@@ -1,0 +1,172 @@
+﻿@using JJMasterData.Commons.Dao.Entity
+@model ApiViewModel
+
+
+<partial name="_Menu"/>
+
+<style>
+    input[type=checkbox] {
+        margin: 2px 0 0;
+    }
+</style>
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+    
+        function SetVisible(value) {
+            if (value === "true")
+                $("#divMode").css('visibility', 'visible');
+            else
+                $("#divMode").css('visibility', 'hidden');
+        }
+    </script>
+}
+
+@using (Html.BeginForm("Edit", "Api", FormMethod.Post))
+{
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;Save</span>
+            </button>
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index", new { dictionaryName = Model.DictionaryName })'">
+                <span class="fa fa-times">
+                </span>
+                <span>&nbsp;@Translate.Key("Cancel")</span>
+            </button>
+        </div>
+    </div>
+
+</div>
+    <br>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(Model?.ValidationSummary?.GetHtml())
+        </div>
+    </div>
+
+    <div class="@BootstrapHelper.GetPanel("default")">
+        <!-- Start Form -->
+        <div class="@BootstrapHelper.PanelBody">
+            <table class="table">
+                <caption>@Translate.Key("Enable or disable API operations")</caption>
+                <thead>
+                    <tr>
+                        <th class="jjselect">
+                            <input type="checkbox" id="CheckAll" @BootstrapHelper.GetDataToggle("tooltip") title="Enable or Disable All" onclick="$('td.jjselect input').not(':disabled').prop('checked', $('#CheckAll').is(':checked')).change();" />
+                        </th>
+                        <th style="width: 90px">@Translate.Key("Verb")</th>
+                        <th>@Translate.Key("Description")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-info jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableGetAll)
+                        </td>
+                        <td>
+                            <label for="EnableGetAll">@Translate.Key("GET")</label>
+                        </td>
+                        <td>
+                            <label for="EnableGetAll">@Translate.Key("Get all records")</label>
+                        </td>
+                    </tr>
+                    <tr class="text-info jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableGetDetail)
+                        </td>
+                        <td>
+                            <label for="EnableGetDetail">@Translate.Key("GET")</label>
+                        </td>
+                        <td>
+                            <label for="EnableGetDetail">@Translate.Key("Get a record detail")</label>
+                        </td>
+                    </tr>
+                    <tr class="text-success jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableAdd)
+                        </td>
+                        <td>
+                            <label for="EnableAdd">@Translate.Key("POST")</label>
+                        </td>
+                        <td>
+                            <label for="EnableAdd">@Translate.Key("Add new record")</label>
+                        </td>
+                    </tr>
+                    <tr class="text-primary jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableUpdate)
+                        </td>
+                        <td>
+                            <label for="EnableUpdate">@Translate.Key("PUT")</label>
+                        </td>
+                        <td>
+                            <label for="EnableUpdate">@Translate.Key("Update records")</label>
+                        </td>
+                    </tr>
+                    <tr class="text-primary jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableUpdatePart)
+                        </td>
+                        <td>
+                            <label for="EnableUpdatePart">@Translate.Key("PATCH")</label>
+                        </td>
+                        <td>
+                            <label for="EnableUpdatePart">@Translate.Key("Update some especific fields")</label>
+                        </td>
+                    </tr>
+                    <tr class="text-danger jjgrid-action">
+                        <td class="jjselect">
+                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableDel)
+                        </td>
+                        <td>
+                            <label for="EnableDel">@Translate.Key("DEL")</label>
+                        </td>
+                        <td>
+                            <label for="EnableDel">@Translate.Key("Delete a record")</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-5">
+                        <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("ApplyUserIdOn")</label>
+                        @Html.DropDownListFor(model => Model.ApiSettings.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control" })
+
+                        <span id="helpBlock" class="help-block">@Translate.Key("Aways apply UserId (from login) as filter and default value on set.")</span>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label " for="FormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("JsonFormat")</label>
+                        <select asp-for="ApiSettings.FormatType" class = "form-control" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                        <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Used in sync?")">@Translate.Key("Sync")</label>
+                        @Html.DropDownList("isSync", new[] {
+                            new SelectListItem {Text = Translate.Key("Yes"), Value = "true"},
+                            new SelectListItem {Text = Translate.Key("No"), Value = "false"}
+                        }, new { @class = "form-control", onchange = "SetVisible(this.value)" })
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
+                        <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Sync Mode")">@Translate.Key("Mode")</label>
+                        <select asp-for="Mode" class="form-control" asp-items="@Html.GetEnumSelectList<SyncMode>()"></select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <br />
+    <br />
+
+
+}
+

@@ -1,0 +1,41 @@
+﻿
+<style>
+    .icon {
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+
+        .icon:hover {
+            background-color: #808080;
+            cursor: pointer;
+        }
+</style>
+
+
+@section Scripts{
+    <script lang="javascript" type="text/javascript">
+    
+        function postValues(cod, description) {
+            var owner = window.parent;
+            owner.setIconValue('@ViewBag.ItemId', cod, description);
+            window.close();
+            return false;
+        }
+    </script>
+}
+
+<div class="row">
+    @foreach (var icon in IconHelper.Icons)
+    {
+        <div class="col-sm-2 text-center icon">
+            <div class="icon text-center" onclick="postValues('@icon.Id.ToString()', '@icon.Description');">
+                <span class="fa @icon.ClassName fa-3x"></span>
+                <br />
+                <span>@icon.Id</span><br />
+                <span>@icon.Description</span>
+            </div>
+        </div>
+    }
+</div>
+
+

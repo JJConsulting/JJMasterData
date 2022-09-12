@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "_Layout.Popup";
+}
+
+@model  JJMasterData.Core.DataDictionary.Action.EditAction
+
+@using (Html.BeginForm("EditAction", "Actions",
+    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+        <div id="divAdvanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}
+

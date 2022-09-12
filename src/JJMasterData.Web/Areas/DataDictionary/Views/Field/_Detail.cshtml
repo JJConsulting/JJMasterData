@@ -1,0 +1,314 @@
+﻿@using JJMasterData.Commons.Dao.Entity
+@model FormElementField
+
+<script lang="javascript" type="text/javascript">
+    function save() {
+        messageWait.show();
+        const url = "@Url.Action("Save", new { dictionaryName = ViewBag.DictionaryName })";
+        $("form:first").attr("action", url).submit();
+    }
+
+    function copy() {
+        messageWait.show();
+        const url = "@Url.Action("Copy", new { dictionaryName = ViewBag.DictionaryName })";
+        $("form:first").attr("action", url).submit();
+    }
+
+    function showSuccess(fieldName) {
+        $(document).ready(function () {
+            $("#divSuccess").css("display", "");
+            window.parent.$('#current_field').val(fieldName);
+            window.parent.cmdRefresh();
+        });
+    }
+</script>
+
+@Html.HiddenFor(model => Model.PanelId)
+@Html.HiddenFor(model => Model.Order)
+
+<div class="container-fluid jjcontainer">
+
+<ul class="nav nav-tabs">
+    <li class="nav-item" id="navGeneral">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
+    </li>
+    <li class="nav-item" id="navComponent">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divComponent">@Translate.Key("Component")</a>
+    </li>
+    <li class="nav-item" id="navAdvanced">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
+    </li>
+</ul>
+
+<div class="tab-content" style="margin-top: 20px;">
+    <div id="divGeneral" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <label class="@BootstrapHelper.Label " for="Name" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("FieldName")">@Translate.Key("FieldName")</label>
+                @Html.TextBoxFor(model => Model.Name, new { maxlength = "64", @class = "form-control" })
+                <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <label class="@BootstrapHelper.Label " for="Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Description on the form")">@Translate.Key("Label")</label>
+                @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <label class="@BootstrapHelper.Label " for="DefaultValue" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Expression for a default value")">@Translate.Key("DefaultValue")</label>
+                @Html.TextBoxFor(model => model.DefaultValue, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="Filter_Type" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Filter Type")">@Translate.Key("Filter")</label>
+                <select asp-for="Filter.Type" class="form-control" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="DataBehavior" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field behavior in relation to the database")">@Translate.Key("DataBehavior")</label>
+                <select asp-for="DataBehavior" class="form-control" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="DataType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Data Type")">@Translate.Key("Data Type")</label>
+                <select asp-for="DataType" class="form-control" asp-items="Html.GetEnumSelectList<FieldType>()"></select>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2">
+                <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="Tamanho do campo">@Translate.Key("Size")</label>
+                @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-1 required">
+                <label class="@BootstrapHelper.Label " for="IsRequired" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("Required")</label>
+                <div class="input-append">
+                    @Html.CheckBoxFor(model => model.IsRequired, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                </div>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-1 required">
+                <label class="@BootstrapHelper.Label " for="IsPk" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Chave primária")">@Translate.Key("PK")</label>
+                <div class="input-append">
+                    @Html.CheckBoxFor(model => model.IsPk, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                </div>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-1 required">
+                <label class="@BootstrapHelper.Label " for="AutoNum" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Automatic numeric (auto increment)")">@Translate.Key("Identity")</label>
+                <div class="input-append">
+                    @Html.CheckBoxFor(model => model.AutoNum, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                </div>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-12">
+                <label class="@BootstrapHelper.Label " for="HelpDescription">
+                    @Translate.Key("Help Description")
+                    <span class="fa fa-question-circle help-description" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("The help text will be displayed like this on the form.")"></span>
+                </label>
+                @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
+            </div>
+        </div>
+
+    </div>
+
+    <div id="divComponent" class="tab-pane fade">
+        <div class="row">
+
+            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <label class="@BootstrapHelper.Label " for="Component" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Component Type")">@Translate.Key("Component")</label>
+                <select asp-for="Component" class="form-control" onchange="this.form.submit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="AutoPostBack" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("When changing the content, it reloads all form fields")">@Translate.Key("AutoPostBack")</label>
+                @Html.DropDownListFor(modelItem => modelItem.AutoPostBack, new[]
+                {
+                    new SelectListItem { Text = Translate.Key("No"), Value = "false" },
+                    new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                },
+                    new { @class = "form-control" })
+            </div>
+
+            @if (Model.Component == FormComponent.Number |
+                 Model.Component == FormComponent.Currency)
+            {
+                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <label class="@BootstrapHelper.Label " for="NumberOfDecimalPlaces" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of decimal places")">@Translate.Key("DecimalPlaces")</label>
+                    @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control" })
+                </div>
+            }
+
+            @await Html.PartialAsync("_Attributes", Model)
+
+        </div>
+
+        @if (Model.Component == FormComponent.Text |
+             Model.Component == FormComponent.Email |
+             Model.Component == FormComponent.Number |
+             Model.Component == FormComponent.Cep |
+             Model.Component == FormComponent.Cnpj |
+             Model.Component == FormComponent.Cpf |
+             Model.Component == FormComponent.CnpjCpf)
+        {
+            if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
+            {
+                <hr/>
+                <div class="col-sm-12">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        <b>@Translate.Key("Actions")</b>
+                        <br/>
+                        <em>@Translate.Key("This component allows you to add actions, but you must save it to add actions later.")</em>
+                    </span>
+                </div>
+            }
+            else
+            {
+                @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new DataDictionaryListAction
+                {
+                    Context = ActionOrigin.Field,
+                    DictionaryName = ViewBag.DictionaryName,
+                    ListAction = Model.Actions.GetAll(),
+                    FieldName = ViewBag.OriginalName
+                })
+            }
+        }
+        else if (Model.Component == FormComponent.ComboBox |
+                 Model.Component == FormComponent.Search)
+        {
+            @await Html.PartialAsync("_DataItem", Model)
+        }
+        else if (Model.Component == FormComponent.Lookup)
+        {
+            @await Html.PartialAsync("_Lookup", Model)
+        }
+        else if (Model.Component == FormComponent.File)
+        {
+            @await Html.PartialAsync("_DataFile", Model)
+        }
+
+    </div>
+
+    <div id="divAdvanced" class="tab-pane fade">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <label class="@BootstrapHelper.Label " for="VisibleExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Visible Expression")</label>
+                @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                <label class="@BootstrapHelper.Label " for="EnableExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Enable Expression")</label>
+                @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-12">
+                <label class="@BootstrapHelper.Label " for="TriggerExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Redoes the expression whenever a field triggers in Auto Post Back")">@Translate.Key("Trigger Expression")</label>
+                @Html.TextBoxFor(model => model.TriggerExpression, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <label class="@BootstrapHelper.Label " for="CssClass" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Class name (CSS) one to be assigned to object group rendering")">@Translate.Key("CssClass")</label>
+                @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2">
+                <label class="@BootstrapHelper.Label " for="LineGroup" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Row counter, used to break the line in the form (row class)")">@Translate.Key("Group Line")</label>
+                @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="Export" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Allows you to export the field")">@Translate.Key("Export")</label>
+                @Html.DropDownListFor(modelItem => modelItem.Export, new[]
+                {
+                    new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
+                    new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+                },
+                    new { @class = "form-control" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <label class="@BootstrapHelper.Label " for="ValidateRequest" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Validates possibly dangerous values ​​on request")">@Translate.Key("Validate Request")</label>
+                @Html.DropDownListFor(modelItem => modelItem.ValidateRequest, new[]
+                {
+                    new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
+                    new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+                },
+                    new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        @Html.Raw(ViewBag.Error)
+    </div>
+
+    <div class="col-sm-12">
+        <div id="divSuccess" class="alert alert-success alert-dismissible" role="alert" style="display:none">
+            <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
+                <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
+            </button>
+            <strong>@Translate.Key("Success!")</strong> @Translate.Key("Record saved successfully.")
+        </div>
+    </div>
+</div>
+
+
+@if (BootstrapHelper.Version < 5)
+{
+    <div class="row">
+        <div class="col-sm-12 jjtoolbar">
+            @{
+                Save();
+            }
+            @{
+                Refresh();
+            }
+            @{
+                Delete();
+            }
+            @{
+                Copy();
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center jjtoolbar-bs5 g-0">
+        <div class="col-sm-2 jjtoolbar-item-bs5">
+            @{ Save(); }
+        </div>
+        <div class="col-sm-2 jjtoolbar-item-bs5">
+            @{ Refresh(); }
+        </div>
+        <div class="col-sm-2 jjtoolbar-item-bs5">
+            @{ Delete(); }
+        </div>
+        <div class="col-sm-2 jjtoolbar-item-bs5">
+            @{ Copy(); }
+        </div>
+    </div>
+}
+</div>
+
+@functions{
+
+    void Save()
+    {
+        <button type="button" class="btn btn-primary btn-small" style="color:white" onclick="save();">
+            <span class="fa fa-check"></span>
+            <span>&nbsp;@Translate.Key("Save")</span>
+        </button>
+    }
+
+    void Refresh()
+    {
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
+            <span class="fa fa-refresh fa-fw fa-fw"></span>
+            <span>@Translate.Key("Refresh")</span>
+        </a>
+    }
+
+    void Delete()
+    {
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
+            <span class="fa fa-trash"></span>
+            <span>&nbsp;@Translate.Key("Delete")</span>
+        </a>
+    }
+
+    void Copy()
+    {
+        <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
+            <span class="fa fa-files-o fa-fw fa-fw"></span>
+            <span>&nbsp;@Translate.Key("Copy")</span>
+        </button>
+    }
+
+}

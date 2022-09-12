@@ -1,0 +1,3886 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "JJMasterData.Api",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/accounts/login": {
+      "post": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Realizes the login.",
+        "requestBody": {
+          "description": "user={login}&password={plain text}",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLogin"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLogin"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLogin"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/accounts/changepassword": {
+      "post": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Change the user password.",
+        "requestBody": {
+          "description": "User data",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountChange"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountChange"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountChange"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "406": {
+            "description": "Not Acceptable"
+          }
+        }
+      }
+    },
+    "/api/accounts/recoverpassword": {
+      "post": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Recover the user password.",
+        "requestBody": {
+          "description": "user={Login}&appId={App Id}",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountRecover"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountRecover"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountRecover"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountRecover"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccessInfo"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Not Acceptable"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/dictionaries": {
+      "get": {
+        "tags": [
+          "Dictionaries"
+        ],
+        "summary": "Get all dictionaries with sync enabled.",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DicParser"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DicParser"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DicParser"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Token Expired"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/dictionaries/{id}": {
+      "get": {
+        "tags": [
+          "Dictionaries"
+        ],
+        "summary": "Get a specific data dictionary.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Element Name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicParser"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicParser"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicParser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Token Expired"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/dictionaries/count": {
+      "post": {
+        "tags": [
+          "Dictionaries"
+        ],
+        "summary": "Returns the number of records modified from a specific date.",
+        "requestBody": {
+          "description": "List of dictionaries to be checked",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DicSyncParam"
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DicSyncParam"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DicSyncParam"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DicSyncParam"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicSyncInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicSyncInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicSyncInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Token Expired"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/masterApi/{elementName}/{pag}/{regporpag}/{orderby}/{tot}": {
+      "get": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pag",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "regporpag",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tot",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasterApiListResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasterApiListResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasterApiListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/masterApi/{elementName}/{id}": {
+      "get": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/masterApi/{elementName}": {
+      "post": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "replace",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": { }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseLetter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/masterApi/{elementName}/trigger/{pageState}/{objname}": {
+      "post": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageState",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/PageState"
+            }
+          },
+          {
+            "name": "objname",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FormValues"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FormValues"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FormValues"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/masterApi/{elementName}/action/{actionName}/{fieldName}": {
+      "post": {
+        "tags": [
+          "MasterApi"
+        ],
+        "parameters": [
+          {
+            "name": "elementName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actionName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResponseMessage"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResponseMessage"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccountChange": {
+        "required": [
+          "pwdConfirm",
+          "pwdCurrent",
+          "pwdNew",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User login"
+          },
+          "pwdCurrent": {
+            "type": "string",
+            "description": "Current Password"
+          },
+          "pwdNew": {
+            "type": "string",
+            "description": "New Password"
+          },
+          "pwdConfirm": {
+            "type": "string",
+            "description": "Confirm Password"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AccountLogin": {
+        "required": [
+          "password",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User login"
+          },
+          "password": {
+            "type": "string",
+            "description": "Current password without cryptography"
+          },
+          "appId": {
+            "type": "string",
+            "description": "AppId number from smartphone,  \r\nit's used on recover password",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AccountRecover": {
+        "required": [
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User login"
+          },
+          "appId": {
+            "type": "string",
+            "description": "AppId number from smartphone",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApiJsonFormat": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "CommandType": {
+        "enum": [
+          1,
+          4,
+          512
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ConfigAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataAccessCommand": {
+        "type": "object",
+        "properties": {
+          "cmdType": {
+            "$ref": "#/components/schemas/CommandType"
+          },
+          "sql": {
+            "type": "string",
+            "nullable": true
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataAccessParameter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataAccessParameter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/DbType"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/ParameterDirection"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataElementMap": {
+        "type": "object",
+        "properties": {
+          "elementName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "fieldDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "popUpSize": {
+            "$ref": "#/components/schemas/PopupSize"
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          },
+          "mapFilters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataElementMapFilter"
+            },
+            "nullable": true
+          },
+          "enableElementActions": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataElementMapFilter": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string",
+            "nullable": true
+          },
+          "expressionValue": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataItemType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "DataItemValue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "imageColor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DbType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          25,
+          26,
+          27
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "DeleteAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicApiSettings": {
+        "type": "object",
+        "properties": {
+          "enableGetAll": {
+            "type": "boolean"
+          },
+          "enableGetDetail": {
+            "type": "boolean"
+          },
+          "enableAdd": {
+            "type": "boolean"
+          },
+          "enableUpdate": {
+            "type": "boolean"
+          },
+          "enableUpdatePart": {
+            "type": "boolean"
+          },
+          "enableDel": {
+            "type": "boolean"
+          },
+          "formatType": {
+            "$ref": "#/components/schemas/ApiJsonFormat"
+          },
+          "applyUserIdOn": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicFormFieldParser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "component": {
+            "$ref": "#/components/schemas/FormComponent"
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "triggerExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lineGroup": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "helpDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataItem": {
+            "$ref": "#/components/schemas/FormElementDataItem"
+          },
+          "dataFile": {
+            "$ref": "#/components/schemas/FormElementDataFile"
+          },
+          "export": {
+            "type": "boolean"
+          },
+          "validateRequest": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "autoPostBack": {
+            "type": "boolean"
+          },
+          "maxValue": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "minValue": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "numberOfDecimalPlaces": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/FormElementFieldActions"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          },
+          "panelId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "internalNotes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicFormParser": {
+        "type": "object",
+        "properties": {
+          "formFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DicFormFieldParser"
+            },
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "panels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormElementPanel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicParser": {
+        "type": "object",
+        "properties": {
+          "table": {
+            "$ref": "#/components/schemas/Element"
+          },
+          "form": {
+            "$ref": "#/components/schemas/DicFormParser"
+          },
+          "uiOptions": {
+            "$ref": "#/components/schemas/UIOptions"
+          },
+          "api": {
+            "$ref": "#/components/schemas/DicApiSettings"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicSyncInfo": {
+        "type": "object",
+        "properties": {
+          "listElement": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DicSyncInfoElement"
+            },
+            "nullable": true
+          },
+          "serverDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalProcessMilliseconds": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicSyncInfoElement": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "processMilliseconds": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DicSyncParam": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EditAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Element": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "info": {
+            "type": "string",
+            "nullable": true
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementField"
+            },
+            "nullable": true
+          },
+          "indexes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementIndex"
+            },
+            "nullable": true
+          },
+          "relations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementRelation"
+            },
+            "nullable": true
+          },
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customProcNameGet": {
+            "type": "string",
+            "nullable": true
+          },
+          "customProcNameSet": {
+            "type": "string",
+            "nullable": true
+          },
+          "sync": {
+            "type": "boolean"
+          },
+          "syncMode": {
+            "$ref": "#/components/schemas/SyncMode"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ElementField": {
+        "type": "object",
+        "properties": {
+          "fieldId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataType": {
+            "$ref": "#/components/schemas/FieldType"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ElementFilter"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "isPk": {
+            "type": "boolean"
+          },
+          "autoNum": {
+            "type": "boolean"
+          },
+          "dataBehavior": {
+            "$ref": "#/components/schemas/FieldBehavior"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ElementFilter": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/FilterMode"
+          },
+          "isRequired": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ElementIndex": {
+        "type": "object",
+        "properties": {
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "isUnique": {
+            "type": "boolean"
+          },
+          "isClustered": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ElementRelation": {
+        "type": "object",
+        "properties": {
+          "childElement": {
+            "type": "string",
+            "nullable": true
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementRelationColumn"
+            },
+            "nullable": true
+          },
+          "updateOnCascade": {
+            "type": "boolean"
+          },
+          "deleteOnCascade": {
+            "type": "boolean"
+          },
+          "viewType": {
+            "$ref": "#/components/schemas/RelationType"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ElementRelationColumn": {
+        "type": "object",
+        "properties": {
+          "pkColumn": {
+            "type": "string",
+            "nullable": true
+          },
+          "fkColumn": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExportAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "processOptions": {
+            "$ref": "#/components/schemas/ProcessOptions"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FieldBehavior": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FieldType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FilterAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "showAsCollapse": {
+            "type": "boolean"
+          },
+          "expandedByDefault": {
+            "type": "boolean"
+          },
+          "enableScreenSearch": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FilterMode": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FirstOptionMode": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FormComponent": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FormElementDataFile": {
+        "type": "object",
+        "properties": {
+          "folderPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxFileSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dragDrop": {
+            "type": "boolean"
+          },
+          "allowedTypes": {
+            "type": "string",
+            "nullable": true
+          },
+          "multipleFile": {
+            "type": "boolean"
+          },
+          "exportAsLink": {
+            "type": "boolean"
+          },
+          "viewGallery": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FormElementDataItem": {
+        "type": "object",
+        "properties": {
+          "dataItemType": {
+            "$ref": "#/components/schemas/DataItemType"
+          },
+          "command": {
+            "$ref": "#/components/schemas/DataAccessCommand"
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataItemValue"
+            },
+            "nullable": true
+          },
+          "elementMap": {
+            "$ref": "#/components/schemas/DataElementMap"
+          },
+          "firstOption": {
+            "$ref": "#/components/schemas/FirstOptionMode"
+          },
+          "replaceTextOnGrid": {
+            "type": "boolean"
+          },
+          "showImageLegend": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FormElementFieldActions": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FormElementPanel": {
+        "type": "object",
+        "properties": {
+          "panelId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "layout": {
+            "$ref": "#/components/schemas/PanelLayout"
+          },
+          "color": {
+            "$ref": "#/components/schemas/PanelColor"
+          },
+          "expandedByDefault": {
+            "type": "boolean"
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FormEnterKey": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FormValues": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "nullable": true
+          },
+          "enable": {
+            "type": "boolean"
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "dataItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataItemValue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GridActions": {
+        "type": "object",
+        "properties": {
+          "editAction": {
+            "$ref": "#/components/schemas/EditAction"
+          },
+          "deleteAction": {
+            "$ref": "#/components/schemas/DeleteAction"
+          },
+          "viewAction": {
+            "$ref": "#/components/schemas/ViewAction"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GridToolBarActions": {
+        "type": "object",
+        "properties": {
+          "insertAction": {
+            "$ref": "#/components/schemas/InsertAction"
+          },
+          "legendAction": {
+            "$ref": "#/components/schemas/LegendAction"
+          },
+          "refreshAction": {
+            "$ref": "#/components/schemas/RefreshAction"
+          },
+          "filterAction": {
+            "$ref": "#/components/schemas/FilterAction"
+          },
+          "importAction": {
+            "$ref": "#/components/schemas/ImportAction"
+          },
+          "exportAction": {
+            "$ref": "#/components/schemas/ExportAction"
+          },
+          "configAction": {
+            "$ref": "#/components/schemas/ConfigAction"
+          },
+          "sortAction": {
+            "$ref": "#/components/schemas/SortAction"
+          },
+          "logAction": {
+            "$ref": "#/components/schemas/LogAction"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpContent": {
+        "type": "object",
+        "properties": {
+          "headers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringStringIEnumerableKeyValuePair"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpMethod": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpRequestMessage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "versionPolicy": {
+            "$ref": "#/components/schemas/HttpVersionPolicy"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HttpContent"
+          },
+          "method": {
+            "$ref": "#/components/schemas/HttpMethod"
+          },
+          "requestUri": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "headers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringStringIEnumerableKeyValuePair"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true,
+            "readOnly": true,
+            "deprecated": true
+          },
+          "options": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpResponseMessage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HttpContent"
+          },
+          "statusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "reasonPhrase": {
+            "type": "string",
+            "nullable": true
+          },
+          "headers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringStringIEnumerableKeyValuePair"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "trailingHeaders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringStringIEnumerableKeyValuePair"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "requestMessage": {
+            "$ref": "#/components/schemas/HttpRequestMessage"
+          },
+          "isSuccessStatusCode": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HttpStatusCode": {
+        "enum": [
+          100,
+          101,
+          102,
+          103,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          226,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          421,
+          422,
+          423,
+          424,
+          426,
+          428,
+          429,
+          431,
+          451,
+          500,
+          501,
+          502,
+          503,
+          504,
+          505,
+          506,
+          507,
+          508,
+          510,
+          511
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HttpVersionPolicy": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "IconType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          496,
+          497,
+          498,
+          499,
+          500,
+          501,
+          502,
+          503,
+          504,
+          505,
+          506,
+          507,
+          508,
+          509,
+          510,
+          511,
+          512,
+          513,
+          514,
+          515,
+          516,
+          517,
+          518,
+          519,
+          520,
+          521,
+          522,
+          523,
+          524,
+          525,
+          526,
+          527,
+          528,
+          529,
+          530,
+          531,
+          532,
+          533,
+          534,
+          535,
+          536,
+          537,
+          538,
+          539,
+          540,
+          541,
+          542,
+          543,
+          544,
+          545,
+          546,
+          547,
+          548,
+          549,
+          550,
+          551,
+          552,
+          553,
+          554,
+          555,
+          556,
+          557,
+          558,
+          559,
+          560,
+          561,
+          562,
+          563,
+          564,
+          565,
+          566,
+          567,
+          568,
+          569,
+          570,
+          571,
+          572,
+          573,
+          574,
+          575,
+          576,
+          577,
+          578,
+          579,
+          580,
+          581,
+          582,
+          583,
+          584,
+          585,
+          586,
+          587,
+          588,
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          595,
+          596,
+          597,
+          598,
+          599,
+          600,
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          613,
+          614,
+          615,
+          616,
+          617,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624,
+          625,
+          626,
+          627,
+          628,
+          629,
+          630,
+          631,
+          632,
+          633,
+          634,
+          635,
+          636,
+          637,
+          638,
+          639,
+          640,
+          641,
+          642,
+          643,
+          644,
+          645,
+          646,
+          647,
+          648,
+          649,
+          650,
+          651,
+          652,
+          653,
+          654,
+          655,
+          656,
+          657,
+          658,
+          659,
+          660,
+          661,
+          662,
+          663,
+          664,
+          665,
+          666,
+          667,
+          668,
+          669,
+          670,
+          671,
+          672,
+          673,
+          674,
+          675,
+          676,
+          677,
+          678,
+          679,
+          680,
+          681,
+          682,
+          683,
+          684,
+          685,
+          686,
+          687,
+          688,
+          689,
+          690,
+          691,
+          692
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ImportAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "processOptions": {
+            "$ref": "#/components/schemas/ProcessOptions"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InsertAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "elementNameToSelect": {
+            "type": "string",
+            "nullable": true
+          },
+          "reopenForm": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LegendAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MasterApiListResponse": {
+        "type": "object",
+        "properties": {
+          "tot": {
+            "type": "integer",
+            "description": "Quantidade total de registros no banco",
+            "format": "int32"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": { }
+            },
+            "description": "Tabela com os dados da pesquisa",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PageState": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PanelColor": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PanelLayout": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ParameterDirection": {
+        "enum": [
+          1,
+          2,
+          3,
+          6
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PopupSize": {
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ProcessOptions": {
+        "type": "object",
+        "properties": {
+          "commandBeforeProcess": {
+            "type": "string",
+            "nullable": true
+          },
+          "commandAfterProcess": {
+            "type": "string",
+            "nullable": true
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ProcessScope"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProcessScope": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "RefreshAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RelationType": {
+        "enum": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "ResponseLetter": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "validationList": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SortAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringStringIEnumerableKeyValuePair": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SyncMode": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "UIForm": {
+        "type": "object",
+        "properties": {
+          "formCols": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isVerticalLayout": {
+            "type": "boolean"
+          },
+          "showViewModeAsStatic": {
+            "type": "boolean"
+          },
+          "enterKey": {
+            "$ref": "#/components/schemas/FormEnterKey"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UIGrid": {
+        "type": "object",
+        "properties": {
+          "totalPerPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPaggingButton": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showBorder": {
+            "type": "boolean"
+          },
+          "showRowStriped": {
+            "type": "boolean"
+          },
+          "showRowHover": {
+            "type": "boolean"
+          },
+          "totalReg": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "showToolBar": {
+            "type": "boolean"
+          },
+          "enableSorting": {
+            "type": "boolean"
+          },
+          "enableMultSelect": {
+            "type": "boolean"
+          },
+          "maintainValuesOnLoad": {
+            "type": "boolean"
+          },
+          "showHeaderWhenEmpty": {
+            "type": "boolean"
+          },
+          "emptyDataText": {
+            "type": "string",
+            "nullable": true
+          },
+          "showPagging": {
+            "type": "boolean"
+          },
+          "headerFixed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UIOptions": {
+        "type": "object",
+        "properties": {
+          "grid": {
+            "$ref": "#/components/schemas/UIGrid"
+          },
+          "form": {
+            "$ref": "#/components/schemas/UIForm"
+          },
+          "toolBarActions": {
+            "$ref": "#/components/schemas/GridToolBarActions"
+          },
+          "gridActions": {
+            "$ref": "#/components/schemas/GridActions"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserAccessInfo": {
+        "type": "object",
+        "properties": {
+          "errorId": {
+            "type": "integer",
+            "description": "Código do erro:\r\n<br />0   = OK\r\n<br />100 = Unexpected error\r\n<br />101 = Password sent by email if existing\r\n<br />110 = Invalid Access\r\n<br />112 = Sua conta excedeu o limite de tentitivas\r\n<br />113 = Blocked user\r\n<br />130 = Password change required\r\n<br />131 = Your password will expire soon, change it as soon as possible\r\n<br />301 = Password cannot be blank!\r\n<br />302 = Password cannot contain user!\r\n<br />303 = Password must contain at least one number!\r\n<br />304 = The password must contain at least one uppercase character!\r\n<br />305 = The password contains at least one of the following characters: !@#$%^*()_+&<br />306 = Password cannot contain a colon(:)\r\n<br />307 = Password and confirmation password are not the same!\r\n<br />308 = Your current password is incorrect! It will not be possible to change to the new password.",
+            "format": "int32"
+          },
+          "isValid": {
+            "type": "boolean",
+            "description": "Retorna verdadeiro se o login foi realizado com sucesso"
+          },
+          "message": {
+            "type": "string",
+            "description": "Descrição do erro",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "description": "Token a ser utilizado nas requisições",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "description": "Id do Usuário",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "description": "Versão do sistema",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Informações do login do usuário"
+      },
+      "Version": {
+        "type": "object",
+        "properties": {
+          "major": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minor": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "build": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "majorRevision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "minorRevision": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ViewAction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "toolTip": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDefaultOption": {
+            "type": "boolean"
+          },
+          "isGroup": {
+            "type": "boolean"
+          },
+          "dividerLine": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/IconType"
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "confirmationMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "enableExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "visibleExpression": {
+            "type": "string",
+            "nullable": true
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAsButton": {
+            "type": "boolean"
+          },
+          "cssClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "isCustomAction": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "isVisible": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "token": {
+        "type": "apiKey",
+        "description": "API Key Authentication",
+        "name": "token",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "token": [ ]
+    }
+  ]
+}

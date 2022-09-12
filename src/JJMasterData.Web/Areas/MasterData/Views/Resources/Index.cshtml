@@ -1,0 +1,7 @@
+﻿@using JJMasterData.Web.Extensions
+@model JJFormView;
+
+@using (Html.BeginForm())
+{
+    @Model.GetHtml().ToHtmlString()
+}

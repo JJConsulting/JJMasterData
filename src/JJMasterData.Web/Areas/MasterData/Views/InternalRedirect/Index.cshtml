@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "_Layout.Popup";
+}
+
+@using (Html.BeginForm())
+{
+    if (ViewBag.Success == true)
+    {
+        <script lang="javascript" type="text/javascript">
+            jjdictionary.refreshAction(true)
+        </script>
+    }
+
+    @Html.Raw(ViewBag.HtmlPage)
+
+    if (ViewBag.ShowToolBar == true)
+    {
+        <div id="divToolbar">
+            <button type="submit" class="btn btn-primary"
+                    formaction="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@Translate.Key("Save")</span>
+            </button>
+
+            <button type="button" class="@BootstrapHelper.DefaultButton" onclick="window.parent.popup.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;@Translate.Key("Cancel")</span>
+            </button>
+        </div>
+        <br/>
+
+        @Html.Raw(ViewBag.Error)
+    }
+}

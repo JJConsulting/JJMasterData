@@ -1,0 +1,1913 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JJMasterData.Commons</name>
+    </assembly>
+    <members>
+        <member name="M:JJMasterData.Commons.Cript.Cript64(System.String)">
+            <summary>
+            Criptografa um texto
+            </summary>
+            <param name="valor">Valor a ser criptografado</param>
+            <returns>Valor Criptografado</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.Cript64(System.String,System.String)">
+            <summary>
+            Criptografa um texto
+            </summary>
+            <param name="valor">Valor a ser criptografado</param>
+            <param name="secretKey">Chave da criptografia a ser utilizada</param>
+            <returns>Valor Criptografado</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.Descript64(System.String)">
+            <summary>
+            Descriptogra um texto
+            </summary>
+            <param name="valor">Valor criptografado</param>
+            <returns>Valor descriptografado</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.Descript64(System.String,System.String)">
+            <summary>
+            Descriptogra um texto
+            </summary>
+            <param name="valor">Valor criptografado</param>
+            <param secretKey="valor">Chave da criptografia a ser utilizada</param>
+            <returns>Valor descriptografado</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.CriptPwdProtheus(System.String)">
+            <summary>
+            Criptografia do Protheus para senhas do SRA
+            </summary>
+            <param name="senha">Senha</param>
+            <remarks>Kleberton 2012-08-28</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.DeCriptPwdProtheus(System.String)">
+            <summary>
+            Descriptografia do Protheus para senhas do SRA
+            </summary>
+            <param name="senha">Senha</param>
+            <remarks>Lucio Pelinson 2012-09-21</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.GetMd5Hash(System.String)">
+            <summary>
+            Converte uma string para hash (32 character hexadecimal string)
+            </summary>
+            <param name="input">Valor a ser convertido</param>
+            <returns>Valor em hash</returns>
+            <remarks>Lucio Pelinson 06-12-2013</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.VerifyMd5Hash(System.String,System.String)">
+            <summary>
+            Verifica uma string com um hash
+            </summary>
+            <param name="input">Valor</param>
+            <param name="hash">Valor em hash</param>
+            <returns>True caso seja o mesmo</returns>
+            <remarks>Lucio Pelinson 06-12-2013</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.EnigmaEncryptRP(System.String)">
+            <summary>
+            Embaralha mensagem do ReportPortal
+            </summary>
+            <param name="message">Texto a ser criptografado</param>
+            <remarks>
+            Veja a função dbo.EnigmaEncrypt no SQLServer
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.EnigmaEncryptRP(System.String,System.String)">
+            <summary>
+            Embaralha mensagem do ReportPortal
+            </summary>
+            <param name="message">Texto a ser criptografado</param>
+            <param name="secretKey">Chave secreta</param>
+            <remarks>
+            Veja a função dbo.EnigmaEncrypt no SQLServer
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.EnigmaDecryptRP(System.String)">
+            <summary>
+            Desembaralha mensagem do ReportPortal
+            </summary>
+            <param name="message">Texto a ser descriptografado</param>
+            <remarks>
+            Veja a função dbo.EnigmaEncrypt no SQLServer
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Cript.EnigmaDecryptRP(System.String,System.String)">
+            <summary>
+            Desembaralha mensagem do ReportPortal
+            </summary>
+            <param name="message">Texto a ser descriptografado</param>
+            <param name="secretKey">Chave secreta</param>
+        </member>
+        <member name="T:JJMasterData.Commons.CustomSettings">
+            <summary>
+            Web Config Settings
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.GenerateLog">
+            <summary>
+            Generate error log
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.StrConnection">
+            <summary>
+            Database connection string; 
+            Default value configured in app.config as "ConnectionString";
+            </summary>
+            <returns>Connection string</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.StrProvider">
+            <summary>
+            Database Connection Provider; 
+            Default value configured in app.config as "ConnectionString";
+            </summary>
+            <returns>Provider Name</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.TimeOut">
+             <summary>
+             Waiting time to execute a command on the database (seconds - default 240s)
+             </summary>
+            <remarks>
+            it is recommended that 0 means no timeout
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.Logger">
+            <summary>
+            Log settings
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccess.KeepConnAlive">
+            <summary>
+            Keeps the database connection open, 
+            allowing to execute a sequence of commands; 
+            </summary>
+            <example>
+            This example shows how the KeepConnAlive method should be used
+            <code>
+            class TestClass  
+            { 
+                private void DoTest()
+                {
+                    var dao = new DataAccess())
+                    try
+                    {
+                        dao.KeepConnAlive = true;
+                        dao.SetCommand("update table1 set ...");
+                        dao.SetCommand("update table2 set ...");
+                    }
+                    catch (Exception ex)
+                    {
+                        //Do Log
+                    }
+                    finally
+                    {
+                       dao.KeepConnAlive = false;
+                    }
+                }
+            }
+            </code> 
+            </example>
+            <remarks>
+            default value is false;
+            Always run the Dispose() method;
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.#ctor">
+            <summary>
+            Initializes the class based on the connection string called "ConnectionString" configured in app.Config
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.#ctor(System.String)">
+            <summary>
+            Initializes the class based on the name of the connection string
+            </summary>
+            <param name="connectionStringName">Connection String name configured in app.config</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.#ctor(System.String,System.String)">
+            <summary>
+            Initializes the class based on the given connection string
+            </summary>
+            <param name="strConnection">Connection String</param>
+            <param name="strProviderName">
+            Providers:
+            <para>System.Data.SqlClient</para>
+            <para>System.Data.OracleClient</para>
+            <para>POSTGRE SQL</para>
+            <para>MYSQL</para>
+            <para>Informix</para>
+            <para>Sybase</para>
+            </param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetDataTable(System.String)">
+            <summary>
+            Returns DataTable object populated by a query
+            </summary>
+            <param name="sql">Query without parameters</param>
+            <returns>Returns DataTable object populated by a query with parameters</returns>
+            <remarks>Lucio Pelinson 14-04-2012</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetDataTable(System.String,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})">
+            <summary>
+            Returns DataTable object populated by a query with parameters
+            </summary>
+            <param name="sql">Query</param>
+            <param name="parameters">Parameters</param>
+            <returns>Returns DataTable object populated by a query with parameters</returns>
+            <remarks>Lucio Pelinson 14-04-2012</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetDataTable(JJMasterData.Commons.Dao.DataAccessCommand)">
+            <summary>
+            Returns DataTable object populated by a query with parameters
+            </summary>
+            <param name="daCmd">Custom DataAccess Command</param>
+            <returns>Returns DataTable object populated by a query with parameters</returns>
+            <remarks>Lucio Pelinson 14-04-2012</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetDataTable(System.Data.Common.DbConnection@,System.String)">
+            <summary>
+            Returns DataTable object populated by a query using an open connection
+            </summary>
+            <param name="sqlConn">SqlConnection object with connection open</param>
+            <param name="sql">Query</param>
+            <returns>DataTable object</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(System.String)">
+            <summary>
+            Returns a single value from the sql command
+            </summary>
+            <param name="sql">Query</param>
+            <returns>Object</returns>
+            <remarks>
+            Autor: Lucio Pelinson 08-05-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(System.String,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})">
+            <summary>
+            Returns a single sql command value with parameters
+            </summary>
+            <param name="sql">Query with parameters</param>
+            <param name="parameters">Parameters</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(JJMasterData.Commons.Dao.DataAccessCommand)">
+            <summary>
+            Returns a single sql command value with parameters
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(JJMasterData.Commons.Dao.DataAccessCommand,System.Data.Common.DbConnection@,System.Data.Common.DbTransaction@)">
+            <summary>
+            Returns a single sql command value with parameters
+            </summary>
+            <param name="cmd">Command</param>
+            <param name="sqlConn">Connection Object</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)">
+            <summary>
+            Commands to be run on the database (With Transaction)
+            </summary>
+            <param name="cmd">Command to be executed</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommandAsync(JJMasterData.Commons.Dao.DataAccessCommand)">
+            <summary>
+            Commands to be run on the database (With Transaction)
+            </summary>
+            <param name="cmd">Command to be executed</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessCommand})">
+            <summary>
+            List of commands to run on the database (With Transaction)
+            </summary>
+            <param name="commands">List of commands</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(JJMasterData.Commons.Dao.DataAccessCommand,System.Data.Common.DbConnection@,System.Data.Common.DbTransaction@)">
+            <summary>
+            Execute a command passing the transaction
+            </summary>
+            <param name="cmd">Comando</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 08-05-2013
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.String,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})">
+            <summary>
+            Commands to be run on the database 
+            </summary>
+            <param name="sql">Command</param>
+            <param name="parameters">Parameters</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.String)">
+            <summary>
+            Commands to be run on the database 
+            </summary>
+            <param name="sql">SQL Command</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.Collections.ArrayList)">
+            <summary>
+            Array with sql commands to be executed in the database (With Transaction)
+            </summary>
+            <param name="sqlList">List of sql commands</param>
+            <returns>Returns the number of affected records</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetFields(System.String)">
+            <summary>
+            Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)] 
+            </summary>
+            <param name="sql">Query</param>
+            <returns>
+            Return a Hashtable Object. 
+            If no record is found it returns null.
+            </returns>
+            <remarks>
+            Autor: Lucio Pelinson 17-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetFields(JJMasterData.Commons.Dao.DataAccessCommand)">
+            <summary>
+            Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)]
+            </summary>
+            <param name="cmd">Command to be executed</param>
+            <returns>
+            Return a Hashtable Object. 
+            If no record is found it returns null.
+            </returns>
+            <remarks>
+            Autor: Lucio Pelinson 17-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.ParseSQL(System.String)">
+            <summary>
+            Convert query to current provider using third-party library
+            </summary>
+            <param name="sSql">Select to be converted</param>
+            <returns>string sql</returns>
+            <remarks>
+            Autor: Lucio Pelinson 14-04-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.HasTable(System.String)">
+             <summary>
+             Verifica se tem acesso de leitura a uma tabela existe no banco
+             </summary>
+             <param name="table">Nome da tabela</param>
+             <returns>True se a tabela exisitir</returns>
+             ///<remarks>
+            Autor: Lucio Pelinson 16-09-2014
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.TryConnection(System.String@)">
+             <summary>
+             Verifica se a conexão com o banco esta ok
+             </summary>
+             <returns>True = Conexão ok </returns>
+             ///<remarks>
+            Autor: Lucio Pelinson 28-04-2014
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.ExecuteBatch(System.String)">
+            <summary>
+            Executa um script de banco de dados
+            </summary>
+            <param name="script">Script do banco de dados</param>
+            <returns>Retorna True caso seja executado com sucesso</returns>
+            <remarks>Lucio Pelinson 18-02-2013</remarks> 
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.ValueExist(System.String,System.String,System.String)">
+            <summary>
+            Verifica se um valor existe de acordo com a tabela e condições
+            </summary>
+            <param name="tableName">Nome da Tabela</param>
+            <param name="columnName">Nome da Coluna </param>
+            <param name="value">Filtro da Coluna</param>
+            <returns>Verdadeiro caso o valor exista na tabela</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.ValueExist(System.String,System.String,System.Int32)">
+            <summary>
+            Verifica se um valor existe de acordo com a tabela e condições
+            </summary>
+            <param name="tableName">Nome da Tabela</param>
+            <param name="columnName">Nome da Coluna </param>
+            <param name="value">Filtro da Coluna</param>
+            <returns>Verdadeiro caso o valor exista na tabela</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.ValueExist(System.String,JJMasterData.Commons.Dao.DataAccessParameter[])">
+            <summary>
+            Verifica se um valor existe de acordo com a tabela e condições
+            </summary>
+            <param name="tableName">Nome da Tabela</param>
+            <param name="filters">Filtros</param>
+            <returns>Verdadeiro caso o valor exista na tabela</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetValue(System.String,System.String,System.String)">
+            <summary>
+            Recupera um determinado valor de um campo em uma tabela
+            </summary>
+            <param name="tableName">Nome da tabela</param>
+            <param name="columnName">Nome da coluna</param>
+            <param name="value">Filtro da Coluna</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.DataAccess.GetValue(System.String,System.String,System.Int32)">
+            <summary>
+            Recupera um determinado valor de um campo em uma tabela
+            </summary>
+            <param name="tableName">Nome da tabela</param>
+            <param name="columnName">Nome da coluna</param>
+            <param name="value">Filtro da Coluna</param>
+            <returns></returns>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccessParameter.Name">
+            <summary>
+            Nome do parametro. 
+            Exemplo MSSQL: @foo, ORACLE p_foo, etc.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccessParameter.Value">
+            <summary>
+            Valor do parametro.
+            Para enviar null utilize DBNull.Value
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccessParameter.Type">
+            <summary>
+            Specifies the data type of a field, a property, or a Parameter object of a .NET
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccessParameter.Size">
+            <summary>
+            Tamanho do Campo. Para numero é opcional
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.DataAccessParameter.Direction">
+            <summary>
+            Direção do parametro.
+            Default = Input
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.CommandType">
+            <summary>
+            Command executed on the database
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.Element">
+            <summary> 
+            Elemento base com a estrutura basica da tabela
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Name">
+            <summary>
+            Dictionary Name
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Info">
+            <summary>
+            Table information
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Fields">
+            <summary>
+            Field List
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Indexes">
+            <summary>
+            Index List
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Relations">
+            <summary>
+            Relations List
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.TableName">
+            <summary>
+            Table Name
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.CustomProcNameGet">
+            <summary>
+            Custom name for recording procedure
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.CustomProcNameSet">
+            <summary>
+            Custom name for read procedure
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Sync">
+            <summary>
+            Send dictionary between applications
+            </summary>
+            <remarks>
+            Enable sync for the app.
+            <para></para>Default = true
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.SyncMode">
+            <summary>
+            Works online or offline on synchronized devices
+            </summary>
+            <remarks>
+            Behavior whether data will be synchronized online or offline
+            <para>Default = SyncMode.Online</para>
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.Element.Version">
+            <summary>
+            Current dictionary version
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementField">
+            <summary>
+            Informações do campo
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.FieldId">
+            <summary>
+            Internal field id
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.Name">
+            <summary>
+            Column name
+            </summary>
+            <remarks>
+            When in JJGridView, the "::ASC" OR "::DESC" tags can be used
+            in the column name to indicate the data order.
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.Label">
+            <summary>
+            Description on the form
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.DataType">
+            <summary>
+            Data Type
+            Default NVARCHAR
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.Filter">
+            <summary>
+            Filter Parameters
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.Size">
+            <summary>
+            Filed Size
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.DefaultValue">
+            <summary>
+            Default field initializer
+            <para/> Expression for a default value
+            <para/> Tipo [val:] returns a value;
+            <para/> Tipo [exp:] returns the result of the expression;
+            <para/> Tipo [sql:] returns the result of a sql command;
+            <para/> Tipo [protheus:] returns the result of a Protheus function;
+            </summary>
+            <example>
+            <para/> Example using [val:] + text
+            <para/> Example1: val:a simple text;
+            <para/> Example2: val:10000;
+            <code lang="c#">
+            var field = new ElementField();
+            field.DefaultValue = "val:test";
+            </code>
+            <para/> Example using [exp:] + expression
+            <para/> Example1: exp:{field1};
+            <para/> Example2: exp:({field1} + 10) * {field2};
+            <code lang="c#">
+            var field = new ElementField();
+            field.DefaultValue = "exp:{UserId}";
+            </code>
+            <para/> Example using [sql:] + query
+            <para/> Example1: sql:select 'foo';
+            <para/> Example2: sql:select count(*) from table1;
+            <code lang="c#">
+            var field = new ElementField();
+            field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
+            </code>
+            <para/> Example using [protheus:] + "UrlProtheus", "NameFunction", "Parameters"
+            <para/> Example1: protheus:"http://localhost/jjmain.apw","u_test","";
+            <para/> Example2: protheus:"http://localhost/jjmain.apw","u_test","{field1};parm2";
+            <code lang="c#">
+            var field = new ElementField();
+            field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vldpan', '1;2'";
+            </code>
+            *Warnings: For Protheus calls apply JJxFun patch and configure http connection in Protheus
+            </example>
+            <remarks>
+            <para/> How to do an expression to hide or show an object:
+            <para/>Form Fields, UserValues ou Session = exp:{FIELD_NAME}
+            <para/>*Warnings: 
+            The contents between {} (brace) will be replaced with current values ​​at runtime..
+            Order:
+            <para>1) UserValues (object property)</para>
+            <para>2) Form Fields (Field Name)</para>
+            <para>3) Keywords (pagestate)</para>
+            <para>4) User Session</para>
+            <para/>Examples of keywords:
+            <para/>{pagestate} = Page Status: {pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
+            <para/>{objname} = Name of the field that triggered the autopostback event
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.IsRequired">
+            <summary>
+            Required field (Default=false)
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.IsPk">
+            <summary>
+            Primary Key (Default=false)
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.AutoNum">
+            <summary>
+            Auto Numerical (Identity) (Default=false)
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementField.DataBehavior">
+            <summary>
+            Field behavior in relation to the database
+            Default (Real)
+            </summary>
+            <remarks>
+            <para/>Real     = Used to Get and Set operations
+            <para/>VIEWONLY = Used to only Get operation
+            <para/>VIRTUAL  = Ignored in database operations
+            </remarks>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementFilter">
+            <summary>
+            Informações de filtro
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementFilter.Type">
+            <summary>
+            Filter type
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Dao.Entity.ElementFilter.IsRequired">
+            <summary>
+            Required filter
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementIndex">
+            <summary>
+            Index specific information
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementList">
+            <summary>
+            Table Field List
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.ElementList.Add(JJMasterData.Commons.Dao.Entity.ElementField)">
+            <summary>
+            Add Field
+            </summary>
+            <param name="item">Object with field information</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.ElementList.Add(System.String,System.String,JJMasterData.Commons.Dao.Entity.FieldType,System.Int32,System.Boolean,JJMasterData.Commons.Dao.Entity.FilterMode)">
+            <summary>
+            Add Field
+            </summary>
+            <param name="name">Column Name</param>
+            <param name="label">Description on the form</param>
+            <param name="dataType">Data Type</param>
+            <param name="size">Field Size</param>
+            <param name="required">Required Field</param>
+            <param name="filterMode">Filter Type</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.ElementList.Add(System.String,System.String,JJMasterData.Commons.Dao.Entity.FieldType,System.Int32,System.Boolean,JJMasterData.Commons.Dao.Entity.FilterMode,JJMasterData.Commons.Dao.Entity.FieldBehavior)">
+            <summary>
+            Add Field
+            </summary>
+            <param name="name">Column Name</param>
+            <param name="label">Description on the form</param>
+            <param name="dataType">Data Type</param>
+            <param name="size">Field Size</param>
+            <param name="required">Required field</param>
+            <param name="filterMode">Filter type</param>
+            <param name="dataBehavior">Specifies the behavior of the field.</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.ElementList.AddPK(System.String,System.String,JJMasterData.Commons.Dao.Entity.FieldType,System.Int32,System.Boolean,JJMasterData.Commons.Dao.Entity.FilterMode)">
+            <summary>
+            Add primary key
+            </summary>
+            <param name="name">Column Name</param>
+            <param name="label">Description on the form</param>
+            <param name="dataType">Data Type</param>
+            <param name="size">Field Size</param>
+            <param name="autoNum">Auto Numerical (Identity)</param>
+            <param name="filterMode">Filter type</param>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementRelation">
+            <summary>
+            Specific relationship information between tables
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.ElementRelationColumn">
+            <summary>
+            Relationship data
+            </summary>
+            <remarks>2017-03-22 JJTeam</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.Insert(System.String,System.Collections.Hashtable)">
+            <summary>
+            Add a record to the database
+            </summary>
+            <param name="elementName">Dictionary name</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.Insert(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Add a record to the database.
+            Retorno o id no campo values como referencia
+            Return the id in the values ​​field as a reference
+            </summary>
+            <param name="element">Base element with the basic structure of the table</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.Update(System.String,System.Collections.Hashtable)">
+            <summary>
+            Update a record in the database
+            </summary>
+            <param name="elementName">Dictionary name</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.Update(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Update a record in the database
+            </summary>
+            <param name="element">Base element with a basic table structure</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.SetValues(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Set a record in the database.
+            If it exists then update it, otherwise add.
+            Include PK in Hashtable in case of indentity
+            </summary>
+            <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
+            <param name="element">Base element with the basic structure of the table</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.SetValues(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable,System.Boolean)">
+            <summary>
+            Set a record in the database.
+            If it exists then update it, otherwise add.
+            </summary>
+            <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
+            <param name="element">Base element with the basic structure of the table</param>
+            <param name="values">List of values ​​to be stored in the database</param>
+            <param name="ignoreResults">By default the values ​​returned in the set procedures are returned by reference in the hashtable values ​​object, 
+            if this ignoreResults parameter is true this action is ignored, improving performance</param>
+            <remarks>
+            How to do:
+            [key(database field name), value(value to be stored in the database)].
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.Delete(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Delete records based on filter.  
+            [key(database field), valor(value stored in database)].
+            </summary>
+            <param name="element">Base element with the basic structure of the table</param>
+            <param name="filters">List of filters to be used</param>
+            <returns>Returns the count of deleted records</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetFields(System.String,System.Collections.Hashtable)">
+            <summary>
+            Returns first record based on filter.  
+            </summary>
+            <param name="elementName">Dictionary name</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <returns>
+            Return a Hashtable Object. 
+            If no record is found then returns null.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetFields(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Returns first record based on filter.  
+            </summary>
+            <param name="element">Base element with the basic structure of the table.</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <returns>
+            Return a Hashtable Object. 
+            If no record is found then returns null.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetDataTable(System.String,System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Returns records from the database based on the filter.  
+            </summary>
+            <param name="elementName">Dictionary element name</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <param name="orderby">Record Order, field followed by ASC or DESC</param>
+            <param name="regporpag">Number of records to be displayed per page</param>
+            <param name="pag">Current page</param>
+            <param name="tot">
+            If the value is zero, it returns as a reference the number of records based on the filter, 
+            running an extra processing in the database, if filled, do not execute the count</param>
+            <returns>
+            Returns a DataTable with the records found. 
+            If no record is found it returns null.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetDataTable(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Returns records from the database based on the filter.    
+            </summary>
+            <param name="element">Base element with the basic structure of the table.</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <param name="orderby">Record Order, field followed by ASC or DESC</param>
+            <param name="regporpag">Number of records to be displayed per page</param>
+            <param name="pag">Current page</param>
+            <param name="tot">If the value is zero, it returns as a reference the number of records based on the filter.</param>
+            <returns>
+            Returns a DataTable with the records found.
+            If no record is found it returns null.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetDataTable(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Returns records from the database based on the filter.  
+            </summary>
+            <param name="element">Base element with the basic structure of the table.</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <returns>
+            Returns a DataTable with the records found. 
+            If no record is found it returns null.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetCount(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable)">
+            <summary>
+            Returns the number of records in the database
+            </summary>
+            <param name="element">Base element with the basic structure of the table.</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <returns>
+            Returns an integer.
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetElement(System.String)">
+            <summary>
+            Returns an element with the basic structure of the table
+            </summary>
+            <param name="elementName">Dictionary name</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetListElement">
+            <summary>
+            Returns a list of base elements
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetListElement(System.Collections.Hashtable,System.String,System.Int32,System.Int32)">
+            <summary>
+            Returns a list of base elements
+            </summary>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <param name="orderby">Record Order, field followed by ASC or DESC</param>
+            <param name="regporpag">Number of records to be displayed per page</param>
+            <param name="pag">Current page</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.CreateDataModel(JJMasterData.Commons.Dao.Entity.Element)">
+            <summary>
+            Create an element's tables and procedures
+            </summary>
+            <param name="element">Element with table data</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetScriptCreateDataModel(JJMasterData.Commons.Dao.Entity.Element)">
+            <summary>
+            Returns the script to create an element's tables and procedures
+            </summary>
+            <param name="element"></param>
+            <returns>Script to be run on the database</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Dao.Entity.Factory.GetListFieldsAsText(JJMasterData.Commons.Dao.Entity.Element,System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Returns database records based on filter.  
+            </summary>
+            <param name="element">Elemento base com uma estrutura básica da tabela.</param>
+            <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+            <param name="orderby">Record Order, field followed by ASC or DESC</param>
+            <param name="regporpag">Number of records to be displayed per page</param>
+            <param name="pag">Current page</param>
+            <param name="showLogInfo">Records detailed log of each operation</param>
+            <param name="delimiter">Field delimiter in text file (default is pipe)</param>
+            <returns>
+            Returns a string with one record per line separated by the delimiter.<para/>
+            If no record is found it returns null. <para/>
+            *Warning: <para/>
+            - Some special characters will be replaced:<para/>
+              enter =  #182;<para/>
+              {delimiter} = #124;<para/>
+            - Submitted formats:<para/>
+              Numbers = en-US<para/>
+              Date = yyyy-MM-dd HH:mm:ss
+            </returns>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.FieldBehavior">
+            <summary>
+            Specifies the behavior of the field.
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Dao.Entity.FieldBehavior.Real">
+            <summary>
+            Default behavior of the field. 
+            Used for Get e Set
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Dao.Entity.FieldBehavior.Virtual">
+            <summary>
+            Field does not exist in procedures return.
+            It is not used for Get e Set.
+            Used to customize a field content at runtime
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Dao.Entity.FieldBehavior.ViewOnly">
+            <summary>
+            Field using read-only
+            Only used for Get
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.FieldType">
+            <summary>
+            Specifies the type of data in the database
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.FilterMode">
+            <summary>
+            Filter Type in Grid
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Dao.Entity.SyncMode">
+            <summary>
+            Sync mode
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.FunctionLoader.GetProcAddress(System.IntPtr,System.String)">
+            <summary>
+            Captura um ponteiro para uma função de uma dll carregada
+            </summary>
+            <param name="hModule">Ponteiro da Dll retornado pela função LoadLibraryEx</param>
+            <param name="procName">Nome da função que será chamada</param>
+            <returns>Ponteiro para função</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.FunctionLoader.LoadLibraryEx(System.String,System.IntPtr,System.UInt32)">
+            <summary>
+            Carregar um ponteiro para dll
+            </summary>
+            <param name="dllFilePath">nome do arquivo com o caminho</param>
+            <param name="hFile">use IntPtr.Zero</param>
+            <param name="dwFlags">What will happend during loading dll
+            <para>LOAD_LIBRARY_AS_DATAFILE</para>
+            <para>DONT_RESOLVE_DLL_REFERENCES</para>
+            <para>LOAD_WITH_ALTERED_SEARCH_PATH</para>
+            <para>LOAD_IGNORE_CODE_AUTHZ_LEVEL</para>
+            </param>
+            <returns>Ponteiro para carregar a dll</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.FunctionLoader.FreeLibrary(System.IntPtr)">
+            <summary>
+            Descarregar uma dll
+            </summary>
+            <param name="dllPointer">Ponteiro da Dll retornado pela função LoadLibraryEx</param>
+            <returns>Se descarregar corretamente a dll corretamente retorna true caso contrario retorna false</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.FunctionLoader.LoadWin32Library(System.String)">
+            <summary>
+            Carrega a dll com base no caminho
+            </summary>
+            <param name="dllFilePath">nome do arquivo com o caminho</param>
+            <returns>Ponteiro para dll</returns>
+            <exception cref="T:System.ApplicationException">
+            Quando a carga falhar dispara ApplicationException
+            </exception>
+        </member>
+        <member name="M:JJMasterData.Commons.FunctionLoader.LoadFunction``1(System.String,System.String)">
+            <summary>
+            Carrega uma função a partir de uma dll
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.JsonHelper">
+            <summary>
+            JSON Serialization and Deserialization Assistant Class
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.JsonHelper.JsonSerializer``1(``0)">
+            <summary>
+            JSON Serialization
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.JsonHelper.JsonDeserializer``1(System.String)">
+            <summary>
+            JSON Deserialization
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Language.Translate">
+            <summary>
+            Class to i18n 
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Language.Translate.Translator">
+            <summary>
+            Get or set tranlator method
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Language.Translate.Key(System.String)">
+            <summary>
+            i18n Resource Key
+            </summary>
+            <param name="resourceKey">english phrase</param>
+            <returns>translated phrase</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Language.Translate.Key(System.String,System.Object[])">
+            <summary>
+            i18n Resource Key replace format string
+            </summary>
+            <param name="formatKey">english phrase</param>
+            <param name="args">Parameters</param>
+            <returns>translated phrase</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Language.Translate.ClearCache">
+            <summary>
+            Clear local cache
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Log">
+            <summary>
+            Gerencia os logs do sistema
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Log.TLog">
+            <summary>
+            Tipos de Log no sistema
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddError(System.String)">
+            <summary>
+            Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do erro</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddError(System.String,System.String)">
+            <summary>
+            Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do erro</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddInfo(System.String)">
+            <summary>
+            Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddInfo(System.String,System.String)">
+            <summary>
+            Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddWarning(System.String)">
+            <summary>
+            Adicionar um log de aviso, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.AddWarning(System.String,System.String)">
+            <summary>
+            Adicionar um log de aviso, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Log.Add(System.String,System.String,JJMasterData.Commons.Log.TLog)">
+            <summary>
+            Adicionar um log, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <param name="source">Origem ou Categoria</param>
+            <param name="type">Tipo do log</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CepInfo.Return">
+            <summary>
+            Indica a situação da requisição. Valores possíveis: OK, NOK, ERROR
+            </summary>
+            <remarks>
+            <para>OK    - API Retornou dados com sucesso.</para>
+            <para>NOK   - API Retornou mensagem de erro. </para>
+            <para>ERROR - Um erro ocorreu ao tentar chamar a API.</para>
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CepInfo.Message">
+            <summary>
+            Mensagem explicativa indicando erro. Válido apenas quando o campo status é diferente de OK.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CepInfo.Result">
+            <summary>
+            Detalhes do Objeto
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.Return">
+            <summary>
+            Indica a situação da requisição. Valores possíveis: OK, NOK, ERROR
+            </summary>
+            <remarks>
+            <para>OK    - API Retornou dados com sucesso.</para>
+            <para>NOK   - API Retornou mensagem de erro. </para>
+            <para>ERROR - Um erro ocorreu ao tentar chamar a API.</para>
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.Message">
+            <summary>
+            Mensagem explicativa indicando erro. Válido apenas quando o campo status é diferente de OK.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.Result">
+            <summary>
+            Detalhes do Objeto
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Nome">
+            <summary>
+            Razão social.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Fantasia">
+            <summary>
+            Nome fantasia.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Logradouro">
+            <summary>
+            Endereço
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Numero">
+            <summary>
+            Número.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Complemento">
+            <summary>
+            Complemento.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Cep">
+            <summary>
+            CEP sem mascara no formato 00000000.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Bairro">
+            <summary>
+            Nome do Bairro.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Municipio">
+            <summary>
+            Nome do Município.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.UF">
+            <summary>
+            Sigla da Unidade da Federação.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Email">
+            <summary>
+            E-Mail.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Telefone">
+            <summary>
+            Telefone.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Situacao">
+            <summary>
+            Situação.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Atividade_principal">
+            <summary>
+            CNAE
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Capital_social">
+            <summary>
+            Capital Social
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Quadro_socios">
+            <summary>
+            Quadro Sócios
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CnpjInfo.CnpjResult.Abertura">
+            <summary>
+            Data da Abertura
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CpfInfo.Return">
+            <summary>
+            Indica a situação da requisição. Valores possíveis: OK, NOK, ERROR
+            </summary>
+            <remarks>
+            <para>OK    - API Retornou dados com sucesso.</para>
+            <para>NOK   - API Retornou mensagem de erro. </para>
+            <para>ERROR - Um erro ocorreu ao tentar chamar a API.</para>
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CpfInfo.Message">
+            <summary>
+            Mensagem explicativa indicando erro. Válido apenas quando o campo status é diferente de OK.
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.Models.CpfInfo.Result">
+            <summary>
+            Detalhes do Objeto
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Mashup.SevicesHub">
+            <summary>
+            Procura por informações na receita federal
+            </summary>
+            <remarks>
+            Essa API utiliza conexão com a internet e serviços de terceiros
+            </remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.SevicesHub.IsSecureConnection">
+            <summary>
+            Habilita conexão https
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.SevicesHub.IgonoreDb">
+            <summary>
+            Ignora o banco local forçando uma conexão 
+            com a Receita para recuperar os dados atualizados
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SevicesHub.SearchCnpj(System.String)">
+            <summary>
+            Poocura os dados da empresa na Receita Federal
+            </summary>
+            <param name="cnpj">Numero do CNPJ</param>
+            <returns>Informações da empresa</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SevicesHub.SearchCpf(System.String,System.DateTime)">
+            <summary>
+            Poocura dados da pessoa física na Receita Federal
+            </summary>
+            <param name="cpf">Numero do CPF</param>
+            <param name="birthDate">Data de Nascimento</param>
+            <returns>Informações da pessoa física</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SevicesHub.SearchCep(System.String)">
+            <summary>
+            Poocura endereço
+            </summary>
+            <param name="cep">Número do CEP</param>
+            <returns>Informações de endereço</returns>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.SintegraWs.IsSecureConnection">
+            <summary>
+            Habilita conexão https
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.Mashup.SintegraWs.IgonoreDb">
+            <summary>
+            Ignora o banco local forçando uma conexão 
+            com a Receita para recuperar os dados atualizados
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SintegraWs.SearchCnpj(System.String)">
+            <summary>
+            Poocura os dados da empresa na Receita Federal
+            </summary>
+            <param name="cnpj">Numero do CNPJ</param>
+            <returns>Informações da empresa</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SintegraWs.SearchCpf(System.String,System.DateTime)">
+            <summary>
+            Poocura dados da pessoa física na Receita Federal
+            </summary>
+            <param name="cpf">Numero do CPF</param>
+            <param name="birthDate">Data de Nascimento</param>
+            <returns>Informações da pessoa física</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Mashup.SintegraWs.SearchCep(System.String)">
+            <summary>
+            Poocura endereço
+            </summary>
+            <param name="cep">Número do CEP</param>
+            <returns>Informações de endereço</returns>
+        </member>
+        <member name="T:JJMasterData.Commons.Protheus.ProtheusConfig">
+            <summary>
+            Configurações para realizar um RPC no Protheus
+            </summary>
+            <remarks>Lucio Pelinson 19/05/2014</remarks> 
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.DllPath">
+            <summary>
+            Permite conectar no protheus informando dinamicamente o caminho da variavel apapi.dll.
+            Obs.: A DLL apconn.dll deve estar no mesmo diretório da apapi.dll.
+            Por padrão o sistema tentará localizar a dll na raiz da aplicação.
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.Server">
+            <summary>
+            IP do Servidor Protheus
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.Port">
+            <summary>
+            Número da Porta do serviço do Protheus
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.Environment">
+            <summary>
+            Nome do Ambiente
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.User">
+            <summary>
+            Usuário do Protheus - (Deve ser administrador)
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.PassWord">
+            <summary>
+            Senha
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.Empresa">
+            <summary>
+            Código da Empresa
+            </summary>
+        </member>
+        <member name="F:JJMasterData.Commons.Protheus.ProtheusConfig.Filial">
+            <summary>
+            Código da Filial
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.Protheus.ProtheusConnect">
+            <summary>
+            Classe Responsável pela comunicação com o Protheus
+            Permite conectar no server do Protheus e executar funções nativas do clipper ou user function (rpc)
+            </summary>
+            <remarks>Lucio Pelinson 16/05/2014</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusConnect.#ctor">
+            <summary>
+            Permite conectar no protheus. Irá carregar os componentes apapi.dll e apconn.dll na raiz da aplicação.
+            </summary>
+            <remarks>Lucio Pelinson 16/05/2014</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusConnect.#ctor(System.String)">
+            <summary>
+            Permite conectar no protheus informando dinamicamente o caminho da variavel apapi.dll.
+            Obs.: A DLL apconn.dll deve estar no mesmo diretório da apapi.dll
+            </summary>
+            <param name="dllpath">
+            Caminho completo para apapi.dll com o nome da dll
+            <para>"\Bin\apapi.dll"</para>
+            <para>"C:\Protheus\Bin\apapi.dll"</para>
+            </param>
+            <remarks>Lucio Pelinson 16/05/2014</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusConnect.APCreateConnControl(System.String,System.Int32,System.String,System.String,System.String)">
+            <summary>
+            Cria uma conexão com o Protheus
+            </summary>
+            <param name="cServer">IP do Servidor Protheus</param>
+            <param name="nPort">Número da Porta do serviço do Protheus</param>
+            <param name="cEnvironment">Nome do Ambiente</param>
+            <param name="cUser">Usuário do Protheus - (Deve ser administrador)</param>
+            <param name="cPassWord">Senha</param>
+            <returns>Ponteiro da conexão</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusConnect.APDestroyConnControl(System.Int32)">
+            <summary>
+            Desconectar Conexão com o Protheus
+            </summary>
+            <param name="objectID">Ponteiro da conexão retornado pela função APCreateConnControl</param>
+            <returns>Retorna verdadeiro caso a conexão foi fechada corretamente</returns>
+        </member>
+        <member name="T:JJMasterData.Commons.Protheus.ProtheusManager">
+            <summary>
+            Classe responsável por gerenciar as conexões e chamadas para o Protheus
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusManager.CallFunction(JJMasterData.Commons.Protheus.ProtheusConfig,System.String,System.String)">
+            <summary>
+            Executa conexão com o Protheus através das DLLs APAPI.dll APCONN.dll
+            </summary>
+            <param name="config">Configurações de conexão com o Protheus</param>
+            <param name="functionname">Nome da Função</param>
+            <param name="param">Paramentros da Função</param>
+            <returns>Retorno da função executada no Protheus</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Protheus.ProtheusManager.CallOrcLib(System.String,System.String,System.String)">
+            <summary>
+            Executa conexão com o Protheus por um serviço http
+            </summary>
+            <param name="urlProtheus">Url do Servidor Protheus</param>
+            <param name="functionname">Nome da função</param>
+            <param name="parameters">Paramentros separados por ponto e virgula</param>
+            <returns>Retorno da função executada no Protheus</returns>
+            <example>
+            <code lang="c#">
+            <![CDATA[
+            string urlProtheus = "http://10.0.0.6:8181/websales/jjmain.apw";
+            string functionName = "u_vldpan";
+            string parms = "1;2";
+            string ret = ProtheusManager.CallOrcLib(urlProtheus, functionName, parms);
+            ]]>
+            </code> 
+            </example>
+            <remarks>Pré requisito aplicar o patch JJxFun e configurar a conexão http no Protheus</remarks>
+        </member>
+        <member name="T:JJMasterData.Commons.Sys.DeepCopy`1">
+            <summary>
+            Realiza uma cópia profunda do objeto, sem manter a referência antiga.
+            </summary>
+            <typeparam name="T">Tipo do objeto a ser copiado.</typeparam>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.DeepCopy`1.Copy(`0)">
+            <summary>
+            Copia o objeto sem manter a referência antiga.
+            </summary>
+            <param name="source">Objeto a ser copiado.</param>
+            <returns>Objeto copiado.</returns>
+        </member>
+        <member name="T:JJMasterData.Commons.Sys.Param">
+            <summary>
+            Parametros e configurações armazenadas no banco de dados
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Parametros do sistema armazenados no banco de dados
+            </summary>
+            <param name="strConn">Nome da String de conexão</param>
+            <param name="strProvider">Provider da Conexão</param>
+            <param name="tablename">Nome da Tabela</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.HasParam(System.String)">
+            <summary>
+            Verifica se existe o parametro cadastrado
+            </summary>
+            <param name="key">Chave do parametro</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.GetParam(System.String)">
+            <summary>
+            Recupera o parametro cadastrado
+            </summary>
+            <param name="key">Chave do parametro</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.SetParam(System.String,System.String,System.String)">
+            <summary>
+            Grava o parametro no banco
+            </summary>
+            <param name="key">Chave do parametro</param>
+            <param name="value">Valor do parametro</param>
+            <param name="description">Descrição do parametro</param>
+            <returns>
+            Se existir atualiza o parametro se não existir inclui
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.DelParam(System.String)">
+            <summary>
+            Exclui um parametro armazenado
+            </summary>
+            <param name="key">Chave do parametro</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Sys.Param.TryCreateStructure">
+            <summary>
+            Cria estrutura no banco para armazenar os parametro
+            Tabela padrão (tb_sysparam)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:JJMasterData.Commons.SystemLog.ILogger">
+            <summary>
+            Interface do Log
+            </summary>
+        </member>
+        <member name="T:JJMasterData.Commons.SystemLog.Logger">
+            <summary>
+            Gerencia os logs do sistema
+            </summary>
+        </member>
+        <member name="P:JJMasterData.Commons.SystemLog.Logger.Settings">
+            <summary>
+            Parametros do log do sistema. Valor padrão app.config
+            </summary>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddError(System.String)">
+            <summary>
+            Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do erro</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddError(System.String,System.String)">
+            <summary>
+            Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do erro</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddInfo(System.String)">
+            <summary>
+            Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddInfo(System.String,System.String)">
+            <summary>
+            Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddWarning(System.String)">
+            <summary>
+            Adicionar um log de aviso, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.AddWarning(System.String,System.String)">
+            <summary>
+            Adicionar um log de aviso, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do aviso</param>
+            <param name="source">Origem ou Categoria</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.SystemLog.Logger.Add(System.String,System.String,JJMasterData.Commons.Log.TLog)">
+            <summary>
+            Adicionar um log, o sistema gravará o log conforme as parametrizações da aplicação
+            </summary>
+            <param name="value">Descrição do log</param>
+            <param name="source">Origem ou Categoria</param>
+            <param name="type">Tipo do log</param>
+            <remarks>Lucio Pelinson 2014-05-12</remarks>
+        </member>
+        <member name="P:JJMasterData.Commons.SystemLog.LoggerSettings.EnableTraceLog">
+            <summary>
+            Habilita o log no trace
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.FileIO.GetFileNameExtension(System.String)">
+            <summary>
+            Retorna o tipo do arquivo em minusculo
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.FileIO.ResolveFilePath(System.String)">
+            <summary>
+            Retorna o caminho fisico com base no nome do arquivo
+            </summary>
+            <param name="filepath">Parte ou Caminho completo do arquivo</param>
+            <returns>Caminho completo do arquivo</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.FileIO.GetDataTableFiles(System.String)">
+            <summary>
+            Carrega os registros de um diretório em um DataTable
+            </summary>
+            <param name="fullPath">Caminho completo do diretório</param>
+            <returns>
+            DataTable contendo nome e tamanho dos arquivos localizados no diretório
+            </returns>
+            <remarks>
+            Autor: Lucio Pelinson 21-05-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.FileIO.GetDataTableFiles(System.String,System.String)">
+            <summary>
+            Carrega os registros de um diretório em um DataTable
+            </summary>
+            <param name="fullPath">Caminho completo do diretório</param>
+            <param name="searchPattern">Condição para filtro de arquivos (opcional)</param>
+            <returns>
+            DataTable contendo nome e tamanho dos arquivos localizados no diretório
+            </returns>
+            <remarks>
+            Autor: Lucio Pelinson 30-05-2017
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatTimeSpan(System.TimeSpan)">
+            <summary>
+            Escreve por extenso o intervalo de datas para o período mais próximo
+            </summary>
+            <param name="ts">Time Interval</param>
+            <returns>Texto com a hora</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatFileSize(System.Int64)">
+            <summary>
+            Formata o tamanho de bytes para a medida mais proxima
+            </summary>
+            <param name="value">Bytes</param>
+            <returns>Tamanho formatado para ser exibido</returns> 
+            <remarks>
+            Autor: Lucio Pelinson 21-05-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatCnpj(System.String)">
+            <summary>
+            Formata um CNPJ válido
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatCpf(System.String)">
+            <summary>
+            Formata um CPF válido
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatCnpj_Cpf(System.String)">
+            <summary>
+            Formata um CNPJ ou CPF válido
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatCep(System.String)">
+            <summary>
+            Formata CEP
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Format.FormatTel(System.String)">
+            <summary>
+            Formata número de telefone
+            </summary>
+            <param name="tel">Número de Telefone em qualquer formato</param>
+            <returns>Número telefone formatado</returns>
+            <remarks>Lucio Pelinson 21-02-2013</remarks> 
+        </member>
+        <member name="M:JJMasterData.Commons.Util.ReflectionUtils.LoadAssembly(System.String)">
+            <summary>
+            Try to load an assembly into the application's app domain.
+            Loads by name first then checks for filename
+            </summary>
+            <param name="assemblyName">Assembly name or full path</param>
+            <returns>null on failure</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.ReflectionUtils.GetTypeFromName(System.String,System.String)">
+            <summary>
+            Helper routine that looks up a type name and tries to retrieve the
+            full type reference using GetType() and if not found looking 
+            in the actively executing assemblies and optionally loading
+            the specified assembly name.
+            </summary>
+            <param name="typeName">type to load</param>
+            <param name="assemblyName">
+            Optional assembly name to load from if type cannot be loaded initially. 
+            Use for lazy loading of assemblies without taking a type dependency.
+            </param>
+            <returns>null</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.ReflectionUtils.GetTypeFromName(System.String)">
+            <summary>
+            Overload for backwards compatibility which only tries to load
+            assemblies that are already loaded in memory.
+            </summary>
+            <param name="typeName"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:JJMasterData.Commons.Util.ReflectionUtils.GetStaticProperty(System.String,System.String)">
+            <summary>
+            Retrieves a value from  a static property by specifying a type full name and property
+            </summary>
+            <param name="typeName">Full type name (namespace.class)</param>
+            <param name="property">Property to get value from</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.ReflectionUtils.GetStaticProperty(System.Type,System.String)">
+            <summary>
+            Returns a static property from a given type
+            </summary>
+            <param name="type">Type instance for the static property</param>
+            <param name="property">Property name as a string</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.ClearText(System.String)">
+            <summary>
+            Limpa o texto evitando eject-sql
+            </summary>
+            <remarks>
+            Autor: Lucio Pelinson 21-05-2012
+            </remarks>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.NoAccents(System.String)">
+            <summary>
+            Remove os acentos e caracteres especiais
+            </summary>
+            <param name="str">Valor</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.GetGreeting">
+            <summary>
+            Função para retornar saudação
+            </summary>
+            <returns>
+            Bom dia, Boa tarde ou Boa noite
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.ClearCpfCnpjChars(System.String)">
+            <summary>
+            Retorna apenas os numeros no Cpf ou Cnpj
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.ClearTelChars(System.String)">
+            <summary>
+            Retorna apenas os numeros do Telefone
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.GetDataSiga(System.String)">
+            <summary>
+            Converte a data yyyyMMdd para DateTime
+            </summary>
+            <param name="dataString">Data no formato yyyyMMdd</param>
+            <returns></returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.GetAge(System.String)">
+            <summary>
+            Calcula a idade de uma pessoa com base na data atual
+            </summary>
+            <param name="data2">Data como um string em formato portugues (dd/MM/yyyy)</param>
+            <returns>
+            Devolve um inteiro com a idade. 
+            Devolve false em caso de que a data seja incorreta ou maior que o dia atual
+            </returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.NumToWords(System.Decimal,System.Boolean,System.Boolean)">
+            <summary>
+            Função para escrever por extenso um número DECIMAL
+            </summary>
+            <param name="valor">Valor decimal limitado a (999.999.999.999.999,00)</param>
+            <param name="isCurrency">Encrever em Reais</param>
+            <param name="isFemale">Encrever no Feminino ex. ao invés de dois ecreve duas</param>
+            <returns>Número por extenso</returns>
+            <remarks>Lucio Pelinson 21-02-2013</remarks> 
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.GetFirstName(System.String)">
+            <summary>
+            Retorna o primeiro nome
+            </summary>
+            <param name="value">Nome</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.GetShortName(System.String)">
+            <summary>
+            Retorna o primeiro e o ultimo nome
+            </summary>
+            <param name="value">Nome</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.OnlyNumbers(System.String)">
+            <summary>
+            Remove letras e caracteres especiais
+            </summary>
+            <param name="value">Texto</param>
+            <returns>Retorna somente númetos</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.StringManager.FindValuesByInterval(System.String,System.Char,System.Char)">
+            <summary>
+            Recupera todos os conteudos dentro de um caracter especifico
+            Exemplo: "teste[a]foo [b] teste" FindValuesByInterval('[',']') retorna {'a','b'}
+            </summary>
+            <param name="text">Texto a ser pesquisado</param>
+            <param name="begin">Caracter Inicial</param>
+            <param name="end">Caracter Final</param>
+            <returns>Lista com as strings localizadas</returns>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidCnpj(System.String)">
+            <summary>
+            Valida se o CNPJ é válido
+            </summary>
+            <returns>Retorna Verdadeiro caso o CNPJ seja valido</returns> 
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidEmail(System.String)">
+            <summary>
+            Verifica se o e-mail é valido
+            </summary>
+            <param name="email">E-Mail</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidTel(System.String)">
+            <summary>
+            Verifica se o numero de telefone é valido 
+            </summary>
+            <param name="telNumber">Numero de Telefone</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidIE(System.String,System.String)">
+            <summary>
+            Valida Inscrição estadual do cliente
+            </summary>
+            <param name="pUF">Estado</param>
+            <param name="pInscr">Inscrição Estadual</param>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidHour(System.String)">
+            <summary>
+            Valida Hora
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidCpf(System.String)">
+            <summary>
+            Valida se o CPF é valido
+            </summary>
+            <returns>Retorna Verdadeiro caso o CPF seja valido</returns> 
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidCpfCnpj(System.String)">
+            <summary>
+            Valida se o CPF ou CNPJ é valido
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidNFe(System.String)">
+            <summary>
+            Valida se a chave da NFe é valida
+            </summary>
+        </member>
+        <member name="M:JJMasterData.Commons.Util.Validate.ValidFileName(System.String)">
+            <summary>
+            Valida se o nome do arquivo contém caracteres inválidos 
+            ? * / \ | : "
+            </summary>
+        </member>
+    </members>
+</doc>

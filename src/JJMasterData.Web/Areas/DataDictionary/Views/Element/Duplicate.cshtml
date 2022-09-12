@@ -1,0 +1,62 @@
+﻿@using JJMasterData.Web.Services
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject ThemeService ThemeService
+
+<div class="page-header">
+    <h1>
+        <img alt="JJMasterData" style="width:8%;height:8%;" src="~/@ThemeService.GetLogoPath()"><small>@Translate.Key("Duplicate Dictionary")</small>
+    </h1>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("Source dictionary")</label>
+            @Html.TextBox("originName", null, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+
+        <div class="@BootstrapHelper.FormGroup col-sm-8 required">
+            <label class="@BootstrapHelper.Label" for="txtTableName" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("New Dictionary Name")</label>
+            @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = Translate.Key("Enter a table or view name") })
+        </div>
+    </div>
+
+
+    <partial name="_DatabaseWarning"/>
+
+    <div class="col-sm-12">
+        <div id="divError">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="location.href='@Url.Action("Index")'">
+                <span class="fa fa-arrow-left"></span>
+                <span>&nbsp;@Translate.Key("Back")</span>
+            </button>
+
+            <button id="btnNext" class="@BootstrapHelper.DefaultButton" type="submit">
+                <span class="fa fa-forward"></span>
+                @Translate.Key("Next")
+            </button>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script lang="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $("#txtTableName").keyup(function () {
+                if ($(this).val().length > 30)
+                    $("#divWarning").css("display", "");
+                else
+                    $("#divWarning").css("display", "none");
+            });
+        });
+    </script>
+}

@@ -1,0 +1,72 @@
+﻿
+@using System.Text
+@model FormElementField
+
+@if (Model.Component == FormComponent.Text |
+     Model.Component == FormComponent.Number |
+     Model.Component == FormComponent.Password |
+     Model.Component == FormComponent.Email |
+     Model.Component == FormComponent.Cnpj |
+     Model.Component == FormComponent.Cpf |
+     Model.Component == FormComponent.CnpjCpf |
+     Model.Component == FormComponent.Cep)
+{
+    <div class="@BootstrapHelper.FormGroup col-sm-3">
+        <label class="@BootstrapHelper.Label" for="txtPlaceHolder">@Translate.Key("Placeholder")</label>
+        <input class="form-control" id="txtPlaceHolder" name="txtPlaceHolder" maxlength="100" type="text" value="@Model.GetAttr(FormElementField.PlaceholderAttribute)">
+    </div>
+}
+
+@switch (Model.Component)
+{
+    case FormComponent.Slider or FormComponent.Number:
+        <div class="col-sm-2">
+        <label asp-for="MinValue" title="@Translate.Key("Minimum Value")" class="@BootstrapHelper.Label">@Translate.Key("Minimum Value")</label>
+        <input class="form-control jjdecimal" type="number" asp-for="MinValue"/>
+    </div>
+    <div class="col-sm-2">
+        <label asp-for="MaxValue" title="@Translate.Key("Maximum Value")"  class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
+        <input class="form-control jjdecimal" type="number" asp-for="MaxValue"/>
+    </div>
+        break;
+    case FormComponent.TextArea:
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label " for="txtTextAreaRows" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of lines in the text box")">@Translate.Key("Rows")</label>
+            <input class="form-control" id="txtTextAreaRows" name="txtTextAreaRows" maxlength="100" type="number" min="1" max="5000" placeholder="5" value="@Model.GetAttr(FormElementField.RowsAttribute)">
+        </div>
+        break;
+    case FormComponent.Lookup:
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label " for="cboLkPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Popup Size")">@Translate.Key("Popup Size")</label>
+            @Html.Raw(GetHtmlCboPopUpSize())
+        </div>
+
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <label class="@BootstrapHelper.Label " for="txtLkPopUpTitle" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Title Pop Up")">@Translate.Key("Title Pop Up")</label>
+            <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@Translate.Key("Search...")" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
+        </div>
+        break;
+}
+
+@functions{
+
+    public string GetHtmlCboPopUpSize()
+    {
+        var sHtml = new StringBuilder();
+        string value = Model.GetAttr(FormElementField.PopUpSizeAttribute);
+        sHtml.Append("<select id=\"cboLkPopUpSize\" name=\"cboLkPopUpSize\" class=\"form-control\">");
+        foreach (PopupSize type in Enum.GetValues(typeof(PopupSize)))
+        {
+            string selected = "";
+            if (((int)type).ToString().Equals(value))
+            {
+                selected = "selected=\"selected\"";
+            }
+            sHtml.AppendFormat("<option value=\"{0}\" {1}>", (int)type, selected);
+            sHtml.Append(type.ToString());
+            sHtml.Append("</option>");
+        }
+        sHtml.Append("</select>");
+        return sHtml.ToString();
+    }
+}

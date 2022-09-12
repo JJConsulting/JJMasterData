@@ -1,0 +1,96 @@
+﻿@using JJMasterData.Commons.Language
+
+@model ErrorViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+
+<style>
+    .jj-gap {
+        margin-top: 60px;
+    }
+    .jj-icon {
+        padding-top: 20px;  font-size:6em
+    } 
+</style>
+
+
+@{
+    var stacktracePanel = new JJCollapsePanel
+    {
+        Name = "stacktrace",
+        Title = "Stacktrace",
+        ExpandedByDefault = false,
+        HtmlContent = $"<pre>{Model.StackTrace}</pre>"
+    };
+}
+
+@if (BootstrapHelper.Version >= 4)
+{
+    <div class="d-flex align-items-center justify-content-center vh-100">
+        <div class="text-center">
+            <img class="img-responsive" style="width:25%;height: 25%" src="~/images/JJMasterDataLogo.png" alt="JJMasterData"/>
+            <h1 class="display-1 fw-bold">@Model.StatusCode</h1>
+            <p class="fs-3">
+                <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
+            </p>
+            <p class="lead">
+                @Model.Exception
+            </p>
+            @if (!Model.IsProduction)
+            {
+                <div class="container">
+                    <div class="col-sm-12">
+                        @Html.Raw(stacktracePanel.GetHtml())
+                    </div>
+                </div>
+                <br/>
+            }
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-sm-4">
+                        <a onclick="history.back()" class="@BootstrapHelper.DefaultButton">
+                            <span class="fa fa-backward"></span>&nbsp; @Translate.Key("Back")
+                        </a>
+                    </div>
+                    <div class="col-sm-4">
+                        <a href="/en-us/DataDictionary/" class="@BootstrapHelper.DefaultButton">
+                            <span class="fa fa-home"></span>&nbsp; @Translate.Key("Home")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron jj-gap">
+                <div class="row">
+                    <div class="col-sm-12 text-center jj-icon text-danger">
+                        <span class="fa fa-times-circle"></span>
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <h1>@Model.Exception</h1>
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <p>@Model.Message</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="con-sm-12">
+        <p class="text-center">
+            <a href="javascript: history.go(-1);" class="btn btn-primary btn-lg">
+                @Translate.Key("Back")
+            </a>
+        </p>
+    </div>
+}

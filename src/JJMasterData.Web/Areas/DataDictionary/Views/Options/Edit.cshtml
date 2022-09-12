@@ -1,0 +1,305 @@
+﻿
+@model UIOptions
+
+<style>
+    input[type=checkbox] {
+        margin: 2px 0 0;
+    }
+</style>
+
+
+@functions
+{
+    async Task FormView()
+    {
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of columns where fields will be rendered by default")">@Translate.Key("FormCols")</label>
+                    @Html.DropDownListFor(model => Model.Form.FormCols, new[]
+                    {
+                        new SelectListItem { Text = Translate.Key("1 (one column)"), Value = "1" },
+                        new SelectListItem { Text = Translate.Key("2 (two columns)"), Value = "2" },
+                        new SelectListItem { Text = Translate.Key("3 (three columns)"), Value = "3" },
+                        new SelectListItem { Text = Translate.Key("4 (four columns)"), Value = "4" },
+                        new SelectListItem { Text = Translate.Key("6 (six columns)"), Value = "6" },
+                        new SelectListItem { Text = Translate.Key("12 (twelve columns)"), Value = "12" },
+                    }, new { @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Horizontal label layout on left side of field, vertical label layout above field")">@Translate.Key("LayoutFields")</label>
+                    @Html.DropDownListFor(model => Model.Form.IsVerticalLayout, new[]
+                    {
+                        new SelectListItem { Text = Translate.Key("Vertical"), Value = "true" },
+                        new SelectListItem { Text = Translate.Key("Horizontal"), Value = "false" }
+                    }, new { @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                    <div class="checkbox">
+                        <label asp-for="Form.ShowViewModeAsStatic">
+                            @Html.CheckBoxFor(model => Model.Form.ShowViewModeAsStatic)
+                            <b>@Translate.Key("ShowViewModeAsStatic")</b><br/>
+                            @Translate.Key("When the panel is not in preview mode ")
+                            @Translate.Key("remover as bordas dos campos exibindo como texto.")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label class="@BootstrapHelper.Label " for="FormEnterKey" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Behavior of the Enter key on the form")">@Translate.Key("EnterKey")</label>
+                    <select asp-for="Form.EnterKey" class="form-control" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+                </div>
+            </div>
+            
+        </div>
+    }
+    
+    async Task GridView()
+    {
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowTitle">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowTitle)
+                            <b>ShowTitle</b><br/>
+                            @Translate.Key("Show title in page header")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="EnableAjax">
+                            @Html.CheckBox("EnableAjax", true, new { disabled = "disabled" })
+                            <b>@Translate.Key("EnableAjax")</b><br/>
+                            @Translate.Key("Post via Ajax")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_EnableSorting">
+                            @Html.CheckBoxFor(model => Model.Grid.EnableSorting)
+                            <b>@Translate.Key("EnableSorting")</b><br/>
+                            @Translate.Key("Enable Column Sorting")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_EnableMultSelect">
+                            @Html.CheckBoxFor(model => Model.Grid.EnableMultSelect)
+                            <b>@Translate.Key("Enable MultSelect")</b><br/>
+                            @Translate.Key("Allows you to select multiple lines in the grid")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_MaintainValuesOnLoad">
+                            @Html.CheckBoxFor(model => Model.Grid.MaintainValuesOnLoad)
+                            <b>@Translate.Key("MaintainValuesOnLoad")</b><br/>
+                            @Translate.Key("Maintains grid filters, order and pagination")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowRowHover">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowRowHover)
+                            <b>@Translate.Key("ShowRowHover")</b><br/>
+                            @Translate.Key("Change a line color on mouseover")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowRowStriped">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowRowStriped)
+                            <b>@Translate.Key("ShowRowStriped")</b><br/>
+                            @Translate.Key("display zebra columns")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowBorder">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowBorder)
+                            <b>@Translate.Key("ShowBorder")</b><br/>
+                            @Translate.Key("Show border on grid")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowToolBar">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowToolBar)
+                            <b>@Translate.Key("ShowToolbar")</b><br/>
+                            @Translate.Key("Show ToolBar on grid")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowPagging">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowPagging)
+                            <b>@Translate.Key("ShowPagging")</b><br/>
+                            @Translate.Key("Displays paging controls")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Total Records per page")">@Translate.Key("TotalPerPage")</label>
+                    @Html.TextBoxFor(model => Model.Grid.TotalPerPage, new { text = "5", @class = "form-control", width = "90px" })
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Total buttons on paging")">@Translate.Key("TotalPaggingButton")</label>
+                    @Html.TextBoxFor(model => Model.Grid.TotalPaggingButton, new { text = "5", @class = "form-control", width = "90px", style = "margin-botton:10px" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_ShowHeaderWhenEmpty">
+                            @Html.CheckBoxFor(model => Model.Grid.ShowHeaderWhenEmpty)
+                            <b>@Translate.Key("ShowHeaderWhenEmpty")</b><br/>
+                            @Translate.Key("Indicates whether the gridview header will be visible when there is no data")
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Text applied when there are no records to be applied")">@Translate.Key("EmptyDataText")</label>
+                    @Html.TextBoxFor(model => Model.Grid.EmptyDataText, new { text = "There is no record to apply", @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="Grid_HeaderFixed">
+                            @Html.CheckBoxFor(model => Model.Grid.HeaderFixed)
+                            <b>@Translate.Key("Header Fixed")</b><br/>
+                            @Translate.Key("Fix the grid header when scrolling")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+
+@using (Html.BeginForm("Edit", "Options", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@Translate.Key("Save")</span>
+            </button>
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName })'">
+                <span class="fa fa-times">
+                </span>
+                <span>&nbsp;@Translate.Key("Cancel")</span>
+            </button>
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
+
+    if (BootstrapHelper.Version.Equals(5))
+    {
+        <div class="accordion pb-1" id="formAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        @Translate.Key("GridView")
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#formAccordion">
+                    <div class="accordion-body">
+                        @{ await GridView(); }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion pb-1" id="gridAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        @Translate.Key("FormView")
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#gridAccordion">
+                    <div class="accordion-body">
+                        @{ await FormView(); }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="@BootstrapHelper.PanelGroup">
+            <input type="hidden" id="pnl_subtotal_visibilidade" name="pnl_subtotal_visibilidade" value="true"/>
+            <div id="pnl_div_resumo" class="@BootstrapHelper.GetPanel("default")">
+                <div class="@BootstrapHelper.GetPanelHeading("default")" href="#collapseResumo2" @BootstrapHelper.GetDataToggle("collapse") data-target="#collapseResumo" aria-expanded="true">
+                    <h5 class="@BootstrapHelper.PanelTitle">
+                        @Translate.Key("GridView")
+                    </h5>
+                </div>
+                <div id="collapseResumo" class="@(BootstrapHelper.Version == 3 ? "panel-collapse in collapse" : "panel-collapse collapse in")">
+                    <div class="@BootstrapHelper.PanelBody">
+                        @{ await GridView(); }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="@BootstrapHelper.PanelGroup">
+            <div id="pnl_formview" class="@BootstrapHelper.GetPanel("default")">
+                <div class="@BootstrapHelper.GetPanelHeading("default")" href="#collapseFormView" @BootstrapHelper.GetDataToggle("collapse") data-target="#collapseFormView" aria-expanded="true">
+                    <h5 class="@BootstrapHelper.PanelTitle">@Translate.Key("FormView")</h5>
+                </div>
+                <div id="collapseFormView" class="@BootstrapHelper.PanelCollapse">
+                    <div class="@BootstrapHelper.PanelBody">
+                        @{ await FormView(); }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <br/>
+    <br/>
+}

@@ -1,0 +1,54 @@
+﻿<script lang="javascript" type="text/javascript">
+    $(document).ready(function () {
+        savePanelState();
+    });
+
+    function savePanelState() {
+        var currentTab = $("#selected_tab").val();
+        if (!currentTab) {
+            currentTab = "#divGrid";
+        }
+        $(".nav a[href='" + currentTab + "']").tab("show");
+
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+            var target = $(e.target).attr("href");
+            $("#selected_tab").val(target);
+        });
+    }
+
+</script>
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+
+@using (Html.BeginForm())
+{
+    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
+    <ul class="nav nav-tabs">
+        <li id="navGrid" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGrid">@Translate.Key("Grid")</a></li>
+        <li id="navToolbar" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divToolBar">@Translate.Key("ToolBar")</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+
+        <div id="divGrid" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
+            @await Html.PartialAsync("_List", new DataDictionaryListAction
+            {
+                Context = ActionOrigin.Grid,
+                DictionaryName = ViewBag.DictionaryName,
+                ListAction = ViewBag.GridActions
+            })
+        </div>
+
+        <div id="divToolBar" class="tab-pane fade">
+            @await Html.PartialAsync("_List", new DataDictionaryListAction
+            {
+                Context = ActionOrigin.Toolbar,
+                DictionaryName = ViewBag.DictionaryName,
+                ListAction = ViewBag.ToolBarActions
+            })
+        </div>
+    </div>
+
+}
+
+

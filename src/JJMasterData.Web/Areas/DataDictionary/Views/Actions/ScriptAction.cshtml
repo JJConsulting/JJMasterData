@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "_Layout.Popup";
+}
+
+@model  JJMasterData.Core.DataDictionary.Action.ScriptAction
+
+@using (Html.BeginForm("ScriptAction", "Actions",
+    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navScriptAction"  class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divScriptAction">@Translate.Key("Script Action")</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+        <div id="divScriptAction" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="">@Translate.Key("JavaScript Command")</label>
+                    @Html.TextBoxFor(model => model.OnClientClick, new { @class = "form-control" })
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-10">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        @Translate.Key("JavaScript action that will be executed when the user clicks out of control")
+                        <br />
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="divAdvanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}
+

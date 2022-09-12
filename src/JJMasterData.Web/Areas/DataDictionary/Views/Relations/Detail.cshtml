@@ -1,0 +1,192 @@
+﻿@using JJMasterData.Commons.Dao.Entity
+@model JJMasterData.Commons.Dao.Entity.ElementRelation
+
+<script type="text/javascript">
+
+    function cmdSave() {
+        var frm = $('form');
+        $.ajax({
+            url: '@Url.Action("SaveRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName })',
+            data: frm.serialize(),
+            type: "POST",
+            dataType: "json",
+            success: function (response) {
+                if (response.success == true) {
+                    window.parent.popup.hide();
+                    window.parent.location.reload();
+                } else {
+                    $('#divError').html(response.errorMessage)
+                }
+
+            }
+        });
+    }
+
+    function populateFkColumn() {
+        messageWait.show();
+        var url = '@Url.Action("Detail", "Relations", new { dictionaryName = ViewBag.DictionaryName })';
+        $("form:first").attr("action", url).submit();
+    }
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.Hidden("index", (string)ViewBag.Index)
+
+    <div class="well">
+        <div>
+            <div class="row">
+
+                <div class="@BootstrapHelper.FormGroup col-sm-8">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Child element name")">@Translate.Key("ChildElement")</label>
+                    <select asp-for="ChildElement"
+                            onchange="populateFkColumn()"
+                            class="form-control"
+                            asp-items="new List<SelectListItem>(ViewBag.PkTable)">
+                    </select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="@BootstrapHelper.Label " for="UpdateOnCascade">@Translate.Key("UpdateOnCascade")</label>
+                    @Html.DropDownListFor(model => model.UpdateOnCascade, new[]
+                    {
+                        new SelectListItem { Text = Translate.Key("No"), Value = "false" },
+                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                    }, new { @class = "form-control" })
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="@BootstrapHelper.Label " asp-for="DeleteOnCascade">@Translate.Key("DeleteOnCascade")</label>
+                    @Html.DropDownListFor(model => model.DeleteOnCascade, new[]
+                    {
+                        new SelectListItem { Text = Translate.Key("No"), Value = "false" },
+                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                    }, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-8 required">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Internal Title")">@Translate.Key("Title")</label>
+                    <input type="text" value="@Model.Title" name="Title" id="Title" class="form-control"/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
+                    <select asp-for="ViewType" class="form-control" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
+                </div>
+            </div>
+        </div>
+        <!-- End Form -->
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>@Translate.Key("Relation")</h4>
+            <hr/>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("PkColumn")</label>
+            <select name="pk"
+                    class="form-control"
+                    asp-items="new List<SelectListItem>(ViewBag.FkColumn)">
+            </select>
+        </div>
+
+        <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("FkColumn")</label>
+            <select name="fk"
+                    class="form-control"
+                    asp-items="new List<SelectListItem>(ViewBag.FkColumn)">
+            </select>
+        </div>
+
+
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.ErrorItem)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <button id="btnAddRelation" type="submit" class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("CreateRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName })">
+                <span class="fa fa-plus-square-o"></span>
+                &nbsp;@Translate.Key("Add Relation")
+            </button>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">@Translate.Key("Order")</th>
+                    <th scope="col">@Translate.Key("PkColumn")</th>
+                    <th scope="col">@Translate.Key("FkColumn")</th>
+                    <th scope="col">@Translate.Key("Delete")</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Columns.Count > 0)
+                {
+                    int index = 0;
+                    foreach (ElementRelationColumn item in Model.Columns)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>
+                                @item.PkColumn
+                                @Html.HiddenFor(model => model.Columns[index].PkColumn)
+                            </td>
+
+                            <td>
+                                @item.FkColumn
+                                @Html.HiddenFor(model => model.Columns[index].FkColumn)
+                            </td>
+                            <td align="center" valign="middle" style="width:60px;">
+                                <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" formaction="@Url.Action("DeleteRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName, indexRelation = index })" class="btn btn-link" data-original-title="@Translate.Key("Delete")">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        index++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">
+                            @Translate.Key("No data records found")
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div id="divError" class="col-sm-12">
+
+        </div>
+    </div>
+
+    <br/>
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="cmdSave()">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@Translate.Key("Save")</span>
+            </button>
+
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;@Translate.Key("Cancel")</span>
+            </button>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+}

@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "_Layout.Popup";
+}
+
+@model  JJMasterData.Core.DataDictionary.Action.InsertAction
+
+@using (Html.BeginForm("InsertAction", "Actions",
+    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li  id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li class="nav-item" id="navInsertAction"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInsertAction">@Translate.Key("Insert Action")</a></li>
+        <li  class="nav-item" id="navAdvanced"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+    </ul>
+
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+        <div id="divInsertAction" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label>@Translate.Key("Element Name To Select")</label>
+                    @Html.Raw(BuildElementToSelect().GetHtml())
+                </div>
+
+                <div class="col-sm-6">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        <b>@Translate.Key("Dictionary name used to display the preselection of a record.")</b><br />
+                        @Translate.Key("When this property is set, the system will display a list of records for selection.")<br />
+                        @Translate.Key("When selecting a record, the insert method is triggered sending the values ​​of the current selection.")<br />
+                        @Translate.Key("If the insert method is executed successfully the user will be redirected to editing the context dictionary.")<br />
+                        <br />
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <label>@Translate.Key("Reopen Form")</label>
+                    @Html.DropDownListFor(modelItem => modelItem.ReopenForm, new[] {
+                        new SelectListItem { Text = "No", Value = "false" },
+                        new SelectListItem { Text = "Yes", Value = "true" }
+                    },
+                        new { @class = "form-control" })
+                </div>
+                <div class="col-sm-3">
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        <b>@Translate.Key("Reopen Form.")</b><br />
+                        @Translate.Key("No = Close the form and return to the list.")<br />
+                        @Translate.Key("Yes = Reopen the form to enter a new record.")<br />
+                        <br />
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="divAdvanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}
+
+@functions {
+    private JJSearchBox BuildElementToSelect()
+    {
+        var cbo = new JJSearchBox();
+        cbo.Name = "ElementNameToSelect";
+        cbo.DataItem.Command.Sql = "select name as cod, name from tb_masterdata where type = 'F' order by name";
+        cbo.SelectedValue = Model.ElementNameToSelect;
+        return cbo;
+    }
+
+}

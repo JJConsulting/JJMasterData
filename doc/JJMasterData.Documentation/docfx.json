@@ -1,0 +1,94 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "**.csproj"
+          ],
+          "src": "../../",
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "_site/**",
+            "_plugins/**",
+            "**/JJMasterData.Api/**",
+            "**/JJMasterData.Api.Test/**",
+            "**/JJMasterData.Commons.Test/**",
+            "**/JJMasterData.Core.Test/**",
+            "**/JJMasterData.Web.Test/**",
+            "**/JJMasterData.Test/**",
+            "**/JJMasterData.Web.DataDictionary/**",
+            "**/JJMasterData.SourceControl/**",
+            "**/JJMasterData.Sample/**",
+            "**/JJMasterData.Example/**"
+          ]
+        }
+      ],
+      "dest": "lib",
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "lib/**.yml",
+          "lib/**.md",
+          "articles/**.md",
+          "articles/**/toc.yml",
+          "restapi/**",
+          "index.md",
+          "toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "**/JJMasterData.Sample/**",
+          "**/JJMasterData.Examples/**",
+          "media/**",
+          "logo.svg",
+          "favicon.ico"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "lib/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "plugins/**",
+          "templates/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_disableContribution": false,
+      "_gitContribute": {
+        "branch": "master"
+      },
+      "_gitUrlPattern": "github",
+      "_appTitle": "JJMasterData",
+      "_appFooter": "<div><span>(Mars Version - 3.0)</span> - <a href='https://www.jjconsulting.com.br' alt=''>&copy; 2022 JJConsulting. All rights reserved.</a></div>"
+    },
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": [
+      "default",
+      "templates/darkfx"
+    ],
+    "postProcessors": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}

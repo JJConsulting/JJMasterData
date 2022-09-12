@@ -1,0 +1,64 @@
+﻿@inject ThemeService ThemeService;
+@using JJMasterData.Web.Services
+@model AboutViewModel;
+
+@{
+    Layout = "_Layout.Popup";
+}
+
+<div class="col-xs-12 text-center h-100 d-inline-block p-4 text-primary">
+    <div>
+        <h1>
+            <img src="~/@ThemeService.GetLogoPath()" style="width:25%;height:25%" alt="JJMasterData"/></h1>
+    </div>
+</div>
+<div class="col-xs-12">
+    <br />
+</div>
+<div class="col-xs-12">
+
+    <div class="@BootstrapHelper.GetPanel("default")">
+        <div class="@BootstrapHelper.GetPanelHeading("default")">
+            <h5>
+                <span class="text-info fa fa-info-circle"></span>
+                &nbsp;@Translate.Key("System Version")
+            </h5>
+        </div>
+        <div class="@BootstrapHelper.PanelBody">
+            <div class="@(BootstrapHelper.Version != 3 ? "container-fluid" : string.Empty)">
+                <div class="row">
+                    <div class="col-xs-12">
+                        @Html.Raw(Model.AssemblyInfoHtml)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class='list-group'>
+
+        @foreach (var assembly in Model.Dependencies)
+        {
+            <li class="list-group-item">
+                <span>@assembly.GetName().Name</span>
+                <br />
+                <span>Version: @assembly.GetName().Version.ToString()</span>
+                <br />
+            </li>
+        }
+        <li class="list-group-item">
+            <span>Bootstrap</span>
+            <br />
+            <span>Version: @Model.BootstrapVersion</span>
+        </li>
+    </ul>
+</div>
+
+<div class="col-xs-12">
+    <hr />
+    <span class="text-warning fa fa-exclamation-triangle"></span>
+    <span class="small">
+        @Translate.Key("Warning: This computer program is protected by copyright law and international treaties.")
+        @Translate.Key("Unauthorized reproduction or distribution of this program, or any portion of it,")
+        @Translate.Key("may result in severe civil and criminal penalties, and will be prosecuted to the maximum extend possible under the law.")
+    </span>
+</div>

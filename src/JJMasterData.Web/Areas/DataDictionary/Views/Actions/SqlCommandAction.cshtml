@@ -1,0 +1,139 @@
+﻿@{
+    Layout = "_Layout.Popup";
+}
+
+@model  JJMasterData.Core.DataDictionary.Action.SqlCommandAction
+
+<link href="@Url.Content("~/js/codemirror/lib/codemirror.css")" rel="stylesheet" />
+<link href="@Url.Content("~/js/codemirror/addon/hint/show-hint.css")" rel="stylesheet" />
+<script src="@Url.Content("~/js/codemirror/lib/codemirror.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/js/codemirror/mode/sql/sql.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/js/codemirror/addon/hint/show-hint.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/js/codemirror/addon/hint/sql-hint.js")" type="text/javascript"></script>
+
+
+
+<script lang="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+            refreshCodeMirror();
+        });
+        buidCodeMirror();
+    });
+
+    function refreshCodeMirror() {
+        var cm1 = $(".CodeMirror")[0];
+        if (cm1 && cm1.CodeMirror) {
+            cm1.CodeMirror.refresh();
+        }
+    }
+
+    function buidCodeMirror() {
+        var cm = CodeMirror.fromTextArea(document.getElementById('CommandSQL'), {
+            mode: "text/x-sql",
+            indentWithTabs: true,
+            smartIndent: true,
+            lineNumbers: true,
+            matchBrackets: true,
+            autofocus: true,
+            autohint: true,
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            hintOptions: {
+                tables: {
+                    AppUser: ["USR_ID", "USR_USERNAME", "USR_FIRSTNAME", "USR_LASTNAME", "USR_EMAIL", "USR_ISDISABLED"],
+                    AppMenu: ["MNU_ID", "MNU_ORDER", "MNU_ICON", "MNU_LABEL", "MNU_TYPE", "MNU_ACTION"],
+                }
+            }
+        });
+
+        cm.setSize(null, 250);
+
+        // Register our custom Codemirror hint plugin.
+        CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
+            var dictionary = @Html.Raw(ViewBag.HintDictionary);
+            var cur = editor.getCursor();
+            var curLine = editor.getLine(cur.line);
+            var start = cur.ch;
+            var end = start;
+            return {
+                list: dictionary,
+                from: CodeMirror.Pos(cur.line, start),
+                to: CodeMirror.Pos(cur.line, end)
+            }
+        });
+
+        cm.on("keyup", function (cm, event) {
+            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
+                event.keyCode == 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
+                CodeMirror.commands.autocomplete(cm, CodeMirror.hint.dictionaryHint, { completeSingle: false });
+                //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
+            }
+        });
+    }
+
+</script>
+
+@using (Html.BeginForm("SqlCommandAction", "Actions",
+    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navSqlCommand" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divSqlcommand">@Translate.Key("SQL Command")</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+
+        <div id="divSqlcommand" class="tab-pane fade">
+            <div class="row">
+
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@Translate.Key("SQL Command")</label>
+                    <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@Translate.Key("(Type Ctrl+Space to AutoComplete)")</span>
+                    <div class="@BootstrapHelper.Well" style="margin-bottom:0px">
+                        @if (!BootstrapHelper.Version.Equals(3))
+                        {
+                            <div class="card-body">
+                                @Html.TextAreaFor(model => model.CommandSQL, new { @class = "form-control", rows = "8" })
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(model => model.CommandSQL, new { @class = "form-control", rows = "8" })
+                        }
+                    </div>
+                </div>
+                <hr />
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="@BootstrapHelper.FormGroup col-sm-2">
+                            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("Apply only selected lines")">@Translate.Key("Apply On Selected")</label>
+                            <div class="input-append">
+                                @Html.CheckBoxFor(model => model.ApplyOnSelected, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                            </div>
+                        </div>
+
+                        <div class="col-sm-10">
+                            <span class="text-info fa fa-info-circle"></span>
+                            <span class="small">
+                                <b>@Translate.Key("Apply only selected lines.")</b><br />
+                                @Translate.Key("When the command is triggered only the selected lines are affected.")
+                                <br />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divAdvanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

@@ -1,0 +1,11 @@
+<div class="row">
+    <div class="col-sm-12" id="divWarning" style="display: none;">
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close"><span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span></button>
+            <strong><span class="fa fa-info-circle" aria-hidden="true"></span> @Translate.Key("Attention!")</strong>
+            @Translate.Key("Some databases have limitation on object names,")
+            @Translate.Key("for example Oracle with version less than 12c is limited to 30 characters.")<br />
+            @Translate.Key("We recommend checking your database documentation before proceeding.")
+        </div>
+    </div>
+</div>

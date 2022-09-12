@@ -1,0 +1,36 @@
+﻿@using (Html.BeginForm("Create", "Element", FormMethod.Post))
+{
+    <br/>
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div style="display: flex;justify-content: center;">
+                    <div style="display: flex;align-items: center;">
+                        <span class="fa fa-book" style="font-size: 50px;color: #c43232d9;"></span>
+                    </div>
+                    <div style="margin-left: 20px;">
+                        <h4>@Translate.Key("Oops, dictionary not found.")</h4>
+                        <p>
+                            @Translate.Key("You will need to create your data dictionary, to proceed click on the next button below.")<br>
+                            @Translate.Key("You can change the table name and other parameters using JJMasterDataSettings class.")<br/>
+                            @Translate.Key("After creating your data dictionary, just insert your tables and their respective fields!")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="float: right;">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small"
+                    onclick="popup.show('@Translate.Key("Database Scripts")',
+                     '@Url.Action("Scripts", "Element", new { Area = "DataDictionary", isDefault = true })')">
+                <span>&nbsp;@Translate.Key("View Scripts")</span>
+                <span class="fa fa-play-circle"></span>
+            </button>
+            <button type="submit" class="btn btn-success btn-small">
+                <span>@Translate.Key("Next")&nbsp;</span>
+                <span class="fa fa-forward"></span>
+            </button>
+        </div>
+    </div>
+}

@@ -1,0 +1,34 @@
+- name: Introduction
+  href: intro.md
+  items:
+  - name: Configurations
+    href: configurations.md
+- name: Components
+  href: components/intro.md
+  items:
+  - name: JJDataFile
+    href: components/data_file.md
+  - name: JJFormView
+    href: components/form_view.md
+- name: FormEvents
+  href: form_events/intro.md
+  items:
+  - name: .NET
+    href: form_events/net.md
+  - name: .Python
+    href: form_events/python.md
+- name: Errors
+  href: errors/intro.md
+  items:
+    - name: JJ001 - ConnectionString not found.
+      href: errors/jj001.md
+    - name: JJ002 - {search_id} is required at queries using ReplaceTextOnGrid.
+      href: errors/jj002.md
+- name: Miscellaneous
+  items:
+  - name: .NET Framework Support
+    href: miscellaneous/netframework.md
+  - name: Python F.A.Q
+    href: miscellaneous/python.md
+  - name: Assemblies
+    href: miscellaneous/assemblies.md

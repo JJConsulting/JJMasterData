@@ -1,0 +1,31 @@
+﻿@model EntityViewModel;
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        @Html.LabelFor(Model => Model.FormElement.Title, Translate.Key("Title"),
+            new Dictionary<string, string>
+            {
+                { BootstrapHelper.DataToggle, "tooltip" },
+                { "title", Translate.Key("Title") }
+            })
+        @Html.TextBoxFor(Model => Model.FormElement.Title, Model.HtmlAttributes)
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-8">
+        @Html.LabelFor(Model => Model.FormElement.SubTitle, Translate.Key("Subtitle"),
+            new Dictionary<string, string>
+            {
+                { BootstrapHelper.DataToggle, "tooltip" },
+                { "title", Translate.Key("Subtitle") }
+            })
+        @Html.TextBoxFor(Model => Model.FormElement.SubTitle, Model.HtmlAttributes)
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-12">
+        @Html.LabelFor(Model => Model.FormElement.Info, Translate.Key("Info"),
+            new Dictionary<string, string>
+            {
+                { BootstrapHelper.DataToggle, "tooltip" },
+                { "title", Translate.Key("Info") }
+            })
+        @Html.TextBoxFor(Model => Model.FormElement.Info, Model.HtmlAttributes)
+    </div>
+</div>
