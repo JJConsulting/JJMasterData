@@ -134,7 +134,7 @@ For customization you have a lot of scenarios too:
 3. Customizing your own JJFormView object at your pages (the old school way of the JJ Consulting team in the WebForms era, not recommended)
 
 ## Who is using JJMasterData ?
-JJMasterData is **production-ready** and is already being used by JJConsulting [customers](https://www.jjconsulting.com.br#clientes).
+JJMasterData is **production-ready** and is already being used by JJConsulting [customers](https://jjconsulting.tech/en-us/Home#clientes).
 
 ## Special Thanks
 
@@ -147,4 +147,4 @@ JJMasterData is **production-ready** and is already being used by JJConsulting [
 ## Bugs and feature requests
 Have a bug or a feature request? 
 Please first search for existing and closed issues.</br>
-If your problem or idea is not addressed yet, [please open a new issue](https://github.com/jjconsultingdev/JJMasterData/issues/new).
+If your problem or idea is not addressed yet, [please open a new issue](https://github.com/jjconsulting/JJMasterData/issues/new).
