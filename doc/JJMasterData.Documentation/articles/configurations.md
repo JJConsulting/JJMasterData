@@ -1,11 +1,13 @@
 <h1>Configurations<small> All you can change on JJ MasterData</small></h1>
 
-<h4>Como configurar?</h4>
-Existem tres maneiras de configurar a aplicação:
+<h4>How to configure?</h4>
+
+There are three ways to configure an application:
 <br><br>
 
-**1)** Incluindo as chaves de configuração nos arquivos appsettings.json (.NET Core) ou web.config (.NET Framework)
-<details><summary>appsettings.json</summary><br>
+**1)** Add configuration key in appsettings.json (.NET Core) or web.config (.NET Framework) files
+
+<details><summary> >> appsettings.json</summary><br>
 
 ```json
 {
@@ -18,7 +20,6 @@ Existem tres maneiras de configurar a aplicação:
     "ResourcesTableName": "tb_masterdata_resources",
     "PrefixGetProc": "jj_get{tablename}",
     "PrefixSetProc": "jj_set{tablename}",
-    "UseUrlRequestCultureProvider": true,
     "BootstrapVersion":5,
     "Theme": "dark-blue",
     "Logger": {
@@ -45,7 +46,7 @@ Existem tres maneiras de configurar a aplicação:
 </details>
 
 
-<details><summary>web.config</summary><br> 
+<details><summary>>> web.config</summary><br> 
 
 ```xml
 <?xml version="1.0"?>
@@ -62,7 +63,7 @@ Existem tres maneiras de configurar a aplicação:
 		<add key="log_connectname" value="ConnectionString"/>
 		<add key="app.connectionstring" value="ConnectionString"/>
 		
-		<!--Configurações JJMasterData-->
+		<!--JJMasterData Settings-->
 		<add key="JJMasterData.PrefixProcGet" value="jj_get{tablename}"/>
 		<add key="JJMasterData.PrefixProcSet" value="jj_set{tablename}"/>
 		<add key="JJMasterData.TableName" value="tb_masterdata"/>
@@ -71,13 +72,13 @@ Existem tres maneiras de configurar a aplicação:
 		<add key="JJMasterData.BootstrapVersion" value="3"/>
 		<add key="JJMasterData.BootstrapTheme" value="dark-blue"/>
 		
-		<!--Configurações Layout-->
+		<!--Layout Settings-->
 		<add key="JJMasterData.LayoutUrl" value="~/Views/Shared/_Layout.vbhtml"/>
 		<add key="JJMasterData.LayoutUrlPopup" value="~/Views/Shared/_Layout.Popup.vbhtml"/>
 
 	</appSettings>
 	<connectionStrings>
-		<add name="Connectionstring" connectionString="data source=..." providerName="System.Data.SqlClient"/>
+		<add name="Connectionstring" connectionString="data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True" providerName="System.Data.SqlClient"/>
 	</connectionStrings>
 	
 </configuration>
@@ -86,50 +87,65 @@ Existem tres maneiras de configurar a aplicação:
 
 </details>
 
-**2)** Alterando programaticamente no startup da aplicação
+**2)** Changing code at application startup
 ```cs
 builder.Services.AddJJMasterDataWeb().WithSettings(options =>
 {
     options.BootstrapVersion = 5;
-    options.ConnectionString = "...";
+    options.ConnectionString = "data source=localhost;initial catalog=JJMasterData;Integrated Security=True";
 });
 ```
 
 
-**3)** Por injeção de dependecia implementando o objeto JJMasterData.Commons.Settings.ISettings
+**3)** By dependency injection implementing the object JJMasterData.Commons.Settings.ISettings
 ```cs
-//Qualquer classe que implemente a ISettings
+//Any class that implements a ISettings
 var settings = new JJMasterDataSettings();
 
-//Simples asssim
+//That simple
 builder.Services.AddJJMasterDataWeb().WithSettings(settings);
 
-//ou se preferir
+//or if you prefer
 //builder.Services.AddSingleton(settings);
-````
-
-<h4>O que configurar?</h4>
-
-**WithSettings:** Qualquer propriedade das classes [JJMasterDataSettings](../lib/JJMasterData.Commons.Settings.JJMasterDataSettings.html) como visto acima.
-<br>
-
-**WithJJMasterDataLogger:**  Esse é simples log da aplicação que pode ser guardado em arquivo, banco de dados, etc... 
-Nós utilizamos para testes pois ele não é async, porém você poderá utilizar qualquer ferramenta de Log implementando a interface 
-Microsoft.Extensions.Logging.ILogger exemplo:
-```cs
-builder.Services.AddLogging(...)
 ```
 
-**WithTranslator:** Por padrão gravamos os resources em uma tabela, pois o usuário pode criar dicionários dinamicamente adicionando palavras e textos traduzidos, você pode configurar o nome da tabela com a propriedade TableResources na classe JJMasterDataSettings.
+<h4>What to configure?</h4>
+
+**Global Settings**
+```cs
+builder.Services.AddJJMasterDataWeb().WithSettings();
+```
+_WithSettings_: Any property of classes [JJMasterDataSettings](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Settings.JJMasterDataSettings.html) as seen above.
 <br>
-Você pode alterar o comportamento da internacionalização do sistema com a interface [ITranslator](../lib/JJMasterData.Commons.Language.ITranslator.html)
+
+**Log**
+
+```cs
+builder.Services.AddLogging(ILogger)
+```
+
+You can use any Log tool to implement the interface 
+Microsoft.Extensions.Logging.ILogger
+<br>
+If you need a basic log:
+
+```cs
+builder.Services.AddJJMasterDataWeb().WithJJMasterDataLogger();
+```
+
+This is a simple application log that can be written to a file, database, etc... 
+We use it for testing, because it is not async. To configure the log see [LoggerSettings](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Logging.LoggerSettings.html)
+
+
+
+**Internacionalization**
+```cs
+builder.Services.WithTranslator(ITranslator)
+```
+_WithTranslator_: By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataSettings class.
+
 <br>
 
+You can change the behavior of system internationalization with the interface [ITranslator](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ITranslator.html)
+<br>
 
-**WithBackgroundTask:** 
-
-**WithDataAccess:** 
-
-Configurar como os serviços de exportação e importação rodarão em segundo cm
-
-ou LoggerSettings como

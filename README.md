@@ -27,7 +27,7 @@
   </a>
 </p>
 
-JJMasterData is an open-source .NET library to help you create CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
+JJMasterData is an open-source .NET library to help you create dynamic CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
 
 ## Features
 - Complete CRUD operations ✅
@@ -51,7 +51,7 @@ JJMasterData is an open-source .NET library to help you create CRUDs quickly fro
 ## Quick Start
 
 This tutorial assumes you will use .NET 6+, for .NET Framework 4.8 support,
-check our [documentation](https://portal.jjconsulting.com.br/jjdoc/articles/introduction/netframework.html).
+check our [documentation](https://portal.jjconsulting.tech/jjdoc/articles/miscellaneous/netframework.html).
 
 ### 1. Install JJMasterData.Web from NuGet
 ![JJMasterData Nuget](doc/JJMasterData.Documentation/media/NuGet.png)
