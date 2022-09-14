@@ -1,0 +1,9 @@
+@using JJMasterData.Web.Extensions
+@model JJGridView;
+
+@using (Html.BeginForm())
+{
+    <div class="col-sm-12">
+        @Model.GetHtml().ToHtmlString()
+    </div>
+}
