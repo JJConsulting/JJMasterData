@@ -1,6 +1,8 @@
 - name: Introduction
   href: intro.md
   items:
+  - name: Getting Started
+    href: getting_started.md
   - name: Configurations
     href: configurations.md
 - name: Components

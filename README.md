@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-<img style="width:42%;height:42%" src="doc/JJMasterData.Documentation/media/JJMasterDataLogo.png"/>
+<img width=25% src="doc/JJMasterData.Documentation/media/JJMasterDataLogo.png"/>
     <br>
     JJMasterData
   <br>
@@ -17,9 +17,9 @@
     <img src="https://img.shields.io/badge/SQL_Server-CC2927?logo=microsoft-sql-server&logoColor=white" alt="TS">
   </a>
   <a href="https://img.shields.io/badge/Python">
-    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="TS">
+    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="SQL Server">
   </a>
-  <a href="https://img.shields.io/nuget/v/JJMasterData.Web.svg">
+  <a href="https://www.nuget.org/profiles/jjconsulting">
     <img src="https://img.shields.io/nuget/v/JJMasterData.Web.svg?color=004880" alt="NuGet">
   </a>
   <a href="https://discord.gg/s9F2ntBXnn">
@@ -40,109 +40,34 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 - Log interface ✅
 - Test library ✅
 
+<br>
+
 # Demo
 ![Demo](doc/JJMasterData.Documentation/media/Demo.gif)
+
+<br>
 
 ## Useful Links
 * [Library Documentation](https://portal.jjconsulting.com.br/jjdoc/)
 * [NuGet.Org](https://www.nuget.org/profiles/jjconsulting)
 * [Community Discord Server](https://discord.gg/s9F2ntBXnn)
 
-## Quick Start
+<br>
 
-This tutorial assumes you will use .NET 6+, for .NET Framework 4.8 support,
-check our [documentation](https://portal.jjconsulting.tech/jjdoc/articles/miscellaneous/netframework.html).
+## Getting Started
+See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles/getting_started.html).
 
-### 1. Install JJMasterData.Web from NuGet
-![JJMasterData Nuget](doc/JJMasterData.Documentation/media/NuGet.png)
-
-Installing JJMasterData.Web, will install all required dependencies.
-
-### 2. Add a SQL Server ConnectionString to your configuration file
-In your configuration file (normally appsettings.json), add a SQL Server connection string. Support for more DBMSs is planned.
-
-### 3. Modify Program.cs
-Add the following lines to your Program.cs
-```csharp
-//This line will add JJMasterData required services.
-builder.Services.AddJJMasterDataWeb();
-
-//Add this line before specifing your default route. It will use the required services and add the RCL routes.
-app.UseJJMasterDataWeb();
-```
-
-Add the following lines to your _Layout.cshtml <head>
-```html
-<partial name="_MasterDataStylesheets"/>
-<partial name="_MasterDataScripts"/>
-<partial name="_MasterDataTheme"/>
-```
-**IMPORTANT**: If you have Bootstrap and jQuery installed, remove it from your _Layout.cshtml both CSS and JS, 
-JJMasterData already have Bootstrap and jQuery installed. You can choose Bootstrap 3, 4 and 5 using [JJMasterDataSettings](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Commons.Settings.JJMasterDataSettings.html).
-If you really want to use your own Bootstrap or jQuery files or CDNs, check _MasterDataStylesheets and _MasterDataScripts source code and specify all dependencies except Bootstrap.
-
-### 4. Create your first Data Dictionary
-In your preferred database-tool like Azure Data Studio or SSMS, create the following example table:
-```sql
--- Create a new table called '[Person]' in schema '[dbo]'
--- Drop the table if it already exists
-IF OBJECT_ID('[dbo].[Person]', 'U') IS NOT NULL
-DROP TABLE [dbo].[Person]
-    GO
--- Create the table in the specified schema
-CREATE TABLE [dbo].[Person]
-(
-    [Id] INT NOT NULL PRIMARY KEY IDENTITY,
-    [FirstName] NVARCHAR(50) NOT NULL,
-    [Age] INT NOT NULL
-    -- Specify more columns here
-    );
-GO
-```
-Next, run your website and open in your browser the route /en-us/DataDictionary, 
-you will be presented with the following screen:
-
-![DataDictionary Not Found](doc/JJMasterData.Documentation/media/DataDictionaryNotFound.png)
-
-After clicking on "Next", click on "Add"
-
-![DataDictionaries Home](doc/JJMasterData.Documentation/media/DataDictionariesHome.png)
-
-Enter the table name (Person), checking the option "Import Fields", after that, you will have a representation of your metadata.
-
-![Person Data Dictionary](doc/JJMasterData.Documentation/media/PersonDataDictionary.png)
-
-Click on "Get Scripts" and then "Run Stored Procedures"
-
-![Person Scripts.png](doc/JJMasterData.Documentation/media/PersonScripts.png)
-
-After running the Stored Procedures Scripts, click on Preview, and you will have your CRUD with nearly zero code 🪄
-
-![Person CRUD](doc/JJMasterData.Documentation/media/PersonCRUD.png)
-
-## Ok, really cool! But how to use these CRUDs on my application?
-JJFormView is the class responsible to render all JJMasterData CRUDs. It have many features out of the box like filters, data exportation and 
-a huge customization potential using .NET code, you can even inject Python code in your application at runtime.
-You have 2 options to instantiate a JJFormView:
-
-1. Using the /DataDictionary/Render/{dictionaryName} route
-2. Creating a View or Page instantiating a JJFormView
-
-For customization you have a lot of scenarios too:
-1. Using the DataDictionary Web interface, we have lots of options, we don't have everything documented **yet**, but you can help submitting a PR
-2. Using the IFormEvent interface (recommended), check the docs for more information
-3. Customizing your own JJFormView object at your pages (the old school way of the JJ Consulting team in the WebForms era, not recommended)
-
-## Who is using JJMasterData ?
-JJMasterData is **production-ready** and is already being used by JJConsulting [customers](https://jjconsulting.tech/en-us/Home#clientes).
+<br>
 
 ## Special Thanks
 
-### Code contributors
+#### Code contributors
 
 <a href="https://github.com/jjconsulting/JJMasterData/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=jjconsulting/JJMasterData" />
 </a>
+
+<br>
 
 ## Bugs and feature requests
 Have a bug or a feature request? 
