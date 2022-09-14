@@ -13,7 +13,7 @@ There are three ways to configure an application:
 {
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "ConnectionString": "data source=..."
+    "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
   },
   "JJMasterData": {
     "TableName": "tb_masterdata",

@@ -31,7 +31,7 @@ JJMasterData is an open-source .NET library to help you create CRUDs quickly fro
 
 <br>
 
-To getting started, click on this [link](articles/getting_stated.md).
+To getting started, click on this [link](articles/getting_started.md).
 
 <br>
 
