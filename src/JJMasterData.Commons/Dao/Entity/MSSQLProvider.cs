@@ -16,13 +16,7 @@ public class MSSQLProvider : IProvider
     private const string DELETE = "E";
     private const char TAB = '\t';
 
-    public string VariablePrefix
-    {
-        get
-        {
-            return "@";
-        }
-    }
+    public string VariablePrefix => "@";
 
     public string GetCreateTableScript(Element element)
     {

@@ -5,12 +5,12 @@
 
 @{
 
-    IHtmlContent GetIdBs3(string name)
+    IHtmlContent? GetIdBs3(string name)
     {
         return BootstrapHelper.Version > 3 ? Html.Raw("id=\"" + name + "\"") : null;
     }
 
-    IHtmlContent GetIdBs4(string name)
+    IHtmlContent? GetIdBs4(string name)
     {
         return BootstrapHelper.Version > 3 ? Html.Raw("id=\"" + name + "\"") : null;
     }
@@ -78,7 +78,7 @@
 
 <div class="tab-content">
 
-    <div id="divTable" class="tab-pane fade in active show">
+    <div id="divTable" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
         <pre><code>@ViewBag.Scripts[0]</code></pre>
     </div>
     <div id="divProcGet" class="tab-pane fade">
@@ -100,12 +100,12 @@
     <script type="text/javascript">
     
     function copyAll() {
-            var textVal;
-            textVal = document.getElementById("divTable").textContent.trim();
+            let textVal = document.getElementById("divTable").textContent.trim();
             textVal += "\r\n";
             textVal += document.getElementById("divProcGet").textContent.trim();
             textVal += "\r\n";
             textVal += document.getElementById("divProcSet").textContent.trim();
+            
             copyText(textVal);
     
             $("#btnCopy").attr('title', 'Copied!')
@@ -116,8 +116,8 @@
         }
     
         function copyContent() {
-            var objName = $("#tabScript .active").attr("id");
-            var textVal = document.getElementById("div" + objName).textContent.trim();
+            const objName = $(".tab-content .active").first().attr("id");
+            let textVal = document.getElementById(objName).textContent.trim();
             copyText(textVal);
     
             $("#btnCopyContent").attr('title', 'Copied!')
@@ -129,14 +129,8 @@
     
     
         function copyText(value) {
-            const textArea = document.createElement('textarea');
-            textArea.textContent = value;
-            document.body.append(textArea);
-            textArea.select();
-            textArea.setSelectionRange(0, 99999); /*For mobile devices*/
-            document.execCommand("copy");
-            textArea.remove();
-       }
+            navigator.clipboard.writeText(value);
+        }
     
         function executeScripts(value) {
              $.ajax({
