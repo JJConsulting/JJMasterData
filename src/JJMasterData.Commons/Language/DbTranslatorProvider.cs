@@ -126,10 +126,10 @@ public class DbTranslatorProvider : ITranslator
     private List<Hashtable> GetDefaultValues()
     {
         var values = new List<Hashtable>();
-        string resourcePath = "JJMasterData.Commons.Resources.JJMasterDataResources.pt.resources";
+        string culture = "pt-br";
+        string resourcePath = $"JJMasterData.Commons.Language.ResourceStrings_{culture}.resources";
         
-        var fs =  Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
-        
+        var fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
         using var res = new ResourceReader(fs);
         
         var dict = res.GetEnumerator();

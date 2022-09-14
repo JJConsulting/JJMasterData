@@ -11,10 +11,10 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.0.14</AssemblyVersion>
-        <FileVersion>3.0.14</FileVersion>
-        <PackageVersion>3.0.14</PackageVersion>
-        <Version>3.0.14</Version>
+        <AssemblyVersion>3.0.15</AssemblyVersion>
+        <FileVersion>3.0.15</FileVersion>
+        <PackageVersion>3.0.15</PackageVersion>
+        <Version>3.0.15</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Mars Version</Product>

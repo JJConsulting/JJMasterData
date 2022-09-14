@@ -1,7 +1,7 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Resources;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Authorization;
@@ -22,10 +22,10 @@ public static class ServiceCollectionExtensions
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
         services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
-        
+
         services.AddHttpContextAccessor();
         services.AddSession();
-        
+
         AddSystemWebAdapters(services);
 
         services.AddDistributedMemoryCache();
@@ -60,24 +60,27 @@ public static class ServiceCollectionExtensions
 
     public static void AddUrlRequestCultureProvider(this IServiceCollection services)
     {
+        CultureInfo[] supportedCultures = new[]
+        {
+            new CultureInfo("pt-BR"),
+            new CultureInfo("en-US")
+        };
+
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            options.DefaultRequestCulture = new RequestCulture(JJMasterDataResources.SupportedCultures.First());
-
-            options.SupportedCultures = JJMasterDataResources.SupportedCultures;
-
-            options.SupportedUICultures = JJMasterDataResources.SupportedCultures;
-            
+            options.DefaultRequestCulture = new RequestCulture(supportedCultures.First());
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
             options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>
             {
                 var currentCulture = "en-US";
-                
-                var segments = context.Request.Path.Value?.Split(new[] { '/' }, 
+
+                var segments = context.Request.Path.Value?.Split(new[] { '/' },
                     StringSplitOptions.RemoveEmptyEntries);
-                
+
                 var culturePattern = new Regex(@"^[a-z]{2}(-[a-z]{2,4})?$",
                     RegexOptions.IgnoreCase);
-                
+
                 if (segments?.Length > 0 && culturePattern.IsMatch(segments![0]))
                 {
                     currentCulture = segments[0];
@@ -94,7 +97,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
-        
+
         services.AddTransient<ActionsService>();
         services.AddTransient<ApiService>();
         services.AddTransient<ElementService>();
