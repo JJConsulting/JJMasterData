@@ -5,6 +5,8 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Expressions
+    href: expressions.md
 - name: Components
   href: components/intro.md
   items:

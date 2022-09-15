@@ -1,6 +1,6 @@
 <h1>Configurations<small> All you can change on JJ MasterData</small></h1>
 
-<h4>How to configure?</h4>
+## How to configure?
 
 There are three ways to configure an application:
 <br><br>
@@ -109,7 +109,7 @@ builder.Services.AddJJMasterDataWeb().WithSettings(settings);
 //builder.Services.AddSingleton(settings);
 ```
 
-<h4>What to configure?</h4>
+## What to configure?
 
 **Global Settings**
 ```cs

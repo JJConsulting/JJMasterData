@@ -26,56 +26,17 @@ public class FormElementField : ElementField
     [DataMember(Name = "component")] 
     public FormComponent Component { get; set; }
 
-    /// <summary>
-    /// EXPRESSÃO QUE RETORNA UM BOOLEANO EM TEMPO DE EXECUÇÃO:
-    /// Tipo [val] retorna um valor;
-    /// Tipo [exp] retorna o resultado da expressão;
-    /// Exemplo:
-    /// <para><c>VisibleExpression = "val:1"</c> Retorna verdadeiro.</para>
-    /// <para><c>VisibleExpression = "val:0"</c> Retorna falso.</para>
-    /// <para><c>VisibleExpression = "exp:1=1"</c> Retorna verdadeiro.</para>
-    /// <para><c>VisibleExpression = "exp:{pagestate} = 'LIST'"</c> Se for uma lista retorna verdadeiro.</para>
-    /// <para><c>VisibleExpression = "exp:{pagestate} = 'INSERT' AND {ID} = '1'"</c> Se for adicionar e o conteúdo do campo ID for igual a 1 retorna verdadeiro.</para>
-    /// <para></para>
-    /// </summary>
     /// <remarks>
-    /// Como montar uma expressão para ocultar ou exibir um objeto:
-    /// <para/>Estado da página: {pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
-    /// <para/>Campos do Formuário, UserValues ou Sessão = exp:{NOME_DO_CAMPO}
-    /// <para/>*Importante: 
-    /// Os conteúdo entre {} (chaves) serão substituidos pelos valores atuais em tempo de execução.
-    /// Seguindo a ordem:
-    /// <para>1) UserValues (propriedade do objeto)</para>
-    /// <para>2) Campos do Formulário (nome do campo)</para>
-    /// <para>3) Palavras chaves (pagestate)</para>
-    /// <para>4) Sessão do usuário </para>
+    /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "visibleExpression")]
     public string VisibleExpression { get; set; }
 
     /// <summary>
-    /// Expressão que retorna um booleano em tempo de execução:
-    /// Tipo [val] retorna um valor;
-    /// Tipo [exp] retorna o resultado da expressão;
-    /// Exemplo:
-    /// <para><c>EnableExpression = "val:1"</c> Retorna verdadeiro.</para>
-    /// <para><c>EnableExpression = "val:0"</c> Retorna falso.</para>
-    /// <para><c>EnableExpression = "exp:1=1"</c> Retorna verdadeiro.</para>
-    /// <para><c>EnableExpression = "exp:{pagestate} = 'LIST'"</c> Se for uma lista retorna verdadeiro.</para>
-    /// <para><c>EnableExpression = "exp:{pagestate} = 'UPDATE' AND {ID} = '1'"</c> Se for atualizar e o conteúdo do campo ID for igual a 1 retorna verdadeiro.</para>
-    /// <para></para>
+    /// Expression on runtime
     /// </summary>
     /// <remarks>
-    /// Como montar uma expressão para habilitar ou desabilitar um objeto:
-    /// <para/>Estado da página: {pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
-    /// <para/>Campos do Formuário, UserValues ou Sessão = {NOME_DO_CAMPO}
-    /// <para/>*Importante: 
-    /// Os conteúdo entre {} (chaves) serão substituidos pelos valores atuais em tempo de execução.
-    /// Seguindo a ordem:
-    /// <para>1) UserValues (propriedade do objeto)</para>
-    /// <para>2) Campos do Formulário (nome do campo)</para>
-    /// <para>3) Palavras chaves (pagestate)</para>
-    /// <para>4) Sessão do usuário </para>
+    /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "enableExpression")]
     public string EnableExpression { get; set; }

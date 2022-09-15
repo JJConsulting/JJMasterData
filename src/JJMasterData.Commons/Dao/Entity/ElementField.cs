@@ -61,50 +61,8 @@ public class ElementField
     /// <para/> Tipo [sql:] returns the result of a sql command;
     /// <para/> Tipo [protheus:] returns the result of a Protheus function;
     /// </summary>
-    /// <example>
-    /// <para/> Example using [val:] + text
-    /// <para/> Example1: val:a simple text;
-    /// <para/> Example2: val:10000;
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "val:test";
-    /// </code>
-    /// <para/> Example using [exp:] + expression
-    /// <para/> Example1: exp:{field1};
-    /// <para/> Example2: exp:({field1} + 10) * {field2};
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "exp:{UserId}";
-    /// </code>
-    /// <para/> Example using [sql:] + query
-    /// <para/> Example1: sql:select 'foo';
-    /// <para/> Example2: sql:select count(*) from table1;
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
-    /// </code>
-    /// <para/> Example using [protheus:] + "UrlProtheus", "NameFunction", "Parameters"
-    /// <para/> Example1: protheus:"http://localhost/jjmain.apw","u_test","";
-    /// <para/> Example2: protheus:"http://localhost/jjmain.apw","u_test","{field1};parm2";
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vldpan', '1;2'";
-    /// </code>
-    /// *Warnings: For Protheus calls apply JJxFun patch and configure http connection in Protheus
-    /// </example>
     /// <remarks>
-    /// <para/> How to do an expression to hide or show an object:
-    /// <para/>Form Fields, UserValues ou Session = exp:{FIELD_NAME}
-    /// <para/>*Warnings: 
-    /// The contents between {} (brace) will be replaced with current values ​​at runtime..
-    /// Order:
-    /// <para>1) UserValues (object property)</para>
-    /// <para>2) Form Fields (Field Name)</para>
-    /// <para>3) Keywords (pagestate)</para>
-    /// <para>4) User Session</para>
-    /// <para/>Examples of keywords:
-    /// <para/>{pagestate} = Page Status: {pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
-    /// <para/>{objname} = Name of the field that triggered the autopostback event
+    /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "defaultvalue")]
     public string DefaultValue { get; set; }

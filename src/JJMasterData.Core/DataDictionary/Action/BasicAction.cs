@@ -81,30 +81,24 @@ public abstract class BasicAction : IAction
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
     /// </summary>
-    /// <remarks>
-    /// <div class="WARNING">
-    ///   <h5>Warning</h5>
-    ///   <p>A invalid expression will throw a exception in the application.</p>
-    /// </div>
-    /// </remarks>
     /// <example>
     /// <see cref="FormElementField.EnableExpression"/>
     /// </example>
+    /// <remarks>
+    /// [See expressions](../articles/expressions.md)
+    /// </remarks>
     [DataMember(Name = "enableExpression")]
     public string EnableExpression { get; set; }
 
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
     /// </summary>
-    /// <remarks>
-    /// <div class="WARNING">
-    ///   <h5>Warning</h5>
-    ///   <p>A invalid expression will throw a exception in the application.</p>
-    /// </div>
-    /// </remarks>
     /// <example>
     /// <see cref="FormElementField.VisibleExpression"/>
     /// </example>
+    /// <remarks>
+    /// [See expressions](../articles/expressions.md)
+    /// </remarks>
     [DataMember(Name = "visibleExpression")]
     public string VisibleExpression { get; set; }
 

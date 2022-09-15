@@ -71,8 +71,9 @@
     "dest": "_site",
     "globalMetadata": {
       "_disableContribution": false,
+      "_enableSearch": "true",
       "_gitContribute": {
-        "branch": "master"
+        "branch": "main"
       },
       "_gitUrlPattern": "github",
       "_appTitle": "JJMasterData",
@@ -84,7 +85,7 @@
       "default",
       "templates/darkfx"
     ],
-    "postProcessors": [],
+    "postProcessors": [ "ExtractSearchIndex" ],
     "markdownEngineName": "markdig",
     "noLangKeyword": false,
     "keepFileLink": false,

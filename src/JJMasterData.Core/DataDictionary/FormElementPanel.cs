@@ -25,9 +25,15 @@ public class FormElementPanel
     [DataMember(Name = "expandedByDefault")]
     public bool ExpandedByDefault { get; set; }
 
+    /// <remarks>
+    /// [See expressions](../articles/expressions.md)
+    /// </remarks>
     [DataMember(Name = "visibleExpression")]
     public string VisibleExpression { get; set; }
 
+    /// <remarks>
+    /// [See expressions](../articles/expressions.md)
+    /// </remarks>
     [DataMember(Name = "enableExpression")]
     public string EnableExpression { get; set; }
 
