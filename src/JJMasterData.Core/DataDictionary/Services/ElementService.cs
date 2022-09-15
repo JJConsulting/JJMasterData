@@ -40,13 +40,15 @@ public class ElementService : BaseService
     {
         var factory = DicDao.Factory;
         var element = factory.GetStructure();
-        List<string> listScripts = new List<string>();
 
-        listScripts.Add(factory.Provider.GetCreateTableScript(element));
-        listScripts.Add(factory.Provider.GetReadProcedureScript(element));
-        listScripts.Add(factory.Provider.GetWriteProcedureScript(element));
+        var scriptsList = new List<string>
+        {
+            factory.Provider.GetCreateTableScript(element),
+            factory.Provider.GetReadProcedureScript(element),
+            factory.Provider.GetWriteProcedureScript(element)
+        };
 
-        return listScripts;
+        return scriptsList;
     }
 
 

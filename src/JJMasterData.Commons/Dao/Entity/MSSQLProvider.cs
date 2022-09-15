@@ -27,16 +27,17 @@ public class MSSQLProvider : IProvider
             throw new Exception("Invalid fields");
 
         var sql = new StringBuilder();
-        var sKeys = new StringBuilder();
+        var keys = new StringBuilder();
 
         sql.Append("CREATE TABLE [");
         sql.Append(element.TableName);
         sql.AppendLine("] (");
-        bool isFirst = true;
+
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
+        bool isFirst = true;
         foreach (var f in fields)
         {
             if (isFirst)
@@ -63,37 +64,35 @@ public class MSSQLProvider : IProvider
             if (f.AutoNum)
                 sql.Append(" IDENTITY ");
 
-            if (f.IsPk)
-            {
-                if (sKeys.Length > 0)
-                    sKeys.Append(",");
+            if (!f.IsPk) continue;
+            if (keys.Length > 0)
+                keys.Append(",");
 
-                sKeys.Append("[");
-                sKeys.Append(f.Name);
-                sKeys.Append("] ASC ");
-            }
+            keys.Append("[");
+            keys.Append(f.Name);
+            keys.Append("] ASC ");
         }
 
-        if (sKeys.Length > 0)
+        if (keys.Length > 0)
         {
             sql.AppendLine(", ");
             sql.Append(TAB);
             sql.Append("CONSTRAINT [PK_");
             sql.Append(element.TableName);
             sql.Append("] PRIMARY KEY NONCLUSTERED (");
-            sql.Append(sKeys);
+            sql.Append(keys);
             sql.Append(")");
         }
 
         sql.AppendLine("");
         sql.AppendLine(")");
-        //sSql.AppendLine("GO");
+
         sql.AppendLine("");
 
         sql.AppendLine(GetRelationScript(element));
         sql.AppendLine("");
 
-        int nIndex = 1;
+        int counter = 1;
         if (element.Indexes.Count > 0)
         {
             foreach (var index in element.Indexes)
@@ -104,7 +103,7 @@ public class MSSQLProvider : IProvider
                 sql.Append(" INDEX [IX_");
                 sql.Append(element.TableName);
                 sql.Append("_");
-                sql.Append(nIndex);
+                sql.Append(counter);
                 sql.Append("] ON ");
                 sql.AppendLine(element.TableName);
 
@@ -122,7 +121,7 @@ public class MSSQLProvider : IProvider
                 sql.Append(TAB);
                 sql.AppendLine(")");
                 sql.AppendLine("GO");
-                nIndex++;
+                counter++;
             }
         }
 
@@ -131,7 +130,7 @@ public class MSSQLProvider : IProvider
 
     private string GetRelationScript(Element element)
     {
-        StringBuilder sql = new StringBuilder();
+        var sql = new StringBuilder();
 
         if (element.Relations.Count > 0)
         {
@@ -141,7 +140,7 @@ public class MSSQLProvider : IProvider
             {
                 string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
 
-                //Tratamento para nome repedido de contraint
+                //Prevents repeated name.
                 if (!listContraint.Contains(contraintName))
                 {
                     listContraint.Add(contraintName);
@@ -149,16 +148,17 @@ public class MSSQLProvider : IProvider
                 else
                 {
                     bool hasContraint = true;
-                    int nCount = 1;
+                    
+                    int counter = 1;
                     while (hasContraint)
                     {
-                        if (!listContraint.Contains(contraintName + nCount))
+                        if (!listContraint.Contains(contraintName + counter))
                         {
-                            contraintName = contraintName + nCount;
+                            contraintName = contraintName + counter;
                             listContraint.Add(contraintName);
                             hasContraint = false;
                         }
-                        nCount++;
+                        counter++;
                     }
                 }
 
@@ -226,8 +226,8 @@ public class MSSQLProvider : IProvider
             throw new Exception("Invalid fields");
 
         StringBuilder sql = new StringBuilder();
-        bool isFirst = true;
-        bool hasUpd = HasUpdateFields(element);
+
+        bool updateScript = HasUpdateFields(element);
         string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
         
@@ -271,21 +271,22 @@ public class MSSQLProvider : IProvider
         sql.AppendLine("BEGIN ");
         sql.Append(TAB).Append(TAB);
         sql.AppendLine("SET @TYPEACTION = '" + INSERT + "' ");
-
+        
+        bool isFirst = true;
         if (pks.Count > 0)
         {
             sql.Append(TAB).Append(TAB);
             sql.AppendLine("DECLARE @NCOUNT INT ");
             sql.AppendLine(" ");
 
-            //CHECK
+            //Check
             sql.Append(TAB).Append(TAB);
             sql.AppendLine("SELECT @NCOUNT = COUNT(*) ");
             sql.Append(TAB).Append(TAB);
             sql.Append("FROM ");
             sql.Append(element.TableName);
             sql.AppendLine(" WITH (NOLOCK) ");
-            isFirst = true;
+            
             foreach (var f in pks)
             {
                 if (isFirst)
@@ -319,7 +320,7 @@ public class MSSQLProvider : IProvider
         sql.AppendLine(" ");
 
 
-        //SCRIPT INSERT
+        //Insert Script
         sql.Append(TAB);
         sql.AppendLine("IF @TYPEACTION = '" + INSERT + "' ");
         sql.Append(TAB);
@@ -328,37 +329,34 @@ public class MSSQLProvider : IProvider
         sql.Append("INSERT INTO [");
         sql.Append(element.TableName);
         sql.AppendLine("] (");
+        
         isFirst = true;
-        foreach (var f in fields)
+        
+        foreach (var f in fields.Where(f => !f.AutoNum))
         {
-            if (!f.AutoNum)
-            {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    sql.AppendLine(",");
+            if (isFirst)
+                isFirst = false;
+            else
+                sql.AppendLine(",");
 
-                sql.Append("			");
-                sql.Append(f.Name);
-            }
+            sql.Append("			");
+            sql.Append(f.Name);
         }
         sql.AppendLine(")");
         sql.Append(TAB).Append(TAB);
         sql.AppendLine("VALUES (");
+        
         isFirst = true;
-        foreach (var f in fields)
+        foreach (var f in fields.Where(f => !f.AutoNum))
         {
-            if (!f.AutoNum)
-            {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    sql.AppendLine(",");
+            if (isFirst)
+                isFirst = false;
+            else
+                sql.AppendLine(",");
 
-                sql.Append(TAB).Append(TAB).Append(TAB);
-                sql.Append("@");
-                sql.Append(f.Name);
-            }
+            sql.Append(TAB).Append(TAB).Append(TAB);
+            sql.Append("@");
+            sql.Append(f.Name);
         }
         sql.AppendLine(")");
         sql.Append(TAB).Append(TAB);
@@ -377,9 +375,8 @@ public class MSSQLProvider : IProvider
         sql.Append(TAB);
         sql.AppendLine("END ");
 
-        //SCRIPT UPDATE
-        isFirst = true;
-        if (hasUpd)
+        //Update Script
+        if (updateScript)
         {
             sql.Append(TAB);
             sql.AppendLine("ELSE IF @TYPEACTION = '" + UPDATE + "' ");
@@ -389,44 +386,40 @@ public class MSSQLProvider : IProvider
             sql.Append("UPDATE [");
             sql.Append(element.TableName);
             sql.AppendLine("] SET ");
+            
             isFirst = true;
-            foreach (var f in fields)
+            foreach (var f in fields.Where(f => !f.IsPk))
             {
-                if (!f.IsPk)
-                {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        sql.AppendLine(", ");
+                if (isFirst)
+                    isFirst = false;
+                else
+                    sql.AppendLine(", ");
 
-                    sql.Append(TAB).Append(TAB).Append(TAB);
-                    sql.Append(f.Name);
-                    sql.Append(" = @");
-                    sql.Append(f.Name);
-                }
+                sql.Append(TAB).Append(TAB).Append(TAB);
+                sql.Append(f.Name);
+                sql.Append(" = @");
+                sql.Append(f.Name);
             }
             sql.AppendLine("");
+            
             isFirst = true;
-            foreach (var f in fields)
+            foreach (var f in fields.Where(f => f.IsPk))
             {
-                if (f.IsPk)
+                if (isFirst)
                 {
-                    if (isFirst)
-                    {
-                        sql.Append(TAB).Append(TAB);
-                        sql.Append("WHERE ");
-                        isFirst = false;
-                    }
-                    else
-                    {
-                        sql.Append(TAB).Append(TAB);
-                        sql.Append("AND ");
-                    }
-
-                    sql.Append(f.Name);
-                    sql.Append(" = @");
-                    sql.AppendLine(f.Name);
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("WHERE ");
+                    isFirst = false;
                 }
+                else
+                {
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("AND ");
+                }
+
+                sql.Append(f.Name);
+                sql.Append(" = @");
+                sql.AppendLine(f.Name);
             }
 
             sql.Append(TAB).Append(TAB);
@@ -448,7 +441,7 @@ public class MSSQLProvider : IProvider
             sql.AppendLine("END ");
         }
 
-        //SCRIPT DELETE
+        //Delete Script
         sql.Append(TAB);
         sql.AppendLine("ELSE IF @TYPEACTION = '" + DELETE + "' ");
         sql.Append(TAB);
@@ -457,27 +450,25 @@ public class MSSQLProvider : IProvider
         sql.Append("DELETE FROM [");
         sql.Append(element.TableName);
         sql.AppendLine("] ");
+        
         isFirst = true;
-        foreach (var f in fields)
+        foreach (var f in fields.Where(f => f.IsPk && f.EnableOnDelete))
         {
-            if (f.IsPk)
+            if (isFirst)
             {
-                if (isFirst)
-                {
-                    sql.Append(TAB).Append(TAB);
-                    sql.Append("WHERE ");
-                    isFirst = false;
-                }
-                else
-                {
-                    sql.Append(TAB).Append(TAB);
-                    sql.Append("AND ");
-                }
-
-                sql.Append(f.Name);
-                sql.Append(" = @");
-                sql.AppendLine(f.Name);
+                sql.Append(TAB).Append(TAB);
+                sql.Append("WHERE ");
+                isFirst = false;
             }
+            else
+            {
+                sql.Append(TAB).Append(TAB);
+                sql.Append("AND ");
+            }
+
+            sql.Append(f.Name);
+            sql.Append(" = @");
+            sql.AppendLine(f.Name);
         }
 
         sql.Append(TAB).Append(TAB);
@@ -499,158 +490,153 @@ public class MSSQLProvider : IProvider
         if (element.Fields == null || element.Fields.Count == 0)
             throw new Exception("Invalid fields");
 
-        //Verificamos se existe chave primaria
-        bool hasPk = HasPK(element);
-
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
-        StringBuilder sSql = new StringBuilder();
+        var sql = new StringBuilder();
         string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
 
         //Se exisitir apaga
-        sSql.AppendLine(GetSqlDropIfExists(procedureFinalName));
+        sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
 
         //Criando proc
-        sSql.Append("CREATE PROCEDURE [");
-        sSql.Append(procedureFinalName);
-        sSql.AppendLine("] ");
-        sSql.AppendLine("@orderby NVARCHAR(MAX), ");
+        sql.Append("CREATE PROCEDURE [");
+        sql.Append(procedureFinalName);
+        sql.AppendLine("] ");
+        sql.AppendLine("@orderby NVARCHAR(MAX), ");
 
         foreach (var f in fields)
         {
             if (f.Filter.Type == FilterMode.Range)
             {
-                sSql.Append("@");
-                sSql.Append(f.Name);
-                sSql.Append("_from ");
-                sSql.Append(f.DataType.ToString());
+                sql.Append("@");
+                sql.Append(f.Name);
+                sql.Append("_from ");
+                sql.Append(f.DataType.ToString());
                 if (f.DataType == FieldType.Varchar ||
                     f.DataType == FieldType.NVarchar)
                 {
-                    sSql.Append("(");
-                    sSql.Append(f.Size);
-                    sSql.Append(")");
+                    sql.Append("(");
+                    sql.Append(f.Size);
+                    sql.Append(")");
                 }
-                sSql.AppendLine(",");
-                sSql.Append("@");
-                sSql.Append(f.Name);
-                sSql.Append("_to ");
-                sSql.Append(f.DataType.ToString());
+                sql.AppendLine(",");
+                sql.Append("@");
+                sql.Append(f.Name);
+                sql.Append("_to ");
+                sql.Append(f.DataType.ToString());
                 if (f.DataType == FieldType.Varchar ||
                     f.DataType == FieldType.NVarchar)
                 {
-                    sSql.Append("(");
-                    sSql.Append(f.Size);
-                    sSql.Append(") ");
+                    sql.Append("(");
+                    sql.Append(f.Size);
+                    sql.Append(") ");
                 }
-                sSql.AppendLine(",");
+                sql.AppendLine(",");
             }
             else if (f.Filter.Type == FilterMode.MultValuesContain ||
                      f.Filter.Type == FilterMode.MultValuesEqual)
             {
-                sSql.Append("@");
-                sSql.Append(f.Name);
-                sSql.Append(" ");
-                sSql.Append(f.DataType.ToString());
-                sSql.AppendLine("(MAX),");
+                sql.Append("@");
+                sql.Append(f.Name);
+                sql.Append(" ");
+                sql.Append(f.DataType.ToString());
+                sql.AppendLine("(MAX),");
             }
             else if (f.Filter.Type != FilterMode.None || f.IsPk)
             {
-                sSql.Append("@");
-                sSql.Append(f.Name);
-                sSql.Append(" ");
-                sSql.Append(f.DataType.ToString());
+                sql.Append("@");
+                sql.Append(f.Name);
+                sql.Append(" ");
+                sql.Append(f.DataType.ToString());
                 if (f.DataType == FieldType.Varchar ||
                     f.DataType == FieldType.NVarchar)
                 {
-                    sSql.Append("(");
-                    sSql.Append(f.Size);
-                    sSql.AppendLine("), ");
+                    sql.Append("(");
+                    sql.Append(f.Size);
+                    sql.AppendLine("), ");
                 }
                 else
                 {
-                    sSql.AppendLine(", ");
+                    sql.AppendLine(", ");
                 }
             }
         }
 
-        sSql.AppendLine("@regporpag INT, ");
-        sSql.AppendLine("@pag INT, ");
-        sSql.AppendLine("@qtdtotal INT OUTPUT ");
-        sSql.AppendLine("AS ");
-        sSql.AppendLine("BEGIN ");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @sqlcolumn   NVARCHAR(MAX)");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @sqltable    NVARCHAR(MAX)");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @sqlcond     NVARCHAR(MAX)");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @sqlorder    NVARCHAR(MAX)");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @sqloffset   NVARCHAR(MAX)");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @query       NVARCHAR(MAX)");
-        sSql.Append(TAB);
+        sql.AppendLine("@regporpag INT, ");
+        sql.AppendLine("@pag INT, ");
+        sql.AppendLine("@qtdtotal INT OUTPUT ");
+        sql.AppendLine("AS ");
+        sql.AppendLine("BEGIN ");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @sqlcolumn   NVARCHAR(MAX)");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @sqltable    NVARCHAR(MAX)");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @sqlcond     NVARCHAR(MAX)");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @sqlorder    NVARCHAR(MAX)");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @sqloffset   NVARCHAR(MAX)");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @query       NVARCHAR(MAX)");
+        sql.Append(TAB);
 
         if (fields.Exists(x => x.Filter.Type == FilterMode.MultValuesContain || 
                                x.Filter.Type == FilterMode.MultValuesEqual))
         {
-            sSql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
-            sSql.Append(TAB);
+            sql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
+            sql.Append(TAB);
         }
 
-        sSql.AppendLine("DECLARE @count       INT");
-        sSql.AppendLine("");
+        sql.AppendLine("DECLARE @count       INT");
+        sql.AppendLine("");
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--COLUMNS");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqlcolumn = '");
+        sql.Append(TAB);
+        sql.AppendLine("--COLUMNS");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqlcolumn = '");
 
-        int nAux = 1;
+        int index = 1;
         foreach (var f in fields)
         {
-            sSql.Append(TAB).Append(TAB);
-            sSql.Append("");
+            sql.Append(TAB).Append(TAB);
+            sql.Append("");
             if (f.DataBehavior == FieldBehavior.ViewOnly)
             {
-                sSql.Append("NULL AS ");
-                sSql.Append(f.Name);
-                if (nAux != fields.Count)
-                    sSql.Append(", ");
+                sql.Append("NULL AS ");
+                sql.Append(f.Name);
+                if (index != fields.Count)
+                    sql.Append(", ");
 
-                sSql.AppendLine(" --TODO");
+                sql.AppendLine(" --TODO");
             }
             else
             {
-                sSql.Append(f.Name);
-                if (nAux != fields.Count)
-                    sSql.AppendLine(", ");
-                else
-                    sSql.AppendLine("");
+                sql.Append(f.Name);
+                
+                sql.AppendLine(index != fields.Count ? ", " : "");
             }
 
-            nAux++;
+            index++;
         }
 
-        sSql.Append(TAB);
-        sSql.AppendLine(" '");
+        sql.Append(TAB);
+        sql.AppendLine(" '");
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--TABLES");
-        sSql.Append(TAB);
-        sSql.Append("SET @sqltable = 'FROM ");
-        sSql.Append(element.TableName);
-        sSql.AppendLine(" WITH (NOLOCK)'");
-        sSql.AppendLine("");
+        sql.Append(TAB);
+        sql.AppendLine("--TABLES");
+        sql.Append(TAB);
+        sql.Append("SET @sqltable = 'FROM ");
+        sql.Append(element.TableName);
+        sql.AppendLine(" WITH (NOLOCK)'");
+        sql.AppendLine("");
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--CONDITIONALS");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqlcond = ' WHERE 1=1 '");
+        sql.Append(TAB);
+        sql.AppendLine("--CONDITIONALS");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqlcond = ' WHERE 1=1 '");
 
         foreach (var f in fields)
         {
@@ -658,253 +644,257 @@ public class MSSQLProvider : IProvider
             {
                 if (f.DataBehavior == FieldBehavior.ViewOnly)
                 {
-                    sSql.AppendLine("");
-                    sSql.Append(TAB);
-                    sSql.AppendLine("/*");
-                    sSql.Append("TODO: FILTER ");
-                    sSql.AppendLine(f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB);
+                    sql.AppendLine("/*");
+                    sql.Append("TODO: FILTER ");
+                    sql.AppendLine(f.Name);
                 }
             }
 
-            if (f.Filter.Type == FilterMode.Range)
+            switch (f.Filter.Type)
             {
-                sSql.AppendLine("");
+                case FilterMode.Range:
+                {
+                    sql.AppendLine("");
 
-                if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
-                {
-                    sSql.Append(TAB);
-                    sSql.Append("IF @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine("_from IS NOT NULL");
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("SET @sqlcond = @sqlcond + ' AND CONVERT(DATE, ");
-                    sSql.Append(f.Name);
-                    sSql.Append(") BETWEEN ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                    sSql.Append(f.Name);
-                    sSql.Append("_from, 112) + CHAR(39) + ' AND ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine("_to, 112) + CHAR(39)");
-                }
-                else
-                {
-                    sSql.Append(TAB);
-                    sSql.Append("IF @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine("_from IS NOT NULL");
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                    sSql.Append(f.Name);
-                    sSql.Append(" BETWEEN ' + CHAR(39) + @");
-                    sSql.Append(f.Name);
-                    sSql.Append("_from + CHAR(39) + ' AND ' + CHAR(39) + @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine(" + CHAR(39)");
-                }
-            }
-            else if (f.Filter.Type == FilterMode.Contain)
-            {
-                sSql.AppendLine("");
-                sSql.Append(TAB);
-                sSql.Append("IF @");
-                sSql.Append(f.Name);
-                sSql.AppendLine(" IS NOT NULL");
-                sSql.Append(TAB).Append(TAB);
-                sSql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                sSql.Append(f.Name);
-                sSql.Append(" LIKE ' + CHAR(39) + '%' + @");
-                sSql.Append(f.Name);
-                sSql.AppendLine(" +  '%' + CHAR(39)");
-            }
-            else if (f.Filter.Type == FilterMode.MultValuesContain)
-            {
-                sSql.AppendLine("");
-                sSql.Append(TAB);
-                sSql.Append("IF @");
-                sSql.Append(f.Name);
-                sSql.AppendLine(" IS NOT NULL");
-                sSql.Append(TAB);
-                sSql.AppendLine("BEGIN");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("SET @likein = ' AND ( '");
-                sSql.Append(TAB, 2);
-                sSql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("BEGIN");
-                sSql.Append(TAB, 3);
-                sSql.AppendFormat("SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 3);
-                sSql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 3);
-                sSql.AppendLine("SET @likein = @likein + ' OR ';");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("END");
-                sSql.Append(TAB, 2);
-                sSql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("SET @sqlcond = @sqlcond + @likein");
-                sSql.Append(TAB);
-                sSql.AppendLine("END");
-            }
-            else if (f.Filter.Type == FilterMode.MultValuesEqual)
-            {
-                sSql.AppendLine("");
-                sSql.Append(TAB);
-                sSql.Append("IF @");
-                sSql.Append(f.Name);
-                sSql.AppendLine(" IS NOT NULL");
-                sSql.Append(TAB);
-                sSql.AppendLine("BEGIN");
-                sSql.Append(TAB, 2);
-                sSql.AppendFormat("SET @likein = ' AND {0} IN ('", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 2);
-                sSql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("BEGIN");
-                sSql.Append(TAB, 3);
-                sSql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 3);
-                sSql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 3);
-                sSql.AppendLine("SET @likein = @likein + ', ';");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("END");
-                sSql.Append(TAB, 2);
-                sSql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", f.Name);
-                sSql.AppendLine("");
-                sSql.Append(TAB, 2);
-                sSql.AppendLine("SET @sqlcond = @sqlcond + @likein");
-                sSql.Append(TAB);
-                sSql.AppendLine("END");
-            }
-            else if (f.Filter.Type == FilterMode.Equal || f.IsPk)
-            {
-                sSql.AppendLine("");
-                sSql.Append(TAB);
-                sSql.Append("IF @");
-                sSql.Append(f.Name);
-                sSql.AppendLine(" IS NOT NULL");
-                sSql.Append(TAB).Append(TAB);
-                sSql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                sSql.Append(f.Name);
+                    if (f.DataType is FieldType.Date or FieldType.DateTime)
+                    {
+                        sql.Append(TAB);
+                        sql.Append("IF @");
+                        sql.Append(f.Name);
+                        sql.AppendLine("_from IS NOT NULL");
+                        sql.Append(TAB).Append(TAB);
+                        sql.Append("SET @sqlcond = @sqlcond + ' AND CONVERT(DATE, ");
+                        sql.Append(f.Name);
+                        sql.Append(") BETWEEN ' + CHAR(39) + CONVERT(VARCHAR(10), @");
+                        sql.Append(f.Name);
+                        sql.Append("_from, 112) + CHAR(39) + ' AND ' + CHAR(39) + CONVERT(VARCHAR(10), @");
+                        sql.Append(f.Name);
+                        sql.AppendLine("_to, 112) + CHAR(39)");
+                    }
+                    else
+                    {
+                        sql.Append(TAB);
+                        sql.Append("IF @");
+                        sql.Append(f.Name);
+                        sql.AppendLine("_from IS NOT NULL");
+                        sql.Append(TAB).Append(TAB);
+                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
+                        sql.Append(f.Name);
+                        sql.Append(" BETWEEN ' + CHAR(39) + @");
+                        sql.Append(f.Name);
+                        sql.Append("_from + CHAR(39) + ' AND ' + CHAR(39) + @");
+                        sql.Append(f.Name);
+                        sql.AppendLine(" + CHAR(39)");
+                    }
 
-                if (f.DataType == FieldType.Int || f.DataType == FieldType.Float)
-                {
-                    sSql.Append(" = ' + CONVERT(VARCHAR, @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine(")");
+                    break;
                 }
-                else if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
+                case FilterMode.Contain:
+                    sql.AppendLine("");
+                    sql.Append(TAB);
+                    sql.Append("IF @");
+                    sql.Append(f.Name);
+                    sql.AppendLine(" IS NOT NULL");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("SET @sqlcond = @sqlcond + ' AND ");
+                    sql.Append(f.Name);
+                    sql.Append(" LIKE ' + CHAR(39) + '%' + @");
+                    sql.Append(f.Name);
+                    sql.AppendLine(" +  '%' + CHAR(39)");
+                    break;
+                case FilterMode.MultValuesContain:
+                    sql.AppendLine("");
+                    sql.Append(TAB);
+                    sql.Append("IF @");
+                    sql.Append(f.Name);
+                    sql.AppendLine(" IS NOT NULL");
+                    sql.Append(TAB);
+                    sql.AppendLine("BEGIN");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("SET @likein = ' AND ( '");
+                    sql.Append(TAB, 2);
+                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("BEGIN");
+                    sql.Append(TAB, 3);
+                    sql.AppendFormat("SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 3);
+                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 3);
+                    sql.AppendLine("SET @likein = @likein + ' OR ';");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("END");
+                    sql.Append(TAB, 2);
+                    sql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+                    sql.Append(TAB);
+                    sql.AppendLine("END");
+                    break;
+                case FilterMode.MultValuesEqual:
+                    sql.AppendLine("");
+                    sql.Append(TAB);
+                    sql.Append("IF @");
+                    sql.Append(f.Name);
+                    sql.AppendLine(" IS NOT NULL");
+                    sql.Append(TAB);
+                    sql.AppendLine("BEGIN");
+                    sql.Append(TAB, 2);
+                    sql.AppendFormat("SET @likein = ' AND {0} IN ('", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 2);
+                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("BEGIN");
+                    sql.Append(TAB, 3);
+                    sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 3);
+                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 3);
+                    sql.AppendLine("SET @likein = @likein + ', ';");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("END");
+                    sql.Append(TAB, 2);
+                    sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", f.Name);
+                    sql.AppendLine("");
+                    sql.Append(TAB, 2);
+                    sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+                    sql.Append(TAB);
+                    sql.AppendLine("END");
+                    break;
+                default:
                 {
-                    sSql.Append(" = ' + CHAR(39) + CAST(@");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine(" AS VARCHAR) +  CHAR(39)");
-                }
-                else
-                {
-                    sSql.Append(" = ' + CHAR(39) + @");
-                    sSql.Append(f.Name);
-                    sSql.AppendLine(" +  CHAR(39)");
-                }
+                    if (f.Filter.Type == FilterMode.Equal || f.IsPk)
+                    {
+                        sql.AppendLine("");
+                        sql.Append(TAB);
+                        sql.Append("IF @");
+                        sql.Append(f.Name);
+                        sql.AppendLine(" IS NOT NULL");
+                        sql.Append(TAB).Append(TAB);
+                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
+                        sql.Append(f.Name);
 
+                        if (f.DataType == FieldType.Int || f.DataType == FieldType.Float)
+                        {
+                            sql.Append(" = ' + CONVERT(VARCHAR, @");
+                            sql.Append(f.Name);
+                            sql.AppendLine(")");
+                        }
+                        else if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
+                        {
+                            sql.Append(" = ' + CHAR(39) + CAST(@");
+                            sql.Append(f.Name);
+                            sql.AppendLine(" AS VARCHAR) +  CHAR(39)");
+                        }
+                        else
+                        {
+                            sql.Append(" = ' + CHAR(39) + @");
+                            sql.Append(f.Name);
+                            sql.AppendLine(" +  CHAR(39)");
+                        }
+
+                    }
+
+                    break;
+                }
             }
 
-            if (f.Filter.Type != FilterMode.None || f.IsPk)
-            {
-                if (f.DataBehavior == FieldBehavior.ViewOnly)
-                {
-                    sSql.Append(TAB);
-                    sSql.AppendLine("*/");
-                }
-            }
+            if (f.Filter.Type == FilterMode.None && !f.IsPk) continue;
+            if (f.DataBehavior != FieldBehavior.ViewOnly) continue;
+            
+            sql.Append(TAB);
+            sql.AppendLine("*/");
         }
 
-        sSql.AppendLine("");
-        sSql.Append(TAB);
-        sSql.AppendLine("--ORDER");
-        sSql.Append(TAB);
+        sql.AppendLine("");
+        sql.Append(TAB);
+        sql.AppendLine("--ORDER");
+        sql.Append(TAB);
         var listPk = fields.FindAll(x => x.IsPk);
         if (listPk == null || listPk.Count == 0)
         {
-            sSql.Append("SET @sqlorder  = ' ORDER BY ");
-            sSql.Append(fields[0].Name);
-            sSql.AppendLine("'");
+            sql.Append("SET @sqlorder  = ' ORDER BY ");
+            sql.Append(fields[0].Name);
+            sql.AppendLine("'");
         }
         else
         {
-            sSql.Append("SET @sqlorder  = ' ORDER BY ");
-            sSql.Append(listPk[0].Name);
-            sSql.AppendLine("'");
+            sql.Append("SET @sqlorder  = ' ORDER BY ");
+            sql.Append(listPk[0].Name);
+            sql.AppendLine("'");
         }
-        sSql.Append(TAB);
-        sSql.AppendLine("IF @orderby IS NOT NULL AND @orderby <> ''");
-        sSql.Append(TAB);
-        sSql.AppendLine("BEGIN");
-        sSql.Append(TAB);
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqlorder  = ' ORDER BY ' + @orderby");
-        sSql.Append(TAB);
-        sSql.AppendLine("END");
-        sSql.AppendLine("");
+        sql.Append(TAB);
+        sql.AppendLine("IF @orderby IS NOT NULL AND @orderby <> ''");
+        sql.Append(TAB);
+        sql.AppendLine("BEGIN");
+        sql.Append(TAB);
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqlorder  = ' ORDER BY ' + @orderby");
+        sql.Append(TAB);
+        sql.AppendLine("END");
+        sql.AppendLine("");
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--PAGING");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = ' '");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + 'OFFSET ('");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @pag - 1))");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + ' * '");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + ') ROWS FETCH NEXT '");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @sqloffset = @sqloffset + ' ROWS ONLY '");
-        sSql.AppendLine("");
+        sql.Append(TAB);
+        sql.AppendLine("--PAGING");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = ' '");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + 'OFFSET ('");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @pag - 1))");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + ' * '");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + ') ROWS FETCH NEXT '");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
+        sql.Append(TAB);
+        sql.AppendLine("SET @sqloffset = @sqloffset + ' ROWS ONLY '");
+        sql.AppendLine("");
 
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--TOTAL OF RECORDS");
-        sSql.Append(TAB);
-        sSql.AppendLine("IF @qtdtotal is null or @qtdtotal = 0");
-        sSql.Append(TAB);
-        sSql.AppendLine("BEGIN");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("SET @qtdtotal = 0;");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("SET @query = N'SELECT @count = COUNT(*) ' + @sqltable + @sqlcond");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("EXECUTE sp_executesql @query, N'@count int output', @count = @qtdtotal output");
-        sSql.Append(TAB);
-        sSql.AppendLine("END");
-        sSql.AppendLine("");
+        sql.Append(TAB);
+        sql.AppendLine("--TOTAL OF RECORDS");
+        sql.Append(TAB);
+        sql.AppendLine("IF @qtdtotal is null or @qtdtotal = 0");
+        sql.Append(TAB);
+        sql.AppendLine("BEGIN");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("SET @qtdtotal = 0;");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("SET @query = N'SELECT @count = COUNT(*) ' + @sqltable + @sqlcond");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("EXECUTE sp_executesql @query, N'@count int output', @count = @qtdtotal output");
+        sql.Append(TAB);
+        sql.AppendLine("END");
+        sql.AppendLine("");
 
-        sSql.Append(TAB);
-        sSql.AppendLine("--DATASET RESULT");
-        sSql.Append(TAB);
+        sql.Append(TAB);
+        sql.AppendLine("--DATASET RESULT");
+        sql.Append(TAB);
 
-        sSql.AppendLine("SET @query = N'SELECT ' + @sqlcolumn + @sqltable + @sqlcond + @sqlorder + @sqloffset");
-        sSql.Append(TAB);
-        sSql.AppendLine("EXECUTE sp_executesql @query ");
-        sSql.Append(TAB);
-        sSql.AppendLine("--PRINT(@query)");
+        sql.AppendLine("SET @query = N'SELECT ' + @sqlcolumn + @sqltable + @sqlcond + @sqlorder + @sqloffset");
+        sql.Append(TAB);
+        sql.AppendLine("EXECUTE sp_executesql @query ");
+        sql.Append(TAB);
+        sql.AppendLine("--PRINT(@query)");
 
-        sSql.AppendLine("");
-        sSql.AppendLine("END");
+        sql.AppendLine("");
+        sql.AppendLine("END");
 
-        return sSql.ToString();
+        return sql.ToString();
     }
 
     public DataAccessCommand GetInsertScript(Element element, Hashtable values)
@@ -1067,30 +1057,12 @@ public class MSSQLProvider : IProvider
 
     private bool HasUpdateFields(Element element)
     {
-        bool ret = false;
-        foreach (var f in element.Fields)
-        {
-            if (!f.IsPk && f.DataBehavior == FieldBehavior.Real)
-            {
-                ret = true;
-                break;
-            }
-        }
-        return ret;
+        return element.Fields.Any(f => !f.IsPk && f.DataBehavior == FieldBehavior.Real);
     }
 
-    private bool HasPK(Element element)
+    private bool HasPk(Element element)
     {
-        bool ret = false;
-        foreach (var f in element.Fields)
-        {
-            if (f.IsPk)
-            {
-                ret = true;
-                break;
-            }
-        }
-        return ret;
+        return element.Fields.Any(f => f.IsPk);
     }
 
     private string GetSqlDropIfExists(string objname)
@@ -1213,13 +1185,14 @@ public class MSSQLProvider : IProvider
             
             element.Fields.Add(field);
         }
-
-        //chave primária
+        
+        //Primary Keys
         var cmdPks = new DataAccessCommand
         {
             CmdType = System.Data.CommandType.StoredProcedure,
             Sql = "sp_pkeys"
         };
+        
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
         var dtPks = dataAccess.GetDataTable(cmdPks);
         foreach (DataRow row in dtPks.Rows)
