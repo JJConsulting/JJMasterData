@@ -37,6 +37,7 @@ public class EntityController : DataDictionaryController
             return RedirectToAction("Index", new { dictionaryName = entity.Name });
         }
 
+        model.MenuId = "Entity";
         model.ValidationSummary = _entityService.GetValidationSummary();
             
         return View(model);
@@ -56,7 +57,6 @@ public class EntityController : DataDictionaryController
 
         return viewModel;
     }
-        
 
 
 }

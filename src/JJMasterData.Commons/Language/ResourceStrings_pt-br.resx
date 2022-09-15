@@ -2737,10 +2737,6 @@
     <value>Existem filtros aplicados para essa consulta.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="There is already a dictionary with the name" xml:space="preserve">
-    <value>Já existe um dicionário com o nome </value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="There is already a relationship registered for" xml:space="preserve">
     <value>Já existe um relacionamento cadastrado para </value>
     <comment>JJMasterDataWeb</comment>
@@ -3310,5 +3306,8 @@
   </data>
   <data name="{0} field needs to be less or equal than {1}" xml:space="preserve">
     <value>Campo {0} deve ser menor ou igual a {1}</value>
+  </data>
+  <data name="There is already a dictionary with the name {0}" xml:space="preserve">
+    <value>Já existe um dicionário com o nome {0}</value>
   </data>
 </root>

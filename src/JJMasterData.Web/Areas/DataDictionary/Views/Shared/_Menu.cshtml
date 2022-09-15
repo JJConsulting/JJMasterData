@@ -146,7 +146,7 @@
             @Translate.Key("More") <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li class="dropdown-item" onclick="popup.show('@Translate.Key("Database Scripts")', '@Url.Action("Scripts","Element",new {dictionaryName=Model.DictionaryName })');">
+            <li class="dropdown-item" onclick="popup.show('@Translate.Key("Database Scripts")', '@Url.Action("Scripts","Element",new {dictionaryName=Model.DictionaryName })',1);">
                 <a href="#">
                     <span class="fa fa-play-circle fa-fw fa-lg"></span> @Translate.Key("Get Script")
                 </a>
@@ -157,7 +157,7 @@
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider" )"></li>
-            <li class="dropdown-item" onclick="popup.show('Help', 'https://portal.jjconsulting.com.br/jjdoc/');">
+            <li class="dropdown-item" onclick="popup.show('Help', 'https://portal.jjconsulting.com.br/jjdoc/', 1);">
                 <a href="#">
                     <span class="fa fa-question-circle fa-fw fa-lg"></span> @Translate.Key("Help")
                 </a>

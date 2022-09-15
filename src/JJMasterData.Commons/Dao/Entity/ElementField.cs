@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Language;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
@@ -96,6 +97,12 @@ public class ElementField
     /// </remarks>
     [DataMember(Name = "databehavior")]
     public FieldBehavior DataBehavior { get; set; }
+    
+    /// <summary>
+    /// For internal use of JJMasterData's table.
+    /// </summary>
+    [JsonIgnore]
+    internal bool EnableOnDelete { get; set; } = true;
 
     public ElementField()
     {
@@ -106,8 +113,6 @@ public class ElementField
 
     public string GetTranslatedLabel()
     {
-        if (string.IsNullOrEmpty(Label))
-            return Name;
-        return Translate.Key(Label);
+        return string.IsNullOrEmpty(Label) ? Name : Translate.Key(Label);
     }
 }

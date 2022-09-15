@@ -18,14 +18,15 @@ namespace JJMasterData.Commons.Dao.Entity;
 public class Factory
 {
     private IDataAccess _dataAccess;
-        
+
     private IProvider _provider;
+
     public IProvider Provider
     {
         get
         {
             if (_provider != null) return _provider;
-            
+
             _provider = _dataAccess.ConnectionProvider switch
             {
                 DataAccess.MSSQL => new MSSQLProvider(),
@@ -37,7 +38,6 @@ public class Factory
 
             return _provider;
         }
-
     }
 
     public Factory()
@@ -145,7 +145,7 @@ public class Factory
         var newFields = _dataAccess.GetFields(command);
 
         var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
-        
+
         if (ret.Value != DBNull.Value)
         {
             if (!int.TryParse(ret.Value.ToString(), out var nret))
@@ -155,7 +155,7 @@ public class Factory
                 err += ": " + Translate.Key("Invalid return of @RET variable in procedure");
                 throw new DataDictionaryException(err);
             }
-                    
+
             commandType = (CommandType)nret;
         }
 
@@ -163,13 +163,14 @@ public class Factory
         foreach (DictionaryEntry entry in newFields)
         {
             if (!element.Fields.ContainsKey(entry.Key.ToString())) continue;
-            
+
             if (values.ContainsKey(entry.Key))
                 values[entry.Key] = entry.Value;
-            
+
             else
                 values.Add(entry.Key, entry.Value);
         }
+
         return commandType;
     }
 
@@ -259,7 +260,8 @@ public class Factory
     /// </returns>
     public Hashtable GetFields(Element element, Hashtable filters)
     {
-        DataAccessParameter pTot = new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
+        DataAccessParameter pTot =
+            new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(element, filters, "", 1, 1, ref pTot);
         return _dataAccess.GetFields(cmd);
     }
@@ -279,7 +281,8 @@ public class Factory
     /// Returns a DataTable with the records found. 
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(string elementName, Hashtable filters, string orderby, int regperpage, int pag, ref int tot)
+    public DataTable GetDataTable(string elementName, Hashtable filters, string orderby, int regperpage, int pag,
+        ref int tot)
     {
         var element = GetElement(elementName);
         return GetDataTable(element, filters, orderby, regperpage, pag, ref tot);
@@ -298,7 +301,8 @@ public class Factory
     /// Returns a DataTable with the records found.
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref int tot)
+    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regperpage, int pag,
+        ref int tot)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -391,7 +395,7 @@ public class Factory
         var element = GetStructure();
         if (!ValidateOrderByClause(element, orderby))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
-            
+
         var listElement = new List<Element>();
         int tot = 1000;
         var dt = GetDataTable(element, filters, orderby, regporpag, pag, ref tot);
@@ -403,6 +407,7 @@ public class Factory
                 listElement.Add(e);
             }
         }
+
         return listElement;
     }
 
@@ -455,7 +460,8 @@ public class Factory
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag, bool showLogInfo, string delimiter = "|")
+    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag,
+        bool showLogInfo, string delimiter = "|")
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -470,7 +476,8 @@ public class Factory
         DbConnection conn = null;
         try
         {
-            var pTot = new DataAccessParameter(Provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
+            var pTot = new DataAccessParameter(Provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
+                ParameterDirection.InputOutput);
             var cmd = Provider.GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
@@ -495,6 +502,7 @@ public class Factory
                 oPar.ParameterName = parm.Name;
                 dbCmd.Parameters.Add(oPar);
             }
+
             dbCmd.CommandType = cmd.CmdType;
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
@@ -504,7 +512,7 @@ public class Factory
             int col = 0;
             int qtd = 0;
             var columns = new Dictionary<string, int>();
-                
+
             if (dr.HasRows)
             {
                 for (int i = 0; i < dr.FieldCount; i++)
@@ -554,8 +562,10 @@ public class Factory
                                     break;
                             }
                         }
+
                         col++;
                     }
+
                     sRet.AppendLine("");
                     col = 0;
                 }
@@ -573,7 +583,7 @@ public class Factory
                 sLog.Append(Translate.Key("Synchronizing"));
                 sLog.Append(" ");
                 sLog.AppendLine(element.Name);
-                    
+
                 if (filters != null)
                 {
                     sLog.Append("- ");
@@ -587,8 +597,10 @@ public class Factory
                         sLog.Append("=");
                         sLog.Append(val.Value);
                     }
+
                     sLog.AppendLine("");
                 }
+
                 sLog.Append("- ");
                 sLog.Append(Translate.Key("TotPerPage"));
                 sLog.Append(": ");
@@ -598,7 +610,8 @@ public class Factory
                 sLog.Append(": ");
                 sLog.AppendLine(pag.ToString());
 
-                sLog.AppendLine(Translate.Key("{0} records sync. Time {1}ms", qtd.ToString(), ts.TotalMilliseconds.ToString("N3")));
+                sLog.AppendLine(Translate.Key("{0} records sync. Time {1}ms", qtd.ToString(),
+                    ts.TotalMilliseconds.ToString("N3")));
                 Log.AddInfo(sLog.ToString());
             }
         }
@@ -619,7 +632,7 @@ public class Factory
 
         return sRet.ToString();
     }
-        
+
 
     private bool ValidateOrderByClause(Element element, string orderby)
     {
@@ -646,18 +659,21 @@ public class Factory
 
     public Element GetStructure()
     {
-        Element e = new Element(JJService.Settings.TableName, "Data Dictionaries");
-        e.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
-        e.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
-        e.Fields.Add("namefilter", "Dictionary Name", FieldType.NVarchar, 30, false, FilterMode.Contain, FieldBehavior.ViewOnly);
-        e.Fields.Add("tablename", "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
-        e.Fields.Add("info", "Info", FieldType.NVarchar, 150, false, FilterMode.None);
-        e.Fields.Add("owner", "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
-        e.Fields.Add("sync", "Sync", FieldType.Varchar, 1, false, FilterMode.Equal);
-        e.Fields.Add("modified", "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
-        e.Fields.Add("json", "Object", FieldType.Text, 0, false, FilterMode.None);
+        var element = new Element(JJService.Settings.TableName, "Data Dictionaries");
 
-        return e;
+        element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields["type"].EnableOnDelete = false;
+
+        element.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
+        element.Fields.Add("namefilter", "Dictionary Name", FieldType.NVarchar, 30, false, FilterMode.Contain,
+            FieldBehavior.ViewOnly);
+        element.Fields.Add("tablename", "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add("info", "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add("owner", "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
+        element.Fields.Add("sync", "Sync", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields.Add("modified", "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
+        element.Fields.Add("json", "Object", FieldType.Text, 0, false, FilterMode.None);
+
+        return element;
     }
-
 }

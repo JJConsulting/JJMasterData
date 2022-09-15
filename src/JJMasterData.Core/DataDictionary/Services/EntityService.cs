@@ -15,7 +15,7 @@ public class EntityService : BaseService
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
             if (DicDao.HasDictionary(formElement.Name))
-                AddError("Name", Translate.Key("There is already a dictionary with the name " + formElement.Name));
+                AddError("Name", Translate.Key("There is already a dictionary with the name {0}",formElement.Name));
         }
 
         if (string.IsNullOrEmpty(formElement.TableName))
@@ -40,9 +40,7 @@ public class EntityService : BaseService
     {
         if (!ValidateEntity(formElement, entityName))
             return null;
-
-
-
+        
         try
         {
             var dicParser = DicDao.GetDictionary(entityName);
