@@ -225,20 +225,18 @@ public class MSSQLProvider : IProvider
         if (element.Fields == null || element.Fields.Count == 0)
             throw new Exception("Invalid fields");
 
-        StringBuilder sSql = new StringBuilder();
+        StringBuilder sql = new StringBuilder();
         bool isFirst = true;
         bool hasUpd = HasUpdateFields(element);
         string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
+        
+        sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
 
-        //Se exisitir apaga
-        sSql.AppendLine(GetSqlDropIfExist(procedureFinalName));
-
-        //Criando proc
-        sSql.Append("CREATE PROCEDURE [");
-        sSql.Append(procedureFinalName);
-        sSql.AppendLine("] ");
-        sSql.AppendLine("@action varchar(1), ");
+        sql.Append("CREATE PROCEDURE [");
+        sql.Append(procedureFinalName);
+        sql.AppendLine("] ");
+        sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
             .ToList()
@@ -246,90 +244,90 @@ public class MSSQLProvider : IProvider
 
         foreach (var f in fields)
         {
-            sSql.Append("@");
-            sSql.Append(f.Name);
-            sSql.Append(" ");
-            sSql.Append(f.DataType);
+            sql.Append("@");
+            sql.Append(f.Name);
+            sql.Append(" ");
+            sql.Append(f.DataType);
             if (f.DataType == FieldType.Varchar ||
                 f.DataType == FieldType.NVarchar)
             {
-                sSql.Append("(");
-                sSql.Append(f.Size);
-                sSql.Append(")");
+                sql.Append("(");
+                sql.Append(f.Size);
+                sql.Append(")");
             }
-            sSql.AppendLine(", ");
+            sql.AppendLine(", ");
 
         }
-        sSql.AppendLine("@RET INT OUTPUT ");
-        sSql.AppendLine("AS ");
-        sSql.AppendLine("BEGIN ");
-        sSql.Append(TAB);
-        sSql.AppendLine("DECLARE @TYPEACTION VARCHAR(1) ");
-        sSql.Append(TAB);
-        sSql.AppendLine("SET @TYPEACTION = @action ");
-        sSql.Append(TAB);
-        sSql.AppendLine("IF @TYPEACTION = ' ' ");
-        sSql.Append(TAB);
-        sSql.AppendLine("BEGIN ");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("SET @TYPEACTION = '" + INSERT + "' ");
+        sql.AppendLine("@RET INT OUTPUT ");
+        sql.AppendLine("AS ");
+        sql.AppendLine("BEGIN ");
+        sql.Append(TAB);
+        sql.AppendLine("DECLARE @TYPEACTION VARCHAR(1) ");
+        sql.Append(TAB);
+        sql.AppendLine("SET @TYPEACTION = @action ");
+        sql.Append(TAB);
+        sql.AppendLine("IF @TYPEACTION = ' ' ");
+        sql.Append(TAB);
+        sql.AppendLine("BEGIN ");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("SET @TYPEACTION = '" + INSERT + "' ");
 
         if (pks.Count > 0)
         {
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("DECLARE @NCOUNT INT ");
-            sSql.AppendLine(" ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("DECLARE @NCOUNT INT ");
+            sql.AppendLine(" ");
 
             //CHECK
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("SELECT @NCOUNT = COUNT(*) ");
-            sSql.Append(TAB).Append(TAB);
-            sSql.Append("FROM ");
-            sSql.Append(element.TableName);
-            sSql.AppendLine(" WITH (NOLOCK) ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("SELECT @NCOUNT = COUNT(*) ");
+            sql.Append(TAB).Append(TAB);
+            sql.Append("FROM ");
+            sql.Append(element.TableName);
+            sql.AppendLine(" WITH (NOLOCK) ");
             isFirst = true;
             foreach (var f in pks)
             {
                 if (isFirst)
                 {
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("WHERE ");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("AND ");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("AND ");
                 }
 
-                sSql.Append(f.Name);
-                sSql.Append(" = @");
-                sSql.AppendLine(f.Name);
+                sql.Append(f.Name);
+                sql.Append(" = @");
+                sql.AppendLine(f.Name);
             }
-            sSql.AppendLine(" ");
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("IF @NCOUNT > 0 ");
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("BEGIN ");
-            sSql.Append(TAB).Append(TAB).Append(TAB);
-            sSql.AppendLine("SET @TYPEACTION = '" + UPDATE + "'");
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("END ");
+            sql.AppendLine(" ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("IF @NCOUNT > 0 ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("BEGIN ");
+            sql.Append(TAB).Append(TAB).Append(TAB);
+            sql.AppendLine("SET @TYPEACTION = '" + UPDATE + "'");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("END ");
         }
-        sSql.Append(TAB);
-        sSql.AppendLine("END ");
-        sSql.AppendLine(" ");
+        sql.Append(TAB);
+        sql.AppendLine("END ");
+        sql.AppendLine(" ");
 
 
         //SCRIPT INSERT
-        sSql.Append(TAB);
-        sSql.AppendLine("IF @TYPEACTION = '" + INSERT + "' ");
-        sSql.Append(TAB);
-        sSql.AppendLine("BEGIN ");
-        sSql.Append(TAB).Append(TAB);
-        sSql.Append("INSERT INTO [");
-        sSql.Append(element.TableName);
-        sSql.AppendLine("] (");
+        sql.Append(TAB);
+        sql.AppendLine("IF @TYPEACTION = '" + INSERT + "' ");
+        sql.Append(TAB);
+        sql.AppendLine("BEGIN ");
+        sql.Append(TAB).Append(TAB);
+        sql.Append("INSERT INTO [");
+        sql.Append(element.TableName);
+        sql.AppendLine("] (");
         isFirst = true;
         foreach (var f in fields)
         {
@@ -338,15 +336,15 @@ public class MSSQLProvider : IProvider
                 if (isFirst)
                     isFirst = false;
                 else
-                    sSql.AppendLine(",");
+                    sql.AppendLine(",");
 
-                sSql.Append("			");
-                sSql.Append(f.Name);
+                sql.Append("			");
+                sql.Append(f.Name);
             }
         }
-        sSql.AppendLine(")");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("VALUES (");
+        sql.AppendLine(")");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("VALUES (");
         isFirst = true;
         foreach (var f in fields)
         {
@@ -355,42 +353,42 @@ public class MSSQLProvider : IProvider
                 if (isFirst)
                     isFirst = false;
                 else
-                    sSql.AppendLine(",");
+                    sql.AppendLine(",");
 
-                sSql.Append(TAB).Append(TAB).Append(TAB);
-                sSql.Append("@");
-                sSql.Append(f.Name);
+                sql.Append(TAB).Append(TAB).Append(TAB);
+                sql.Append("@");
+                sql.Append(f.Name);
             }
         }
-        sSql.AppendLine(")");
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("SET @RET = 0; ");
+        sql.AppendLine(")");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("SET @RET = 0; ");
 
         var autonum = pks.FindAll(x => x.AutoNum);
         foreach (var f in autonum)
         {
-            sSql.Append(TAB);
-            sSql.Append("SELECT @@IDENTITY AS ");
-            sSql.Append(f.Name);
-            sSql.AppendLine(";");
+            sql.Append(TAB);
+            sql.Append("SELECT @@IDENTITY AS ");
+            sql.Append(f.Name);
+            sql.AppendLine(";");
             break;
         }
 
-        sSql.Append(TAB);
-        sSql.AppendLine("END ");
+        sql.Append(TAB);
+        sql.AppendLine("END ");
 
         //SCRIPT UPDATE
         isFirst = true;
         if (hasUpd)
         {
-            sSql.Append(TAB);
-            sSql.AppendLine("ELSE IF @TYPEACTION = '" + UPDATE + "' ");
-            sSql.Append(TAB);
-            sSql.AppendLine("BEGIN ");
-            sSql.Append(TAB).Append(TAB);
-            sSql.Append("UPDATE [");
-            sSql.Append(element.TableName);
-            sSql.AppendLine("] SET ");
+            sql.Append(TAB);
+            sql.AppendLine("ELSE IF @TYPEACTION = '" + UPDATE + "' ");
+            sql.Append(TAB);
+            sql.AppendLine("BEGIN ");
+            sql.Append(TAB).Append(TAB);
+            sql.Append("UPDATE [");
+            sql.Append(element.TableName);
+            sql.AppendLine("] SET ");
             isFirst = true;
             foreach (var f in fields)
             {
@@ -399,15 +397,15 @@ public class MSSQLProvider : IProvider
                     if (isFirst)
                         isFirst = false;
                     else
-                        sSql.AppendLine(", ");
+                        sql.AppendLine(", ");
 
-                    sSql.Append(TAB).Append(TAB).Append(TAB);
-                    sSql.Append(f.Name);
-                    sSql.Append(" = @");
-                    sSql.Append(f.Name);
+                    sql.Append(TAB).Append(TAB).Append(TAB);
+                    sql.Append(f.Name);
+                    sql.Append(" = @");
+                    sql.Append(f.Name);
                 }
             }
-            sSql.AppendLine("");
+            sql.AppendLine("");
             isFirst = true;
             foreach (var f in fields)
             {
@@ -415,50 +413,50 @@ public class MSSQLProvider : IProvider
                 {
                     if (isFirst)
                     {
-                        sSql.Append(TAB).Append(TAB);
-                        sSql.Append("WHERE ");
+                        sql.Append(TAB).Append(TAB);
+                        sql.Append("WHERE ");
                         isFirst = false;
                     }
                     else
                     {
-                        sSql.Append(TAB).Append(TAB);
-                        sSql.Append("AND ");
+                        sql.Append(TAB).Append(TAB);
+                        sql.Append("AND ");
                     }
 
-                    sSql.Append(f.Name);
-                    sSql.Append(" = @");
-                    sSql.AppendLine(f.Name);
+                    sql.Append(f.Name);
+                    sql.Append(" = @");
+                    sql.AppendLine(f.Name);
                 }
             }
 
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("SET @RET = 1; ");
-            sSql.Append(TAB);
-            sSql.AppendLine("END ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("SET @RET = 1; ");
+            sql.Append(TAB);
+            sql.AppendLine("END ");
         }
         else
         {
-            sSql.Append(TAB);
-            sSql.AppendLine("ELSE IF @TYPEACTION = '" + UPDATE + "' ");
-            sSql.Append(TAB);
-            sSql.AppendLine("BEGIN ");
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("--NO UPDATABLED");
-            sSql.Append(TAB).Append(TAB);
-            sSql.AppendLine("SET @RET = 1; ");
-            sSql.Append(TAB);
-            sSql.AppendLine("END ");
+            sql.Append(TAB);
+            sql.AppendLine("ELSE IF @TYPEACTION = '" + UPDATE + "' ");
+            sql.Append(TAB);
+            sql.AppendLine("BEGIN ");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("--NO UPDATABLED");
+            sql.Append(TAB).Append(TAB);
+            sql.AppendLine("SET @RET = 1; ");
+            sql.Append(TAB);
+            sql.AppendLine("END ");
         }
 
         //SCRIPT DELETE
-        sSql.Append(TAB);
-        sSql.AppendLine("ELSE IF @TYPEACTION = '" + DELETE + "' ");
-        sSql.Append(TAB);
-        sSql.AppendLine("BEGIN ");
-        sSql.Append(TAB).Append(TAB);
-        sSql.Append("DELETE FROM [");
-        sSql.Append(element.TableName);
-        sSql.AppendLine("] ");
+        sql.Append(TAB);
+        sql.AppendLine("ELSE IF @TYPEACTION = '" + DELETE + "' ");
+        sql.Append(TAB);
+        sql.AppendLine("BEGIN ");
+        sql.Append(TAB).Append(TAB);
+        sql.Append("DELETE FROM [");
+        sql.Append(element.TableName);
+        sql.AppendLine("] ");
         isFirst = true;
         foreach (var f in fields)
         {
@@ -466,31 +464,31 @@ public class MSSQLProvider : IProvider
             {
                 if (isFirst)
                 {
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("WHERE ");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("AND ");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("AND ");
                 }
 
-                sSql.Append(f.Name);
-                sSql.Append(" = @");
-                sSql.AppendLine(f.Name);
+                sql.Append(f.Name);
+                sql.Append(" = @");
+                sql.AppendLine(f.Name);
             }
         }
 
-        sSql.Append(TAB).Append(TAB);
-        sSql.AppendLine("SET @RET = 2; ");
-        sSql.Append(TAB);
-        sSql.AppendLine("END ");
-        sSql.AppendLine(" ");
-        sSql.AppendLine("END ");
-        sSql.AppendLine("GO ");
+        sql.Append(TAB).Append(TAB);
+        sql.AppendLine("SET @RET = 2; ");
+        sql.Append(TAB);
+        sql.AppendLine("END ");
+        sql.AppendLine(" ");
+        sql.AppendLine("END ");
+        sql.AppendLine("GO ");
 
-        return sSql.ToString();
+        return sql.ToString();
     }
 
     public string GetReadProcedureScript(Element element)
@@ -512,7 +510,7 @@ public class MSSQLProvider : IProvider
         string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
 
         //Se exisitir apaga
-        sSql.AppendLine(GetSqlDropIfExist(procedureFinalName));
+        sSql.AppendLine(GetSqlDropIfExists(procedureFinalName));
 
         //Criando proc
         sSql.Append("CREATE PROCEDURE [");
@@ -1095,7 +1093,7 @@ public class MSSQLProvider : IProvider
         return ret;
     }
 
-    private string GetSqlDropIfExist(string objname)
+    private string GetSqlDropIfExists(string objname)
     {
         StringBuilder sSql = new StringBuilder();
         sSql.AppendLine("IF  EXISTS (SELECT * ");

@@ -37,6 +37,8 @@
 }
 
 
+
+
 @using (Html.BeginForm("Edit", "Entity", FormMethod.Post))
 {
 
@@ -53,14 +55,7 @@
             </button>
         </div>
     </div>
-
-
-    <div class="col-sm-12">
-        @Html.Raw(Model.ValidationSummary?.GetHtml())
-    </div>
-
-    <br />
-
+    <br>
 
     @Html.Raw(dataDictionaryPanel.GetHtml())
 
@@ -75,6 +70,11 @@
 
     <br />
 
+    <div class="col-sm-12">
+        @Html.Raw(Model.ValidationSummary?.GetHtml())
+    </div>
+
+    <br />
 }
 
 
