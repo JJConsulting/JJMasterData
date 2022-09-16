@@ -23,8 +23,8 @@ public class MasterApiController : ControllerBase
     [HttpGet]
     [Produces(typeof(MasterApiListResponse))]
     [Route("masterApi/{elementName}/{pag?}/{regporpag?}/{orderby?}/{tot?}")]
-    public ActionResult<MasterApiListResponse> GetAll(string elementName, int pag = 1,
-        int regporpag = 1000, string? orderby = null, int tot = 0)
+    public ActionResult<MasterApiListResponse> GetAll(string elementName, [FromQuery]int pag = 1,
+        [FromQuery]int regporpag = 1000, [FromQuery]string? orderby = null, [FromQuery]int? tot = 0)
     {
         if (Request?.Headers?.Accept.ToString().Contains("text/csv") ?? false)
         {
@@ -33,7 +33,7 @@ public class MasterApiController : ControllerBase
             return Content(text, "text/csv");
         }
 
-        var response = Service.GetListFields(elementName, pag, regporpag, orderby, tot);
+        var response = Service.GetListFields(elementName, pag, regporpag, orderby, tot.Value);
         return Ok(response);
     }
 
