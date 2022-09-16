@@ -291,7 +291,8 @@ public class JJTextFile : JJBaseControl
             throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", ElementField.Name);
 
         //Replace {app.path}
-        string baseDirectory = Environment.CurrentDirectory;
+        
+        string baseDirectory = FileIO.GetApplicationPath();
         
         path = path.Replace("{app.path}", baseDirectory);
         

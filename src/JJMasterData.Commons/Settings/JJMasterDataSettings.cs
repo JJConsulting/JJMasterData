@@ -7,6 +7,7 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
@@ -135,7 +136,7 @@ public sealed class JJMasterDataSettings : ISettings
         ExternalAssembliesPath = GetOption(nameof(ExternalAssembliesPath))?.Split(';');
         LayoutPath = GetOption(nameof(LayoutPath));
         PopUpLayoutPath = GetOption(nameof(PopUpLayoutPath));
-        ExportationFolderPath = GetOption(nameof(ExportationFolderPath)) ?? @$"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\JJExportFiles\";
+        ExportationFolderPath = GetOption(nameof(ExportationFolderPath)) ?? @$"{FileIO.GetApplicationPath()}\App_Data\JJExportFiles\";
         SecretKey = GetOption(nameof(SecretKey)) ?? "ChangeMe";
     }
 

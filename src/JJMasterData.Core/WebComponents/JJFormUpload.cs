@@ -833,7 +833,7 @@ public class JJFormUpload : JJBaseView
             var file = files.Find(x => x.FileName.Equals(fileName));
             if (file != null)
             {
-                if (file.FileStream == null)
+                if (!file.IsInMemory)
                     file.Deleted = true;
                 else
                     files.Remove(file);
@@ -1034,7 +1034,7 @@ public class JJFormUpload : JJBaseView
             }
 
 #if NETFRAMEWORK
-            using var stream = new MemoryStream();
+            var stream = new MemoryStream();
             e.File.FileData.InputStream.CopyTo(stream);
             CreateFile(e.File.FileData.FileName, stream);
 #else
