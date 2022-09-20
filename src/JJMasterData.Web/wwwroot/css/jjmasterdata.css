@@ -251,16 +251,16 @@ a.disabled {
         cursor: -webkit-grab;
         cursor: grab;
         width: 10px;
-        margin-top: 10px;
+        margin-top: 0.8em;
         text-align: right;
     }
 
     .jjsortable a .jjsortable-span {
         cursor: -webkit-grab;
         cursor: grab;
-        margin-top: 12px;
+        margin-top: 1.95em;
         text-align: right;
-        font-size: 8px;
+        font-size: 0.6em;
     }
 
     .jjsortable .ui-sortable-helper,
@@ -338,25 +338,28 @@ a.disabled {
     }
 }
 
+.jjrelative {
+    position: relative;
+}
+
 
 .jjtoolbar {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 50px;
     font-size: 12px;
     text-align: center;
     color: #808080;
-    border-top: solid 1px #eeee;
-    padding-top: 15px;
+
 }
 
-#fieldDetail {
-    border-width: 0px;
-    width: 100%;
-    height: 75vh;
-    overflow: auto;
-}
+
+    #fieldDetail {
+        border-width: 0px;
+        width: 100%;
+        height: 75vh;
+        overflow: auto;
+    }
 
 #listField {
     border-width: 0px;
