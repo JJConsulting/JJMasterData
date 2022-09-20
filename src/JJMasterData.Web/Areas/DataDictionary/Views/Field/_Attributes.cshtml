@@ -54,7 +54,7 @@
     {
         var sHtml = new StringBuilder();
         string value = Model.GetAttr(FormElementField.PopUpSizeAttribute);
-        sHtml.Append("<select id=\"cboLkPopUpSize\" name=\"cboLkPopUpSize\" class=\"form-control\">");
+        sHtml.Append("<select id=\"cboLkPopUpSize\" name=\"cboLkPopUpSize\" class=\"form-control form-select\">");
         foreach (PopupSize type in Enum.GetValues(typeof(PopupSize)))
         {
             string selected = "";

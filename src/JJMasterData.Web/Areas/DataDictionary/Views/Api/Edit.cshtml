@@ -145,7 +145,7 @@
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
                         <label class="@BootstrapHelper.Label " for="FormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("JsonFormat")</label>
-                        <select asp-for="ApiSettings.FormatType" class = "form-control" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
+                        <select asp-for="ApiSettings.FormatType" class = "form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                         <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Used in sync?")">@Translate.Key("Sync")</label>
@@ -156,7 +156,7 @@
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
                         <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Sync Mode")">@Translate.Key("Mode")</label>
-                        <select asp-for="Mode" class="form-control" asp-items="@Html.GetEnumSelectList<SyncMode>()"></select>
+                        <select asp-for="Mode" class="form-control form-select" asp-items="@Html.GetEnumSelectList<SyncMode>()"></select>
                     </div>
                 </div>
             </div>

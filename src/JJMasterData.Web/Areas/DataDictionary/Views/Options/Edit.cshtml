@@ -50,7 +50,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " for="FormEnterKey" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Behavior of the Enter key on the form")">@Translate.Key("EnterKey")</label>
-                    <select asp-for="Form.EnterKey" class="form-control" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+                    <select asp-for="Form.EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
                 </div>
             </div>
             
