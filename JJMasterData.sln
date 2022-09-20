@@ -45,12 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.DataDictio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Api.Test", "test\JJMasterData.Api.Test\JJMasterData.Api.Test.csproj", "{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Tester", "src\Plugins\JJMasterData.Tester\JJMasterData.Tester.csproj", "{75C87178-97A0-4802-867C-143B1169D6D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-4493-BAAA-277D13A85DB8}"
 	ProjectSection(SolutionItems) = preProject
-		.gitlab-ci.yml = .gitlab-ci.yml
-		.github\workflows\gitlab_sync.yml = .github\workflows\gitlab_sync.yml
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 	EndProjectSection
 EndProject
@@ -256,18 +252,6 @@ Global
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x64.Build.0 = Release|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x86.ActiveCfg = Release|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x86.Build.0 = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|x64.Build.0 = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Debug|x86.Build.0 = Debug|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|x64.ActiveCfg = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|x64.Build.0 = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|x86.ActiveCfg = Release|Any CPU
-		{75C87178-97A0-4802-867C-143B1169D6D7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -286,7 +270,6 @@ Global
 		{14C3076E-B624-4F3B-A4A6-D091577937A1} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA} = {034CBF9B-6FEC-4D5C-A440-133F5310055D}
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
-		{75C87178-97A0-4802-867C-143B1169D6D7} = {59427CF1-D6B7-4779-9E62-4717C5763762}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCB34875-DB5E-4444-99BA-3C362F8EF1BB}

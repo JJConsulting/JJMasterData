@@ -74,7 +74,7 @@ public class MasterApiService
 
         var ret = new MasterApiListResponse
         {
-            Tot = total
+            Tot = result.Total
         };
 
         ret.SetDataTableValues(dictionary, result.Result);

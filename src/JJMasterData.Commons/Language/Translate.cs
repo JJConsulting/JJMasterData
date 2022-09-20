@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using JJMasterData.Commons.DI;
 
@@ -7,10 +8,10 @@ namespace JJMasterData.Commons.Language;
 /// <summary>
 /// Class to i18n 
 /// </summary>
-public static class Translate 
+public static class Translate
 {
     private static Dictionary<string, Dictionary<string, string>> _resourcesDictionary;
-    
+
     private static ITranslator Translator => JJService.Translator;
 
     /// <summary>
@@ -27,12 +28,14 @@ public static class Translate
 
         _resourcesDictionary ??= new Dictionary<string, Dictionary<string, string>>();
 
-        if (!_resourcesDictionary.ContainsKey(culture))
-            _resourcesDictionary.Add(culture, Translator.GetDictionaryStrings(culture));
-
-        if (_resourcesDictionary[culture].ContainsKey(resourceKey))
-            return _resourcesDictionary[culture][resourceKey];
-
+        lock (_resourcesDictionary)
+        {
+            if (!_resourcesDictionary.ContainsKey(culture))
+                _resourcesDictionary.Add(culture, Translator.GetDictionaryStrings(culture));
+            
+            if (_resourcesDictionary[culture].ContainsKey(resourceKey))
+                return _resourcesDictionary[culture][resourceKey];
+        }
         return resourceKey;
     }
 
@@ -47,7 +50,7 @@ public static class Translate
     {
         return string.Format(Key(formatKey), args);
     }
-    
+
     public static void ClearCache()
     {
         _resourcesDictionary.Clear();

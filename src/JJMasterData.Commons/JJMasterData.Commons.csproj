@@ -2,15 +2,15 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>3.0.15</Version>
+		<Version>3.0.17</Version>
 		<Company>JJ Consulting</Company>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
 		<Product>JJMasterData.Commons - Mars Version</Product>
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<PackageVersion>3.0.15</PackageVersion>
-		<AssemblyVersion>3.0.15</AssemblyVersion>
+		<PackageVersion>3.0.17</PackageVersion>
+		<AssemblyVersion>3.0.17</AssemblyVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 		<LangVersion>10.0</LangVersion>
@@ -37,8 +37,5 @@
 		<PackageReference Include="System.Data.Common" Version="4.3.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="6.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Resources\" />
 	</ItemGroup>
 </Project>

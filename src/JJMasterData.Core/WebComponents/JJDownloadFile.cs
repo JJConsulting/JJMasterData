@@ -13,8 +13,7 @@ public class JJDownloadFile : JJBaseView
 {
     public const string PARAM_DIRECTDOWNLOAD = "jjdirectdownload";
     public const string PARAM_DOWNLOAD = "jjdownload";
-
-
+    
     public JJDownloadFile()
     {
 
@@ -140,9 +139,11 @@ public class JJDownloadFile : JJBaseView
         if (filePath == null)
             throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
 
-        var download = new JJDownloadFile();
-        download.FilePath = filePath;
-        download.IsExternalLink = isExternalLink;
+        var download = new JJDownloadFile
+        {
+            FilePath = filePath,
+            IsExternalLink = isExternalLink
+        };
 
         return download.GetHtml();
     }
