@@ -8,8 +8,7 @@
 
     private showModal() {
         if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal({
-            });
+            $("#" + this.modalId).modal();
         }
         else {
             const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
