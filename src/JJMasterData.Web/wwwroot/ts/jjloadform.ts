@@ -60,7 +60,7 @@
             $(this).number(true, decimalPlaces);
     });
 
-    $(prefixSelector + "[data-toggle='tooltip']").tooltip({
+    $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
         container: "body",
         trigger: "hover"
     });
