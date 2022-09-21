@@ -8,7 +8,8 @@
 
     private showModal() {
         if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal();
+            $("#" + this.modalId).modal({
+            });
         }
         else {
             const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
@@ -48,14 +49,13 @@
             case 2:
                 width = "auto";
                 height = "95%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;\">\r\n";
+                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;width:auto;\">\r\n";
 
                 break;
             case 3:
-                width = "auto";
-                height = "75%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 75vh;\">\r\n";
-
+                width = "50%";
+                height = "65%";
+                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 65vh;width:50%\">\r\n";
                 break;
             default:
                 width = "65%";
@@ -81,11 +81,14 @@
 }
 `
 
+
+
+
         let html = "";
-        
+
         html += "<div id=\"popup-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
 
-        if (bootstrapVersion == 3) {
+        if (bootstrapVersion == 3 ) {
             html += modalDialogDiv;
         }
         else {
@@ -132,7 +135,7 @@
         $(html).appendTo($("body"));
     }
 
-    show(title, url, size = 4) {
+    show(title, url, size) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
@@ -147,7 +150,7 @@
     }
 }
 
-var popup = function() {
+var popup = function () {
     if (!(this instanceof Popup)) {
         return new Popup();
     }

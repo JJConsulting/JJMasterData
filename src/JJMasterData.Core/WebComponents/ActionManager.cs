@@ -77,6 +77,7 @@ internal class ActionManager
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         string popup = "true";
+        int popupSize = (int)elementRedirect.PopupSize;
 
         StringBuilder @params = new();
 
@@ -110,6 +111,8 @@ internal class ActionManager
         script.Append(popUpTitle);
         script.Append("','");
         script.Append(confirmationMessage);
+        script.Append("','");
+        script.Append(popupSize);
         script.Append("');");
 
         return script.ToString();

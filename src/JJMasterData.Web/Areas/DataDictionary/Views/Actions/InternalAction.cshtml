@@ -7,7 +7,7 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
         savePanelState();
     });
 
@@ -19,7 +19,7 @@
         }
         $(".nav a[href='" + currentTab + "']").tab("show");
 
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function(e) {
             var target = $(e.target).attr("href");
             $("#selected_tab").val(target);
             resizeContainer();
@@ -50,14 +50,14 @@
 </script>
 
 @using (Html.BeginForm("InternalAction", "Actions",
-    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+   new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
 
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a  class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
-        <li id="navInternalRedirect" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divInternalredirect">@Translate.Key("Internal Redirect")</a></li>
-        <li id="navAdvanced" class="nav-item"><a  class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navInternalRedirect" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInternalredirect">@Translate.Key("Internal Redirect")</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
@@ -73,8 +73,8 @@
                     @if (Model.ElementRedirect.RelationFields.Count == 0)
                     {
                         @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
-                             new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                             new { @class = "form-control", onchange = "this.form.submit();" })
+                new SelectList(ViewBag.ElementNameList, "Key", "Value"),
+                new { @class = "form-control", onchange = "this.form.submit();" })
                     }
                     else
                     {
@@ -84,8 +84,14 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
-                    <select asp-for="ElementRedirect.ViewType" class = "form-control" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
+                    <select asp-for="ElementRedirect.ViewType" class="form-control" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
                 </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                    <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Popup Size")">@Translate.Key("Popup Size")</label>
+                     <select asp-for="ElementRedirect.PopupSize" class="form-control" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
+                </div>
+
             </div>
             <div class="row">
                 <div class="col-sm-12">
@@ -103,12 +109,12 @@
                     @Html.DropDownList("internalField", new SelectList(ViewBag.InternalFieldList, "Key", "Value"), new { @class = "form-control" })
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-sm-4">
-                   <button type="button" class="@BootstrapHelper.DefaultButton" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Add Reference")" OnClick="addRelation();">
-                       <span class="fa fa-plus-square-o"></span>&nbsp;@Translate.Key("Add")
-                   </button>
+                    <button type="button" class="@BootstrapHelper.DefaultButton" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Add Reference")" OnClick="addRelation();">
+                        <span class="fa fa-plus-square-o"></span>&nbsp;@Translate.Key("Add")
+                    </button>
                 </div>
             </div>
 
