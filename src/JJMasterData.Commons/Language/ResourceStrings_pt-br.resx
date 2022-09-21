@@ -990,7 +990,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Execute Stored Procedures" xml:space="preserve">
-    <value>Executar Procedimentos Armazenados</value>
+    <value>Executar Procedures</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Executed Query" xml:space="preserve">

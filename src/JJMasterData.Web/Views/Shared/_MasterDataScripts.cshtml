@@ -2,6 +2,14 @@
 <script src="~/js/jquery/jquery-form/jquery.form.js"></script>
 <script src="~/js/jquery/jquery-number/jquery.number.min.js"></script>
 <script src="~/js/jquery/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.widget.bridge('uitooltip', $.ui.tooltip);
+        $.widget.bridge('uibutton', $.ui.button);
+    });
+    // Change JQueryUI plugin names to fix name collision with Bootstrap.
+</script>
+
 <script src="~/js/jquery/jquery-validation/jquery.validate.min.js"></script>
 <script src="~/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 

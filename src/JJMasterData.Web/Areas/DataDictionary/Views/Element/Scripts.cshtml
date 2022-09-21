@@ -16,50 +16,52 @@
     }
 }
 
+@functions{
+
+    void ScriptCode(string script)
+    {
+        <div class="jjrelative">
+            <div class="bs-clipboard">
+                <div class="btn-group">
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Copy to Clipboard")">
+                        <span class="fa fa-copy fa-fw"></span>
+                        &nbsp;@Translate.Key("Copy")
+                    </button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="@BootstrapHelper.DefaultButton dropdown-toggle btn-small btn-sm" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" onclick="copyAll(this);" href="#">@Translate.Key("Copy All Scripts")</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <pre><code>@script</code></pre>
+        </div>
+    }
+}
+
 <style>
-        .bs-clipboard {
-            position: absolute;
-            right: 15px;
-        }
-    
-            .bs-clipboard button.btn-default {
-                background-color: inherit;
-            }
+        
 </style>
 
 <div class="row">
-    <div class="col-sm-4">
-        <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
-            <span>&nbsp;Close</span>
+    <div class="col-sm-12">
+        <button class="@BootstrapHelper.DefaultButton" type="button" value="Exec" onclick="executeScripts(this.value)">
+            <span class="fa fa-play"></span>
+            <span>&nbsp; @Translate.Key("Execute Stored Procedures")</span>
         </button>
-        <button id="btnCopy" type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copyAll();" data-placement="right" 
-                @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Copy All Scripts")">
-            <span class="fa fa-copy fa-fw"></span>
-            &nbsp;@Translate.Key("Copy All")
+
+        <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecAll" onclick="executeScripts(this.value)">
+            <span class="fa fa-forward"></span>
+            <span>&nbsp; @Translate.Key("Run All")</span>
         </button>
     </div>
-    @if (!ViewBag.IsDefault)
-    {
-        <div class="col-sm-8 @BootstrapHelper.TextRight">
-            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" value="Exec" onclick="executeScripts(this.value)">
-                <span class="fa fa-play"></span>
-                <span>&nbsp; @Translate.Key("Execute Stored Procedures")</span>
-            </button>
-
-            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" value="ExecAll" onclick="executeScripts(this.value)">
-                <span class="fa fa-forward"></span>
-                <span>&nbsp; @Translate.Key("Run All")</span>
-            </button>
-        </div>
-    }
 </div>
 <br />
-<div class="bs-clipboard">
-    <button id="btnCopyContent" type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copyContent();" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Copy to Clipboard")">
-        <span class="fa fa-copy fa-fw"></span>
-        &nbsp;@Translate.Key("Copy")
-    </button>
-</div>
+
 <ul class="nav nav-tabs" id="tabScript">
     <li class="nav-item @(BootstrapHelper.Version == 3 ? "active" : string.Empty)" @GetIdBs3("Table")>
         <a @GetIdBs4("Table") class="nav-link @(BootstrapHelper.Version > 3 ? "active" : string.Empty)" @BootstrapHelper.GetDataToggle("tab") href="#divTable">@Translate.Key("Table")</a>
@@ -77,20 +79,23 @@
 </ul>
 
 <div class="tab-content">
-
+    
     <div id="divTable" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
-        <pre><code>@ViewBag.Scripts[0]</code></pre>
+        @{
+            ScriptCode(ViewBag.Scripts[0]);
+        }
     </div>
     <div id="divProcGet" class="tab-pane fade">
-        <pre>
-        <code>@ViewBag.Scripts[1]</code>     
-        </pre>
+       @{
+            ScriptCode(ViewBag.Scripts[1]);
+        }
     </div>
     <div id="divProcSet" class="tab-pane fade">
-        <pre>
-        <code>@ViewBag.Scripts[2]</code>
-</pre>
+       @{
+            ScriptCode(ViewBag.Scripts[2]);
+        }
     </div>
+    
 </div>
 
 @section Scripts
@@ -99,35 +104,34 @@
     <script type="text/javascript" src="~/js/highlightjs/languages/tsql.min.js"></script>
     <script type="text/javascript">
     
-    function copyAll() {
-            let textVal = document.getElementById("divTable").textContent.trim();
+    function copyAll(obj) {
+            let textVal = $("#divTable pre").text().trim();
             textVal += "\r\n";
-            textVal += document.getElementById("divProcGet").textContent.trim();
+            textVal += $("#divProcGet pre").text().trim();
             textVal += "\r\n";
-            textVal += document.getElementById("divProcSet").textContent.trim();
+            textVal += $("#divProcSet pre").text().trim();
             
             copyText(textVal);
-    
-            $("#btnCopy").attr('title', 'Copied!')
-                .tooltip('fixTitle')
-                .tooltip('show')
-                .attr('title', "Copy to Clipboard")
-                .tooltip('fixTitle');
         }
     
-        function copyContent() {
+        function copyContent(obj) {
             const objName = $(".tab-content .active").first().attr("id");
-            let textVal = document.getElementById(objName).textContent.trim();
+            let textVal =  $("#" + objName + " pre").text().trim();
             copyText(textVal);
-    
-            $("#btnCopyContent").attr('title', 'Copied!')
-                .tooltip('fixTitle')
-                .tooltip('show')
-                .attr('title', "Copy to Clipboard")
-                .tooltip('fixTitle');
+            displayAsCopied(obj);
         }
     
-    
+        function displayAsCopied(obj) {
+             var btnContent = $(obj).html();
+            $(obj).html("<span class='fa fa-check'></span> Copied!")
+                .attr("class", "btn btn-success btn-small btn-sm");
+
+            setTimeout(function() {
+                $(obj).html(btnContent)
+                    .attr("class", "@BootstrapHelper.DefaultButton btn-small btn-sm");
+            },2000);
+        }
+
         function copyText(value) {
             navigator.clipboard.writeText(value);
         }
