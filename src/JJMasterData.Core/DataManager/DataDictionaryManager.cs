@@ -242,7 +242,6 @@ public class DataDictionaryManager
         return result;
     }
 
-
     private static void RunDatabaseCommand(Action action, ref Hashtable errors)
     {
         try
@@ -251,8 +250,7 @@ public class DataDictionaryManager
         }
         catch (SqlException ex)
         {
-            Log.AddError(ex.Message);
-            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
+            HandleException(ex, ref errors);
         }
     }
 
@@ -264,11 +262,23 @@ public class DataDictionaryManager
         }
         catch (SqlException ex)
         {
-            Log.AddError(ex.Message);
-            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
+            HandleException(ex, ref errors);
         }
 
         return default;
+    }
+
+    private static void HandleException(SqlException ex, ref Hashtable errors)
+    {
+        if (ex.Number == 547 | ex.Number == 2627 | ex.Number == 2601 | ex.Number == 170 | ex.Number == 50000)
+        {
+            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
+        }
+        else
+        {
+            Log.AddError(ex.Message);
+            throw ex;
+        }
     }
 
     private void AddFormEvent(IFormEvent formEvent)
