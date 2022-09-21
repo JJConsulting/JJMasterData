@@ -390,7 +390,7 @@
          * @param {string} title [opcional] Titulo da popUp
          * @param {string} confirmMessage [opcional] Mensagem de confirmação antes de executar a ação
          */
-        doUrlRedirect: function (url, ispopup, title, confirmMessage) {
+        doUrlRedirect: function (url, ispopup, title, confirmMessage, popupSize = 1) {
 
             if (confirmMessage) {
                 const result = confirm(confirmMessage);
@@ -400,7 +400,7 @@
             }
 
             if (ispopup) {
-                popup.show(title, url, 1);
+                popup.show(title, url, popupSize);
             } else {
                 window.location.href = url;
             }
