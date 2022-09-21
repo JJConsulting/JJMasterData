@@ -123,7 +123,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("List Type")">@Translate.Key("ListType")</label>
-        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control">
+        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
                 <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
@@ -158,7 +158,7 @@
     {
         <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divFirstOption">
             <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display text (All) as first option")">@Translate.Key("FirstOption")</label>
-            <select asp-for="DataItem.FirstOption" class="form-control" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
+            <select asp-for="DataItem.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">

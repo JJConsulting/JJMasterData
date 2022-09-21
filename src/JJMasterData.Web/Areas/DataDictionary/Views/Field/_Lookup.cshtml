@@ -110,7 +110,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" for="DataItem_DataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("ListType")">@Translate.Key("ListType")</label>
-        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control">
+        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             <option selected="selected" value="@((int)DataItemType.Dictionary)">@DataItemType.Dictionary.ToString()</option>
         </select>
     </div>

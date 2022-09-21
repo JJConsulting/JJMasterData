@@ -67,7 +67,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
-                    <select asp-for="ViewType" class="form-control" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
+                    <select asp-for="ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
             <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("PkColumn")</label>
             <select name="pk"
-                    class="form-control"
+                    class="form-control form-select"
                     asp-items="new List<SelectListItem>(ViewBag.FkColumn)">
             </select>
         </div>
@@ -94,7 +94,7 @@
         <div class="@BootstrapHelper.FormGroup col-sm-5 required">
             <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("FkColumn")</label>
             <select name="fk"
-                    class="form-control"
+                    class="form-control form-select"
                     asp-items="new List<SelectListItem>(ViewBag.FkColumn)">
             </select>
         </div>

@@ -137,7 +137,7 @@ public class GridUI
             html.Append(TAB, 7);
             html.AppendLine("<div class=\"col-sm-2\"> ");
             html.Append(TAB, 8);
-            html.Append("<select class=\"form-control\" id=\"");
+            html.Append($"<select class=\"form-control form-select\" id=\"");
             html.Append(TABLE_REGPERPAGE);
             html.Append("\" name=\"");
             html.Append(TABLE_REGPERPAGE);

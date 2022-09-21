@@ -93,11 +93,11 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label" for="cboLayout" @BootstrapHelper.GetDataToggle("tooltip")>@Translate.Key("Layout")</label>
-                    <select asp-for="Layout" class="form-control" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
+                    <select asp-for="Layout" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label" for="cboColor" @BootstrapHelper.GetDataToggle("tooltip")>@Translate.Key("Color")</label>
-                    <select asp-for="Color" class="form-control" asp-items="Html.GetEnumSelectList<PanelColor>()"></select>
+                    <select asp-for="Color" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelColor>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divExpandedByDefault">
                     <label class="@BootstrapHelper.Label" for="cboExpandedByDefault" @BootstrapHelper.GetDataToggle("tooltip")>@Translate.Key("Expanded By Default")</label>
@@ -106,7 +106,7 @@
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" }
                     },
-                        new { @class = "form-control" })
+                        new { @class = "form-control form-select" })
                 </div>
             </div>
             <div class="row">
@@ -133,7 +133,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <select size="10" name="listEnabled" id="listEnabled" multiple="multiple" class="form-control" ondblclick="addFields()">
+                                <select size="10" name="listEnabled" id="listEnabled" multiple="multiple" class="form-control form-select" ondblclick="addFields()">
                                     @foreach (FormElementField f in ViewBag.AvailableFields)
                                     {
                                         if (f.PanelId == 0)
@@ -154,7 +154,7 @@
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <select size="10" name="listSelected" id="listSelected" multiple="multiple" class="form-control" ondblclick="removeFields()">
+                                    <select size="10" name="listSelected" id="listSelected" multiple="multiple" class="form-control form-select" ondblclick="removeFields()">
                                         @foreach (FormElementField f in ViewBag.SelectedFields)
                                         {
                                             if (f.PanelId == Model.PanelId)

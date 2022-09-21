@@ -95,7 +95,7 @@
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip")>@Translate.Key("Sql Command")</label>
     </div>
     <div class="col-sm-4">
-        <select class="form-control selectpicker" id="cboSqlEvent" name="cboSqlEvent">
+        <select class="form-control form-select selectpicker" id="cboSqlEvent" name="cboSqlEvent">
             <option value="1" selected="selected" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@Translate.Key("Before starting the process")">@Translate.Key("Before starting the process")</option>
             <option value="2" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@Translate.Key("After finishing the process")">@Translate.Key("After finishing the process")</option>
         </select>
@@ -123,7 +123,7 @@
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-3">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom">@Translate.Key("Scope")</label>
-        <select class="form-control" id="ProcessOptions_Scope" name="ProcessOptions.Scope">
+        <select class="form-control form-select" id="ProcessOptions_Scope" name="ProcessOptions.Scope">
             @foreach (ProcessScope scope in Enum.GetValues(typeof(ProcessScope)))
             {
                 if (Model.Scope == scope)

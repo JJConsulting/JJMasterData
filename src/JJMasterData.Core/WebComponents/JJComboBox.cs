@@ -110,7 +110,7 @@ public class JJComboBox : JJBaseView
         if (list == null)
             throw new ArgumentException("Origem de dados não definida para combo", Name);
 
-        string cssClass = "form-control";
+        string cssClass = "form-control form-select";
         if (!string.IsNullOrEmpty(CssClass))
             cssClass += " " + CssClass;
 
