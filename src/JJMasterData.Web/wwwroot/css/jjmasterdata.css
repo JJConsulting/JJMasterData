@@ -652,3 +652,8 @@ button.dropdown-toggle.form-control {
     .bs-clipboard button.btn-default {
         background-color: inherit;
     }
+
+#jjmenu nav {
+    border-radius: 8px;
+    margin-bottom: 1vh;
+}
