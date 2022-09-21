@@ -1134,7 +1134,7 @@ var jjview = (function () {
                 $("#pnl_insert_" + objid).slideDown();
             });
         },
-        doUrlRedirect: function (url, ispopup, title, confirmMessage) {
+        doUrlRedirect: function (url, ispopup, title, confirmMessage, popupSize = 1) {
             if (confirmMessage) {
                 const result = confirm(confirmMessage);
                 if (!result) {
@@ -1142,7 +1142,7 @@ var jjview = (function () {
                 }
             }
             if (ispopup) {
-                popup.show(title, url, 1);
+                popup.show(title, url, popupSize);
             }
             else {
                 window.location.href = url;
@@ -1441,7 +1441,7 @@ class Popup {
     }
     showModal() {
         if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal();
+            $("#" + this.modalId).modal({});
         }
         else {
             const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
@@ -1472,12 +1472,12 @@ class Popup {
             case 2:
                 width = "auto";
                 height = "95%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;\">\r\n";
+                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;width:auto;\">\r\n";
                 break;
             case 3:
-                width = "auto";
-                height = "75%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 75vh;\">\r\n";
+                width = "50%";
+                height = "65%";
+                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 65vh;width:50%\">\r\n";
                 break;
             default:
                 width = "65%";
@@ -1541,7 +1541,7 @@ class Popup {
         html += "</div>\r\n";
         $(html).appendTo($("body"));
     }
-    show(title, url, size = 4) {
+    show(title, url, size = 0) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
