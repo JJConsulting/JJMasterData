@@ -639,3 +639,16 @@ button.dropdown-toggle.form-control {
     border-top-left-radius: 3px !important;
     border-bottom-left-radius: 3px !important;
 }
+
+
+
+/*JJMasterData Web*/
+.bs-clipboard {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+    .bs-clipboard button.btn-default {
+        background-color: inherit;
+    }

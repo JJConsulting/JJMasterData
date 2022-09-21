@@ -22,49 +22,57 @@ public class InternalRedirectController : MasterDataController
     public ActionResult Index(string parameters)
     {
         LoadParameters(parameters);
-        string userId = HttpContext.GetUserId();
-            
+        var userId = HttpContext.GetUserId();
+
         switch (_relationType)
         {
             case RelationType.List:
-            {
-                var form = new JJFormView(_dictionaryName)
                 {
-                    RelationValues = _relationValues
-                };
-                form.SetUserValues("USERID", userId);
-                form.SetCurrentFilter("USERID", userId);
+                    var form = new JJFormView(_dictionaryName)
+                    {
+                        RelationValues = _relationValues
+                    };
 
-                ViewBag.HtmlPage = form.GetHtml();
-                ViewBag.ShowToolBar = false;
-                break;
-            }
+                    if (userId != null)
+                    {
+                        form.SetUserValues("USERID", userId);
+                        form.SetCurrentFilter("USERID", userId);
+                    }
+
+                    ViewBag.HtmlPage = form.GetHtml();
+                    ViewBag.ShowToolBar = false;
+                    break;
+                }
             case RelationType.View:
-            {
-                var painel = new JJDataPanel(_dictionaryName)
                 {
-                    PageState = PageState.View
-                };
-                painel.SetUserValues("USERID", userId);
-                painel.LoadValuesFromPK(_relationValues);
+                    var painel = new JJDataPanel(_dictionaryName)
+                    {
+                        PageState = PageState.View
+                    };
+                    if (userId != null)
+                        painel.SetUserValues("USERID", userId);
 
-                ViewBag.HtmlPage = painel.GetHtml();
-                ViewBag.ShowToolBar = false;
-                break;
-            }
+                    painel.LoadValuesFromPK(_relationValues);
+
+                    ViewBag.HtmlPage = painel.GetHtml();
+                    ViewBag.ShowToolBar = false;
+                    break;
+                }
             case RelationType.Update:
-            {
-                var painel = new JJDataPanel(_dictionaryName)
                 {
-                    PageState = PageState.Update
-                };
-                painel.SetUserValues("USERID", userId);
-                painel.LoadValuesFromPK(_relationValues);
+                    var painel = new JJDataPanel(_dictionaryName)
+                    {
+                        PageState = PageState.Update
+                    };
+                    if (userId != null)
+                        painel.SetUserValues("USERID", userId);
 
-                ViewBag.HtmlPage = painel.GetHtml();
-                ViewBag.ShowToolBar = true;
-                break;
-            }
+                    painel.LoadValuesFromPK(_relationValues);
+
+                    ViewBag.HtmlPage = painel.GetHtml();
+                    ViewBag.ShowToolBar = true;
+                    break;
+                }
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -76,8 +84,8 @@ public class InternalRedirectController : MasterDataController
     public ActionResult Save(string parameters)
     {
         LoadParameters(parameters);
-        
-        string userId = HttpContext.GetUserId();
+
+        var userId = HttpContext.GetUserId();
 
         var painel = new JJDataPanel(_dictionaryName)
         {
@@ -85,7 +93,8 @@ public class InternalRedirectController : MasterDataController
         };
 
         painel.LoadValuesFromPK(_relationValues);
-        painel.SetUserValues("USERID", userId);
+        if (userId != null)
+            painel.SetUserValues("USERID", userId.ToString());
 
         var values = painel.GetFormValues();
         var errors = painel.ValidateFields(values, PageState.Update);
