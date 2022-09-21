@@ -107,7 +107,7 @@ public class ElementField
     public ElementField()
     {
         Filter = new ElementFilter();
-        DataType = FieldType.NVarchar;
+        DataType = FieldType.Varchar;
         DataBehavior = FieldBehavior.Real;
     }
 

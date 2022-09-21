@@ -3310,4 +3310,8 @@
   <data name="There is already a dictionary with the name {0}" xml:space="preserve">
     <value>Já existe um dicionário com o nome {0}</value>
   </data>
+  <data name="Field with AutoNum (auto increment) must be of data type int, unencrypted and required" xml:space="preserve">
+    <value>Campos marcados como Auto Incremento deve ser do tipo inteiro e obrigatório</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
 </root>

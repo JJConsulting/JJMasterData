@@ -138,6 +138,10 @@ public class FieldService : BaseService
             }
         }
 
+        if (field.AutoNum && field.DataType != FieldType.Int)
+            AddError(nameof(field.AutoNum), Translate.Key("Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
+        
+
         if (field.Component == FormComponent.Number ||
             field.Component == FormComponent.Currency)
         {
