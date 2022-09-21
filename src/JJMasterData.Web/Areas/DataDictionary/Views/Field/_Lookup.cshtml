@@ -18,13 +18,13 @@
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("Field Key")</label>
                 @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.FieldKey,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control" })
+                    new { @class = "form-control form-select" })
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-4">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Key")">@Translate.Key("Field Description")</label>
                 @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.FieldDescription,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control" })
+                    new { @class = "form-control form-select" })
             </div>
         </div>
     }
@@ -122,14 +122,14 @@
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
             new SelectListItem { Text = Translate.Key("No"), Value = "false" }
         },
-            new { @class = "form-control" })
+            new { @class = "form-control form-select" })
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label " for="cboLkElementName" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Dictionary Name")">@Translate.Key("ElementName")</label>
         @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.ElementName,
             new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-            new { @class = "form-control", onchange = "this.form.submit();" })
+            new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
@@ -139,7 +139,7 @@
             new SelectListItem { Text = Translate.Key("No"), Value = "false" },
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
         },
-            new { @class = "form-control" })
+            new { @class = "form-control form-select" })
     </div>
 
     @if (BootstrapHelper.Version == 5)

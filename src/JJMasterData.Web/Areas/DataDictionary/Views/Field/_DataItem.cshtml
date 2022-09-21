@@ -151,7 +151,7 @@
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
             new SelectListItem { Text = Translate.Key("No"), Value = "false" }
         },
-            new { @class = "form-control" })
+            new { @class = "form-control form-select" })
     </div>
 
     @if (Model.Component != FormComponent.Search)
@@ -168,7 +168,7 @@
             new SelectListItem { Text = Translate.Key("No"), Value = "false" },
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
         },
-            new { @class = "form-control", onchange = "this.form.submit();" })
+            new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
 
     <div id="divManualValues" class="col-sm-12" style="@(isManualVal ? "" : "display:none")">

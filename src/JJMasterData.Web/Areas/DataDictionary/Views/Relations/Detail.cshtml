@@ -51,7 +51,7 @@
                     {
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" },
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
-                    }, new { @class = "form-control" })
+                    }, new { @class = "form-control form-select" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="DeleteOnCascade">@Translate.Key("DeleteOnCascade")</label>
@@ -59,7 +59,7 @@
                     {
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" },
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
-                    }, new { @class = "form-control" })
+                    }, new { @class = "form-control form-select" })
                 </div>
                 <div class="col-sm-8 required">
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Internal Title")">@Translate.Key("Title")</label>

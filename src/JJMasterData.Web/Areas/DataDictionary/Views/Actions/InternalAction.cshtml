@@ -73,8 +73,8 @@
                     @if (Model.ElementRedirect.RelationFields.Count == 0)
                     {
                         @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
-                new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                new { @class = "form-control", onchange = "this.form.submit();" })
+                            new SelectList(ViewBag.ElementNameList, "Key", "Value"),
+                            new { @class = "form-control form-select", onchange = "this.form.submit();" })
                     }
                     else
                     {
