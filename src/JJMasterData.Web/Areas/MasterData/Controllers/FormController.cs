@@ -28,9 +28,12 @@ public class FormController : MasterDataController
     {
         var userId = HttpContext.GetUserId();
         var form = new JJFormView(dictionaryName);
-        form.SetCurrentFilter("USERID", userId);
-        form.SetUserValues("USERID", userId);
-
+        if (userId != null)
+        {
+            form.SetCurrentFilter("USERID", userId);
+            form.SetUserValues("USERID", userId);
+        }
+        
         return form;
     }
 }

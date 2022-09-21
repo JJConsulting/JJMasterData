@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Web;
-using JJMasterData.Commons.Language;
 using Microsoft.AspNetCore.Http;
 using HttpContext = Microsoft.AspNetCore.Http.HttpContext;
 
@@ -8,21 +5,18 @@ namespace JJMasterData.Web.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static string GetUserId(this HttpContext context)
+    public static string? GetUserId(this HttpContext context)
     {
-#if DEBUG
-        var identity = new ClaimsIdentity();
-        identity.AddClaim(new Claim("USERID", "0"));
-        context.User.AddIdentity(identity);
-#endif
+        //var identity = new ClaimsIdentity();
+        //identity.AddClaim(new Claim("USERID", "0"));
+        //context.User.AddIdentity(identity);
+
         string? userId = context.Session.GetString("USERID");
+        if (userId != null) 
+            return userId;
 
-        if (userId != null) return userId;
+        userId = context.User.Claims.FirstOrDefault(c => c.Type == "USERID")?.Value;
 
-        string? claimsId = context.User.Claims.FirstOrDefault(c => c.Type == "USERID")?.Value;
-
-        if (claimsId != null) return claimsId;
-
-        throw new HttpException(Translate.Key("Session Expired"));
+        return userId;
     }
 }
