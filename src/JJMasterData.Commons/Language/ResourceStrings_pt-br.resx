@@ -3205,7 +3205,7 @@
     <value>Propriedade [DataItem] não definidas para pesquisa</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="[Name] field contains a reserved word used in the api" xml:space="preserve">
+  <data name="The [Name] field contains a reserved word used in the api" xml:space="preserve">
     <value>Campo [Nome] contém uma palavra reservada utilizada na api</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3336,6 +3336,10 @@
   </data>
   <data name="Set Procedure Name" xml:space="preserve">
     <value>Nome da Proc de Set</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The [Name] field contains a reserved word used in the database." xml:space="preserve">
+    <value>Campo [Nome] contém uma palavra reservada utilizada no banco de dados.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
 </root>
