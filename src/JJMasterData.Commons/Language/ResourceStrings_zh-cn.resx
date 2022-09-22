@@ -1,0 +1,3317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="(Click here for more details)" xml:space="preserve">
+    <value>(点击这里查看更多详情)</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="(No Apply)" xml:space="preserve">
+    <value>(没有申请)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="(Select)" xml:space="preserve">
+    <value>(选择)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="(Type Ctrl+Space to AutoComplete)" xml:space="preserve">
+    <value>(按下 Ctrl+Space 以自动完成)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="({0} characters remaining)" xml:space="preserve">
+    <value>({0} 剩余字符)</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="--Select--" xml:space="preserve">
+    <value>--选择--</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="1 (one column)" xml:space="preserve">
+    <value>1 (一列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="1) To use the upload, the dictionary must have a primary key" xml:space="preserve">
+    <value>1) 要使用上传，字典必须有一个主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="12 (twelve columns)" xml:space="preserve">
+    <value>12 (十二列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="2 (two columns)" xml:space="preserve">
+    <value>2 (两列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="2) The primary key cannot contain characters" xml:space="preserve">
+    <value>2) 主键不能包含字符</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="3 (three columns)" xml:space="preserve">
+    <value>3 (三列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="3) The {app.path} is the path to the root of the site where the application is running and this variable will be replaced at runtime" xml:space="preserve">
+    <value>3) {app.path} 是运行应用程序的站点根目录的路径，此变量将在运行时被替换</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="4 (four columns)" xml:space="preserve">
+    <value>4 (四列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="4) The path configured in FolderPath must always end with a slash" xml:space="preserve">
+    <value>4) FolderPath 中配置的路径必须始终以斜杠结尾</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="5) Be careful not to configure a path that already exists in another dictionary" xml:space="preserve">
+    <value>5) 注意不要配置另一个字典中已经存在的路径</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="6 (six columns)" xml:space="preserve">
+    <value>6 (六列)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="A file with the name {0} already exists" xml:space="preserve">
+    <value>名称为 {0} 的文件已存在</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="A selected record" xml:space="preserve">
+    <value>选择一条记录</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Access denied to change user filter on {0}" xml:space="preserve">
+    <value>拒绝访问以更改 {0} 上的用户过滤器</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>操作</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Action execution confirmation text" xml:space="preserve">
+    <value>操作执行确认文本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Action {0} not found" xml:space="preserve">
+    <value>操作 {0} 没有找到</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="更多操作" xml:space="preserve">
+    <value>更多操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>新增</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add Dictionary" xml:space="preserve">
+    <value>新增字典</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add new record" xml:space="preserve">
+    <value>新增一条记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add Order Budget" xml:space="preserve">
+    <value>新增订单预算</value>
+    <comment>WebSales</comment>
+  </data>
+  <data name="Add Reference" xml:space="preserve">
+    <value>新增引用</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Add Relation" xml:space="preserve">
+    <value>新增关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>补充</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Added:" xml:space="preserve">
+    <value>补充:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Advance" xml:space="preserve">
+    <value>高级</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>高级设置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="After creating your data dictionary, just insert your tables and their respective fields!" xml:space="preserve">
+    <value>创建数据字典后，只需插入表及其各自的字段！</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="After finishing the process" xml:space="preserve">
+    <value>完成处理后</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>提示</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>所有</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Allow dragging files" xml:space="preserve">
+    <value>允许拖放文件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="AllowedTypes" xml:space="preserve">
+    <value>允许的类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Allows you to export the field" xml:space="preserve">
+    <value>允许你导出字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Allows you to select multiple lines in the grid" xml:space="preserve">
+    <value>允许你在表格中选择多条明细</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Allows you to upload multiple files" xml:space="preserve">
+    <value>允许你上传多个文件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="and a panel with filters will be displayed above the grid." xml:space="preserve">
+    <value>并且带有过滤器的面板将显示在网格上方。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="and all users will be able to view the latest log and execution of an ongoing process." xml:space="preserve">
+    <value>并且所有用户都将能够查看正在进行的进程的最新日志和执行情况。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="and inside, the uploads performed by users are stored." xml:space="preserve">
+    <value>在内部，存储用户执行的上传。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Applied filter" xml:space="preserve">
+    <value>应用过滤条件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Apply On Selected" xml:space="preserve">
+    <value>应用选择</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Apply only selected lines" xml:space="preserve">
+    <value>应用于选择明细</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Apply only selected lines." xml:space="preserve">
+    <value>应用于选择明细。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ApplyUserIdOn" xml:space="preserve">
+    <value>应用UserId</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Are you sure you want to DELETE all selected records?" xml:space="preserve">
+    <value>确定要删除所有选择？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Are you sure you want to delete this event ?" xml:space="preserve">
+    <value>您确定要删除此活动吗？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Are you sure you want to delete [{0}] action?" xml:space="preserve">
+    <value>确定要删除 [{0}] 操作吗？</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Are you sure you want to execute this action?" xml:space="preserve">
+    <value>您确定要执行此操作吗？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Ascendant" xml:space="preserve">
+    <value>上升</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Ascending order" xml:space="preserve">
+    <value>升序</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Attention!" xml:space="preserve">
+    <value>注意力!</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Automatic numeric (auto increment)" xml:space="preserve">
+    <value>自动数字（自动递增）</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="AutoPostBack" xml:space="preserve">
+    <value>自动返回</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Available Fields" xml:space="preserve">
+    <value>可用字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Aways apply UserId (from login) as filter and default value on set." xml:space="preserve">
+    <value>始终应用UserId（来自登录）作为过滤器和设置的默认值。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>返回</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Background task is already running." xml:space="preserve">
+    <value>后台任务已经在运行中。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Before starting the process" xml:space="preserve">
+    <value>在开始处理之前</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Behavior of the Enter key on the form" xml:space="preserve">
+    <value>表单上 Enter 键的行为</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Birth date" xml:space="preserve">
+    <value>出身日期</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Blocked user" xml:space="preserve">
+    <value>被屏蔽的用户</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Browser" xml:space="preserve">
+    <value>浏览器</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Browser info" xml:space="preserve">
+    <value>浏览器信息</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="By default every post made on the site is limited to 4mb" xml:space="preserve">
+    <value>默认情况下，网站上的每个帖子都限制为 4mb</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>撤销</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Change a line color on mouseover" xml:space="preserve">
+    <value>在鼠标悬停时更改线条颜色</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Change History" xml:space="preserve">
+    <value>变更历史</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Character {0} not allowed" xml:space="preserve">
+    <value>不允许使用字符 {0}</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Character {0} not allowed1" xml:space="preserve">
+    <value>字符 {0} 不允许1</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Child element name" xml:space="preserve">
+    <value>子元素名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ChildElement" xml:space="preserve">
+    <value>子元素</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>类</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Class name (CSS) one to be assigned to object group rendering" xml:space="preserve">
+    <value>类名 (CSS) 一个分配给对象组渲染</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Class name (CSS) to be added when rendering the object group" xml:space="preserve">
+    <value>渲染对象组时要添加的类名 (CSS)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>清除</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>清除过滤</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Clear log" xml:space="preserve">
+    <value>清除日志</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="click here." xml:space="preserve">
+    <value>点击这里.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Click on the [Help] link for more information regarding the file layout." xml:space="preserve">
+    <value>单击 [帮助] 链接以获取有关文件布局的更多信息。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>颜色</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Column" xml:space="preserve">
+    <value>列</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Column {0} has no filter or is not a primary key." xml:space="preserve">
+    <value>列 {0} 没有过滤器或不是主键。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Column {0} not found in {1}." xml:space="preserve">
+    <value>在 {1} 中找不到列 {0}。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Columns" xml:space="preserve">
+    <value>列</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Comma (,)" xml:space="preserve">
+    <value>逗号 (,)</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>公共</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Command.Sql" xml:space="preserve">
+    <value>Command.Sql</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Component" xml:space="preserve">
+    <value>组件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Component Type" xml:space="preserve">
+    <value>组件类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="compress the file before uploading." xml:space="preserve">
+    <value>上传前压缩文件。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Configuration for logging to the database is not enabled" xml:space="preserve">
+    <value>未启用记录到数据库的配置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Configure Export" xml:space="preserve">
+    <value>配置导出</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Configure View" xml:space="preserve">
+    <value>配置预览</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Confirmation Message" xml:space="preserve">
+    <value>确认消息</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Connection provider not found in configuration file." xml:space="preserve">
+    <value>在配置文件中找不到连接提供程序。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Connection string not found in configuration file." xml:space="preserve">
+    <value>在配置文件中找不到连接字符串。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>内容</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>复制</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Copy All" xml:space="preserve">
+    <value>复制所有</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Copy All Scripts" xml:space="preserve">
+    <value>复制所有脚本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Copy to Clipboard" xml:space="preserve">
+    <value>复制到剪切板</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="CssClass" xml:space="preserve">
+    <value>CssClass</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Culture Code" xml:space="preserve">
+    <value>多语言代码</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="CurrentPage" xml:space="preserve">
+    <value>当前页面</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Custom name for reading procedure" xml:space="preserve">
+    <value>读取过程的自定义名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Custom name for recording procedure" xml:space="preserve">
+    <value>录制过程的自定义名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="CustomProcNameGet" xml:space="preserve">
+    <value>CustomProcNameGet</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="CustomProcNameSet" xml:space="preserve">
+    <value>CustomProcNameGet</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Data Dictionaries" xml:space="preserve">
+    <value>数据字典</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Data Type" xml:space="preserve">
+    <value>数据类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Database Scripts" xml:space="preserve">
+    <value>数据库脚本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="DataBehavior" xml:space="preserve">
+    <value>数据行为</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="DataFile" xml:space="preserve">
+    <value>数据文件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="DataItem" xml:space="preserve">
+    <value>数据明细</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="DataTable schema is null" xml:space="preserve">
+    <value>数据表架构为空</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日期</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Date and time" xml:space="preserve">
+    <value>日期和时间</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Date:" xml:space="preserve">
+    <value>日期:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Decimal number" xml:space="preserve">
+    <value>小数数字</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="DecimalPlaces" xml:space="preserve">
+    <value>小数位数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Default connection name is [ConnectionString]" xml:space="preserve">
+    <value>默认连接字符串 [ConnectionString]</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="DefaultValue" xml:space="preserve">
+    <value>默认值</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Delete a record" xml:space="preserve">
+    <value>删除一条记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Delete File" xml:space="preserve">
+    <value>删除文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Delete Selected" xml:space="preserve">
+    <value>删除选择的</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>删除</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Deleted:" xml:space="preserve">
+    <value>删除:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="DeleteOnCascade" xml:space="preserve">
+    <value>级联删除</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Delimiter" xml:space="preserve">
+    <value>分隔符</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Descendant" xml:space="preserve">
+    <value>下降</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Descending order" xml:space="preserve">
+    <value>降序</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>说明</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Description on the form" xml:space="preserve">
+    <value>表格上的说明</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Detail Message" xml:space="preserve">
+    <value>明细消息</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Detailed Filters" xml:space="preserve">
+    <value>明细过滤</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>明细</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Details:" xml:space="preserve">
+    <value>明细:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="DicSyncParam invalid" xml:space="preserve">
+    <value>字典同步参数无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Dictionary imported successfully!" xml:space="preserve">
+    <value>字典导入成功!</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Dictionary invalid" xml:space="preserve">
+    <value>字典无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Dictionary Name" xml:space="preserve">
+    <value>字典名称</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Dictionary name cannot be empty" xml:space="preserve">
+    <value>字典名称不能为空</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Dictionary name used to display the preselection of a record." xml:space="preserve">
+    <value>字典名称已经被另一个字段所使用.</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Dictionary {0} not found" xml:space="preserve">
+    <value>字典 {0} 没有找到</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Dictionary {0} not found or not configured for sync" xml:space="preserve">
+    <value>找不到字典 {0} 或未配置同步</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Display images with text in the combo" xml:space="preserve">
+    <value>在下拉中显示带有文本的图像</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Display name in grid header" xml:space="preserve">
+    <value>在表头显示名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Display open dashboard by default" xml:space="preserve">
+    <value>默认显示打开的仪表板</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Display text (All) as first option" xml:space="preserve">
+    <value>显示文本（全部）作为第一个选项</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="display zebra columns" xml:space="preserve">
+    <value>显示斑马条</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Displays paging controls" xml:space="preserve">
+    <value>显示分页控件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Divider Line" xml:space="preserve">
+    <value>分割线</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="do not include caption or description in the first line" xml:space="preserve">
+    <value>不要在第一行包含标题或描述</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>文档</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>完毕</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Drag &amp; Drop Files" xml:space="preserve">
+    <value>拖放文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Drag and drop to change order." xml:space="preserve">
+    <value>拖放文件可以改变顺序</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="DragDrop" xml:space="preserve">
+    <value>拖放</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Drag and drop to move" xml:space="preserve">
+    <value>拖放以移动</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>重复</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="duplicate dictionary" xml:space="preserve">
+    <value>字典重复</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Edited" xml:space="preserve">
+    <value>编辑</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Element" xml:space="preserve">
+    <value>元素</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Element is a Form, to serialize form use SetFormElement method" xml:space="preserve">
+    <value>Element 是一个表单，要序列化表单使用 SetFormElement 方法</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Element Map" xml:space="preserve">
+    <value>元素地图</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Element Name To Select" xml:space="preserve">
+    <value>要选择的元素名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ElementField can not be null" xml:space="preserve">
+    <value>元素名称不能为null</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="ElementName" xml:space="preserve">
+    <value>元素名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Empty line ignored" xml:space="preserve">
+    <value>空行被忽略</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="EmptyDataText" xml:space="preserve">
+    <value>没有数据</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable / Disable dictionary actions" xml:space="preserve">
+    <value>启用/禁用字典操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable Column Sorting" xml:space="preserve">
+    <value>启用列排序</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable Expression" xml:space="preserve">
+    <value>启用表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable MultSelect" xml:space="preserve">
+    <value>启用多选</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable or disable API operations" xml:space="preserve">
+    <value>启用或禁用 API 操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable quick on-screen search." xml:space="preserve">
+    <value>启用快速屏幕搜索。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enable quick screen search" xml:space="preserve">
+    <value>启用快速屏幕搜索</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="EnableAjax" xml:space="preserve">
+    <value>启用 Ajax</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="EnableElementActions" xml:space="preserve">
+    <value>启用元素操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="EnableSorting" xml:space="preserve">
+    <value>启用排序</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="end" xml:space="preserve">
+    <value>结束</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Enter a table or view name" xml:space="preserve">
+    <value>输入表或视图名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enter the data below and click Next to add the record." xml:space="preserve">
+    <value>在下面输入数据，然后单击下一步添加记录。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Enter the new name for the file:" xml:space="preserve">
+    <value>输入文件的新名称：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="EnterKey" xml:space="preserve">
+    <value>输入</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Entity" xml:space="preserve">
+    <value>实体</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Entity List" xml:space="preserve">
+    <value>实体列表</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Entity Name" xml:space="preserve">
+    <value>实体名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Entity {0} not found" xml:space="preserve">
+    <value>实体 {0} 没有找到</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error executing expression of field {0}." xml:space="preserve">
+    <value>执行字段 {0} 的表达式时出错。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Error executing expression {0} for {1} field." xml:space="preserve">
+    <value>为 {1} 字段执行表达式 {0} 时出错。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error importing file!" xml:space="preserve">
+    <value>导入文件错误!</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Error Message '" xml:space="preserve">
+    <value>错误消息</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error on write log to database." xml:space="preserve">
+    <value>将日志写入数据库时出错。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error raise in DataAccess" xml:space="preserve">
+    <value>数据访问引发错误。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error rendering upload! Primary key not defined in {0}" xml:space="preserve">
+    <value>渲染上传错误！ {0} 中未定义主键</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Error rendering upload! Primary key value {0} contains invalid characters." xml:space="preserve">
+    <value>渲染上传错误！ 主键值 {0} 包含无效字符。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Error rendering upload! Primary key value {0} not found at {1}" xml:space="preserve">
+    <value>渲染上传错误！ 在 {1} 找不到主键值 {0}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Error retrieving expression in Protheus integration." xml:space="preserve">
+    <value>在 Protheus 集成中检索表达式时出错。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error retrieving expression or trigger." xml:space="preserve">
+    <value>检索表达式或触发器时出错。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error searching for {0}." xml:space="preserve">
+    <value>搜索 {0} 时出错。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error starting connection provider {0}. Error message: {1}" xml:space="preserve">
+    <value>启动连接提供程序 {0} 时出错。 错误消息：{1}</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Error synchronizing object: {0}, page: {1}. Details: {2}" xml:space="preserve">
+    <value>同步对象时出错：{0}，页面：{1}。 详细信息：{2}</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Errors:" xml:space="preserve">
+    <value>错误:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Event Types" xml:space="preserve">
+    <value>事件类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>事件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Execute Stored Procedures" xml:space="preserve">
+    <value>执行存储过程</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Executed Query" xml:space="preserve">
+    <value>执行查询</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>退出</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Expanded By Default" xml:space="preserve">
+    <value>默认展开</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ExpandedByDefault" xml:space="preserve">
+    <value>默认展开</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Expected {0} Received {1}." xml:space="preserve">
+    <value>预计 {0} 收到 {1}。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Export file name with download link" xml:space="preserve">
+    <value>导出带有下载链接的文件名</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Export first line as title" xml:space="preserve">
+    <value>将第一行导出为标题</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Export not enabled" xml:space="preserve">
+    <value>未启用导出</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Export Selected" xml:space="preserve">
+    <value>导出选择</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Export to" xml:space="preserve">
+    <value>导出到</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="ExportAsLink" xml:space="preserve">
+    <value>导出链接</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Exportation started on" xml:space="preserve">
+    <value>导出从</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Exporting {0} records..." xml:space="preserve">
+    <value>导出 {0} 记录...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Expression" xml:space="preserve">
+    <value>表达式</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Expression for a default value" xml:space="preserve">
+    <value>默认值的表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Expression not started with" xml:space="preserve">
+    <value>表达式不是以</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Expression that returns a Boolean at runtime" xml:space="preserve">
+    <value>在运行时返回布尔值的表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field" xml:space="preserve">
+    <value>字段</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Field behavior in relation to the database" xml:space="preserve">
+    <value>与数据库相关的字段行为</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field Description" xml:space="preserve">
+    <value>字段描述</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field Key" xml:space="preserve">
+    <value>字段主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field Lookup" xml:space="preserve">
+    <value>字段查找</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field Maintenance" xml:space="preserve">
+    <value>字段维护</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field [{0}] already exists in Element.Fields" xml:space="preserve">
+    <value>Element.Fields 中已存在字段 [{0}]</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Field [{0}] invalid, as it is not PK or not configured as a filter" xml:space="preserve">
+    <value>字段 [{0}] 无效，因为它不是 PK 或未配置为过滤器</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field [{0}] is empty." xml:space="preserve">
+    <value>字段 [{0}] 为空。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field [{0}] not found" xml:space="preserve">
+    <value>字段 [{0}] 没有找到。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Field [{0}] not returned when inserting record" xml:space="preserve">
+    <value>插入记录时未返回字段 [{0}]</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="FieldName" xml:space="preserve">
+    <value>字段名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Fields of type FILE cannot be virtual" xml:space="preserve">
+    <value>FILE 类型的字段不能是虚拟的</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="File generated successfully!" xml:space="preserve">
+    <value>文件生成成功！</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File has been already used." xml:space="preserve">
+    <value>文件已被使用。</value>
+    <comment>JJMasterdata.Core</comment>
+  </data>
+  <data name="File header ignored" xml:space="preserve">
+    <value>文件头被忽略</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File imported successfully!" xml:space="preserve">
+    <value>文件导入成功！</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File imported with errors!" xml:space="preserve">
+    <value>文件导入错误！</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File is already being used by another process. Try downloading it from \&quot;Recently generated files\&quot;." xml:space="preserve">
+    <value>文件已被另一个进程使用。 尝试从“最近生成的文件”下载它。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="File name" xml:space="preserve">
+    <value>文件名</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="File name cannot contain [{0}] characters" xml:space="preserve">
+    <value>文件名不能包含 [{0}] 个字符</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File Name:" xml:space="preserve">
+    <value>文件名:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File not found at {0}" xml:space="preserve">
+    <value>在 {0} 找不到文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File size:" xml:space="preserve">
+    <value>文件大小:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File Type:" xml:space="preserve">
+    <value>文件类型:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked" xml:space="preserve">
+    <value>用逗号分隔的文件类型，例如：txt、csv、xlsx。 在 * 模式下系统文件被阻止</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="file types that cannot be included as attachments by default" xml:space="preserve">
+    <value>默认情况下不能作为附件包含的文件类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="File Upload" xml:space="preserve">
+    <value>文件上传</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="File {0} ignored." xml:space="preserve">
+    <value>文件 {0} 已忽略。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="File {0} is being used by another process." xml:space="preserve">
+    <value>文件 {0} 正被另一个进程使用。</value>
+    <comment>JJMasterData.Core</comment>
+  </data>
+  <data name="File {0} not found!" xml:space="preserve">
+    <value>未找到文件 {0}！</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>过滤</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Filter Action" xml:space="preserve">
+    <value>过滤操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Filter behavior remains the same." xml:space="preserve">
+    <value>过滤器行为保持不变。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Filter by any field visible in the list" xml:space="preserve">
+    <value>按列表中可见的任何字段过滤</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Filter Expression" xml:space="preserve">
+    <value>过滤器表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Filter Type" xml:space="preserve">
+    <value>过滤器类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>过滤器</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Filters performed in the previous screen will be considered in the export" xml:space="preserve">
+    <value>在前一个屏幕中执行的过滤器将在导出中考虑</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="First record" xml:space="preserve">
+    <value>第一次记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="FirstOption" xml:space="preserve">
+    <value>第一选项</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Fix the grid header when scrolling" xml:space="preserve">
+    <value>滚动时修复网格标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Folder path, ex:" xml:space="preserve">
+    <value>文件夹路径，例如：</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="FolderPath" xml:space="preserve">
+    <value>文件夹路径</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="FolerPath not defined in upload config to field {0}" xml:space="preserve">
+    <value>在将配置上传到字段 {0} 中未定义 FolerPath</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="for example Oracle with version less than 12c is limited to 30 characters." xml:space="preserve">
+    <value>例如，低于 12c 的 Oracle 被限制为 30 个字符。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="For example:" xml:space="preserve">
+    <value>例如：</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="For more information, check the log details below" xml:space="preserve">
+    <value>有关更多信息，请查看下面的日志详细信息</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="For security reasons we don't allow you to attach some file types by default." xml:space="preserve">
+    <value>出于安全原因，默认情况下我们不允许您附加某些文件类型。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="for this reason it is not allowed to export multiple linked files." xml:space="preserve">
+    <value>因此，不允许导出多个链接文件。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form" xml:space="preserve">
+    <value>表单</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form Sub-Title" xml:space="preserve">
+    <value>表单子标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Form Title" xml:space="preserve">
+    <value>表单名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Format (dd/MM/yyyy HH:mm:ss) example:" xml:space="preserve">
+    <value>格式化 (dd/MM/yyyy HH:mm:ss) 例子</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Format (dd/MM/yyyy) example:" xml:space="preserve">
+    <value>格式化 (dd/MM/yyyy) 例子</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="FormCols" xml:space="preserve">
+    <value>表单列</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="FormElementField can not be null" xml:space="preserve">
+    <value>表单元素字段不能为null</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="FormView" xml:space="preserve">
+    <value>表单预览</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>从</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="From:" xml:space="preserve">
+    <value>从:</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>一般</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get a record detail" xml:space="preserve">
+    <value>获取记录详细信息</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get all records" xml:space="preserve">
+    <value>获取所有记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get Procedure" xml:space="preserve">
+    <value>获取存储过程</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get Script" xml:space="preserve">
+    <value>获取脚本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Global" xml:space="preserve">
+    <value>全球</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Good Afternoon" xml:space="preserve">
+    <value>下午好</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Good Morning" xml:space="preserve">
+    <value>早上好</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Good Night" xml:space="preserve">
+    <value>晚上好</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Grid" xml:space="preserve">
+    <value>网格</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="GridView" xml:space="preserve">
+    <value>网格视图</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Group Line" xml:space="preserve">
+    <value>线组</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Header Fixed" xml:space="preserve">
+    <value>固定表头</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>帮助</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Help Description" xml:space="preserve">
+    <value>帮助说明</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Hide Log" xml:space="preserve">
+    <value>隐藏日志</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Highlight line on mouseover" xml:space="preserve">
+    <value>鼠标悬停时突出显示线</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Horizontal" xml:space="preserve">
+    <value>水平的</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Horizontal label layout on left side of field, vertical label layout above field" xml:space="preserve">
+    <value>字段左侧的水平标签布局，字段上方的垂直标签布局</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="How do I further increase the file size in the MaxFileSize property?" xml:space="preserve">
+    <value>如何进一步增加 MaxFileSize 属性中的文件大小？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="How to configure a property folder path?" xml:space="preserve">
+    <value>如何配置属性文件夹路径？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>图标</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="IconId" xml:space="preserve">
+    <value>图标Id</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Identity" xml:space="preserve">
+    <value>身份</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="If the download does not start automatically, click on the icon below." xml:space="preserve">
+    <value>如果下载没有自动开始，请单击下面的图标。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="If the download not start automatically" xml:space="preserve">
+    <value>如果下载没有自动开始</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="If the form has a composite primary key, they will be separated by an underscore following a registration order." xml:space="preserve">
+    <value>如果表单有复合主键，它们将按照注册顺序用下划线分隔。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="If the insert method is executed successfully the user will be redirected to editing the context dictionary." xml:space="preserve">
+    <value>如果插入方法成功执行，用户将被重定向到编辑上下文字典。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="If you are sure the file is safe you can specify file types separated by comma or" xml:space="preserve">
+    <value>如果您确定文件是安全的，您可以指定用逗号分隔的文件类型或</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="If you want to increase the size of this field, you will need to change the setting in the application's web.config in the key" xml:space="preserve">
+    <value>如果要增加此字段的大小，则需要更改应用程序的 web.config 中的设置键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="If your table's primary key is the id field (autonumeric) and you set the path:" xml:space="preserve">
+    <value>如果您的表的主键是 id 字段（自动数字）并且您设置了路径：</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Ignored:" xml:space="preserve">
+    <value>忽略：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>导入</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Import action not enabled" xml:space="preserve">
+    <value>未启用导入操作</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Import configured with scope per user, but no key with USERID found." xml:space="preserve">
+    <value>导入配置为每个用户的范围，但没有找到具有 USERID 的键。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Import fields" xml:space="preserve">
+    <value>导入字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Import File" xml:space="preserve">
+    <value>导入文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Import File - Help" xml:space="preserve">
+    <value>导入文件 - 帮助</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Import started on" xml:space="preserve">
+    <value>导入开始于</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Important points" xml:space="preserve">
+    <value>导入点</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Importing {0} records..." xml:space="preserve">
+    <value>导入 {0} 记录...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Index Name" xml:space="preserve">
+    <value>索引 名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Indexes" xml:space="preserve">
+    <value>索引</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="IndexName" xml:space="preserve">
+    <value>索引名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Indicates whether the gridview header will be visible when there is no data" xml:space="preserve">
+    <value>指示当没有数据时gridview header是否可见</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>信息</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Inform the Id" xml:space="preserve">
+    <value>信息Id</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>信息</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Insert Action" xml:space="preserve">
+    <value>插入动作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Insert action not enabled" xml:space="preserve">
+    <value>未启用插入操作</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Inserted:" xml:space="preserve">
+    <value>插入：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Integer number" xml:space="preserve">
+    <value>整数</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Internal Redirect" xml:space="preserve">
+    <value>内部重定向</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Internal Title" xml:space="preserve">
+    <value>内部标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Internationalization not enabled, check the [JJMasterData.TableResources] parameter" xml:space="preserve">
+    <value>未启用国际化，检查 [JJMasterData.TableResources] 参数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Internet unavailable" xml:space="preserve">
+    <value>互联网不可用</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid Access" xml:space="preserve">
+    <value>无效访问</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Invalid Action" xml:space="preserve">
+    <value>无效操作</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid character" xml:space="preserve">
+    <value>无效字符</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid CNPJ" xml:space="preserve">
+    <value>无效的 CNPJ</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid CPF" xml:space="preserve">
+    <value>无效公积金</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid data" xml:space="preserve">
+    <value>无效数据</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid data provider." xml:space="preserve">
+    <value>数据提供者无效。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid dictionary name" xml:space="preserve">
+    <value>字典名称无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid element" xml:space="preserve">
+    <value>无效元素</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid expression for {0} field" xml:space="preserve">
+    <value>{0} 字段的表达式无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid fields" xml:space="preserve">
+    <value>无效字段</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid file path or badly formatted URL" xml:space="preserve">
+    <value>文件路径无效或 URL 格式错误</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Invalid filter field" xml:space="preserve">
+    <value>过滤器字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid number of fields." xml:space="preserve">
+    <value>字段数无效。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Invalid Parameter" xml:space="preserve">
+    <value>无效的参数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid parameter or not a list" xml:space="preserve">
+    <value>参数无效或不是列表</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Invalid parameter or not found" xml:space="preserve">
+    <value>参数无效或未找到</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Invalid parameters when opening file upload" xml:space="preserve">
+    <value>打开文件上传时参数无效</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Invalid primary key" xml:space="preserve">
+    <value>无效的主键</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Invalid Protheus Request" xml:space="preserve">
+    <value>无效的 Protheus 请求</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid return of @RET variable in procedure" xml:space="preserve">
+    <value>过程中 @RET 变量的无效返回</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Invalid Token" xml:space="preserve">
+    <value>令牌无效</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Invalid [DefaultValue] field" xml:space="preserve">
+    <value>[DefaultValue] 字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [EnableExpression] field" xml:space="preserve">
+    <value>[EnableExpression] 字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [Name] field! There is already an action registered with that name." xml:space="preserve">
+    <value>[名称] 字段无效！ 已经有一个使用该名称注册的操作。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [Size] field" xml:space="preserve">
+    <value>[大小] 字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [TriggerExpression] field" xml:space="preserve">
+    <value>[TriggerExpression] 字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [VisibleExpression] field" xml:space="preserve">
+    <value>[VisibleExpression] 字段无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Invalid [VisibleExpression] panel" xml:space="preserve">
+    <value>[VisibleExpression] 面板无效</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="IP Address" xml:space="preserve">
+    <value>IP地址</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Is Default" xml:space="preserve">
+    <value>是默认的</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Is Group" xml:space="preserve">
+    <value>是组</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="is not allowed. Allowed extensions:" xml:space="preserve">
+    <value>不被允许。 允许的扩展：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="is not allowed. Allowed Max size:" xml:space="preserve">
+    <value>不被允许。 允许的最大尺寸：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="IsClustered" xml:space="preserve">
+    <value>是集群的</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="IsUnique" xml:space="preserve">
+    <value>是独特的</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="It is not allowed to enable multiple selection without defining a primary key in the data dictionary" xml:space="preserve">
+    <value>不允许在数据字典中未定义主键的情况下启用多选</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Item description {i} required" xml:space="preserve">
+    <value>需要项目描述 {i}</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Item id {0} required" xml:space="preserve">
+    <value>需要项目 ID {0}</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Item list not defined" xml:space="preserve">
+    <value>未定义项目列表</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="JavaScript Command" xml:space="preserve">
+    <value>JavaScript 命令</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="JJPipeline Process is already running" xml:space="preserve">
+    <value>JJPipeline 进程已经在运行</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Json return format" xml:space="preserve">
+    <value>Json返回格式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="JsonFormat" xml:space="preserve">
+    <value>json格式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Label" xml:space="preserve">
+    <value>标签</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Landscape" xml:space="preserve">
+    <value>空格</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Last Import" xml:space="preserve">
+    <value>上次导入</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Last Modified" xml:space="preserve">
+    <value>最后修改</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Last month" xml:space="preserve">
+    <value>上个月</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Last record" xml:space="preserve">
+    <value>最后记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Last three months" xml:space="preserve">
+    <value>最近三个月</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Last write time:" xml:space="preserve">
+    <value>上次写入时间：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="LayoutFields" xml:space="preserve">
+    <value>布局字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Legal person" xml:space="preserve">
+    <value>法人</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Line" xml:space="preserve">
+    <value>明细</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="LineGroup" xml:space="preserve">
+    <value>线路组</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Lines" xml:space="preserve">
+    <value>明细</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="List Type" xml:space="preserve">
+    <value>列表类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ListType" xml:space="preserve">
+    <value>列表类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>日志</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Maintains grid filters, order and pagination" xml:space="preserve">
+    <value>维护网格过滤器、顺序和分页</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="MaintainValuesOnLoad" xml:space="preserve">
+    <value>在加载时保持值</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Make a menu separator before this action" xml:space="preserve">
+    <value>在此操作之前制作菜单分隔符</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Manage Files" xml:space="preserve">
+    <value>管理文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Mandatory &lt;b&gt;PKTable &lt;/b&gt; field" xml:space="preserve">
+    <value>必填 &lt;b&gt;PKTable &lt;/b&gt; 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Mandatory Date of Birth" xml:space="preserve">
+    <value>强制出生日期</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Mandatory dictionary name field" xml:space="preserve">
+    <value>必填字典名称字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Mark all {0} records" xml:space="preserve">
+    <value>标记所有 {0} 条记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Mark|Unmark all from page" xml:space="preserve">
+    <value>标记|取消标记所有页面</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Max. {0} characters" xml:space="preserve">
+    <value>最大限度。 {0} 个字符</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>最大文件大小</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Maximum file size" xml:space="preserve">
+    <value>最大文件大小</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Maximum limit of {0} characters!" xml:space="preserve">
+    <value>最大限制为 {0} 个字符！</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="maxRequestLength" xml:space="preserve">
+    <value>最大请求长度</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="may result in severe civil and criminal penalties, and will be prosecuted to the maximum extend possible under the law." xml:space="preserve">
+    <value>可能导致严厉的民事和刑事处罚，并将在法律允许的范围内受到最大程度的起诉。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>消息</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Methods" xml:space="preserve">
+    <value>方法</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Mode" xml:space="preserve">
+    <value>模式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="More" xml:space="preserve">
+    <value>更多</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="More Options" xml:space="preserve">
+    <value>更多选项</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Move Down" xml:space="preserve">
+    <value>下移</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Move Up" xml:space="preserve">
+    <value>上移</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="MultipleFile" xml:space="preserve">
+    <value>多个文件</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="MULTVALUES filters are only allowed for text type fields" xml:space="preserve">
+    <value>MULTVALUES 过滤器仅允许用于文本类型字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Name of field already exists" xml:space="preserve">
+    <value>字段名称已存在</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Need more help?" xml:space="preserve">
+    <value>需要更多帮助？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>新增</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="New action" xml:space="preserve">
+    <value>新增操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="New Dictionary Name" xml:space="preserve">
+    <value>新字典名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="New File" xml:space="preserve">
+    <value>新文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="New Index" xml:space="preserve">
+    <value>新索引</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>不</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No - Close the form and return to the list." xml:space="preserve">
+    <value>否 - 关闭表单并返回列表。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No data records found" xml:space="preserve">
+    <value>未找到数据记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No dictionary found" xml:space="preserve">
+    <value>找不到字典</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="No dot or comma" xml:space="preserve">
+    <value>没有点或逗号</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="No lines selected." xml:space="preserve">
+    <value>未选择任何行。</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="No primary key defined in dictionary" xml:space="preserve">
+    <value>字典中没有定义主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No recently generated files." xml:space="preserve">
+    <value>没有最近生成的文件。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="No record found" xml:space="preserve">
+    <value>没有找到记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No record selected" xml:space="preserve">
+    <value>未选择记录</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="No records found" xml:space="preserve">
+    <value>没有找到记录</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="No relations found" xml:space="preserve">
+    <value>未找到任何关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="No relationship registered." xml:space="preserve">
+    <value>没有登记关系。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Not order" xml:space="preserve">
+    <value>没有订单</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Number maximum of records exceeded on {0}, contact the administrator." xml:space="preserve">
+    <value>{0} 上的记录数超出上限，请与管理员联系。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Number of columns where fields will be rendered by default" xml:space="preserve">
+    <value>默认情况下将呈现字段的列数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Number of decimal places" xml:space="preserve">
+    <value>小数位数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Number of lines in the text box" xml:space="preserve">
+    <value>文本框中的行数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Object" xml:space="preserve">
+    <value>对象</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="objects" xml:space="preserve">
+    <value>对象</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="of" xml:space="preserve">
+    <value>的</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>确认</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Only one process from this dictionary can be run at a time." xml:space="preserve">
+    <value>一次只能运行此字典中的一个进程。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Only the fields visible on the screen" xml:space="preserve">
+    <value>只有屏幕上可见的字段</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Oops, dictionary not found." xml:space="preserve">
+    <value>糟糕，找不到字典。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="open action as popup" xml:space="preserve">
+    <value>打开动作作为弹出窗口</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Optimizing the reading of SEARCH component records" xml:space="preserve">
+    <value>优化 SEARCH 组件记录的读取</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="or" xml:space="preserve">
+    <value>或者</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>订单</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Order Budget" xml:space="preserve">
+    <value>订单预算</value>
+    <comment>WebSales</comment>
+  </data>
+  <data name="Orientation" xml:space="preserve">
+    <value>方向</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>起源</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>所有者</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="pages" xml:space="preserve">
+    <value>页面</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Panels" xml:space="preserve">
+    <value>面板</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>参数</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="passing as a parameter an action to download the file," xml:space="preserve">
+    <value>将下载文件的操作作为参数传递，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Password and confirmation password are not the same!" xml:space="preserve">
+    <value>密码和确认密码不一样！</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Password cannot be blank!" xml:space="preserve">
+    <value>密码不能为空！</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Password cannot contain user!" xml:space="preserve">
+    <value>密码不能包含用户！</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Password change required" xml:space="preserve">
+    <value>需要更改密码</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Password must contain at least one number!" xml:space="preserve">
+    <value>密码必须包含至少一个数字！</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Password sent by email if existing" xml:space="preserve">
+    <value>通过电子邮件发送的密码（如果存在）</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Paste Excel rows or drag and drop files of type: {0}" xml:space="preserve">
+    <value>粘贴 Excel 行或拖放以下类型的文件：{0}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Paste or Drag &amp; Drop Files" xml:space="preserve">
+    <value>粘贴或拖放文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Periods" xml:space="preserve">
+    <value>时期</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Physical person" xml:space="preserve">
+    <value>物理人</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Pipe (|)" xml:space="preserve">
+    <value>管道 (|)</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="PK" xml:space="preserve">
+    <value>外键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="PL-SQL Command" xml:space="preserve">
+    <value> PL-SQL命令</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="PlaceHolder" xml:space="preserve">
+    <value>占位符</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Please enter a record before proceeding" xml:space="preserve">
+    <value>请在继续之前输入记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Popup Size" xml:space="preserve">
+    <value>弹出窗口大小</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Portrait" xml:space="preserve">
+    <value>头像</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Post via Ajax" xml:space="preserve">
+    <value>通过 Ajax 发布</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>预览</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Primary key" xml:space="preserve">
+    <value>主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Primary key not defined for dictionary {0}" xml:space="preserve">
+    <value>未为字典 {0} 定义主键</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Primary key record" xml:space="preserve">
+    <value>主键记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Primary key separated by semicolons" xml:space="preserve">
+    <value>用分号分隔的主键</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Primary key {0} not entered" xml:space="preserve">
+    <value>未输入主键 {0}</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Primary key {0} value not found" xml:space="preserve">
+    <value>未找到主键 {0} 值</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Procedure names cannot be identical" xml:space="preserve">
+    <value>过程名称不能相同</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Process aborted by the user." xml:space="preserve">
+    <value>进程被用户中止。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Process performed on {0}" xml:space="preserve">
+    <value>在 {0} 上执行的过程</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Property name action is not valid" xml:space="preserve">
+    <value>属性名称操作无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Python Script" xml:space="preserve">
+    <value>Python 脚本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Recently generated files" xml:space="preserve">
+    <value>最近生成的文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Record added successfully" xml:space="preserve">
+    <value>记录添加成功</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Record already registered" xml:space="preserve">
+    <value>记录已注册</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Record Key" xml:space="preserve">
+    <value>记录键</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Record saved successfully." xml:space="preserve">
+    <value>记录保存成功。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Record successfully deleted" xml:space="preserve">
+    <value>记录成功删除</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Record updated successfully" xml:space="preserve">
+    <value>记录更新成功</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="records" xml:space="preserve">
+    <value>记录</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Records per Page" xml:space="preserve">
+    <value>每页记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="records." xml:space="preserve">
+    <value>记录。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Recover password" xml:space="preserve">
+    <value>恢复密码</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="redirecting the user to the page where the file was generated," xml:space="preserve">
+    <value>将用户重定向到生成文件的页面，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Redoes the expression whenever a field triggers in Auto Post Back" xml:space="preserve">
+    <value>每当字段在自动回发中触发时重做表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>参考</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>刷新</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Registration data" xml:space="preserve">
+    <value>注册资料</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Relation" xml:space="preserve">
+    <value>关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Relations" xml:space="preserve">
+    <value>关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Relationship already registered" xml:space="preserve">
+    <value>已登记关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>移除</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Remove All" xml:space="preserve">
+    <value>移除所有</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="remove the borders of the fields displaying as text." xml:space="preserve">
+    <value>删除显示为文本的字段的边框。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Rename File" xml:space="preserve">
+    <value>重新命名文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Reopen Form" xml:space="preserve">
+    <value>重新打开表格</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Reopen Form." xml:space="preserve">
+    <value>重新打开表格</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Replace the field value with a description of the combination when displaying a grid" xml:space="preserve">
+    <value>显示网格时将字段值替换为组合的描述</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ReplaceTextOnGrid" xml:space="preserve">
+    <value>替换网格上的文本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>必填</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Required CNPJ" xml:space="preserve">
+    <value>要求的 CNPJ</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required CPF" xml:space="preserve">
+    <value>要求的 CPF</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required field" xml:space="preserve">
+    <value>必填</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required field [ElementName]" xml:space="preserve">
+    <value>必填 [ElementName]</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required field [FolderPath]" xml:space="preserve">
+    <value>必填 [FolderPath]</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required file name" xml:space="preserve">
+    <value>所需文件名</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Required filter field" xml:space="preserve">
+    <value>必填过滤字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required FkColumn field" xml:space="preserve">
+    <value>必需的 FkColumn 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required PkColumn field" xml:space="preserve">
+    <value>必需的 PkColumn 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required PkTableName Field" xml:space="preserve">
+    <value>必需的 PkTableName 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required table name field" xml:space="preserve">
+    <value>必填表名字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [AllowedTypes] field" xml:space="preserve">
+    <value>必需的 [AllowedTypes] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [EnableExpression] field" xml:space="preserve">
+    <value>必需的 [EnableExpression] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [Entity Name] field" xml:space="preserve">
+    <value>必填 [实体名称] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [EventsTypes] field" xml:space="preserve">
+    <value>必需的 [EventsTypes] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [JavaScript Command] field" xml:space="preserve">
+    <value>必需的 [JavaScript 命令] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [Name] field" xml:space="preserve">
+    <value>必填 [名称] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [PythonScript] field" xml:space="preserve">
+    <value>必填 [PythonScript] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [Sql Command] field" xml:space="preserve">
+    <value>必填 [Sql 命令] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [Url Redirect] field" xml:space="preserve">
+    <value>必填 [网址重定向] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [VisibleExpression] field" xml:space="preserve">
+    <value>必填 [VisibleExpression] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [VisibleExpression] panel" xml:space="preserve">
+    <value>必需的 [VisibleExpression] 面板</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Required [{0}] field" xml:space="preserve">
+    <value>必填 [{0}] 字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Retrieving records..." xml:space="preserve">
+    <value>正在检索记录...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Return four columns in query Id, Description, ImageId,  Color in Hexa" xml:space="preserve">
+    <value>在Hexa中返回查询Id，Description，ImageId，Color中的四列</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Return two columns in query Id, Description" xml:space="preserve">
+    <value>返回查询 ID、描述中的两列</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Row counter, used to break the line in the form (row class)" xml:space="preserve">
+    <value>行计数器，用于在表格中换行（行类）</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Row:" xml:space="preserve">
+    <value>行:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Rows" xml:space="preserve">
+    <value>行</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Run All" xml:space="preserve">
+    <value>运行所有</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>范围</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Scope of execution of the process." xml:space="preserve">
+    <value>流程的执行范围。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Script Action" xml:space="preserve">
+    <value>脚本操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Search..." xml:space="preserve">
+    <value>搜索...</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>选择</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Select a field to compose the index" xml:space="preserve">
+    <value>选择一个字段来组成索引</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Select Dictionaries" xml:space="preserve">
+    <value>选择字典</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Select one or more dictionaries" xml:space="preserve">
+    <value>选择一个或多个字典</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Selected" xml:space="preserve">
+    <value>选择</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Selected Fields" xml:space="preserve">
+    <value>选定字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Semicolon (;)" xml:space="preserve">
+    <value>分号 (;)</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="separated by semicolons (;), following the layout below:" xml:space="preserve">
+    <value>用分号 (;) 分隔，遵循以下布局：</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Session expired" xml:space="preserve">
+    <value>会话已过期</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Set as default option" xml:space="preserve">
+    <value>设置为默认选项</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Set Procedure" xml:space="preserve">
+    <value>设置程序</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Set the connection string name in the [log_connectname] key." xml:space="preserve">
+    <value>在 [log_connectname] 键中设置连接字符串名称。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Setting where the file(s) will be stored" xml:space="preserve">
+    <value>设置文件的存储位置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Several users can run this process simultaneously, but only see the log and one run of your process." xml:space="preserve">
+    <value>多个用户可以同时运行此进程，但只能看到日志和您的进程的一次运行。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Show As Button" xml:space="preserve">
+    <value>显示为按钮</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Show border on grid" xml:space="preserve">
+    <value>在网格上显示边框</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Show rows striped" xml:space="preserve">
+    <value>显示条纹行</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Show table border" xml:space="preserve">
+    <value>显示表格边框</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Show Title" xml:space="preserve">
+    <value>显示标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Show title in page header" xml:space="preserve">
+    <value>在页眉中显示标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowAsCollapse" xml:space="preserve">
+    <value>显示为折叠</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowBorder" xml:space="preserve">
+    <value>显示边界</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowHeaderWhenEmpty" xml:space="preserve">
+    <value>空时显示标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowImageLegend" xml:space="preserve">
+    <value>显示图像图例</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Showing" xml:space="preserve">
+    <value>显示</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="ShowPagging" xml:space="preserve">
+    <value>显示分页</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowRowHover" xml:space="preserve">
+    <value>显示行悬停</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowRowStriped" xml:space="preserve">
+    <value>显示行条纹</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowTitle" xml:space="preserve">
+    <value>显示标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowToolbar" xml:space="preserve">
+    <value>显示工具栏</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ShowViewModeAsStatic" xml:space="preserve">
+    <value>将视图模式显示为静态</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>大小</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Size: {0} MB" xml:space="preserve">
+    <value>大小：{0} MB</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Snapshot Record" xml:space="preserve">
+    <value>快照记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Some databases have limitation on object names," xml:space="preserve">
+    <value>一些数据库对对象名称有限制，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>排序</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Sort Fields" xml:space="preserve">
+    <value>排序字段</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Source dictionary" xml:space="preserve">
+    <value>源字典</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Sql Command" xml:space="preserve">
+    <value>Sql Command</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>开始</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>停止</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stop the exportation." xml:space="preserve">
+    <value>停止导出.</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stop the import." xml:space="preserve">
+    <value>停止导入</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Stopping Processing..." xml:space="preserve">
+    <value>停止处理...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Sub Title" xml:space="preserve">
+    <value>副标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="SubTitle" xml:space="preserve">
+    <value>副标题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Success!" xml:space="preserve">
+    <value>成功!</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Sync" xml:space="preserve">
+    <value>同步</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Sync Mode" xml:space="preserve">
+    <value>同步模式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Synchronizing" xml:space="preserve">
+    <value>同步</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="System Log" xml:space="preserve">
+    <value>系统日志</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="System Version" xml:space="preserve">
+    <value>系统信息</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Table" xml:space="preserve">
+    <value>表</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Table information" xml:space="preserve">
+    <value>表信息</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Table Name" xml:space="preserve">
+    <value>表名</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Table not found" xml:space="preserve">
+    <value>表没有找到</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Table {0} not found" xml:space="preserve">
+    <value>表 {0} 没有找到</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>文本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Text applied when there are no records to be applied" xml:space="preserve">
+    <value>没有要应用的记录时应用的文本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The field[NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
+    <value>字段[NumberOfDecimalPlaces] 不能用类型定义</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The file extension must remain the same" xml:space="preserve">
+    <value>文件扩展名必须保持不变</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="the file must contain" xml:space="preserve">
+    <value>该文件必须包含</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="the filename is sent to comma-separated database." xml:space="preserve">
+    <value>文件名被发送到逗号分隔的数据库。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The help text will be displayed like this on the form." xml:space="preserve">
+    <value>帮助文本将像这样显示在表单上。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The maximum limit of this configuration is determined by the configuration performed on the application server." xml:space="preserve">
+    <value>此配置的最大限制由在应用程序服务器上执行的配置决定。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The maximum request size in kilobytes. The default size is 4096 KB (4 MB)." xml:space="preserve">
+    <value>以千字节为单位的最大请求大小。 默认大小为 4096 KB (4 MB)。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The password must contain at least one uppercase character!" xml:space="preserve">
+    <value>密码必须至少包含一个大写字符！</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="The primary key field must not contain [NumberOfDecimalPlaces]" xml:space="preserve">
+    <value>主键字段不得包含 [NumberOfDecimalPlaces]</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The record cannot be deleted because it is being used as a dependency." xml:space="preserve">
+    <value>无法删除该记录，因为它被用作依赖项。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="The [ExportAsLink] field cannot be enabled with [MultipleFile]" xml:space="preserve">
+    <value>[ExportAsLink] 字段无法使用 [MultipleFile] 启用</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The [Name] field cannot contain accents." xml:space="preserve">
+    <value>[名称] 字段不能包含重音符号。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The [Name] field cannot contain blank spaces." xml:space="preserve">
+    <value>[名称] 字段不能包含空格。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The [Name] field contains an invalid character ({c})" xml:space="preserve">
+    <value>[名称] 字段包含无效字符 ({c})</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="There are filters applied for this query." xml:space="preserve">
+    <value>有适用于此查询的过滤器。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="There is already a relationship registered for" xml:space="preserve">
+    <value>已经注册了一个关系</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="There is no caption to be displayed" xml:space="preserve">
+    <value>没有要显示的标题</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="There is no events to display." xml:space="preserve">
+    <value>没有要显示的事件。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="There is no file to display" xml:space="preserve">
+    <value>没有要显示的文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="There is no record to apply" xml:space="preserve">
+    <value>没有申请记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="There is no record to display" xml:space="preserve">
+    <value>没有可显示的记录</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="There was an error processing your order." xml:space="preserve">
+    <value>处理您的订单时出错。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="These are the blocked file types:" xml:space="preserve">
+    <value>这些是被阻止的文件类型：</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This action can not be removed" xml:space="preserve">
+    <value>此操作无法删除</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="This component allows you to add actions, but you must save it to add actions later." xml:space="preserve">
+    <value>此组件允许您添加操作，但您必须将其保存以稍后添加操作。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This month" xml:space="preserve">
+    <value>这个月</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="This search does not query the database, it only looks for records displayed in the grid." xml:space="preserve">
+    <value>此搜索不查询数据库，它只查找显示在网格中的记录。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="This task has expired and can no longer run" xml:space="preserve">
+    <value>此任务已过期，无法再运行</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>标题</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Title Pop Up" xml:space="preserve">
+    <value>标题弹出</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>至</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="To bulk insert records, select a file of type" xml:space="preserve">
+    <value>要批量插入记录，请选择文件类型</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="To enable sync the get APIs must be enabled." xml:space="preserve">
+    <value>要启用同步，必须启用 get API。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="To keep up with the ever-changing malicious software, we frequently update file types without permission." xml:space="preserve">
+    <value>为了跟上不断变化的恶意软件，我们经常在未经许可的情况下更新文件类型。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="To:" xml:space="preserve">
+    <value>至:</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>今天</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Toggle Dropdown" xml:space="preserve">
+    <value>切换下拉</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Toggle navigation" xml:space="preserve">
+    <value>切换导航</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ToolBar" xml:space="preserve">
+    <value>工具栏</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ToolTip" xml:space="preserve">
+    <value>提示</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Total buttons on paging" xml:space="preserve">
+    <value>分页按钮总数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Total Records per page" xml:space="preserve">
+    <value>每页总记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="TotalPaggingButton" xml:space="preserve">
+    <value>总分页按钮</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="TotalPerPage" xml:space="preserve">
+    <value>总页数</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="TotPerPage" xml:space="preserve">
+    <value>总页数</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Trigger Expression" xml:space="preserve">
+    <value>触发表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Truncated log file, greater than 700 chars" xml:space="preserve">
+    <value>截断的日志文件，超过 700 个字符</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Types of historical files" xml:space="preserve">
+    <value>历史文件的类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Typically used when grid paging is disabled." xml:space="preserve">
+    <value>通常在禁用网格分页时使用。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Unable to identify the format of the list." xml:space="preserve">
+    <value>无法识别列表的格式。</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Unable to retrieve caption" xml:space="preserve">
+    <value>无法检索字幕</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Unauthorized reproduction or distribution of this program, or any portion of it," xml:space="preserve">
+    <value>未经授权复制或分发本程序或其任何部分，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Undefined file settings" xml:space="preserve">
+    <value>未定义的文件设置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Undefined font settings" xml:space="preserve">
+    <value>未定义的字体设置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Undefined mapping settings" xml:space="preserve">
+    <value>未定义的映射设置</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Unexpected error" xml:space="preserve">
+    <value>意外的错误</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Unfortunately in this scenario you will have to create a field for each file." xml:space="preserve">
+    <value>不幸的是，在这种情况下，您必须为每个文件创建一个字段。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Unmark all selected records" xml:space="preserve">
+    <value>取消标记所有选定的记录</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Unzipping file:" xml:space="preserve">
+    <value>解压文件:</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Update records" xml:space="preserve">
+    <value>更新字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Update some especific fields" xml:space="preserve">
+    <value>更新一些特定字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Updated:" xml:space="preserve">
+    <value>更新:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="UpdateOnCascade" xml:space="preserve">
+    <value>级联更新</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>上传</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Upload config not defined" xml:space="preserve">
+    <value>上传配置未定义</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="URL accept expression" xml:space="preserve">
+    <value>URL 接受表达式</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Url Redirect" xml:space="preserve">
+    <value>Url 跳转</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Use comma as separator for {0} decimal places" xml:space="preserve">
+    <value>使用逗号作为 {0} 位小数的分隔符</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator." xml:space="preserve">
+    <value>使用过滤器减少导出量，如果您需要经常执行此操作，请联系您的系统管理员。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Used in sync?" xml:space="preserve">
+    <value>同步使用？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>用户</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="User Id" xml:space="preserve">
+    <value>User Id</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="User Id:" xml:space="preserve">
+    <value>User Id:</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="User not found, contact system administrator." xml:space="preserve">
+    <value>未找到用户，请联系系统管理员。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="User [{0}] started the process." xml:space="preserve">
+    <value>用户 [{0}] 启动了该进程。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Using both Before and After events is not allowed." xml:space="preserve">
+    <value>不允许同时使用 Before 和 After 事件。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Validate Request" xml:space="preserve">
+    <value>验证请求</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Validates possibly dangerous values on request" xml:space="preserve">
+    <value>根据要求验证可能的危险值</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>值</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Value {0} not found" xml:space="preserve">
+    <value>未找到值 {0}</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Verb" xml:space="preserve">
+    <value>动词</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Vertical" xml:space="preserve">
+    <value>垂直</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>查看</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="View Grouped" xml:space="preserve">
+    <value>查看分组</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="View in a collapsed dashboard." xml:space="preserve">
+    <value>在折叠的仪表板中查看。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="View in a collapsed panel" xml:space="preserve">
+    <value>在折叠面板中查看</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="View Log" xml:space="preserve">
+    <value>查看日志</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="View Scripts" xml:space="preserve">
+    <value>查看脚本</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ViewGallery" xml:space="preserve">
+    <value>查看画廊</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="ViewType" xml:space="preserve">
+    <value>查看类型</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Visible Expression" xml:space="preserve">
+    <value>可见的表达</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Waiting..." xml:space="preserve">
+    <value>等待...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Warning!" xml:space="preserve">
+    <value>警告!</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Warning: This computer program is protected by copyright law and international treaties." xml:space="preserve">
+    <value>警告：此计算机程序受版权法和国际条约的保护。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="We recommend consulting your current database documentation before proceeding." xml:space="preserve">
+    <value>我们建议您在继续之前查阅您当前的数据库文档。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="We recommend using the parameters to be passed in the procedure:" xml:space="preserve">
+    <value>我们建议使用要在过程中传递的参数：</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="WebSales" xml:space="preserve">
+    <value>网络销售</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="What can you do" xml:space="preserve">
+    <value>你能做什么</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When changing the content, it reloads all form fields" xml:space="preserve">
+    <value>更改内容时，它会重新加载所有表单字段</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When enabling this property when exporting files to excel or pdf a link will be added" xml:space="preserve">
+    <value>在将文件导出为 excel 或 pdf 时启用此属性时，将添加一个链接</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When exporting the field to excel it is not allowed to place more than one link in the same cell," xml:space="preserve">
+    <value>将字段导出到 excel 时，不允许在同一个单元格中放置多个链接，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When selecting a record, the insert method is triggered sending the values ??of the current selection." xml:space="preserve">
+    <value>选择记录时，触发插入方法发送当前选择的值？。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When the AllowedTypes property is * What types are blocked by default?" xml:space="preserve">
+    <value>当 AllowedTypes 属性为 * 时默认阻止哪些类型？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When the command is triggered only the selected lines are affected." xml:space="preserve">
+    <value>当命令被触发时，只有选定的行会受到影响。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When the panel is not in preview mode" xml:space="preserve">
+    <value>当面板未处于预览模式时</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When this property is set to yes the filter icon will be removed from the grid" xml:space="preserve">
+    <value>当此属性设置为 yes 时，过滤器图标将从网格中删除</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When this property is set, the system will display a list of records for selection." xml:space="preserve">
+    <value>设置此属性后，系统将显示一个记录列表供选择。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="When we enable the option to upload multiple files," xml:space="preserve">
+    <value>当我们启用上传多个文件的选项时，</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Where we configure the maximum size in bytes allowed in the upload." xml:space="preserve">
+    <value>我们配置上传中允许的最大字节大小。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Why when enabling a MultipleFile property I cannot enable ExportAsLink?" xml:space="preserve">
+    <value>为什么启用 MultipleFile 属性时无法启用 ExportAsLink？</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="with the maximum size of" xml:space="preserve">
+    <value>最大大小为</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Within this folder will be added several other folders containing the primary key of each record" xml:space="preserve">
+    <value>在此文件夹中将添加几个其他文件夹，其中包含每条记录的主键</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Would you like to delete this record?" xml:space="preserve">
+    <value>您要删除此记录吗？</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="Would you like to save the image below?" xml:space="preserve">
+    <value>你想保存下面的图片吗？</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Writing file..." xml:space="preserve">
+    <value>写入文件...</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Yes - Reopen the form to enter a new record." xml:space="preserve">
+    <value>是 - 重新打开表单以输入新记录。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>昨天</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="You are downloading file {0}." xml:space="preserve">
+    <value>您正在下载文件 {0}。</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="You are trying to export more than 50,000 records, this can cause system overhead and slowdowns." xml:space="preserve">
+    <value>您正在尝试导出超过 50,000 条记录，这可能会导致系统开销和速度下降。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="You can change the table name and other parameters in the application's' Web.Config file." xml:space="preserve">
+    <value>您可以在应用程序的 Web.Config 文件中更改表名和其他参数。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="You cannot enable MultiSelect without setting a primary key" xml:space="preserve">
+    <value>如果不设置主键，则无法启用 MultiSelect</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="You cannot upload system files" xml:space="preserve">
+    <value>你不能上传系统文件</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="you will be presented with a different page informing the file name and size that is being downloaded." xml:space="preserve">
+    <value>您将看到一个不同的页面，通知正在下载的文件名和大小。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="You will need to create your data dictionary, to proceed click on the button below." xml:space="preserve">
+    <value>您需要创建数据字典，然后单击下面的按钮继续。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Your current password is:" xml:space="preserve">
+    <value>当前的密码是:</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Your password will expire soon, change it as soon as possible" xml:space="preserve">
+    <value>您的密码即将过期，请尽快更改</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Zipping file:" xml:space="preserve">
+    <value>压缩文件:</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled" xml:space="preserve">
+    <value>[Apply On Selected] 字段只能在启用网格的 EnableMultSelect 选项时启用</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="[Command.Sql field] required" xml:space="preserve">
+    <value>[Command.Sql field] 必须</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="[DataItem] property not set" xml:space="preserve">
+    <value>[DataItem] 属性没有设置</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="[Name] field contains a reserved word used in the api" xml:space="preserve">
+    <value>[Name] 字段包含 api 中使用的保留字</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="[order by] clause is not valid" xml:space="preserve">
+    <value>[order by] 条件无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="[search_id] retrieves the list record from the found ID that can be used in the query filter condition" xml:space="preserve">
+    <value>[search_id] 从找到的 ID 中检索可以在查询过滤条件中使用的列表记录</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="[{0}] field duplicated in get procedure" xml:space="preserve">
+    <value>字段重复在获取存储过程中</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field cannot contain more than {1} characters" xml:space="preserve">
+    <value>{0} 字段不能包含超过 {1} 个字符</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field contains invalid or not allowed character" xml:space="preserve">
+    <value>{0} 字段包含无效或不允许的字符</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field has an invalid number" xml:space="preserve">
+    <value>{0} 字段是无效的数字</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field has an invalid time" xml:space="preserve">
+    <value>{0} 字段是无效的时间</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field has an invalid value" xml:space="preserve">
+    <value>{0} 字段的值无效</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field invalid email" xml:space="preserve">
+    <value>{0} 字段是无效的email</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field invalid phone" xml:space="preserve">
+    <value>{0} 字段是无效的电话</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field is a invalid date" xml:space="preserve">
+    <value>{0} 字段是无效的日期</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field is required" xml:space="preserve">
+    <value>{0} 字段是必填</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} field not found" xml:space="preserve">
+    <value>{0} 字段没有找到</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} from {1} by user:{2}" xml:space="preserve">
+    <value>{0} 从 {1} 被使用:{2}</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="{0} Record(s) deleted successfully" xml:space="preserve">
+    <value>{0} 记录(s) 删除成功</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="{0} Record(s) with error" xml:space="preserve">
+    <value>{0} 记录(s) 有错误</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="{0} records analyzed in {1}" xml:space="preserve">
+    <value>{0} 记录分析在 {1}</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} records sync. Time {1}ms" xml:space="preserve">
+    <value>{0} 记录同步. 耗时 {1}ms</value>
+    <comment>JJMasterData.Commons</comment>
+  </data>
+  <data name="{0} selected records" xml:space="preserve">
+    <value>{0} 选定的记录</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="{search_text} passage of typed text that can be used with the LIKE command in the query." xml:space="preserve">
+    <value>{search_text} 可与查询中的 LIKE 命令一起使用的键入文本的段落。</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="We recommend checking your database documentation before proceeding." xml:space="preserve">
+    <value>我们建议在继续之前检查您的数据库文档。</value>
+  </data>
+  <data name="Application Log" xml:space="preserve">
+    <value>应用日志</value>
+  </data>
+  <data name="Page not found" xml:space="preserve">
+    <value>网页未找到</value>
+  </data>
+  <data name="No stacktrace available." xml:space="preserve">
+    <value>没有可用的堆栈跟踪。</value>
+  </data>
+  <data name="{0} field needs to be greater than {1}" xml:space="preserve">
+    <value>{0} 字段必须大于 {1}</value>
+  </data>
+  <data name="{0} field needs to be less or equal than {1}" xml:space="preserve">
+    <value>{0} 字段必须小于或等于 {1}</value>
+  </data>
+  <data name="There is already a dictionary with the name {0}" xml:space="preserve">
+    <value>已经有一个名为 {0} 的字典</value>
+  </data>
+  <data name="Field with AutoNum (auto increment) must be of data type int, unencrypted and required" xml:space="preserve">
+    <value>具有 AutoNum（自动递增）的字段必须是数据类型 int、未加密且必需</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+</root>
