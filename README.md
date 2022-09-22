@@ -38,7 +38,7 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 - IronPython support ✅
 - Bootstrap 3,4 & 5 support ✅
 - Log interface ✅
-- Test library ✅
+- xUnit library ✅
 
 <br>
 
@@ -67,7 +67,7 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 #### Code contributors
 
 <a href="https://github.com/jjconsulting/JJMasterData/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=jjconsulting/JJMasterData" />
+  <img src="https://contrib.rocks/image?repo=jjconsulting/jjmasterdata" />
 </a>
 
 <br>
