@@ -11,10 +11,10 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.0.19</AssemblyVersion>
-        <FileVersion>3.0.19</FileVersion>
-        <PackageVersion>3.0.19</PackageVersion>
-        <Version>3.0.19</Version>
+        <AssemblyVersion>3.0.20</AssemblyVersion>
+        <FileVersion>3.0.20</FileVersion>
+        <PackageVersion>3.0.20</PackageVersion>
+        <Version>3.0.20</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Mars Version</Product>
@@ -23,8 +23,7 @@
     <ItemGroup>
         <EmbeddedResource Include="wwwroot\**\*" />
     </ItemGroup>
-
-
+    
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
@@ -51,11 +50,6 @@
             <Pack>True</Pack>
             <PackagePath>\</PackagePath>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <TypeScriptCompile Include="wwwroot\ts\jquery-flatpickr.ts" />
-      <TypeScriptCompile Include="wwwroot\ts\jquery-plugins.ts" />
     </ItemGroup>
     
     <ProjectExtensions>
