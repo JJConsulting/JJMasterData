@@ -355,27 +355,21 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 6);
         html.AppendLine("</div>");
 
-        html.Append(TAB, 6);
-        html.AppendLine($"<div id=\"warning_exp_{objname}\" class=\"alert alert-warning alert-dismissible\" role=\"alert\" style=\"display:none;\">");
-        html.Append(TAB, 7);
-        html.AppendLine($"<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"Close\">");
-        html.Append(TAB, 8);
-        html.AppendLine($"<span aria-hidden=\"true\">{BootstrapHelper.CloseButtonTimes}</span>");
-        html.Append(TAB, 7);
-        html.AppendLine("</button>");
-        html.Append(TAB, 7);
-        html.AppendLine("<span class=\"text-danger\"><strong><span class=\"fa fa-exclamation-triangle\"></span> ");
-        html.Append(Translate.Key("Warning!"));
-        html.Append(" </strong></span> ");
-        html.Append(TAB, 7);
-        html.AppendLine(Translate.Key("You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."));
-        html.Append("<br>");
-        html.Append(Translate.Key("Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."));
-        html.Append(TAB, 6);
-        html.AppendLine("</div>");
 
-        html.Append(TAB, 5);
-        html.AppendLine("</div>");
+        var alert = new JJAlert();
+        alert.Id = $"warning_exp_{objname}";
+        alert.ShowCloseButton = true;
+        alert.Title = "Warning!";
+        alert.ListMessages = new List<string>()
+        {
+            "You are trying to export more than 50,000 records, this can cause system overhead and slowdowns.",
+            "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."
+        };
+        alert.Icon = IconType.ExclamationTriangle;
+        alert.Type = PanelColor.Warning;
+        alert.Style = "display:none;";
+
+        html.AppendLine(alert.GetHtml());
 
         return html.ToString();
     }

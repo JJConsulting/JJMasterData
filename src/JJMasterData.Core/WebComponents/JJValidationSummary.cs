@@ -66,35 +66,19 @@ public class JJValidationSummary : JJBaseView
 
     protected override string RenderHtml()
     {
+
         if (!Visible)
             return "";
 
-        var icon = new JJIcon(IconType.ExclamationTriangle);
-        var html = new StringBuilder();
-
-        html.AppendLine("<!-- Start Validation Summary -->");
-        html.AppendLine($"<div class=\"alert alert-danger alert-dismissable {(BootstrapHelper.Version == 3 ? "fade-in" : string.Empty)}\">");
-
-        if (ShowCloseButton)
-            html.AppendLine($"\t<a href=\"#\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"close\">{BootstrapHelper.CloseButtonTimes}</a>");
-
-        html.Append("\t");
-        html.Append(icon.GetHtml());
-        html.Append("&nbsp;<strong>");
-        html.Append(Translate.Key(MessageTitle));
-        html.AppendLine("</strong><br>");
-        if (Errors != null)
+        JJAlert alert = new JJAlert()
         {
-            foreach (string err in Errors)
-            {
-                html.Append("\t- ");
-                html.Append(err);
-                html.AppendLine("<br>");
-            }
-        }
-        html.AppendLine("</div>");
-        html.AppendLine("<!-- End Validation Summary -->");
+            Type = PanelColor.Danger,
+            Icon = IconType.ExclamationTriangle,
+            Title = MessageTitle,
+            ShowCloseButton = ShowCloseButton,
+            Message = string.Concat('-', string.Join("<br>\t-", Errors))
+        };
 
-        return html.ToString();
+        return alert.GetHtml();
     }
 }
