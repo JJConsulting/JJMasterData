@@ -156,11 +156,11 @@
                              window.parent.forms[0].submit();
                          }
                          else {
-                             messageBox.show("Atenção", err.message, 4);
+                             messageBox.show(@Translate.Key("Error"), err.message, 4);
                          }
                      }
                      else {
-                         messageBox.show("Erro","Ocorreu. um erro inesperado executar scripts", 4);
+                         messageBox.show(@Translate.Key("Error"),@Translate.Key("Unexpected error"), 4);
                      }
                  }
             });
