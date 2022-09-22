@@ -213,8 +213,8 @@
     <value>操作 {0} 没有找到</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="更多操作" xml:space="preserve">
-    <value>更多操作</value>
+  <data name="Dark Theme" xml:space="preserve">
+    <value>黑暗主题</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Add" xml:space="preserve">
@@ -3312,6 +3312,26 @@
   </data>
   <data name="Field with AutoNum (auto increment) must be of data type int, unencrypted and required" xml:space="preserve">
     <value>具有 AutoNum（自动递增）的字段必须是数据类型 int、未加密且必需</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Data Dictionary" xml:space="preserve">
+    <value>数据字典</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get Procedure Name" xml:space="preserve">
+    <value>获取过程名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Light Theme" xml:space="preserve">
+    <value>轻主题</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="record(s)" xml:space="preserve">
+    <value>记录）</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Set Procedure Name" xml:space="preserve">
+    <value>设置过程名称</value>
     <comment>JJMasterDataWeb</comment>
   </data>
 </root>

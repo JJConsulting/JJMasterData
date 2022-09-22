@@ -3314,4 +3314,28 @@
     <value>Campos marcados como Auto Incremento deve ser do tipo inteiro e obrigatório</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Dark Theme" xml:space="preserve">
+    <value>Tema Escuro</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Data Dictionary" xml:space="preserve">
+    <value>Dicionário de Dados</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Get Procedure Name" xml:space="preserve">
+    <value>Nome da Proc de Get</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Light Theme" xml:space="preserve">
+    <value>Tema Claro</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="record(s)" xml:space="preserve">
+    <value>registro(s)</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Set Procedure Name" xml:space="preserve">
+    <value>Nome da Proc de Set</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
 </root>
