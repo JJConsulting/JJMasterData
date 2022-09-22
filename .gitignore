@@ -344,4 +344,8 @@ healthchecksdb
 #Custom 
 /doc/JJMasterData.Doc/Help/**
 
-/src/Plugins/JJMasterData.SchemaGenerator/*.json
+# Dangerous values to public source control
+appsettings.json
+
+# Ignore default JJConsulting logs
+*_applog

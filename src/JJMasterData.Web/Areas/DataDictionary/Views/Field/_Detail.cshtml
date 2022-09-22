@@ -115,7 +115,7 @@
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" },
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
                     },
-                        new { @class = "form-control" })
+                        new { @class = "form-control form-select" })
                 </div>
 
                 @if (Model.Component == FormComponent.Number |
@@ -207,7 +207,7 @@
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" }
                     },
-                        new { @class = "form-control" })
+                        new { @class = "form-control form-select" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="ValidateRequest" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Validates possibly dangerous values ​​on request")">@Translate.Key("Validate Request")</label>
@@ -216,7 +216,7 @@
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" }
                     },
-                        new { @class = "form-control" })
+                        new { @class = "form-control form-select" })
                 </div>
             </div>
         </div>

@@ -89,7 +89,7 @@ public static class BootstrapHelper
     #region NavBar 
     public static string NavBar => Version switch
     {
-        >= 4 => " navbar navbar-light navbar-expand-sm",
+        >= 4 => " navbar navbar-light bg-light navbar-expand-sm",
         _ => " navbar navbar-default"
     };
     #endregion

@@ -404,7 +404,7 @@ function jjloadform(event, prefixSelector) {
         if (decimalPlaces == null)
             decimalPlaces = "2";
         if (localeCode === 'pt')
-            $(this).number(false, decimalPlaces, ",", ".");
+            $(this).number(true, decimalPlaces, ",", ".");
         else
             $(this).number(true, decimalPlaces);
     });

@@ -15,7 +15,7 @@ public static class JJServiceBuilderExtensions
     {
         var assemblies = new List<Assembly>
         {
-            Assembly.GetExecutingAssembly()
+            Assembly.GetCallingAssembly()
         };
 
         string[] externalAssemblies = JJService.Settings.ExternalAssembliesPath;

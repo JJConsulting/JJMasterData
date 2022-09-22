@@ -20,7 +20,7 @@ public class ElementService : BaseService
     public ElementService(IValidationDictionary validationDictionary) : base(validationDictionary)
     {
     }
-    
+
     #region Exec Scripts GET/SET/TABLE
 
     public List<string> GetScriptsDictionary(string id)
@@ -57,29 +57,21 @@ public class ElementService : BaseService
         var factory = DicDao.Factory;
         var formElement = DicDao.GetFormElement(id);
 
-        try
+        switch (scriptExec)
         {
-            switch (scriptExec)
-            {
-                case "Exec":
-                {
-                    var sql = new StringBuilder();
-                    sql.AppendLine(factory.Provider.GetWriteProcedureScript(formElement));
-                    sql.AppendLine(factory.Provider.GetReadProcedureScript(formElement));
+            case "Exec":
+                var sql = new StringBuilder();
+                sql.AppendLine(factory.Provider.GetWriteProcedureScript(formElement));
+                sql.AppendLine(factory.Provider.GetReadProcedureScript(formElement));
 
-                    var dataAccess = JJService.DataAccess;
-                    dataAccess.ExecuteBatch(sql.ToString());
-                    break;
-                }
-                case "ExecAll":
-                    factory.CreateDataModel(formElement);
-                    break;
-            }
+                var dataAccess = JJService.DataAccess;
+                dataAccess.ExecuteBatch(sql.ToString());
+                break;
+            case "ExecAll":
+                factory.CreateDataModel(formElement);
+                break;
         }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+
     }
 
     public void ExecScriptsMasterData()
@@ -160,7 +152,7 @@ public class ElementService : BaseService
         return dicname;
     }
 
-        
+
     #endregion
 
     #region Duplicate Entity
@@ -193,11 +185,11 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
 
-            
+
         return IsValid;
     }
 
-        
+
 
     public JJFormView GetFormView()
     {

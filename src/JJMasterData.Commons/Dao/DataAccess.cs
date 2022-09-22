@@ -241,14 +241,13 @@ public class DataAccess : IDataAccess
         if (KeepConnAlive)
             return;
 
-        if (_connection == null) return;
+        if (_connection == null) 
+            return;
         
         if (_connection.State == ConnectionState.Open)
-        {
             _connection.Close();
-        }
 
-        _connection.Dispose();
+        _connection?.Dispose();
         _connection = null;
     }
 

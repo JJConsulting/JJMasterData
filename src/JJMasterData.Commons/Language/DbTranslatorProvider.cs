@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Resources;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Settings;
@@ -11,38 +13,55 @@ namespace JJMasterData.Commons.Language;
 
 public class DbTranslatorProvider : ITranslator
 {
+    private IDataAccess _dataAccess;
+    internal IDataAccess DataAccess
+    {
+        get 
+        { 
+            if (_dataAccess == null)
+            {
+                _dataAccess = JJService.DataAccess;
+                _dataAccess.TranslateErrorMessage = false;
+                _dataAccess.GenerateLog = false;
+            }
+            return _dataAccess; 
+        }    
+    }
+
+    private Factory _factory;
+    internal Factory Factory
+    {
+        get
+        {
+            if (_factory == null)
+                _factory = new Factory(DataAccess);
+            
+            return _factory;
+        }
+    }
+
     public Dictionary<string, string> GetDictionaryStrings(string culture)
     {
-        var dic = new Dictionary<string, string>();
+        var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         string tablename = JJService.Settings.ResourcesTableName;
         if (string.IsNullOrEmpty(tablename))
             return dic;
 
         var element = GetElement(tablename);
-        
-        var da = JJService.DataAccess;
-        
-        da.TranslateErrorMessage = false;
-        da.GenerateLog = false;
-        var factory = new Factory(da);
-        if (!da.TableExists(element.TableName))
-        {
-            factory.CreateDataModel(element);
-            var listValues = GetDefaultValues();
-            foreach(Hashtable values in listValues)
-            {
-                factory.Insert(element, values);
-            }
-        }
+        if (!DataAccess.TableExists(element.TableName))
+            Factory.CreateDataModel(element);
 
-        var filter = new Hashtable();
-        filter.Add("cultureCode", culture);
+        dic = GetDatabaseValues(element, culture);
+        if (dic.Count > 0)
+            return dic;
 
-        var dataTable = factory.GetDataTable(element, filter);
-        foreach (DataRow row in dataTable.Rows)
+        var values = GetDefaultValues(culture);
+        if (values?.Count > 0)
         {
-            dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
+            AddDefaultValues(element, values);
+            foreach (Hashtable row in values)
+                dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
         }
 
         return dic;
@@ -122,38 +141,52 @@ public class DbTranslatorProvider : ITranslator
         return element;
     }
 
+    private void AddDefaultValues(Element element, List<Hashtable> listValues)
+    {
+        foreach (Hashtable values in listValues)
+            Factory.Insert(element, values);
+    }
 
-    private List<Hashtable> GetDefaultValues()
+
+    private List<Hashtable> GetDefaultValues(string culture)
     {
         var values = new List<Hashtable>();
-        string culture = "pt-br";
-        string resourcePath = $"JJMasterData.Commons.Language.ResourceStrings_{culture}.resources";
+        string resourcePath = $"JJMasterData.Commons.Language.ResourceStrings_{culture.ToLower()}.resources";
         
         var fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePath);
+        if (fs == null)
+            return values;
+
         using var res = new ResourceReader(fs);
-        
         var dict = res.GetEnumerator();
         while (dict.MoveNext())
         {
-            values.Add(GetValue(dict.Key.ToString(), dict.Value.ToString()));
+            var val = new Hashtable
+            {
+                { "cultureCode", culture },
+                { "resourceKey", dict.Key.ToString() },
+                { "resourceValue", dict.Value.ToString() },
+                { "resourceOrigin", "JJMasterData" }
+            };
+
+            values.Add(val);
         }
-        
         res.Close();
 
         return values;
     }
 
-    private Hashtable GetValue(string resourceKey, string resourceValue)
+    private Dictionary<string, string> GetDatabaseValues(Element element, string culture)
     {
-        var val = new Hashtable
+        var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        var filter = new Hashtable();
+        filter.Add("cultureCode", culture);
+        var dt = Factory.GetDataTable(element, filter);
+        foreach (DataRow row in dt.Rows)
         {
-            { "cultureCode", "pt-BR" },
-            { "resourceKey", resourceKey },
-            { "resourceValue", resourceValue },
-            { "resourceOrigin", "JJMasterData" }
-        };
-
-        return val;
+            dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
+        }
+        return dic;
     }
 
 }

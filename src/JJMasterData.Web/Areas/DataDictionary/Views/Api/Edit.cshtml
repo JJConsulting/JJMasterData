@@ -139,7 +139,7 @@
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-5">
                         <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("ApplyUserIdOn")</label>
-                        @Html.DropDownListFor(model => Model.ApiSettings.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control" })
+                        @Html.DropDownListFor(model => Model.ApiSettings.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control form-select" })
 
                         <span id="helpBlock" class="help-block">@Translate.Key("Aways apply UserId (from login) as filter and default value on set.")</span>
                     </div>

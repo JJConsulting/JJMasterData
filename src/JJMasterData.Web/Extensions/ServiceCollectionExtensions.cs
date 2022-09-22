@@ -62,18 +62,20 @@ public static class ServiceCollectionExtensions
     {
         CultureInfo[] supportedCultures = new[]
         {
+            new CultureInfo("en-US"),
             new CultureInfo("pt-BR"),
-            new CultureInfo("en-US")
+            new CultureInfo("zh-CN")
         };
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            options.DefaultRequestCulture = new RequestCulture(supportedCultures.First());
+            string defultCulture = "en-US";
+            options.DefaultRequestCulture = new RequestCulture(defultCulture);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
             options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>
             {
-                var currentCulture = "en-US";
+                string currentCulture = CultureInfo.CurrentCulture.Name;
 
                 var segments = context.Request.Path.Value?.Split(new[] { '/' },
                     StringSplitOptions.RemoveEmptyEntries);
