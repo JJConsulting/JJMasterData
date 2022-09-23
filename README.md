@@ -48,7 +48,7 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 <br>
 
 ## Useful Links
-* [Library Documentation](https://portal.jjconsulting.com.br/jjdoc/)
+* [Library Documentation](https://portal.jjconsulting.com.br/jjdoc/articles/intro.html)
 * [NuGet.Org](https://www.nuget.org/profiles/jjconsulting)
 * [Community Discord Server](https://discord.gg/s9F2ntBXnn)
 

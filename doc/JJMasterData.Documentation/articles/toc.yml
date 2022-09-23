@@ -5,6 +5,8 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Internationalization
+    href: internationalization.md
   - name: Authentication
     href: authentication.md
   - name: The USERID keyword
