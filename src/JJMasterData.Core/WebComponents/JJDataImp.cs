@@ -258,22 +258,22 @@ public class JJDataImp : JJBaseProcess
         if (reporter.HasError || reporter.TotalProcessed == reporter.Error)
         {
             alert.Icon = IconType.ExclamationTriangle;
-            alert.Type = PanelColor.Danger;
+            alert.Color = PanelColor.Danger;
             alert.Title = "Error importing file!";
-            alert.Message = reporter.Message;
+            alert.Messages.Add(reporter.Message);
         }
         else if (reporter.Error > 0)
         {
             alert.Icon = IconType.InfoCircle;
-            alert.Type = PanelColor.Info;
+            alert.Color = PanelColor.Info;
             alert.Title = "File imported with errors!";
-            alert.Message = reporter.Message;
+            alert.Messages.Add(reporter.Message);
         }
         else
         {
             alert.Icon = IconType.Check;
-            alert.Type = PanelColor.Success;
-            alert.Message = reporter.Message;
+            alert.Color = PanelColor.Success;
+            alert.Messages.Add(reporter.Message);
         }
 
         html.AppendLine(alert.GetHtml());

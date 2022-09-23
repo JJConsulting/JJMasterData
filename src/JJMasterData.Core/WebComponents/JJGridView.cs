@@ -995,46 +995,21 @@ public class JJGridView : JJBaseView
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             var alert = new JJAlert();
-            alert.Type = PanelColor.Default;
+            alert.Color = PanelColor.Default;
             alert.ShowCloseButton = true;
 
             if (Filter.HasFilter())
             {
-                alert.Message = "There are filters applied for this query.";
+                alert.Messages.Add("There are filters applied for this query");
                 alert.Icon = IconType.Filter;
             }
             else
             {
-                alert.Message = EmptyDataText;
+                alert.Messages.Add(EmptyDataText);
                 alert.Icon = IconType.InfoCircle;
             }
 
             html.AppendLine(alert.GetHtml());
-
-            //html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well} {(BootstrapHelper.Version == 3 ? string.Empty : "bg-jjmasterdata")}\">");
-            //if (BootstrapHelper.Version != 3)
-            //    html.Append("<div class=\"card-body\">");
-
-            //string closebuttonBs5 = BootstrapHelper.Version == 5 ? "p-2 me-3" : string.Empty;
-            //html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close} {closebuttonBs5} \" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
-            //html.Append(Translate.Key("Close"));
-            //html.AppendLine($"\">{BootstrapHelper.CloseButtonTimes}</a>");
-            //html.Append("\t\t");
-            //html.Append("<span class=\"fa fa-info-circle\"></span>&nbsp;");
-            //html.AppendLine(Translate.Key(EmptyDataText));
-
-            //if (Filter.HasFilter())
-            //{
-            //    html.Append("<div class=\"text-info\">");
-            //    html.Append("<span class=\"fa fa-filter\"></span>&nbsp;");
-            //    html.Append(Translate.Key("There are filters applied for this query."));
-            //    html.Append("</div>");
-            //}
-
-            //if (BootstrapHelper.Version != 3)
-            //    html.Append("</div>");
-
-            //html.Append("\t</div>");
         }
 
         html.AppendLine("\t<!-- End Table -->");

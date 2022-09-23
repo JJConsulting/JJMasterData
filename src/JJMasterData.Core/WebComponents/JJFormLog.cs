@@ -168,8 +168,8 @@ public class JJFormLog : JJBaseView
         {
             var alert = new JJAlert();
             alert.Icon = IconType.ExclamationTriangle;
-            alert.Type = PanelColor.Warning;
-            alert.Message = "No Records Found";
+            alert.Color = PanelColor.Warning;
+            alert.Messages.Add("No Records Found");
 
             return alert.GetHtml();
         }

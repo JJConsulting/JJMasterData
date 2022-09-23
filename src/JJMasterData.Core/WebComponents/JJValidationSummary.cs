@@ -72,11 +72,11 @@ public class JJValidationSummary : JJBaseView
 
         JJAlert alert = new JJAlert()
         {
-            Type = PanelColor.Danger,
+            Color = PanelColor.Danger,
             Icon = IconType.ExclamationTriangle,
             Title = MessageTitle,
             ShowCloseButton = ShowCloseButton,
-            Message = string.Concat('-', string.Join("<br>\t-", Errors))
+            Messages = Errors
         };
 
         return alert.GetHtml();

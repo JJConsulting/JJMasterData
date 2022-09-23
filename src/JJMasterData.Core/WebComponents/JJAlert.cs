@@ -1,47 +1,42 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace JJMasterData.Core.WebComponents
 {
     public class JJAlert : JJBaseView
     {
-
-        public PanelColor Type { get; set; }
+        public PanelColor Color { get; set; }
         public IconType Icon { get; set; }
-        public string Id { get; set; }
         public string Title { get; set; }
-        public string Message { get; set; }
-        public List<string> ListMessages { get; set; }
-        public string Style { get; set; }
-
+        public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
-
         private string ClassType
         {
             get
             {
-                if (Type.Equals(PanelColor.Default))
+                if (Color.Equals(PanelColor.Default))
                 {
                     return "secondary";
                 }
-                return Type.ToString().ToLower();
+                return Color.ToString().ToLower();
 
             }
         }
-
         public JJAlert()
         {
-            ListMessages = new List<string>();
+            Messages = new List<string>();
         }
+
+
+        private string GetSplittedMessages() => string.Join("<br>", Messages.Select(m => Translate.Key(m)));
 
         protected override string RenderHtml()
         {
-            if (BootstrapHelper.Version == 3 & (Type == PanelColor.Default || Type == PanelColor.Primary))
+            if (BootstrapHelper.Version == 3 & (Color == PanelColor.Default || Color == PanelColor.Primary))
             {
                 return GetAlertDefaultBs3();
             }
@@ -56,7 +51,9 @@ namespace JJMasterData.Core.WebComponents
         {
             var html = new StringBuilder();
 
-            html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well}\">");
+            html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well}\" ");
+            html.Append(GetProps());
+            html.AppendLine(">");
 
             html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
             html.Append(Translate.Key("Close"));
@@ -65,7 +62,7 @@ namespace JJMasterData.Core.WebComponents
             html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
             html.AppendLine($"{Translate.Key(Title)}");
             html.AppendLine($"</strong>");
-            html.AppendLine($"{Translate.Key(Message)}");
+            html.AppendLine(GetSplittedMessages());
 
             html.Append("\t</div>");
 
@@ -76,7 +73,9 @@ namespace JJMasterData.Core.WebComponents
         {
             var html = new StringBuilder();
 
-            html.AppendLine($"<div id=\"{Id}\" class=\"alert alert-{ClassType} {CssClass} alert-dismissible\" role=\"alert\" style=\"{Style}\">");
+            html.AppendLine($"<div class=\"alert alert-{ClassType} {CssClass} alert-dismissible\" role=\"alert\" ");
+            html.Append(GetProps());
+            html.AppendLine(">");
 
             if (ShowCloseButton)
             {
@@ -92,22 +91,36 @@ namespace JJMasterData.Core.WebComponents
 
             }
             html.AppendLine($"</strong>");
-            html.AppendLine(GetMessages());
+            html.AppendLine(GetSplittedMessages());
             html.AppendLine("</div>");
 
             return html.ToString();
 
         }
 
-        private string GetMessages()
+        private string GetProps()
         {
-            if (ListMessages.Count > 0)
+            var html = new StringBuilder();
+            if (!string.IsNullOrEmpty(Name))
             {
-                return string.Join("<br>", ListMessages);
+                html.Append($"id=\"{Name}\" name=\"{Name}\"");
             }
 
-            return Message;
+            foreach (DictionaryEntry attr in Attributes)
+            {
+                html.Append(' ');
+                html.Append(attr.Key);
+                if (attr.Value != null)
+                {
+                    html.Append("=\"");
+                    html.Append(attr.Value);
+                    html.Append('"');
+                }
+            }
+
+            return html.ToString();
         }
+
     }
 }
 

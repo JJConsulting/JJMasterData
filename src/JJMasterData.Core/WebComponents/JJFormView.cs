@@ -430,9 +430,9 @@ public class JJFormView : JJGridView
                 if (action.ReopenForm)
                 {
                     var alert = new JJAlert();
-                    alert.Id = $"pnl_insertmsg_{Name}";
-                    alert.Message = "Record added successfully";
-                    alert.Type = PanelColor.Success;
+                    alert.Name = $"pnl_insertmsg_{Name}";
+                    alert.Messages.Add("Record added successfully");
+                    alert.Color = PanelColor.Success;
                     alert.Icon = IconType.CheckCircleO;
 
                     html.Append(alert.GetHtml());
