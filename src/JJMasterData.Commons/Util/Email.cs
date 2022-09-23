@@ -187,7 +187,7 @@ public class ConfigSmtp
             Port = int.Parse(values["PORT"]);
             User = values["USER"];
             Password = values["PWD"];
-            EnableSSL = values["SSL"] == "1";
+            EnableSSL = values.ContainsKey("SSL") && values["SSL"] == "1";
         }
     }
 

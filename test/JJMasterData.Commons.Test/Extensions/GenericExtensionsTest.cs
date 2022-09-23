@@ -1,5 +1,5 @@
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Commons.Test.Extensions;
 
@@ -17,12 +17,12 @@ public class GenericExtensionsTest
     [Fact]
     public void ToDictionaryTest()
     {
-        const string formElementTitle = "FormElementTest";
+        const string formElementName = "FormElementTest";
         const string formElementFieldName = "FieldTest";
         
-        var formElement = new FormElement
+        var formElement = new Element
         {
-            Title = formElementTitle
+            Name = formElementName
         };
         formElement.Fields.Add(new()
         {
@@ -31,7 +31,7 @@ public class GenericExtensionsTest
 
         var dictionary = formElement.ToDictionary();
         
-        Assert.Equal(formElementTitle, dictionary["title"]);
+        Assert.Equal(formElementName, dictionary["name"]);
         Assert.Equal(formElementFieldName, dictionary["fields[0].fieldname"]);
     }
 }

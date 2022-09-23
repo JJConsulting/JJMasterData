@@ -9,6 +9,10 @@ There are three ways to configure an application:
 
 <details><summary> >> appsettings.json</summary><br>
 
+> [!TIP] 
+> To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema.
+https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMasterData.JsonSchema/jjmasterdata.json
+
 ```json
 {
   "AllowedHosts": "*",
