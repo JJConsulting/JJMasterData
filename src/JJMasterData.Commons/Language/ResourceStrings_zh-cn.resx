@@ -3338,4 +3338,8 @@
     <value>[名称] 字段包含数据库中使用的保留字。</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Actions" xml:space="preserve">
+    <value>操作</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
 </root>
