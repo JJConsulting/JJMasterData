@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\JJMasterData.Commons\JJMasterData.Commons.csproj" />
-    <ProjectReference Include="..\..\src\Plugins\JJMasterData.Tester\JJMasterData.Tester.csproj" />
   </ItemGroup>
 
   <ItemGroup>

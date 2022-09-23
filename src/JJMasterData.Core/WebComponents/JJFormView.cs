@@ -429,18 +429,13 @@ public class JJFormView : JJGridView
 
                 if (action.ReopenForm)
                 {
-                    html.AppendLine(
-                        $"<div id=\"pnl_insertmsg_{Name}\" class=\"alert alert-success alert-dismissible\" role=\"alert\">");
-                    html.Append(
-                        $"<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
-                    html.Append(Translate.Key("Close"));
-                    html.AppendLine("\">");
-                    html.AppendLine($"<span aria-hidden=\"true\">{BootstrapHelper.CloseButtonTimes}</span>");
-                    html.AppendLine("</button>");
-                    html.Append(
-                        "<span style=\"font-size:18px\"><span class=\"fa fa-check-circle-o\"></span>&nbsp;</span> ");
-                    html.AppendLine(Translate.Key("Record added successfully"));
-                    html.AppendLine("</div>");
+                    var alert = new JJAlert();
+                    alert.Name = $"pnl_insertmsg_{Name}";
+                    alert.Messages.Add("Record added successfully");
+                    alert.Color = PanelColor.Success;
+                    alert.Icon = IconType.CheckCircleO;
+
+                    html.Append(alert.GetHtml());
 
                     html.AppendLine($"<div id=\"pnl_insert_{Name}\" style=\"display:none\">");
                     html.AppendLine(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));

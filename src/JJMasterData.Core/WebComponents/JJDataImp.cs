@@ -251,34 +251,32 @@ public class JJDataImp : JJBaseProcess
         html.AppendLine("<input type=\"hidden\" id=\"filename\" name=\"filename\" />");
         html.AppendLine("");
 
+        var alert = new JJAlert();
+        alert.CssClass = "text-center";
+
 
         if (reporter.HasError || reporter.TotalProcessed == reporter.Error)
         {
-            html.Append("<div class='alert alert-danger text-center'>");
-            html.Append("<span class='fa fa-exclamation-triangle' aria-hidden='true'></span> ");
-            html.Append("<strong>");
-            html.Append(Translate.Key("Error importing file!"));
-            html.Append("</strong><br>");
-            html.Append(reporter.Message);
-            html.AppendLine("</div>");
+            alert.Icon = IconType.ExclamationTriangle;
+            alert.Color = PanelColor.Danger;
+            alert.Title = "Error importing file!";
+            alert.Messages.Add(reporter.Message);
         }
         else if (reporter.Error > 0)
         {
-            html.Append("<div class='alert alert-info text-center'>");
-            html.Append("<span class='fa fa-exclamation-triangle' aria-hidden='true'></span> ");
-            html.Append("<strong>");
-            html.Append(Translate.Key("File imported with errors!"));
-            html.Append("</strong><br>");
-            html.Append(Translate.Key("For more information, check the log details below"));
-            html.AppendLine("</div>");
+            alert.Icon = IconType.InfoCircle;
+            alert.Color = PanelColor.Info;
+            alert.Title = "File imported with errors!";
+            alert.Messages.Add(reporter.Message);
         }
         else
         {
-            html.Append("<div class='alert alert-success text-center'>");
-            html.Append("<span class='fa fa-check' aria-hidden='true'></span> ");
-            html.Append(reporter.Message);
-            html.AppendLine("</div>");
+            alert.Icon = IconType.Check;
+            alert.Color = PanelColor.Success;
+            alert.Messages.Add(reporter.Message);
         }
+
+        html.AppendLine(alert.GetHtml());
 
         html.AppendLine("<div style='text-align: center;'>");
         html.AppendLine("<div>");
