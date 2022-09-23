@@ -58,19 +58,23 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static void AddUrlRequestCultureProvider(this IServiceCollection services)
+    public static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
     {
-        CultureInfo[] supportedCultures = new[]
+
+        if (supportedCultures == null)
         {
-            new CultureInfo("en-US"),
-            new CultureInfo("pt-BR"),
-            new CultureInfo("zh-CN")
-        };
+            supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("pt-BR"),
+                new CultureInfo("zh-CN")
+            };
+        }
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            string defultCulture = "en-US";
-            options.DefaultRequestCulture = new RequestCulture(defultCulture);
+            string defaultCulture = "en-US";
+            options.DefaultRequestCulture = new RequestCulture(defaultCulture);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
             options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>

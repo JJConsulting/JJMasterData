@@ -13,8 +13,10 @@ public class ResourcesService : BaseService
     {
     }
 
-    public JJFormView GetFormView()
+    public JJFormView GetFormView(IList<CultureInfo> supportedCultures)
     {
+        supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
+            
         var element = new DbTranslatorProvider().GetElement();
         
         var formElement = new FormElement(element)
@@ -35,7 +37,7 @@ public class ResourcesService : BaseService
         cultureField.DataItem = new FormElementDataItem();
         cultureField.DataItem.Itens = new List<DataItemValue>();
         cultureField.DataItem.ReplaceTextOnGrid = false;
-        foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
+        foreach (CultureInfo ci in supportedCultures)
         {
             var item = new DataItemValue();
             item.Id = ci.Name;

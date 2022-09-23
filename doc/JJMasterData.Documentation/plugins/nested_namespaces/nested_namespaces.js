@@ -17,7 +17,6 @@ for (var i = 0; i < toc.length; i++) {
             parent[partialnamespace] = {};
         }
         parent = parent[partialnamespace];
-        //console.log(partialnamespace);
     }
 
     if (parent.items == undefined) {
