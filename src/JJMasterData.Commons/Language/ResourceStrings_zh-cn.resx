@@ -3205,7 +3205,7 @@
     <value>[DataItem] 属性没有设置</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="[Name] field contains a reserved word used in the api" xml:space="preserve">
+  <data name="The [Name] field contains a reserved word used in the api" xml:space="preserve">
     <value>[Name] 字段包含 api 中使用的保留字</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3332,6 +3332,10 @@
   </data>
   <data name="Set Procedure Name" xml:space="preserve">
     <value>设置过程名称</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="The [Name] field contains a reserved word used in the database." xml:space="preserve">
+    <value>[名称] 字段包含数据库中使用的保留字。</value>
     <comment>JJMasterDataWeb</comment>
   </data>
 </root>
