@@ -5,6 +5,10 @@
     href: getting_started.md
   - name: Configurations
     href: configurations.md
+  - name: Authentication
+    href: authentication.md
+  - name: The USERID keyword
+    href: userid.md
   - name: Expressions
     href: expressions.md
 - name: Components

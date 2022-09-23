@@ -23,6 +23,7 @@ if you want to programmatically change your CRUD title, your can simply call:
 
 ```csharp
     formView.FormElement.Title = "Your Title"
+    formView.FormElement.Fields["YOUR_FIELD"].VisibleExpression = "YourLogicHere"
 ```
 
 In a nutshell, use FormElement property to customize DataDictionary configurations, like your fields. 
