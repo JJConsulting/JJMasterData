@@ -8,6 +8,7 @@ using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -160,8 +161,16 @@ public class ElementController : DataDictionaryController
     [HttpPost]
     public IActionResult Scripts(string dictionaryName, string scriptExec)
     {
-        _elementService.ExecScripts(dictionaryName, scriptExec);
-        return new JsonResult(new { success = true });
+        try
+        {
+            _elementService.ExecScripts(dictionaryName, scriptExec);
+            return new JsonResult(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            var error = new { success = false, message = ex.Message };
+            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error};
+        }
     }
 
     [HttpPost]

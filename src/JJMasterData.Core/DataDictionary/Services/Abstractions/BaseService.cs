@@ -14,7 +14,7 @@ public abstract class BaseService
     private DictionaryDao _dictionaryDao;
 
     public DictionaryDao DicDao => _dictionaryDao ??= new DictionaryDao();
-    
+
     protected BaseService(IValidationDictionary validationDictionary)
     {
         _validationDictionary = validationDictionary;
@@ -31,7 +31,7 @@ public abstract class BaseService
     }
 
     public bool IsValid => _validationDictionary.IsValid;
-    
+
     public FormElement GetFormElement(string dictionaryName)
     {
         var dicParser = DicDao.GetDictionary(dictionaryName);
@@ -46,14 +46,8 @@ public abstract class BaseService
             return false;
         }
 
-        if (name.ToLower().Equals("pag") |
-            name.ToLower().Equals("regporpag") |
-            name.ToLower().Equals("orderby") |
-            name.ToLower().Equals("tot") |
-            name.ToLower().Equals("pagestate"))
-        {
-            AddError(nameof(name), "[Name] field contains a reserved word used in the api");
-        }
+        if (Validate.IsMasterDataKeyword(name))
+            AddError(nameof(name), Translate.Key("The [Name] field contains a reserved word used in the api"));
 
         if (name.Contains(" "))
             AddError(nameof(name), Translate.Key("The [Name] field cannot contain blank spaces."));
@@ -71,6 +65,10 @@ public abstract class BaseService
         string nameNoAccents = StringManager.NoAccents(name);
         if (!nameNoAccents.Equals(name))
             AddError(nameof(name), Translate.Key("The [Name] field cannot contain accents."));
+
+        if (Validate.IsDatabaseKeyword(name))
+            AddError(nameof(name), Translate.Key("The [Name] field contains a reserved word used in the database."));
+
 
         return _validationDictionary.IsValid;
     }
