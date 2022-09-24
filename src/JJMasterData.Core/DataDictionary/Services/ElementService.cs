@@ -222,7 +222,7 @@ public class ElementService : BaseService
 
         formElement.Fields["modified"].Component = FormComponent.DateTime;
 
-        formElement.Fields["type"].DefaultValue = "val:F";
+        formElement.Fields["type"].DefaultValue = "val:0";
 
         var formView = new JJFormView(formElement);
         formView.Name = "List";
