@@ -1,4 +1,7 @@
-<h1>Authentication<small> How to secure your routes on JJ MasterData</small></h1>
+<h1>
+    Authentication
+    <small> How to secure your routes on JJ MasterData</small>
+</h1>
 
 JJMasterData uses 3 controller attributes with Authorize and a policy by default. If you are not familiarized with the concept of policies, please check this [link](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0).
 
@@ -39,3 +42,4 @@ builder.Services.AddAuthorization(options =>
 If you want to protect specific actions or fields in your DataDictionary, you will need to implement your own [JJFormView](articles/components/form_view.md) in your custom View or use the [IFormEvent](articles/form_events/intro.md) interface in the method OnInstanceCreated, customizing your JJFormView object. 
 
 Don't forget to secure every policy in **production**, this is just a example for learning purposes.
+
