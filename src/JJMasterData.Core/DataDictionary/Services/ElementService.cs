@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
@@ -222,7 +225,7 @@ public class ElementService : BaseService
 
         formElement.Fields["modified"].Component = FormComponent.DateTime;
 
-        formElement.Fields["type"].DefaultValue = "val:0";
+        formElement.Fields["type"].DefaultValue = "val:F";
 
         var formView = new JJFormView(formElement);
         formView.Name = "List";
@@ -248,6 +251,50 @@ public class ElementService : BaseService
     }
 
 
+    #endregion
+
+    #region Class Source Code Generation
+    public string GetClassSourceCode(string dicName)
+    {
+        string prop = "public @PropType @PropName { get; set; } ";
+
+        var dicDao = new DictionaryDao();
+        var dicParser = dicDao.GetDictionary(dicName);
+        var propsBuilder = new StringBuilder();
+
+        foreach (var item in dicParser.Table.Fields.ToList())
+        {
+            var nameProp = item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " ").RemoveAccents();
+            var typeProp = GetTypeProp(item.DataType, item.IsRequired);
+            var propField = prop.Replace("@PropName", nameProp.FirstCharToUpperComplete()).Replace("@PropType", typeProp);
+
+            propsBuilder.AppendLine($"[DataMember(Name = \"{item.Name}\")] ");
+            propsBuilder.AppendLine($"[Display(Name = \"{item.Label}\")]");
+            propsBuilder.AppendLine(propField);
+            propsBuilder.AppendLine("");
+
+        }
+
+        var resultClass = new StringBuilder();
+
+        resultClass.AppendLine($"public class {dicParser.Table.Name}" + "\r\n{");
+        resultClass.AppendLine(propsBuilder.ToString());
+        resultClass.AppendLine("\r\n}");
+
+        return resultClass.ToString();
+    }
+
+    private string GetTypeProp(FieldType dataTypeField, bool required)
+    {
+        return dataTypeField switch
+        {
+            FieldType.Date or FieldType.DateTime => "DateTime",
+            FieldType.Float => "double",
+            FieldType.Int => "int",
+            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
+            _ => "",
+        };
+    }
     #endregion
 
     public byte[] Export(List<Hashtable> selectedRows)

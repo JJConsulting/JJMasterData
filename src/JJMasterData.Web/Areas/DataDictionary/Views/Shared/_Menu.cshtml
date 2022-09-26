@@ -62,7 +62,8 @@
                     </button>
                 }
                 else
-                { <button class="navbar-toggler" type="button" @BootstrapHelper.DataToggle="collapse" data-bs-target="#jj-navbar" data-target="#jj-navbar" aria-controls="jj-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                {
+                    <button class="navbar-toggler" type="button" @BootstrapHelper.DataToggle="collapse" data-bs-target="#jj-navbar" data-target="#jj-navbar" aria-controls="jj-navbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 }
@@ -119,7 +120,9 @@
                         <li class="@NavItem("More") me-3">
                             <div class="nav-link">
                                 <div class="dropdown dropstart">
-                                    @{More();}
+                                    @{
+                                        More();
+                                    }
                                 </div>
                             </div>
                         </li>
@@ -129,7 +132,9 @@
                 {
                     <ul class="nav navbar-nav navbar-right mr-3" style="@(BootstrapHelper.Version == 3 ? "padding-right: 15px;" : String.Empty)">
                         <li class="dropdown dropleft">
-                            @{More();}
+                            @{
+                                More();
+                            }
                         </li>
                     </ul>
                 }
@@ -149,6 +154,11 @@
             <li class="dropdown-item" onclick="popup.show('@Translate.Key("Database Scripts")', '@Url.Action("Scripts","Element",new {dictionaryName=Model.DictionaryName })',1);">
                 <a href="#">
                     <span class="fa fa-play-circle fa-fw fa-lg"></span> @Translate.Key("Get Script")
+                </a>
+            </li>
+            <li class="dropdown-item" onclick="popup.show('@Translate.Key("Class Source Code")', '@Url.Action("ClassSourceCode","Element",new {dictionaryName=Model.DictionaryName })',1);">
+                <a href="#">
+                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @Translate.Key("Get Class")
                 </a>
             </li>
             <li class="dropdown-item" onclick="window.open('@Url.Action("Render","Form", new {area="MasterData" , dictionaryName=Model.DictionaryName})', '_blank').focus();">

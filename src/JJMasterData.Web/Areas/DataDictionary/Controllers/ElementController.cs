@@ -100,6 +100,15 @@ public class ElementController : DataDictionaryController
         return View(new { originName = dictionaryName });
     }
 
+    public IActionResult ClassSourceCode(string dictionaryName)
+    {
+
+        ViewBag.ClassSourceCode = _elementService.GetClassSourceCode(dictionaryName);
+        ViewBag.DictionaryName = dictionaryName;
+
+        return View("ClassSourceCode", "_Layout.Popup");
+    }
+
     public IActionResult Scripts(string dictionaryName, bool isDefault = false)
     {
         if (isDefault)
