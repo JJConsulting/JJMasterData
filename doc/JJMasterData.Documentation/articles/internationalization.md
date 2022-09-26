@@ -1,12 +1,7 @@
 <h1>Internationalization<small> i18n</small></h1>
 
-# How to do
 
-You have 3 scenarios to do this:
-
-1 - Fork JJMasterData, add a resource file for your language like [this one](https://github.com/JJConsulting/JJMasterData/blob/main/src/JJMasterData.Commons/Language/ResourceStrings_pt-br.resx), and send us a pull request. Other people from your country will have the values already out of the box.
-
-2 - You will need to add the following line to your Program.cs, with cultures you will be using:
+First you will need to add the following line to your Program.cs, with cultures you will be using:
 ```cs
 builder.Services.AddJJMasterDataWeb();
 builder.Services.AddUrlRequestCultureProvider(
@@ -14,13 +9,24 @@ builder.Services.AddUrlRequestCultureProvider(
     new CultureInfo("en-US")
 );
 ```
-Go to ```/en-us/MasterData/Resources``` and populate the database with your culture values, but only your system will reflect these changes
 
-3 - Implement your own [ITranslator](articles/configurations.md#what-to-configure) with your custom logic.
+Now we have 3 scenarios to acomplish this:
 
+## Resource File
+Fork JJMasterData, add a resource file for your language like [this one](https://github.com/JJConsulting/JJMasterData/blob/main/src/JJMasterData.Commons/Language/ResourceStrings_pt-br.resx), and send us a pull request. Other people from your country will have the values already out of the box.
 
+## Database
+Go to ```/en-us/MasterData/Resources``` and populate the strings with your culture values, but only your system will reflect these changes
+
+<img alt="Resources Screen" src="../media/ResourceScreen.png"/>
 <br>
 
-# Why we implemented in the database
+> [!TIP] 
+> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataSettings class.
 
-We put the values in the database because dictionaries are created dynamically, like labels, action names, and other fields in dictionaries. These strings are translated at runtime and can be added to the resource table or with the user interface.
+## Create your own translator system
+You can change the behavior of system internationalization with the interface [ITranslator](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ITranslator.html) with your custom logic.
+
+```cs
+builder.Services.WithTranslator(ITranslator)
+```

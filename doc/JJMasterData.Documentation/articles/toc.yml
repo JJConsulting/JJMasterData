@@ -9,10 +9,12 @@
     href: internationalization.md
   - name: Authentication
     href: authentication.md
-  - name: The USERID keyword
-    href: userid.md
+  - name: Custom Rules
+    href: custom_rules.md
   - name: Expressions
     href: expressions.md
+  - name: Reserved Keywords
+    href: reserved_keywords.md
 - name: Data Dictionary
   items:
   - name: Importing and Exporting Data Dictionaries
@@ -24,13 +26,6 @@
     href: components/data_file.md
   - name: JJFormView
     href: components/form_view.md
-- name: FormEvents
-  href: form_events/intro.md
-  items:
-  - name: .NET
-    href: form_events/net.md
-  - name: .Python
-    href: form_events/python.md
 - name: Errors
   href: errors/intro.md
   items:

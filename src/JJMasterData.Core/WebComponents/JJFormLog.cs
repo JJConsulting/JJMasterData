@@ -166,10 +166,12 @@ public class JJFormLog : JJBaseView
 
         if (string.IsNullOrEmpty(logId))
         {
-            sHtml.AppendLine("<div class=\"alert alert-warning\" role=\"alert\">");
-            sHtml.AppendLine(Translate.Key("No Records Found"));
-            sHtml.AppendLine("</div></br></br>");
-            return sHtml.ToString();
+            var alert = new JJAlert();
+            alert.Icon = IconType.ExclamationTriangle;
+            alert.Color = PanelColor.Warning;
+            alert.Messages.Add("No Records Found");
+
+            return alert.GetHtml();
         }
 
         var filter = new Hashtable();

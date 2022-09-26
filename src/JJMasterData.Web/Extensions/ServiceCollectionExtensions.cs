@@ -61,7 +61,7 @@ public static class ServiceCollectionExtensions
     public static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
     {
 
-        if (supportedCultures == null)
+        if (supportedCultures == null || supportedCultures.Length == 0)
         {
             supportedCultures = new[]
             {

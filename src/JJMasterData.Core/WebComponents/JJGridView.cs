@@ -114,7 +114,7 @@ public class JJGridView : JJBaseView
 
     public JJDataExp DataExp
     {
-        get 
+        get
         {
             if (_dataExp != null) return _dataExp;
             _dataExp = new JJDataExp(FormElement)
@@ -129,10 +129,10 @@ public class JJGridView : JJBaseView
             _dataExp.OnRenderCell += OnRenderCell;
             _dataExp.ProcessOptions = ExportAction.ProcessOptions;
 
-            return _dataExp; 
+            return _dataExp;
         }
     }
-    
+
     private List<FormElementField> PrimaryKeyFields
     {
         get
@@ -156,7 +156,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_visibleFields != null) return _visibleFields;
-            
+
             if (FormElement == null)
                 throw new Exception("FormElement inválido");
 
@@ -426,7 +426,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentExportConfig != null) return _currentExportConfig;
-            
+
             _currentExportConfig = new ExportOptions();
             if (IsPostBack)
             {
@@ -550,7 +550,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_defaultValues != null) return _defaultValues;
-            
+
             //Valor padrão dos campos
             var formManager = new FormManager(FormElement, UserValues, DataAccess);
             _defaultValues = formManager.GetDefaultValues(null, PageState.List);
@@ -763,7 +763,7 @@ public class JJGridView : JJBaseView
                     continue;
                 }
             }
-            
+
             var linkButton = ActionManager.GetLinkToolBar(action, DefaultValues);
             if (linkButton.Visible)
             {
@@ -774,22 +774,22 @@ public class JJGridView : JJBaseView
                         linkButton.Spinner.Name = "dataexp_spinner_" + Name;
                         linkButton.Spinner.Visible = true;
                     }
-                        
+
                 }
                 else if (action is ImportAction)
                 {
-                    if (DataImp.IsRunning()) 
+                    if (DataImp.IsRunning())
                         linkButton.Spinner.Visible = true;
                 }
             }
-            
+
 
             if (BootstrapHelper.Version != 3)
             {
                 linkButton.CssClass += $" {BootstrapHelper.MarginRight}-1";
             }
 
-            
+
             html.Append('\t', 3);
 
             html.AppendLine(linkButton.GetHtml());
@@ -857,7 +857,7 @@ public class JJGridView : JJBaseView
             sAction = string.Empty;
         }
 
-        
+
 
         //Se o post for via ajax
         string tRequest = CurrentContext.Request.QueryString("t");
@@ -994,30 +994,18 @@ public class JJGridView : JJBaseView
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
-            html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well} {(BootstrapHelper.Version == 3 ? string.Empty : "bg-jjmasterdata")}\">");
-            if (BootstrapHelper.Version != 3)
-                html.Append("<div class=\"card-body\">");
-
-            string closebuttonBs5 = BootstrapHelper.Version == 5 ? "p-2 me-3" : string.Empty;
-            html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close} {closebuttonBs5} \" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
-            html.Append(Translate.Key("Close"));
-            html.AppendLine($"\">{BootstrapHelper.CloseButtonTimes}</a>");
-            html.Append("\t\t");
-            html.Append("<span class=\"fa fa-info-circle\"></span>&nbsp;");
-            html.AppendLine(Translate.Key(EmptyDataText));
-
+            var alert = new JJAlert();
+            alert.ShowCloseButton = true;
+            alert.Color = PanelColor.Default;
+            alert.Icon = IconType.InfoCircle;
+            alert.Title = EmptyDataText;
             if (Filter.HasFilter())
             {
-                html.Append("<div class=\"text-info\">");
-                html.Append("<span class=\"fa fa-filter\"></span>&nbsp;");
-                html.Append(Translate.Key("There are filters applied for this query."));
-                html.Append("</div>");
+                alert.Icon = IconType.Filter;
+                alert.Messages.Add("There are filters applied for this query");
             }
-
-            if (BootstrapHelper.Version != 3)
-                html.Append("</div>");
-
-            html.Append("\t</div>");
+            
+            html.AppendLine(alert.GetHtml());
         }
 
         html.AppendLine("\t<!-- End Table -->");
@@ -1518,15 +1506,15 @@ public class JJGridView : JJBaseView
             switch (f.Component)
             {
                 case FormComponent.ComboBox:
-                {
-                    if (f.DataItem != null &&
-                        f.DataItem.ShowImageLegend && !f.DataItem.ReplaceTextOnGrid)
                     {
-                        tdStyle = " style=\"text-align:center;\" ";
-                    }
+                        if (f.DataItem != null &&
+                            f.DataItem.ShowImageLegend && !f.DataItem.ReplaceTextOnGrid)
+                        {
+                            tdStyle = " style=\"text-align:center;\" ";
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case FormComponent.CheckBox:
                     tdStyle = " style=\"text-align:center;\" ";
                     break;
@@ -1534,15 +1522,15 @@ public class JJGridView : JJBaseView
                     scriptOnClick = "";
                     break;
                 default:
-                {
-                    if (f.DataType == FieldType.Float || f.DataType == FieldType.Int)
                     {
-                        if (!f.IsPk)
-                            tdStyle = " style=\"text-align:right;\" ";
-                    }
+                        if (f.DataType == FieldType.Float || f.DataType == FieldType.Int)
+                        {
+                            if (!f.IsPk)
+                                tdStyle = " style=\"text-align:right;\" ";
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
 
             html.Append("\t\t\t\t\t<td");
@@ -1681,7 +1669,7 @@ public class JJGridView : JJBaseView
                 }
 
                 if (link is not { Visible: true }) continue;
-                
+
                 if (action.DividerLine)
                     html.AppendLine("\t\t\t\t\t\t\t\t<li role=\"separator\" class=\"divider\"></li>");
 
@@ -2026,12 +2014,12 @@ public class JJGridView : JJBaseView
     {
         var values = new Hashtable();
         string currentRow = CurrentContext.Request["current_tablerow_" + Name];
-        
+
         if (string.IsNullOrEmpty(currentRow)) return values;
-        
+
         var decriptId = Cript.Descript64(currentRow);
         var parms = HttpUtility.ParseQueryString(decriptId);
-        
+
         foreach (string key in parms)
         {
             values.Add(key, parms[key]);
@@ -2048,7 +2036,7 @@ public class JJGridView : JJBaseView
         var exp = DataExp;
         string exptype = CurrentContext.Request.QueryString("exptype");
         if (exptype.Equals("showoptions"))
-        { 
+        {
             CurrentContext.Response.SendResponse(exp.GetHtml());
         }
         else if (exptype.Equals("export"))
@@ -2090,8 +2078,8 @@ public class JJGridView : JJBaseView
         }
     }
 
-   
-    
+
+
 
     /// <summary>
     /// Executa uma ação SQL
@@ -2519,7 +2507,7 @@ public class JJGridView : JJBaseView
             throw new ArgumentNullException(nameof(actionName));
 
         var action = ToolBarActions.Find(x => x.Name.Equals(actionName));
-        
+
         switch (action)
         {
             case null:

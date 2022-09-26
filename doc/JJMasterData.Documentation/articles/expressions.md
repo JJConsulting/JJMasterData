@@ -37,9 +37,9 @@ Building an expression<br>
 
 
 **System keywords**<br>
-{pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT">
+{pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
 <br>
-Campos do Formuário, UserValues ou Sessão = {FieldName}
+Form fields, UserValues ou Sessão = {FieldName}
 <br>
 {objname} = Name of the field that triggered the autopostback event
 
