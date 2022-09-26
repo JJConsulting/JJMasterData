@@ -106,7 +106,7 @@ IF (1=1)
 ```
 
 > [!WARNING] 
-> It is not a best pratice, use to litle validations.
+> It is not a best pratice, use to little validations.
 
 
 
