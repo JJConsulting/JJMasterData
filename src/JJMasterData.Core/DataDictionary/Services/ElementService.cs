@@ -207,25 +207,20 @@ public class ElementService : BaseService
         formElement.Fields["json"].Component = FormComponent.TextArea;
         formElement.Fields["json"].Export = false;
 
-        formElement.Fields["type"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
+        formElement.Fields["type"].VisibleExpression = "val:0";
+        formElement.Fields["type"].DefaultValue = "val:F";
         formElement.Fields["type"].Component = FormComponent.ComboBox;
-        formElement.Fields["type"].DataItem.Itens.Add(
-            new DataItemValue("F", "Form"));
-        formElement.Fields["type"].DataItem.Itens.Add(
-            new DataItemValue("T", "Table"));
+        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("F", "Form"));
+        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("T", "Table"));
 
         formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
 
         formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields["sync"].Component = FormComponent.ComboBox;
-        formElement.Fields["sync"].DataItem.Itens.Add(
-            new DataItemValue("1", "Yes"));
-        formElement.Fields["sync"].DataItem.Itens.Add(
-            new DataItemValue("0", "No"));
+        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("1", "Yes"));
+        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("0", "No"));
 
         formElement.Fields["modified"].Component = FormComponent.DateTime;
-
-        formElement.Fields["type"].DefaultValue = "val:F";
 
         var formView = new JJFormView(formElement);
         formView.Name = "List";
