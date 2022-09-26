@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Extensions
     public static class StringExtensions
     {
         /// <summary>
-        /// Remove acentos da string
+        /// Remove accents from string
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
