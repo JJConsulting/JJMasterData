@@ -40,6 +40,9 @@ builder.Services.AddAuthorization(options =>
 ```
 
 If you want to protect specific actions or fields in your DataDictionary, you will need to implement your own [JJFormView](articles/components/form_view.md) in your custom View or use the [IFormEvent](articles/form_events/intro.md) interface in the method OnInstanceCreated, customizing your JJFormView object. 
+<br>
+[Learn more here.](custom_rules.md)
 
-Don't forget to secure every policy in **production**, this is just a example for learning purposes.
+> [!TIP] 
+> Don't forget to secure every policy in **production**, this is just a example for learning purposes.
 
