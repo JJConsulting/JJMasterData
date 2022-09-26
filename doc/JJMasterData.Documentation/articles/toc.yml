@@ -13,6 +13,10 @@
     href: userid.md
   - name: Expressions
     href: expressions.md
+- name: Data Dictionary
+  items:
+  - name: Importing and Exporting Data Dictionaries
+    href: data_dictionary/import_export.md
 - name: Components
   href: components/intro.md
   items:

@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>@ViewData["Title"] - JJMasterData Examples</title>
+    <partial name="_MasterDataStylesheets"/>
+    <link rel="stylesheet" href="~/css/menu.css" asp-append-version="true"/>
+    <partial name="_MasterDataTheme"/>
+    <partial name="_MasterDataScripts"/>
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" asp-page="Index">Intro</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" asp-page="FormViewExample">JJFormView</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" asp-page="TitleExample">JJTitle</a>
+        </div>
+    </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <span class="fa fa-bars fa-lg p-3" id="sidebarToggle"></span>
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+<script src="~/js/menu.js"></script>
+</body>
+</html>
