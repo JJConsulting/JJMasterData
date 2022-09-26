@@ -37,7 +37,7 @@ By creating such a class it is possible to execute code in all events defined by
 
 Create a class with starts with the Data Dictionary name and inherits it from [BaseFormEvent.](../lib/JJMasterData.Core.FormEvents.Abstractions.BaseFormEvent.html) <br>
 
-Press Alt+. on Visual Studio and click in Generate overrrides...
+Press "CTRL + ." on Visual Studio and click in Generate overrides...
 <img alt="CustomRules1" src="../media/CustomRules1.png"/>
 
 Then choose the events to customize
@@ -63,37 +63,22 @@ namespace JJMasterData.Web.DataDictionary
 
 ## Customizing with Python
 
+Create a python file with your data dictionary name and implement a class with the same name. Add jjmasterdata.py to enable autocomplete features.
+To deploy, paste the file on the bin folder of your site or specify the path on the services setup.
 ```py
-data_access.set_command("EXEC YOUR_SQL_STUFF")
-```
-### How to use .NET Code ?
+from JJMasterData.Core.FormEvents.Abstractions import BaseFormEvent
 
-You can write .NET Code using CLR (Common Language Runtime). You can access any library available on runtime, including JJMasterData. You can find more about it [here](https://ironpython.net/documentation/dotnet/dotnet.html).
-
-Below you can see the source code of the data_access module that uses the .NET runtime.
-
-```py
-import clr
-clr.AddReference("JJMasterData.Commons")
-import System
-import JJMasterData.Commons.Dao
-    
-data_access_instance = System.Activator.CreateInstance(JJMasterData.Commons.Dao.DataAccess)
-    
-get_fields = lambda sql : dict(data_access_instance.GetFields(sql))  
-get_data_table = lambda sql : data_access_instance.GetDataTable(sql)
-set_command = lambda sql : data_access_instance.SetCommand(sql)
+class DataDictionaryName(BaseFormEvent):
+	def OnInstanceCreated(self, sender):
+		sender.FormElement.Title = "Hello from Python!"
 ```
 
-### How to iterate through a DataTable ?
-With a code like the example below:
+## How to inject them?
 
-```py
-data_table = data_access.get_data_table("SELECT * FROM MY_TABLE")
-    
-for row in data_table.Rows:
-    # do stuff with your str(row["COLUMN"])
+Install JJMasterData.Python and them simply inject in your application startup with the following code:
 
+```csharp
+	services.AddJJMasterDataWeb().WithPythonEngine()
 ```
 
 ## Customizing with Database procedure 
@@ -106,7 +91,7 @@ IF (1=1)
 ```
 
 > [!WARNING] 
-> It is not a best pratice, use to little validations.
+> It is not a best practice, recommended only for simple validations.
 
 
 
