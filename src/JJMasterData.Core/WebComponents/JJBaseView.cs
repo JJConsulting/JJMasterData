@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
@@ -69,7 +71,18 @@ public abstract class JJBaseView
     /// <summary>
     /// Id e nome do componente
     /// </summary>
-    public string Name { get; set; }
+    public string Name
+    {
+        get 
+        {
+            return GetAttr("id");
+        }
+        set
+        {
+            SetAttr("id", value);
+            SetAttr("name", value);
+        }
+    }
 
     /// <summary>
     /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
@@ -183,6 +196,7 @@ public abstract class JJBaseView
             SetAttr(v.Key.ToString(), v.Value);
         }
     }
+
 
     /// <summary>
     /// Add or update a value in UserValues.<br></br>
