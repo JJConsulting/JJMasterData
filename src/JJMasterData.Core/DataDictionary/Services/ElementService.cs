@@ -259,13 +259,13 @@ public class ElementService : BaseService
 
         foreach (var item in dicParser.Table.Fields.ToList())
         {
-            var nameProp = item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " ").RemoveAccents();
+            var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
-            var propField = prop.Replace("@PropName", nameProp.FirstCharToUpperComplete()).Replace("@PropType", typeProp);
+            var propField = prop.Replace("@PropName", FirstCharToUpperComplete(nameProp)).Replace("@PropType", typeProp);
 
-            propsBuilder.AppendLine($"[DataMember(Name = \"{item.Name}\")] ");
-            propsBuilder.AppendLine($"[Display(Name = \"{item.Label}\")]");
-            propsBuilder.AppendLine(propField);
+            propsBuilder.AppendLine($"\t[DataMember(Name = \"{item.Name}\")] ");
+            propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
+            propsBuilder.AppendLine("\t"+propField);
             propsBuilder.AppendLine("");
 
         }
@@ -289,6 +289,19 @@ public class ElementService : BaseService
             FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
             _ => "",
         };
+    }
+
+    private  string FirstCharToUpperComplete(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            string valueFormat = string.Empty;
+            value.Split(' ').ToList().ForEach(x => valueFormat += x.FirstCharToUpper());
+
+            return valueFormat;
+        }
+
+        return value;
     }
     #endregion
 

@@ -17,6 +17,9 @@
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="Extensions\StringExtensions.cs" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Include="..\..\JJMasterData.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
