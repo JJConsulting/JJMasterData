@@ -15,7 +15,10 @@ public class HtmlElementTag
     {
         this.TagName = tag;
 
-        if (tag != HtmlTag.Br)
+        if (tag == HtmlTag.Br |
+            tag == HtmlTag.Input)
+            this.HasClosingTag = false;
+        else
             this.HasClosingTag = true;
     }
 

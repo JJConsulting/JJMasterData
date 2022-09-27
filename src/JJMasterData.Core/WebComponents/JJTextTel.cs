@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJTextTel : JJBaseControl
 {
+    public new int MaxLength { get; private set; }
+
 
     internal static JJTextTel GetInstance(FormElementField f,
                                 object value,
@@ -21,7 +22,6 @@ public class JJTextTel : JJBaseControl
         JJTextTel text = new JJTextTel();
         text.SetAttr(f.Attributes);
         text.ToolTip = f.HelpDescription;
-        text.MaxLength = f.Size;
         text.Text = value != null ? value.ToString() : "";
         text.Enable = enable;
         text.ReadOnly = readOnly;
@@ -29,72 +29,42 @@ public class JJTextTel : JJBaseControl
 
         return text;
     }
-    protected override string RenderHtml()
+
+    public JJTextTel()
     {
-        string cssClass = "form-control ";
-        cssClass += !string.IsNullOrEmpty(CssClass) ? CssClass : "";
+        MaxLength = 19;
+    }
 
-        StringBuilder html = new StringBuilder();
-        html.Append("<div class=\"input-group\"> ");
-
-        html.Append($"<div class=\"{BootstrapHelper.InputGroupAddon}\"> ");
-        if (BootstrapHelper.Version != 3)
-            html.Append("<div class=\"input-group-text\">");
-        
-        html.Append("	<span class=\"fa fa-phone\"></span>");
-        html.Append("	<span title=\"Brasil\">&nbsp;&nbsp;+55</span> ");
-       
-
-        if (BootstrapHelper.Version != 3)
-            html.Append("</div> ");
-        
-        html.Append("</div>");
-        html.Append("<input class=\"");
-        html.Append(cssClass);
-        html.Append("\" id=\"");
-        html.Append(Name);
-        html.Append("\" name=\"");
-        html.Append(Name);
-        html.Append("\" type=\"tel\" ");
-        html.Append("data-inputmask=\"'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'\" ");
-        html.Append("maxlength =\"19\" ");
-    
-        if (!string.IsNullOrEmpty(Text))
-        {
-            html.Append("value =\"");
-            html.Append(Text);
-            html.Append("\" ");
-        }
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.AppendFormat("title=\"{0}\" ", Translate.Key(ToolTip));
-        }
-
-        if (ReadOnly)
-            html.Append("readonly ");
-
-        if (!Enable)
-            html.Append("disabled ");
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-
-            html.Append(attr.Key);
-            if (attr.Value != null)
+    internal override HtmlElement GetHtmlElement()
+    {
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("input-group")
+            .AppendElement(HtmlTag.Div, div =>
             {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-            html.Append(" ");
-        }
+                div.WithCssClass(BootstrapHelper.InputGroupAddon);
+                div.AppendElement(new JJIcon(IconType.Phone).GetHtmlElement());
+                div.AppendElement(HtmlTag.Span, s =>
+                {
+                    s.WithAttribute("title", "Brasil")
+                     .AppendText("&nbsp;&nbsp;+55");
+                });
+            })
+            .AppendElement(HtmlTag.Input, i =>
+            {
+                i.WithNameAndId(Name)
+                 .WithToolTip(Translate.Key(ToolTip))
+                 .WithAttributes(Attributes)
+                 .WithCssClass(CssClass)
+                 .WithCssClass("form-control")
+                 .WithAttribute("type", "tel")
+                 .WithAttribute("maxlength", MaxLength.ToString())
+                 .WithDataAttribute("inputmask", "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'")
+                 .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text)
+                 .WithAttributeIf(ReadOnly, "readonly", "readonly")
+                 .WithAttributeIf(!Enable, "disabled", "disabled");
+            });
 
-        html.Append("/>");
-        html.Append("</div>");
-
-        return html.ToString();
+        return html;
     }
 
 }

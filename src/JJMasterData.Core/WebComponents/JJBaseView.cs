@@ -167,7 +167,7 @@ public abstract class JJBaseView
 
         builder.StartElement(GetHtmlElement());
 
-        var result = builder.RenderHtml();
+        var result = builder.RenderHtml(false);
 
         //TODO: Remove RenderHtml
         return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;

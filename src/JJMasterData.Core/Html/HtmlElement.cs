@@ -232,8 +232,10 @@ public class HtmlElement
             indentedText = "\r\n" + new string('\t', tabCount);
 
         if (_hasRawText || Tag == null)
+        {
             return string.Format("{0}{1}", indentedText, _rawText);
-
+        }
+            
         string tagLayout = Tag.HasClosingTag ? "{0}<{1}{2}>{{0}}{0}</{1}>" : "{0}<{1}{2}/>";
         string elementLayout = string.Format(tagLayout,
             indentedText,
@@ -248,10 +250,12 @@ public class HtmlElement
 
     private string GetElementContent(int tabCount)
     {
+        if (tabCount > 0)
+            tabCount++;
         var content = new StringBuilder();
         foreach (var child in _children)
         {
-            content.Append(child.GetElementHtml(++tabCount));
+            content.Append(child.GetElementHtml(tabCount));
         }
 
         return content.ToString();
