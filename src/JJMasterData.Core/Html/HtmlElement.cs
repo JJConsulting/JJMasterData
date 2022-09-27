@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Html;
 /// </summary>
 public class HtmlElement
 {
-    private HtmlTag tag;
+    private HtmlElementTag tag;
     private List<HtmlElementAttribute> attributes;
     private string rawText;
     private bool hasRawText;
@@ -42,10 +42,9 @@ public class HtmlElement
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElement"/> class.
     /// </summary>
-    /// <param name="tag"></param>
     internal HtmlElement(HtmlTag tag)
     {
-        this.tag = tag;
+        this.tag = new HtmlElementTag(tag);
         this.attributes = new List<HtmlElementAttribute>();
         this.children = new HtmlElementsCollection();
     }
@@ -53,7 +52,7 @@ public class HtmlElement
     /// <summary>
     /// Tag of the current element.
     /// </summary>
-    public HtmlTag Tag => this.tag;
+    public HtmlElementTag Tag => this.tag;
 
     /// <summary>
     /// List of all attributes for current element.
@@ -76,9 +75,7 @@ public class HtmlElement
     /// <summary>
     /// Start HTML element definition if the element type is not defined.
     /// </summary>
-    /// <param name="tag"></param>
-    /// <returns></returns>
-    public HtmlElement OpenElement(HtmlTag tag)
+    public HtmlElement OpenElement(HtmlElementTag tag)
     {
         this.tag = tag;
         return this;
@@ -87,8 +84,6 @@ public class HtmlElement
     /// <summary>
     /// Insert HTML element as a child of caller element.
     /// </summary>
-    /// <param name="elementAction"></param>
-    /// <returns></returns>
     public HtmlElement AppendElement(Action<HtmlElement> elementAction)
     {
         var childElement = new HtmlElement();
@@ -150,14 +145,9 @@ public class HtmlElement
         return this;
     }
 
-   
-
     /// <summary>
     /// Set attribute to the HTML element.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
     public HtmlElement WithAttribute(string name, string value)
     {
         if (this.attributes.Any(x => x.Name == name))
@@ -204,10 +194,6 @@ public class HtmlElement
     /// <summary>
     /// Set attribute to the HTML element on condition.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <param name="condition"></param>
-    /// <returns></returns>
     public HtmlElement WithAttributeIf(string name, string value, bool condition)
     {
         if (condition)
@@ -226,11 +212,6 @@ public class HtmlElement
     /// <summary>
     /// Set classes to the HTML element on condition.
     /// </summary>
-    /// <param name="classesOnTrue"></param>
-    /// <param name="classesOnFalse"></param>
-    /// <param name="condition"></param>
-    /// <param name="sharedClasses"></param>
-    /// <returns></returns>
     public HtmlElement WithConditionalClasses(string classesOnTrue, string classesOnFalse, bool condition, string sharedClasses = "")
     {
         classesOnTrue = classesOnTrue ?? string.Empty;
@@ -247,8 +228,6 @@ public class HtmlElement
     /// <summary>
     /// Set HTML classes.
     /// </summary>
-    /// <param name="classes"></param>
-    /// <returns></returns>
     public HtmlElement WithClasses(string classes)
     {
         return this.WithAttribute("class", classes);
@@ -257,9 +236,6 @@ public class HtmlElement
     /// <summary>
     /// Set custom data attribute to HTML element.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
     public HtmlElement WithDataAttribute(string name, string value)
     {
         return this.WithAttribute($"data-{name}", value);
@@ -270,7 +246,7 @@ public class HtmlElement
     {
         if (!this.hasRawText)
         {
-            return string.Format(this.TagLayout, this.tag.Name, string.Join(string.Empty, this.attributes));
+            return string.Format(this.TagLayout, this.tag.TagName, string.Join(string.Empty, this.attributes));
         }
 
         return this.rawText;
@@ -279,10 +255,9 @@ public class HtmlElement
     /// <summary>
     /// Gets current element content.
     /// </summary>
-    /// <returns></returns>
     internal string GetElementContent()
     {
-        StringBuilder content = new StringBuilder();
+        var content = new StringBuilder();
         foreach (var child in this.children)
         {
             content.Append(child.GetElementHtml());
@@ -294,12 +269,11 @@ public class HtmlElement
     /// <summary>
     /// Gets current element HTML.
     /// </summary>
-    /// <returns></returns>
     internal string GetElementHtml()
     {
         if (!this.hasRawText)
         {
-            string elementLayout = string.Format(this.TagLayout, this.tag.Name, string.Join(string.Empty, this.attributes));
+            string elementLayout = string.Format(this.TagLayout, this.tag.TagName, string.Join(string.Empty, this.attributes));
 
             return string.Format(elementLayout, this.GetElementContent());
         }

@@ -26,9 +26,5 @@ public class HtmlElementAttribute
     /// </summary>
     internal string Value { get; private set; }
 
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return string.Format(Layouts.AttributeLayout, this.Name, this.Value);
-    }
+   
 }

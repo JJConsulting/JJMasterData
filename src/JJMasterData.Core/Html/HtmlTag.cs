@@ -1,46 +1,20 @@
-﻿namespace JJMasterData.Core.Html;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-/// <summary>
-/// Implementation of HTML tag.
-/// </summary>
-public class HtmlTag
+namespace JJMasterData.Core.Html
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HtmlTag"/> class.
-    /// </summary>
-    public HtmlTag()
+    public enum HtmlTag
     {
-    }
+        A,
+        Area,
+        Br,
+        Div,
+        Span,
+        Label,
+        Input
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HtmlTag"/> class.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="hasClosingTag"></param>
-    public HtmlTag(string name, bool hasClosingTag = true)
-    {
-        this.Name = name;
-        this.HasClosingTag = hasClosingTag;
-    }
-
-    /// <summary>
-    /// Name of the tag.
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// Flag that indicates whether the tag is self closing (false) or not (true).
-    /// </summary>
-    public bool HasClosingTag { get; set; }
-
-    public static implicit operator string(HtmlTag tag)
-    {
-        return tag.Name;
-    }
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return this.Name;
     }
 }

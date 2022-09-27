@@ -58,17 +58,17 @@ public class JJLabel : JJBaseView
     protected override string RenderHtml()
     {
         var builder = new HtmlBuilder();
-        builder.StartElement(HtmlTags.Label)
+        builder.StartElement(HtmlTag.Label)
             .WithAttributes(Attributes)
             .WithClasses(CssClass)
             .AppendText(Translate.Key(Text))
-            .AppendElementIf(IsRequired, HtmlTags.Span, s =>
+            .AppendElementIf(IsRequired, HtmlTag.Span, s =>
             {
                 s.WithClasses("required-symbol");
                 s.AppendText("*");
                 s.WithToolTip(Translate.Key("Required"));
             })
-            .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTags.Span, s =>
+            .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
             {
                 s.WithClasses("fa fa-question-circle help-description");
                 s.WithToolTip(Translate.Key(ToolTip));
