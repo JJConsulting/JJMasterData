@@ -11,18 +11,18 @@ namespace JJMasterData.Core.Html;
 /// </summary>
 public class HtmlElement
 {
-    private Dictionary<string, string> attributes;
-    private string rawText;
-    private bool hasRawText;
-    private HtmlElementsCollection children;
+    private Dictionary<string, string> _attributes;
+    private string _rawText;
+    private bool _hasRawText;
+    private HtmlElementsCollection _children;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElement"/> class.
     /// </summary>
     internal HtmlElement()
     {
-        this.attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        this.children = new HtmlElementsCollection();
+        _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        _children = new HtmlElementsCollection();
     }
 
     /// <summary>
@@ -31,8 +31,8 @@ public class HtmlElement
     /// <param name="rawText"></param>
     internal HtmlElement(string rawText) : this()
     {
-        this.rawText = rawText;
-        this.hasRawText = true;
+        _rawText = rawText;
+        _hasRawText = true;
     }
 
     /// <summary>
@@ -48,23 +48,19 @@ public class HtmlElement
     /// </summary>
     public HtmlElementTag Tag { get; private set; }
 
+
     /// <summary>
-    /// List of all attributes for current element.
+    /// Insert HTML element as a child of caller element.
     /// </summary>
-    public Dictionary<string, string> Attributes => this.attributes;
-
-    private string TagLayout
+    public HtmlElement AppendElement(HtmlElement element)
     {
-        get
-        {
-            if (this.hasRawText)
-            {
-                return string.Empty;
-            }
+        if (element == null)
+            throw new ArgumentNullException(nameof(element));
 
-            return Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
-        }
+        _children.Add(element);
+        return this;
     }
+
 
     /// <summary>
     /// Insert HTML element as a child of caller element.
@@ -73,7 +69,18 @@ public class HtmlElement
     {
         var childElement = new HtmlElement(tag);
         elementAction.Invoke(childElement);
-        this.children.Add(childElement);
+        _children.Add(childElement);
+        return this;
+    }
+
+    /// <summary>
+    /// Conditional insert HTML element as a child of caller element.
+    /// </summary>
+    public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction)
+    {
+        if (condition)
+            AppendElement(tag, elementAction);
+
         return this;
     }
 
@@ -85,7 +92,7 @@ public class HtmlElement
     public HtmlElement AppendText(string rawText)
     {
         var childElement = new HtmlElement(rawText);
-        this.children.Add(childElement);
+        _children.Add(childElement);
         return this;
     }
 
@@ -96,37 +103,19 @@ public class HtmlElement
     public HtmlElement AppendTextIf(bool condition, string rawText)
     {
         if (condition)
-        {
-            var childElement = new HtmlElement(rawText);
-            this.children.Add(childElement);
-        }
-
+            AppendText(rawText);
+        
         return this;
     }
 
     /// <summary>
-    /// Conditional insert HTML element as a child of caller element.
+    /// Set HTML element name and ID.
     /// </summary>
-    public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction)
+    public HtmlElement WithNameAndId(string id)
     {
-        if (condition)
-        {
-            var childElement = new HtmlElement(tag);
-            elementAction.Invoke(childElement);
-            this.children.Add(childElement);
-        }
+        if (!string.IsNullOrWhiteSpace(id))
+            WithAttribute("id", id).WithAttribute("name", id);
 
-        return this;
-    }
-
-    /// <summary>
-    /// Insert HTML element collection as children of caller element.
-    /// </summary>
-    public HtmlElement AppendMultiple(Action<HtmlElementsCollection> elementsAction)
-    {
-        var childElements = new HtmlElementsCollection();
-        elementsAction.Invoke(childElements);
-        this.children.AddRange(childElements);
         return this;
     }
 
@@ -135,39 +124,33 @@ public class HtmlElement
     /// </summary>
     public HtmlElement WithAttribute(string name, string value)
     {
-        this.attributes.Add(name, value);
+        _attributes.Add(name, value);
         return this;
     }
 
+
+    
 
     /// <summary>
     /// Set Title to the HTML element.
     /// </summary>
     public HtmlElement WithToolTip(string tooltip)
     {
-        if (attributes.ContainsKey("title"))
-            attributes["title"] = tooltip;
-        else
-            attributes.Add("title", tooltip);
-
-        if (attributes.ContainsKey(BootstrapHelper.DataToggle))
-            attributes[BootstrapHelper.DataToggle] = "tooltip";
-        else
-            attributes.Add(BootstrapHelper.DataToggle, "tooltip");
-
-        return this;
-    }
-
-
-    public HtmlElement WithAttributes(Hashtable attributes)
-    {
-        foreach (DictionaryEntry v in attributes)
+        if (!string.IsNullOrEmpty(tooltip))
         {
-            this.attributes.Add(v.Key.ToString(), v.Value.ToString());
+            if (_attributes.ContainsKey("title"))
+                _attributes["title"] = tooltip;
+            else
+                _attributes.Add("title", tooltip);
+
+            if (_attributes.ContainsKey(BootstrapHelper.DataToggle))
+                _attributes[BootstrapHelper.DataToggle] = "tooltip";
+            else
+                _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
         }
-        
         return this;
     }
+
 
     /// <summary>
     /// Set attribute to the HTML element on condition.
@@ -175,35 +158,44 @@ public class HtmlElement
     public HtmlElement WithAttributeIf(bool condition, string name, string value)
     {
         if (condition)
+            _attributes.Add(name, value);
+
+        return this;
+    }
+
+
+    /// <summary>
+    /// Set classes attributes, if already exists will be ignored.
+    /// </summary>
+    public HtmlElement WithCssClass(string classes)
+    {
+        if (string.IsNullOrWhiteSpace(classes))
+            return this;
+
+        if (!_attributes.ContainsKey("class"))
+            return WithAttribute("class", classes);
+        
+        var listClass = new List<string>();
+        listClass.AddRange(_attributes["class"].Split(' '));
+        foreach (string cssClass in classes.Split(' '))
         {
-            this.attributes.Add(name, value);
+            if (!listClass.Contains(cssClass))
+                listClass.Add(cssClass);
         }
-
-        return this;
-    }
-
-    /// <summary>
-    /// Set classes to the HTML element on condition.
-    /// </summary>
-    public HtmlElement WithConditionalClasses(string classesOnTrue, string classesOnFalse, bool condition, string sharedClasses = "")
-    {
-        classesOnTrue = classesOnTrue ?? string.Empty;
-        classesOnFalse = classesOnFalse ?? string.Empty;
-
-        string classes = $"{(condition ? classesOnTrue.Trim() : classesOnFalse.Trim())} {sharedClasses.Trim()}";
-
-        this.WithClasses(classes.Trim());
-
-        return this;
+       
+        return WithAttribute("class", string.Join(' ', listClass));
     }
 
 
     /// <summary>
-    /// Set HTML classes.
+    /// Conditional to set classes attributes, if already exists will be ignored.
     /// </summary>
-    public HtmlElement WithClasses(string classes)
+    public HtmlElement WithCssClassIf(bool conditional, string classes)
     {
-        return this.WithAttribute("class", classes);
+        if (conditional)
+            WithCssClass(classes);
+
+        return this;
     }
 
     /// <summary>
@@ -211,7 +203,20 @@ public class HtmlElement
     /// </summary>
     public HtmlElement WithDataAttribute(string name, string value)
     {
-        return this.WithAttribute($"data-{name}", value);
+        return WithAttribute($"data-{name}", value);
+    }
+
+    /// <summary>
+    /// Set range of attrs
+    /// </summary>
+    internal HtmlElement WithAttributes(Hashtable attributes)
+    {
+        foreach (DictionaryEntry v in attributes)
+        {
+            _attributes.Add(v.Key.ToString(), v.Value.ToString());
+        }
+
+        return this;
     }
 
     /// <summary>
@@ -220,7 +225,7 @@ public class HtmlElement
     internal string GetElementContent()
     {
         var content = new StringBuilder();
-        foreach (var child in this.children)
+        foreach (var child in _children)
         {
             content.Append(child.GetElementHtml());
         }
@@ -233,20 +238,20 @@ public class HtmlElement
     /// </summary>
     internal string GetElementHtml()
     {
-        if (!this.hasRawText)
+        if (!_hasRawText)
         {
             var attrs = new StringBuilder();
-            foreach (var item in attributes)
+            foreach (var item in _attributes)
             {
                 attrs.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
             }
 
-            string elementLayout = string.Format(this.TagLayout, Tag.TagName, string.Join(string.Empty, attrs.ToString()));
-
-            return string.Format(elementLayout, this.GetElementContent());
+            string tagLayout = Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
+            string elementLayout = string.Format(tagLayout, Tag.TagName, string.Join(string.Empty, attrs.ToString()));
+            return string.Format(elementLayout, GetElementContent());
         }
 
-        return this.rawText;
+        return _rawText;
     }
 
 }

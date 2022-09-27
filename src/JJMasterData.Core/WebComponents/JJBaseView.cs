@@ -71,18 +71,7 @@ public abstract class JJBaseView
     /// <summary>
     /// Id e nome do componente
     /// </summary>
-    public string Name
-    {
-        get 
-        {
-            return GetAttr("id");
-        }
-        set
-        {
-            SetAttr("id", value);
-            SetAttr("name", value);
-        }
-    }
+    public string Name { get; set; }
 
     /// <summary>
     /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle

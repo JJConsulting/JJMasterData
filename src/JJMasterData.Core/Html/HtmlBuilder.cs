@@ -19,6 +19,19 @@ public class HtmlBuilder
         return _element;
     }
 
+
+    /// <summary>
+    /// Start fluent building HTML element.
+    /// </summary>
+    public HtmlElement StartElement(HtmlElement element)
+    {
+        if (element == null)
+            throw new ArgumentNullException(nameof(element));
+
+        _element = element;
+        return _element;
+    }
+
     /// <summary>
     /// Render HTML content based on built element.
     /// </summary>

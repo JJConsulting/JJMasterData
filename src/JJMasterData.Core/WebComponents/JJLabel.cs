@@ -57,7 +57,9 @@ public class JJLabel : JJBaseView
     {
         var builder = new HtmlBuilder();
         builder.StartElement(HtmlTag.Label)
+            .WithNameAndId(Name)
             .WithAttributes(Attributes)
+            .WithClasses(BootstrapHelper.Label)
             .WithClasses(CssClass)
             .AppendText(Translate.Key(Text))
             .AppendElementIf(IsRequired, HtmlTag.Span, s =>

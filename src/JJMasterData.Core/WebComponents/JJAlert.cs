@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,40 +37,53 @@ namespace JJMasterData.Core.WebComponents
 
         protected override string RenderHtml()
         {
+            var html = new HtmlBuilder();
             if (BootstrapHelper.Version == 3 & (Color == PanelColor.Default || Color == PanelColor.Primary))
             {
-                return GetAlertDefaultBs3();
+                html.StartElement(GetAlertDefaultBs3());
             }
             else
             {
-                return GetAlert();
+                html.StartElement(GetAlert());
             }
 
+            return html.RenderHtml();
         }
 
-        private string GetAlertDefaultBs3()
+        private HtmlElement GetAlertDefaultBs3()
         {
-            var html = new StringBuilder();
+            var html = new HtmlElement(HtmlTag.Div)
+            .WithNameAndId(Name)
+            .WithCssClass($"alert {BootstrapHelper.Well}")
+            .WithAttributes(Attributes)
+            .AppendElement(HtmlTag.A, a =>
+            {
+                a.WithAttribute("href", "#");
+                a.WithAttribute("aria-label", Translate.Key("Close"));
+                a.WithAttribute(BootstrapHelper.DataDismiss, "alert");
+                a.WithCssClass(BootstrapHelper.Close);
 
-            html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well}\" ");
-            html.Append(GetProps());
-            html.AppendLine(">");
+            });
+            //html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well}\" ");
+            //html.Append(GetProps());
+            //html.AppendLine(">");
+            return html;
 
-            html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
-            html.Append(Translate.Key("Close"));
-            html.AppendLine($"\">{BootstrapHelper.CloseButtonTimes}</a>");
-            html.Append("\t\t");
-            html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
-            html.AppendLine($"{Translate.Key(Title)}");
-            html.AppendLine($"</strong>");
-            html.AppendLine(GetSplittedMessages());
+            //html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
+            //html.Append(Translate.Key("Close"));
+            //html.AppendLine($"\">{BootstrapHelper.CloseButtonTimes}</a>");
+            //html.Append("\t\t");
+            //html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
+            //html.AppendLine($"{Translate.Key(Title)}");
+            //html.AppendLine($"</strong>");
+            //html.AppendLine(GetSplittedMessages());
 
-            html.Append("\t</div>");
+            //html.Append("\t</div>");
 
-            return html.ToString();
+            //return html.ToString();
         }
 
-        private string GetAlert()
+        private HtmlElement GetAlert()
         {
             var html = new StringBuilder();
 
