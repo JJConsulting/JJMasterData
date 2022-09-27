@@ -14,7 +14,8 @@ namespace JJMasterData.Core.Html
         Div,
         Span,
         Label,
-        Input
-
+        Input,
+        Strong,
+        Button
     }
 }

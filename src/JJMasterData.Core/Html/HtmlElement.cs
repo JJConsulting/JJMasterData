@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JJMasterData.Core.Html;
@@ -11,10 +12,10 @@ namespace JJMasterData.Core.Html;
 /// </summary>
 public class HtmlElement
 {
-    private Dictionary<string, string> _attributes;
-    private string _rawText;
-    private bool _hasRawText;
-    private HtmlElementsCollection _children;
+    private readonly Dictionary<string, string> _attributes;
+    private readonly string _rawText;
+    private readonly bool _hasRawText;
+    private readonly HtmlElementsCollection _children;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElement"/> class.
@@ -148,6 +149,7 @@ public class HtmlElement
             else
                 _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
         }
+        
         return this;
     }
 
@@ -157,6 +159,7 @@ public class HtmlElement
     /// </summary>
     public HtmlElement WithAttributeIf(bool condition, string name, string value)
     {
+
         if (condition)
             _attributes.Add(name, value);
 
@@ -171,7 +174,7 @@ public class HtmlElement
     {
         if (string.IsNullOrWhiteSpace(classes))
             return this;
-
+        
         if (!_attributes.ContainsKey("class"))
             return WithAttribute("class", classes);
         
@@ -182,8 +185,10 @@ public class HtmlElement
             if (!listClass.Contains(cssClass))
                 listClass.Add(cssClass);
         }
-       
-        return WithAttribute("class", string.Join(' ', listClass));
+
+        _attributes["class"] = string.Join(" ", listClass);
+        
+        return this;
     }
 
 
@@ -247,7 +252,7 @@ public class HtmlElement
             }
 
             string tagLayout = Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
-            string elementLayout = string.Format(tagLayout, Tag.TagName, string.Join(string.Empty, attrs.ToString()));
+            string elementLayout = string.Format(tagLayout, Tag.TagName.ToString().ToLower(), string.Join(string.Empty, attrs.ToString()));
             return string.Format(elementLayout, GetElementContent());
         }
 

@@ -51,64 +51,15 @@ public class JJIcon : JJBaseView
         Title = title;
     }
     
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        var sHtml = new StringBuilder();
-        if (CssClass == null)
-            CssClass = string.Empty;
+        var element = new HtmlElement(HtmlTag.Span)
+            .WithNameAndId(Name)
+            .WithCssClass(IconClass)
+            .WithCssClass(CssClass)
+            .WithToolTip(Translate.Key(Title))
+            .WithAttributeIf(!string.IsNullOrEmpty(Color), "style",$"color:{Color}");
 
-        sHtml.Append($"<span class=\"{IconClass} {CssClass}\"");
-
-        if (!string.IsNullOrEmpty(Color))
-        {
-            sHtml.Append(" style=\"color:");
-            sHtml.Append(Color);
-            sHtml.Append(";\"");
-        }
-
-        if (!string.IsNullOrEmpty(Title))
-        {
-            sHtml.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            sHtml.Append(Translate.Key(Title));
-            sHtml.Append("\"");
-        }
-        sHtml.Append(">");
-        sHtml.Append("</span>");
-       
-        return sHtml.ToString();
+        return element;
     }
-
-    //protected HtmlElement RenderHtml()
-    //{
-    //    var sHtml = new HtmlElement(HtmlTag.Span)
-    //    .WithNameAndId(Name)
-    //    .WithCssClass(IconClass)
-    //    .WithCssClass(CssClass)
-    //    .WithToolTip(Translate.Key(Title))
-    //    .WithAttribute("style",$"color:")
-    //    if (CssClass == null)
-    //        CssClass = string.Empty;
-
-    //    sHtml.Append($"<span class=\"{IconClass} {CssClass}\"");
-
-    //    if (!string.IsNullOrEmpty(Color))
-    //    {
-    //        sHtml.Append(" style=\"color:");
-    //        sHtml.Append(Color);
-    //        sHtml.Append(";\"");
-    //    }
-
-    //    if (!string.IsNullOrEmpty(Title))
-    //    {
-    //        sHtml.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-    //        sHtml.Append(Translate.Key(Title));
-    //        sHtml.Append("\"");
-    //    }
-    //    sHtml.Append(">");
-    //    sHtml.Append("</span>");
-
-    //    return sHtml.ToString();
-    //}
-
-
 }

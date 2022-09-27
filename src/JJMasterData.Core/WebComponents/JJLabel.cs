@@ -53,27 +53,26 @@ public class JJLabel : JJBaseView
         IsRequired = f.IsRequired;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        var builder = new HtmlBuilder();
-        builder.StartElement(HtmlTag.Label)
+        var element = new HtmlElement(HtmlTag.Label)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithClasses(BootstrapHelper.Label)
-            .WithClasses(CssClass)
+            .WithCssClass(BootstrapHelper.Label)
+            .WithCssClass(CssClass)
             .AppendText(Translate.Key(Text))
             .AppendElementIf(IsRequired, HtmlTag.Span, s =>
             {
-                s.WithClasses("required-symbol");
+                s.WithCssClass("required-symbol");
                 s.AppendText("*");
                 s.WithToolTip(Translate.Key("Required"));
             })
             .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
             {
-                s.WithClasses("fa fa-question-circle help-description");
+                s.WithCssClass("fa fa-question-circle help-description");
                 s.WithToolTip(Translate.Key(ToolTip));
             });
           
-        return builder.RenderHtml();
+        return element;
     }
 }

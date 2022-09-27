@@ -135,7 +135,21 @@ public abstract class JJBaseView
 
     #endregion
 
-    protected abstract string RenderHtml();
+    [Obsolete("Please use GetHtmlElement and remove this method before merging into main.")]
+    protected virtual string RenderHtml()
+    {
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Returns the object representation of the HTML
+    /// </summary>
+    // internal abstract HtmlElement GetHtmlElement();
+    // TODO: after removing RenderHtml() make this method abstract.
+    internal virtual HtmlElement GetHtmlElement()
+    {
+        return new HtmlElement("    ");
+    }
 
     /// <summary>
     /// Renders the content in HTML.
@@ -149,7 +163,15 @@ public abstract class JJBaseView
             return "";
         try
         {
-            return RenderHtml();
+            var builder = new HtmlBuilder();
+            
+            builder.StartElement(GetHtmlElement());
+            
+            //TODO: Remove RenderHtml
+            
+            var result = builder.RenderHtml();
+            
+            return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
         }
         catch (JJBaseException)
         {
