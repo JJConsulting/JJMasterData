@@ -1,5 +1,4 @@
-﻿using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 
@@ -14,7 +13,6 @@ public class JJIcon : JJBaseView
     /// classe da fonte fontawesome ou glyphicons 
     /// </remarks>
     public string IconClass { get; set; }
-
     public string Color { get; set; }
     public string Title { get; set; }
 
@@ -35,7 +33,6 @@ public class JJIcon : JJBaseView
         Title = title;
     }
 
-    
     public JJIcon(string iconClass)
     {
         IconClass = iconClass;
@@ -55,6 +52,7 @@ public class JJIcon : JJBaseView
     {
         var element = new HtmlElement(HtmlTag.Span)
             .WithNameAndId(Name)
+            .WithAttributes(Attributes)
             .WithCssClass(IconClass)
             .WithCssClass(CssClass)
             .WithToolTip(Translate.Key(Title))

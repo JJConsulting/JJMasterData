@@ -44,7 +44,7 @@ public abstract class JJBaseView
     /// </summary>
     public Factory Factory
     {
-        get => _factory ??= new Factory(DataAccess); 
+        get => _factory ??= new Factory(DataAccess);
         set => _factory = value;
     }
 
@@ -100,9 +100,9 @@ public abstract class JJBaseView
         get
         {
             if (_userId != null) return _userId;
-            
+
             const string userid = "USERID";
-            
+
             if (UserValues.Contains(userid))
             {
                 //Valor customizado pelo usuário
@@ -161,27 +161,21 @@ public abstract class JJBaseView
     {
         if (!Visible)
             return "";
-        try
-        {
-            var builder = new HtmlBuilder();
-            
-            builder.StartElement(GetHtmlElement());
-            
-    
-            
-            var result = builder.RenderHtml();
-            
-            //TODO: Remove RenderHtml
-            return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
-        }
-        catch (JJBaseException)
-        {
-            return null;
-        }
+
+
+        var builder = new HtmlBuilder();
+
+        builder.StartElement(GetHtmlElement());
+
+        var result = builder.RenderHtml();
+
+        //TODO: Remove RenderHtml
+        return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
+
     }
 
     protected DicParser GetDictionary(string elementName) => new DictionaryDao(DataAccess).GetDictionary(elementName);
-    
+
     public string GetAttr(string key)
     {
         return Attributes.ContainsKey(key) ? Attributes[key].ToString() : string.Empty;

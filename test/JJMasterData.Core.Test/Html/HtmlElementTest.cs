@@ -12,7 +12,7 @@ public class HtmlElementTest
     {
         var builder = new HtmlBuilder();
         builder.StartElement(tag);
-        var result = builder.RenderHtml();
+        var result = builder.RenderHtml(false);
 
         string formattedTag = tag.ToString().ToLower();
         Assert.Equal($"<{formattedTag}></{formattedTag}>",result);
@@ -24,7 +24,7 @@ public class HtmlElementTest
     {
         var builder = new HtmlBuilder();
         builder.StartElement(tag);
-        var result = builder.RenderHtml();
+        var result = builder.RenderHtml(false);
 
         string formattedTag = tag.ToString().ToLower();
         Assert.Equal($"<{formattedTag}/>",result);

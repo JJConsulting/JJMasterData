@@ -1,8 +1,6 @@
-﻿using System;
-using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -42,7 +40,10 @@ public class JJTitle : JJBaseView
 
     internal override HtmlElement GetHtmlElement()
     {
-        return new HtmlElement(HtmlTag.Div).WithNameAndId(Name)
+        return new HtmlElement(HtmlTag.Div)
+            .WithNameAndId(Name)
+            .WithAttributes(Attributes)
+            .WithCssClass(CssClass)
             .WithCssClass(BootstrapHelper.PageHeader)
             .AppendElement(Tag, e =>
             {

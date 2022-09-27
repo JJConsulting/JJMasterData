@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace JJMasterData.Core.Html;
@@ -47,7 +46,7 @@ public class HtmlElement
     /// Tag of the current element.
     /// </summary>
     public HtmlElementTag Tag { get; private set; }
-    
+
     /// <summary>
     /// Insert HTML element as a child of caller element.
     /// </summary>
@@ -103,7 +102,7 @@ public class HtmlElement
     {
         if (condition)
             AppendText(rawText);
-        
+
         return this;
     }
 
@@ -128,7 +127,7 @@ public class HtmlElement
     }
 
 
-    
+
 
     /// <summary>
     /// Set Title to the HTML element.
@@ -147,7 +146,7 @@ public class HtmlElement
             else
                 _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
         }
-        
+
         return this;
     }
 
@@ -172,10 +171,10 @@ public class HtmlElement
     {
         if (string.IsNullOrWhiteSpace(classes))
             return this;
-        
+
         if (!_attributes.ContainsKey("class"))
             return WithAttribute("class", classes);
-        
+
         var listClass = new List<string>();
         listClass.AddRange(_attributes["class"].Split(' '));
         foreach (string cssClass in classes.Split(' '))
@@ -185,7 +184,7 @@ public class HtmlElement
         }
 
         _attributes["class"] = string.Join(" ", listClass);
-        
+
         return this;
     }
 
@@ -222,40 +221,52 @@ public class HtmlElement
         return this;
     }
 
+
     /// <summary>
-    /// Gets current element content.
+    /// Gets current element HTML.
     /// </summary>
-    internal string GetElementContent()
+    internal string GetElementHtml(int tabCount)
+    {
+        string indentedText = string.Empty;
+        if (tabCount > 0)
+            indentedText = "\r\n" + new string('\t', tabCount);
+
+        if (_hasRawText || Tag == null)
+            return string.Format("{0}{1}", indentedText, _rawText);
+
+        string tagLayout = Tag.HasClosingTag ? "{0}<{1}{2}>{{0}}{0}</{1}>" : "{0}<{1}{2}/>";
+        string elementLayout = string.Format(tagLayout,
+            indentedText,
+            Tag.TagName.ToString().ToLower(),
+            GetHtmlAttrs());
+
+        if (!Tag.HasClosingTag)
+            return elementLayout;
+
+        return string.Format(elementLayout, GetElementContent(tabCount));
+    }
+
+    private string GetElementContent(int tabCount)
     {
         var content = new StringBuilder();
         foreach (var child in _children)
         {
-            content.Append(child.GetElementHtml());
+            content.Append(child.GetElementHtml(++tabCount));
         }
 
         return content.ToString();
     }
 
-    /// <summary>
-    /// Gets current element HTML.
-    /// </summary>
-    internal string GetElementHtml()
+    private string GetHtmlAttrs()
     {
-        if (!_hasRawText && Tag != null)
+        var attrs = new StringBuilder();
+        foreach (var item in _attributes)
         {
-            var attrs = new StringBuilder();
-            foreach (var item in _attributes)
-            {
-                attrs.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
-            }
-
-            string tagLayout = Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
-            string elementLayout = string.Format(tagLayout, Tag.TagName.ToString().ToLower(), string.Join(string.Empty, attrs.ToString()));
-            
-            return string.Format(elementLayout, GetElementContent());
+            attrs.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
         }
 
-        return _rawText;
+        return attrs.ToString();
     }
+
 
 }

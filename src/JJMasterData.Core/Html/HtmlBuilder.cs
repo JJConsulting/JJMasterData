@@ -19,7 +19,6 @@ public class HtmlBuilder
         return _element;
     }
 
-
     /// <summary>
     /// Start fluent building HTML element.
     /// </summary>
@@ -37,16 +36,15 @@ public class HtmlBuilder
     /// <summary>
     /// Render HTML content based on built element.
     /// </summary>
-    public string RenderHtml()
+    public string RenderHtml(bool indentHtml = true)
     {
         if (_element == null)
         {
             throw new ArgumentNullException("HTML Element", "HTML element is not build. Use StartElement method to build your HTML element");
         }
-
-        return _element.GetElementHtml();
+        int tabCount = indentHtml ? 1 : 0;
+        return _element.GetElementHtml(tabCount);
     }
-
 
     /// <summary>
     /// Reset builder element.

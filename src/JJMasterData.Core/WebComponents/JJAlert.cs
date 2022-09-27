@@ -1,10 +1,8 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -38,8 +36,9 @@ namespace JJMasterData.Core.WebComponents
         {
             var html = new HtmlElement(HtmlTag.Div)
                 .WithNameAndId(Name)
-                .WithCssClass($"alert {BootstrapHelper.Well}")
                 .WithAttributes(Attributes)
+                .WithCssClass(CssClass)
+                .WithCssClass($"alert {BootstrapHelper.Well}")
                 .AppendElement(HtmlTag.A, e =>
                 {
                     e.WithAttribute("href", "#");
@@ -61,9 +60,12 @@ namespace JJMasterData.Core.WebComponents
         private HtmlElement GetAlert()
         {
             var html = new HtmlElement(HtmlTag.Div)
-                .WithCssClass($"alert alert-{ClassType} {CssClass} alert-dismissible")
-                .WithAttribute("role", "alert")
+                .WithNameAndId(Name)
                 .WithAttributes(Attributes)
+                .WithCssClass(CssClass)
+                .WithCssClass($"alert alert-{ClassType} alert-dismissible")
+                .WithAttribute("role", "alert")
+                
                 .AppendElementIf(ShowCloseButton, HtmlTag.Button, e =>
                 {
                     e.WithCssClass(BootstrapHelper.Close);
