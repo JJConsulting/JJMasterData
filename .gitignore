@@ -348,4 +348,4 @@ healthchecksdb
 appsettings.json
 
 # Ignore default JJConsulting logs
-*_applog
+*_applog.txt
