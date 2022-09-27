@@ -261,7 +261,7 @@ public class ElementService : BaseService
         {
             var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
-            var propField = prop.Replace("@PropName", FirstCharToUpperComplete(nameProp)).Replace("@PropType", typeProp);
+            var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 
             propsBuilder.AppendLine($"\t[DataMember(Name = \"{item.Name}\")] ");
             propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
@@ -291,41 +291,35 @@ public class ElementService : BaseService
         };
     }
 
-    private  string FirstCharToUpperComplete(string value)
+    private string ToCamelCase(string value)
     {
-        if (!string.IsNullOrEmpty(value))
-        {
-            string valueFormat = string.Empty;
-            value.Split(' ').ToList().ForEach(x => valueFormat += x.FirstCharToUpper());
+        if (string.IsNullOrEmpty(value)) return value;
+        
+        string formattedValue = string.Empty;
+        value.Split(' ').ToList().ForEach(x => formattedValue += x.FirstCharToUpper());
 
-            return valueFormat;
-        }
+        return formattedValue;
 
-        return value;
     }
     #endregion
 
     public byte[] Export(List<Hashtable> selectedRows)
     {
-        using (var memoryStream = new MemoryStream())
+        using var memoryStream = new MemoryStream();
+        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            foreach (var element in selectedRows)
             {
-                foreach (var element in selectedRows)
-                {
-                    string dictionaryName = element["name"].ToString();
-                    var dicParser = DicDao.GetDictionary(dictionaryName);
-                    string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
+                string dictionaryName = element["name"].ToString();
+                var dicParser = DicDao.GetDictionary(dictionaryName);
+                string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
 
-                    var jsonFile = archive.CreateEntry(dictionaryName + ".json");
-                    using (var streamWriter = new StreamWriter(jsonFile.Open()))
-                    {
-                        streamWriter.Write(json);
-                    }
-                }
+                var jsonFile = archive.CreateEntry(dictionaryName + ".json");
+                using var streamWriter = new StreamWriter(jsonFile.Open());
+                streamWriter.Write(json);
             }
-            return memoryStream.ToArray();
         }
+        return memoryStream.ToArray();
     }
 
     public bool Import(Stream file)
