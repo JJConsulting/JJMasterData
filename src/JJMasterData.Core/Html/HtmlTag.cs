@@ -16,6 +16,13 @@ namespace JJMasterData.Core.Html
         Label,
         Input,
         Strong,
-        Button
+        Button,
+        H1,
+        H2,
+        H3,
+        H4,
+        H5,
+        H6,
+        Small
     }
 }

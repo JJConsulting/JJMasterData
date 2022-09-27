@@ -167,10 +167,11 @@ public abstract class JJBaseView
             
             builder.StartElement(GetHtmlElement());
             
-            //TODO: Remove RenderHtml
+    
             
             var result = builder.RenderHtml();
             
+            //TODO: Remove RenderHtml
             return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
         }
         catch (JJBaseException)

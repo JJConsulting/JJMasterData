@@ -136,6 +136,12 @@ public static class BootstrapHelper
         _ => "center-block"
     };
 
+    public static string PageHeader => Version switch
+    {
+        >= 4 => "pb-2 mt-4 mb-2 border-bottom",
+        _ => "page-header"
+    };
+
     #endregion
 
     #region Bootstrap5 Breaking Changes
@@ -224,7 +230,6 @@ public static class BootstrapHelper
     };
 
     #endregion
-
     public static string ApplyCompatibility(string cssClass)
     {
         if (Version == 3) return null;

@@ -1,5 +1,7 @@
 ﻿
 
+using JJMasterData.Core.Html;
+
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
@@ -19,11 +21,6 @@ public class JJText : JJBaseView
         Visible = true;
         Text = text;
     }
-    
-    protected override string RenderHtml()
-    {
-        return Text;
-    }
 
-    
+    internal override HtmlElement GetHtmlElement() => new(Text);
 }

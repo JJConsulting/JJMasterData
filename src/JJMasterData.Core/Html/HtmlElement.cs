@@ -16,7 +16,6 @@ public class HtmlElement
     private readonly string _rawText;
     private readonly bool _hasRawText;
     private readonly HtmlElementsCollection _children;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElement"/> class.
     /// </summary>
@@ -48,8 +47,7 @@ public class HtmlElement
     /// Tag of the current element.
     /// </summary>
     public HtmlElementTag Tag { get; private set; }
-
-
+    
     /// <summary>
     /// Insert HTML element as a child of caller element.
     /// </summary>
@@ -243,7 +241,7 @@ public class HtmlElement
     /// </summary>
     internal string GetElementHtml()
     {
-        if (!_hasRawText)
+        if (!_hasRawText && Tag != null)
         {
             var attrs = new StringBuilder();
             foreach (var item in _attributes)
@@ -253,6 +251,7 @@ public class HtmlElement
 
             string tagLayout = Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
             string elementLayout = string.Format(tagLayout, Tag.TagName.ToString().ToLower(), string.Join(string.Empty, attrs.ToString()));
+            
             return string.Format(elementLayout, GetElementContent());
         }
 
