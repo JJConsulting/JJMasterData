@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -32,7 +30,7 @@ public class JJLabel : JJBaseView
     /// </summary>
     public string Text { get; set; }
 
-    public Boolean IsRequired { get; set; }
+    public bool IsRequired { get; set; }
 
     /// <summary>
     /// Inicializa uma nova instância da classe JJLabel

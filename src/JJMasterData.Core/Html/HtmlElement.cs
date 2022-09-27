@@ -11,7 +11,6 @@ namespace JJMasterData.Core.Html;
 /// </summary>
 public class HtmlElement
 {
-    private HtmlElementTag tag;
     private Dictionary<string, string> attributes;
     private string rawText;
     private bool hasRawText;
@@ -41,13 +40,13 @@ public class HtmlElement
     /// </summary>
     internal HtmlElement(HtmlTag tag) : this()
     {
-        this.tag = new HtmlElementTag(tag);
+        Tag = new HtmlElementTag(tag);
     }
 
     /// <summary>
     /// Tag of the current element.
     /// </summary>
-    public HtmlElementTag Tag => this.tag;
+    public HtmlElementTag Tag { get; private set; }
 
     /// <summary>
     /// List of all attributes for current element.
@@ -63,25 +62,16 @@ public class HtmlElement
                 return string.Empty;
             }
 
-            return this.tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
+            return Tag.HasClosingTag ? "<{0}{1}>{{0}}</{0}>" : "<{0}{1}/>";
         }
-    }
-
-    /// <summary>
-    /// Start HTML element definition if the element type is not defined.
-    /// </summary>
-    public HtmlElement OpenElement(HtmlElementTag tag)
-    {
-        this.tag = tag;
-        return this;
     }
 
     /// <summary>
     /// Insert HTML element as a child of caller element.
     /// </summary>
-    public HtmlElement AppendElement(Action<HtmlElement> elementAction)
+    public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction)
     {
-        var childElement = new HtmlElement();
+        var childElement = new HtmlElement(tag);
         elementAction.Invoke(childElement);
         this.children.Add(childElement);
         return this;
@@ -145,12 +135,6 @@ public class HtmlElement
     /// </summary>
     public HtmlElement WithAttribute(string name, string value)
     {
-        
-        if (this.attributes.ContainsKey(name))
-        {
-            throw new InvalidOperationException($"Attribute {name} cannot be duplicated!");
-        }
-
         this.attributes.Add(name, value);
         return this;
     }
@@ -161,15 +145,15 @@ public class HtmlElement
     /// </summary>
     public HtmlElement WithToolTip(string tooltip)
     {
-        if (this.attributes.ContainsKey("title"))
-            Attributes["title"] = tooltip;
+        if (attributes.ContainsKey("title"))
+            attributes["title"] = tooltip;
         else
-            Attributes.Add("title", tooltip);
+            attributes.Add("title", tooltip);
 
-        if (this.attributes.ContainsKey(BootstrapHelper.DataToggle))
-            Attributes[BootstrapHelper.DataToggle] = "tooltip";
+        if (attributes.ContainsKey(BootstrapHelper.DataToggle))
+            attributes[BootstrapHelper.DataToggle] = "tooltip";
         else
-            Attributes.Add(BootstrapHelper.DataToggle, "tooltip");
+            attributes.Add(BootstrapHelper.DataToggle, "tooltip");
 
         return this;
     }
@@ -188,7 +172,7 @@ public class HtmlElement
     /// <summary>
     /// Set attribute to the HTML element on condition.
     /// </summary>
-    public HtmlElement WithAttributeIf(string name, string value, bool condition)
+    public HtmlElement WithAttributeIf(bool condition, string name, string value)
     {
         if (condition)
         {
@@ -257,7 +241,7 @@ public class HtmlElement
                 attrs.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
             }
 
-            string elementLayout = string.Format(this.TagLayout, this.tag.TagName, string.Join(string.Empty, attrs.ToString()));
+            string elementLayout = string.Format(this.TagLayout, Tag.TagName, string.Join(string.Empty, attrs.ToString()));
 
             return string.Format(elementLayout, this.GetElementContent());
         }
