@@ -995,16 +995,20 @@ public class JJGridView : JJBaseView
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             var alert = new JJAlert();
-            alert.ShowCloseButton = true;
             alert.Color = PanelColor.Default;
-            alert.Icon = IconType.InfoCircle;
-            alert.Title = EmptyDataText;
+            alert.ShowCloseButton = true;
+
             if (Filter.HasFilter())
             {
-                alert.Icon = IconType.Filter;
                 alert.Messages.Add("There are filters applied for this query");
+                alert.Icon = IconType.Filter;
             }
-            
+            else
+            {
+                alert.Messages.Add(EmptyDataText);
+                alert.Icon = IconType.InfoCircle;
+            }
+
             html.AppendLine(alert.GetHtml());
         }
 
