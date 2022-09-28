@@ -231,37 +231,49 @@ public class HtmlElement
         return this;
     }
 
-
     /// <summary>
     /// Gets current element HTML.
     /// </summary>
     internal string GetElementHtml(int tabCount)
     {
-        string indentedText = string.Empty;
+        var html = new StringBuilder();
         if (tabCount > 0)
-            indentedText = "\r\n" + new string('\t', tabCount);
+            html.AppendLine("").Append('\t', tabCount);
 
         if (_hasRawText || Tag == null)
-        {
-            return string.Format("{0}{1}", indentedText, _rawText);
+        {    
+            html.Append(_rawText);
+            return html.ToString();
         }
+
+        html.Append("<");
+        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(GetHtmlAttrs());
             
-        string tagLayout = Tag.HasClosingTag ? "{0}<{1}{2}>{{0}}{0}</{1}>" : "{0}<{1}{2}/>";
-        string elementLayout = string.Format(tagLayout,
-            indentedText,
-            Tag.TagName.ToString().ToLower(),
-            GetHtmlAttrs());
-
         if (!Tag.HasClosingTag)
-            return elementLayout;
+        {
+            html.Append("/>");
+            return html.ToString();
+        }
 
-        return string.Format(elementLayout, GetElementContent(tabCount));
+        html.Append(">");
+        html.Append(GetElementContent(tabCount));
+
+        if (tabCount > 0)
+            html.AppendLine("").Append('\t', tabCount);
+
+        html.Append("</");
+        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(">");
+
+        return html.ToString();
     }
 
     private string GetElementContent(int tabCount)
     {
         if (tabCount > 0)
             tabCount++;
+
         var content = new StringBuilder();
         foreach (var child in _children)
         {
@@ -281,6 +293,5 @@ public class HtmlElement
 
         return attrs.ToString();
     }
-
 
 }

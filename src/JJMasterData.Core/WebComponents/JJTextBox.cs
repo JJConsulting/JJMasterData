@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -32,7 +30,7 @@ public class JJTextBox : JJBaseControl
     /// <summary>
     /// Tipo do componente
     /// </summary>
-    public InputType InputType { get; set; }
+    public InputType InputType { get; private set; }
 
     /// <summary>
     /// Numero de casas decimais
@@ -42,49 +40,32 @@ public class JJTextBox : JJBaseControl
     /// Propriedade válida somente para tipos numéricos
     /// </remarks>
     public int NumberOfDecimalPlaces { get; set; }
-    
+
     public float? MinValue { get; set; }
     public float? MaxValue { get; set; }
 
-    public JJTextBox()
+    private bool HasAction
     {
-        Visible = true;
-        Enable = true;
-    }
-
-    public JJTextBox(IDataAccess dataAccess) : base(dataAccess)
-    {
-        Visible = true;
-        Enable = true;
-    }
-
-    public JJTextBox(FormElementField f)
-    {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f));
-
-        Visible = true;
-        Enable = true;
-        switch (f.Component)
+        get
         {
-            case FormComponent.Password:
-            case FormComponent.Email:
-            case FormComponent.Number:
-            case FormComponent.Cnpj:
-            case FormComponent.Cpf:
-            case FormComponent.CnpjCpf:
-            case FormComponent.Cep:
-            case FormComponent.QrCode:
-                int type = (int)f.Component;
-                InputType = (InputType)type;
-                break;
-            default:
-                InputType = InputType.Textbox;
-                break;
+            return Actions.ToList().Exists(x => x.Visible);
         }
+    }
 
-        Name = f.Name;
-        MaxLength = f.Size;
+    public JJTextBox() 
+    {
+        InputType = InputType.Textbox;
+        Visible = true;
+        Enable = true;
+        SetDefaultAttrs(InputType);
+    }
+
+    public JJTextBox(InputType inputType) 
+    {
+        InputType = inputType;
+        Visible = true;
+        Enable = true;
+        SetDefaultAttrs(inputType);
     }
 
     internal static JJTextBox GetInstance(FormElementField f,
@@ -94,272 +75,213 @@ public class JJTextBox : JJBaseControl
                                 string name = null)
     {
         if (f == null)
-            throw new ArgumentNullException(nameof(f));
+            throw new ArgumentNullException(nameof(FormElementField));
 
-        var textBox = new JJTextBox();
-        switch (f.Component)
-        {
-            case FormComponent.Password:
-            case FormComponent.Email:
-            case FormComponent.Cnpj:
-            case FormComponent.Cpf:
-            case FormComponent.CnpjCpf:
-            case FormComponent.Cep:
-            case FormComponent.Currency:
-            case FormComponent.QrCode:
-                int type = (int)f.Component;
-                textBox.InputType = (InputType)type;
-                break;
-            case FormComponent.Number:
-                textBox.MinValue = f.MinValue;
-                textBox.MaxValue = f.MaxValue;
-                textBox.InputType = InputType.Number;
-                break;
-            default:
-                textBox.InputType = InputType.Textbox;
-                break;
-        }
-
+        int type = (int)f.Component;
+        var textBox = new JJTextBox((InputType)type);
         textBox.SetAttr(f.Attributes);
         textBox.MaxLength = f.Size;
+        textBox.Enable = enable;
+        textBox.ReadOnly = readOnly;
+        textBox.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
+        textBox.Name = name ?? f.Name;
+        textBox.MinValue = f.MinValue;
+        textBox.MaxValue = f.MaxValue;
 
         if (textBox.InputType == InputType.Currency)
             value = value?.ToString()?.Replace("R$", string.Empty).Trim();
 
         textBox.Text = value?.ToString() ?? string.Empty;
 
-        textBox.Enable = enable;
-        textBox.ReadOnly = readOnly;
-        textBox.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
-        textBox.Name = name ?? f.Name;
-
         return textBox;
     }
 
-
-
-    protected override string RenderHtml()
+    private void SetDefaultAttrs(InputType type)
     {
-        StringBuilder html = new StringBuilder();
-        string cssClass = "form-control ";
-        cssClass += !string.IsNullOrEmpty(CssClass) ? CssClass : "";
+        var listClass = new List<string>();
+        listClass.Add("form-control");
 
+        switch (type)
+        {
+            case InputType.Currency:
+                listClass.Add(BootstrapHelper.TextRight);
+                MaxLength = 18;
+                Actions.Add(new JJLinkButton
+                {
+                    Text = "R$"
+                });
+
+                SetAttr("type", "number");
+                SetAttr("onclick", "this.select();");
+                SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                break;
+            case InputType.Number:
+                listClass.Add(BootstrapHelper.TextRight);
+                MaxLength = 22;
+                SetAttr("step", "1");
+                SetAttr("onclick", "this.select();");
+
+                if (NumberOfDecimalPlaces > 0)
+                {
+                    SetAttr("type", "text");
+                    listClass.Add("jjdecimal");
+                }
+                else
+                {
+                    SetAttr("type", "number");
+                    SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                }
+                break;
+            case InputType.Cnpj:
+                MaxLength = 18;
+                SetAttr("type", "text");
+                SetAttr("onclick", "this.select();");
+                SetAttr("data-inputmask", "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case InputType.Cpf:
+                MaxLength = 14;
+                SetAttr("type", "text");
+                SetAttr("onclick", "this.select();");
+                SetAttr("data-inputmask", "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case InputType.CnpjCpf:
+                MaxLength = 18;
+                SetAttr("type", "text");
+                break;
+            case InputType.Cep:
+                MaxLength = 9;
+                SetAttr("type", "text");
+                SetAttr("data-inputmask", "'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'");
+                break;
+            case InputType.Password:
+                SetAttr("type", "password");
+                break;
+            default:
+                SetAttr("type", "text");
+                break;
+
+        }
+
+        SetAttr("class", string.Join(" ", listClass));
+    }
+
+    internal override HtmlElement GetHtmlElement()
+    {
+        var input = GetHtmlInput();
+        if (!HasAction)
+            return input;
 
         //Actions
         var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
         var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
-        bool isCurrency = InputType == InputType.Currency; 
-        bool hasAction = (listAction.Count > 0 || listActionGroup.Count > 0 || isCurrency);
 
-        if (hasAction)
+        if (defaultAction != null && defaultAction.Enabled && Enable)
         {
-            if (defaultAction != null && defaultAction.Enabled && !Enable)
-                cssClass += "default-option ";
-
-            html.Append($"<div class=\"{(BootstrapHelper.Version  == 3 ? "input-group" : string.Empty)} jjform-action\"> ");
-
-            if (isCurrency)
-
-                listAction.Add(new JJLinkButton
-                {
-                    Text = "R$"
-                });
+            input.WithCssClass("default-option");
+            input.WithAttribute("onchange", defaultAction.OnClientClick);
         }
 
-        if(!hasAction)
-            html.Append(GetInputHtml(cssClass, defaultAction));
+        var inputGroup = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("input-group jjform-action")
+            .AppendElement(input);
 
-        if (hasAction)
+        HtmlElement elementGroup;
+        if (BootstrapHelper.Version >= 5)
         {
-            html.Append($"<div class=\"{BootstrapHelper.InputGroupBtn}\"> ");
+            elementGroup = inputGroup;
+        }
+        else
+        {
+            elementGroup = new HtmlElement(HtmlTag.Div)
+                .WithCssClass(BootstrapHelper.InputGroupBtn);
 
-            foreach (var action in listAction)
-            {
-                action.ShowAsButton = BootstrapHelper.Version == 3;
-                action.Attributes.Add("style", "text-decoration:none");
-                action.CssClass = BootstrapHelper.Version > 3 ? "input-group-text" : string.Empty;
-                html.AppendLine(action.GetHtml());
-            }
-
-            if (BootstrapHelper.Version >= 4)
-                html.Append(GetInputHtml(cssClass, defaultAction));
-
-
-            if (listActionGroup.Count > 0)
-            {
-                html.AppendLine($"<button type=\"button\" class=\"{(BootstrapHelper.Version != 3 ? " form-control input-group-text" : BootstrapHelper.DefaultButton)} dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
-                html.Append("  <span class=\"caret\" ");
-                html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-                html.AppendFormat("title=\"{0}\">", Translate.Key("More Options"));
-                html.AppendLine("</span>");
-                html.AppendLine("</button>");
-                html.AppendLine("<ul class=\"dropdown-menu dropdown-menu-right\">");
-
-                foreach (var action in listActionGroup)
-                {
-                    if (action.DividerLine)
-                        html.AppendLine("  <li role =\"separator\" class=\"divider\"></li>");
-
-                    html.AppendLine("  <li class=\"dropdown-item\">");
-                    html.Append(action.GetHtml());
-                    html.AppendLine("  </li>");
-                }
-                html.AppendLine("</ul>");
-            }
-
-            html.Append("</div>");
-
-            if(BootstrapHelper.Version == 3)
-                html.Append(GetInputHtml(cssClass, defaultAction));
-
-            html.Append("</div>");
+            inputGroup.AppendElement(elementGroup);
+        }
+         
+        foreach (var action in listAction)
+        {
+            action.ShowAsButton = true;
+            elementGroup.AppendElement(action.GetHtmlElement());
         }
 
-        return html.ToString();
+        if (listActionGroup.Count > 0)
+        {
+            elementGroup.AppendElement(GetHtmlCaretButton());
+            elementGroup.AppendElement(HtmlTag.Ul, ul =>
+            {
+                ul.WithCssClass("dropdown-menu dropdown-menu-right");
+                AddGroupActions(ul, listActionGroup);
+            });
+        }
+
+        return inputGroup;
     }
 
-    private string GetInputHtml( string cssClass, JJLinkButton defaultAction)
+    private void AddGroupActions(HtmlElement ul, List<JJLinkButton> listAction)
     {
-        var html = new StringBuilder();
-        html.Append("<input id=\"");
-        html.Append(Name);
-        html.Append("\" name=\"");
-        html.Append(Name);
-        html.Append("\" ");
-
-        switch (InputType)
+        foreach (var action in listAction)
         {
-            case InputType.Number:
+            if (action.DividerLine)
+            {
+                ul.AppendElement(HtmlTag.Li, li =>
                 {
+                    li.WithAttribute("role", "separator").WithCssClass("divider dropdown-divider");
+                });
+            }
 
-                    html.Append("maxlength =\"22\" ");
-                    html.Append($"min=\"{(MinValue == null ? "–2147483648" : MinValue)}\"" +
-                                $"max=\"{(MaxValue == null ? "2147483648" : MaxValue)}\"" +
-                                " step=\"1\" ");
-                    html.Append("onclick=\"this.select();\" ");
-
-                    switch (NumberOfDecimalPlaces)
-                    {
-                        case 0:
-                            html.Append("type=\"number\" ");
-                            html.Append("onkeypress=\"return jjutil.justNumber(event);\" ");
-                            break;
-                        case > 0:
-                            html.Append("type=\"text\" ");
-                            html.AppendFormat("jjdecimalplaces=\"{0}\" ", NumberOfDecimalPlaces);
-
-                            cssClass += " jjdecimal";
-                            break;
-                    }
-
-                    if (!string.IsNullOrEmpty(Text))
-                    {
-                        if (int.TryParse(Text.Replace(".", ""), out int @int))
-                            Text = @int.ToString();
-                    }
-                    cssClass += BootstrapHelper.TextRight;
-                    break;
-                }
-
-            case InputType.Currency:
-                html.Append("type=\"number\" ");
-                html.Append("maxlength =\"18\" ");
-                html.Append("onclick=\"this.select();\" ");
-                html.Append("onkeypress=\"return jjutil.justDecimal(event);\" ");
-                cssClass += BootstrapHelper.TextRight;
-                break;
-            case InputType.Cnpj:
-                html.Append("type=\"text\" ");
-                html.Append("maxlength =\"18\" ");
-                html.Append("onclick=\"this.select();\" ");
-                html.Append("data-inputmask=\"'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'\" ");
-                break;
-            case InputType.Cpf:
-                html.Append("type=\"text\" ");
-                html.Append("maxlength =\"14\" ");
-                html.Append("data-inputmask=\"'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'\" ");
-                break;
-            case InputType.CnpjCpf:
-                html.Append("type=\"text\" ");
-                html.Append("maxlength =\"18\" ");
-                break;
-            case InputType.Password:
-                html.Append("type=\"password\" ");
-                if (MaxLength > 0)
-                {
-                    html.Append("maxlength =\"");
-                    html.Append(MaxLength);
-                    html.Append("\" ");
-                }
-                break;
-            case InputType.Cep:
-                html.Append("type=\"text\" ");
-                html.Append("maxlength =\"9\" ");
-                html.Append("data-inputmask=\"'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'\" ");
-                break;
-            default:
-                html.Append("type=\"text\" ");
-                if (MaxLength > 0)
-                {
-                    html.Append("maxlength =\"");
-                    html.Append(MaxLength);
-                    html.Append("\" ");
-                }
-                break;
+            ul.AppendElement(HtmlTag.Li, li =>
+            {
+                li.WithCssClass("dropdown-item").AppendElement(action.GetHtmlElement());
+            });
         }
+    }
 
-        html.Append("class=\"");
-        html.Append(cssClass);
-        html.Append("\" ");
+    private HtmlElement GetHtmlCaretButton()
+    {
+        var html = new HtmlElement(HtmlTag.Button)
+            .WithAttribute("type", "button")
+            .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
+            .WithAttribute("aria-haspopup", "true")
+            .WithAttribute("aria-expanded", "false")
+            .WithCssClass(BootstrapHelper.DefaultButton)
+            .WithCssClass("dropdown-toggle btn-outline-secondary")
+            .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
+            {
+                s.WithCssClass("caret")
+                 .WithToolTip(Translate.Key("More Options"));
+            });
 
-        if (!string.IsNullOrEmpty(Text))
-        {
-            html.Append("value =\"");
-            html.Append(Text);
-            html.Append("\" ");
-        }
+        return html;
+    }
 
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(ToolTip);
-            html.Append("\" ");
-        }
 
-        if (defaultAction != null && !Enable)
-        {
-            html.Append(" onclick=\"");
-            html.Append(defaultAction.OnClientClick);
-            html.Append("\"");
-        }
-
-        if (ReadOnly)
-            html.Append("readonly ");
-
+    private HtmlElement GetHtmlInput()
+    {
+        var html = new HtmlElement(HtmlTag.Input)
+            .WithNameAndId(Name)
+            .WithAttributes(Attributes)
+            .WithCssClass(CssClass)
+            .WithToolTip(Translate.Key(ToolTip))
+            .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
+            .WithAttributeIf(NumberOfDecimalPlaces > 0, "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
+            .WithAttributeIf(MinValue != null, "min", MinValue?.ToString())
+            .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
+            .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text);
+            
         if (!Enable)
         {
-            if (defaultAction != null)
-                html.Append("readonly ");
+            bool hasDefaultAction = Actions.Exists(x => x.IsDefaultOption && x.Visible);
+            if (hasDefaultAction)
+                html.WithAttribute("readonly", "readonly");
             else
-                html.Append("disabled ");
+                html.WithAttribute("disabled", "disabled");
         }
-
-        foreach (DictionaryEntry attr in Attributes)
+        else
         {
-
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-            html.Append(" ");
+            html.WithAttributeIf(ReadOnly, "readonly", "readonly");
         }
 
-        html.Append("/>");
-
-        return html.ToString();
+        return html;
     }
 }

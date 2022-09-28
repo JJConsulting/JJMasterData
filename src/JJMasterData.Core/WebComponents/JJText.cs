@@ -5,7 +5,7 @@ using JJMasterData.Core.Html;
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Represents a string.
+/// Represents a plain text.
 /// </summary>
 public class JJText : JJBaseView
 {

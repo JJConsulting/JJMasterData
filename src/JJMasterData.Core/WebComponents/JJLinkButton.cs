@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -61,7 +60,6 @@ public class JJLinkButton : JJBaseView, IAction
             };
         set => _spinner = value;
     }
-
 
     /// <summary>
     /// Descrição do link
@@ -133,235 +131,94 @@ public class JJLinkButton : JJBaseView, IAction
         Enabled = true;
     }
 
-
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        ApplyCompatibility();
+        JJIcon icon = GetIcon();
 
-        return IsSubmit ? RenderButton() : RenderLink();
-    }
+        var html = new HtmlElement(HtmlTag.A)
+            .WithNameAndId(Name)
+            .WithCssClass(GetCssClassWithCompatibility())
+            .WithToolTip(Translate.Key(ToolTip))
+            .WithAttributes(Attributes)
+            .WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick)
+            .WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton)
+            .WithCssClassIf(!Enabled, "disabled")
+            .AppendElementIf(icon != null, icon.GetHtmlElement())
+            .AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Span, s => {
 
-    private void ApplyCompatibility()
-    {
-        if (BootstrapHelper.Version < 4) return;
-        
-        CssClass = CssClass?.Replace("pull-left", BootstrapHelper.PullLeft);
-        CssClass = CssClass?.Replace("pull-right", BootstrapHelper.PullRight);
-    }
+                s.AppendText("&nbsp " + Translate.Key(Text));
+            })
+            .AppendElementIf(_spinner != null, Spinner.GetHtmlElement());
 
 
-    private string RenderLink()
-    {
-        var html = new StringBuilder();
-
-        html.Append("<a href=\"");
-        if (!string.IsNullOrEmpty(UrlAction) && Enabled)
+        if (IsSubmit)
         {
-            html.Append(UrlAction);
+            html.Tag.TagName = HtmlTag.Button;
+            html.WithAttribute("type", "submit");
+            html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else
         {
-            html.Append("javascript: void(0);");
-        }
-        html.Append('"');
-
-
-        if (!string.IsNullOrEmpty(Name))
-            html.AppendFormat(" id=\"{0}\"", Name);
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key(ToolTip));
-            html.Append("\"");
+            if (Enabled && !string.IsNullOrEmpty(UrlAction))
+                html.WithAttribute("href", UrlAction);
+            else
+                html.WithAttribute("href", "javascript: void(0);");
         }
 
-        string cssClass = CssClass;
-        if (cssClass == null)
-            cssClass = "";
-
-        if (ShowAsButton)
-        {
-            html.Append(" role=\"button\"");
-
-            cssClass += BootstrapHelper.DefaultButton;
-        }
-
-        if (!Enabled)
-        {
-            cssClass += " disabled";
-        }
-
-        if (!string.IsNullOrEmpty(cssClass))
-        {
-            html.Append(" class=\"");
-            html.Append(cssClass);
-            html.Append('"');
-        }
-
-        if (!string.IsNullOrEmpty(OnClientClick) && Enabled)
-        {
-            html.Append(" onclick=\"");
-            html.Append(OnClientClick);
-            html.Append('"');
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(' ');
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append('"');
-            }
-        }
-
-        html.Append(">");
-
-        if (!string.IsNullOrEmpty(IconClass))
-        {
-            var icon = new JJIcon(IconClass);
-            if (!string.IsNullOrEmpty(IconClass) &&
-                IconClass.Contains("fa-") &&
-                IsGroup)
-            {
-                icon.CssClass = "fa-fw";
-            }
-
-
-            html.Append(icon.GetHtml());
-        }
-
-        if (!string.IsNullOrEmpty(Text))
-        {
-            html.Append("<span>");
-            html.Append("&nbsp " + Translate.Key(Text));
-            html.Append("</span>");
-        }
-
-        if (_spinner != null)
-            html.Append(Spinner.GetHtml());
-
-        html.Append("</a>");
-
-        return html.ToString();
+        return html;
     }
 
-
-    private string RenderButton()
+    private string GetCssClassWithCompatibility()
     {
-        StringBuilder html = new StringBuilder();
-
-        html.Append("<button type=\"submit\"");
-
-
-        if (!string.IsNullOrEmpty(Name))
-            html.AppendFormat(" id=\"{0}\"", Name);
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key(ToolTip));
-            html.Append("\"");
-        }
-
         string cssClass = CssClass;
         if (cssClass == null)
             cssClass = string.Empty;
 
-        if (!cssClass.Contains("btn ") &&
-            !cssClass.Contains(" btn") &&
-            !cssClass.Equals("btn"))
+        if (BootstrapHelper.Version >= 4)
         {
-            cssClass += " btn";
+            cssClass = cssClass.Replace("pull-left", BootstrapHelper.PullLeft);
+            cssClass = cssClass.Replace("pull-right", BootstrapHelper.PullRight);
+        }
+        else
+        {
+            cssClass = cssClass.Replace("float-start", "pull-left");
+            cssClass = cssClass.Replace("float-end", "pull-right");
         }
 
-        if (!cssClass.Contains("btn-default") ||
-            !cssClass.Contains("btn-primary"))
+        if (IsSubmit)
         {
-            cssClass += BootstrapHelper.DefaultButton;
-        }
-
-        if (!Enabled)
-        {
-            cssClass += " disabled";
-        }
-        
-        if (!string.IsNullOrEmpty(cssClass))
-        {
-            html.Append(" class=\"");
-            html.Append(cssClass);
-            html.Append("\"");
-        }
-
-        if (!string.IsNullOrEmpty(OnClientClick) && Enabled)
-        {
-            html.Append(" onclick=\"");
-            html.Append(OnClientClick);
-            html.Append("\"");
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(" ");
-            html.Append(attr.Key);
-            if (attr.Value != null)
+            if (!cssClass.Contains("btn ") &&
+                !cssClass.Contains(" btn") &&
+                !cssClass.Equals("btn"))
             {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
+                cssClass += " btn";
+            }
+
+            if (!cssClass.Contains("btn-default") ||
+                !cssClass.Contains("btn-primary"))
+            {
+                cssClass += BootstrapHelper.DefaultButton;
             }
         }
 
-        html.Append(">");
+        return cssClass;
+    }
 
+    private JJIcon GetIcon()
+    {
+        JJIcon icon = null;
         if (!string.IsNullOrEmpty(IconClass))
         {
-            var icon = new JJIcon(IconClass);
+            icon = new JJIcon(IconClass);
             if (!string.IsNullOrEmpty(IconClass) &&
                 IconClass.Contains("fa-") &&
                 IsGroup)
             {
                 icon.CssClass = "fa-fw";
             }
-
-
-            html.Append(icon.GetHtml());
         }
 
-        if (!string.IsNullOrEmpty(Text))
-        {
-            html.Append("<span>&nbsp;");
-            html.Append(Translate.Key(Text));
-            html.Append("</span>");
-        }
-
-        html.Append("</button>");
-
-        return html.ToString();
-    }
-
-    /// <summary>
-    /// Retorna uma nova instancia do mesmo objeto
-    /// </summary>
-    public JJLinkButton GetClone()
-    {
-        var c = new JJLinkButton();
-        c.Attributes = Attributes;
-        c.Enabled = Enabled;
-        c.ToolTip = ToolTip;
-        c.Text = Text;
-        c.CssClass = CssClass;
-        c.IconClass = IconClass;
-        c.ShowAsButton = ShowAsButton;
-        c.OnClientClick = OnClientClick;
-        c.UrlAction = UrlAction;
-        c.Visible = Visible;
-        c.IsGroup = IsGroup;
-        c.DividerLine = DividerLine;
-        return c;
+        return icon;
     }
 
 }

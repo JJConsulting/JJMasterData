@@ -23,6 +23,8 @@ namespace JJMasterData.Core.Html
         H4,
         H5,
         H6,
-        Small
+        Small,
+        Ul,
+        Li
     }
 }
