@@ -14,6 +14,8 @@ namespace JJMasterData.Core.WebComponents
         public string Title { get; set; }
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
+        public bool ShowIcon { get; set; }
+
         private string ClassType
         {
             get
@@ -84,7 +86,11 @@ namespace JJMasterData.Core.WebComponents
                 html.AppendLine("</button>");
             }
 
-            html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
+            if (ShowIcon)
+            {
+                html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
+            }
+
             if (!string.IsNullOrEmpty(Title))
             {
                 html.AppendLine($"{Translate.Key(Title)}<br>");
