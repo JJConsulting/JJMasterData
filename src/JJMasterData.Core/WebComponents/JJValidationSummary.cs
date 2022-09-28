@@ -70,7 +70,7 @@ public class JJValidationSummary : JJBaseView
         if (!Visible)
             return "";
 
-        JJAlert alert = new JJAlert()
+        var alert = new JJAlert()
         {
             Color = PanelColor.Danger,
             Icon = IconType.ExclamationTriangle,

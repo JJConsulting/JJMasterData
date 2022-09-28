@@ -13,22 +13,23 @@ namespace JJMasterData.Core.WebComponents
         public string Title { get; set; }
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
+        public bool ShowIcon { get; set; }
         private string ClassType => Color.Equals(PanelColor.Default) ? "secondary" : Color.ToString().ToLower();
 
         public JJAlert()
         {
             Messages = new List<string>();
         }
-        
+
         private string GetSplittedMessages() => string.Join("<br>", Messages.Select(Translate.Key));
-        
+
         internal override HtmlElement GetHtmlElement()
         {
             if (BootstrapHelper.Version == 3 & (Color == PanelColor.Default || Color == PanelColor.Primary))
             {
                 return GetAlertDefaultBs3();
             }
-            
+
             return GetAlert();
         }
 
@@ -47,13 +48,13 @@ namespace JJMasterData.Core.WebComponents
                     e.WithCssClass(BootstrapHelper.Close);
                     e.AppendText(BootstrapHelper.CloseButtonTimes);
                 })
-                .AppendElement(new JJIcon(Icon).GetHtmlElement())
-                .AppendElementIf(!string.IsNullOrEmpty(Title),HtmlTag.Strong, e =>
+                .AppendElementIf(ShowIcon, new JJIcon(Icon).GetHtmlElement())
+                .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
                 {
                     e.AppendText(Translate.Key(Title));
                 })
                 .AppendText(GetSplittedMessages());
-            
+
             return html;
         }
 
@@ -65,7 +66,7 @@ namespace JJMasterData.Core.WebComponents
                 .WithCssClass(CssClass)
                 .WithCssClass($"alert alert-{ClassType} alert-dismissible")
                 .WithAttribute("role", "alert")
-                
+
                 .AppendElementIf(ShowCloseButton, HtmlTag.Button, e =>
                 {
                     e.WithCssClass(BootstrapHelper.Close);
@@ -83,10 +84,10 @@ namespace JJMasterData.Core.WebComponents
                 {
                     e.AppendText(Translate.Key(Title));
                 })
-                .AppendText(GetSplittedMessages());;
+                .AppendText(GetSplittedMessages()); ;
 
             return html;
         }
-        
+
     }
 }

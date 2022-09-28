@@ -253,27 +253,28 @@ public class JJDataImp : JJBaseProcess
 
         var alert = new JJAlert();
         alert.CssClass = "text-center";
+        alert.ShowIcon = true;
 
 
         if (reporter.HasError || reporter.TotalProcessed == reporter.Error)
         {
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = PanelColor.Danger;
-            alert.Title = "Error importing file!";
-            alert.Messages.Add(reporter.Message);
+            alert.Title = Translate.Key("Error importing file!");
+            alert.Messages.Add(Translate.Key(reporter.Message));
         }
         else if (reporter.Error > 0)
         {
             alert.Icon = IconType.InfoCircle;
             alert.Color = PanelColor.Info;
-            alert.Title = "File imported with errors!";
-            alert.Messages.Add(reporter.Message);
+            alert.Title = Translate.Key("File imported with errors!");
+            alert.Messages.Add(Translate.Key(reporter.Message));
         }
         else
         {
             alert.Icon = IconType.Check;
             alert.Color = PanelColor.Success;
-            alert.Messages.Add(reporter.Message);
+            alert.Messages.Add(Translate.Key(reporter.Message));
         }
 
         html.AppendLine(alert.GetHtml());

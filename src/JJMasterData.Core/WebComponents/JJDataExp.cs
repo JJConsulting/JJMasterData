@@ -357,11 +357,12 @@ public class JJDataExp : JJBaseProcess
 
 
         var alert = new JJAlert();
+        alert.ShowIcon = true;
         alert.Name = $"warning_exp_{objname}";
         alert.ShowCloseButton = true;
         alert.Title = "Warning!";
-        alert.Messages.Add("You are trying to export more than 50,000 records, this can cause system overhead and slowdowns.");
-        alert.Messages.Add("Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator.");
+        alert.Messages.Add(Translate.Key("You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."));
+        alert.Messages.Add(Translate.Key("Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."));
         alert.Icon = IconType.ExclamationTriangle;
         alert.Color = PanelColor.Warning;
         alert.SetAttr("style", "display:none;");

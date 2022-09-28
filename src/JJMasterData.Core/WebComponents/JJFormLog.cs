@@ -167,9 +167,10 @@ public class JJFormLog : JJBaseView
         if (string.IsNullOrEmpty(logId))
         {
             var alert = new JJAlert();
+            alert.ShowIcon = true;  
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = PanelColor.Warning;
-            alert.Messages.Add("No Records Found");
+            alert.Messages.Add(Translate.Key("No Records Found"));
 
             return alert.GetHtml();
         }

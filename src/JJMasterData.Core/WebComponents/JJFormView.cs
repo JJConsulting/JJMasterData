@@ -431,8 +431,9 @@ public class JJFormView : JJGridView
                 {
                     var alert = new JJAlert();
                     alert.Name = $"pnl_insertmsg_{Name}";
-                    alert.Messages.Add("Record added successfully");
+                    alert.Messages.Add(Translate.Key("Record added successfully"));
                     alert.Color = PanelColor.Success;
+                    alert.ShowIcon = true;
                     alert.Icon = IconType.CheckCircleO;
 
                     html.Append(alert.GetHtml());

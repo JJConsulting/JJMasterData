@@ -71,6 +71,16 @@ public class HtmlElement
         return this;
     }
 
+    public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement)
+    {
+        {
+            if (condition)
+                AppendElement(htmlElement);
+
+            return this;
+        }
+    }
+
     /// <summary>
     /// Conditional insert HTML element as a child of caller element.
     /// </summary>

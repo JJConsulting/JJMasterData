@@ -995,6 +995,7 @@ public class JJGridView : JJBaseView
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             var alert = new JJAlert();
+            alert.ShowIcon = true;
             alert.ShowCloseButton = true;
             alert.Color = PanelColor.Default;
             alert.Icon = IconType.InfoCircle;
@@ -1002,7 +1003,7 @@ public class JJGridView : JJBaseView
             if (Filter.HasFilter())
             {
                 alert.Icon = IconType.Filter;
-                alert.Messages.Add("There are filters applied for this query");
+                alert.Messages.Add(Translate.Key("There are filters applied for this query"));
             }
             
             html.AppendLine(alert.GetHtml());
