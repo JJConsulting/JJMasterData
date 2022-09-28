@@ -1,0 +1,8 @@
+@page
+@using JJMasterData.Web.Extensions
+@model FormViewExample
+
+@using (Html.BeginForm())
+{
+    @Model.FormView.GetHtmlString()
+}

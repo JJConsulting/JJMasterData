@@ -7,7 +7,7 @@ There are three ways to configure an application:
 
 **1)** Add configuration key in appsettings.json (.NET Core) or web.config (.NET Framework) files
 
-<details><summary> >> appsettings.json</summary><br>
+<details><summary> >> appsettings.json (click to expand)</summary><br>
 
 > [!TIP] 
 > To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema.
@@ -49,8 +49,9 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
 ```
 </details>
 
+<br>
 
-<details><summary>>> web.config</summary><br> 
+<details><summary>>> web.config (click to expand)</summary><br> 
 
 ```xml
 <?xml version="1.0"?>
@@ -87,9 +88,9 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
 	
 </configuration>
 ```
-
-
 </details>
+<br>
+
 
 **2)** Changing code at application startup
 ```cs
@@ -141,15 +142,15 @@ This is a simple application log that can be written to a file, database, etc...
 We use it for testing, because it is not async. To configure the log see [LoggerSettings](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Logging.LoggerSettings.html)
 
 
-
 **Internacionalization**
 ```cs
-builder.Services.WithTranslator(ITranslator)
+builder.Services.AddJJMasterDataWeb();
+builder.Services.AddUrlRequestCultureProvider(
+    new CultureInfo("zh-CN"),
+    new CultureInfo("en-US")
+);
 ```
-_WithTranslator_: By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataSettings class.
-
+[read more](internationalization.md) about internationalization.
 <br>
 
-You can change the behavior of system internationalization with the interface [ITranslator](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ITranslator.html)
-<br>
 

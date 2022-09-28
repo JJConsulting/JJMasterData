@@ -1,0 +1,640 @@
+{
+  "table": {
+    "name": "Product",
+    "info": null,
+    "fields": [
+      {
+        "fieldid": 0,
+        "fieldname": "Id",
+        "label": "Id",
+        "datatype": 4,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 4,
+        "defaultvalue": null,
+        "isrequired": true,
+        "ispk": true,
+        "autonum": true,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "Name",
+        "label": "Name",
+        "datatype": 6,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 100,
+        "defaultvalue": null,
+        "isrequired": true,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "Quantity",
+        "label": "Quantity",
+        "datatype": 4,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 4,
+        "defaultvalue": null,
+        "isrequired": true,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "Price",
+        "label": "Price",
+        "datatype": 3,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 2,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "Color",
+        "label": "Color",
+        "datatype": 4,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 0,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "ManufacturingDate",
+        "label": "ManufacturingDate",
+        "datatype": 1,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 50,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      }
+    ],
+    "indexes": [],
+    "relations": [],
+    "tableName": "Product",
+    "customprocnameget": "ProductGet",
+    "customprocnameset": "ProductSet",
+    "sync": false,
+    "mode": 1
+  },
+  "form": {
+    "formfields": [
+      {
+        "name": "Id",
+        "component": 1,
+        "visibleexpression": "exp:{pagestate} <> 'INSERT'",
+        "enableexpression": "exp:{pagestate} = 'FILTER'",
+        "triggerexpression": null,
+        "order": 1,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "Name",
+        "component": 1,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 2,
+        "linegroup": 0,
+        "cssclass": "col-sm-10",
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "Quantity",
+        "component": 8,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 3,
+        "linegroup": 0,
+        "cssclass": "col-sm-2",
+        "helpdescription": null,
+        "dataitem": null,
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "Price",
+        "component": 8,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 4,
+        "linegroup": 0,
+        "cssclass": "col-sm-4",
+        "helpdescription": null,
+        "dataitem": null,
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 2,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "Color",
+        "component": 9,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 5,
+        "linegroup": 0,
+        "cssclass": "col-sm-4",
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [
+            {
+              "id": "0",
+              "description": "Red",
+              "icon": 0,
+              "imagecolor": null
+            },
+            {
+              "id": "1",
+              "description": "Green",
+              "icon": 0,
+              "imagecolor": null
+            },
+            {
+              "id": "2",
+              "description": "Blue",
+              "icon": 0,
+              "imagecolor": null
+            }
+          ],
+          "elementMap": null,
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "ManufacturingDate",
+        "component": 4,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 6,
+        "linegroup": 0,
+        "cssclass": "col-sm-4",
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      }
+    ],
+    "title": "Product",
+    "subtitle": null,
+    "panels": []
+  },
+  "uioptions": {
+    "grid": {
+      "totalPerPage": 5,
+      "totalPaggingButton": 5,
+      "showBorder": false,
+      "showRowStriped": true,
+      "showRowHover": true,
+      "totalReg": 0,
+      "showTitle": true,
+      "showToolbar": true,
+      "enableSorting": true,
+      "enableMultSelect": false,
+      "maintainValuesOnLoad": false,
+      "showHeaderWhenEmpty": true,
+      "emptyDataText": "There is no record to display",
+      "showPagging": true,
+      "headerFixed": false
+    },
+    "form": {
+      "formCols": 1,
+      "isVerticalLayout": true,
+      "showViewModeAsStatic": false,
+      "enterKey": 0
+    },
+    "toolBarActions": {
+      "insertAction": {
+        "elementNameToSelect": null,
+        "reopenForm": false,
+        "name": "insert",
+        "text": "New",
+        "tooltip": null,
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 467,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 1,
+        "showAsButton": true,
+        "cssClass": null,
+        "isCustomAction": false
+      },
+      "legendAction": {
+        "name": "legend",
+        "text": null,
+        "tooltip": "Information",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 340,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:0",
+        "order": 7,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "refreshAction": {
+        "name": "refresh",
+        "text": null,
+        "tooltip": "Refresh",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 487,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 6,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "filterAction": {
+        "showAsCollapse": true,
+        "expandedByDefault": false,
+        "enableScreenSearch": false,
+        "name": "filter",
+        "text": null,
+        "tooltip": "Filter",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 68,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 10,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "importAction": {
+        "processOptions": {
+          "CommandBeforeProcess": null,
+          "CommandAfterProcess": null,
+          "Scope": 0
+        },
+        "name": "import",
+        "text": null,
+        "tooltip": "Upload",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 648,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:0",
+        "order": 4,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "exportAction": {
+        "processOptions": {
+          "CommandBeforeProcess": null,
+          "CommandAfterProcess": null,
+          "Scope": 0
+        },
+        "name": "export",
+        "text": null,
+        "tooltip": "Export",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 192,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 3,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "configAction": {
+        "name": "config",
+        "text": null,
+        "tooltip": "Settings",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 156,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 2,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "sortAction": {
+        "name": "sort",
+        "text": null,
+        "tooltip": "Sort",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 544,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:0",
+        "order": 7,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "logAction": {
+        "name": "log",
+        "text": null,
+        "tooltip": "Log",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 248,
+        "showTitle": false,
+        "confirmationMessage": null,
+        "enableExpression": "val:1",
+        "visibleExpression": "val:0",
+        "order": 20,
+        "showAsButton": true,
+        "cssClass": "float-end",
+        "isCustomAction": false
+      },
+      "commandActions": [],
+      "pythonActions": [],
+      "urlRedirectActions": [],
+      "internalActions": []
+    },
+    "gridActions": {
+      "editAction": {
+        "name": "edit",
+        "text": null,
+        "tooltip": "Edit",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 447,
+        "showTitle": false,
+        "confirmationMessage": "",
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 2,
+        "showAsButton": false,
+        "cssClass": null,
+        "isCustomAction": false
+      },
+      "deleteAction": {
+        "name": "delete",
+        "text": null,
+        "tooltip": "Delete",
+        "isDefaultOption": false,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 624,
+        "showTitle": false,
+        "confirmationMessage": "Would you like to delete this record?",
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 3,
+        "showAsButton": false,
+        "cssClass": null,
+        "isCustomAction": false
+      },
+      "viewAction": {
+        "name": "view",
+        "text": null,
+        "tooltip": "View",
+        "isDefaultOption": true,
+        "isGroup": false,
+        "dividerLine": false,
+        "icon": 216,
+        "showTitle": false,
+        "confirmationMessage": "",
+        "enableExpression": "val:1",
+        "visibleExpression": "val:1",
+        "order": 1,
+        "showAsButton": false,
+        "cssClass": null,
+        "isCustomAction": false
+      },
+      "commandActions": [],
+      "pythonActions": [],
+      "urlRedirectActions": [],
+      "internalActions": []
+    }
+  },
+  "api": {
+    "enableGetAll": false,
+    "enableGetDetail": false,
+    "enableAdd": false,
+    "enableUpdate": false,
+    "enableUpdatePart": false,
+    "enableDel": false,
+    "formatType": 1,
+    "applyUserIdOn": null
+  }
+}

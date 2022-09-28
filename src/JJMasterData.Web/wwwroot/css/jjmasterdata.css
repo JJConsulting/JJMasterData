@@ -645,8 +645,8 @@ button.dropdown-toggle.form-control {
 /*JJMasterData Web*/
 .bs-clipboard {
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: 7px;
+    top: 7px;
 }
 
     .bs-clipboard button.btn-default {

@@ -29,7 +29,7 @@ public static class JJServiceBuilderExtensions
         return builder.WithFormEvents(assemblies.ToArray());
     }
 
-    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder, Assembly[] assemblies)
+    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder, params Assembly[] assemblies)
     {
         FormEventManager.Assemblies = assemblies;
 

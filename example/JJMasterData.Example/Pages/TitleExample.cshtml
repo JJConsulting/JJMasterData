@@ -1,0 +1,9 @@
+@page
+@using JJMasterData.Web.Extensions
+
+@model TitleExample
+
+@using (Html.BeginForm())
+{
+    @Model.Title.GetHtmlString()
+}
