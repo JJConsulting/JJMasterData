@@ -1,9 +1,7 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
@@ -28,7 +26,7 @@ public class JJTextBox : JJBaseControl
         set { _actions = value; }
     }
 
-    public InputType InputType { get; private set; }
+    public InputType InputType { get; set; }
 
     public int NumberOfDecimalPlaces { get; set; }
 
@@ -41,113 +39,18 @@ public class JJTextBox : JJBaseControl
     /// </summary>
     internal InputAddons Addons { get; set; }
 
-    public JJTextBox() 
+    internal string CssInputGroup { get; set; }
+
+    public JJTextBox()
     {
-        InputType = InputType.Textbox;
+        InputType = InputType.Text;
         Visible = true;
         Enable = true;
-        SetDefaultAttrs(InputType);
     }
 
-    public JJTextBox(InputType inputType) 
+    public static JJTextBox GetInstance(FormElementField f, string name = null)
     {
-        InputType = inputType;
-        Visible = true;
-        Enable = true;
-        SetDefaultAttrs(inputType);
-    }
-
-    internal static JJTextBox GetInstance(FormElementField f,
-                                object value,
-                                bool enable = true,
-                                bool readOnly = false,
-                                string name = null)
-    {
-        if (f == null)
-            throw new ArgumentNullException(nameof(FormElementField));
-
-        int type = (int)f.Component;
-        var textBox = new JJTextBox((InputType)type);
-        textBox.SetAttr(f.Attributes);
-        textBox.MaxLength = f.Size;
-        textBox.Enable = enable;
-        textBox.ReadOnly = readOnly;
-        textBox.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
-        textBox.Name = name ?? f.Name;
-        textBox.MinValue = f.MinValue;
-        textBox.MaxValue = f.MaxValue;
-
-        if (textBox.InputType == InputType.Currency)
-            value = value?.ToString()?.Replace("R$", string.Empty).Trim();
-
-        textBox.Text = value?.ToString() ?? string.Empty;
-
-        return textBox;
-    }
-
-    private void SetDefaultAttrs(InputType type)
-    {
-        var listClass = new List<string>();
-        listClass.Add("form-control");
-
-        switch (type)
-        {
-            case InputType.Currency:
-                listClass.Add(BootstrapHelper.TextRight);
-                MaxLength = 18;
-                Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
-                SetAttr("type", "number");
-                SetAttr("onclick", "this.select();");
-                SetAttr("onkeypress", "return jjutil.justNumber(event);");
-                break;
-            case InputType.Number:
-                listClass.Add(BootstrapHelper.TextRight);
-                MaxLength = 22;
-                SetAttr("step", "1");
-                SetAttr("onclick", "this.select();");
-                SetAttr("type", "number");
-                break;
-            case InputType.Cnpj:
-                MaxLength = 18;
-                SetAttr("type", "text");
-                SetAttr("onclick", "this.select();");
-                SetAttr("data-inputmask", "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
-                break;
-            case InputType.Cpf:
-                MaxLength = 14;
-                SetAttr("type", "text");
-                SetAttr("onclick", "this.select();");
-                SetAttr("data-inputmask", "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
-                break;
-            case InputType.CnpjCpf:
-                MaxLength = 18;
-                SetAttr("type", "text");
-                break;
-            case InputType.Cep:
-                MaxLength = 9;
-                SetAttr("type", "text");
-                SetAttr("data-inputmask", "'mask': '[99999-999]', 'placeholder':'', 'greedy': 'false'");
-                break;
-            case InputType.Password:
-                SetAttr("type", "password");
-                break;
-            case InputType.Tel:
-                MaxLength = 15;
-                Addons = new InputAddons
-                {
-                    ToolTip = "Brasil",
-                    Text = "+55"
-                };
-                SetAttr("type", "tel");
-                SetAttr("data-inputmask", "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
-                break;
-            default:
-                SetAttr("type", "text");
-                break;
-
-        }
-
-        SetAttr("class", string.Join(" ", listClass));
+        return TextBoxFactory.GetInstance(f, name);
     }
 
     internal override HtmlElement GetHtmlElement()
@@ -158,7 +61,7 @@ public class JJTextBox : JJBaseControl
 
         if (!hasAction && !hasAddons)
             return input;
-        
+
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (defaultAction != null && defaultAction.Enabled && Enable)
         {
@@ -167,16 +70,17 @@ public class JJTextBox : JJBaseControl
         }
 
         var inputGroup = new HtmlElement(HtmlTag.Div)
-            .WithCssClass("input-group jjform-action");
+            .WithCssClass("input-group jjform-action ")
+            .WithCssClass(CssInputGroup);
 
         if (hasAddons)
             inputGroup.AppendElement(GetHtmlAddons());
-            
+
         inputGroup.AppendElement(input);
-            
+
         if (hasAction)
             AddActions(inputGroup);
-            
+
         return inputGroup;
     }
 
@@ -240,7 +144,7 @@ public class JJTextBox : JJBaseControl
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
              .AppendElementIf(Addons.Icon != null, Addons.Icon?.GetHtmlElement())
-             .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), "&nbsp;&nbsp;" + Addons.Text);
+             .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;
     }
@@ -265,15 +169,17 @@ public class JJTextBox : JJBaseControl
 
     private HtmlElement GetHtmlInput()
     {
+        string inputType = InputType.ToString().ToLower();
         if (NumberOfDecimalPlaces > 0)
         {
-            Attributes["type"] = "text";
+            inputType = "text";
             CssClass += " jjdecimal";
         }
-        
+
         var html = new HtmlElement(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
+            .WithAttribute("type", inputType)
             .WithCssClass(CssClass)
             .WithToolTip(Translate.Key(ToolTip))
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
@@ -282,7 +188,7 @@ public class JJTextBox : JJBaseControl
             .WithAttributeIf(MinValue != null, "min", MinValue?.ToString())
             .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
             .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text);
-        
+
         if (!Enable)
         {
             bool hasDefaultAction = Actions.Exists(x => x.IsDefaultOption && x.Visible);

@@ -76,28 +76,26 @@ public class HtmlElement
     /// <summary>
     /// Insert HTML element as a child of caller element.
     /// </summary>
-    public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction)
+    public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction = null)
     {
         var childElement = new HtmlElement(tag);
-        elementAction.Invoke(childElement);
+        elementAction?.Invoke(childElement);
         _children.Add(childElement);
         return this;
     }
 
-    public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement)
+    public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
     {
-        {
-            if (condition)
-                AppendElement(htmlElement);
+        if (condition)
+            AppendElement(htmlElement);
 
-            return this;
-        }
+        return this;
     }
 
     /// <summary>
     /// Conditional insert HTML element as a child of caller element.
     /// </summary>
-    public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction)
+    public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction = null)
     {
         if (condition)
             AppendElement(tag, elementAction);
@@ -148,8 +146,6 @@ public class HtmlElement
         _attributes.Add(name, value);
         return this;
     }
-
-
 
 
     /// <summary>
@@ -254,7 +250,7 @@ public class HtmlElement
             html.AppendLine("").Append('\t', tabCount);
 
         if (_hasRawText || Tag == null)
-        {    
+        {
             html.Append(_rawText);
             return html.ToString();
         }
@@ -262,7 +258,7 @@ public class HtmlElement
         html.Append("<");
         html.Append(Tag.TagName.ToString().ToLower());
         html.Append(GetHtmlAttrs());
-            
+
         if (!Tag.HasClosingTag)
         {
             html.Append("/>");

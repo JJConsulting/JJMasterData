@@ -11,5 +11,6 @@ interface FlatpickrOptions{
     dateFormat?: string,
     altFormat?: string,
     onOpen?: Function,
-    locale?: string
+    locale?: string,
+    time_24hr?: boolean
 }

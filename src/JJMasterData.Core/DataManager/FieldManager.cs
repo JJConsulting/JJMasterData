@@ -307,15 +307,15 @@ public class FieldManager
                 bool isChecked = Expression.ParseBool(value);
                 baseView = JJCheckBox.GetInstance(f, pagestate, isChecked, enable, fieldName);
                 break;
-            case FormComponent.Hour:
-                baseView = JJTextHour.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
-            case FormComponent.Date:
-                baseView = JJTextDate.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
-            case FormComponent.DateTime:
-                baseView = JJTextDateTime.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
+            //case FormComponent.Hour:
+            //    baseView = JJTextHour.GetInstance(f, value, enable, viewOnly, fieldName);
+            //    break;
+            //case FormComponent.Date:
+            //    baseView = JJTextDate.GetInstance(f, value, enable, viewOnly, fieldName);
+            //    break;
+            //case FormComponent.DateTime:
+            //    baseView = JJTextDateTime.GetInstance(f, value, enable, viewOnly, fieldName);
+            //    break;
             case FormComponent.TextArea:
                 baseView = JJTextArea.GetInstance(f, value, enable, viewOnly, fieldName);
                 break;
@@ -325,7 +325,7 @@ public class FieldManager
             case FormComponent.File:
                 if (pagestate == PageState.Filter)
                 {
-                    baseView = JJTextBox.GetInstance(f, value, enable, viewOnly, fieldName);
+                    baseView = TextBoxFactory.GetInstance(f, value, enable, viewOnly, fieldName);
                 }
                 else
                 {
@@ -338,7 +338,8 @@ public class FieldManager
                 }
                 break;
             default:
-                baseView = JJTextBox.GetInstance(f, value, enable, viewOnly, fieldName);
+                baseView = TextBoxFactory.GetInstance(f, value, enable, viewOnly, fieldName);
+                
                 break;
         }
 

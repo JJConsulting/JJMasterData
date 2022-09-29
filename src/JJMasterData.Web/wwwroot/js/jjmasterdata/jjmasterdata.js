@@ -368,6 +368,7 @@ function jjloadform(event, prefixSelector) {
         wrap: true,
         allowInput: true,
         altInput: true,
+        time_24hr: true,
         altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
@@ -394,6 +395,8 @@ function jjloadform(event, prefixSelector) {
         allowInput: true,
         altInput: true,
         dateFormat: "H:i",
+        altFormat: "H:i",
+        time_24hr: true,
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },

@@ -53,6 +53,7 @@ namespace JJMasterData.Core.WebComponents
                 {
                     e.AppendText(Translate.Key(Title));
                 })
+                .AppendElementIf(!string.IsNullOrEmpty(Title) && Messages.Count > 0, HtmlTag.Br)
                 .AppendText(GetSplittedMessages());
 
             return html;

@@ -138,8 +138,8 @@ public class JJLinkButton : JJBaseView, IAction
         var html = new HtmlElement(HtmlTag.A);
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
-        html.WithToolTip(Translate.Key(ToolTip));
         html.WithAttributes(Attributes);
+        html.WithToolTip(Translate.Key(ToolTip));
         html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
         html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");
