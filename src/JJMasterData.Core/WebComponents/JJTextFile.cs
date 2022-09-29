@@ -267,13 +267,33 @@ public class JJTextFile : JJBaseControl
         form.Upload.AllowedTypes = dataFile.AllowedTypes;
         form.ViewGallery = dataFile.ViewGallery;
 
-        if (PageState != PageState.Insert)
+        if (HasPk())
             form.FolderPath = GetFolderPath();
 
         if (!Enable)
             form.Disable();
 
         return form;
+    }
+
+    private bool HasPk()
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        if (pkFields.Count == 0)
+            return false;
+
+        foreach (var pkField in pkFields)
+        {
+
+            if (!FormValues.ContainsKey(pkField.Name))
+                return false;
+
+            string value = FormValues[pkField.Name].ToString();
+            if (!Validate.ValidFileName(value))
+                return false;
+        }
+
+        return true;
     }
 
     public string GetFolderPath()
