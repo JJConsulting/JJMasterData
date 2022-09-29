@@ -59,6 +59,19 @@ public class HtmlElement
         return this;
     }
 
+    /// <summary>
+    /// Insert a list of HTML element as a child of caller element.
+    /// </summary>
+    public HtmlElement AppendRange(IList<HtmlElement> listelement)
+    {
+        if (listelement != null)
+        {
+            foreach (var item in listelement)
+                AppendElement(item);
+        }
+
+        return this;
+    }
 
     /// <summary>
     /// Insert HTML element as a child of caller element.

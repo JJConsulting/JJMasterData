@@ -319,9 +319,6 @@ public class FieldManager
             case FormComponent.TextArea:
                 baseView = JJTextArea.GetInstance(f, value, enable, viewOnly, fieldName);
                 break;
-            case FormComponent.Tel:
-                baseView = JJTextTel.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
             case FormComponent.Slider:
                 baseView = JJSlider.GetInstance(f, value, enable, viewOnly, fieldName);
                 break;

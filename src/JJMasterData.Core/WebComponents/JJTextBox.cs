@@ -39,7 +39,7 @@ public class JJTextBox : JJBaseControl
     /// <summary>
     /// Text info on left of component
     /// </summary>
-    internal string AddonsText { get; set; }
+    internal InputAddons Addons { get; set; }
 
     public JJTextBox() 
     {
@@ -95,7 +95,7 @@ public class JJTextBox : JJBaseControl
             case InputType.Currency:
                 listClass.Add(BootstrapHelper.TextRight);
                 MaxLength = 18;
-                AddonsText = CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol;
+                Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
                 SetAttr("type", "number");
                 SetAttr("onclick", "this.select();");
                 SetAttr("onkeypress", "return jjutil.justNumber(event);");
@@ -131,6 +131,16 @@ public class JJTextBox : JJBaseControl
             case InputType.Password:
                 SetAttr("type", "password");
                 break;
+            case InputType.Tel:
+                MaxLength = 15;
+                Addons = new InputAddons
+                {
+                    ToolTip = "Brasil",
+                    Text = "+55"
+                };
+                SetAttr("type", "tel");
+                SetAttr("data-inputmask", "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
+                break;
             default:
                 SetAttr("type", "text");
                 break;
@@ -144,7 +154,7 @@ public class JJTextBox : JJBaseControl
     {
         var input = GetHtmlInput();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
-        bool hasAddons = !string.IsNullOrEmpty(AddonsText);
+        bool hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)
             return input;
@@ -160,11 +170,7 @@ public class JJTextBox : JJBaseControl
             .WithCssClass("input-group jjform-action");
 
         if (hasAddons)
-            inputGroup.AppendElement(HtmlTag.Span, s =>
-            {
-                s.WithCssClass(BootstrapHelper.InputGroupAddon)
-                 .AppendText(AddonsText);
-            });
+            inputGroup.AppendElement(GetHtmlAddons());
             
         inputGroup.AppendElement(input);
             
@@ -228,6 +234,16 @@ public class JJTextBox : JJBaseControl
         }
     }
 
+    private HtmlElement GetHtmlAddons()
+    {
+        var html = new HtmlElement(HtmlTag.Span)
+             .WithCssClass(BootstrapHelper.InputGroupAddon)
+             .WithToolTip(Addons.ToolTip)
+             .AppendElementIf(Addons.Icon != null, Addons.Icon?.GetHtmlElement())
+             .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), "&nbsp;&nbsp;" + Addons.Text);
+
+        return html;
+    }
     private HtmlElement GetHtmlCaretButton()
     {
         var html = new HtmlElement(HtmlTag.Button)
