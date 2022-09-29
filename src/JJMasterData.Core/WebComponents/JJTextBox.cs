@@ -120,17 +120,7 @@ public class JJTextBox : JJBaseControl
                 MaxLength = 22;
                 SetAttr("step", "1");
                 SetAttr("onclick", "this.select();");
-
-                if (NumberOfDecimalPlaces > 0)
-                {
-                    SetAttr("type", "text");
-                    listClass.Add("jjdecimal");
-                }
-                else
-                {
-                    SetAttr("type", "number");
-                    SetAttr("onkeypress", "return jjutil.justNumber(event);");
-                }
+                SetAttr("type", "number");
                 break;
             case InputType.Cnpj:
                 MaxLength = 18;
@@ -258,6 +248,12 @@ public class JJTextBox : JJBaseControl
 
     private HtmlElement GetHtmlInput()
     {
+        if (NumberOfDecimalPlaces > 0)
+        {
+            Attributes["type"] = "text";
+            CssClass += " jjdecimal";
+        }
+        
         var html = new HtmlElement(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
@@ -265,10 +261,12 @@ public class JJTextBox : JJBaseControl
             .WithToolTip(Translate.Key(ToolTip))
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces > 0, "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
+            .WithAttributeIf(NumberOfDecimalPlaces == 0, "onkeypress", "return jjutil.justNumber(event);")
             .WithAttributeIf(MinValue != null, "min", MinValue?.ToString())
             .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
             .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text);
-            
+        
+
         if (!Enable)
         {
             bool hasDefaultAction = Actions.Exists(x => x.IsDefaultOption && x.Visible);
