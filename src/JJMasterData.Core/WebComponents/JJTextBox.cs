@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
@@ -13,7 +14,7 @@ public class JJTextBox : JJBaseControl
     private List<JJLinkButton> _actions;
 
     /// <summary>
-    /// Ações do campo
+    /// Actions of input
     /// </summary>
     public List<JJLinkButton> Actions
     {
@@ -27,30 +28,18 @@ public class JJTextBox : JJBaseControl
         set { _actions = value; }
     }
 
-    /// <summary>
-    /// Tipo do componente
-    /// </summary>
     public InputType InputType { get; private set; }
 
-    /// <summary>
-    /// Numero de casas decimais
-    /// Default(2)
-    /// </summary>
-    /// <remarks>
-    /// Propriedade válida somente para tipos numéricos
-    /// </remarks>
     public int NumberOfDecimalPlaces { get; set; }
 
     public float? MinValue { get; set; }
+
     public float? MaxValue { get; set; }
 
-    private bool HasAction
-    {
-        get
-        {
-            return Actions.ToList().Exists(x => x.Visible);
-        }
-    }
+    /// <summary>
+    /// Text info on left of component
+    /// </summary>
+    internal string AddonsText { get; set; }
 
     public JJTextBox() 
     {
@@ -106,11 +95,7 @@ public class JJTextBox : JJBaseControl
             case InputType.Currency:
                 listClass.Add(BootstrapHelper.TextRight);
                 MaxLength = 18;
-                Actions.Add(new JJLinkButton
-                {
-                    Text = "R$"
-                });
-
+                AddonsText = CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol;
                 SetAttr("type", "number");
                 SetAttr("onclick", "this.select();");
                 SetAttr("onkeypress", "return jjutil.justNumber(event);");
@@ -158,14 +143,13 @@ public class JJTextBox : JJBaseControl
     internal override HtmlElement GetHtmlElement()
     {
         var input = GetHtmlInput();
-        if (!HasAction)
+        bool hasAction = Actions.ToList().Exists(x => x.Visible);
+        bool hasAddons = !string.IsNullOrEmpty(AddonsText);
+
+        if (!hasAction && !hasAddons)
             return input;
-
-        //Actions
-        var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
-        var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
+        
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
-
         if (defaultAction != null && defaultAction.Enabled && Enable)
         {
             input.WithCssClass("default-option");
@@ -173,8 +157,27 @@ public class JJTextBox : JJBaseControl
         }
 
         var inputGroup = new HtmlElement(HtmlTag.Div)
-            .WithCssClass("input-group jjform-action")
-            .AppendElement(input);
+            .WithCssClass("input-group jjform-action");
+
+        if (hasAddons)
+            inputGroup.AppendElement(HtmlTag.Span, s =>
+            {
+                s.WithCssClass(BootstrapHelper.InputGroupAddon)
+                 .AppendText(AddonsText);
+            });
+            
+        inputGroup.AppendElement(input);
+            
+        if (hasAction)
+            AddActions(inputGroup);
+            
+        return inputGroup;
+    }
+
+    private void AddActions(HtmlElement inputGroup)
+    {
+        var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
+        var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
 
         HtmlElement elementGroup;
         if (BootstrapHelper.Version >= 5)
@@ -188,7 +191,7 @@ public class JJTextBox : JJBaseControl
 
             inputGroup.AppendElement(elementGroup);
         }
-         
+
         foreach (var action in listAction)
         {
             action.ShowAsButton = true;
@@ -204,8 +207,6 @@ public class JJTextBox : JJBaseControl
                 AddGroupActions(ul, listActionGroup);
             });
         }
-
-        return inputGroup;
     }
 
     private void AddGroupActions(HtmlElement ul, List<JJLinkButton> listAction)
@@ -266,7 +267,6 @@ public class JJTextBox : JJBaseControl
             .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
             .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text);
         
-
         if (!Enable)
         {
             bool hasDefaultAction = Actions.Exists(x => x.IsDefaultOption && x.Visible);

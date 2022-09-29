@@ -97,7 +97,7 @@ public class JJLinkButton : JJBaseView, IAction
     /// Default (true)
     /// </summary>
     public bool Enabled { get; set; }
-    
+
     /// <remarks>
     /// FontAwesome 2022 icon class.
     /// </remarks>
@@ -135,21 +135,26 @@ public class JJLinkButton : JJBaseView, IAction
     {
         JJIcon icon = GetIcon();
 
-        var html = new HtmlElement(HtmlTag.A)
-            .WithNameAndId(Name)
-            .WithCssClass(GetCssClassWithCompatibility())
-            .WithToolTip(Translate.Key(ToolTip))
-            .WithAttributes(Attributes)
-            .WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick)
-            .WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton)
-            .WithCssClassIf(!Enabled, "disabled")
-            .AppendElementIf(icon != null, icon.GetHtmlElement())
-            .AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Span, s => {
+        var html = new HtmlElement(HtmlTag.A);
+        html.WithNameAndId(Name);
+        html.WithCssClass(GetCssClassWithCompatibility());
+        html.WithToolTip(Translate.Key(ToolTip));
+        html.WithAttributes(Attributes);
+        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
+        html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
+        html.WithCssClassIf(!Enabled, "disabled");
 
-                s.AppendText("&nbsp " + Translate.Key(Text));
-            })
-            .AppendElementIf(_spinner != null, Spinner.GetHtmlElement());
+        if (icon != null)
+            html.AppendElement(icon.GetHtmlElement());
 
+        if (!string.IsNullOrEmpty(Text))
+            html.AppendElement(HtmlTag.Span, s =>
+                {
+                    s.AppendText("&nbsp " + Translate.Key(Text));
+                });
+
+        if (_spinner != null)
+            html.AppendElement(Spinner.GetHtmlElement());
 
         if (IsSubmit)
         {
@@ -210,9 +215,7 @@ public class JJLinkButton : JJBaseView, IAction
         if (!string.IsNullOrEmpty(IconClass))
         {
             icon = new JJIcon(IconClass);
-            if (!string.IsNullOrEmpty(IconClass) &&
-                IconClass.Contains("fa-") &&
-                IsGroup)
+            if (!string.IsNullOrEmpty(IconClass) && IconClass.Contains("fa-") && IsGroup)
             {
                 icon.CssClass = "fa-fw";
             }
