@@ -6,7 +6,7 @@ using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
-public enum Positon
+public enum Position
 {
     Right = 0,
     Left = 1
@@ -14,7 +14,7 @@ public enum Positon
 
 public class JJCollapsePanel : JJBaseView
 {
-    public Positon PositonButton { get; set; }
+    public Position ButtonPosition { get; set; }
 
     public string Title { get; set; }
 
@@ -41,7 +41,7 @@ public class JJCollapsePanel : JJBaseView
 
     public JJCollapsePanel()
     {
-        PositonButton = Positon.Right;
+        ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = new List<JJLinkButton>();
         Color = PanelColor.Default;
@@ -67,10 +67,52 @@ public class JJCollapsePanel : JJBaseView
                 div.WithHref("#collapseOne");
                 div.WithAttribute("data-toggle", "collapse");
                 div.WithAttribute("data-target", "#" + Name);
-                div.WithAttribute("", IsCollapseOpen.ToString().ToLower());
+                div.WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLower());
                 
             });
+            div.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass($"{BootstrapHelper.PanelTitle} unselectable");
+                div.AppendElement(HtmlTag.A, a =>
+                {
+                    a.AppendElementIf(TitleIcon != null, TitleIcon?.GetHtmlElement());
+                    a.AppendTextIf(TitleIcon != null, "&nbsp;");
+                    a.AppendText(Title);
+                });
+            });
+            div.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithNameAndId(Name);
+                if (BootstrapHelper.Version == 3)
+                {
+                    div.WithCssClass("panel-collapse collapse ");
+                    div.WithCssClassIf(IsCollapseOpen, "in");
+                }
+                else
+                {
+                    div.WithCssClass("panel-collapse in collapse ");
+                    div.WithCssClassIf(IsCollapseOpen, "show");
+                }
+
+                div.AppendElement(HtmlTag.Div, div =>
+                {
+                    div.WithCssClass($"{BootstrapHelper.PanelBody} {CssClass}");
+                    div.AppendText(HtmlContent);
+                    div.AppendElement(HtmlTag.Div, div =>
+                    {
+                        div.WithCssClassIf(ButtonPosition is Position.Left, BootstrapHelper.TextLeft);
+                        div.WithCssClassIf(ButtonPosition is Position.Right, BootstrapHelper.TextRight);
+          
+                        foreach (var btn in Buttons)
+                        {
+                            div.AppendElement(btn.GetHtmlElement());
+                        }
+                    });
+                });
+            });
         });
+
+        return root;
     }
     
     protected override string RenderHtml()
@@ -140,7 +182,7 @@ public class JJCollapsePanel : JJBaseView
             html.AppendLine("<div class=\"row\"> ");
             html.Append(TAB, 5);
 
-            if (Positon.Left == (PositonButton))
+            if (Position.Left == (ButtonPosition))
                 html.AppendLine("<div class=\"col-md-12 text-left\"> ");
             else
                 html.AppendLine("<div class=\"col-md-12 text-right\"> ");
@@ -194,7 +236,7 @@ public class JJCollapsePanel : JJBaseView
             html.AppendLine(HtmlContent);
             html.AppendLine("            <div class=\"row\"> ");
 
-            if (Positon.Left == (PositonButton))
+            if (Position.Left == (ButtonPosition))
                 html.AppendLine("<div class=\"col-md-12 text-start\"> ");
             else
                 html.AppendLine("<div class=\"col-md-12 text-end\"> ");
