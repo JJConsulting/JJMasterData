@@ -325,7 +325,7 @@ public class FieldManager
             case FormComponent.File:
                 if (pagestate == PageState.Filter)
                 {
-                    baseView = TextBoxFactory.GetInstance(f, value, enable, viewOnly, fieldName);
+                    baseView = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
                 }
                 else
                 {
@@ -338,7 +338,7 @@ public class FieldManager
                 }
                 break;
             default:
-                baseView = TextBoxFactory.GetInstance(f, value, enable, viewOnly, fieldName);
+                baseView = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
                 
                 break;
         }

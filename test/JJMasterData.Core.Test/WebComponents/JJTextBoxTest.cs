@@ -37,12 +37,6 @@ namespace JJMasterData.Core.Test.WebComponents
             text.PlaceHolder = "00";
             text.SetAttr("pan", "pan");
 
-            var action = new JJLinkButton();
-            action.Text = "teste";
-            action.IconClass = "fa-info";
-
-            text.Actions.Add(action);
-
             string html = text.GetHtml();
             const string expected = "<input id=\"id1\" name=\"id1\" type=\"text\" class=\"form-control class1 class2\" value =\"11982941815\" data-bs-toggle=\"tooltip\" title=\"teste\" pan=\"pan\" placeholder=\"00\"/>";
             Assert.Equal(expected, html);
