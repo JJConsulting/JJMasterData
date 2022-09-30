@@ -121,18 +121,16 @@
 }
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
-
-
 @{
-    var fieldSearchBox = new JJTextBox
+    var fieldSearchBox = new JJTextGroup();
+    fieldSearchBox.TextBox = new JJTextBox
     {
-        Name = "txtFilter",
-        PlaceHolder = Translate.Key("Search..."),
-        ToolTip = Translate.Key("Filter by any field visible in the list")
+       Name = "txtFilter",
+       PlaceHolder = Translate.Key("Search..."),
+       ToolTip = Translate.Key("Filter by any field visible in the list")
     };
     
-    fieldSearchBox.Attributes.Add("onkeyup","searchFields(this);");
-    
+    fieldSearchBox.TextBox.Attributes.Add("onkeyup","searchFields(this);");
     fieldSearchBox.Actions.Add(new JJLinkButton
     {
         IconClass = "fa fa-plus",

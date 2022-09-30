@@ -6,16 +6,18 @@ using System.Globalization;
 
 namespace JJMasterData.Core.WebComponents
 {
-    internal static class TextBoxFactory
+    internal static class InputFactory
     {
-        internal static JJTextBox GetInstance(FormElementField f,
+        internal static JJTextGroup GetInstance(FormElementField f,
                             object value,
                             bool enable = true,
                             bool readOnly = false,
                             string name = null)
         {
             
-            var textBox = GetInstance(f, name);
+            var textGroup = GetInstance(f, name);
+            var textBox = textGroup.TextBox;
+
 
             textBox.Enable = enable;
             textBox.ReadOnly = readOnly;
@@ -25,16 +27,18 @@ namespace JJMasterData.Core.WebComponents
 
             textBox.Text = value?.ToString() ?? string.Empty;
 
-            return textBox;
+            return textGroup;
         }
 
-        internal static JJTextBox GetInstance(FormElementField f, string name = null)
+        internal static JJTextGroup GetInstance(FormElementField f, string name = null)
         {
             if (f == null)
                 throw new ArgumentNullException(nameof(FormElementField));
 
 
-            var textBox = new JJTextBox();
+            var textGroup = new JJTextGroup();
+            var textBox = textGroup.TextBox;
+
             textBox.SetAttr(f.Attributes);
             textBox.MaxLength = f.Size;
             textBox.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
@@ -42,22 +46,24 @@ namespace JJMasterData.Core.WebComponents
             textBox.MinValue = f.MinValue;
             textBox.MaxValue = f.MaxValue;
 
-            SetDefaultAttrs(textBox, f.Component);
+            SetDefaultAttrs(textGroup, f.Component);
 
-            return textBox;
+            return textGroup;
         }
 
-        internal static void SetDefaultAttrs(JJTextBox textBox, FormComponent type)
+        internal static void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
         {
+            var textBox = textGroup.TextBox;
             var listClass = new List<string>();
+            
             listClass.Add("form-control");
 
             switch (type)
             {
                 case FormComponent.Currency:
                     listClass.Add(BootstrapHelper.TextRight);
+                    textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
                     textBox.MaxLength = 18;
-                    textBox.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
                     textBox.InputType = InputType.Number;
                     textBox.SetAttr("onclick", "this.select();");
                     textBox.SetAttr("onkeypress", "return jjutil.justNumber(event);");
@@ -94,39 +100,38 @@ namespace JJMasterData.Core.WebComponents
                     textBox.InputType = InputType.Password;
                     break;
                 case FormComponent.Tel:
-                    textBox.MaxLength = 15;
-                    textBox.InputType = InputType.Tel;
-                    textBox.Addons = new InputAddons
+                    textGroup.Addons = new InputAddons
                     {
                         ToolTip = "Brasil",
                         Text = "+55"
                     };
+                    textBox.MaxLength = 15;
+                    textBox.InputType = InputType.Tel;
                     textBox.SetAttr("data-inputmask", "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
                     break;
                 case FormComponent.Hour:
-                    textBox.InputType = InputType.Text;
-                    textBox.MaxLength = 5;
-                    textBox.CssInputGroup = "flatpickr date jjform-hour";
-                    textBox.SetAttr("data-input", "date");
-
                     var btn = GetDateAction();
                     btn.IconClass = "fa fa-clock";
-                    textBox.Actions.Add(btn);
+                    textGroup.Actions.Add(btn);
 
+                    textBox.InputType = InputType.Text;
+                    textBox.MaxLength = 5;
+                    textGroup.CssClass = "flatpickr date jjform-hour";
+                    textBox.SetAttr("data-input", "date");
                     break;
                 case FormComponent.Date:
+                    textGroup.CssClass = "flatpickr date jjform-date";
+                    textGroup.Actions.Add(GetDateAction());
                     textBox.InputType = InputType.Text;
                     textBox.MaxLength = 10;
-                    textBox.CssInputGroup = "flatpickr date jjform-date";
                     textBox.SetAttr("data-input", "date");
-                    textBox.Actions.Add(GetDateAction());
                     break;
                 case FormComponent.DateTime:
+                    textGroup.CssClass = "flatpickr date jjform-datetime";
+                    textGroup.Actions.Add(GetDateAction());
                     textBox.InputType = InputType.Text;
                     textBox.MaxLength = 19;
-                    textBox.CssInputGroup = "flatpickr date jjform-datetime";
                     textBox.SetAttr("data-input", "date");
-                    textBox.Actions.Add(GetDateAction());
                     break;
                 default:
                     textBox.InputType = InputType.Text;

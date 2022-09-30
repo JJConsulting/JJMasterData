@@ -36,14 +36,15 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
 
-@{
-    var filterTextBox = new JJTextBox
+    @{
+    var filterTextGroup = new JJTextGroup();
+    filterTextGroup.TextBox = new JJTextBox
     {
         Name = "filter",
         PlaceHolder = Translate.Key("Search...")
     };
 
-    filterTextBox.Actions.Add(new JJLinkButton
+    filterTextGroup.Actions.Add(new JJLinkButton
     {
         OnClientClick = null,
         IconClass = "fa fa-search"
@@ -60,7 +61,7 @@
             </button>
         </div>
         <div class="col-sm-4">
-            @Html.Raw(filterTextBox.GetHtml())
+            @Html.Raw(filterTextGroup.GetHtml())
         </div>
     </div>
     <br />

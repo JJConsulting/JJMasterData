@@ -686,11 +686,11 @@ public class JJDataPanel : JJBaseView
         if (actions.Count == 0)
             return field.GetHtml();
 
-        if (!(field is JJTextBox))
+        if (!(field is JJTextGroup))
             return field.GetHtml();
 
         //Actions
-        var textBox = (JJTextBox)field;
+        var textBox = (JJTextGroup)field;
         foreach (BasicAction action in actions)
         {
             var link = ActionManager.GetLinkField(action, Values, PageState, field);

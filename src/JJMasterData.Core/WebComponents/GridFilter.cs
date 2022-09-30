@@ -498,13 +498,13 @@ internal class GridFilter
     private string GetHtmlField(FormElementField f, object value, Hashtable formValues, string name)
     {
         var baseField = GridView.FieldManager.GetField(f, PageState.Filter, value, formValues, name);
-        if (baseField is JJTextBox textBox)
+        if (baseField is JJTextGroup textGroup)
         {
             if (f.Filter.Type == FilterMode.MultValuesContain ||
                 f.Filter.Type == FilterMode.MultValuesEqual)
             {
-                textBox.Attributes.Add("data-role", "tagsinput");
-                textBox.MaxLength = 0;
+                textGroup.TextBox.Attributes.Add("data-role", "tagsinput");
+                textGroup.TextBox.MaxLength = 0;
             }
         }
 

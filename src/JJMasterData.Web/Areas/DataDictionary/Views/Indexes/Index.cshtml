@@ -37,12 +37,12 @@
 
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
-
 @{
-    var filterTextBox = new JJTextBox
+    var filterTextBox = new JJTextGroup();
+    filterTextBox.TextBox = new JJTextBox
     {
-        Name = "filter",
-        PlaceHolder = Translate.Key("Search...")
+       Name = "txtFilter",
+       PlaceHolder = Translate.Key("Search...")
     };
 
     filterTextBox.Actions.Add(new JJLinkButton
