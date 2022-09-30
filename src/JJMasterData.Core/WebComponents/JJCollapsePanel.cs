@@ -2,6 +2,7 @@
 using System.Text;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -47,6 +48,31 @@ public class JJCollapsePanel : JJBaseView
         TitleIcon = null;
     }
 
+    internal override HtmlElement GetHtmlElement()
+    {
+        var root = new HtmlElement(HtmlTag.Div);
+        root.AppendElement(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("hidden", "hidden");
+            input.WithNameAndId($"collapse_mode_{Name}");
+            input.WithValue(IsCollapseOpen ? "1" : "0");
+        });
+        root.AppendElement(HtmlTag.Div, div =>
+        {
+            div.WithCssClass(BootstrapHelper.PanelGroup);
+            div.WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
+            div.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()));
+                div.WithHref("#collapseOne");
+                div.WithAttribute("data-toggle", "collapse");
+                div.WithAttribute("data-target", "#" + Name);
+                div.WithAttribute("", IsCollapseOpen.ToString().ToLower());
+                
+            });
+        });
+    }
+    
     protected override string RenderHtml()
     {
         char TAB = '\t';

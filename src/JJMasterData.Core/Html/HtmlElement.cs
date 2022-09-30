@@ -146,30 +146,7 @@ public class HtmlElement
         _attributes.Add(name, value);
         return this;
     }
-
-
-    /// <summary>
-    /// Set Title to the HTML element.
-    /// </summary>
-    public HtmlElement WithToolTip(string tooltip)
-    {
-        if (!string.IsNullOrEmpty(tooltip))
-        {
-            if (_attributes.ContainsKey("title"))
-                _attributes["title"] = tooltip;
-            else
-                _attributes.Add("title", tooltip);
-
-            if (_attributes.ContainsKey(BootstrapHelper.DataToggle))
-                _attributes[BootstrapHelper.DataToggle] = "tooltip";
-            else
-                _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
-        }
-
-        return this;
-    }
-
-
+    
     /// <summary>
     /// Set attribute to the HTML element on condition.
     /// </summary>
@@ -220,14 +197,6 @@ public class HtmlElement
     }
 
     /// <summary>
-    /// Set custom data attribute to HTML element.
-    /// </summary>
-    public HtmlElement WithDataAttribute(string name, string value)
-    {
-        return WithAttribute($"data-{name}", value);
-    }
-
-    /// <summary>
     /// Set range of attrs
     /// </summary>
     internal HtmlElement WithAttributes(Hashtable attributes)
@@ -235,6 +204,27 @@ public class HtmlElement
         foreach (DictionaryEntry v in attributes)
         {
             _attributes.Add(v.Key.ToString(), v.Value.ToString());
+        }
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Set Title to the HTML element.
+    /// </summary>
+    public HtmlElement WithToolTip(string tooltip)
+    {
+        if (!string.IsNullOrEmpty(tooltip))
+        {
+            if (_attributes.ContainsKey("title"))
+                _attributes["title"] = tooltip;
+            else
+                _attributes.Add("title", tooltip);
+
+            if (_attributes.ContainsKey(BootstrapHelper.DataToggle))
+                _attributes[BootstrapHelper.DataToggle] = "tooltip";
+            else
+                _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
         }
 
         return this;
@@ -302,5 +292,4 @@ public class HtmlElement
 
         return attrs.ToString();
     }
-
 }

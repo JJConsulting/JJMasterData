@@ -10,23 +10,28 @@ namespace JJMasterData.Core.Html
 {
     public static class HtmlElementExtensions
     {
-        // public static HtmlElement WithStyle(this HtmlElement element, string style)
-        // {
-        //     element.WithAttribute("style", style);
-        //     return element;
-        // }
-        //
-        // public static HtmlElement WithStyle(this HtmlElement element, Dictionary<string,string> styles)
-        // {
-        //     string styleString = string.Join(";", styles.Select(x => x.Key + ":" + x.Value).ToArray());
-        //     element.WithAttribute("style", styleString);
-        //     return element;
-        // }
-        //
-        // public static HtmlElement AppendIcon(this HtmlElement element, IconType icon)
-        // {
-        //     element.AppendText(new JJIcon(icon).GetHtmlElement());
-        //     return element;
-        // }
+        /// <summary>
+        /// Set custom data attribute to HTML element.
+        /// </summary>
+        public static HtmlElement WithValue(this HtmlElement html, string @value)
+        {
+            return html.WithAttribute("value", @value);
+        }
+        
+        /// <summary>
+        /// Set custom data attribute to HTML element.
+        /// </summary>
+        public static HtmlElement WithHref(this HtmlElement html, string @value)
+        {
+            return html.WithAttribute("href", @value);
+        }
+        
+        /// <summary>
+        /// Set custom data attribute to HTML element.
+        /// </summary>
+        public static HtmlElement WithDataAttribute(this HtmlElement html, string name, string value)
+        {
+            return html.WithAttribute($"data-{name}", value);
+        }
     }
 }
