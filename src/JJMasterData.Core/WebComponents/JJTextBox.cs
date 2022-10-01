@@ -33,6 +33,7 @@ public class JJTextBox : JJBaseControl
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithAttribute("type", inputType)
+            .WithCssClass("form-control")
             .WithCssClass(CssClass)
             .WithToolTip(Translate.Key(ToolTip))
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())

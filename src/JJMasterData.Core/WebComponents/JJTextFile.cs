@@ -7,6 +7,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -66,126 +67,76 @@ public class JJTextFile : JJBaseControl
 
     protected override string RenderHtml()
     {
-        var html = new StringBuilder();
+        var formUpload = GetFormUpload();
         if (IsFormUploadRoute())
         {
             //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
             //por esse motivo passamos os valores nessários do form anterior por parametro o:)
             LoadDirectValues();
 
-            var formUpload = GetFormUpload();
+            var html = new StringBuilder();
             html.AppendLine(formUpload.GetHtml());
-            html.AppendLine(GetRefreshScript());
+            html.AppendLine(GetRefreshScript(formUpload));
+            return html.ToString();
+
         }
         else
         {
-            html.AppendLine($"<div id=\"div_{Name}\">");
-            html.AppendLine(RenderTextHtml());
-            html.Append("</div>");
+            var html = new HtmlBuilder();
+            html.StartElement(GetHtmlTextGroup(formUpload));
+            return html.RenderHtml();
         }
-        return html.ToString();
+
     }
 
-    private string RenderTextHtml()
+    private HtmlElement GetHtmlTextGroup(JJFormUpload formUpload)
     {
-        var formUpload = GetFormUpload();
-
-        string cssClass = !string.IsNullOrEmpty(CssClass) ? CssClass : string.Empty;
-        int tabIdent = 5;
-
         if (!Enable)
             formUpload.ClearMemoryFiles();
 
-        var html = new StringBuilder();
-        html.Append('\t', tabIdent);
-        html.Append($"<div class=\"input-group jjform-upload {cssClass}\" >");
+        var textGroup = new JJTextGroup();
+        textGroup.CssClass = CssClass;
 
-        html.Append('\t', tabIdent);
-        html.Append("<input type=\"hidden\" ");
-        html.Append($"id=\"{Name}\" ");
-        html.Append($"name=\"{Name}\" ");
-        html.AppendLine($"value =\"{GetFileName(formUpload)}\" >");
+        var textBox = textGroup.TextBox;
+        textBox.ReadOnly = true;
+        textBox.Name = $"v_{Name}";
+        textBox.ToolTip = ToolTip;
+        textBox.Attributes = Attributes;
+        textBox.Text = GetPresentationText(formUpload);
 
-        html.Append('\t', tabIdent);
+        var btn = new JJLinkButton();
+        btn.ShowAsButton = true;
+        btn.OnClientClick = GetOpenUploadFormAction();
+        btn.ToolTip = "Manage Files";
+        btn.IconClass = IconHelper.GetClassName(IconType.Paperclip);
+        textGroup.Actions.Add(btn);
 
-        if(BootstrapHelper.Version < 5)
-            html.Append(GetInputHtml(cssClass, formUpload));
+        var html = new HtmlElement(HtmlTag.Div)
+            .AppendElement(textGroup.GetHtmlElement())
+            .AppendElement(HtmlTag.Input, i =>
+                {
+                    i.WithAttribute("type", "hidden")
+                     .WithNameAndId(Name)
+                     .WithAttribute("value", GetFileName(formUpload));
+                });
 
-        html.Append('\t', tabIdent);
-        html.AppendLine($"<span class=\"{BootstrapHelper.InputGroupBtn}\"> ");
-        html.Append('\t', ++tabIdent);
-        if (BootstrapHelper.Version >= 5)
-            html.Append(GetInputHtml(cssClass, formUpload));
-        html.Append("<button type=\"button\" ");
-        html.Append($"onclick=\"{GetOpenUploadFormAction()}\" ");
-        html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-        html.AppendFormat("title=\"{0}\" ", Translate.Key("Manage Files"));
-        html.AppendLine($"class=\"{(BootstrapHelper.Version ==3 ? BootstrapHelper.DefaultButton : "input-group-text")}\">");
-        html.Append('\t', ++tabIdent);
-        html.AppendLine(new JJIcon(IconType.Paperclip).GetHtml());
-        html.Append('\t', --tabIdent);
-        html.AppendLine("</button>");
-        html.Append('\t', --tabIdent);
-        html.AppendLine("</span> ");
-        html.Append('\t', --tabIdent);
-        html.Append("</div>");
-
-        return html.ToString();
+        return html;
     }
 
-    private string GetInputHtml(string cssClass, JJFormUpload formUpload)
+    private string GetRefreshScript(JJFormUpload formUpload)
     {
+        var script = new StringBuilder();
+        script.AppendLine("$(document).ready(function () {");
+        script.AppendLine($"window.parent.$(\"#v_{Name}\").text(\"{GetPresentationText(formUpload)}\");");
+        script.AppendLine($"window.parent.$(\"{Name}\").text(\"{GetFileName(formUpload)}\");");
+        script.AppendLine("});");
 
-        var html = new StringBuilder();
+        var html = new HtmlBuilder();
+        html.StartElement(HtmlTag.Script)
+            .WithAttribute("type", "text/javascript")
+            .AppendText(script.ToString());
 
-        html.Append("<input type=\"text\" readonly ");
-        html.Append($"id=\"v_{Name}\" ");
-        html.Append($"name=\"v_{Name}\" ");
-        html.Append($"class=\"{cssClass} form-control\" ");
-        html.Append($"value =\"{GetPresentationText(formUpload)}\" ");
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key(ToolTip));
-            html.Append("\" ");
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(" ");
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-        }
-
-        html.AppendLine("/>");
-
-        return html.ToString();
-    }
-
-    private string GetRefreshScript()
-    {
-        var html = new StringBuilder();
-
-        string fieldHtml = RenderTextHtml().Replace("\r\n", "").Replace("\t", "").Replace("\"", "\\\"");
-
-        //Scripts
-        html.Append('\t', 1);
-        html.AppendLine("<script type=\"text/javascript\"> ");
-        html.Append('\t', 2);
-        html.AppendLine("$(document).ready(function () {");
-        html.Append('\t', 3);
-        html.AppendLine($"window.parent.$(\"#div_{Name}\").html(\"{fieldHtml}\");");
-        html.AppendLine("\t\t});");
-        html.AppendLine("\t</script> ");
-
-
-        return html.ToString();
+        return html.RenderHtml();
     }
 
     private string GetOpenUploadFormAction()
