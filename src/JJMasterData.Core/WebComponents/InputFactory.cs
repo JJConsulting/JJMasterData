@@ -38,7 +38,6 @@ namespace JJMasterData.Core.WebComponents
 
             var textGroup = new JJTextGroup();
             var textBox = textGroup.TextBox;
-
             textBox.SetAttr(f.Attributes);
             textBox.MaxLength = f.Size;
             textBox.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;

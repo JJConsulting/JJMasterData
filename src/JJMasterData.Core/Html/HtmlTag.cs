@@ -25,6 +25,7 @@ namespace JJMasterData.Core.Html
         H6,
         Small,
         Ul,
-        Li
+        Li,
+        TextArea
     }
 }

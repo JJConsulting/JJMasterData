@@ -1,8 +1,7 @@
-﻿using System.Collections;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -64,12 +63,8 @@ public class JJValidationSummary : JJBaseView
         Errors.Add(error);
     }
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-
-        if (!Visible)
-            return "";
-
         var alert = new JJAlert()
         {
             Color = PanelColor.Danger,
@@ -79,6 +74,6 @@ public class JJValidationSummary : JJBaseView
             Messages = Errors
         };
 
-        return alert.GetHtml();
+        return alert.GetHtmlElement();
     }
 }
