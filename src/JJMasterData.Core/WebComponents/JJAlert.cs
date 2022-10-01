@@ -14,7 +14,17 @@ namespace JJMasterData.Core.WebComponents
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
         public bool ShowIcon { get; set; }
-        private string ClassType => Color.Equals(PanelColor.Default) ? "secondary" : Color.ToString().ToLower();
+
+        private string ClassType
+        {
+            get
+            {
+                if (Color.Equals(PanelColor.Default))
+                    return "secondary";
+
+                return Color.ToString().ToLower();
+            }
+        }
 
         public JJAlert()
         {
@@ -35,6 +45,7 @@ namespace JJMasterData.Core.WebComponents
 
         private HtmlElement GetAlertDefaultBs3()
         {
+
             var html = new HtmlElement(HtmlTag.Div)
                 .WithNameAndId(Name)
                 .WithAttributes(Attributes)
@@ -56,8 +67,10 @@ namespace JJMasterData.Core.WebComponents
                 .AppendElementIf(!string.IsNullOrEmpty(Title) && Messages.Count > 0, HtmlTag.Br)
                 .AppendText(GetSplittedMessages());
 
+
             return html;
         }
+
 
         private HtmlElement GetAlert()
         {

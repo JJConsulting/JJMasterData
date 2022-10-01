@@ -997,15 +997,18 @@ public class JJGridView : JJBaseView
             var alert = new JJAlert();
             alert.ShowIcon = true;
             alert.ShowCloseButton = true;
-            alert.Color = PanelColor.Default;
-            alert.Icon = IconType.InfoCircle;
-            alert.Title = EmptyDataText;
+
             if (Filter.HasFilter())
             {
                 alert.Icon = IconType.Filter;
                 alert.Messages.Add(Translate.Key("There are filters applied for this query"));
             }
-            
+            else
+            {
+                alert.Messages.Add(EmptyDataText);
+                alert.Icon = IconType.InfoCircle;
+            }
+
             html.AppendLine(alert.GetHtml());
         }
 

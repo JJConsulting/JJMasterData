@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
@@ -245,27 +248,78 @@ public class ElementService : BaseService
 
     #endregion
 
+    #region Class Source Code Generation
+    public string GetClassSourceCode(string dicName)
+    {
+        string prop = "public @PropType @PropName { get; set; } ";
+
+        var dicDao = new DictionaryDao();
+        var dicParser = dicDao.GetDictionary(dicName);
+        var propsBuilder = new StringBuilder();
+
+        foreach (var item in dicParser.Table.Fields.ToList())
+        {
+            var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var typeProp = GetTypeProp(item.DataType, item.IsRequired);
+            var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
+
+            propsBuilder.AppendLine($"\t[DataMember(Name = \"{item.Name}\")] ");
+            propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
+            propsBuilder.AppendLine("\t"+propField);
+            propsBuilder.AppendLine("");
+
+        }
+
+        var resultClass = new StringBuilder();
+
+        resultClass.AppendLine($"public class {dicParser.Table.Name}" + "\r\n{");
+        resultClass.AppendLine(propsBuilder.ToString());
+        resultClass.AppendLine("\r\n}");
+
+        return resultClass.ToString();
+    }
+
+    private string GetTypeProp(FieldType dataTypeField, bool required)
+    {
+        return dataTypeField switch
+        {
+            FieldType.Date or FieldType.DateTime => "DateTime",
+            FieldType.Float => "double",
+            FieldType.Int => "int",
+            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
+            _ => "",
+        };
+    }
+
+    private string ToCamelCase(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return value;
+        
+        string formattedValue = string.Empty;
+        value.Split(' ').ToList().ForEach(x => formattedValue += x.FirstCharToUpper());
+
+        return formattedValue;
+
+    }
+    #endregion
+
     public byte[] Export(List<Hashtable> selectedRows)
     {
-        using (var memoryStream = new MemoryStream())
+        using var memoryStream = new MemoryStream();
+        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            foreach (var element in selectedRows)
             {
-                foreach (var element in selectedRows)
-                {
-                    string dictionaryName = element["name"].ToString();
-                    var dicParser = DicDao.GetDictionary(dictionaryName);
-                    string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
+                string dictionaryName = element["name"].ToString();
+                var dicParser = DicDao.GetDictionary(dictionaryName);
+                string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
 
-                    var jsonFile = archive.CreateEntry(dictionaryName + ".json");
-                    using (var streamWriter = new StreamWriter(jsonFile.Open()))
-                    {
-                        streamWriter.Write(json);
-                    }
-                }
+                var jsonFile = archive.CreateEntry(dictionaryName + ".json");
+                using var streamWriter = new StreamWriter(jsonFile.Open());
+                streamWriter.Write(json);
             }
-            return memoryStream.ToArray();
         }
+        return memoryStream.ToArray();
     }
 
     public bool Import(Stream file)
