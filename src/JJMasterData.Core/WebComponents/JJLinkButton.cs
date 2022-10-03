@@ -123,6 +123,8 @@ public class JJLinkButton : JJBaseView, IAction
     /// </summary>
     public string UrlAction { get; set; }
 
+    internal bool ShowInFilter { get; set; }
+
     /// <summary>
     /// Inicializa uma nova instância da classe JJButton
     /// </summary>

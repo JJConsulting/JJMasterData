@@ -203,7 +203,7 @@ internal class GridFilter
                     f.DataItem.FirstOption = FirstOptionMode.All;
             }
 
-            string name = string.Format("{0}{1}", FIELD_NAME_PREFIX, f.Name);
+            string name = $"{FIELD_NAME_PREFIX}{f.Name}";
             object value = null;
             if (values != null && values.Contains(f.Name))
                 value = values[f.Name];
@@ -243,13 +243,12 @@ internal class GridFilter
                     html.AppendLine("<div class=\"col-sm-3\">");
                     html.Append('\t', 7);
                     var componentFrom = GridView.FieldManager.GetField(f, PageState.Filter, value, values, name + "_from");
-                    if (componentFrom is JJBaseControl controlFrom)
+                    if (componentFrom is JJTextGroup controlFrom)
                     {
-                        controlFrom.PlaceHolder = Translate.Key("From");
+                        controlFrom.TextBox.PlaceHolder = Translate.Key("From");
                         if (!GridView.EnableFilter)
-                            controlFrom.Enable = false;
+                            controlFrom.TextBox.Enable = false;
                     }
-                    
                     html.AppendLine(componentFrom.GetHtml());
                     html.Append('\t', 6);
                     html.AppendLine("</div>");
@@ -263,11 +262,11 @@ internal class GridFilter
                     html.Append('\t', 7);
 
                     var componentTo = GridView.FieldManager.GetField(f, PageState.Filter, value, values, name + "_to");
-                    if (componentTo is JJBaseControl controlTo)
+                    if (componentTo is JJTextGroup controlTo)
                     {
-                        controlTo.PlaceHolder = Translate.Key("To");
+                        controlTo.TextBox.PlaceHolder = Translate.Key("To");
                         if (!GridView.EnableFilter)
-                            controlTo.Enable = false;
+                            controlTo.TextBox.Enable = false;
                     }
                         
                     html.AppendLine(componentTo.GetHtml());

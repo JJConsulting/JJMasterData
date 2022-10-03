@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
@@ -307,15 +308,6 @@ public class FieldManager
                 bool isChecked = Expression.ParseBool(value);
                 baseView = JJCheckBox.GetInstance(f, pagestate, isChecked, enable, fieldName);
                 break;
-            //case FormComponent.Hour:
-            //    baseView = JJTextHour.GetInstance(f, value, enable, viewOnly, fieldName);
-            //    break;
-            //case FormComponent.Date:
-            //    baseView = JJTextDate.GetInstance(f, value, enable, viewOnly, fieldName);
-            //    break;
-            //case FormComponent.DateTime:
-            //    baseView = JJTextDateTime.GetInstance(f, value, enable, viewOnly, fieldName);
-            //    break;
             case FormComponent.TextArea:
                 baseView = JJTextArea.GetInstance(f, value, enable, viewOnly, fieldName);
                 break;
@@ -338,7 +330,14 @@ public class FieldManager
                 }
                 break;
             default:
-                baseView = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
+                var textGroup = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
+                
+                if (pagestate == PageState.Filter)
+                {
+                    textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
+                }
+
+                baseView = textGroup;
                 
                 break;
         }

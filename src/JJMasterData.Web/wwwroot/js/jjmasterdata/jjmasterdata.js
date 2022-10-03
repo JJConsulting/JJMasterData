@@ -7,6 +7,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     jjloadform("load");
 });
+function setupCollapsePanel(name) {
+    let nameSelector = "#" + name;
+    let collapseSelector = '#collapse_mode_' + name;
+    document.addEventListener("DOMContentLoaded", function () {
+        $(nameSelector).on('hidden.bs.collapse', function () {
+            $(collapseSelector).val("0");
+        });
+        $(nameSelector).on('show.bs.collapse', function () {
+            $(collapseSelector).val("1");
+        });
+    });
+}
 class JJDataExp {
     static setLoadMessage() {
         const options = {

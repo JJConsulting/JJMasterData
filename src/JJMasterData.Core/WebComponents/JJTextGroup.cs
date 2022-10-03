@@ -23,7 +23,7 @@ public class JJTextGroup : JJBaseView
 
             return _actions;
         }
-        set { _actions = value; }
+        set => _actions = value;
     }
 
     /// <summary>

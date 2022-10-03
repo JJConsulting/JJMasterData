@@ -53,8 +53,8 @@ namespace JJMasterData.Core.WebComponents
         internal static void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
         {
             var textBox = textGroup.TextBox;
-            var listClass = new List<string>();
             
+            var listClass = new List<string>();
             listClass.Add("form-control");
 
             switch (type)
@@ -144,9 +144,13 @@ namespace JJMasterData.Core.WebComponents
 
         private static JJLinkButton GetDateAction()
         {
-            var btn = new JJLinkButton();
-            btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
-            btn.ToolTip = Translate.Key("Calendar");
+            var btn = new JJLinkButton
+            {
+                IconClass = $"fa fa-{BootstrapHelper.DateIcon}",
+                ToolTip = Translate.Key("Calendar"),
+                ShowInFilter = true
+            };
+            
             btn.SetAttr("data-toggle", "date");
             btn.SetAttr("tabindex", "-1");
             return btn;
