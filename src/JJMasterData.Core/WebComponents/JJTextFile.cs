@@ -67,30 +67,31 @@ public class JJTextFile : JJBaseControl
 
     protected override string RenderHtml()
     {
-        var formUpload = GetFormUpload();
         if (IsFormUploadRoute())
         {
             //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
             //por esse motivo passamos os valores nessários do form anterior por parametro o:)
             LoadDirectValues();
+            var formUpload = GetFormUpload();
 
             var html = new StringBuilder();
             html.AppendLine(formUpload.GetHtml());
             html.AppendLine(GetRefreshScript(formUpload));
             return html.ToString();
-
         }
         else
         {
             var html = new HtmlBuilder();
-            html.StartElement(GetHtmlTextGroup(formUpload));
+            html.StartElement(GetHtmlTextGroup());
             return html.RenderHtml();
         }
 
     }
 
-    private HtmlElement GetHtmlTextGroup(JJFormUpload formUpload)
+    private HtmlElement GetHtmlTextGroup()
     {
+        var formUpload = GetFormUpload();
+
         if (!Enable)
             formUpload.ClearMemoryFiles();
 
@@ -127,8 +128,8 @@ public class JJTextFile : JJBaseControl
     {
         var script = new StringBuilder();
         script.AppendLine("$(document).ready(function () {");
-        script.AppendLine($"window.parent.$(\"#v_{Name}\").text(\"{GetPresentationText(formUpload)}\");");
-        script.AppendLine($"window.parent.$(\"{Name}\").text(\"{GetFileName(formUpload)}\");");
+        script.AppendLine($"window.parent.$(\"#v_{Name}\").val(\"{GetPresentationText(formUpload)}\");");
+        script.AppendLine($"window.parent.$(\"#{Name}\").val(\"{GetFileName(formUpload)}\");");
         script.AppendLine("});");
 
         var html = new HtmlBuilder();
@@ -347,45 +348,36 @@ public class JJTextFile : JJBaseControl
         if (string.IsNullOrEmpty(Text))
             return string.Empty;
 
-        var html = new StringBuilder();
         string[] files = Text.Split(',');
         if (files.Length == 1)
         {
-            string filename = files[0];
-            html.Append($"<a href=\"{GetDownloadLink(filename)}\">");
-            html.Append(new JJIcon(IconType.CloudDownload).GetHtml());
-            html.Append($"&nbsp;{filename}");
-            html.AppendLine("</a>");
+            var btn = GetLinkButton(files[0]);
+            return btn.GetHtml();
         }
         else
         {
-            html.AppendLine("\t\t\t\t\t\t<div class=\"btn-group\">");
-            html.AppendLine($"\t\t\t\t\t\t\t<button type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
-            html.Append(files.Length);
-            html.Append("&nbsp;");
-            html.Append(Translate.Key("Files"));
-            html.Append(" &nbsp;");
-            html.Append("<span class=\"caret\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.Append($"title=\"{Translate.Key("Download")}\">");
-            html.AppendLine("</span>");
-            html.AppendLine("\t\t\t\t\t\t\t</button>");
-            html.AppendLine("\t\t\t\t\t\t\t<ul class=\"dropdown-menu dropdown-menu-right\">");
+            var btnGroup = new JJLinkButtonGroup();
+            btnGroup.CaretText =  $"{files.Length}&nbsp;{Translate.Key("Files")}";
+
             foreach (var filename in files)
             {
-                html.AppendLine("\t\t\t\t\t\t\t\t<li>");
-                html.Append("\t\t\t\t\t\t\t\t\t");
-                html.Append($"<a href=\"{GetDownloadLink(filename)}\">");
-                html.Append(new JJIcon(IconType.CloudDownload).GetHtml());
-                html.Append($"&nbsp;{filename}");
-                html.AppendLine("</a>");
-                html.AppendLine("\t\t\t\t\t\t\t\t</li>");
-
+                btnGroup.Actions.Add(GetLinkButton(filename));
             }
-            html.AppendLine("\t\t\t\t\t\t\t</ul>");
-            html.AppendLine("\t\t\t\t\t\t</div>");
+
+            return btnGroup.GetHtml();
         }
-        return html.ToString();
+
+    }
+
+    private JJLinkButton GetLinkButton(string filename)
+    {
+        var btn = new JJLinkButton();
+        btn.IconClass = IconHelper.GetClassName(IconType.CloudDownload);
+        btn.Text = filename;
+        btn.UrlAction = GetDownloadLink(filename);
+        btn.IsGroup = true;
+
+        return btn;
     }
 
     public string GetDownloadLink(string fileName, bool isExternalLink = false)

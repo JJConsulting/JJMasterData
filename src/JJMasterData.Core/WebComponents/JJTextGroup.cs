@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +71,7 @@ public class JJTextGroup : JJBaseView
         if (!hasAction && !hasAddons)
             return input;
 
-       
+
         if (defaultAction != null && defaultAction.Enabled)
         {
             input.WithCssClass("default-option");
@@ -91,16 +90,13 @@ public class JJTextGroup : JJBaseView
         inputGroup.AppendElement(input);
 
         if (hasAction)
-            AddActions(inputGroup);
+            AddActionsAt(inputGroup);
 
         return inputGroup;
     }
 
-    private void AddActions(HtmlElement inputGroup)
+    private void AddActionsAt(HtmlElement inputGroup)
     {
-        var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
-        var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
-
         HtmlElement elementGroup;
         if (BootstrapHelper.Version >= 5)
         {
@@ -114,41 +110,14 @@ public class JJTextGroup : JJBaseView
             inputGroup.AppendElement(elementGroup);
         }
 
-        foreach (var action in listAction)
-        {
-            action.ShowAsButton = true;
-            elementGroup.AppendElement(action.GetHtmlElement());
-        }
+        var btnGroup = new JJLinkButtonGroup();
+        btnGroup.Actions = Actions;
+        btnGroup.ShowAsButton = true;
 
-        if (listActionGroup.Count > 0)
-        {
-            elementGroup.AppendElement(GetHtmlCaretButton());
-            elementGroup.AppendElement(HtmlTag.Ul, ul =>
-            {
-                ul.WithCssClass("dropdown-menu dropdown-menu-right");
-                AddGroupActions(ul, listActionGroup);
-            });
-        }
+        //Add element Actions
+        btnGroup.AddActionsAt(elementGroup);
     }
 
-    private void AddGroupActions(HtmlElement ul, List<JJLinkButton> listAction)
-    {
-        foreach (var action in listAction)
-        {
-            if (action.DividerLine)
-            {
-                ul.AppendElement(HtmlTag.Li, li =>
-                {
-                    li.WithAttribute("role", "separator").WithCssClass("divider dropdown-divider");
-                });
-            }
-
-            ul.AppendElement(HtmlTag.Li, li =>
-            {
-                li.WithCssClass("dropdown-item").AppendElement(action.GetHtmlElement());
-            });
-        }
-    }
 
     private HtmlElement GetHtmlAddons()
     {
@@ -161,22 +130,5 @@ public class JJTextGroup : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlCaretButton()
-    {
-        var html = new HtmlElement(HtmlTag.Button)
-            .WithAttribute("type", "button")
-            .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
-            .WithAttribute("aria-haspopup", "true")
-            .WithAttribute("aria-expanded", "false")
-            .WithCssClass(BootstrapHelper.DefaultButton)
-            .WithCssClass("dropdown-toggle btn-outline-secondary")
-            .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
-            {
-                s.WithCssClass("caret")
-                 .WithToolTip(Translate.Key("More Options"));
-            });
-
-        return html;
-    }
 
 }

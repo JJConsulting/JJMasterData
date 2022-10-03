@@ -732,7 +732,7 @@ class JJUpload {
                 dragdropWidth: ($(this).width() - 10),
                 statusBarWidth: ($(this).width() - 10),
                 autoSubmit: true,
-                uploadButtonClass: bootstrapVersion === 3 ? "btn btn-default" : "btn btn-outline-dark",
+                uploadButtonClass: bootstrapVersion == 3 ? "btn btn-default" : "btn btn-outline-dark",
                 allowedTypes: allowedTypes,
                 acceptFiles: acceptFiles,
                 uploadStr: obj.attr("uploadStr"),

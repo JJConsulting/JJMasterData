@@ -128,6 +128,20 @@ public class HtmlElement
     }
 
     /// <summary>
+    /// Insert tag script with a script text
+    /// </summary>
+    public HtmlElement AppendScript(string rawScript)
+    {
+        var childElement = new HtmlElement(HtmlTag.Script)
+            .WithAttribute("type", "text/javascript")
+            .AppendText(rawScript);
+
+        _children.Add(childElement);
+
+        return this;
+    }
+
+    /// <summary>
     /// Set HTML element name and ID.
     /// </summary>
     public HtmlElement WithNameAndId(string id)
