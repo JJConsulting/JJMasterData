@@ -60,6 +60,7 @@
                     $("#" + objid).val(item.value);
                     if (item.value != "") {
                         $("#st_" + objid)
+                            .removeClass("fa-search")
                             .removeClass("fa-exclamation-triangle ")
                             .addClass("fa fa-check");
                     }
