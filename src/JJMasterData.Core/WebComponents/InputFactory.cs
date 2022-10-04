@@ -73,6 +73,13 @@ namespace JJMasterData.Core.WebComponents
                     textBox.InputType = InputType.Number;
                     textBox.SetAttr("step", "1");
                     textBox.SetAttr("onclick", "this.select();");
+
+                    if (!textBox.MinValue.HasValue)
+                        textBox.MinValue = int.MinValue;
+
+                    if (!textBox.MaxValue.HasValue)
+                        textBox.MaxValue = int.MaxValue;
+
                     break;
                 case FormComponent.Cnpj:
                     textBox.MaxLength = 18;

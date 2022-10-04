@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using System;
+using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -118,8 +117,7 @@ public class JJLegendView : JJBaseView
             HtmlContent = form.GetElementHtml()
         };
         
-        //TODO: Change this after finishing JJModalDialog
-        return new HtmlElement(dialog.GetHtml());
+        return dialog.GetHtmlElement();
     }
     
     private FormElementField GetFieldLegend()

@@ -471,8 +471,8 @@ public class JJDataPanel : JJBaseView
                     fieldClass += colClass;
             }
 
-            if (Erros != null && Erros.Contains(f.Name))
-                fieldClass += " " + BootstrapHelper.HasError;
+            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+                fieldClass += " has-error";
 
             if (PageState == PageState.View && ShowViewModeAsStatic)
                 fieldClass += " jjborder-static";
@@ -564,8 +564,8 @@ public class JJDataPanel : JJBaseView
             label.CssClass = labelClass;
 
             fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : string.Format(" {0}", f.CssClass);
-            if (Erros != null && Erros.Contains(f.Name))
-                fldClass += " " + BootstrapHelper.HasError;
+            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+                fldClass += " has-error";
 
             string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
@@ -678,6 +678,14 @@ public class JJDataPanel : JJBaseView
     private string GetHtmlField(FormElementField f, object value)
     {
         var field = FieldManager.GetField(f, PageState, value, Values);
+
+        if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
+        {
+            if (field is JJTextGroup txtGroup)
+                txtGroup.TextBox.CssClass = "is-invalid";
+            else
+                field.CssClass = "is-invalid";
+        }
 
         if (f.Actions == null)
             return field.GetHtml();

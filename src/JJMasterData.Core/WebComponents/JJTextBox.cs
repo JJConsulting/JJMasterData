@@ -39,7 +39,6 @@ public class JJTextBox : JJBaseControl
             .WithToolTip(Translate.Key(ToolTip))
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces > 0, "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
-            .WithAttributeIf(InputType == InputType.Number, "onkeypress", "return jjutil.justNumber(event);")
             .WithAttributeIf(MinValue != null, "min", MinValue?.ToString())
             .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
             .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text)

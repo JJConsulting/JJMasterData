@@ -2,7 +2,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -19,84 +18,58 @@ namespace JJMasterData.Core.WebComponents
         /// </remarks>
         public bool ShowIcon { get; set; } = true;
 
-        private string ClassType => Color.Equals(PanelColor.Default) ? "secondary" : Color.ToString().ToLower();
-
         public JJAlert()
         {
             Messages = new List<string>();
         }
 
-        private string GetSplittedMessages() => string.Join("<br>", Messages.Select(Translate.Key));
-
         internal override HtmlElement GetHtmlElement()
         {
-            if (BootstrapHelper.Version == 3 & Color is PanelColor.Default or PanelColor.Primary)
-            {
-                return GetAlertDefaultBs3();
-            }
-
-            return GetAlert();
-        }
-
-        private HtmlElement GetAlertDefaultBs3()
-        {
-
             var html = new HtmlElement(HtmlTag.Div)
                 .WithNameAndId(Name)
                 .WithAttributes(Attributes)
                 .WithCssClass(CssClass)
-                .WithCssClass($"alert {BootstrapHelper.Well}")
-                .AppendElement(HtmlTag.A, e =>
-                {
-                    e.WithAttribute("href", "#");
-                    e.WithAttribute("aria-label", Translate.Key("Close"));
-                    e.WithAttribute(BootstrapHelper.DataDismiss, "alert");
-                    e.WithCssClass(BootstrapHelper.Close);
-                    e.AppendText(BootstrapHelper.CloseButtonTimes);
-                })
+                .WithCssClass($"alert alert-dismissible")
+                .WithCssClass(GetClassType())
+                .WithAttribute("role", "alert")
+                .AppendElementIf(ShowCloseButton, GetCloseButton("alert"))
                 .AppendElementIf(ShowIcon, new JJIcon(Icon).GetHtmlElement())
                 .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
                 {
                     e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
-                })
-                .AppendElementIf(!string.IsNullOrEmpty(Title) && Messages.Count > 0, HtmlTag.Br)
-                .AppendText(GetSplittedMessages());
+                });
 
+            foreach(string message in Messages)
+            {
+                html.AppendElement(HtmlTag.Br);
+                html.AppendText(Translate.Key(message));
+            }
 
             return html;
         }
 
-
-        private HtmlElement GetAlert()
+        private string GetClassType()
         {
-            var html = new HtmlElement(HtmlTag.Div)
-                .WithNameAndId(Name)
-                .WithAttributes(Attributes)
-                .WithCssClass(CssClass)
-                .WithCssClass($"alert alert-{ClassType} alert-dismissible")
-                .WithAttribute("role", "alert")
+            if (Color == PanelColor.Default)
+                return BootstrapHelper.Version == 3 ? "well" : "alert-secondary";
+            
+            return $"alert-{Color.ToString().ToLower()}";
+        } 
 
-                .AppendElementIf(ShowCloseButton, HtmlTag.Button, e =>
-                {
-                    e.WithCssClass(BootstrapHelper.Close);
-                    e.WithAttribute("type", "button");
-                    e.WithAttribute(BootstrapHelper.DataDismiss, "alert");
-                    e.WithAttribute("aria-label", "close");
-                    e.AppendElement(HtmlTag.Span, element =>
-                    {
-                        element.WithAttribute("aria-hidden", "true");
-                        element.AppendText(BootstrapHelper.CloseButtonTimes);
-                    });
-                })
-                .AppendElementIf(ShowIcon,new JJIcon(Icon).GetHtmlElement())
-                .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
-                {
-                    e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
-                })
-                .AppendText(GetSplittedMessages());
+        internal static HtmlElement GetCloseButton(string dimissValue)
+        {
+            var btn = new HtmlElement(HtmlTag.Button)
+                .WithAttribute("type", "button")
+                .WithAttribute("aria-label", Translate.Key("Close"))
+                .WithDataAttribute("dismiss", dimissValue)
+                .WithCssClass(BootstrapHelper.Close)
+                .AppendText(BootstrapHelper.CloseButtonTimes);
 
-            return html;
+            return btn;
+
         }
+
+
 
     }
 }

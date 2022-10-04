@@ -63,13 +63,7 @@ public class JJModalDialog : JJBaseView
 
     private HtmlElement GetHtmlHeader()
     {
-        var btn = new HtmlElement(HtmlTag.Button)
-            .WithAttribute("type", "button")
-            .WithAttribute("aria-label", "Close")
-            .WithCssClass(BootstrapHelper.Close)
-            .WithDataAttribute("dismiss", "modal")
-            .AppendText(BootstrapHelper.CloseButtonTimes);
-
+        var btn = JJAlert.GetCloseButton("modal");
         var header = new HtmlElement(HtmlTag.Div)
             .WithCssClass("modal-header")
             .AppendElementIf(BootstrapHelper.Version == 3, btn)
