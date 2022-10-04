@@ -466,7 +466,7 @@ public class JJFormUpload : JJBaseView
         html.AppendLine("");
 
         if (!Upload.Multiple && CountFiles() > 0)
-            Upload.LabelAdd = Translate.Key("Update");
+            Upload.AddLabel = Translate.Key("Update");
 
         html.AppendLine(Upload.GetHtml());
 
@@ -773,12 +773,12 @@ public class JJFormUpload : JJBaseView
 
         foreach (var mFiles in files.Where(mFiles => !mFiles.Deleted))
         {
-            var oRow = dt.NewRow();
-            oRow["Name"] = mFiles.FileName;
-            oRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
-            oRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
-            oRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
-            dt.Rows.Add(oRow);
+            var dataRow = dt.NewRow();
+            dataRow["Name"] = mFiles.FileName;
+            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
+            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
+            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
+            dt.Rows.Add(dataRow);
         }
 
         return dt;

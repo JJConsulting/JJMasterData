@@ -7,6 +7,7 @@ namespace JJMasterData.Core.WebComponents;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
+/// TODO: Breaking change suggestion: GridSettings is a more appropriate name for what the class represents
 public class GridUI
 {
     private const string TableTotalPerPage = "table_regperpage";

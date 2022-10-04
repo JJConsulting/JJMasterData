@@ -69,7 +69,7 @@ public class ElementController : DataDictionaryController
         var upload = new JJUploadFile
         {
             Name = "dicImport",
-            LabelAdd = Translate.Key("Select Dictionaries"),
+            AddLabel = Translate.Key("Select Dictionaries"),
             AllowedTypes = "json",
             AutoSubmitAfterUploadAll = false
         };

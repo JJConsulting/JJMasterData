@@ -994,16 +994,21 @@ public class JJGridView : JJBaseView
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
-            var alert = new JJAlert();
-            alert.ShowCloseButton = true;
-            alert.Color = PanelColor.Default;
-            alert.ShowCloseButton = true;
+            var alert = new JJAlert
+            {
+                ShowCloseButton = true,
+                Color = PanelColor.Default
+            };
 
             if (Filter.HasFilter())
             {
                 alert.Messages.Add("There are filters applied for this query");
                 alert.Icon = IconType.Filter;
-                alert.Messages.Add("There are filters applied for this query");
+            }
+            else
+            {
+                alert.Messages.Add("No records found.");
+                alert.Icon = IconType.Times;
             }
 
             html.AppendLine(alert.GetHtml());
