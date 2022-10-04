@@ -6,11 +6,9 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJIcon : JJBaseView
 {
-    /// <summary>
-    /// Classe do icone
-    /// </summary>
+
     /// <remarks>
-    /// classe da fonte fontawesome ou glyphicons 
+    /// Font Awesome icon class
     /// </remarks>
     public string IconClass { get; set; }
     public string Color { get; set; }

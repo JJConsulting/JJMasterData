@@ -17,14 +17,11 @@ namespace JJMasterData.Core.WebComponents;
 /// </example>
 public class JJValidationSummary : JJBaseView
 {
-    /// <summary>
-    /// Lista com as mensagens de erro
-    /// </summary>
     public List<string> Errors { get; set; }
 
     /// <summary>
-    /// Titulo do painel com as mensagens de erro. 
-    /// (Default = "Dados inválidos"
+    /// Panel title
+    /// (Default = "Invalid Data")
     /// </summary>
     public string MessageTitle { get; set; }
     

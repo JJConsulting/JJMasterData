@@ -1008,7 +1008,7 @@ public class JJGridView : JJBaseView
             else
             {
                 alert.Messages.Add("No records found.");
-                alert.Icon = IconType.Times;
+                alert.Icon = IconType.InfoCircle;
             }
 
             html.AppendLine(alert.GetHtml());

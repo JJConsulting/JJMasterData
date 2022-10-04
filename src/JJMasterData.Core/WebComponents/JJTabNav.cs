@@ -6,17 +6,16 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJTabNav : JJBaseView
 {
-    private int? _SelectedTabIndex;
+    private int? _selectedTabIndex;
     public int SelectedTabIndex
     {
         get
         {
-            if (_SelectedTabIndex == null)
-                _SelectedTabIndex = RequestSelectedTabIndex();
+            _selectedTabIndex ??= RequestSelectedTabIndex();
 
-            return (int)_SelectedTabIndex;
+            return (int)_selectedTabIndex;
         }
-        set => _SelectedTabIndex = value;
+        set => _selectedTabIndex = value;
     }
 
     internal string InputHiddenSelectedTabName => $"selected_tab_{Name}";

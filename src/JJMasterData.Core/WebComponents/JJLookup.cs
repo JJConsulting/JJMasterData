@@ -133,7 +133,7 @@ public class JJLookup : JJBaseControl
         var search = new JJLookup();
         search.SetAttr(f.Attributes);
         search.Name = name ?? f.Name;
-        search.SelectedValue = (string)value;
+        search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
         search.Enable = enable;

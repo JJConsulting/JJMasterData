@@ -11,7 +11,7 @@ namespace JJMasterData.Core.WebComponents;
 public class JJLegendView : JJBaseView
 {
     /// <summary>
-    /// Configurações pré-definidas do formulário
+    /// Pre-defined Form settings.
     /// </summary>
     public FormElement FormElement { get; set; }
 

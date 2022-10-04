@@ -177,9 +177,7 @@ public class JJLinkButton : JJBaseView, IAction
 
     private string GetCssClassWithCompatibility()
     {
-        string cssClass = CssClass;
-        if (cssClass == null)
-            cssClass = string.Empty;
+        string cssClass = CssClass ?? string.Empty;
 
         if (BootstrapHelper.Version >= 4)
         {
