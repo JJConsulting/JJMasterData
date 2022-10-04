@@ -15,14 +15,8 @@ namespace JJMasterData.Core.WebComponents
         /// </summary>
         public List<JJLinkButton> Actions
         {
-            get
-            {
-                if (_actions == null)
-                    _actions = new List<JJLinkButton>();
-
-                return _actions;
-            }
-            set { _actions = value; }
+            get => _actions ??= new List<JJLinkButton>();
+            set => _actions = value;
         }
 
         public bool ShowAsButton { get; set; }

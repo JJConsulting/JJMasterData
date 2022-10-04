@@ -99,12 +99,10 @@ internal class JJDataImpProcess
 
     public string GetElapsedTime()
     {
-        DateTime startDate;
-        DateTime endDate;
         string format = Format.DateTimeFormat;
         string elapsedTime = string.Empty;
-        if (DateTime.TryParseExact(StartDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out startDate) &&
-            DateTime.TryParseExact(EndDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out endDate))
+        if (DateTime.TryParseExact(StartDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate) &&
+            DateTime.TryParseExact(EndDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
         {
             elapsedTime = Format.FormatTimeSpan(startDate, endDate);
         }

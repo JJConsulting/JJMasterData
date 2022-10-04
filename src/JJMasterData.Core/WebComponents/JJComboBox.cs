@@ -230,7 +230,30 @@ public class JJComboBox : JJBaseView
 
         var label = IsManualValues() ? Translate.Key(item.Description) : item.Description;
 
-        return label;
+        if (DataItem.ShowImageLegend)
+        {
+            var div = new HtmlElement(HtmlTag.Div);
+            
+            var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
+            {
+                CssClass = "fa-lg fa-fw"
+            }.GetHtmlElement();
+
+            div.AppendElement(icon);
+            
+            if (DataItem.ReplaceTextOnGrid)
+            {
+                div.AppendText("&nbsp;");
+                div.AppendText(label);
+            }
+            description = div.GetElementHtml();
+        }
+        else
+        {
+            description = label;
+        }
+
+        return description;
     }
 
 

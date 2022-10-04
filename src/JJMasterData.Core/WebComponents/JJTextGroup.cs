@@ -16,13 +16,7 @@ public class JJTextGroup : JJBaseView
     /// </summary>
     public List<JJLinkButton> Actions
     {
-        get
-        {
-            if (_actions == null)
-                _actions = new List<JJLinkButton>();
-
-            return _actions;
-        }
+        get => _actions ??= new List<JJLinkButton>();
         set => _actions = value;
     }
 
@@ -31,14 +25,8 @@ public class JJTextGroup : JJBaseView
     /// </summary>
     public JJTextBox TextBox
     {
-        get
-        {
-            if (_textBox == null)
-                _textBox = new JJTextBox();
-
-            return _textBox;
-        }
-        set { _textBox = value; }
+        get => _textBox ??= new JJTextBox();
+        set => _textBox = value;
     }
 
     /// <summary>
@@ -72,7 +60,7 @@ public class JJTextGroup : JJBaseView
             return input;
 
 
-        if (defaultAction != null && defaultAction.Enabled)
+        if (defaultAction is { Enabled: true })
         {
             input.WithCssClass("default-option");
             input.WithAttribute("onchange", defaultAction.OnClientClick);

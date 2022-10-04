@@ -31,13 +31,7 @@ internal class ActionManager
     /// </summary>
     public Hashtable UserValues
     {
-        get
-        {
-            if (_userValues == null)
-                _userValues = new Hashtable();
-
-            return _userValues;
-        }
+        get => _userValues ??= new Hashtable();
         set
         {
             _expression = null;
@@ -281,13 +275,13 @@ internal class ActionManager
         {
             script = GetFormActionScript(action, formValues, contextAction);
         }
-        else if (action is UrlRedirectAction)
+        else if (action is UrlRedirectAction redirectAction)
         {
-            script = GetUrlRedirectScript((UrlRedirectAction)action, formValues, pagestate, contextAction, fieldName);
+            script = GetUrlRedirectScript(redirectAction, formValues, pagestate, contextAction, fieldName);
         }
-        else if (action is InternalAction)
+        else if (action is InternalAction internalAction)
         {
-            script = GetInternalUrlScript((InternalAction)action, formValues);
+            script = GetInternalUrlScript(internalAction, formValues);
         }
         else if (action is ScriptAction jsAction)
         {

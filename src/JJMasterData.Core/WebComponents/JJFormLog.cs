@@ -33,18 +33,7 @@ public class JJFormLog : JJBaseView
         }
     }
 
-    public JJGridView GridView
-    {
-        get
-        {
-            if (_gridView == null)
-            {
-                _gridView = CreateGridViewLog();
-            }
-            return _gridView;
-        }
-    }
-
+    public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
     /// <summary>
     /// Configuração do painel com os campos do formulário

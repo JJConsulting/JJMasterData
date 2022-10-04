@@ -16,19 +16,10 @@ public class JJTabNav : JJBaseView
 
             return (int)_SelectedTabIndex;
         }
-        set
-        {
-            _SelectedTabIndex = value;
-        }
+        set => _SelectedTabIndex = value;
     }
 
-    internal string InputHiddenSelectedTabName
-    {
-        get
-        {
-            return $"selected_tab_{Name}";
-        }
-    }
+    internal string InputHiddenSelectedTabName => $"selected_tab_{Name}";
 
     public List<NavContent> ListTab { get; set; }
 
@@ -114,10 +105,7 @@ public class JJTabNav : JJBaseView
     private int RequestSelectedTabIndex()
     {
         string tabIndex = CurrentContext.Request[InputHiddenSelectedTabName];
-        if (int.TryParse(tabIndex, out int nIndex))
-            return nIndex;
-        else
-            return 0;
+        return int.TryParse(tabIndex, out var nIndex) ? nIndex : 0;
     }
 
 }
