@@ -57,7 +57,6 @@ public class JJSlider : JJBaseControl
         }
 
         return html;
-
     }
 
     private HtmlElement GetHtmlSlider()
