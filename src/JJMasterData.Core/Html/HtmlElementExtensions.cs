@@ -17,15 +17,7 @@ namespace JJMasterData.Core.Html
         {
             return html.WithAttribute("value", @value);
         }
-        
-        /// <summary>
-        /// Set custom data attribute to HTML element.
-        /// </summary>
-        public static HtmlElement WithHref(this HtmlElement html, string @value)
-        {
-            return html.WithAttribute("href", @value);
-        }
-        
+
         /// <summary>
         /// Set custom data attribute to HTML element.
         /// </summary>
@@ -34,6 +26,19 @@ namespace JJMasterData.Core.Html
             string attrName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
             attrName += name;
             return html.WithAttribute(attrName, value);
+        }
+        
+        /// <summary>
+        /// Append a hidden input to the Element tree.
+        /// </summary>
+        public static HtmlElement AppendHiddenInput(this HtmlElement html, string name, string value)
+        {
+            return html.AppendElement(HtmlTag.Input, input =>
+            {
+                input.WithAttribute("hidden", "hidden");
+                input.WithNameAndId(name);
+                input.WithValue(value);
+            });
         }
     }
 }

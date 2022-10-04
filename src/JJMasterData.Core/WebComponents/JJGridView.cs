@@ -384,7 +384,7 @@ public class JJGridView : JJBaseView
 
             if (MaintainValuesOnLoad && FormElement != null)
             {
-                CurrentUI = JJSession.GetSessionValue<GridUI>(string.Format("jjcurrentui_{0}", FormElement.Name));
+                CurrentUI = JJSession.GetSessionValue<GridUI>($"jjcurrentui_{FormElement.Name}");
             }
 
             if (_currentUI == null)
@@ -398,7 +398,7 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad && FormElement != null)
-                JJSession.SetSessionValue(string.Format("jjcurrentui_{0}", FormElement.Name), value);
+                JJSession.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
 
             _currentUI = value;
         }
@@ -966,7 +966,7 @@ public class JJGridView : JJBaseView
         if (CurrentUI.ShowRowStriped)
             html.Append(" table-striped");
 
-        if (CurrentUI.HeaderFixed)
+        if (CurrentUI.IsHeaderFixed)
             html.Append(" table-fix-head");
 
         html.AppendLine("\">");
@@ -1194,7 +1194,7 @@ public class JJGridView : JJBaseView
         if (EnableMultSelect)
         {
             bool hasPages = true;
-            if (!IsPaggingEnable())
+            if (!IsPaggingEnabled())
             {
                 hasPages = false;
             }
@@ -1694,11 +1694,11 @@ public class JJGridView : JJBaseView
     /// <returns></returns>
     private string GetHtmlPaging(List<Hashtable> listSelectedValues)
     {
-        if (!IsPaggingEnable())
+        if (!IsPaggingEnabled())
             return "";
 
         int totalPages = (int)Math.Ceiling(TotalReg / (double)CurrentUI.TotalPerPage);
-        int qtdButtons = CurrentUI.TotalPaggingButton;
+        int qtdButtons = CurrentUI.TotalPaginationButtons;
         int startButton = (((int)Math.Floor((CurrentPage - 1) / (double)qtdButtons)) * qtdButtons) + 1;
         int endButton = startButton + qtdButtons;
 
@@ -1882,7 +1882,7 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Renderiza o formulário modal de configuração de pagina
+    /// UI Settings Modal
     /// </summary>
     private string GetHtmlSetup()
     {
@@ -1915,7 +1915,7 @@ public class JJGridView : JJBaseView
         };
         modal.Buttons.Add(btnCancel);
 
-        modal.HtmlContent = CurrentUI.GetHtmlFormSetup(IsPaggingEnable());
+        modal.HtmlContent = CurrentUI.GetHtmlElement(IsPaggingEnabled()).GetElementHtml();
 
         return modal.GetHtml();
     }
@@ -2454,7 +2454,7 @@ public class JJGridView : JJBaseView
     /// <summary>
     /// Verifica se a paginação esta habilitada
     /// </summary>
-    private bool IsPaggingEnable()
+    private bool IsPaggingEnabled()
     {
         return !(!ShowPagging || CurrentPage == 0 || CurrentUI.TotalPerPage == 0 || TotalReg == 0);
     }
@@ -2661,8 +2661,8 @@ public class JJGridView : JJBaseView
                 ui.ShowRowStriped = o.ShowRowStriped;
                 ui.ShowBorder = o.ShowBorder;
                 ui.TotalPerPage = o.TotalPerPage;
-                ui.TotalPaggingButton = o.TotalPaggingButton;
-                ui.HeaderFixed = o.HeaderFixed;
+                ui.TotalPaginationButtons = o.TotalPaggingButton;
+                ui.IsHeaderFixed = o.HeaderFixed;
             }
 
 
