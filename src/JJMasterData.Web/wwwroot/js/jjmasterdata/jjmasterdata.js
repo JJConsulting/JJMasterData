@@ -432,6 +432,7 @@ function jjloadform(event, prefixSelector) {
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();
+    JJTabNav.setup();
     JJSlider.observeSliders();
     JJSlider.observeInputs();
     messageWait.hide();
@@ -1651,4 +1652,12 @@ var showWaitOnPost = true;
 var bootstrapVersion = 3;
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
+class JJTabNav {
+    static setup() {
+        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
+            var link = $(e.target);
+            $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
+        });
+    }
+}
 //# sourceMappingURL=jjmasterdata.js.map

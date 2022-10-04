@@ -31,7 +31,9 @@ namespace JJMasterData.Core.Html
         /// </summary>
         public static HtmlElement WithDataAttribute(this HtmlElement html, string name, string value)
         {
-            return html.WithAttribute($"data-{name}", value);
+            string attrName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
+            attrName += name;
+            return html.WithAttribute(attrName, value);
         }
     }
 }

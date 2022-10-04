@@ -366,7 +366,6 @@ public class JJTextFile : JJBaseControl
 
             return btnGroup.GetHtml();
         }
-
     }
 
     private JJLinkButton GetLinkButton(string filename)

@@ -98,8 +98,8 @@ public class JJCollapsePanel : JJBaseView
             button.WithCssClass($"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}");
             button.WithAttribute("type", "button");
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
-            button.WithDataAttribute("bs-toggle", "collapse");
-            button.WithDataAttribute("bs-target", $"#collapse-{Name.ToLower()}");
+            button.WithDataAttribute("toggle", "collapse");
+            button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
             button.AppendText(Translate.Key(Title));
         });
 
@@ -111,7 +111,7 @@ public class JJCollapsePanel : JJBaseView
             .WithAttribute("id", $"collapse-{Name.ToLower()}")
             .WithCssClass($"accordion-collapse collapse {(IsCollapseOpen ? "show" : "")}")
             .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
-            .WithDataAttribute("bs-parent", $"#{Name}")
+            .WithDataAttribute("parent", $"#{Name}")
             .AppendElement(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("accordion-body");

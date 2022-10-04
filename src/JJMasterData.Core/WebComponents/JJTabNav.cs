@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
+using JJMasterData.Core.Html;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -11,22 +11,22 @@ public class JJTabNav : JJBaseView
     {
         get
         {
-
             if (_SelectedTabIndex == null)
-            {
-                string tabIndex = CurrentContext.Request["selected_tab_" + Name];
-                if (int.TryParse(tabIndex, out int nIndex))
-                    _SelectedTabIndex = nIndex;
-                else
-                    _SelectedTabIndex = 0;
-
-            }
+                _SelectedTabIndex = RequestSelectedTabIndex();
 
             return (int)_SelectedTabIndex;
         }
         set
         {
             _SelectedTabIndex = value;
+        }
+    }
+
+    internal string InputHiddenSelectedTabName
+    {
+        get
+        {
+            return $"selected_tab_{Name}";
         }
     }
 
@@ -38,65 +38,86 @@ public class JJTabNav : JJBaseView
         ListTab = new List<NavContent>();
     }
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        char TAB = '\t';
-        StringBuilder html = new();
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithAttributes(Attributes)
+            .WithCssClass(CssClass)
+            .AppendElement(GetNavTabs())
+            .AppendElement(GetTabContent())
+            .AppendElement(HtmlTag.Input, i =>
+            {
+                i.WithAttribute("type", "hidden")
+                 .WithNameAndId(InputHiddenSelectedTabName)
+                 .WithAttribute("value", SelectedTabIndex.ToString());
+            });
 
-        html.Append("<input type=\"hidden\" ");
-        html.AppendFormat("id =\"selected_tab_{0}\" ", Name);
-        html.AppendFormat("name =\"selected_tab_{0}\" ", Name);
-        html.AppendFormat("value =\"{0}\"", SelectedTabIndex);
-        html.AppendLine("/>");
-
-        html.AppendLine("<ul class=\"nav nav-tabs\" role=\"tablist\"> ");
-
-        for (int i = 0; i < ListTab.Count; i++)
-        {
-            NavContent nav = ListTab[i];
-            string navId = Name + "_nav_" + i;
-
-            html.Append(TAB, 1);
-            if (SelectedTabIndex == i && BootstrapHelper.Version != 3)
-                html.AppendFormat("<li class=\"active nav-item\">", navId);
-            else
-                html.AppendFormat("<li class=\"nav-item\">", navId);
-
-            html.AppendFormat($"<a {BootstrapHelper.DataToggle}=\"tab\" href=\"#{0}\" tabindex=\"{1}\" class=\"nav-link {2}\">{3}</a>", navId, i, (SelectedTabIndex == i && BootstrapHelper.Version == 3 ? "active" : string.Empty), Translate.Key(nav.Title));
-            html.AppendLine("</li>");
-
-        }
-        html.AppendLine("</ul> ");
-
-
-        html.AppendLine("<div class=\"tab-content\" style=\"margin-top: 20px;\">");
-        for (int i = 0; i < ListTab.Count; i++)
-        {
-            NavContent nav = ListTab[i];
-            string navId = Name + "_nav_" + i;
-            string tabClass = (SelectedTabIndex == i) ? "tab-pane fade in active" : "tab-pane fade";
-            
-            html.Append(TAB, 1);
-            html.AppendFormat("<div id=\"{0}\" class=\"{1}\" role=\"tabpanel\">", navId, tabClass);
-            html.AppendLine("");
-            html.Append(nav.HtmlContent);
-            html.Append(TAB, 1);
-            html.AppendLine("</div>");
-            
-        }
-
-        html.AppendLine("</div>");
-        html.AppendLine("<br>");
-
-        html.AppendLine("<script type=\"text/javascript\"> ");
-        html.AppendLine("	$(document).ready(function () { ");
-        html.AppendLine($"		 $(\"a[{BootstrapHelper.DataToggle}='tab']\").on(\"shown.bs.tab\", function (e) {{ ");
-        html.AppendLine("			var target = $(e.target).attr(\"tabindex\");");
-        html.AppendLine($"			$(\"#selected_tab_{Name}\").val(target);");
-        html.AppendLine("		 });");
-        html.AppendLine("	}); ");
-        html.AppendLine("</script>");
-
-        return html.ToString();
+        return html;
     }
+
+    private HtmlElement GetNavTabs()
+    {
+        var ul = new HtmlElement(HtmlTag.Ul)
+            .WithAttribute("role", "tablist")
+            .WithCssClass("nav nav-tabs");
+
+        for (int i = 0; i < ListTab.Count; i++)
+        {
+            NavContent nav = ListTab[i];
+            string navId = $"{Name}_nav_{i}";
+
+            ul.AppendElement(HtmlTag.Li, li =>
+            {
+                li.WithCssClass("nav-item")
+                  .WithCssClassIf(SelectedTabIndex == i && BootstrapHelper.Version == 3, "active")
+                  .WithAttribute("role", "presentation")
+                  .AppendElement(HtmlTag.A, a =>
+                  {
+                      a.WithAttribute("href", $"#{navId}")
+                       .WithAttribute("aria-controls", navId)
+                       .WithAttribute("jj-tabindex", i.ToString())
+                       .WithAttribute("jj-objectid", InputHiddenSelectedTabName)
+                       .WithAttribute("aria-selected", SelectedTabIndex == i ? "true" : "false")
+                       .WithAttribute("role", "tab")
+                       .WithDataAttribute("toggle", "tab")
+                       .WithCssClass("jj-tab-link nav-link")
+                       .WithCssClassIf(SelectedTabIndex == i && BootstrapHelper.Version > 3, "active")
+                       .AppendText(Translate.Key(nav.Title));
+                  });
+            });
+        }
+
+        return ul;
+    }
+
+    private HtmlElement GetTabContent()
+    {
+        var tabContent = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("tab-content");
+
+        for (int i = 0; i < ListTab.Count; i++)
+        {
+            NavContent nav = ListTab[i];
+            var divContent = new HtmlElement(HtmlTag.Div)
+                .WithAttribute("id", $"{Name}_nav_{i}")
+                .WithAttribute("role", "tabpanel")
+                .WithCssClass("tab-pane fade")
+                .WithCssClassIf(SelectedTabIndex == i, "in show active")
+                .AppendText(nav.HtmlContent);
+
+            tabContent.AppendElement(divContent);
+        }
+
+        return tabContent;
+    }
+
+    private int RequestSelectedTabIndex()
+    {
+        string tabIndex = CurrentContext.Request[InputHiddenSelectedTabName];
+        if (int.TryParse(tabIndex, out int nIndex))
+            return nIndex;
+        else
+            return 0;
+    }
+
 }

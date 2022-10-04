@@ -265,7 +265,7 @@ public class HtmlElement
 
         if (!Tag.HasClosingTag)
         {
-            html.Append("/>");
+            html.Append(" />");
             return html.ToString();
         }
 

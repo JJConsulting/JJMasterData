@@ -72,7 +72,8 @@
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();
-    
+    JJTabNav.setup();
+
     JJSlider.observeSliders();
     JJSlider.observeInputs();
 
