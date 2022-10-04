@@ -76,7 +76,7 @@ public class JJCheckBox : JJBaseView
     internal override HtmlElement GetHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Div)
-            .WithCssClass("form-check checkbox")
+            .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
             .WithCssClassIf(!Enable, "disabled")
             .AppendElement(HtmlTag.Label, label =>
             {

@@ -58,7 +58,7 @@ public class JJTabNav : JJBaseView
 
             ul.AppendElement(HtmlTag.Li, li =>
             {
-                li.WithCssClass("nav-item")
+                li.WithCssClassIf(BootstrapHelper.Version > 3, "nav-item")
                   .WithCssClassIf(SelectedTabIndex == i && BootstrapHelper.Version == 3, "active")
                   .WithAttribute("role", "presentation")
                   .AppendElement(HtmlTag.A, a =>
@@ -92,7 +92,7 @@ public class JJTabNav : JJBaseView
                 .WithAttribute("id", $"{Name}_nav_{i}")
                 .WithAttribute("role", "tabpanel")
                 .WithCssClass("tab-pane fade")
-                .WithCssClassIf(SelectedTabIndex == i, "in show active")
+                .WithCssClassIf(SelectedTabIndex == i, "active" + BootstrapHelper.Show)
                 .AppendText(nav.HtmlContent);
 
             tabContent.AppendElement(divContent);
