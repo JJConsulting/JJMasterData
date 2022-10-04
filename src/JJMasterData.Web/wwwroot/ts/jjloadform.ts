@@ -4,7 +4,9 @@
         prefixSelector = "";
     }
     
-    $(prefixSelector + ".selectpicker").selectpicker("render");
+    $(prefixSelector + ".selectpicker").selectpicker({
+        iconBase:'fa'
+    });
     
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     

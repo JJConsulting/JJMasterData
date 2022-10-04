@@ -29,13 +29,7 @@ public class FieldManager
     /// </summary>
     internal Hashtable UserValues
     {
-        get
-        {
-            if (_userValues == null)
-                _userValues = new Hashtable();
-
-            return _userValues;
-        }
+        get => _userValues ??= new Hashtable();
         set
         {
             _expression = null;
@@ -67,16 +61,7 @@ public class FieldManager
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
-    public ExpressionManager Expression
-    {
-        get
-        {
-            if (_expression == null)
-                _expression = new ExpressionManager(UserValues, DataAccess);
-
-            return _expression;
-        }
-    }
+    public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
 
     #endregion
 
@@ -156,45 +141,31 @@ public class FieldManager
             && (f.DataItem.ReplaceTextOnGrid || f.DataItem.ShowImageLegend))
         {
             var cbo = (JJComboBox)GetField(f, PageState.List, value, values);
-            sVal = cbo.GetDescription();
-            if (sVal == null)
-                sVal = value.ToString();
+            sVal = cbo.GetDescription() ?? value.ToString();
         }
         else if (f.Component == FormComponent.Lookup
-           && f.DataItem != null
-           && f.DataItem.ReplaceTextOnGrid)
+                 && f.DataItem is { ReplaceTextOnGrid: true })
         {
             var lookup = (JJLookup)GetField(f, PageState.List, value, values);
-            sVal = lookup.GetDescription();
-            if (sVal == null)
-                sVal = value.ToString();
+            sVal = lookup.GetDescription() ?? value.ToString();
         }
         else if (f.Component == FormComponent.CheckBox)
         {
-            if (Expression.ParseBool(value))
-                sVal = "Sim";
-            else
-                sVal = "Não";
+            sVal = Expression.ParseBool(value) ? "Sim" : "Não";
         }
         else if (f.Component == FormComponent.Search
-            && f.DataItem != null
-            && f.DataItem.ReplaceTextOnGrid)
+                 && f.DataItem is { ReplaceTextOnGrid: true })
         {
             var search = (JJSearchBox)GetField(f, PageState.Filter, null, values);
             search.AutoReloadFormFields = false;
-            sVal = search.GetDescription(value.ToString());
-            if (sVal == null)
-                sVal = value.ToString();
+            sVal = search.GetDescription(value.ToString()) ?? value.ToString();
         }
         else
         {
             sVal = FormatVal(value, f);
         }
 
-        if (sVal == null)
-            return "";
-
-        return sVal;
+        return sVal ?? "";
     }
 
 
@@ -235,8 +206,7 @@ public class FieldManager
                 }
                 break;
             case FormComponent.Currency:
-                double nCurrency;
-                if (double.TryParse(sVal, out nCurrency))
+                if (double.TryParse(sVal, out var nCurrency))
                     sVal = nCurrency.ToString("C" + field.NumberOfDecimalPlaces);             
                 break;
             case FormComponent.Date:

@@ -4,13 +4,14 @@ using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJLegendView : JJBaseView
 {
     /// <summary>
-    /// Configurações pré-definidas do formulário
+    /// Pre-defined Form settings.
     /// </summary>
     public FormElement FormElement { get; set; }
 
@@ -47,8 +48,8 @@ public class JJLegendView : JJBaseView
     }
 
     #endregion
-
-    protected override string RenderHtml()
+    
+    internal override HtmlElement GetHtmlElement()
     {
         if (ShowAsModal)
         {
@@ -56,115 +57,71 @@ public class JJLegendView : JJBaseView
         }
 
         var field = GetFieldLegend();
-        return GetHtmlLegend(field, 0);
-
+        return GetHtmlLegend(field);
     }
 
-
-    private string GetHtmlLegend(FormElementField field, int identity)
+    private HtmlElement GetHtmlLegend(FormElementField field)
     {
-        string tab = "\t".PadRight(identity);
+        var div = new HtmlElement(HtmlTag.Div);
 
-        var html = new StringBuilder();
-
-        html.Append(tab);
-        html.AppendLine("<div> ");
         if (field != null)
         {
-            var cbo = new JJComboBox(DataAccess);
-            cbo.Name = field.Name;
-            cbo.DataItem = field.DataItem;
-            var list = cbo.GetValues();
-            if (list != null && list.Count > 0)
+            var cbo = new JJComboBox(DataAccess)
             {
-                foreach (DataItemValue item in list)
-                { 
-                    html.Append(tab);
-                    html.Append("\t<div style=\"height:40px\">");
+                Name = field.Name,
+                DataItem = field.DataItem
+            };
+            
+            var values = cbo.GetValues();
+            
+            if (values is { Count: > 0 })
+            {
+                foreach (var item in values)
+                {
+                    div.AppendElement(HtmlTag.Div, div =>
+                    {
+                        div.WithAttribute("style", "height:40px");
 
-                    var ic = new JJIcon(item.Icon, item.ImageColor, item.Description);
-                    ic.CssClass = "fa-fw fa-2x";
-                    html.Append(ic.GetHtml());
-
-                    html.Append("&nbsp;&nbsp;");
-                    html.Append(Translate.Key(item.Description));
-                    html.Append("<br>");
-                    html.AppendLine("</div>");
+                        div.AppendElement(new JJIcon(item.Icon, item.ImageColor, item.Description)
+                        {
+                            CssClass = "fa-fw fa-2x"
+                        }.GetHtmlElement());
+                        div.AppendText("&nbsp;&nbsp;");
+                        div.AppendText(Translate.Key(item.Description));
+                        div.AppendElement(HtmlTag.Br);
+                    });
                 }
-            }
-            else
-            {
-                html.Append(tab);
-                html.Append("\t");
-                html.Append(Translate.Key("Unable to retrieve caption"));
             }
         }
         else
         {
-            html.Append(tab);
-            html.Append("\t");
-            html.Append(Translate.Key("There is no caption to be displayed"));
+            div.AppendElement(HtmlTag.Br);
+            div.AppendText(Translate.Key("There is no caption to be displayed"));
         }
 
-        html.Append(tab);
-        html.AppendLine("</div>");
-        return html.ToString();
+        return div;
     }
 
-    private string GetHtmlModal()
+    private HtmlElement GetHtmlModal()
     {
         var field = GetFieldLegend();
-        string name = string.Empty;
-        if (field != null && !string.IsNullOrEmpty(field.Label))
-            name = " - " + field.Label;
 
-        string closeBtn = $"\t\t\t\t\t<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"modal\">{BootstrapHelper.CloseButtonTimes}</button> ";
-        int bootstrapVersion = BootstrapHelper.Version;
-
-        StringBuilder html = new();
-        html.AppendLine("\t<!-- Start Modal Settings -->");
-        html.AppendLine("\t<div class=\"modal\" id=\"" + Name + "\" role=\"dialog\"> ");
-        html.AppendLine("\t\t<div class=\"modal-dialog modal-sm\"> ");
-        html.AppendLine("\t\t\t<div class=\"modal-content\"> ");
-        html.AppendLine("\t\t\t\t<div class=\"modal-header\"> ");
-        html.Append("\t\t\t\t\t<h4 class=\"modal-title\">");
-        html.Append(Translate.Key("Information"));
-        html.Append(" ");
-        html.Append(name);
-        if(bootstrapVersion < 5 )
-            html.Append(closeBtn);
-        html.AppendLine("</h4> ");
-        if (bootstrapVersion >= 5)
-            html.Append(closeBtn);
-        html.AppendLine();
-        html.AppendLine("\t\t\t\t</div> ");
-        html.AppendLine("\t\t\t\t<div class=\"modal-body\"> ");
-        html.AppendLine(" ");
+        var form = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("form-horizontal")
+            .WithAttribute("role", "form")
+            .AppendElement(GetHtmlLegend(field));
         
-        html.AppendLine("\t\t\t\t\t<div class=\"form-horizontal\" role=\"form\"> ");
-        html.AppendLine(GetHtmlLegend(field, 6));
-        html.AppendLine("\t\t\t\t\t</div> ");
+        var dialog = new JJModalDialog
+        {
+            Name = Name,
+            Title = Translate.Key("Information"),
+            HtmlContent = form.GetElementHtml()
+        };
         
-        html.AppendLine("\t\t\t\t</div> ");
-
-        html.AppendLine("\t\t\t\t<div class=\"modal-footer\"> ");
-        html.AppendLine($"\t\t\t\t\t<button type=\"submit\" class=\"{BootstrapHelper.DefaultButton}\" {BootstrapHelper.DataDismiss}=\"modal\">");
-        html.AppendLine("\t\t\t\t\t\t<span class=\"fa fa-check\"></span> ");
-        html.Append("\t\t\t\t\t\t<span>&nbsp;");
-        html.Append(Translate.Key("Ok"));
-        html.AppendLine("</span> ");
-        html.AppendLine("\t\t\t\t\t</button> ");
-        html.AppendLine("\t\t\t\t</div> ");
-
-        html.AppendLine("\t\t\t</div> ");
-        html.AppendLine("\t\t</div> ");
-        html.AppendLine("\t</div>");
-        html.AppendLine("\t<!-- End Modal Settings -->");
-        html.AppendLine("");
-        return html.ToString();
+        //TODO: Change this after finishing JJModalDialog
+        return new HtmlElement(dialog.GetHtml());
     }
-
-
+    
     private FormElementField GetFieldLegend()
     {
         return FormElement.Fields.FirstOrDefault(f 

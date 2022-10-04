@@ -13,18 +13,13 @@ namespace JJMasterData.Core.WebComponents
         public string Title { get; set; }
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
-        public bool ShowIcon { get; set; }
+        
+        /// <remarks>
+        /// Default = true
+        /// </remarks>
+        public bool ShowIcon { get; set; } = true;
 
-        private string ClassType
-        {
-            get
-            {
-                if (Color.Equals(PanelColor.Default))
-                    return "secondary";
-
-                return Color.ToString().ToLower();
-            }
-        }
+        private string ClassType => Color.Equals(PanelColor.Default) ? "secondary" : Color.ToString().ToLower();
 
         public JJAlert()
         {
@@ -35,7 +30,7 @@ namespace JJMasterData.Core.WebComponents
 
         internal override HtmlElement GetHtmlElement()
         {
-            if (BootstrapHelper.Version == 3 & (Color == PanelColor.Default || Color == PanelColor.Primary))
+            if (BootstrapHelper.Version == 3 & Color is PanelColor.Default or PanelColor.Primary)
             {
                 return GetAlertDefaultBs3();
             }
@@ -62,7 +57,7 @@ namespace JJMasterData.Core.WebComponents
                 .AppendElementIf(ShowIcon, new JJIcon(Icon).GetHtmlElement())
                 .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
                 {
-                    e.AppendText(Translate.Key(Title));
+                    e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
                 })
                 .AppendElementIf(!string.IsNullOrEmpty(Title) && Messages.Count > 0, HtmlTag.Br)
                 .AppendText(GetSplittedMessages());
@@ -93,12 +88,12 @@ namespace JJMasterData.Core.WebComponents
                         element.AppendText(BootstrapHelper.CloseButtonTimes);
                     });
                 })
-                .AppendElement(new JJIcon(Icon).GetHtmlElement())
+                .AppendElementIf(ShowIcon,new JJIcon(Icon).GetHtmlElement())
                 .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
                 {
-                    e.AppendText(Translate.Key(Title));
+                    e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
                 })
-                .AppendText(GetSplittedMessages()); ;
+                .AppendText(GetSplittedMessages());
 
             return html;
         }

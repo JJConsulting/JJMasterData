@@ -27,6 +27,8 @@ namespace JJMasterData.Core.Html
         Ul,
         Li,
         TextArea,
-        Script
+        Script,
+        Select,
+        Option
     }
 }

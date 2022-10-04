@@ -30,22 +30,14 @@ public class JJDataImpHelp : JJBaseView
     /// </summary>
     public JJUploadFile Upload
     {
-        get
+        get => _upload ??= new JJUploadFile
         {
-            if (_upload == null)
-            {
-                _upload = new JJUploadFile();
-                _upload.Multiple = false;
-                _upload.CopyPaste = false;
-                _upload.Name = Name + "_upload";
-                _upload.AllowedTypes = "txt,csv,log";
-            }
-            return _upload;
-        }
-        set
-        {
-            _upload = value;
-        }
+            Multiple = false,
+            EnableCopyPaste = false,
+            Name = Name + "_upload",
+            AllowedTypes = "txt,csv,log"
+        };
+        set => _upload = value;
     }
 
     
@@ -53,30 +45,12 @@ public class JJDataImpHelp : JJBaseView
     /// <summary>
     /// Funções úteis para manipular campos no formulário
     /// </summary>
-    private FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(this, FormElement);
-
-            return _fieldManager;
-        }
-    }
+    private FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
 
     internal FormManager FormManager
     {
-        get
-        {
-            if (_formManager == null)
-                _formManager = new FormManager(FormElement, UserValues, DataAccess);
-
-            return _formManager;
-        }
-        private set
-        {
-            _formManager = value;
-        }
+        get => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
+        private set => _formManager = value;
     }
 
 

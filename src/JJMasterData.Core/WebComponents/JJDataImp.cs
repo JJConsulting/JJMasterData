@@ -51,25 +51,14 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     public JJLinkButton BackButton 
     {
-        get
-        {
-            if (_backButton == null)
+        get => _backButton ??= new JJLinkButton
             {
-                _backButton = new JJLinkButton
-                {
-                    IconClass = "fa fa-arrow-left",
-                    Text = "Back",
-                    ShowAsButton = true,
-                    OnClientClick = "uploadFile1Obj.remove();"
-                };
-            }
-
-            return _backButton;
-        }
-        set
-        {
-            _backButton = value;
-        }
+                IconClass = "fa fa-arrow-left",
+                Text = "Back",
+                ShowAsButton = true,
+                OnClientClick = "uploadFile1Obj.remove();"
+            };
+        set => _backButton = value;
     }
 
     /// <summary>
@@ -77,25 +66,14 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     public JJLinkButton HelpButton
     {
-        get
-        {
-            if (_helpButton == null)
+        get => _helpButton ?? (_helpButton = new JJLinkButton
             {
-                _helpButton = new JJLinkButton
-                {
-                    IconClass = "fa fa-question-circle",
-                    Text = "Help",
-                    ShowAsButton = true,
-                    OnClientClick = "$('#current_uploadaction').val('process_help'); $('form:first').submit();"
-                };
-            }
-
-            return _helpButton;
-        }
-        set
-        {
-            _helpButton = value;
-        }
+                IconClass = "fa fa-question-circle",
+                Text = "Help",
+                ShowAsButton = true,
+                OnClientClick = "$('#current_uploadaction').val('process_help'); $('form:first').submit();"
+            });
+        set => _helpButton = value;
     }
 
     /// <summary>
@@ -105,21 +83,18 @@ public class JJDataImp : JJBaseProcess
     {
         get
         {
-            if (_logButton == null)
+            if (_logButton != null) return _logButton;
+            _logButton = new JJLinkButton
             {
-                _logButton = new JJLinkButton();
-                _logButton.IconClass = "fa fa-film";
-                _logButton.Text = "Last Import";
-                _logButton.ShowAsButton = true;
-                _logButton.OnClientClick = "$('#current_uploadaction').val('process_finished'); $('form:first').submit();";
-            }
+                IconClass = "fa fa-film",
+                Text = "Last Import",
+                ShowAsButton = true,
+                OnClientClick = "$('#current_uploadaction').val('process_finished'); $('form:first').submit();"
+            };
 
             return _logButton;
         }
-        set
-        {
-            _logButton = value;
-        }
+        set => _logButton = value;
     }
 
     /// <summary>
@@ -129,23 +104,18 @@ public class JJDataImp : JJBaseProcess
     {
         get
         {
-            if (_upload == null)
+            return _upload ??= new JJUploadFile
             {
-                _upload = new JJUploadFile();
-                _upload.Multiple = false;
-                _upload.CopyPaste = false;
-                _upload.Name = Name + "_upload";
-                _upload.AllowedTypes = "txt,csv,log";
-            }
-            return _upload;
+                Multiple = false,
+                EnableCopyPaste = false,
+                Name = Name + "_upload",
+                AllowedTypes = "txt,csv,log"
+            };
         }
-        set
-        {
-            _upload = value;
-        }
+        set => _upload = value;
     }
 
-    
+
     /// <summary>
     /// Expandir ou recolher painel de upload de arquivos.
     /// Default: true (painel aberto)
@@ -229,7 +199,7 @@ public class JJDataImp : JJBaseProcess
         }
         else
         {
-            if (Upload.IsPostAfterUploadAll() || IsRunning())
+            if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
                 sHtml.AppendLine(GetHtmlWaitProcess());
             else
                 sHtml.Append(GetHtmlForm(ProcessKey));
