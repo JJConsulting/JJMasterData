@@ -247,7 +247,7 @@ public class HtmlElement
     /// <summary>
     /// Gets current element HTML.
     /// </summary>
-    internal string GetElementHtml(int tabCount)
+    internal string GetElementHtml(int tabCount = 0)
     {
         var html = new StringBuilder();
         if (tabCount > 0)

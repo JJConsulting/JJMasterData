@@ -3342,4 +3342,19 @@
     <value>Campo [Nome] contém uma palavra reservada utilizada no banco de dados.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="[DataItem] properties not defined for combo" xml:space="preserve">
+    <value>Propriedades [DataItem] não definidas para combo</value>
+  </data>
+  <data name="Data source not defined for combo" xml:space="preserve">
+    <value>Origem de dados não definida para combo</value>
+  </data>
+  <data name="Error loading data from JJComboBox {0}. Error Details: {1}" xml:space="preserve">
+    <value>Erro carregar os dados da JJComboBox {0}. Detalhes do Erro: {1}</value>
+  </data>
+  <data name="(All)" xml:space="preserve">
+    <value>(Todos)</value>
+  </data>
+  <data name="(Choose)" xml:space="preserve">
+    <value>(Escolha)</value>
+  </data>
 </root>
