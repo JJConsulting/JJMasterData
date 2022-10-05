@@ -369,6 +369,23 @@ var jjdictionary = (function () {
         }
     };
 })();
+class JJFeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(JJFeedbackIcon.successClass)
+            .removeClass(JJFeedbackIcon.warningClass)
+            .removeClass(JJFeedbackIcon.searchClass)
+            .removeClass(JJFeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
+    }
+}
+JJFeedbackIcon.searchClass = "jj-icon-search";
+JJFeedbackIcon.successClass = "jj-icon-success";
+JJFeedbackIcon.warningClass = "jj-icon-warning";
+JJFeedbackIcon.errorClass = "jj-icon-error";
 function jjloadform(event, prefixSelector) {
     if (prefixSelector === undefined) {
         prefixSelector = "";
@@ -472,6 +489,8 @@ class JJLookup {
                 url += "?";
             url += "jjlookup_";
             url += panelName + "=" + lookupId;
+            const jjLookupSelector = "#" + lookupId + "";
+            const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
                 let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
                 $.ajax({
@@ -501,12 +520,8 @@ class JJLookup {
             });
             lookupInput.on("blur", function () {
                 showWaitOnPost = false;
-                $("#id_" + lookupId).val(lookupInput.val());
-                $("#st_" + lookupId)
-                    .removeClass("fa-check")
-                    .removeClass("fa-exclamation-triangle")
-                    .removeClass("fa-ellipsis-h")
-                    .removeClass("fa-times");
+                $(jjHiddenLookupSelector).val(lookupInput.val());
+                JJFeedbackIcon.removeAllIcons(jjLookupSelector);
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
                     return;
@@ -523,25 +538,18 @@ class JJLookup {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-check")
-                                .addClass("fa fa-exclamation-triangle");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
                             lookupInput.removeAttr("readonly");
                         }
                         else {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-exclamation-triangle")
-                                .removeClass("fa fa-ellipsis-h")
-                                .addClass("fa fa-check");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInput.attr("readonly", "readonly").val(data.description);
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        $("#st_" + lookupId)
-                            .removeClass("fa fa-check")
-                            .addClass("fa fa-times");
+                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass);
                         console.log(errorThrown);
                         console.log(textStatus);
                         console.log(jqXHR);
@@ -581,11 +589,11 @@ class JJSearchBox {
             const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.searchClass);
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass);
                     $(jjSearchBoxHiddenSelector).val("");
                 }
                 else if ($(jjSearchBoxHiddenSelector).val() == "") {
-                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.warningClass);
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass);
                 }
             });
             $(this).typeahead({
@@ -596,14 +604,14 @@ class JJSearchBox {
                     triggerLength: triggerlength,
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
-                        JJSearchBox.setIcon(jjSearchBoxSelector, "");
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "");
                         return frm.serializeArray();
                     },
                 },
                 onSelect: function (item) {
                     $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.successClass);
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass);
                     }
                 },
                 displayField: "name",
@@ -632,17 +640,7 @@ class JJSearchBox {
             });
         });
     }
-    static setIcon(selector, iconClass) {
-        $(selector)
-            .removeClass(JJSearchBox.successClass)
-            .removeClass(JJSearchBox.warningClass)
-            .removeClass(JJSearchBox.searchClass)
-            .addClass(iconClass);
-    }
 }
-JJSearchBox.searchClass = "jj-icon-search";
-JJSearchBox.successClass = "jj-icon-success";
-JJSearchBox.warningClass = "jj-icon-warning";
 class JJSlider {
     static observeSliders() {
         let sliders = document.getElementsByClassName("jjslider");

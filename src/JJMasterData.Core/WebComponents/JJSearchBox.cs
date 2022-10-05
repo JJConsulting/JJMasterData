@@ -117,14 +117,11 @@ public class JJSearchBox : JJBaseControl
     /// <ul class="typeahead dropdown-menu" style="max-height:220px;overflow:auto;"></ul>
     /// </code>
     /// </remarks>
-    public bool ScrollBar 
+    public bool ScrollBar
     {
-        get
-        {
-            if (Attributes.ContainsKey(ScrollbarAttribute))
-                return Attributes[ScrollbarAttribute].ToString().Equals("true");
-            return false;
-        }
+        get =>
+            Attributes.ContainsKey(ScrollbarAttribute) &&
+            Attributes[ScrollbarAttribute].ToString().Equals("true");
         set
         {
             string v = value ? "true" : "false";
@@ -186,7 +183,7 @@ public class JJSearchBox : JJBaseControl
 
     public JJSearchBox()
     {
-        Enable = true;
+        Enabled = true;
         TriggerLength = 1;
         PlaceHolder = Translate.Key("Search...");
         NumberOfItems = 10;
@@ -209,16 +206,18 @@ public class JJSearchBox : JJBaseControl
                                   bool enable,
                                   string name)
     {
-        JJSearchBox search = new JJSearchBox();
-        search.Name = (name == null ? f.Name : name);
-        search.SelectedValue = (string)value;
-        search.Visible = true;
-        search.DataItem = f.DataItem;
-        search.Enable = enable;
-        search.ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter;
-        search.AutoReloadFormFields = false;
-        search.FormValues = formValues;
-        search.PageState = pagestate;
+        JJSearchBox search = new JJSearchBox
+        {
+            Name = name ?? f.Name,
+            SelectedValue = (string)value,
+            Visible = true,
+            DataItem = f.DataItem,
+            Enabled = enable,
+            ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter,
+            AutoReloadFormFields = false,
+            FormValues = formValues,
+            PageState = pagestate
+        };
 
         return search;
     }
@@ -263,7 +262,7 @@ public class JJSearchBox : JJBaseControl
                 input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
                 input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
                 input.WithAttributeIf(ReadOnly, "readonly", "readonly");
-                input.WithAttributeIf(!Enable, "disabled", "disabled");
+                input.WithAttributeIf(!Enabled, "disabled", "disabled");
                 input.WithAttributes(Attributes);
                 input.WithToolTip(ToolTip);
                 input.WithCssClass("form-control jjsearchbox");

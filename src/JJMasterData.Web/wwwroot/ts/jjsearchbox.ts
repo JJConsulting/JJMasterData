@@ -1,9 +1,4 @@
 ﻿class JJSearchBox{
-
-    private static searchClass = "jj-icon-search";
-    private static successClass = "jj-icon-success";
-    private static warningClass = "jj-icon-warning";
-    
     static setup(){
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
@@ -43,11 +38,11 @@
             
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.searchClass)
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass)
                     $(jjSearchBoxHiddenSelector).val("");
                 }
                 else if($(jjSearchBoxHiddenSelector).val() == ""){
-                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.warningClass)
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass)
                 }
             });
             
@@ -59,7 +54,7 @@
                     triggerLength: triggerlength,
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
-                        JJSearchBox.setIcon(jjSearchBoxSelector, "")
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "")
                         
                         return frm.serializeArray();
                     },
@@ -67,7 +62,7 @@
                 onSelect: function (item) {
                     $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.successClass)
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass)
                     }
                 },
                 displayField: "name",
@@ -94,13 +89,5 @@
                 }
             });
         });
-    }
-    
-    private static setIcon(selector: string, iconClass : string){
-        $(selector)
-            .removeClass(JJSearchBox.successClass)
-            .removeClass(JJSearchBox.warningClass)
-            .removeClass(JJSearchBox.searchClass)
-            .addClass(iconClass);
     }
 }

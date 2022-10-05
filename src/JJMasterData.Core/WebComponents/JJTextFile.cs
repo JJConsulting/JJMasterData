@@ -55,7 +55,7 @@ public class JJTextFile : JJBaseControl
             PageState = pagestate,
             Text = value != null ? value.ToString() : "",
             FormValues = formValues,
-            Enable = enable,
+            Enabled = enable,
             Name = name ?? field.Name,
             ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly
         };
@@ -92,7 +92,7 @@ public class JJTextFile : JJBaseControl
     {
         var formUpload = GetFormUpload();
 
-        if (!Enable)
+        if (!Enabled)
             formUpload.ClearMemoryFiles();
 
         var textGroup = new JJTextGroup();
@@ -144,7 +144,7 @@ public class JJTextFile : JJBaseControl
     {
         var parms = new OpenFormParms();
         parms.PageState = PageState;
-        parms.Enable = Enable & !ReadOnly;
+        parms.Enable = Enabled & !ReadOnly;
 
         if (PageState != PageState.Insert)
             parms.PkValues = GetPkValues('|');
@@ -174,7 +174,7 @@ public class JJTextFile : JJBaseControl
             throw new Exception(Translate.Key("Invalid parameters when opening file upload"));
 
         PageState = parms.PageState;
-        Enable = parms.Enable;
+        Enabled = parms.Enable;
 
         if (!string.IsNullOrEmpty(parms.PkValues))
         {
@@ -222,7 +222,7 @@ public class JJTextFile : JJBaseControl
         if (HasPk())
             form.FolderPath = GetFolderPath();
 
-        if (!Enable)
+        if (!Enabled)
             form.Disable();
 
         return form;

@@ -22,7 +22,7 @@ public class JJSlider : JJBaseControl
         {
             Name = fieldName ?? field.Name,
             Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null,
-            Enable = enable,
+            Enabled = enable,
             ReadOnly = readOnly
         };
         return slider;

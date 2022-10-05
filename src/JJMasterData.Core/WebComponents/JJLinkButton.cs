@@ -6,45 +6,8 @@ using System;
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Representa um Link 
+/// Represents a clickable button
 /// </summary>
-/// <example>
-/// Exemplo de como utilizar JJLinkButton
-/// <code lang="html">
-/// <![CDATA[
-///     <%@ Page Language="C#" AutoEventWireup="true"  %>
-///     <!DOCTYPE html>
-///     <html xmlns = "http://www.w3.org/1999/xhtml" >
-///     <head runat="server">
-///         <title></title>
-///         <link rel = "Stylesheet" href="Content/bootstrap.css" />
-///         <link rel = "stylesheet" href="Content/bootstrap-select.css" />
-///         <link rel = "Stylesheet" href="Content/bootstrap-theme.css" />
-///         <link rel = "Stylesheet" href="Content/jjmasterdata.css" />
-/// 
-///         <script type = "text/javascript" src="../Scripts/jquery-3.1.1.min.js"></script>
-///         <script type = "text/javascript" src="../Scripts/bootstrap.min.js"></script>
-///         <script type = "text/javascript" src="../Scripts/jjmasterdata.js"></script>
-///     </head>
-///     <body>
-///         <form id = "form1" runat="server">
-///         <%--Configuração do componente--%>
-///         <%
-///             var link = new JJMasterData.WebForm.JJLinkButton();
-///             link.Text = "JJ Consulting";
-///             link.IconClass = "glyphicon glyphicon-home";
-///             link.UrlAction = "http://www.jjconsulting.com.br";
-///         %>
-/// 
-///         <%--Rendereiza o componente--%>
-///         <%=link.GetHtml() %>
-/// 
-///         </form>
-///     </body>
-///     </html>
-/// ]]>
-/// </code>
-/// </example>
 [Serializable]
 public class JJLinkButton : JJBaseView, IAction
 {
@@ -60,74 +23,48 @@ public class JJLinkButton : JJBaseView, IAction
             };
         set => _spinner = value;
     }
-
-    /// <summary>
-    /// Descrição do link
-    /// </summary>
+    
     public string Text { get; set; }
-
-    /// <summary>
-    /// Texto exibido quando o ponteiro do mouse passa sobre o controle
-    /// </summary>
+    
     public string ToolTip { get; set; }
 
     /// <summary>
-    /// Executar essa ação como padrão.
-    /// Ação será disparada ao clicar em qualquer lugar da linha.
+    /// Action will be fired clicking at any place at the row.
     /// </summary>
     public bool IsDefaultOption { get; set; }
 
     /// <summary>
-    /// Exibe a ação em um grupo de menu
+    /// Show the action inside a group.
     /// Default = false
     /// </summary>
     public bool IsGroup { get; set; }
 
     /// <summary>
-    /// Faz um separador de menu antes dessa ação
+    /// Show a divider before this action
     /// Default = false
     /// </summary>
     /// <remarks>
-    /// Propriedade valida somente se o IsGroup for verdadeiro
+    /// Only valid if IsGroup is true.
     /// </remarks>
     public bool DividerLine { get; set; }
-
-    /// <summary>
-    /// Obtém ou define um valor que indica se o controle está habilitado.
-    /// Default (true)
-    /// </summary>
+    
     public bool Enabled { get; set; }
 
     /// <remarks>
     /// FontAwesome 2022 icon class.
     /// </remarks>
     public string IconClass { get; set; }
-
-    /// <summary>
-    /// Exibir com estilo de um botão (Default=false)
-    /// </summary>
+    
     public bool ShowAsButton { get; set; }
-
-    /// <summary>
-    /// Renderizar como botão ao invés de link
-    /// </summary>
+    
     public bool IsSubmit { get; set; }
-
-    /// <summary>
-    /// Ação JavaScript que será executada quando usuário clicar no controle
-    /// </summary>
+    
     public string OnClientClick { get; set; }
-
-    /// <summary>
-    /// URL que será usada para link quando um usuário clicar no controle
-    /// </summary>
+    
     public string UrlAction { get; set; }
 
     internal bool ShowInFilter { get; set; }
-
-    /// <summary>
-    /// Inicializa uma nova instância da classe JJButton
-    /// </summary>
+    
     public JJLinkButton()
     {
         Enabled = true;
