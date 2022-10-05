@@ -1,4 +1,9 @@
 ﻿class JJSearchBox{
+
+    private static searchClass = "jj-icon-search";
+    private static successClass = "jj-icon-success";
+    private static warningClass = "jj-icon-warning";
+    
     static setup(){
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
@@ -34,17 +39,15 @@
             urltypehead += "&pnlname=" + pnlname;
             
             const jjSearchBoxSelector = "#" + objid + "_text";
-            
-            const searchClass = "jj-icon-search"
-            const successClass = "jj-icon-success"
-            const warningClass = "jj-icon-warning"
+            const jjSearchBoxHiddenSelector = "#" + objid;
             
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    $(jjSearchBoxSelector)
-                        .removeClass(successClass)
-                        .removeClass(warningClass);
-                    $("#" + objid).val("");
+                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.searchClass)
+                    $(jjSearchBoxHiddenSelector).val("");
+                }
+                else if($(jjSearchBoxHiddenSelector).val() == ""){
+                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.warningClass)
                 }
             });
             
@@ -55,20 +58,16 @@
                     loadingClass: "loading-circle",
                     triggerLength: triggerlength,
                     preDispatch: function () {
-                        $("#" + objid).val("");
-                        $(jjSearchBoxSelector)
-                            .removeClass(successClass)
-                            .removeClass(warningClass);
-                        const data = frm.serializeArray();
-                        return data;
+                        $(jjSearchBoxHiddenSelector).val("");
+                        JJSearchBox.setIcon(jjSearchBoxSelector, "")
+                        
+                        return frm.serializeArray();
                     },
                 },
                 onSelect: function (item) {
-                    $("#" + objid).val(item.value);
+                    $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        $(jjSearchBoxSelector)
-                            .removeClass(warningClass)
-                            .addClass(successClass);
+                        JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.successClass)
                     }
                 },
                 displayField: "name",
@@ -95,5 +94,13 @@
                 }
             });
         });
+    }
+    
+    private static setIcon(selector: string, iconClass : string){
+        $(selector)
+            .removeClass(JJSearchBox.successClass)
+            .removeClass(JJSearchBox.warningClass)
+            .removeClass(JJSearchBox.searchClass)
+            .addClass(iconClass);
     }
 }

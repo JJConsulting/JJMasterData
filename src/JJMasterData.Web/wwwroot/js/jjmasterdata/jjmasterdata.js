@@ -554,12 +554,12 @@ class JJLookup {
 class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
-            var objid = $(this).attr("jjid");
-            var pnlname = $(this).attr("pnlname");
-            var triggerlength = $(this).attr("triggerlength");
-            var numberofitems = $(this).attr("numberofitems");
-            var scrollbar = Boolean($(this).attr("scrollbar"));
-            var showimagelegend = Boolean($(this).attr("showimagelegend"));
+            const objid = $(this).attr("jjid");
+            const pnlname = $(this).attr("pnlname");
+            let triggerlength = $(this).attr("triggerlength");
+            let numberofitems = $(this).attr("numberofitems");
+            let scrollbar = Boolean($(this).attr("scrollbar"));
+            let showimagelegend = Boolean($(this).attr("showimagelegend"));
             if (triggerlength == null)
                 triggerlength = "1";
             if (numberofitems == null)
@@ -568,8 +568,8 @@ class JJSearchBox {
                 scrollbar = false;
             if (showimagelegend == null)
                 showimagelegend = false;
-            var frm = $("form");
-            var urltypehead = frm.attr("action");
+            const frm = $("form");
+            let urltypehead = frm.attr("action");
             if (urltypehead.includes("?"))
                 urltypehead += "&";
             else
@@ -577,12 +577,15 @@ class JJSearchBox {
             urltypehead += "t=jjsearchbox";
             urltypehead += "&objname=" + objid;
             urltypehead += "&pnlname=" + pnlname;
+            const jjSearchBoxSelector = "#" + objid + "_text";
+            const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    $("#st_" + objid)
-                        .removeClass("fa-check")
-                        .removeClass("fa-exclamation-triangle");
-                    $("#" + objid).val("");
+                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.searchClass);
+                    $(jjSearchBoxHiddenSelector).val("");
+                }
+                else if ($(jjSearchBoxHiddenSelector).val() == "") {
+                    JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.warningClass);
                 }
             });
             $(this).typeahead({
@@ -592,20 +595,15 @@ class JJSearchBox {
                     loadingClass: "loading-circle",
                     triggerLength: triggerlength,
                     preDispatch: function () {
-                        $("#" + objid).val("");
-                        $("#st_" + objid)
-                            .removeClass("fa-check")
-                            .removeClass("fa-exclamation-triangle ");
-                        var data = frm.serializeArray();
-                        return data;
+                        $(jjSearchBoxHiddenSelector).val("");
+                        JJSearchBox.setIcon(jjSearchBoxSelector, "");
+                        return frm.serializeArray();
                     },
                 },
                 onSelect: function (item) {
-                    $("#" + objid).val(item.value);
+                    $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        $("#st_" + objid)
-                            .removeClass("fa-exclamation-triangle ")
-                            .addClass("fa fa-check");
+                        JJSearchBox.setIcon(jjSearchBoxSelector, JJSearchBox.successClass);
                     }
                 },
                 displayField: "name",
@@ -615,10 +613,10 @@ class JJSearchBox {
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
-                    var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    var textSel;
+                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+                    let textSel;
                     if (showimagelegend) {
-                        var parts = item.split("|");
+                        const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";
                         });
@@ -634,7 +632,17 @@ class JJSearchBox {
             });
         });
     }
+    static setIcon(selector, iconClass) {
+        $(selector)
+            .removeClass(JJSearchBox.successClass)
+            .removeClass(JJSearchBox.warningClass)
+            .removeClass(JJSearchBox.searchClass)
+            .addClass(iconClass);
+    }
 }
+JJSearchBox.searchClass = "jj-icon-search";
+JJSearchBox.successClass = "jj-icon-success";
+JJSearchBox.warningClass = "jj-icon-warning";
 class JJSlider {
     static observeSliders() {
         let sliders = document.getElementsByClassName("jjslider");

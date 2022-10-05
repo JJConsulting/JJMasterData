@@ -116,7 +116,8 @@ public class JJComboBox : JJBaseView
     private HtmlElement GetSelectElement(List<DataItemValue> values)
     {
         var select = new HtmlElement(HtmlTag.Select)
-            .WithCssClass("form-control form-select selectpicker")
+            .WithCssClass("form-control ")
+            .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
             .WithAttributeIf(MultiSelect, "title", Translate.Key("All"))
             .WithAttributeIf(MultiSelect, "data-live-search", "true")
@@ -182,7 +183,7 @@ public class JJComboBox : JJBaseView
         return inputs;
     }
 
-    private string GetSelectedText(List<DataItemValue> list)
+    private string GetSelectedText(IEnumerable<DataItemValue> list)
     {
         string selectedText = string.Empty;
 

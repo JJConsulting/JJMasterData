@@ -54,10 +54,7 @@ public abstract class JJBaseControl : JJBaseView
             }
             return _text;
         }
-        set
-        {
-            _text = value;
-        }
+        set => _text = value;
     }
 
 
