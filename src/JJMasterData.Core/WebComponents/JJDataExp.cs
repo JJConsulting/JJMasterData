@@ -16,6 +16,7 @@ using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -27,15 +28,8 @@ public class JJDataExp : JJBaseProcess
     #region "Events"
 
     /// <summary>
-    /// Evento disparado ao renderizar o conteúdo HTML da celula
+    /// Event fired when the cell is rendered.
     /// </summary>
-    /// <example>
-    /// Exemplo da pagina
-    ///[!code-html[Example](../../../doc/JJMasterData.Sample/JJGridViewRenderCell.aspx)]
-    ///[!code-cs[Example](../../../doc/JJMasterData.Sample/JJGridViewRenderCell.aspx.cs)]
-    /// Exemplo objeto
-    ///[!code-cs[Example](../../../doc/JJMasterData.Sample/Model/Cliente.cs)]
-    /// </example>
     public EventHandler<GridCellEventArgs> OnRenderCell = null;
 
     #endregion
@@ -43,7 +37,7 @@ public class JJDataExp : JJBaseProcess
     #region "Properties"
 
     private ExportOptions _exportOptions;
-    
+
     /// <summary>
     /// Recupera as configurações de exportação 
     /// </summary>
@@ -55,12 +49,9 @@ public class JJDataExp : JJBaseProcess
                 _exportOptions = new ExportOptions();
             return _exportOptions;
         }
-        set
-        {
-            _exportOptions = value;
-        }
+        set { _exportOptions = value; }
     }
-    
+
 
     /// <summary>
     /// Exibi borda na grid 
@@ -73,7 +64,6 @@ public class JJDataExp : JJBaseProcess
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-
 
     #endregion
 
@@ -91,19 +81,101 @@ public class JJDataExp : JJBaseProcess
 
     #endregion
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        if (IsRunning())
-        {
-            return GetHtmlWaitProcess();
-        }
-       
-        return GetHtmlExport();
+        //TODO: GetHtmlExport
+        return IsRunning() ? GetRunningProcessHtmlElement() : new HtmlElement(GetHtmlExport());
     }
 
-    /// <summary>
-    /// Recupera html de aguarde
-    /// </summary>
+    private HtmlElement GetRunningProcessHtmlElement()
+    {
+        var div = new HtmlElement(HtmlTag.Div);
+
+        div.AppendElement(GetLoading());
+
+        div.AppendElement(GetProgressData());
+
+        div.AppendElement(HtmlTag.Br);
+
+        div.AppendText(Translate.Key("Exportation started on"));
+
+        div.AppendElement(HtmlTag.Span, span =>
+        {
+            span.WithAttribute("id", "lblStartDate");
+        });
+        
+        div.AppendElement(HtmlTag.Br);
+        div.AppendElement(HtmlTag.Br);
+        div.AppendElement(HtmlTag.Br);
+
+        div.AppendElement(HtmlTag.A, a =>
+        {
+            a.WithAttribute("href",
+                $"javascript:JJDataExp.stopProcess('{Name}','{Translate.Key("Stopping Processing...")}')");
+            a.AppendElement(HtmlTag.Span, span =>
+            {
+                a.WithCssClass("fa fa-stop");
+                a.AppendText("&nbsp;" + Translate.Key("Stop the exportation."));
+            });
+        });
+
+        div.AppendScript($"JJDataExp.startProcess('{Name}')");
+        
+        return div;
+    }
+
+    private static HtmlElement GetLoading()
+    {
+        return new HtmlElement(HtmlTag.Div)
+            .WithAttribute("id", "divProcess")
+            .WithAttribute("style", "text-align:center;")
+            .AppendHiddenInput("current_uploadaction", string.Empty)
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithAttribute("id", "impSpin");
+                div.WithAttribute("style", "position: relative; height: 80px");
+            });
+    }
+
+    private HtmlElement GetProgressData()
+    {
+        return new HtmlElement(HtmlTag.Div)
+            .WithAttribute("id", "divMsgProcess")
+            .WithCssClass("text-center")
+            .WithAttribute("style", "display:none;")
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithAttribute("id", "divStatus");
+                div.WithCssClass("text-center");
+                div.WithAttribute("style", "display:none");
+                div.AppendElement(HtmlTag.Span, span => { span.WithAttribute("id", "lblResumeLog"); });
+            })
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithAttribute("style", "width:50%");
+                div.WithCssClass(BootstrapHelper.CenterBlock);
+                div.AppendElement(HtmlTag.Div, div =>
+                {
+                    div.WithCssClass("progress");
+                    div.AppendElement(HtmlTag.Div, div =>
+                    {
+                        div.WithCssClass("progress-bar");
+                        div.WithAttribute("role", "progressbar");
+                        div.WithAttribute("style", "width: 0;");
+                        div.WithAttribute("aria-valuemin", "0");
+                        div.WithAttribute("aria-valuemax", "100");
+                        div.AppendText("0%");
+                    });
+                });
+            });
+    }
+
+
+    private HtmlElement GetSettingsHtmlElement()
+    {
+        return null;
+    }
+
     internal string GetHtmlWaitProcess()
     {
         var html = new StringBuilder();
@@ -121,10 +193,11 @@ public class JJDataExp : JJBaseProcess
         html.AppendLine("<span id='lblResumeLog'></span>");
         html.Append(' ', 8);
         html.AppendLine("</div>");
-        
+
         html.AppendLine($"        <div style='width: 50%;' class='{BootstrapHelper.CenterBlock}'>");
         html.AppendLine("            <div class='progress'>");
-        html.AppendLine("	            <div class='progress-bar' role='progressbar' style='width: 0;' aria-valuemin='0' aria-valuemax='100'>0%</div>");
+        html.AppendLine(
+            "	            <div class='progress-bar' role='progressbar' style='width: 0;' aria-valuemin='0' aria-valuemax='100'>0%</div>");
         html.AppendLine("            </div>");
         html.AppendLine("        </div>");
         html.AppendLine("        <div>");
@@ -157,16 +230,13 @@ public class JJDataExp : JJBaseProcess
         return html.ToString();
     }
 
-    /// <summary>
-    /// Rendeiza o formulário modal de exportação
-    /// </summary>
     private string GetHtmlExport()
     {
         var html = new StringBuilder();
 
         var btnOk = new JJLinkButton
         {
-            Text = "Gerar",
+            Text = Translate.Key("Export"),
             IconClass = "fa fa-check",
             ShowAsButton = true,
             OnClientClick = $"JJDataExp.doExport('{Name}');"
@@ -193,9 +263,9 @@ public class JJDataExp : JJBaseProcess
 
     private string GetHtmlFormExport()
     {
-        string colSm = BootstrapHelper.Version > 3 ? "col-sm-2" :"col-sm-4";
+        string colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
         string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
-        string label = BootstrapHelper.Version > 3 ?  BootstrapHelper.Label + "  form-label" : string.Empty;
+        string label = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
         string objname = Name;
         var html = new StringBuilder();
         char TAB = '\t';
@@ -210,15 +280,17 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 7);
         html.AppendLine($"<div class=\"{colSm}\">");
         html.Append(TAB, 8);
-        html.AppendLine($"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.FileName}\" name=\"{objname}{ExportOptions.FileName}\" onchange=\"jjview.showExportOptions('{objname}',this.value);\">");
+        html.AppendLine(
+            $"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.FileName}\" name=\"{objname}{ExportOptions.FileName}\" onchange=\"jjview.showExportOptions('{objname}',this.value);\">");
         html.Append(TAB, 9);
         html.AppendLine("<option selected value=\"" + (int)ExportFileExtension.XLS + "\">Excel</option>");
         html.Append(TAB, 9);
-        if(PdfWriterExists())
+        if (PdfWriterExists())
         {
             html.AppendLine("<option value=\"" + (int)ExportFileExtension.PDF + "\">PDF</option>");
             html.Append(TAB, 9);
         }
+
         html.AppendLine("<option value=\"" + (int)ExportFileExtension.CSV + "\">CSV</option>");
         html.Append(TAB, 9);
         html.AppendLine("<option value=\"" + (int)ExportFileExtension.TXT + "\">TXT</option>");
@@ -231,7 +303,8 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 6);
         html.AppendLine("</div>");
         html.Append(TAB, 6);
-        html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\" id=\"{objname}_div_export_orientation\" style=\"display:none;\">");
+        html.AppendLine(
+            $"<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\" id=\"{objname}_div_export_orientation\" style=\"display:none;\">");
         html.Append(TAB, 7);
         html.Append($"<label for=\"{objname}{ExportOptions.TableOrientation}\" class=\"{label} col-sm-4\">");
         html.Append(Translate.Key("Orientation"));
@@ -239,7 +312,8 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 7);
         html.AppendLine($"<div class=\"{colSm}\">");
         html.Append(TAB, 8);
-        html.AppendLine($"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.TableOrientation}\" name=\"{objname}{ExportOptions.TableOrientation}\">");
+        html.AppendLine(
+            $"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.TableOrientation}\" name=\"{objname}{ExportOptions.TableOrientation}\">");
         html.Append(TAB, 9);
         html.Append("<option selected value=\"1\">");
         html.Append(Translate.Key("Landscape"));
@@ -265,7 +339,8 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 7);
         html.AppendLine($"<div class=\"{colSm}\">");
         html.Append(TAB, 8);
-        html.AppendLine($"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.ExportAll}\" name=\"{objname}{ExportOptions.ExportAll}\">");
+        html.AppendLine(
+            $"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.ExportAll}\" name=\"{objname}{ExportOptions.ExportAll}\">");
         html.Append(TAB, 9);
         html.Append("<option selected value=\"1\">");
         html.Append(Translate.Key("All"));
@@ -283,7 +358,8 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 6);
         html.AppendLine("</div>");
         html.Append(TAB, 6);
-        html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\" id=\"{objname}_div_export_delimiter\" style=\"display:none;\">");
+        html.AppendLine(
+            $"<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\" id=\"{objname}_div_export_delimiter\" style=\"display:none;\">");
         html.Append(TAB, 7);
         html.Append($"<label for=\"{objname}{ExportOptions.ExportDelimiter}\" class=\"{label} col-sm-4\">");
         html.Append(Translate.Key("Delimiter"));
@@ -291,7 +367,8 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 7);
         html.AppendLine("<div class=\"col-sm-4\">");
         html.Append(TAB, 8);
-        html.AppendLine($"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.ExportDelimiter}\" name=\"{objname}{ExportOptions.ExportDelimiter}\">");
+        html.AppendLine(
+            $"<select class=\"form-control form-select\" id=\"{objname}{ExportOptions.ExportDelimiter}\" name=\"{objname}{ExportOptions.ExportDelimiter}\">");
         html.Append(TAB, 9);
         html.Append("<option selected value=\";\">");
         html.Append(Translate.Key("Semicolon (;)"));
@@ -361,8 +438,10 @@ public class JJDataExp : JJBaseProcess
         alert.Name = $"warning_exp_{objname}";
         alert.ShowCloseButton = true;
         alert.Title = "Warning!";
-        alert.Messages.Add(Translate.Key("You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."));
-        alert.Messages.Add(Translate.Key("Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."));
+        alert.Messages.Add(Translate.Key(
+            "You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."));
+        alert.Messages.Add(Translate.Key(
+            "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."));
         alert.Icon = IconType.ExclamationTriangle;
         alert.Color = PanelColor.Warning;
         alert.SetAttr("style", "display:none;");
@@ -433,11 +512,10 @@ public class JJDataExp : JJBaseProcess
 
     private string GetDownloadUrl(string filePath)
     {
-
         var uriBuilder = new UriBuilder(CurrentContext.Request.AbsoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         query[JJDownloadFile.PARAM_DOWNLOAD] = Cript.Cript64(filePath);
-        uriBuilder.Query = query.ToString();
+        uriBuilder.Query = query.ToString() ?? string.Empty;
 
         return uriBuilder.ToString();
     }
@@ -487,7 +565,7 @@ public class JJDataExp : JJBaseProcess
             html.Append("</a>");
             html.Append("<br>");
             html.Append("<br>");
-            html.Append("</div>"); 
+            html.Append("</div>");
         }
 
         var btnCancel = new JJLinkButton
@@ -522,7 +600,7 @@ public class JJDataExp : JJBaseProcess
 
         exporter.DataSource = dt;
         exporter.CurrentContext = HttpContext.Current;
-        
+
         exporter.RunWorkerAsync(CancellationToken.None).Wait();
 
         var download = new JJDownloadFile

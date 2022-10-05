@@ -10,6 +10,7 @@ namespace JJMasterData.Core.Html
 {
     public static class HtmlElementExtensions
     {
+
         /// <summary>
         /// Set custom data attribute to HTML element.
         /// </summary>
@@ -19,7 +20,7 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Set custom data attribute to HTML element.
+        /// Set a custom Bootstrap data attribute to HTML element.
         /// </summary>
         public static HtmlElement WithDataAttribute(this HtmlElement html, string name, string value)
         {
@@ -40,7 +41,7 @@ namespace JJMasterData.Core.Html
                 input.WithValue(value);
             });
         }
-        
+
         /// <summary>
         /// Append a hidden input to the Element tree.
         /// </summary>
@@ -50,9 +51,23 @@ namespace JJMasterData.Core.Html
             {
                 input.WithAttribute("hidden", "hidden");
                 input.WithAttribute("id", id);
-                input.WithAttribute("name",name);
+                input.WithAttribute("name", name);
                 input.WithValue(value);
             });
+        }
+
+        /// <summary>
+        /// Insert tag script with a script text
+        /// </summary>
+        public static HtmlElement AppendScript(this HtmlElement html, string rawScript)
+        {
+            var childElement = new HtmlElement(HtmlTag.Script)
+                .WithAttribute("type", "text/javascript")
+                .AppendText(rawScript);
+
+            html.AppendElement(childElement);
+
+            return html;
         }
     }
 }

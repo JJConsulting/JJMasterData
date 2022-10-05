@@ -6,50 +6,38 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJCheckBox : JJBaseView
 {
-    private bool? _IsChecked;
-
-    /// <summary>
-    /// Obtém ou define um valor que indica se o controle está habilitado.
-    /// </summary>
-    public bool Enable { get; set; }
+    private bool? _isChecked;
     
-    /// <summary>
-    /// Texto exibido quando o ponteiro do mouse passa sobre o controle
-    /// </summary>
+    public bool Enabled { get; set; }
+    
     public string ToolTip { get; set; }
 
-    /// <summary>
-    /// Valor do campo (Default = 1)
-    /// </summary>
+    /// <remarks>
+    /// Default: 1
+    /// </remarks>
     public string Value { get; set; }
     
     /// <summary>
-    /// Descrição alinhado a direita do controle
+    /// Description at the left of the component
     /// </summary>
     public string Text { get; set; }
-
-    /// <summary>
-    /// Selecionado Sim | Não
-    /// </summary>
+    
     public bool IsChecked
     {
         get
         {
-            if (_IsChecked == null && IsPostBack)
-                _IsChecked = Value.Equals(CurrentContext.Request[Name]);
+            if (_isChecked == null && IsPostBack)
+                _isChecked = Value.Equals(CurrentContext.Request[Name]);
 
-            return (!_IsChecked.HasValue ? false : _IsChecked.Value);
+            return _isChecked ?? false;
         }
-        set
-        {
-            _IsChecked = value;
-        }
+        set => _isChecked = value;
     }
 
     public JJCheckBox()
     {
         Visible = true;
-        Enable = true;
+        Enabled = true;
         Value = "1";
     }
 
@@ -62,7 +50,7 @@ public class JJCheckBox : JJBaseView
         JJCheckBox check = new()
         {
             Name = name ?? f.Name,
-            Enable = enable,
+            Enabled = enable,
             IsChecked = isChecked
         };
         
@@ -77,7 +65,7 @@ public class JJCheckBox : JJBaseView
     {
         var html = new HtmlElement(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
-            .WithCssClassIf(!Enable, "disabled")
+            .WithCssClassIf(!Enabled, "disabled")
             .AppendElement(HtmlTag.Label, label =>
             {
                 label.AppendElement(GetInputHtml());
@@ -99,7 +87,7 @@ public class JJCheckBox : JJBaseView
             .WithCssClass(CssClass)
             .WithToolTip(Translate.Key(ToolTip))
             .WithAttributeIf(IsChecked, "checked", "checked")
-            .WithAttributeIf(!Enable, "disabled", "disabled");
+            .WithAttributeIf(!Enabled, "disabled", "disabled");
 
         return input;
     }

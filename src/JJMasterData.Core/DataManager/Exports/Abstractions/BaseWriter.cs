@@ -52,16 +52,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public DataExpReporter ProcessReporter
-    {
-        get
-        {
-            if (_processReporter == null)
-                _processReporter = new DataExpReporter();
-
-            return _processReporter;
-        }
-    }
+    public DataExpReporter ProcessReporter => _processReporter ??= new DataExpReporter();
 
     public ExportOptions Configuration { get; set; }
 
@@ -69,15 +60,12 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement);
+            if (_fieldManager != null) return _fieldManager;
+            _fieldManager = new FieldManager(FormElement);
 
             return _fieldManager;
         }
-        set
-        {
-            _fieldManager = value;
-        }
+        set => _fieldManager = value;
     }
 
     /// <summary>

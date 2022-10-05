@@ -137,7 +137,8 @@ public class JJLookup : JJBaseControl
 
     internal override HtmlElement GetHtmlElement()
     {
-        if (!IsLookupRoute()) return GetLookupHtmlElement();
+        if (!IsLookupRoute()) 
+            return GetLookupHtmlElement();
         
         if (IsAjaxGetDescription())
             ResponseAjax();
