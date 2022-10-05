@@ -40,5 +40,19 @@ namespace JJMasterData.Core.Html
                 input.WithValue(value);
             });
         }
+        
+        /// <summary>
+        /// Append a hidden input to the Element tree.
+        /// </summary>
+        public static HtmlElement AppendHiddenInput(this HtmlElement html, string id, string name, string value)
+        {
+            return html.AppendElement(HtmlTag.Input, input =>
+            {
+                input.WithAttribute("hidden", "hidden");
+                input.WithAttribute("id", id);
+                input.WithAttribute("name",name);
+                input.WithValue(value);
+            });
+        }
     }
 }

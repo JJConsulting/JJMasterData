@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -12,6 +13,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -295,13 +297,7 @@ public class JJSearchBox : JJBaseControl
 
     private Hashtable FormValues { get; set; }
 
-    private string Id
-    {
-        get
-        {
-            return Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-        }
-    }
+    private string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
     #endregion
 
@@ -348,9 +344,9 @@ public class JJSearchBox : JJBaseControl
 
     #endregion
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        string html = null;
+        var html = new HtmlElement();
         if ("jjsearchbox".Equals(CurrentContext.Request.QueryString("t")))
         {
             if (Id.Equals(CurrentContext.Request.QueryString("objname")))
@@ -363,12 +359,49 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            html = GetHtmlTextSearch();
+            html = GetSearchBoxHtmlElement();
         }
 
         return html;
     }
 
+
+    private HtmlElement GetSearchBoxHtmlElement()
+    {
+        if (DataItem == null)
+            throw new ArgumentException(Translate.Key("[DataItem] property not set"), Name);
+
+        var div = new HtmlElement(HtmlTag.Div)
+            .AppendElement(HtmlTag.Input, input =>
+            {
+                input.WithAttribute("id",Id + "_text");
+                input.WithAttribute("name",Name + "_text");
+                input.WithAttribute("jjid",Id );
+                input.WithAttribute("type", "text");
+                input.WithAttribute("autocomplete", "off");
+                input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
+                input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
+                input.WithAttributeIf(ReadOnly, "readonly", "readonly");
+                input.WithAttributeIf(!Enable, "disabled", "disabled");
+                input.WithAttributes(Attributes);
+                input.WithToolTip(ToolTip);
+                input.WithCssClass("form-control jjsearchbox");
+                input.WithCssClassIf(string.IsNullOrEmpty(SelectedValue), "jj-icon-search");
+                input.WithCssClassIf(!string.IsNullOrEmpty(SelectedValue), "jj-icon-success");
+                input.WithCssClass(CssClass);
+                
+                string description = Text;
+                if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(SelectedValue))
+                    description = GetDescription(SelectedValue);
+
+                input.WithAttribute("value", description);
+                
+            })
+            .AppendHiddenInput(Id, Name, SelectedValue);
+
+        return div;
+    }
+    
     private string GetHtmlTextSearch()
     {
         if (DataItem == null)

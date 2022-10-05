@@ -1,12 +1,13 @@
 ﻿class JJSearchBox{
     static setup(){
         $("input.jjsearchbox").each(function () {
-            var objid = $(this).attr("jjid");
-            var pnlname = $(this).attr("pnlname");
-            var triggerlength = $(this).attr("triggerlength");
-            var numberofitems = $(this).attr("numberofitems");
-            var scrollbar = Boolean($(this).attr("scrollbar"));
-            var showimagelegend = Boolean($(this).attr("showimagelegend"));
+            const objid = $(this).attr("jjid");
+            const pnlname = $(this).attr("pnlname");
+            
+            let triggerlength = $(this).attr("triggerlength");
+            let numberofitems = $(this).attr("numberofitems");
+            let scrollbar = Boolean($(this).attr("scrollbar"));
+            let showimagelegend = Boolean($(this).attr("showimagelegend"));
 
             if (triggerlength == null)
                 triggerlength = "1";
@@ -20,8 +21,9 @@
             if (showimagelegend == null)
                 showimagelegend = false;
 
-            var frm = $("form");
-            var urltypehead = frm.attr("action");
+            const frm = $("form");
+            
+            let urltypehead = frm.attr("action");
             if (urltypehead.includes("?"))
                 urltypehead += "&";
             else
@@ -30,18 +32,23 @@
             urltypehead += "t=jjsearchbox";
             urltypehead += "&objname=" + objid;
             urltypehead += "&pnlname=" + pnlname;
-
+            
+            const jjSearchBoxSelector = "#" + objid + "_text";
+            
+            const searchClass = "jj-icon-search"
+            const successClass = "jj-icon-success"
+            const warningClass = "jj-icon-warning"
+            
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    $("#st_" + objid)
-                        .removeClass("fa-check")
-                        .removeClass("fa-exclamation-triangle");
+                    $(jjSearchBoxSelector)
+                        .removeClass(successClass)
+                        .removeClass(warningClass);
                     $("#" + objid).val("");
                 }
             });
-
-            // @ts-ignore
-            $(this).typeahead(<any>{
+            
+            $(this).typeahead({
                 ajax: {
                     url: urltypehead,
                     method: "POST",
@@ -49,19 +56,19 @@
                     triggerLength: triggerlength,
                     preDispatch: function () {
                         $("#" + objid).val("");
-                        $("#st_" + objid)
-                            .removeClass("fa-check")
-                            .removeClass("fa-exclamation-triangle ");
-                        var data = frm.serializeArray();
+                        $(jjSearchBoxSelector)
+                            .removeClass(successClass)
+                            .removeClass(warningClass);
+                        const data = frm.serializeArray();
                         return data;
                     },
                 },
                 onSelect: function (item) {
                     $("#" + objid).val(item.value);
                     if (item.value != "") {
-                        $("#st_" + objid)
-                            .removeClass("fa-exclamation-triangle ")
-                            .addClass("fa fa-check");
+                        $(jjSearchBoxSelector)
+                            .removeClass(warningClass)
+                            .addClass(successClass);
                     }
                 },
                 displayField: "name",
@@ -71,10 +78,10 @@
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
-                    var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    var textSel;
+                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+                    let textSel;
                     if (showimagelegend) {
-                        var parts = item.split("|");
+                        const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";
                         });
