@@ -19,7 +19,7 @@ namespace JJMasterData.Core.WebComponents
             var textBox = textGroup.TextBox;
 
 
-            textBox.Enable = enable;
+            textBox.Enabled = enable;
             textBox.ReadOnly = readOnly;
 
             if (f.Component == FormComponent.Currency)

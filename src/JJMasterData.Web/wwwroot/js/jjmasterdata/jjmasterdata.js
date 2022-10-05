@@ -369,6 +369,23 @@ var jjdictionary = (function () {
         }
     };
 })();
+class JJFeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(JJFeedbackIcon.successClass)
+            .removeClass(JJFeedbackIcon.warningClass)
+            .removeClass(JJFeedbackIcon.searchClass)
+            .removeClass(JJFeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
+    }
+}
+JJFeedbackIcon.searchClass = "jj-icon-search";
+JJFeedbackIcon.successClass = "jj-icon-success";
+JJFeedbackIcon.warningClass = "jj-icon-warning";
+JJFeedbackIcon.errorClass = "jj-icon-error";
 function jjloadform(event, prefixSelector) {
     if (prefixSelector === undefined) {
         prefixSelector = "";
@@ -472,6 +489,8 @@ class JJLookup {
                 url += "?";
             url += "jjlookup_";
             url += panelName + "=" + lookupId;
+            const jjLookupSelector = "#" + lookupId + "";
+            const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
                 let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
                 $.ajax({
@@ -501,12 +520,8 @@ class JJLookup {
             });
             lookupInput.on("blur", function () {
                 showWaitOnPost = false;
-                $("#id_" + lookupId).val(lookupInput.val());
-                $("#st_" + lookupId)
-                    .removeClass("fa-check")
-                    .removeClass("fa-exclamation-triangle")
-                    .removeClass("fa-ellipsis-h")
-                    .removeClass("fa-times");
+                $(jjHiddenLookupSelector).val(lookupInput.val());
+                JJFeedbackIcon.removeAllIcons(jjLookupSelector);
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
                     return;
@@ -523,25 +538,18 @@ class JJLookup {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-check")
-                                .addClass("fa fa-exclamation-triangle");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
                             lookupInput.removeAttr("readonly");
                         }
                         else {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-exclamation-triangle")
-                                .removeClass("fa fa-ellipsis-h")
-                                .addClass("fa fa-check");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInput.attr("readonly", "readonly").val(data.description);
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        $("#st_" + lookupId)
-                            .removeClass("fa fa-check")
-                            .addClass("fa fa-times");
+                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass);
                         console.log(errorThrown);
                         console.log(textStatus);
                         console.log(jqXHR);
@@ -554,12 +562,12 @@ class JJLookup {
 class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
-            var objid = $(this).attr("jjid");
-            var pnlname = $(this).attr("pnlname");
-            var triggerlength = $(this).attr("triggerlength");
-            var numberofitems = $(this).attr("numberofitems");
-            var scrollbar = Boolean($(this).attr("scrollbar"));
-            var showimagelegend = Boolean($(this).attr("showimagelegend"));
+            const objid = $(this).attr("jjid");
+            const pnlname = $(this).attr("pnlname");
+            let triggerlength = $(this).attr("triggerlength");
+            let numberofitems = $(this).attr("numberofitems");
+            let scrollbar = Boolean($(this).attr("scrollbar"));
+            let showimagelegend = Boolean($(this).attr("showimagelegend"));
             if (triggerlength == null)
                 triggerlength = "1";
             if (numberofitems == null)
@@ -568,8 +576,8 @@ class JJSearchBox {
                 scrollbar = false;
             if (showimagelegend == null)
                 showimagelegend = false;
-            var frm = $("form");
-            var urltypehead = frm.attr("action");
+            const frm = $("form");
+            let urltypehead = frm.attr("action");
             if (urltypehead.includes("?"))
                 urltypehead += "&";
             else
@@ -577,12 +585,15 @@ class JJSearchBox {
             urltypehead += "t=jjsearchbox";
             urltypehead += "&objname=" + objid;
             urltypehead += "&pnlname=" + pnlname;
+            const jjSearchBoxSelector = "#" + objid + "_text";
+            const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    $("#st_" + objid)
-                        .removeClass("fa-check")
-                        .removeClass("fa-exclamation-triangle");
-                    $("#" + objid).val("");
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass);
+                    $(jjSearchBoxHiddenSelector).val("");
+                }
+                else if ($(jjSearchBoxHiddenSelector).val() == "") {
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass);
                 }
             });
             $(this).typeahead({
@@ -592,20 +603,15 @@ class JJSearchBox {
                     loadingClass: "loading-circle",
                     triggerLength: triggerlength,
                     preDispatch: function () {
-                        $("#" + objid).val("");
-                        $("#st_" + objid)
-                            .removeClass("fa-check")
-                            .removeClass("fa-exclamation-triangle ");
-                        var data = frm.serializeArray();
-                        return data;
+                        $(jjSearchBoxHiddenSelector).val("");
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "");
+                        return frm.serializeArray();
                     },
                 },
                 onSelect: function (item) {
-                    $("#" + objid).val(item.value);
+                    $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        $("#st_" + objid)
-                            .removeClass("fa-exclamation-triangle ")
-                            .addClass("fa fa-check");
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass);
                     }
                 },
                 displayField: "name",
@@ -615,10 +621,10 @@ class JJSearchBox {
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
-                    var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    var textSel;
+                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+                    let textSel;
                     if (showimagelegend) {
-                        var parts = item.split("|");
+                        const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";
                         });

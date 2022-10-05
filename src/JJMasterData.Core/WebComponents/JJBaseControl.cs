@@ -19,7 +19,7 @@ public abstract class JJBaseControl : JJBaseView
     /// Obtém ou define um valor que indica se o controle está habilitado.
     /// (Default = true)
     /// </summary>
-    public bool Enable { get; set; }
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Obtém ou define um valor que indica se o controle é somente leitura
@@ -54,10 +54,7 @@ public abstract class JJBaseControl : JJBaseView
             }
             return _text;
         }
-        set
-        {
-            _text = value;
-        }
+        set => _text = value;
     }
 
 

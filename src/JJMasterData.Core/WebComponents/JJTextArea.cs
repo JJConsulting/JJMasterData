@@ -30,7 +30,7 @@ public class JJTextArea : JJBaseControl
         text.ToolTip = field.HelpDescription;
         text.MaxLength = field.Size;
         text.Text = value != null ? value.ToString() : "";
-        text.Enable = enable;
+        text.Enabled = enable;
         text.ReadOnly = readOnly;
         text.Name = name ?? field.Name;
 
@@ -53,7 +53,7 @@ public class JJTextArea : JJBaseControl
             .WithAttribute("strchars", Translate.Key("({0} characters remaining)"))
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
-            .WithAttributeIf(!Enable, "disabled", "disabled")
+            .WithAttributeIf(!Enabled, "disabled", "disabled")
             .AppendText(Text);
 
         return html;

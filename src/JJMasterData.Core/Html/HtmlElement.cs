@@ -126,20 +126,7 @@ public class HtmlElement
 
         return this;
     }
-
-    /// <summary>
-    /// Insert tag script with a script text
-    /// </summary>
-    public HtmlElement AppendScript(string rawScript)
-    {
-        var childElement = new HtmlElement(HtmlTag.Script)
-            .WithAttribute("type", "text/javascript")
-            .AppendText(rawScript);
-
-        _children.Add(childElement);
-
-        return this;
-    }
+    
 
     /// <summary>
     /// Set HTML element name and ID.
@@ -175,7 +162,7 @@ public class HtmlElement
 
 
     /// <summary>
-    /// Set classes attributes, if already exists will be ignored.
+    /// Set CSS classes attributes, if already exists it will be ignored.
     /// </summary>
     public HtmlElement WithCssClass(string classes)
     {
@@ -185,22 +172,22 @@ public class HtmlElement
         if (!_attributes.ContainsKey("class"))
             return WithAttribute("class", classes);
 
-        var listClass = new List<string>();
-        listClass.AddRange(_attributes["class"].Split(' '));
+        var classList = new List<string>();
+        classList.AddRange(_attributes["class"].Split(' '));
         foreach (string cssClass in classes.Split(' '))
         {
-            if (!listClass.Contains(cssClass))
-                listClass.Add(cssClass);
+            if (!classList.Contains(cssClass))
+                classList.Add(cssClass);
         }
 
-        _attributes["class"] = string.Join(" ", listClass);
+        _attributes["class"] = string.Join(" ", classList);
 
         return this;
     }
 
 
     /// <summary>
-    /// Conditional to set classes attributes, if already exists will be ignored.
+    /// Conditional to set classes attributes, if already exists it will be ignored.
     /// </summary>
     public HtmlElement WithCssClassIf(bool conditional, string classes)
     {
@@ -224,7 +211,7 @@ public class HtmlElement
     }
     
     /// <summary>
-    /// Set Title to the HTML element.
+    /// Sets a tooltip to the HTML Element
     /// </summary>
     public HtmlElement WithToolTip(string tooltip)
     {
@@ -261,7 +248,7 @@ public class HtmlElement
 
         html.Append("<");
         html.Append(Tag.TagName.ToString().ToLower());
-        html.Append(GetHtmlAttrs());
+        html.Append(GetAttributes());
 
         if (!Tag.HasClosingTag)
         {
@@ -295,13 +282,13 @@ public class HtmlElement
 
         return content.ToString();
     }
-
-    private string GetHtmlAttrs()
+    
+    private string GetAttributes()
     {
         var attrs = new StringBuilder();
         foreach (var item in _attributes)
         {
-            attrs.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
+            attrs.Append($" {item.Key}=\"{item.Value}\"");
         }
 
         return attrs.ToString();

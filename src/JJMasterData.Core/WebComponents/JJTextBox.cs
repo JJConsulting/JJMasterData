@@ -17,7 +17,7 @@ public class JJTextBox : JJBaseControl
     {
         InputType = InputType.Text;
         Visible = true;
-        Enable = true;
+        Enabled = true;
     }
 
     internal override HtmlElement GetHtmlElement()
@@ -43,7 +43,7 @@ public class JJTextBox : JJBaseControl
             .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
             .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
-            .WithAttributeIf(!Enable, "disabled", "disabled");
+            .WithAttributeIf(!Enabled, "disabled", "disabled");
 
         return html;
     }

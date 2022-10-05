@@ -247,7 +247,7 @@ internal class GridFilter
                     {
                         controlFrom.TextBox.PlaceHolder = Translate.Key("From");
                         if (!GridView.EnableFilter)
-                            controlFrom.TextBox.Enable = false;
+                            controlFrom.TextBox.Enabled = false;
                     }
                     html.AppendLine(componentFrom.GetHtml());
                     html.Append('\t', 6);
@@ -266,7 +266,7 @@ internal class GridFilter
                     {
                         controlTo.TextBox.PlaceHolder = Translate.Key("To");
                         if (!GridView.EnableFilter)
-                            controlTo.TextBox.Enable = false;
+                            controlTo.TextBox.Enabled = false;
                     }
                         
                     html.AppendLine(componentTo.GetHtml());
@@ -521,7 +521,7 @@ internal class GridFilter
             if (!GridView.EnableFilter ||
                 GridView.RelationValues.ContainsKey(f.Name))
             {
-                control.Enable = false;
+                control.Enabled = false;
             }
         }
 

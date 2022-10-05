@@ -43,12 +43,12 @@ public class JJTextGroup : JJBaseView
     internal override HtmlElement GetHtmlElement()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
-        if (!TextBox.Enable)
+        if (!TextBox.Enabled)
         {
             if (defaultAction != null)
             {
                 TextBox.ReadOnly = true;
-                TextBox.Enable = true;
+                TextBox.Enabled = true;
             }
         }
 
