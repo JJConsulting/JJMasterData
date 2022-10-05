@@ -7,23 +7,23 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJDataImpHelp : JJBaseView
 {
- 
+
     #region "Properties"
 
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private JJUploadFile _upload;
-    
+
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
     public FormElement FormElement { get; set; }
-
 
     /// <summary>
     /// Objeto responsável por realizar upload dos arquivos
@@ -40,8 +40,6 @@ public class JJDataImpHelp : JJBaseView
         set => _upload = value;
     }
 
-    
-
     /// <summary>
     /// Funções úteis para manipular campos no formulário
     /// </summary>
@@ -52,7 +50,6 @@ public class JJDataImpHelp : JJBaseView
         get => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
         private set => _formManager = value;
     }
-
 
     #endregion
 
@@ -68,7 +65,7 @@ public class JJDataImpHelp : JJBaseView
         Name = baseView.Name;
     }
 
-    public JJDataImpHelp(FormElement formElement, IDataAccess dataAccess) 
+    public JJDataImpHelp(FormElement formElement, IDataAccess dataAccess)
     {
         FormElement = formElement;
         DataAccess = dataAccess;
@@ -77,226 +74,225 @@ public class JJDataImpHelp : JJBaseView
 
     #endregion
 
-    protected override string RenderHtml()
+    internal override HtmlElement GetHtmlElement()
     {
-        return GetHtmlHelp();
+        var panel = new JJCollapsePanel();
+        panel.Title = "Import File - Help";
+        panel.TitleIcon = new JJIcon(IconType.QuestionCircle);
+        panel.ExpandedByDefault = true;
+        panel.HtmlElementContent = GetHtmlHelp();
+
+        var html = panel.GetHtmlElement()
+           .AppendHiddenInput("current_uploadaction", "")
+           .AppendHiddenInput("filename", "")
+           .AppendElement(GetBackButton().GetHtmlElement());
+
+        return html;
     }
 
-    /// <summary>
-    /// Recupera o html de ajuda
-    /// </summary>
-    private string GetHtmlHelp()
+    private HtmlElement GetHtmlHelp()
     {
         var list = GetListImportedField();
-        StringBuilder html = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div)
+            .AppendElement(HtmlTag.Div, row =>
+            {
+                row.WithCssClass("row")
+                   .AppendElement(HtmlTag.Div, col =>
+                    {
+                        col.WithCssClass("col-sm-12")
+                           .AppendText(GetInfoText(list.Count))
+                           .AppendElement(HtmlTag.Br)
+                           .AppendElement(HtmlTag.Br);
+                    });
+            })
+            .AppendElement(HtmlTag.Div, div =>
+             {
+                 div.WithCssClass("table-responsive")
+                    .AppendElement(HtmlTag.Table, table =>
+                    {
+                        table.WithCssClass("table table-hover")
+                             .AppendElement(GetHeaderColums())
+                             .AppendElement(GetBodyColums(list));
+                    });
+             });
 
-        html.AppendLine("<input type=\"hidden\" id=\"current_uploadaction\" name=\"current_uploadaction\" value=\"\" />");
-        html.AppendLine("<input type=\"hidden\" id=\"filename\" name=\"filename\" />");
-        html.AppendLine("");
-        html.AppendLine($"<div class=\"{BootstrapHelper.PanelGroup}\" id=\"divNovo\" runat=\"server\" enableviewstate=\"false\">");
-        html.AppendLine($"\t<div class=\"{BootstrapHelper.GetPanel("default")}\">");
-        html.Append($"\t\t<div class=\"{BootstrapHelper.GetPanelHeading("default")}\" href=\"#collapse1\" {BootstrapHelper.DataToggle}=\"collapse\" data-target=\"#collapse1\" aria-expanded=\"true\">");
-        html.AppendLine($"\t\t\t<h4 class=\"{BootstrapHelper.PanelTitle}\">");
+        return html;
+    }
 
-        html.Append('\t', 4);
-        html.Append("<a>");
-        html.Append("<span class=\"fa fa-question-circle\"></span> ");
-        html.Append(Translate.Key("Import File - Help"));
-        html.AppendLine(" </a>");
+    private HtmlElement GetHeaderColums()
+    {
+        var head = new HtmlElement(HtmlTag.Thead)
+            .AppendElement(HtmlTag.Tr, tr =>
+            {
+                tr.AppendElement(HtmlTag.Th, th =>
+                {
+                    th.WithAttribute("style", "width:60px")
+                    .AppendText(Translate.Key("Order"));
+                });
+                tr.AppendElement(HtmlTag.Th, th =>
+                {
+                    th.AppendText(Translate.Key("Name"));
+                });
+                tr.AppendElement(HtmlTag.Th, th =>
+                {
+                    th.WithAttribute("style", "width:120px")
+                        .AppendText(Translate.Key("Type"));
+                });
+                tr.AppendElement(HtmlTag.Th, th =>
+                {
+                    th.WithAttribute("style", "width:90px")
+                        .AppendText(Translate.Key("Required"));
+                });
+                tr.AppendElement(HtmlTag.Th, th =>
+                {
+                    th.AppendText(Translate.Key("Details"));
+                });
+            });
 
-        html.AppendLine("\t\t\t</h4>");
-        html.AppendLine("\t\t</div>");
-        html.Append($"\t\t<div id=\"collapse1\" class=\"{BootstrapHelper.PanelCollapse}\">");
-        html.AppendLine($"\t\t\t<div class=\"{BootstrapHelper.PanelBody}\">");
+        return head;
+    }
 
-        html.AppendLine("\t<div class=\"row\">");
-        html.AppendLine("\t\t<div class=\"col-sm-12\">");
-        html.Append("\t\t\t");
-        html.Append(Translate.Key("To bulk insert records, select a file of type"));
-        html.Append(" <b>");
-        string separeteString = string.Format(" {0} ", Translate.Key("or"));
-        html.Append(Upload.AllowedTypes.Replace(",", separeteString));
-        html.Append("</b>");
-        html.Append(", ");
-        html.Append(Translate.Key("with the maximum size of"));
-        html.Append(" <b>");
-        html.Append(Format.FormatFileSize(Upload.GetMaxRequestLength()));
-        html.Append("</b>");
-        html.Append(", ");
-        html.Append(Translate.Key("do not include caption or description in the first line"));
-        html.Append(", ");
-        html.Append(Translate.Key("the file must contain"));
-        html.Append(" <b>");
-        html.Append(list.Count);
-        html.Append(" ");
-        html.Append(Translate.Key("Columns"));
-        html.Append(" </b> ");
-        html.Append(Translate.Key("separated by semicolons (;), following the layout below:"));
-        html.AppendLine("<br><br>");
-        html.AppendLine("\t\t</div>");
-        html.AppendLine("\t</div>");
-
-        html.AppendLine("\t<div class=\"table-responsive\">");
-        html.AppendLine("\t\t<table class=\"table table-hover\">");
-        html.AppendLine("\t\t\t<thead>");
-        html.AppendLine("\t\t\t\t<tr>");
-
-        html.Append('\t', 5);
-        html.Append("<th style=\"width:60px\">");
-        html.Append(Translate.Key("Order"));
-        html.AppendLine("</th>");
-
-        html.Append('\t', 5);
-        html.Append("<th>");
-        html.Append(Translate.Key("Name"));
-        html.AppendLine("</th>");
-
-        html.Append('\t', 5);
-        html.Append("<th style=\"width:120px\">");
-        html.Append(Translate.Key("Type"));
-        html.AppendLine("</th>");
-
-        html.Append('\t', 5);
-        html.Append("<th style=\"width:90px\">");
-        html.Append(Translate.Key("Required"));
-        html.AppendLine("</th>");
-
-        html.Append('\t', 5);
-        html.Append("<th>");
-        html.Append(Translate.Key("Details"));
-        html.AppendLine("</th>");
-
-        html.AppendLine("\t\t\t\t</tr>");
-        html.AppendLine("\t\t\t</thead>");
-        html.AppendLine("\t\t\t<tbody>");
+    private HtmlElement GetBodyColums(List<FormElementField> list)
+    {
+        var body = new HtmlElement(HtmlTag.Tbody);
         int orderField = 1;
         foreach (FormElementField field in list)
         {
-            html.AppendLine("\t\t\t\t<tr>");
-            html.Append("\t\t\t\t\t<td>");
-            html.Append(orderField);
-            html.AppendLine("\t\t\t\t\t</td>");
-            html.Append("\t\t\t\t\t<td>");
-            html.Append(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
-            if (field.IsPk)
+            body.AppendElement(HtmlTag.Tr, tr =>
             {
-                html.Append(" <span class='fa fa-star' ");
-                html.Append(" style='color:#efd829;' ");
-                html.Append($" {BootstrapHelper.DataToggle}='tooltip' ");
-                html.AppendFormat(" title='{0}'></span>", Translate.Key("Primary Key"));
-            }
-            html.AppendLine("</td>");
-            html.Append("\t\t\t\t\t<td>");
-            if (field.DataType == FieldType.Date)
-            {
-                html.Append(Translate.Key("Date"));
-            }
-            else if (field.DataType == FieldType.DateTime)
-            {
-                html.Append(Translate.Key("Date and time"));
-            }
-            else if (field.DataType == FieldType.Int)
-            {
-                html.Append(Translate.Key("Integer number"));
-            }
-            else if (field.DataType == FieldType.Float)
-            {
-                html.Append(Translate.Key("Decimal number"));
-            }
-            else
-            {
-                html.Append(Translate.Key("Text"));
-            }
-            html.AppendLine("</td>");
-            html.Append("\t\t\t\t\t<td>");
-            if (field.IsRequired)
-                html.Append(Translate.Key("Yes"));
-            else
-                html.Append(Translate.Key("No"));
-            html.AppendLine("</td>");
-            html.Append("\t\t\t\t\t<td>");
-            if (field.Component == FormComponent.Date)
-            {
-                html.Append(Translate.Key($"Format ({Format.DateFormat}) example:"));
-                html.Append(" ");
-                html.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
-            }
-            else if (field.Component == FormComponent.DateTime)
-            {
-                html.Append(Translate.Key($"Format ({Format.DateTimeFormat}) example:"));
-                html.Append(" ");
-                html.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
-            }
-            else if (field.Component == FormComponent.ComboBox)
-            {
-                html.Append(Translate.Key("Inform the Id"));
-                html.Append(" ");
-                html.Append(GetHtmlComboHelp(field));
-            }
-            else if (field.Component == FormComponent.CheckBox)
-            {
-                html.Append("(1,S,Y) ");
-                html.Append(Translate.Key("Selected"));
-            }
-            else if (field.DataType == FieldType.Int)
-            {
-                html.Append(Translate.Key("No dot or comma"));
-            }
-            else if (field.DataType == FieldType.Float)
-            {
-                if (field.Size > 0)
+                tr.AppendElement(HtmlTag.Td, td =>
                 {
-                    html.Append(Translate.Key("Max. {0} characters.", field.Size));
-                }
-
-                html.Append(Translate.Key("Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces));
-            }
-            else
-            {
-                if (field.Size > 0)
+                    td.AppendText(orderField.ToString());
+                });
+                tr.AppendElement(HtmlTag.Td, td =>
                 {
-                    html.Append(Translate.Key("Max. {0} characters.", field.Size));
-                }
-            }
-            
-            if (!string.IsNullOrEmpty(field.HelpDescription))
-            {
-                html.Append("<br>");
-                html.Append(field.HelpDescription);
-            }
-
-            html.AppendLine("</td>");
-            html.AppendLine("\t\t\t\t</tr>");
+                    td.AppendText(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
+                    td.AppendElementIf(field.IsPk, HtmlTag.Span, span =>
+                    {
+                        span.WithCssClass("fa fa-star")
+                            .WithToolTip(Translate.Key("Primary Key"))
+                            .WithAttribute("style", "color:#efd829;");
+                    });
+                });
+                tr.AppendElement(HtmlTag.Td, td =>
+                {
+                    td.AppendText(GetDataTypeDescription(field.DataType));
+                });
+                tr.AppendElement(HtmlTag.Td, td =>
+                {
+                    td.AppendText(field.IsRequired ? Translate.Key("Yes") : Translate.Key("No"));
+                });
+                tr.AppendElement(HtmlTag.Td, td =>
+                {
+                    td.AppendText(GetFormatDescription(field));
+                });
+            });
             orderField++;
         }
-        html.AppendLine("\t\t\t</tbody>");
-        html.AppendLine("\t\t</table>");
 
-        html.AppendLine("\t</div>");
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t\t</div>");
-        html.AppendLine("\t</div>");
-        html.AppendLine("</div>");
+        return body;
+    }
 
-        html.AppendLine("<div class=\"row\">");
-        html.AppendLine("\t<div class=\"col-sm-12\">");
+    private string GetDataTypeDescription(FieldType type)
+    {
+        switch (type)
+        {
+            case FieldType.Date:
+                return Translate.Key("Date");
+            case FieldType.DateTime:
+                return Translate.Key("Date and time");
+            case FieldType.Int:
+                return Translate.Key("Integer number");
+            case FieldType.Float:
+                return Translate.Key("Decimal number");
+            default:
+                return Translate.Key("Text");
 
-        var btnBack = new JJLinkButton();
-        btnBack.IconClass = "fa fa-arrow-left";
-        btnBack.Text = "Back";
-        btnBack.ShowAsButton = true;
-        btnBack.OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();";
-        html.AppendLine(btnBack.GetHtml());
+        }
+    }
 
-        html.AppendLine("\t</div>");
-        html.AppendLine("</div>");
+    private string GetFormatDescription(FormElementField field)
+    {
+        var html = new StringBuilder();
+        if (field.Component == FormComponent.Date)
+        {
+            html.Append(Translate.Key($"Format ({Format.DateFormat}) example:"));
+            html.Append(" ");
+            html.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
+        }
+        else if (field.Component == FormComponent.DateTime)
+        {
+            html.Append(Translate.Key($"Format ({Format.DateTimeFormat}) example:"));
+            html.Append(" ");
+            html.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
+        }
+        else if (field.Component == FormComponent.ComboBox)
+        {
+            html.Append(Translate.Key("Inform the Id"));
+            html.Append(" ");
+            html.Append(GetHtmlComboHelp(field));
+        }
+        else if (field.Component == FormComponent.CheckBox)
+        {
+            html.Append("(1,S,Y) ");
+            html.Append(Translate.Key("Selected"));
+        }
+        else if (field.DataType == FieldType.Int)
+        {
+            html.Append(Translate.Key("No dot or comma"));
+        }
+        else if (field.DataType == FieldType.Float)
+        {
+            if (field.Size > 0)
+            {
+                html.Append(Translate.Key("Max. {0} characters.", field.Size));
+            }
+
+            html.Append(Translate.Key("Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces));
+        }
+        else
+        {
+            if (field.Size > 0)
+            {
+                html.Append(Translate.Key("Max. {0} characters.", field.Size));
+            }
+        }
+
+        if (!string.IsNullOrEmpty(field.HelpDescription))
+        {
+            html.Append("<br>");
+            html.Append(field.HelpDescription);
+        }
 
         return html.ToString();
     }
 
-    /// <summary>
-    /// Recupera um informativo dos ids validos de uma combo
-    /// </summary>
+    private string GetInfoText(int columnsCount)
+    {
+        var text = new StringBuilder();
+        text.Append(Translate.Key("To bulk insert records, select a file of type"));
+        text.Append("<b>");
+        text.Append(Upload.AllowedTypes.Replace(",", string.Format(" {0} ", Translate.Key("or"))));
+        text.Append("</b>");
+        text.Append(", ");
+        text.Append(Translate.Key("with the maximum size of"));
+        text.Append(" <b>");
+        text.Append(Format.FormatFileSize(Upload.GetMaxRequestLength()));
+        text.Append("</b>");
+        text.Append(", ");
+        text.Append(Translate.Key("do not include caption or description in the first line"));
+        text.Append(", ");
+        text.Append(Translate.Key("the file must contain"));
+        text.Append(" <b>");
+        text.Append(columnsCount);
+        text.Append(" ");
+        text.Append(Translate.Key("Columns"));
+        text.Append(" </b> ");
+        text.Append(Translate.Key("separated by semicolons (;), following the layout below:"));
+
+        return text.ToString();
+    }
+
     private string GetHtmlComboHelp(FormElementField f)
     {
         var defaultValues = FormManager.GetDefaultValues(null, PageState.Import);
@@ -332,9 +328,17 @@ public class JJDataImpHelp : JJBaseView
         return sValues.ToString();
     }
 
-    /// <summary>
-    /// Lista de campos a serem importados
-    /// </summary>
+    private JJLinkButton GetBackButton()
+    {
+        var btnBack = new JJLinkButton();
+        btnBack.IconClass = "fa fa-arrow-left";
+        btnBack.Text = "Back";
+        btnBack.ShowAsButton = true;
+        btnBack.OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();";
+
+        return btnBack;
+    }
+
     private List<FormElementField> GetListImportedField()
     {
         if (FormElement == null)
@@ -349,8 +353,5 @@ public class JJDataImpHelp : JJBaseView
         }
         return list;
     }
-
-    
-
 
 }

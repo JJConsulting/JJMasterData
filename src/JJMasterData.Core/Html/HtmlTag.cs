@@ -9,6 +9,7 @@ namespace JJMasterData.Core.Html
     public enum HtmlTag
     {
         A,
+        B,
         Area,
         Br,
         Div,
@@ -29,6 +30,13 @@ namespace JJMasterData.Core.Html
         TextArea,
         Script,
         Select,
-        Option
+        Option,
+        Table,
+        Tr,
+        Th,
+        Td,
+        Thead,
+        Tbody
+
     }
 }

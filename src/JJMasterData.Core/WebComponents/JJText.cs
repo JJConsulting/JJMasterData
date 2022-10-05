@@ -1,6 +1,4 @@
-﻿
-
-using JJMasterData.Core.Html;
+﻿using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 

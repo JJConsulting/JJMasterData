@@ -2,7 +2,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -21,6 +20,8 @@ public class JJCollapsePanel : JJBaseView
     public JJIcon TitleIcon { get; set; }
 
     public string HtmlContent { get; set; }
+
+    public HtmlElement HtmlElementContent { get; set; }
 
     public List<JJLinkButton> Buttons { get; set; }
 
@@ -99,6 +100,8 @@ public class JJCollapsePanel : JJBaseView
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
+            button.AppendElementIf(TitleIcon != null, TitleIcon?.GetHtmlElement());
+            button.AppendTextIf(TitleIcon != null, "&nbsp;");
             button.AppendText(Translate.Key(Title));
         });
 
@@ -111,24 +114,7 @@ public class JJCollapsePanel : JJBaseView
             .WithCssClass($"accordion-collapse collapse {(IsCollapseOpen ? "show" : "")}")
             .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
             .WithDataAttribute("parent", $"#{Name}")
-            .AppendElement(HtmlTag.Div, div =>
-                {
-                    div.WithCssClass("accordion-body");
-                    div.AppendText(HtmlContent);
-                    div.AppendElement(HtmlTag.Div, div =>
-                    {
-                        div.WithCssClass("row");
-                        div.AppendElement(HtmlTag.Div, div =>
-                        {
-                            div.WithCssClass("col-md-12");
-                            div.WithCssClassIf(ButtonPosition == Position.Left, "text-start");
-                            div.WithCssClassIf(ButtonPosition == Position.Right, "text-end");
-                            div.AppendRange(Buttons.Select(btn => btn.GetHtmlElement().WithCssClass("ms-1"))
-                                .ToList());
-                        });
-                    });
-                }
-            );
+            .AppendElement(GetBody());
         return body;
     }
     #endregion
@@ -142,7 +128,13 @@ public class JJCollapsePanel : JJBaseView
             {
                 div.WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
                 div.AppendElement(GetPanelHeading());
-                div.AppendElement(GetPanelBody());
+                div.AppendElement(HtmlTag.Div, body =>
+                {
+                    body.WithNameAndId(Name)
+                    .WithCssClass("panel-collapse collapse")
+                    .WithCssClassIf(IsCollapseOpen, "in show")
+                    .AppendElement(GetBody());
+                });
             });
         return panel;
     }
@@ -161,33 +153,61 @@ public class JJCollapsePanel : JJBaseView
                 {
                     a.AppendElementIf(TitleIcon != null, TitleIcon?.GetHtmlElement());
                     a.AppendTextIf(TitleIcon != null, "&nbsp;");
-                    a.AppendText(Title);
+                    a.AppendText(Translate.Key(Title));
                 });
             });
         return panelHeading;
     }
     private HtmlElement GetPanelBody()
     {
-        var panelBody = new HtmlElement(HtmlTag.Div)
-            .WithCssClass($"{BootstrapHelper.PanelBody} {CssClass}")
-            .AppendText(HtmlContent)
-            .AppendElement(HtmlTag.Div, div =>
-            {
-                div.WithCssClassIf(ButtonPosition is Position.Left, BootstrapHelper.TextLeft);
-                div.WithCssClassIf(ButtonPosition is Position.Right, BootstrapHelper.TextRight);
-                foreach (var btn in Buttons)
-                {
-                    div.AppendText("&nbsp;");
-                    div.AppendElement(btn.GetHtmlElement());
-                }
-            });
-
         var collapse = new HtmlElement(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithCssClass("panel-collapse collapse")
-            .WithCssClassIf(IsCollapseOpen, "in show").AppendElement(panelBody);
+            .WithCssClassIf(IsCollapseOpen, "in show")
+            .AppendElement(GetBody());
 
         return collapse;
     }
     #endregion
+
+    private HtmlElement GetBody()
+    {
+        var panelBody = new HtmlElement(HtmlTag.Div)
+            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
+            .AppendElementIf(HtmlElementContent != null, HtmlElementContent)
+            .AppendElementIf(Buttons.Count > 0, GetButtons())
+            .WithCssClass(CssClass);
+
+        if (BootstrapHelper.Version >= 5)
+            panelBody.WithCssClass("accordion-body");
+        else
+            panelBody.WithCssClass(BootstrapHelper.PanelBody);
+
+        return panelBody;
+    }
+
+    private HtmlElement GetButtons()
+    {
+        if (Buttons.Count == 0)
+            return null;
+
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("row")
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass("col-md-12");
+                div.WithCssClassIf(ButtonPosition == Position.Left, BootstrapHelper.TextLeft);
+                div.WithCssClassIf(ButtonPosition == Position.Right, BootstrapHelper.TextRight);
+
+                foreach (var btn in Buttons)
+                {
+                    div.AppendText("&nbsp;");
+                    div.AppendElement(btn.GetHtmlElement().WithCssClass("ms-1"));
+                }
+
+            });
+
+        return html;
+    }
+
 }
