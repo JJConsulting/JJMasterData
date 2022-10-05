@@ -556,7 +556,7 @@ public class JJFormView : JJGridView
                 sMsg.Append("<br>");
             }
 
-            sHtml.Append(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning, true).GetHtml());
+            sHtml.Append(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning).GetHtml());
             sHtml.AppendLine(GetHtmlElementList(InsertAction));
             pageState = PageState.Insert;
         }
@@ -609,7 +609,7 @@ public class JJFormView : JJGridView
                     errorMessage.AppendLine("<br>");
                 }
 
-                html.AppendLine(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning, true).GetHtml());
+                html.AppendLine(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning).GetHtml());
             }
             else
             {
@@ -619,7 +619,7 @@ public class JJFormView : JJGridView
         }
         catch (Exception ex)
         {
-            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error, true).GetHtml());
+            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error).GetHtml());
         }
 
         if (!string.IsNullOrEmpty(UrlRedirect))
@@ -685,14 +685,14 @@ public class JJFormView : JJGridView
                     icon = MessageIcon.Warning;
                 }
 
-                html.AppendLine(new JJMessageBox(message.ToString(), icon, true).GetHtml());
+                html.AppendLine(new JJMessageBox(message.ToString(), icon).GetHtml());
 
                 ClearSelectedGridValues();
             }
         }
         catch (Exception ex)
         {
-            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error, true).GetHtml());
+            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error).GetHtml());
         }
         finally
         {

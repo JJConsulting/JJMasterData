@@ -2101,7 +2101,7 @@ public class JJGridView : JJBaseView
                 if (selectedRows.Count == 0)
                 {
                     string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning, true).GetHtml();
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
                 }
 
                 foreach (var row in selectedRows)
@@ -2137,7 +2137,7 @@ public class JJGridView : JJBaseView
         catch (Exception ex)
         {
             string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error, true).GetHtml();
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
         }
 
         return null;
@@ -2156,7 +2156,7 @@ public class JJGridView : JJBaseView
                 if (selectedRows.Count == 0)
                 {
                     string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning, true).GetHtml();
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
                 }
 
                 foreach (var row in selectedRows)
@@ -2186,7 +2186,7 @@ public class JJGridView : JJBaseView
         catch (Exception ex)
         {
             string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error, true).GetHtml();
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
         }
 
         return null;

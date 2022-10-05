@@ -402,7 +402,7 @@ public class JJFormUpload : JJBaseView
         }
         catch (Exception ex)
         {
-            return new JJMessageBox(ex.Message, MessageIcon.Warning, true).GetHtml();
+            return new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtml();
         }
 
         return string.Empty;
