@@ -9,10 +9,10 @@ using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
-internal class DataImpHelp 
+internal class DataImpHelp
 {
     public JJDataImp DataImp { get; private set; }
-    
+
     internal DataImpHelp(JJDataImp dataImp)
     {
         DataImp = dataImp;
@@ -29,7 +29,7 @@ internal class DataImpHelp
         var html = panel.GetHtmlElement()
            .AppendHiddenInput("current_uploadaction", "")
            .AppendHiddenInput("filename", "")
-           .AppendElement(GetBackButton().GetHtmlElement());
+           .AppendElement(GetBackButton());
 
         return html;
     }
@@ -102,35 +102,34 @@ internal class DataImpHelp
         int orderField = 1;
         foreach (FormElementField field in list)
         {
-            body.AppendElement(HtmlTag.Tr, tr =>
+            var tr = new HtmlElement(HtmlTag.Tr);
+            tr.AppendElement(HtmlTag.Td, td =>
             {
-                tr.AppendElement(HtmlTag.Td, td =>
+                td.AppendText(orderField.ToString());
+            });
+            tr.AppendElement(HtmlTag.Td, td =>
+            {
+                td.AppendText(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
+                td.AppendElementIf(field.IsPk, HtmlTag.Span, span =>
                 {
-                    td.AppendText(orderField.ToString());
-                });
-                tr.AppendElement(HtmlTag.Td, td =>
-                {
-                    td.AppendText(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
-                    td.AppendElementIf(field.IsPk, HtmlTag.Span, span =>
-                    {
-                        span.WithCssClass("fa fa-star")
-                            .WithToolTip(Translate.Key("Primary Key"))
-                            .WithAttribute("style", "color:#efd829;");
-                    });
-                });
-                tr.AppendElement(HtmlTag.Td, td =>
-                {
-                    td.AppendText(GetDataTypeDescription(field.DataType));
-                });
-                tr.AppendElement(HtmlTag.Td, td =>
-                {
-                    td.AppendText(field.IsRequired ? Translate.Key("Yes") : Translate.Key("No"));
-                });
-                tr.AppendElement(HtmlTag.Td, td =>
-                {
-                    td.AppendText(GetFormatDescription(field));
+                    span.WithCssClass("fa fa-star")
+                        .WithToolTip(Translate.Key("Primary Key"))
+                        .WithAttribute("style", "color:#efd829;");
                 });
             });
+            tr.AppendElement(HtmlTag.Td, td =>
+            {
+                td.AppendText(GetDataTypeDescription(field.DataType));
+            });
+            tr.AppendElement(HtmlTag.Td, td =>
+            {
+                td.AppendText(field.IsRequired ? Translate.Key("Yes") : Translate.Key("No"));
+            });
+            tr.AppendElement(HtmlTag.Td, td =>
+            {
+                td.AppendText(GetFormatDescription(field));
+            });
+
             orderField++;
         }
 
@@ -273,7 +272,7 @@ internal class DataImpHelp
         return sValues.ToString();
     }
 
-    private JJLinkButton GetBackButton()
+    private HtmlElement GetBackButton()
     {
         var btnBack = new JJLinkButton();
         btnBack.IconClass = "fa fa-arrow-left";
@@ -281,7 +280,7 @@ internal class DataImpHelp
         btnBack.ShowAsButton = true;
         btnBack.OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();";
 
-        return btnBack;
+        return btnBack.GetHtmlElement();
     }
 
     private List<FormElementField> GetListImportedField()

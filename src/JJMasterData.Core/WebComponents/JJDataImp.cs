@@ -573,7 +573,7 @@ public class JJDataImp : JJBaseProcess
         return worker;
     }
 
-    private DataImpReporter GetCurrentReporter()
+    internal DataImpReporter GetCurrentReporter()
     {
         var progress = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);
         if (progress != null)
