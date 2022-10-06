@@ -1,86 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class JJDataImpHelp : JJBaseView
+internal class DataImpHelp 
 {
-
-    #region "Properties"
-
-    private FieldManager _fieldManager;
-    private FormManager _formManager;
-    private JJUploadFile _upload;
-
-    /// <summary>
-    /// Configurações pré-definidas do formulário
-    /// </summary>
-    public FormElement FormElement { get; set; }
-
-    /// <summary>
-    /// Objeto responsável por realizar upload dos arquivos
-    /// </summary>
-    public JJUploadFile Upload
+    public JJDataImp DataImp { get; private set; }
+    
+    internal DataImpHelp(JJDataImp dataImp)
     {
-        get => _upload ??= new JJUploadFile
-        {
-            Multiple = false,
-            EnableCopyPaste = false,
-            Name = Name + "_upload",
-            AllowedTypes = "txt,csv,log"
-        };
-        set => _upload = value;
+        DataImp = dataImp;
     }
 
-    /// <summary>
-    /// Funções úteis para manipular campos no formulário
-    /// </summary>
-    private FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
-
-    internal FormManager FormManager
-    {
-        get => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
-        private set => _formManager = value;
-    }
-
-    #endregion
-
-    #region "Constructors"
-
-    internal JJDataImpHelp(JJDataImp baseView)
-    {
-        FormElement = baseView.FormElement;
-        FormManager = baseView.FormManager;
-        Upload = baseView.Upload;
-        UserValues = baseView.UserValues;
-        DataAccess = baseView.DataAccess;
-        Name = baseView.Name;
-    }
-
-    public JJDataImpHelp(FormElement formElement, IDataAccess dataAccess)
-    {
-        FormElement = formElement;
-        DataAccess = dataAccess;
-        Name = "jjdataimp1";
-    }
-
-    #endregion
-
-    internal override HtmlElement GetHtmlElement()
+    public HtmlElement GetHtmlHelp()
     {
         var panel = new JJCollapsePanel();
         panel.Title = "Import File - Help";
         panel.TitleIcon = new JJIcon(IconType.QuestionCircle);
         panel.ExpandedByDefault = true;
-        panel.HtmlElementContent = GetHtmlHelp();
+        panel.HtmlElementContent = GetHtmlContent();
 
         var html = panel.GetHtmlElement()
            .AppendHiddenInput("current_uploadaction", "")
@@ -90,7 +34,7 @@ public class JJDataImpHelp : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlHelp()
+    private HtmlElement GetHtmlContent()
     {
         var list = GetListImportedField();
         var html = new HtmlElement(HtmlTag.Div)
@@ -269,15 +213,16 @@ public class JJDataImpHelp : JJBaseView
 
     private string GetInfoText(int columnsCount)
     {
+        var upload = DataImp.Upload;
         var text = new StringBuilder();
         text.Append(Translate.Key("To bulk insert records, select a file of type"));
         text.Append("<b>");
-        text.Append(Upload.AllowedTypes.Replace(",", string.Format(" {0} ", Translate.Key("or"))));
+        text.Append(upload.AllowedTypes.Replace(",", string.Format(" {0} ", Translate.Key("or"))));
         text.Append("</b>");
         text.Append(", ");
         text.Append(Translate.Key("with the maximum size of"));
         text.Append(" <b>");
-        text.Append(Format.FormatFileSize(Upload.GetMaxRequestLength()));
+        text.Append(Format.FormatFileSize(upload.GetMaxRequestLength()));
         text.Append("</b>");
         text.Append(", ");
         text.Append(Translate.Key("do not include caption or description in the first line"));
@@ -295,10 +240,10 @@ public class JJDataImpHelp : JJBaseView
 
     private string GetHtmlComboHelp(FormElementField f)
     {
-        var defaultValues = FormManager.GetDefaultValues(null, PageState.Import);
+        var defaultValues = DataImp.FormManager.GetDefaultValues(null, PageState.Import);
         var cbo = JJComboBox.GetInstance(f, PageState.Import, null, defaultValues, true, null);
-        cbo.DataAccess = DataAccess;
-        cbo.UserValues = UserValues;
+        cbo.DataAccess = DataImp.DataAccess;
+        cbo.UserValues = DataImp.UserValues;
         cbo.Name = f.Name;
         cbo.Visible = true;
         cbo.DataItem = f.DataItem;
@@ -341,13 +286,13 @@ public class JJDataImpHelp : JJBaseView
 
     private List<FormElementField> GetListImportedField()
     {
-        if (FormElement == null)
+        if (DataImp.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
         var list = new List<FormElementField>();
-        foreach (var field in FormElement.Fields)
+        foreach (var field in DataImp.FormElement.Fields)
         {
-            bool visible = FieldManager.IsVisible(field, PageState.Import, null);
+            bool visible = DataImp.FieldManager.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

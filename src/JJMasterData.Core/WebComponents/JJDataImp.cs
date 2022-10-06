@@ -10,6 +10,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.AuditLog;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -522,8 +523,10 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     private string GetHtmlHelp()
     {
-        var help = new JJDataImpHelp(this);
-        return help.GetHtml();
+        var html = new HtmlBuilder();
+        html.StartElement(new DataImpHelp(this).GetHtmlHelp());
+
+        return html.RenderHtml();
     }
 
     /// <summary>
