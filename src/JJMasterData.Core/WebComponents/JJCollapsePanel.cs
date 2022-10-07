@@ -111,7 +111,8 @@ public class JJCollapsePanel : JJBaseView
     {
         var body = new HtmlElement(HtmlTag.Div)
             .WithAttribute("id", $"collapse-{Name.ToLower()}")
-            .WithCssClass($"accordion-collapse collapse {(IsCollapseOpen ? "show" : "")}")
+            .WithCssClass("accordion-collapse collapse")
+            .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
             .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
             .WithDataAttribute("parent", $"#{Name}")
             .AppendElement(GetBody());
@@ -132,7 +133,7 @@ public class JJCollapsePanel : JJBaseView
                 {
                     body.WithNameAndId(Name)
                     .WithCssClass("panel-collapse collapse")
-                    .WithCssClassIf(IsCollapseOpen, "in show")
+                    .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
                     .AppendElement(GetBody());
                 });
             });
