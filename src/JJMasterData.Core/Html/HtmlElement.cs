@@ -1,6 +1,4 @@
-﻿using JJMasterData.Core.WebComponents;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,12 +7,13 @@ namespace JJMasterData.Core.Html;
 /// <summary>
 /// Implementation of HTML element.
 /// </summary>
-public class HtmlElement
+public partial class HtmlElement
 {
     private readonly Dictionary<string, string> _attributes;
     private readonly string _rawText;
     private readonly bool _hasRawText;
     private readonly HtmlElementsCollection _children;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElement"/> class.
     /// </summary>
@@ -48,190 +47,6 @@ public class HtmlElement
     public HtmlElementTag Tag { get; private set; }
 
     /// <summary>
-    /// Insert HTML element as a child of caller element.
-    /// </summary>
-    public HtmlElement AppendElement(HtmlElement element)
-    {
-        if (element == null)
-            throw new ArgumentNullException(nameof(element));
-
-        _children.Add(element);
-        return this;
-    }
-
-    /// <summary>
-    /// Insert a list of HTML element as a child of caller element.
-    /// </summary>
-    public HtmlElement AppendRange(IList<HtmlElement> listelement)
-    {
-        if (listelement != null)
-        {
-            foreach (var item in listelement)
-                AppendElement(item);
-        }
-
-        return this;
-    }
-
-    /// <summary>
-    /// Insert HTML element as a child of caller element.
-    /// </summary>
-    public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction = null)
-    {
-        var childElement = new HtmlElement(tag);
-        elementAction?.Invoke(childElement);
-        _children.Add(childElement);
-        return this;
-    }
-
-    public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
-    {
-        if (condition)
-            AppendElement(htmlElement);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Conditional insert HTML element as a child of caller element.
-    /// </summary>
-    public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction = null)
-    {
-        if (condition)
-            AppendElement(tag, elementAction);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Insert raw text as a child of caller element.
-    /// </summary>
-    /// <param name="rawText"></param>
-    /// <returns></returns>
-    public HtmlElement AppendText(string rawText)
-    {
-        var childElement = new HtmlElement(rawText);
-        _children.Add(childElement);
-        return this;
-    }
-
-
-    /// <summary>
-    /// Conditional insert raw text as a child of caller element.
-    /// </summary>
-    public HtmlElement AppendTextIf(bool condition, string rawText)
-    {
-        if (condition)
-            AppendText(rawText);
-
-        return this;
-    }
-    
-
-    /// <summary>
-    /// Set HTML element name and ID.
-    /// </summary>
-    public HtmlElement WithNameAndId(string id)
-    {
-        if (!string.IsNullOrWhiteSpace(id))
-            WithAttribute("id", id).WithAttribute("name", id);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Set attribute to the HTML element.
-    /// </summary>
-    public HtmlElement WithAttribute(string name, string value)
-    {
-        _attributes.Add(name, value);
-        return this;
-    }
-    
-    /// <summary>
-    /// Set attribute to the HTML element on condition.
-    /// </summary>
-    public HtmlElement WithAttributeIf(bool condition, string name, string value)
-    {
-
-        if (condition)
-            _attributes.Add(name, value);
-
-        return this;
-    }
-
-
-    /// <summary>
-    /// Set CSS classes attributes, if already exists it will be ignored.
-    /// </summary>
-    public HtmlElement WithCssClass(string classes)
-    {
-        if (string.IsNullOrWhiteSpace(classes))
-            return this;
-
-        if (!_attributes.ContainsKey("class"))
-            return WithAttribute("class", classes);
-
-        var classList = new List<string>();
-        classList.AddRange(_attributes["class"].Split(' '));
-        foreach (string cssClass in classes.Split(' '))
-        {
-            if (!classList.Contains(cssClass))
-                classList.Add(cssClass);
-        }
-
-        _attributes["class"] = string.Join(" ", classList);
-
-        return this;
-    }
-
-
-    /// <summary>
-    /// Conditional to set classes attributes, if already exists it will be ignored.
-    /// </summary>
-    public HtmlElement WithCssClassIf(bool conditional, string classes)
-    {
-        if (conditional)
-            WithCssClass(classes);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Set range of attrs
-    /// </summary>
-    internal HtmlElement WithAttributes(Hashtable attributes)
-    {
-        foreach (DictionaryEntry v in attributes)
-        {
-            _attributes.Add(v.Key.ToString(), v.Value.ToString());
-        }
-
-        return this;
-    }
-    
-    /// <summary>
-    /// Sets a tooltip to the HTML Element
-    /// </summary>
-    public HtmlElement WithToolTip(string tooltip)
-    {
-        if (!string.IsNullOrEmpty(tooltip))
-        {
-            if (_attributes.ContainsKey("title"))
-                _attributes["title"] = tooltip;
-            else
-                _attributes.Add("title", tooltip);
-
-            if (_attributes.ContainsKey(BootstrapHelper.DataToggle))
-                _attributes[BootstrapHelper.DataToggle] = "tooltip";
-            else
-                _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
-        }
-
-        return this;
-    }
-
-    /// <summary>
     /// Gets current element HTML.
     /// </summary>
     internal string GetElementHtml(int tabCount = 0)
@@ -248,7 +63,7 @@ public class HtmlElement
 
         html.Append("<");
         html.Append(Tag.TagName.ToString().ToLower());
-        html.Append(GetAttributes());
+        html.Append(GetAttributesHtml());
 
         if (!Tag.HasClosingTag)
         {
@@ -283,7 +98,7 @@ public class HtmlElement
         return content.ToString();
     }
     
-    private string GetAttributes()
+    private string GetAttributesHtml()
     {
         var attrs = new StringBuilder();
         foreach (var item in _attributes)
