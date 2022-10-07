@@ -130,6 +130,7 @@ internal class DataImpHelp
                 td.AppendText(GetFormatDescription(field));
             });
 
+            body.AppendElement(tr);
             orderField++;
         }
 
@@ -156,58 +157,58 @@ internal class DataImpHelp
 
     private string GetFormatDescription(FormElementField field)
     {
-        var html = new StringBuilder();
+        var text = new StringBuilder();
         if (field.Component == FormComponent.Date)
         {
-            html.Append(Translate.Key($"Format ({Format.DateFormat}) example:"));
-            html.Append(" ");
-            html.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
+            text.Append(Translate.Key($"Format ({Format.DateFormat}) example:"));
+            text.Append(" ");
+            text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
         }
         else if (field.Component == FormComponent.DateTime)
         {
-            html.Append(Translate.Key($"Format ({Format.DateTimeFormat}) example:"));
-            html.Append(" ");
-            html.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
+            text.Append(Translate.Key($"Format ({Format.DateTimeFormat}) example:"));
+            text.Append(" ");
+            text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
         }
         else if (field.Component == FormComponent.ComboBox)
         {
-            html.Append(Translate.Key("Inform the Id"));
-            html.Append(" ");
-            html.Append(GetHtmlComboHelp(field));
+            text.Append(Translate.Key("Inform the Id"));
+            text.Append(" ");
+            text.Append(GetHtmlComboHelp(field));
         }
         else if (field.Component == FormComponent.CheckBox)
         {
-            html.Append("(1,S,Y) ");
-            html.Append(Translate.Key("Selected"));
+            text.Append("(1,S,Y) ");
+            text.Append(Translate.Key("Selected"));
         }
         else if (field.DataType == FieldType.Int)
         {
-            html.Append(Translate.Key("No dot or comma"));
+            text.Append(Translate.Key("No dot or comma"));
         }
         else if (field.DataType == FieldType.Float)
         {
             if (field.Size > 0)
             {
-                html.Append(Translate.Key("Max. {0} characters.", field.Size));
+                text.Append(Translate.Key("Max. {0} characters.", field.Size));
             }
 
-            html.Append(Translate.Key("Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces));
+            text.Append(Translate.Key("Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces));
         }
         else
         {
             if (field.Size > 0)
             {
-                html.Append(Translate.Key("Max. {0} characters.", field.Size));
+                text.Append(Translate.Key("Max. {0} characters.", field.Size));
             }
         }
 
         if (!string.IsNullOrEmpty(field.HelpDescription))
         {
-            html.Append("<br>");
-            html.Append(field.HelpDescription);
+            text.Append("<br>");
+            text.Append(field.HelpDescription);
         }
 
-        return html.ToString();
+        return text.ToString();
     }
 
     private string GetInfoText(int columnsCount)

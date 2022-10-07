@@ -217,8 +217,12 @@ a.disabled {
     text-align: center;
 }
 
+.jjlabel-process span {
+    margin: 5px;
+}
+
 .ajax-upload-dragdrop {
-    height: 60px;
+    height: 100px;
 }
 
 .ajax-file-upload-statusbar {

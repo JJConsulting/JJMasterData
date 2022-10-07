@@ -207,36 +207,60 @@ class JJDataImp {
                 $("#lblStartDate").text(result.StartDate);
                 if (result.Insert > 0) {
                     $("#lblInsert").css("display", "");
-                    $("#lblInsertCount").text(result.Insert);
+                    if (result.PercentProcess == 100)
+                        $("#lblInsertCount").text(result.Insert);
+                    else
+                        jjutil.animateValue("lblInsertCount", JJDataImp.insertCount, result.Insert, 1000);
+                    JJDataImp.insertCount = result.Insert;
                 }
                 if (result.Update > 0) {
                     $("#lblUpdate").css("display", "");
-                    $("#lblUpdateCount").text(result.Update);
+                    if (result.PercentProcess == 100)
+                        $("#lblUpdateCount").text(result.Update);
+                    else
+                        jjutil.animateValue("lblUpdateCount", JJDataImp.updateCount, result.Update, 1000);
+                    JJDataImp.updateCount = result.Update;
                 }
                 if (result.Delete > 0) {
                     $("#lblDelete").css("display", "");
-                    $("#lblDeleteCount").text(result.Delete);
+                    if (result.PercentProcess == 100)
+                        $("#lblDeleteCount").text(result.Delete);
+                    else
+                        jjutil.animateValue("lblDeleteCount", JJDataImp.deleteCount, result.Delete, 1000);
+                    JJDataImp.deleteCount = result.Delete;
                 }
                 if (result.Ignore > 0) {
                     $("#lblIgnore").css("display", "");
-                    $("#lblIgnoreCount").text(result.Ignore);
+                    if (result.PercentProcess == 100)
+                        $("#lblIgnoreCount").text(result.Ignore);
+                    else
+                        jjutil.animateValue("lblIgnoreCount", JJDataImp.ignoreCount, result.Ignore, 1000);
+                    JJDataImp.ignoreCount = result.Ignore;
                 }
                 if (result.Error > 0) {
                     $("#lblError").css("display", "");
-                    $("#lblErrorCount").text(result.Error);
+                    if (result.PercentProcess == 100)
+                        $("#lblErrorCount").text(result.Error);
+                    else
+                        jjutil.animateValue("lblErrorCount", JJDataImp.errorCount, result.Error, 1000);
+                    JJDataImp.errorCount = result.Error;
                 }
                 if (!result.IsProcessing) {
                     $("#current_uploadaction").val("process_finished");
-                    $("form:first").submit();
+                    setTimeout(function () {
+                        $("form:first").submit();
+                    }, 1000);
                 }
             }
         });
     }
     static startProcess(objname) {
-        this.setLoadMessage();
-        setInterval(function () {
-            JJDataImp.checkProcess(objname);
-        }, (3 * 1000));
+        $(document).ready(function () {
+            JJDataImp.setLoadMessage();
+            setInterval(function () {
+                JJDataImp.checkProcess(objname);
+            }, 3000);
+        });
     }
     static stopProcess(objname, stopStr) {
         $("#divMsgProcess").html(stopStr);
@@ -253,7 +277,32 @@ class JJDataImp {
             cache: false
         });
     }
+    static addPasteListener() {
+        $(document).ready(function () {
+            document.addEventListener("paste", (e) => {
+                var pastedText = undefined;
+                if (window.clipboardData && window.clipboardData.getData) {
+                    pastedText = window.clipboardData.getData("Text");
+                }
+                else if (e.clipboardData && e.clipboardData.getData) {
+                    pastedText = e.clipboardData.getData("text/plain");
+                }
+                e.preventDefault();
+                if (pastedText != undefined) {
+                    $("#current_uploadaction").val("posted_past_text");
+                    $("#pasteValue").val(pastedText);
+                    $("form:first").submit();
+                }
+                return false;
+            });
+        });
+    }
 }
+JJDataImp.insertCount = 0;
+JJDataImp.updateCount = 0;
+JJDataImp.deleteCount = 0;
+JJDataImp.ignoreCount = 0;
+JJDataImp.errorCount = 0;
 var jjdictionary = (function () {
     return {
         deleteAction: function (actionName, url, questionStr) {
@@ -1660,6 +1709,32 @@ var jjutil = (function () {
                     return false;
                 }
             });
+        },
+        animateValue: function (id, start, end, duration) {
+            if (start === end)
+                return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start ? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+            var incrementValue = increment;
+            if (stepTime == 0) {
+                incrementValue = increment * Math.abs(Math.ceil(range / duration));
+                stepTime = 1;
+            }
+            var obj = document.getElementById(id);
+            var timer = setInterval(function () {
+                current = parseInt(obj.innerHTML);
+                current += incrementValue;
+                if ((current >= end && increment > 0) ||
+                    (current <= end && increment < 0)) {
+                    obj.innerHTML = end.toString();
+                    clearInterval(timer);
+                }
+                else {
+                    obj.innerHTML = current.toString();
+                }
+            }, stepTime);
         }
     };
 })();

@@ -218,6 +218,31 @@ public static class BootstrapHelper
         _ => "pull-left"
     };
 
+
+    public static string LabelSucess => Version switch
+    {
+        >= 4 => "badge bg-success",
+        _ => "label label-success"
+    };
+
+    public static string LabelDefault => Version switch
+    {
+        >= 4 => "badge bg-secondary",
+        _ => "label label-default"
+    };
+
+    public static string LabelWarning => Version switch
+    {
+        >= 4 => "badge bg-warning",
+        _ => "label label-warning"
+    };
+
+    public static string LabelDanger => Version switch
+    {
+        >= 4 => "badge bg-danger",
+        _ => "label label-danger"
+    };
+
     public static string GetDataToggle(string value)
     {
         return $"{DataToggle}={value}";

@@ -99,8 +99,35 @@
                     return false;
                 }
             });
-        }
+        },
 
+        animateValue: function (id:string, start:number, end:number, duration:number) {
+            if (start === end) return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start ? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+
+            var incrementValue = increment;
+            if (stepTime == 0) {
+                incrementValue = increment * Math.abs(Math.ceil(range / duration));
+                stepTime = 1;
+            }
+                
+            var obj = document.getElementById(id);
+            var timer = setInterval(function () {
+                current = parseInt(obj.innerHTML);
+                current += incrementValue;
+                if ((current >= end && increment > 0) ||
+                    (current <= end && increment < 0)) {
+                    obj.innerHTML = end.toString();
+                    clearInterval(timer);
+                } else {
+                    obj.innerHTML = current.toString();
+                }
+
+            }, stepTime);
+        }
 
     };
 
