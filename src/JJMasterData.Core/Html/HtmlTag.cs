@@ -36,7 +36,8 @@ namespace JJMasterData.Core.Html
         Th,
         Td,
         Thead,
-        Tbody
-
+        Tbody,
+        Hr,
+        I
     }
 }

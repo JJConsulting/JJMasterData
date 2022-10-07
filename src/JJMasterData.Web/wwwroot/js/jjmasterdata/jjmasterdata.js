@@ -64,7 +64,7 @@ class JJDataExp {
                 showWaitOnPost = true;
                 $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
                 $("#dataexp_spinner_" + objname).hide();
-                var linkFile = $("#export_link_" + objname)[0];
+                const linkFile = $("#export_link_" + objname)[0];
                 if (linkFile)
                     linkFile.click();
             }

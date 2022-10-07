@@ -511,7 +511,6 @@ internal class GridFilter
         {
             if (f.Filter.Type == FilterMode.MultValuesEqual)
             {
-                comboBox.Attributes.Add("data-style","form-control");
                 comboBox.MultiSelect = true;
             }
         }

@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.DataManager.Imports;
 
-internal class DataImpDTO
+internal record DataImpDto
 {
     [DataMember(Name = "StartDate")]
     public string StartDate { get; set; }

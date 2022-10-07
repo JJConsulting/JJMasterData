@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-internal class DataExpDTO
+internal record DataExpDto
 {
     [DataMember(Name = "StartDate")]
     public string StartDate { get; set; }
@@ -21,5 +21,4 @@ internal class DataExpDTO
 
     [DataMember(Name = "PercentProcess")]
     public int PercentProcess { get; set; }
-
 }
