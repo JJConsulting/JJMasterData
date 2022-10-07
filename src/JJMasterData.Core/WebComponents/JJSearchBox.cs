@@ -245,7 +245,6 @@ public class JJSearchBox : JJBaseControl
         return html;
     }
 
-
     private HtmlElement GetSearchBoxHtmlElement()
     {
         if (DataItem == null)
@@ -254,9 +253,9 @@ public class JJSearchBox : JJBaseControl
         var div = new HtmlElement(HtmlTag.Div)
             .AppendElement(HtmlTag.Input, input =>
             {
-                input.WithAttribute("id",Id + "_text");
-                input.WithAttribute("name",Name + "_text");
-                input.WithAttribute("jjid",Id );
+                input.WithAttribute("id", Id + "_text");
+                input.WithAttribute("name", Name + "_text");
+                input.WithAttribute("jjid", Id);
                 input.WithAttribute("type", "text");
                 input.WithAttribute("autocomplete", "off");
                 input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
@@ -269,15 +268,21 @@ public class JJSearchBox : JJBaseControl
                 input.WithCssClassIf(string.IsNullOrEmpty(SelectedValue), "jj-icon-search");
                 input.WithCssClassIf(!string.IsNullOrEmpty(SelectedValue), "jj-icon-success");
                 input.WithCssClass(CssClass);
-                
+
                 string description = Text;
                 if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(SelectedValue))
                     description = GetDescription(SelectedValue);
 
                 input.WithAttribute("value", description);
-                
+
             })
-            .AppendHiddenInput(Id, Name, SelectedValue);
+            .AppendElement(HtmlTag.Input, input =>
+            {
+                input.WithAttribute("hidden", "hidden");
+                input.WithAttribute("id", Id);
+                input.WithAttribute("name", Name);
+                input.WithValue(SelectedValue);
+            });
 
         return div;
     }
