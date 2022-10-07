@@ -30,7 +30,8 @@
         Th,
         Td,
         Thead,
-        Tbody
-
+        Tbody,
+        Hr,
+        I
     }
 }

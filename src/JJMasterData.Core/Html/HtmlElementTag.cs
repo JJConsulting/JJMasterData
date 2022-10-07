@@ -5,7 +5,6 @@
 /// </summary>
 public class HtmlElementTag
 {
-    
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElementTag"/> class.
     /// </summary>
@@ -13,22 +12,20 @@ public class HtmlElementTag
     /// <param name="hasClosingTag"></param>
     public HtmlElementTag(HtmlTag tag)
     {
-        this.TagName = tag;
+        TagName = tag;
 
-        if (tag == HtmlTag.Br |
-            tag == HtmlTag.Input)
-            this.HasClosingTag = false;
+        if (tag is HtmlTag.Br or HtmlTag.Input or HtmlTag.Hr)
+            HasClosingTag = false;
         else
-            this.HasClosingTag = true;
+            HasClosingTag = true;
     }
 
     public HtmlElementTag(HtmlTag tag, bool hasClosingTag)
     {
-        this.TagName = tag;
-        this.HasClosingTag = hasClosingTag;
+        TagName = tag;
+        HasClosingTag = hasClosingTag;
     }
-
-
+    
     /// <summary>
     /// Name of the tag.
     /// </summary>

@@ -2069,7 +2069,7 @@ public class JJGridView : JJBaseView
                 }
             }
 
-            CurrentContext.Response.SendResponse(exp.GetHtmlWaitProcess());
+            CurrentContext.Response.SendResponse(new DataExpLog(exp.Name).GetHtmlElement().GetElementHtml());
         }
         else if (exptype.Equals("checkProcess"))
         {

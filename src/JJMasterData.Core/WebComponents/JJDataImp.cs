@@ -339,11 +339,11 @@ public class JJDataImp : JJBaseProcess
         BackgroundTask.Run(ProcessKey, worker);
     }
 
-    internal DataImpDTO GetCurrentProcess()
+    internal  DataImpDto GetCurrentProcess()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
         var reporter = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);
-        var dto = new DataImpDTO();
+        var dto = new DataImpDto();
         if (reporter != null)
         {
             dto.StartDate = reporter.StartDate.ToDateTimeString();
