@@ -12,7 +12,7 @@ internal class DataExpLog
         _name = name;
     }
 
-    internal HtmlElement GetHtmlElement()
+    internal HtmlElement GetHtmlProcess()
     {
         var div = new HtmlElement(HtmlTag.Div);
         

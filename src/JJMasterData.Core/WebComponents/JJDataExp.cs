@@ -80,7 +80,7 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlElement GetHtmlElement()
     {
-        return IsRunning() ? new DataExpLog(Name).GetHtmlElement() : new DataExpSettings(this).GetHtmlElement();
+        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
     }
     
     internal JJIcon GetFileIcon(string ext)
@@ -114,7 +114,7 @@ public class JJDataExp : JJBaseProcess
                 ShowCloseButton = false,
                 MessageTitle = reporter.Message
             };
-            html.AppendElement(panel.GetHtmlElement());
+            html.AppendElement(panel);
         }
         else
         {
@@ -160,7 +160,7 @@ public class JJDataExp : JJBaseProcess
                 {
                     a.WithAttribute("id", $"export_link_{Name}");
                     a.WithAttribute("href", url);
-                    a.AppendElement(icon.GetHtmlElement());
+                    a.AppendElement(icon);
                     a.AppendElement(HtmlTag.Br);
                     a.AppendText(file.Name);
                 });
@@ -185,7 +185,7 @@ public class JJDataExp : JJBaseProcess
             div.AppendElement(HtmlTag.Div, div =>
             {
                 div.WithCssClass($"col-sm-12 {BootstrapHelper.TextRight}");
-                div.AppendElement(btnCancel.GetHtmlElement());
+                div.AppendElement(btnCancel);
             });
         });
 

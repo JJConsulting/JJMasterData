@@ -32,9 +32,12 @@ namespace JJMasterData.Core.WebComponents
                 .WithCssClass($"alert alert-dismissible")
                 .WithCssClass(GetClassType())
                 .WithAttribute("role", "alert")
-                .AppendElementIf(ShowCloseButton, GetCloseButton("alert"))
-                .AppendElementIf(ShowIcon, new JJIcon(Icon).GetHtmlElement())
-                .AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
+                .AppendElementIf(ShowCloseButton, GetCloseButton("alert"));
+
+            if (ShowIcon)
+                html.AppendElement(new JJIcon(Icon));
+
+            html.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
                 {
                     e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
                 });

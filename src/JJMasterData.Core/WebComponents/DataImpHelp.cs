@@ -273,7 +273,7 @@ internal class DataImpHelp
         return sValues.ToString();
     }
 
-    private HtmlElement GetBackButton()
+    private JJLinkButton GetBackButton()
     {
         var btnBack = new JJLinkButton();
         btnBack.IconClass = "fa fa-arrow-left";
@@ -281,7 +281,7 @@ internal class DataImpHelp
         btnBack.ShowAsButton = true;
         btnBack.OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();";
 
-        return btnBack.GetHtmlElement();
+        return btnBack;
     }
 
     private List<FormElementField> GetListImportedField()

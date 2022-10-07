@@ -147,7 +147,7 @@ internal class DataImpLog
         return panel.GetHtmlElement();
     }
 
-    private HtmlElement GetAlertPanel()
+    private JJAlert GetAlertPanel()
     {
         var alert = new JJAlert();
         alert.CssClass = "text-center";
@@ -174,7 +174,7 @@ internal class DataImpLog
             alert.Title = Translate.Key(reporter.Message);
         }
 
-        return alert.GetHtmlElement();
+        return alert;
     }
 
 }

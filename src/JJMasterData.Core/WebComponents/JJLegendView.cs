@@ -84,7 +84,7 @@ public class JJLegendView : JJBaseView
                         div.AppendElement(new JJIcon(item.Icon, item.ImageColor, item.Description)
                         {
                             CssClass = "fa-fw fa-2x"
-                        }.GetHtmlElement());
+                        });
                         div.AppendText("&nbsp;&nbsp;");
                         div.AppendText(Translate.Key(item.Description));
                         div.AppendElement(HtmlTag.Br);

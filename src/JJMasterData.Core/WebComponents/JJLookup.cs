@@ -185,7 +185,7 @@ public class JJLookup : JJBaseControl
             }
         };
 
-        div.AppendElement(textGroup.GetHtmlElement());
+        div.AppendElement(textGroup);
         div.AppendHiddenInput($"id_{Name}", SelectedValue);
         return div;
     }

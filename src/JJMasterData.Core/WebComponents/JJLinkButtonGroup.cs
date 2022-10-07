@@ -51,7 +51,7 @@ namespace JJMasterData.Core.WebComponents
             foreach (var action in listAction)
             {
                 action.ShowAsButton = ShowAsButton;
-                inputGroup.AppendElement(action.GetHtmlElement());
+                inputGroup.AppendElement(action);
             }
 
             if (listActionGroup.Count > 0)
@@ -81,7 +81,7 @@ namespace JJMasterData.Core.WebComponents
 
                 ul.AppendElement(HtmlTag.Li, li =>
                 {
-                    li.WithCssClass("dropdown-item").AppendElement(action.GetHtmlElement());
+                    li.WithCssClass("dropdown-item").AppendElement(action);
                 });
             }
         }

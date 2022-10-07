@@ -55,9 +55,9 @@ internal class DataExpSettings
                 btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");
 
                 div.WithCssClass($"col-sm-12 {BootstrapHelper.TextRight}");
-                div.AppendElement(btnOk.GetHtmlElement());
+                div.AppendElement(btnOk);
                 div.AppendText("&nbsp;");
-                div.AppendElement(btnCancel.GetHtmlElement());
+                div.AppendElement(btnCancel);
             });
         });
 
@@ -94,7 +94,7 @@ internal class DataExpSettings
                     label.AppendElement(new JJIcon()
                     {
                         IconClass = "text-info fa fa-info-circle"
-                    }.GetHtmlElement());
+                    });
                     label.AppendText(
                         "&nbsp;" + Translate.Key("Filters performed in the previous screen will be considered in the export"));
                 });
@@ -288,7 +288,7 @@ internal class DataExpSettings
             });
     }
 
-    private HtmlElement GetTooManyRecordsAlert(string name)
+    private JJAlert GetTooManyRecordsAlert(string name)
     {
         var alert = new JJAlert
         {
@@ -307,10 +307,10 @@ internal class DataExpSettings
             }
         };
         alert.SetAttr("style", "display:none;");
-        return alert.GetHtmlElement();
+        return alert;
     }
 
-    private HtmlElement GetFilesPanelHtmlElement()
+    private JJCollapsePanel GetFilesPanelHtmlElement()
     {
         var files = GetGeneratedFiles();
         var panel = new JJCollapsePanel
@@ -322,7 +322,7 @@ internal class DataExpSettings
             HtmlElementContent = GetLastFilesHtmlElement(files)
         };
 
-        return panel.GetHtmlElement();
+        return panel;
     }
 
     private HtmlElement GetLastFilesHtmlElement(List<FileInfo> files)
@@ -341,7 +341,7 @@ internal class DataExpSettings
 
             var div = new HtmlElement(HtmlTag.Div);
             div.WithCssClass("mb-1");
-            div.AppendElement(icon.GetHtmlElement());
+            div.AppendElement(icon);
             div.AppendText("&nbsp;");
             div.AppendElement(HtmlTag.A, a =>
             {

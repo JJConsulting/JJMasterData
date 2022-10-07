@@ -100,7 +100,7 @@ public class JJCollapsePanel : JJBaseView
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
-            button.AppendElementIf(TitleIcon != null, TitleIcon?.GetHtmlElement());
+            button.AppendElement(TitleIcon);
             button.AppendTextIf(TitleIcon != null, "&nbsp;");
             button.AppendText(Translate.Key(Title));
         });
@@ -152,7 +152,7 @@ public class JJCollapsePanel : JJBaseView
                 div.WithCssClass($"{BootstrapHelper.PanelTitle} unselectable");
                 div.AppendElement(HtmlTag.A, a =>
                 {
-                    a.AppendElementIf(TitleIcon != null, TitleIcon?.GetHtmlElement());
+                    a.AppendElement(TitleIcon);
                     a.AppendTextIf(TitleIcon != null, "&nbsp;");
                     a.AppendText(Translate.Key(Title));
                 });

@@ -51,7 +51,7 @@ public class JJModalDialog : JJBaseView
                         footer.WithCssClass("modal-footer");
                         foreach (var btn in Buttons)
                         {
-                            footer.AppendElement(btn.GetHtmlElement());
+                            footer.AppendElement(btn);
                         }
                     });
 

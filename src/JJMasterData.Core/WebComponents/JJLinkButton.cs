@@ -84,7 +84,7 @@ public class JJLinkButton : JJBaseView, IAction
         html.WithCssClassIf(!Enabled, "disabled");
 
         if (icon != null)
-            html.AppendElement(icon.GetHtmlElement());
+            html.AppendElement(icon);
 
         if (!string.IsNullOrEmpty(Text))
             html.AppendElement(HtmlTag.Span, s =>
@@ -93,7 +93,7 @@ public class JJLinkButton : JJBaseView, IAction
                 });
 
         if (_spinner != null)
-            html.AppendElement(Spinner.GetHtmlElement());
+            html.AppendElement(Spinner);
 
         if (IsSubmit)
         {

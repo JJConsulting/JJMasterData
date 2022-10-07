@@ -17,6 +17,7 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 using Newtonsoft.Json;
 
@@ -2069,7 +2070,10 @@ public class JJGridView : JJBaseView
                 }
             }
 
-            CurrentContext.Response.SendResponse(new DataExpLog(exp.Name).GetHtmlElement().GetElementHtml());
+            var html = new HtmlBuilder();
+            html.StartElement(new DataExpLog(exp.Name).GetHtmlProcess());
+
+            CurrentContext.Response.SendResponse(html.RenderHtml());
         }
         else if (exptype.Equals("checkProcess"))
         {

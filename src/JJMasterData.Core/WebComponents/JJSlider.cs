@@ -52,7 +52,7 @@ public class JJSlider : JJBaseControl
             html.AppendElement(HtmlTag.Div, row =>
             {
                 row.WithCssClass("col-sm-3");
-                row.AppendElement(number.GetHtmlElement());
+                row.AppendElement(number);
             });
         }
 

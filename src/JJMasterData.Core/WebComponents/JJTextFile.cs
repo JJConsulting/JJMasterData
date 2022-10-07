@@ -113,7 +113,7 @@ public class JJTextFile : JJBaseControl
         textGroup.Actions.Add(btn);
 
         var html = new HtmlElement(HtmlTag.Div)
-            .AppendElement(textGroup.GetHtmlElement())
+            .AppendElement(textGroup)
             .AppendElement(HtmlTag.Input, i =>
                 {
                     i.WithAttribute("type", "hidden")
