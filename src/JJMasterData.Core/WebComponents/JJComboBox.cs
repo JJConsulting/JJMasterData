@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -20,8 +18,6 @@ public class JJComboBox : JJBaseControl
     private string _selectedValue;
     private FormElementDataItem _dataItem;
 
-    
-    
     public bool EnableSearch { get; set; }
 
     /// <summary>
@@ -307,7 +303,7 @@ public class JJComboBox : JJBaseControl
         }
         else
         {
-            values = DataItem.Itens;
+            values = DataItem.Items;
         }
 
 
@@ -317,9 +313,9 @@ public class JJComboBox : JJBaseControl
 
     private bool IsManualValues()
     {
-        if (DataItem?.Itens == null)
+        if (DataItem?.Items == null)
             return false;
 
-        return DataItem.Itens.Count > 0;
+        return DataItem.Items.Count > 0;
     }
 }

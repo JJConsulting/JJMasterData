@@ -24,7 +24,7 @@ public class HtmlBuilder
     /// </summary>
     public HtmlElement StartElement(HtmlElement element)
     {
-        _element = element ?? throw new ArgumentNullException(nameof(element));
+        _element = element; //Removed this because of AJAX requests. We really need to remove DirectResponses from here to respect SRP. ?? throw new ArgumentNullException(nameof(element));
         return _element;
     }
     
@@ -40,7 +40,8 @@ public class HtmlBuilder
     {
         if (_element == null)
         {
-            throw new ArgumentNullException("HTML Element", "HTML element is not build. Use StartElement method to build your HTML element");
+            return null;
+            //throw new ArgumentNullException("HTML Element", "HTML element is not build. Use StartElement method to build your HTML element");
         }
         int tabCount = indentHtml ? 1 : 0;
         return _element.GetElementHtml(tabCount);

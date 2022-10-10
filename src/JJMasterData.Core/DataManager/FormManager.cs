@@ -363,7 +363,7 @@ public class FormManager
         }
         else
         {
-            values = DataItem.Itens;
+            values = DataItem.Items;
         }
 
         return values;

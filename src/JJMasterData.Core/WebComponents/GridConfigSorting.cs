@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -23,7 +24,7 @@ public class GridConfigSorting
         Name = grid.Name;
     }
 
-    public string GetHtml()
+    public HtmlElement GetHtmlElement()
     {
         var dialog = new JJModalDialog
         {
@@ -49,110 +50,106 @@ public class GridConfigSorting
             ShowAsButton = true,
             OnClientClick = $"$('#sort_modal_{Name}').modal('hide');"
         };
+        
         dialog.Buttons.Add(btnCancel);
-
-        var cab = new StringBuilder();
-        cab.Append('\t', 5);
-        cab.Append("<div>");
-        cab.Append("<span class=\"text-info fa fa-triangle-exclamation\"></span>");
-        cab.Append("&nbsp;");
-        cab.Append(Translate.Key("Drag and drop to change order."));
-        cab.AppendLine("</div>");
-        cab.Append('\t', 5);
-        cab.AppendLine("<table class=\"table table-hover\">");
-        cab.Append('\t', 6);
-        cab.AppendLine("<thead>");
-        cab.Append('\t', 7);
-        cab.AppendLine("<tr>");
-        cab.Append('\t', 8);
-        cab.AppendLine("<th style=\"width:50px;\">#</th>");
-        cab.Append('\t', 8);
-        cab.Append("<th>");
-        cab.Append(Translate.Key("Column"));
-        cab.AppendLine("</th>");
-        cab.Append('\t', 8);
-        cab.Append("<th style=\"width:222px;\">");
-        cab.Append(Translate.Key("Order"));
-        cab.AppendLine("</th>");
-        cab.Append('\t', 7);
-        cab.AppendLine("</tr>");
-        cab.Append('\t', 6);
-        cab.AppendLine("</thead>");
-        cab.Append('\t', 6);
-        cab.AppendLine($"<tbody id=\"sortable_{Name}\" class=\"ui-sortable jjsortable\">");
-
-        var cbo = new JJComboBox();
-        cbo.DataItem.ShowImageLegend = true;
-        cbo.DataItem.Itens.Add(new DataItemValue("A", "Ascendant", IconType.SortAmountAsc, null));
-        cbo.DataItem.Itens.Add(new DataItemValue("D", "Descendant", IconType.SortAmountDesc, null));
-        cbo.DataItem.Itens.Add(new DataItemValue("N", "Not order", IconType.Genderless, null));
-
-        var listsort = GetListSort();
-        var listFields = new List<FormElementField>();
-
-        foreach (var sort in listsort)
-        {
-            var f = FormElement.Fields[sort.FieldName];
-            listFields.Add(f);
-        }
-
-        foreach (var item in FormElement.Fields)
-        {
-            var f = listFields.Find(x => x.Name.Equals(item.Name));
-            if (f == null)
-                listFields.Add(item);
-        }
-
-        foreach (var item in listFields)
-        {
-            if (item.VisibleExpression.Equals("val:0"))
-                continue;
-
-            cbo.Name = item.Name + "_order";
-            cbo.SelectedValue = "N";
-
-            var sort = listsort.Find(x => x.FieldName.Equals(item.Name));
-            if (sort != null)
+        
+        var htmlContent = new HtmlElement(HtmlTag.Div)
+            .AppendElement(HtmlTag.Div, div =>
             {
-                if (sort.IsAsc)
-                    cbo.SelectedValue = "A";
-                else
-                    cbo.SelectedValue = "D";
-            }
+                div.AppendElement(new JJIcon("text-info fa fa-triangle-exclamation"));
+                div.AppendText("&nbsp;");
+                div.AppendText(Translate.Key("Drag and drop to change order."));
+            })
+            .AppendElement(HtmlTag.Table, table =>
+            {
+                table.WithCssClass("table table-hover");
+                table.AppendElement(HtmlTag.Thead, thead =>
+                {
+                    thead.AppendElement(HtmlTag.Tr, tr =>
+                    {
+                        tr.AppendElement(HtmlTag.Th, th =>
+                        {
+                            th.WithAttribute("style", "width:50px");
+                            th.AppendText("#");
+                        });
+                        tr.AppendElement(HtmlTag.Th, th =>
+                        {
+                            th.AppendText(Translate.Key("Column"));
+                        });
+                        tr.AppendElement(HtmlTag.Th, th =>
+                        {
+                            th.WithAttribute("style", "width:220px");
+                            th.AppendText(Translate.Key("Order"));
+                        });
+                    });
+                    table.AppendElement(HtmlTag.Tbody, tbody =>
+                    {
+                        tbody.WithAttribute("id", $"sortable_{Name}");
+                        tbody.WithCssClass("ui-sortable jjsortable");
+                        
+                        var comboBox = new JJComboBox
+                        {
+                            DataItem =
+                            {
+                                ShowImageLegend = true,
+                                Items = new List<DataItemValue>
+                                {
+                                    new("A", Translate.Key("Ascendant"), IconType.SortAmountAsc, null),
+                                    new("D", Translate.Key("Descendant"), IconType.SortAmountDesc, null),
+                                    new("N", Translate.Key("No Order"), IconType.Genderless, null)
+                                }
+                            },
+                        };
 
-            cab.Append('\t', 7);
-            cab.Append("<tr id='");
-            cab.Append(item.Name);
-            cab.AppendLine("' class=\"ui-sortable-handle\">");
-            cab.Append('\t', 8);
-            cab.Append("<td>");
-            cab.Append("<span class=\"fa fa-arrows\"></span>");
-            cab.AppendLine("</td>");
-            cab.Append('\t', 8);
-            cab.Append("<td>");
-            cab.Append(Translate.Key(item.Label));
-            cab.AppendLine("</td>");
-            cab.Append('\t', 8);
-            cab.AppendLine("<td>");
-            cab.Append('\t', 9);
-            cab.AppendLine(cbo.GetHtml());
-            cab.Append('\t', 8);
-            cab.AppendLine("</td>");
-            cab.Append('\t', 7);
-            cab.AppendLine("</tr>");
-        }
+                        var sortList = GetSortList();
+                        var fieldsList = sortList.Select(sort => FormElement.Fields[sort.FieldName]).ToList();
 
-        cab.Append('\t', 6);
-        cab.AppendLine("</tbody>");
-        cab.Append('\t', 5);
-        cab.AppendLine("</table>");
+                        foreach (var item in FormElement.Fields)
+                        {
+                            var f = fieldsList.Find(x => x.Name.Equals(item.Name));
+                            if (f == null)
+                                fieldsList.Add(item);
+                        }
+                        
+                        foreach (var item in fieldsList.Where(item => !item.VisibleExpression.Equals("val:0")))
+                        {
+                            comboBox.Name = item.Name + "_order";
+                            comboBox.SelectedValue = "N";
 
-        dialog.HtmlContent = cab.ToString();
+                            var sort = sortList.Find(x => x.FieldName.Equals(item.Name));
+                            if (sort != null)
+                            {
+                                comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
+                            }
 
-        return dialog.GetHtml();
+                            tbody.AppendElement(HtmlTag.Tr, tr =>
+                            {
+                                tr.WithAttribute("id", item.Name);
+                                tr.WithCssClass("ui-sortable-handle");
+                                tr.AppendElement(HtmlTag.Td, td =>
+                                {
+                                    td.AppendElement(new JJIcon("fa fa-arrows"));
+                                });
+                                tr.AppendElement(HtmlTag.Td, td =>
+                                {
+                                    td.AppendText(Translate.Key(item.Label));
+                                });
+                                tr.AppendElement(HtmlTag.Td, td =>
+                                {
+                                    td.AppendElement(comboBox);
+                                });
+                            });
+                        }
+                    });
+                });
+            });
+
+        dialog.HtmlElementContent = htmlContent;
+
+        return dialog.GetHtmlElement();
     }
 
-    private List<SortItem> GetListSort()
+    private List<SortItem> GetSortList()
     {
         var listsort = new List<SortItem>();
         if (string.IsNullOrEmpty(CurrentOrder))

@@ -11,8 +11,8 @@ namespace JJMasterData.Core.Html
         /// </summary>
         public HtmlElement AppendElement(HtmlElement element)
         {
-            if (element == null)
-                throw new ArgumentNullException(nameof(element));
+            // if (element == null)
+            //     throw new ArgumentNullException(nameof(element));
 
             _children.Add(element);
             return this;

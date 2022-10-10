@@ -44,10 +44,10 @@ public class FormElementDataItem
     }
 
     /// <summary>
-    /// Lista de itens da combo [Chave, Valor]
+    /// ComboBox items [Key, Value]
     /// </summary>
     [DataMember(Name = "itens")]
-    public List<DataItemValue> Itens
+    public List<DataItemValue> Items
     {
         get
         {

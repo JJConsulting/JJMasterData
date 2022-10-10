@@ -32,6 +32,8 @@
         Thead,
         Tbody,
         Hr,
-        I
+        I,
+        Section,
+        P
     }
 }

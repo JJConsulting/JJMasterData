@@ -380,7 +380,7 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            values = DataItem.Itens;
+            values = DataItem.Items;
         }
 
 

@@ -137,11 +137,11 @@ public class FieldController : DataDictionaryController
         for (int i = 0; i < qtdRowsToAdd; i++)
         {
             var item = new DataItemValue();
-            item.Id = field.DataItem.Itens.Count.ToString();
+            item.Id = field.DataItem.Items.Count.ToString();
             item.Description = "";
             item.Icon = IconType.Star;
             item.ImageColor = "#ffffff";
-            field.DataItem.Itens.Add(item);
+            field.DataItem.Items.Add(item);
         }
         return RedirectToIndex(dictionaryName, field);
     }
@@ -149,14 +149,14 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveDataItem(string dictionaryName, FormElementField field, int dataItemIndex)
     {
-        field.DataItem.Itens.RemoveAt(dataItemIndex);
+        field.DataItem.Items.RemoveAt(dataItemIndex);
         return RedirectToIndex(dictionaryName, field);
     }
 
     [HttpPost]
     public IActionResult RemoveAllDataItem(string dictionaryName, FormElementField field)
     {
-        field.DataItem.Itens = new List<DataItemValue>();
+        field.DataItem.Items = new List<DataItemValue>();
         return RedirectToIndex(dictionaryName, field);
     }
 

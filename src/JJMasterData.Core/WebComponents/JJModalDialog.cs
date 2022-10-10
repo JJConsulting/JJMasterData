@@ -9,7 +9,9 @@ public class JJModalDialog : JJBaseView
     public string Title { get; set; }
 
     public string HtmlContent { get; set; }
-
+    
+    public HtmlElement HtmlElementContent { get; set; }
+    
     public List<JJLinkButton> Buttons { get; set; }
 
     public MessageSize Size { get; set; }
@@ -44,7 +46,8 @@ public class JJModalDialog : JJBaseView
                     content.AppendElement(HtmlTag.Div, body =>
                     {
                         body.WithCssClass("modal-body")
-                            .AppendText(HtmlContent);
+                            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
+                            .AppendElementIf(HtmlElementContent != null, HtmlElementContent);
                     });
                     content.AppendElementIf(Buttons.Count > 0, HtmlTag.Div, footer =>
                     {
