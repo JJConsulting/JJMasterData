@@ -3,7 +3,6 @@ using JJMasterData.Core.Html;
 using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
-
 public class JJModalDialog : JJBaseView
 {
     public string Title { get; set; }
@@ -47,7 +46,7 @@ public class JJModalDialog : JJBaseView
                     {
                         body.WithCssClass("modal-body")
                             .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
-                            .AppendElementIf(HtmlElementContent != null, HtmlElementContent);
+                            .AppendElement(HtmlElementContent);
                     });
                     content.AppendElementIf(Buttons.Count > 0, HtmlTag.Div, footer =>
                     {

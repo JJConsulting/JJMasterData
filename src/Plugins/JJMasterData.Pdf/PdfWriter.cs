@@ -256,7 +256,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, selectedValue, values);
+        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, values, selectedValue);
         var item = cbo.GetValue(selectedValue);
 
         if (item != null)

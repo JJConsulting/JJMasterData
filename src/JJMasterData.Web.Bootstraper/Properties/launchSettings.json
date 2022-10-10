@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "JJMasterData.Web.DataDictionary": {
+    "JJMasterData.Web.Bootstraper": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

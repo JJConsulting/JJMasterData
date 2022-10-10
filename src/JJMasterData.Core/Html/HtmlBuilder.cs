@@ -24,7 +24,10 @@ public class HtmlBuilder
     /// </summary>
     public HtmlElement StartElement(HtmlElement element)
     {
-        _element = element; //Removed this because of AJAX requests. We really need to remove DirectResponses from here to respect SRP. ?? throw new ArgumentNullException(nameof(element));
+        if (element == null)
+            throw new ArgumentNullException(nameof(element));
+
+        _element = element; 
         return _element;
     }
     

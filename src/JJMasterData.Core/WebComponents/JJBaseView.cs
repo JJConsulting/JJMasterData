@@ -162,13 +162,15 @@ public abstract class JJBaseView
         if (!Visible)
             return "";
 
-
-        var builder = new HtmlBuilder();
-
-        builder.StartElement(GetHtmlElement());
-
-        var result = builder.RenderHtml(false);
-
+        string result = null;
+        var element = GetHtmlElement();
+        if (element != null)
+        {
+            var builder = new HtmlBuilder();
+            builder.StartElement(element);
+            result = builder.RenderHtml(false);
+        }
+        
         //TODO: Remove RenderHtml
         return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
 
