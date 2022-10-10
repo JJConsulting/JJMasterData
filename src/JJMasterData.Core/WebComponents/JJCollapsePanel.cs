@@ -58,14 +58,7 @@ public class JJCollapsePanel : JJBaseView
             input.WithValue(IsCollapseOpen ? "1" : "0");
         });
 
-        if (BootstrapHelper.Version < 5)
-        {
-            root.AppendElement(GetPanel());
-        }
-        else
-        {
-            root.AppendElement(GetAccordion());
-        }
+        root.AppendElement(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
 
         root.AppendScript($"setupCollapsePanel('{Name}')");
 
@@ -179,10 +172,7 @@ public class JJCollapsePanel : JJBaseView
             .AppendElementIf(Buttons.Count > 0, GetButtons())
             .WithCssClass(CssClass);
 
-        if (BootstrapHelper.Version >= 5)
-            panelBody.WithCssClass("accordion-body");
-        else
-            panelBody.WithCssClass(BootstrapHelper.PanelBody);
+        panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
 
         return panelBody;
     }

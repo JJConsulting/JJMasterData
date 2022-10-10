@@ -104,10 +104,10 @@ internal static class DataDictionarySchema
 
         if (item.Component == FormComponent.ComboBox
                     && item.DataItem != null
-                    && item.DataItem.Itens != null
-                    && item.DataItem.Itens.Count > 0)
+                    && item.DataItem.Items != null
+                    && item.DataItem.Items.Count > 0)
         {
-            foreach (DataItemValue dataItem in item.DataItem.Itens)
+            foreach (var dataItem in item.DataItem.Items)
             {
                 itemSchema.Description += "<br>" + dataItem.Id + " = " + dataItem.Description;
             }

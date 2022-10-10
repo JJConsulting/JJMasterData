@@ -60,7 +60,7 @@ public class FieldService : BaseService
                 case DataItemType.Dictionary:
                     field.DataFile = null;
                     field.DataItem.Command = null;
-                    field.DataItem.Itens.Clear();
+                    field.DataItem.Items.Clear();
                     break;
                 case DataItemType.Manual:
                     field.DataFile = null;
@@ -70,7 +70,7 @@ public class FieldService : BaseService
                 case DataItemType.SqlCommand:
                     field.DataFile = null;
                     field.DataItem.ElementMap = null;
-                    field.DataItem.Itens.Clear();
+                    field.DataItem.Items.Clear();
                     break;
             }
         }
@@ -196,7 +196,7 @@ public class FieldService : BaseService
                 break;
             }
             case DataItemType.Manual:
-                ValidateManualItens(data.Itens);
+                ValidateManualItens(data.Items);
                 break;
             case DataItemType.Dictionary:
                 ValidateDataElementMap(data.ElementMap);

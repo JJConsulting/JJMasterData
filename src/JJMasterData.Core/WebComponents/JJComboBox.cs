@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -315,7 +313,7 @@ public class JJComboBox : JJBaseView
         }
         else
         {
-            values = DataItem.Itens;
+            values = DataItem.Items;
         }
 
 
@@ -325,9 +323,9 @@ public class JJComboBox : JJBaseView
 
     private bool IsManualValues()
     {
-        if (DataItem?.Itens == null)
+        if (DataItem?.Items == null)
             return false;
 
-        return DataItem.Itens.Count > 0;
+        return DataItem.Items.Count > 0;
     }
 }

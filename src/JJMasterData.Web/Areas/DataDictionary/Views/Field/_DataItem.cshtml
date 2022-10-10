@@ -186,16 +186,16 @@
             </tr>
             </thead>
             <tbody>
-            @for (int i = 0; i < Model.DataItem.Itens.Count; i++)
+            @for (int i = 0; i < Model.DataItem.Items.Count; i++)
             {
                 <tr>
                     <td>
                         @Html.TextBox("DataItem.Itens[" + i + "].Id",
-                            Model.DataItem.Itens[i].Id, new { @class = "form-control" })
+                            Model.DataItem.Items[i].Id, new { @class = "form-control" })
                     </td>
                     <td>
                         @Html.TextBox("DataItem.Itens[" + i + "].Description",
-                            Model.DataItem.Itens[i].Description, new { @class = "form-control" })
+                            Model.DataItem.Items[i].Description, new { @class = "form-control" })
                     </td>
 
                     @if (showImage)
@@ -205,8 +205,8 @@
                                 var iconId = "DataItem.Itens[" + i + "].Icon";
                                 var cbo = new JJSearchBox();
                                 cbo.DataItem.ShowImageLegend = true;
-                                cbo.DataItem.Itens = IconHelper.GetListImages();
-                                cbo.SelectedValue = ((int)Model.DataItem.Itens[i].Icon).ToString();
+                                cbo.DataItem.Items = IconHelper.GetListImages();
+                                cbo.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
                                 cbo.Name = iconId;
                             }
 
@@ -223,7 +223,7 @@
                         </td>
                         <td>
                             @Html.TextBox("DataItem.Itens[" + i + "].ImageColor",
-                                Model.DataItem.Itens[i].ImageColor, new { @class = "form-control", type = "color" })
+                                Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
                         </td>
                     }
 

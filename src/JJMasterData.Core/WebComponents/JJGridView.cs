@@ -815,7 +815,7 @@ public class JJGridView : JJBaseView
     private string GetHtmlConfigSorting()
     {
         var configsorting = new GridConfigSorting(this);
-        return configsorting.GetHtml();
+        return configsorting.GetHtmlElement().GetElementHtml();
     }
 
     /// <summary>
@@ -976,8 +976,7 @@ public class JJGridView : JJBaseView
         html.AppendLine("\t\t\t<thead>");
         html.AppendLine(GetHtmlHeader());
         html.AppendLine("\t\t\t</thead>");
-
-        //Itens
+        
         html.AppendLine($"\t\t\t<tbody id=\"table_{Name}\">");
         int nRow = -1;
         foreach (DataRow row in DataSource.Rows)

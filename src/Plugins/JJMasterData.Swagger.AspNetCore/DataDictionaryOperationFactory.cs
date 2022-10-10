@@ -231,11 +231,11 @@ internal class DataDictionaryOperationFactory
 
                 if (field.Component == FormComponent.ComboBox
                     && field.DataItem != null
-                    && field.DataItem.Itens != null
-                    && field.DataItem.Itens.Count > 0)
+                    && field.DataItem.Items != null
+                    && field.DataItem.Items.Count > 0)
                 {
 
-                    var enums = (from DataItemValue dataItem in field.DataItem.Itens
+                    var enums = (from DataItemValue dataItem in field.DataItem.Items
                                  select new OpenApiString(dataItem.Id)).ToList<IOpenApiAny>();
 
 
@@ -243,7 +243,7 @@ internal class DataDictionaryOperationFactory
 
                     content = new Dictionary<string, OpenApiMediaType>();
 
-                    foreach (DataItemValue dataItem in field.DataItem.Itens)
+                    foreach (DataItemValue dataItem in field.DataItem.Items)
                     {
                         example.Append("<br>" + dataItem.Id + " = " + dataItem.Description);
                     }

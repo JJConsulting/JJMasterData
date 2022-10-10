@@ -150,16 +150,16 @@ public class AuditLogService
         foreach (int i in Enum.GetValues(typeof(AuditLogSource)))
         {
             var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(AuditLogSource), i));
-            origin.DataItem.Itens.Add(item);
+            origin.DataItem.Items.Add(item);
         }
 
         var action = form.Fields[DIC_ACTION];
         action.Component = FormComponent.ComboBox;
         action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;
-        action.DataItem.Itens.Add(new DataItemValue(((int)CommandType.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
-        action.DataItem.Itens.Add(new DataItemValue(((int)CommandType.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
-        action.DataItem.Itens.Add(new DataItemValue(((int)CommandType.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
 
         return form;
     }
