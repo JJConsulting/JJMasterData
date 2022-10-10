@@ -389,9 +389,9 @@ public class JJTextFile : JJBaseControl
             url += "?";
 
         if (isExternalLink)
-            url += JJDownloadFile.PARAM_DIRECTDOWNLOAD;
+            url += JJDownloadFile.DirectDownloadParameter;
         else
-            url += JJDownloadFile.PARAM_DOWNLOAD;
+            url += JJDownloadFile.DownloadParameter;
 
         url += "=";
         url += Cript.Cript64(filePath);

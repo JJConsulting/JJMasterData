@@ -96,7 +96,7 @@ public class JJDataExp : JJBaseProcess
     {
         var uriBuilder = new UriBuilder(CurrentContext.Request.AbsoluteUri);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        query[JJDownloadFile.PARAM_DOWNLOAD] = Cript.Cript64(filePath);
+        query[JJDownloadFile.DownloadParameter] = Cript.Cript64(filePath);
         uriBuilder.Query = query.ToString() ?? string.Empty;
 
         return uriBuilder.ToString();

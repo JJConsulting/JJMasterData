@@ -6,13 +6,14 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJDownloadFile : JJBaseView
 {
-    public const string PARAM_DIRECTDOWNLOAD = "jjdirectdownload";
-    public const string PARAM_DOWNLOAD = "jjdownload";
+    public const string DirectDownloadParameter = "jjdirectdownload";
+    public const string DownloadParameter = "jjdownload";
     
     public JJDownloadFile()
     {
@@ -32,65 +33,70 @@ public class JJDownloadFile : JJBaseView
     {
         return new JJDownloadFile();
     }
-    
-    protected override string RenderHtml()
+
+    internal override HtmlElement GetHtmlElement()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
-
+    
         if (IsExternalLink)
-            return GetHtmlDownload();
+            return GetDownloadHtmlElement();
         
         ResponseDirectDownload();
-
+    
         return null;
     }
 
-    private string GetHtmlDownload()
+    private HtmlElement GetDownloadHtmlElement()
     {
         var file = new FileInfo(FilePath);
         string fileName = file.Name;
         string size = Format.FormatFileSize(file.Length);
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
-        string url = CurrentContext.Request.AbsoluteUri.Replace(PARAM_DIRECTDOWNLOAD, PARAM_DOWNLOAD);
+        string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
-        var html = new StringBuilder();
-        html.AppendLine("<div class=\"page-header \">");
-        html.Append("	<h1>Downloading <small>");
-        html.Append(fileName.ToLower());
-        html.AppendLine("</small></h1>");
-        html.AppendLine("</div>");
-        html.AppendLine("<div class=\"jumbotron\">");
-        html.AppendLine("	<div class=\"container\">");
-        html.AppendLine($"		<h1><span class=\"fa fa-cloud-download text-info\"></span>  {fileName}</h1>");
-        html.Append("		<p>");
-        html.Append(Translate.Key("File size:"));
-        html.Append(' ');
-        html.Append(size);
-        html.Append("<br>");
-        html.Append(Translate.Key("Last write time:"));
-        html.Append(' ');
-        html.Append(lastWriteTime);
-        html.AppendLine("		</p>");
-        html.AppendLine("	</div>");
-        html.AppendLine("</div>");
-        html.AppendLine("<div class=\"col-sm-12\">	");
-        html.Append(Translate.Key("You are downloading file {0}.", fileName));
-        html.Append(' ');
-        html.Append(Translate.Key("If the download not start automatically"));
-        html.Append($" <a href=\"{url}\">");
-        html.Append(Translate.Key("click here."));
-        html.Append("</a>");
-        html.AppendLine("</div>");
-
-        //Scripts
-        html.AppendLine("<script type=\"text/javascript\"> ");
-        html.AppendLine($"	window.location.assign('{url}');");
-        html.AppendLine("</script> ");
-
-        return html.ToString();
+        var html = new HtmlElement(HtmlTag.Div)
+            .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
+            .AppendElement(HtmlTag.Section, section =>
+            {
+                section.WithCssClass("container mt-3");
+                section.AppendElement(HtmlTag.Div, div =>
+                {
+                    div.WithCssClass("jumbotron px-3 py-4 px-sm-4 py-sm-5 bg-light rounded-3 mb-3");
+                    div.AppendElement(HtmlTag.Div, div =>
+                    {
+                        div.AppendElement(HtmlTag.H1, h1 =>
+                        {
+                            h1.AppendElement(new JJIcon("fa fa-cloud-download text-info"));
+                            h1.AppendText(fileName);
+                        });
+                        div.AppendElement(HtmlTag.P, p =>
+                        {
+                            p.AppendText($"{Translate.Key("File Size:")} {size}");
+                            p.AppendElement(HtmlTag.Br);
+                            p.AppendText($"{Translate.Key("Last write time:")} {lastWriteTime}");
+                        });
+                        div.AppendElement(HtmlTag.Hr, hr =>
+                        {
+                            hr.WithCssClass("my-4");
+                        });
+                        div.AppendElement(HtmlTag.P, p =>
+                        {
+                            p.AppendText(Translate.Key("You are downloading file {0}.", fileName));
+                            p.AppendText(" ");
+                            p.AppendText(Translate.Key("If the download not start automatically") + ", ");
+                            p.AppendElement(HtmlTag.A, a =>
+                            {
+                                a.WithAttribute("href", url);
+                                a.AppendText(Translate.Key("click here."));
+                            });
+                        });
+                    });
+                });
+            });
+        return html;
     }
-
+    
     internal void ResponseDirectDownload()
     {
         if (string.IsNullOrEmpty(FilePath))
@@ -115,9 +121,9 @@ public class JJDownloadFile : JJBaseView
 
     public static bool IsDownloadRoute(JJBaseView view)
     {
-        if (view.CurrentContext.Request.QueryString(PARAM_DIRECTDOWNLOAD) != null)
+        if (view.CurrentContext.Request.QueryString(DirectDownloadParameter) != null)
             return true;
-        if (view.CurrentContext.Request.QueryString(PARAM_DOWNLOAD) != null)
+        if (view.CurrentContext.Request.QueryString(DownloadParameter) != null)
             return true;
         return false;
     }
@@ -125,10 +131,10 @@ public class JJDownloadFile : JJBaseView
     public static string ResponseRoute(JJBaseView view)
     {
         bool isExternalLink = false;
-        string criptFilePath = view.CurrentContext.Request.QueryString(PARAM_DOWNLOAD);
+        string criptFilePath = view.CurrentContext.Request.QueryString(DownloadParameter);
         if (criptFilePath == null)
         {
-            criptFilePath = view.CurrentContext.Request.QueryString(PARAM_DIRECTDOWNLOAD);
+            criptFilePath = view.CurrentContext.Request.QueryString(DirectDownloadParameter);
             isExternalLink = true;
         }
 
