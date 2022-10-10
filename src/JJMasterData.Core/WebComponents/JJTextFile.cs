@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
@@ -378,11 +379,12 @@ public class JJTextFile : JJBaseControl
 
         return btn;
     }
-
-    public string GetDownloadLink(string fileName, bool isExternalLink = false)
+    
+    //AbsoluteUri needs to be via parameter here, because a external thread on exportation don't have access to Context.
+    public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = CurrentContext.Request.AbsoluteUri;
+        string url = absoluteUri ?? HttpContext.Current.Request.Url.AbsoluteUri;
         if (url.Contains("?"))
             url += "&";
         else

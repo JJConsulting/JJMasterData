@@ -128,6 +128,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public string UserId { get; set; }
     public HttpContext CurrentContext { get; internal set; }
+    
+    //We need this property because Current.Context.Request is disposed inside a thread.
+    public string AbsoluteUri { get; set; }
 
     #endregion
 
@@ -208,8 +211,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public void Reporter(DataExpReporter processReporter)
     {
-        if (OnProgressChanged != null)
-            OnProgressChanged.Invoke(this, processReporter);
+        OnProgressChanged?.Invoke(this, processReporter);
     }
 
     public abstract void GenerateDocument(Stream ms, CancellationToken token);
@@ -237,7 +239,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         var textFile = JJTextFile.GetInstance(field, PageState.List, value, values, false, null);
         textFile.FormElement = FormElement;
 
-        return textFile.GetDownloadLink(fileName, true);
+        return textFile.GetDownloadLink( fileName, true, AbsoluteUri);
     }
 
 
