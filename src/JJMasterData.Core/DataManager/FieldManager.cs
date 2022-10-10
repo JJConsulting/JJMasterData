@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Globalization;
-using System.Linq;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.WebComponents;
+using System;
+using System.Collections;
+using System.Globalization;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -76,11 +74,12 @@ public class FieldManager
         Name = "pnl_" + formElement.Name.ToLower();
 
     }
-    public FieldManager(JJBaseView baseView, FormElement formElement) : this(formElement)
+    public FieldManager(JJBaseView baseView, FormElement formElement)
     {
         if (baseView == null)
             throw new ArgumentNullException(nameof(baseView));
 
+        FormElement = formElement;
         CurrentContext = baseView.CurrentContext;
         UserValues = baseView.UserValues;
         DataAccess = baseView.DataAccess;
@@ -140,23 +139,23 @@ public class FieldManager
             && f.DataItem != null
             && (f.DataItem.ReplaceTextOnGrid || f.DataItem.ShowImageLegend))
         {
-            var cbo = (JJComboBox)GetField(f, PageState.List, value, values);
+            var cbo = (JJComboBox)GetField(f, PageState.List, values, value);
             sVal = cbo.GetDescription() ?? value.ToString();
         }
         else if (f.Component == FormComponent.Lookup
                  && f.DataItem is { ReplaceTextOnGrid: true })
         {
-            var lookup = (JJLookup)GetField(f, PageState.List, value, values);
+            var lookup = (JJLookup)GetField(f, PageState.List, values, value);
             sVal = lookup.GetDescription() ?? value.ToString();
         }
         else if (f.Component == FormComponent.CheckBox)
         {
-            sVal = Expression.ParseBool(value) ? "Sim" : "Não";
+            sVal = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
         }
         else if (f.Component == FormComponent.Search
                  && f.DataItem is { ReplaceTextOnGrid: true })
         {
-            var search = (JJSearchBox)GetField(f, PageState.Filter, null, values);
+            var search = (JJSearchBox)GetField(f, PageState.List, values, value);
             search.AutoReloadFormFields = false;
             sVal = search.GetDescription(value.ToString()) ?? value.ToString();
         }
@@ -236,85 +235,13 @@ public class FieldManager
         return sVal;
     }
 
-    public JJBaseView GetField(FormElementField f, PageState pagestate, object value, Hashtable formValues)
+    public JJBaseView GetField(FormElementField f, PageState pagestate, Hashtable formValues, object value = null)
     {
-        return GetField(f, pagestate, value, formValues, null);
+        var expOptions = new ExpressionOptions(UserValues, formValues, pagestate, DataAccess);
+        var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
+
+        return controlFactory.CreateControl(f, value);
     }
-
-    public JJBaseView GetField(FormElementField f,
-                                  PageState pagestate,
-                                  object value,
-                                  Hashtable formValues,
-                                  string fieldName)
-    {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
-
-        bool viewOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter;
-        bool enable = IsEnable(f, pagestate, formValues);
-        JJBaseView baseView;
-        switch (f.Component)
-        {
-            case FormComponent.ComboBox:
-                baseView = JJComboBox.GetInstance(f, pagestate, value, formValues, enable, fieldName);
-                baseView.DataAccess = DataAccess;
-                baseView.UserValues = UserValues.DeepCopy();
-                break;
-            case FormComponent.Search:
-                var search = JJSearchBox.GetInstance(f, pagestate, value, formValues, enable, fieldName);
-                search.Attributes.Add("pnlname", Name);
-                search.DataAccess = DataAccess;
-                search.UserValues = UserValues.DeepCopy();
-                baseView = search;
-                break;
-            case FormComponent.Lookup:
-                var lookup = JJLookup.GetInstance(f, pagestate, value, formValues, enable, fieldName);
-                lookup.Attributes.Add("pnlname", Name);
-                lookup.DataAccess = DataAccess;
-                lookup.UserValues = UserValues.DeepCopy();
-                baseView = lookup;
-                break;
-            case FormComponent.CheckBox:
-                bool isChecked = Expression.ParseBool(value);
-                baseView = JJCheckBox.GetInstance(f, pagestate, isChecked, enable, fieldName);
-                break;
-            case FormComponent.TextArea:
-                baseView = JJTextArea.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
-            case FormComponent.Slider:
-                baseView = JJSlider.GetInstance(f, value, enable, viewOnly, fieldName);
-                break;
-            case FormComponent.File:
-                if (pagestate == PageState.Filter)
-                {
-                    baseView = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
-                }
-                else
-                {
-                    var textFile = JJTextFile.GetInstance(f, pagestate, value, formValues, enable, fieldName);
-                    textFile.Attributes.Add("pnlname", Name);
-                    textFile.DataAccess = DataAccess;
-                    textFile.UserValues = UserValues.DeepCopy();
-                    textFile.FormElement = FormElement;
-                    baseView = textFile;
-                }
-                break;
-            default:
-                var textGroup = InputFactory.GetInstance(f, value, enable, viewOnly, fieldName);
-                
-                if (pagestate == PageState.Filter)
-                {
-                    textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
-                }
-
-                baseView = textGroup;
-                
-                break;
-        }
-
-        return baseView;
-    }
-
 
     /// <summary>
     /// Recupera os dados do Form, aplicando o valor padrão e as triggers
@@ -358,7 +285,7 @@ public class FieldManager
                 {
                     case FormComponent.Search:
                         {
-                            var search = (JJSearchBox)GetField(f, state, null, newvalues);
+                            var search = (JJSearchBox)GetField(f, state, newvalues, null);
                             search.AutoReloadFormFields = true;
                             val = search.SelectedValue;
                             break;

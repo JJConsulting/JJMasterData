@@ -21,7 +21,7 @@ public class JJDataPanel : JJBaseView
 
     #region "Events"
 
-    public event EventHandler<ActionEventArgs> OnRenderAction;
+    public EventHandler<ActionEventArgs> OnRenderAction;
 
     #endregion
 
@@ -32,7 +32,7 @@ public class JJDataPanel : JJBaseView
     private DataDictionaryManager _dataDictionaryManager;
 
     private DataDictionaryManager DataDictionaryManager => _dataDictionaryManager ??= new DataDictionaryManager(FormElement);
-    
+
     /// <summary>
     /// Funções úteis para manipular campos no formulário
     /// </summary>
@@ -159,7 +159,7 @@ public class JJDataPanel : JJBaseView
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
             return JJLookup.ResponseRoute(this);
-        
+
         //FormUpload Route
         if (JJTextFile.IsFormUploadRoute(this))
             return JJTextFile.ResponseRoute(this);
@@ -181,7 +181,7 @@ public class JJDataPanel : JJBaseView
                 var f = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
                 if (f != null)
                 {
-                    var jjSearchBox = FieldManager.GetField(f, PageState, null, Values);
+                    var jjSearchBox = FieldManager.GetField(f, PageState, Values, null);
                     jjSearchBox.GetHtml();
                 }
             }
@@ -266,7 +266,7 @@ public class JJDataPanel : JJBaseView
         {
             html.AppendLine(GetHtmlPanelGroup(null));
         }
-        
+
         html.AppendLine("</div>");
 
         html.AppendLine(GetHtmlFormScript());
@@ -289,7 +289,7 @@ public class JJDataPanel : JJBaseView
             else
             {
                 html.AppendLine($"<div class=\"{BootstrapHelper.Well}\">");
-                if(BootstrapHelper.Version != 3)
+                if (BootstrapHelper.Version != 3)
                     html.AppendLine("<div class=\"card-body\">");
 
                 html.AppendLine("<div class=\"container-fluid\">");
@@ -311,12 +311,12 @@ public class JJDataPanel : JJBaseView
         if (panel.Layout == PanelLayout.Well)
         {
             html.AppendLine($"<div class=\"{BootstrapHelper.Well}\">");
-            
+
             if (BootstrapHelper.Version != 3)
                 html.Append("<div class=\"card-header\">");
-            
+
             html.AppendLine(GetHtmlPanelTitle(panel));
-            
+
             if (BootstrapHelper.Version != 3)
                 html.Append("</div>");
 
@@ -325,7 +325,7 @@ public class JJDataPanel : JJBaseView
 
             html.AppendLine("<div class=\"container-fluid\">");
             html.AppendLine(GetHtmlForm(panel));
-            html.AppendLine("</div>");                
+            html.AppendLine("</div>");
 
             if (BootstrapHelper.Version != 3)
                 html.Append("</div>");
@@ -419,7 +419,7 @@ public class JJDataPanel : JJBaseView
     private string GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
-   
+        var controlFactory = new WebControlFactory(this);
 
         int cols = FormCols;
         if (cols > 12)
@@ -496,7 +496,16 @@ public class JJDataPanel : JJBaseView
             }
             else
             {
-                html.AppendLine(GetHtmlField(f, value));
+                
+                var field = controlFactory.CreateControl(f, value);
+                bool enable = FieldManager.IsEnable(f, PageState, Values);
+                field.Enabled = enable;
+                if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
+                {
+                    field.CssClass = "is-invalid";
+                }
+
+                html.AppendLine(field.GetHtml());
             }
 
             html.AppendLine("\t\t</div>");
@@ -542,6 +551,7 @@ public class JJDataPanel : JJBaseView
             fullClass = "col-sm-8";
         }
 
+        var controlFactory = new WebControlFactory(this);
         StringBuilder html = new();
         html.Append($"<div class=\"{BootstrapHelper.FormHorizontal}\">");
 
@@ -569,6 +579,17 @@ public class JJDataPanel : JJBaseView
 
             string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
+
+            var field = controlFactory.CreateControl(f, fieldValue);
+            bool enable = FieldManager.IsEnable(f, PageState, Values);
+            field.Enabled = enable;
+            if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
+            {
+                field.CssClass = "is-invalid";
+            }
+
+            
+
             if (f.Component == FormComponent.TextArea)
             {
                 if (colCount > 1)
@@ -591,7 +612,7 @@ public class JJDataPanel : JJBaseView
                 }
                 else
                 {
-                    html.AppendLine(FieldManager.GetField(f, PageState, fieldValue, Values).GetHtml());
+                    html.AppendLine(field.GetHtml());
                 }
                 html.AppendLine("\t\t\t</div>");
                 html.AppendLine("\t\t</div>");
@@ -620,7 +641,7 @@ public class JJDataPanel : JJBaseView
                 }
                 else
                 {
-                    html.AppendLine(GetHtmlField(f, fieldValue));
+                    html.AppendLine(field.GetHtml());
                 }
                 html.AppendLine("\t\t\t</div>");
                 html.AppendLine("\t\t</div>");
@@ -673,46 +694,6 @@ public class JJDataPanel : JJBaseView
         sHtml.AppendLine("\"/>");
 
         return sHtml.ToString();
-    }
-
-    private string GetHtmlField(FormElementField f, object value)
-    {
-        var field = FieldManager.GetField(f, PageState, value, Values);
-
-        if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
-        {
-            if (field is JJTextGroup txtGroup)
-                txtGroup.TextBox.CssClass = "is-invalid";
-            else
-                field.CssClass = "is-invalid";
-        }
-
-        if (f.Actions == null)
-            return field.GetHtml();
-
-        var actions = f.Actions.GetAll().FindAll(x => x.IsVisible);
-        if (actions.Count == 0)
-            return field.GetHtml();
-
-        if (!(field is JJTextGroup))
-            return field.GetHtml();
-
-        //Actions
-        var textBox = (JJTextGroup)field;
-        foreach (BasicAction action in actions)
-        {
-            var link = ActionManager.GetLinkField(action, Values, PageState, field);
-            var onRender = OnRenderAction;
-            if (onRender != null)
-            {
-                var args = new ActionEventArgs(action, link, Values);
-                onRender.Invoke(this, args);
-            }
-            if (link != null)
-                textBox.Actions.Add(link);
-        }
-
-        return textBox.GetHtml();
     }
 
     private string GetHtmlFormScript()
@@ -920,7 +901,7 @@ public class JJDataPanel : JJBaseView
 
         var html = new StringBuilder();
 
-        if(BootstrapHelper.Version != 3)
+        if (BootstrapHelper.Version != 3)
         {
             if (!string.IsNullOrEmpty(title))
                 html.AppendFormat("<span>{0}</span>", Translate.Key(title));
@@ -972,7 +953,7 @@ public class JJDataPanel : JJBaseView
 
         tempvalues ??= new Hashtable();
 
-        if (Values != null && FormElement.Fields.Any(f=>Values.Contains(f.Name)))
+        if (Values != null && FormElement.Fields.Any(f => Values.Contains(f.Name)))
         {
             foreach (var f in FormElement.Fields)
             {

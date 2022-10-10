@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -199,25 +200,21 @@ public class JJSearchBox : JJBaseControl
     }
 
 
-    internal static JJSearchBox GetInstance(FormElementField f,
-                                  PageState pagestate,
-                                  object value,
-                                  Hashtable formValues,
-                                  bool enable,
-                                  string name)
+    internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
-        JJSearchBox search = new JJSearchBox
+        var search = new JJSearchBox
         {
-            Name = name ?? f.Name,
+            Name = f.Name,
             SelectedValue = (string)value,
             Visible = true,
             DataItem = f.DataItem,
-            Enabled = enable,
-            ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter,
             AutoReloadFormFields = false,
-            FormValues = formValues,
-            PageState = pagestate
+            FormValues = expOptions.FormValues,
+            PageState = expOptions.PageState,
+            DataAccess = expOptions.DataAccess,
+            UserValues = expOptions.UserValues
         };
+        search.Attributes.Add("pnlname", panelName);
 
         return search;
     }

@@ -112,7 +112,7 @@ internal class GridFilter
         _currentFilter = fManager.ApplyDefaultValues(values, PageState.List);
 
         //Save on session
-        JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name,  _currentFilter);
+        JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
 
     /// <summary>
@@ -154,7 +154,8 @@ internal class GridFilter
                 return null;
 
             var f = GridView.FormElement.Fields[oName];
-            var jjSearchBox = GridView.FieldManager.GetField(f, PageState.Filter, null, GridView.CurrentFilter, objname);
+            var jjSearchBox = GridView.FieldManager.GetField(f, PageState.Filter, GridView.CurrentFilter, null);
+            jjSearchBox.Name = objname;
             jjSearchBox.GetHtml();
         }
 
@@ -242,12 +243,13 @@ internal class GridFilter
                     html.Append('\t', 6);
                     html.AppendLine("<div class=\"col-sm-3\">");
                     html.Append('\t', 7);
-                    var componentFrom = GridView.FieldManager.GetField(f, PageState.Filter, value, values, name + "_from");
-                    if (componentFrom is JJTextGroup controlFrom)
+                    var componentFrom = GridView.FieldManager.GetField(f, PageState.Filter, values, value);
+                    componentFrom.Name = name + "_from";
+                    if (componentFrom is JJBaseControl controlFrom)
                     {
-                        controlFrom.TextBox.PlaceHolder = Translate.Key("From");
+                        controlFrom.PlaceHolder = Translate.Key("From");
                         if (!GridView.EnableFilter)
-                            controlFrom.TextBox.Enabled = false;
+                            controlFrom.Enabled = false;
                     }
                     html.AppendLine(componentFrom.GetHtml());
                     html.Append('\t', 6);
@@ -261,14 +263,15 @@ internal class GridFilter
                     html.AppendLine("<div class=\"col-sm-3\">");
                     html.Append('\t', 7);
 
-                    var componentTo = GridView.FieldManager.GetField(f, PageState.Filter, value, values, name + "_to");
-                    if (componentTo is JJTextGroup controlTo)
+                    var componentTo = GridView.FieldManager.GetField(f, PageState.Filter, values, value);
+                    componentTo.Name = name + "_to";
+                    if (componentTo is JJBaseControl controlTo)
                     {
-                        controlTo.TextBox.PlaceHolder = Translate.Key("To");
+                        controlTo.PlaceHolder = Translate.Key("To");
                         if (!GridView.EnableFilter)
-                            controlTo.TextBox.Enabled = false;
+                            controlTo.Enabled = false;
                     }
-                        
+
                     html.AppendLine(componentTo.GetHtml());
                     html.Append('\t', 6);
                     html.AppendLine("</div>");
@@ -291,7 +294,7 @@ internal class GridFilter
                     html.Append('\t', 7);
 
                     html.AppendLine(GetHtmlField(f, value, values, name));
-                    
+
                     html.Append('\t', 6);
                     html.AppendLine("</div>");
                     if (string.IsNullOrEmpty(f.CssClass))
@@ -303,7 +306,7 @@ internal class GridFilter
             }
             else
             {
-                if (!string.IsNullOrEmpty(f.CssClass) 
+                if (!string.IsNullOrEmpty(f.CssClass)
                     && !f.CssClass.Contains("-11")
                     && !f.CssClass.Contains("-12"))
                 {
@@ -313,7 +316,7 @@ internal class GridFilter
                 {
                     fldClass = "col-sm-10";
                 }
-                    
+
                 html.Append('\t', 6);
                 html.AppendLine($"<div class=\"{fldClass}\">");
                 html.Append('\t', 7);
@@ -496,14 +499,15 @@ internal class GridFilter
 
     private string GetHtmlField(FormElementField f, object value, Hashtable formValues, string name)
     {
-        var baseField = GridView.FieldManager.GetField(f, PageState.Filter, value, formValues, name);
+        var baseField = GridView.FieldManager.GetField(f, PageState.Filter, formValues, value);
+        baseField.Name = name;
         if (baseField is JJTextGroup textGroup)
         {
             if (f.Filter.Type == FilterMode.MultValuesContain ||
                 f.Filter.Type == FilterMode.MultValuesEqual)
             {
-                textGroup.TextBox.Attributes.Add("data-role", "tagsinput");
-                textGroup.TextBox.MaxLength = 0;
+                textGroup.Attributes.Add("data-role", "tagsinput");
+                textGroup.MaxLength = 0;
             }
         }
 
@@ -634,33 +638,27 @@ internal class GridFilter
                     case FormComponent.Cnpj:
                     case FormComponent.Cpf:
                     case FormComponent.CnpjCpf:
-                    {
                         if (!string.IsNullOrEmpty(value))
                             value = StringManager.ClearCpfCnpjChars(value);
                         break;
-                    }
                     case FormComponent.CheckBox:
-                    {
                         if (string.IsNullOrEmpty(value))
                             value = "0";
                         break;
-                    }
                     case FormComponent.Search:
-                    {
-                        var search = (JJSearchBox)GridView.FieldManager.GetField(f, PageState.Filter, null, values, name);
+                        var search = (JJSearchBox)GridView.FieldManager.GetField(f, PageState.Filter, values);
+                        search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = search.SelectedValue;
                         break;
-                    }
                     case FormComponent.Lookup:
-                    {
-                        var lookup = (JJLookup)GridView.FieldManager.GetField(f, PageState.Filter, null, values, name);
+                        var lookup = (JJLookup)GridView.FieldManager.GetField(f, PageState.Filter, values);
+                        lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;
                         break;
-                    }
                 }
-                
+
                 if (!string.IsNullOrEmpty(value))
                 {
                     values ??= new Hashtable();

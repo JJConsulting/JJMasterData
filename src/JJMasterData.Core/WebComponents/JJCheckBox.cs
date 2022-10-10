@@ -1,26 +1,18 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class JJCheckBox : JJBaseView
+public class JJCheckBox : JJBaseControl
 {
     private bool? _isChecked;
-    
-    public bool Enabled { get; set; }
-    
-    public string ToolTip { get; set; }
 
     /// <remarks>
     /// Default: 1
     /// </remarks>
     public string Value { get; set; }
-    
-    /// <summary>
-    /// Description at the left of the component
-    /// </summary>
-    public string Text { get; set; }
     
     public bool IsChecked
     {
@@ -41,22 +33,11 @@ public class JJCheckBox : JJBaseView
         Value = "1";
     }
 
-    internal static JJCheckBox GetInstance(FormElementField f,
-                                 PageState pagestate,
-                                 bool isChecked,
-                                 bool enable = true,
-                                 string name = null)
+    internal static JJCheckBox GetInstance(FormElementField f, object value)
     {
-        JJCheckBox check = new()
-        {
-            Name = name ?? f.Name,
-            Enabled = enable,
-            IsChecked = isChecked
-        };
-        
-        if (pagestate != PageState.List)
-            check.Text = string.IsNullOrEmpty(f.Label) ? f.Name : f.Label;
-
+        var check = new JJCheckBox();
+        check.Name = f.Name;
+        check.IsChecked = ExpressionManager.ParseBool(value);
         check.ToolTip = f.HelpDescription;
         return check;
     }

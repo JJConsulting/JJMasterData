@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
@@ -12,20 +6,22 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class JJComboBox : JJBaseView
+public class JJComboBox : JJBaseControl
 {
     private List<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
 
-    internal PageState PageState { get; set; }
-    public bool ReadOnly { get; set; }
-
-    public bool Enable { get; set; }
-
+    
+    
     public bool EnableSearch { get; set; }
 
     /// <summary>
@@ -34,6 +30,7 @@ public class JJComboBox : JJBaseView
     public bool MultiSelect { get; set; }
 
     private Hashtable FormValues { get; set; }
+    internal PageState PageState { get; set; }
 
     public FormElementDataItem DataItem
     {
@@ -57,31 +54,26 @@ public class JJComboBox : JJBaseView
 
     public JJComboBox()
     {
-        Enable = true;
+        Enabled = true;
         MultiSelect = false;
     }
 
     public JJComboBox(IDataAccess dataAccess) : base(dataAccess)
     {
-        Enable = true;
+        Enabled = true;
     }
 
-    internal static JJComboBox GetInstance(FormElementField f,
-        PageState pagestate,
-        object value,
-        Hashtable formValues,
-        bool enable,
-        string name)
+    internal static JJComboBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value)
     {
         var cbo = new JJComboBox
         {
-            Name = name ?? f.Name,
+            Name = f.Name,
             Visible = true,
             DataItem = f.DataItem,
-            Enable = enable,
-            ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter,
-            FormValues = formValues,
-            PageState = pagestate
+            FormValues = expOptions.FormValues,
+            PageState = expOptions.PageState,
+            DataAccess = expOptions.DataAccess,
+            UserValues = expOptions.UserValues
         };
         if (value != null)
             cbo.SelectedValue = value.ToString();
@@ -122,7 +114,7 @@ public class JJComboBox : JJBaseView
             .WithAttributeIf(MultiSelect, "title", Translate.Key("All"))
             .WithAttributeIf(MultiSelect, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
-            .WithAttributeIf(!Enable, "disabled", "disabled")
+            .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithAttribute("data-style", "form-control")
             .WithAttributes(Attributes)
             .AppendRange(GetOptions(values));

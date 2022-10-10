@@ -322,7 +322,7 @@ public class DataDictionaryManager
             if (values.ContainsKey(field.Name))
                 value = values[field.Name].ToString();
 
-            var upload = (JJTextFile)fieldManager.GetField(field, PageState.Insert, value, values);
+            var upload = (JJTextFile)fieldManager.GetField(field, PageState.Insert, values, value);
             upload.SaveMemoryFiles();
         }
     }
@@ -342,7 +342,7 @@ public class DataDictionaryManager
             if (primaryKeys.ContainsKey(field.Name))
                 value = primaryKeys[field.Name].ToString();
 
-            var jjTextFile = (JJTextFile)fieldManager.GetField(field, PageState.Delete, value, primaryKeys);
+            var jjTextFile = (JJTextFile)fieldManager.GetField(field, PageState.Delete, primaryKeys, value);
             jjTextFile.DeleteAll();
         }
     }

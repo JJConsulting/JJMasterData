@@ -22,11 +22,11 @@ public class JJLookup : JJBaseControl
     private string _text;
     private FormElementDataItem _dataItem;
     private Hashtable FormValues { get; set; }
-    
+
     internal PageState PageState { get; set; }
-    
+
     public bool AutoReloadFormFields { get; set; }
-    
+
     public bool OnlyNumbers { get; set; }
 
 
@@ -41,7 +41,7 @@ public class JJLookup : JJBaseControl
         }
         set => SetAttr("popupsize", value);
     }
-    
+
     public string PopTitle
     {
         get => GetAttr("popuptitle");
@@ -61,7 +61,7 @@ public class JJLookup : JJBaseControl
         }
         set => _text = value;
     }
-    
+
     public string SelectedValue
     {
         get
@@ -75,8 +75,8 @@ public class JJLookup : JJBaseControl
         }
         set => _selectedValue = value;
     }
-    
-    
+
+
     public FormElementDataItem DataItem
     {
         get => _dataItem ??= new FormElementDataItem();
@@ -102,24 +102,21 @@ public class JJLookup : JJBaseControl
         DataAccess = dataAccess;
     }
 
-    internal static JJLookup GetInstance(FormElementField f,
-        PageState pagestate,
-        object value,
-        Hashtable formValues,
-        bool enable,
-        string name)
+    internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
         var search = new JJLookup();
         search.SetAttr(f.Attributes);
-        search.Name = name ?? f.Name;
+        search.Name = f.Name;
         search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
-        search.Enabled = enable;
-        search.ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter;
         search.AutoReloadFormFields = false;
-        search.FormValues = formValues;
-        search.PageState = pagestate;
+        search.Attributes.Add("pnlname", panelName);
+        search.FormValues = expOptions.FormValues;
+        search.PageState = expOptions.PageState;
+        search.DataAccess = expOptions.DataAccess;
+        search.UserValues = expOptions.UserValues;
+
         if (f.DataType == FieldType.Int)
         {
             search.OnlyNumbers = true;
@@ -137,9 +134,9 @@ public class JJLookup : JJBaseControl
 
     internal override HtmlElement GetHtmlElement()
     {
-        if (!IsLookupRoute()) 
+        if (!IsLookupRoute())
             return GetLookupHtmlElement();
-        
+
         if (IsAjaxGetDescription())
             ResponseAjax();
         else
@@ -158,21 +155,18 @@ public class JJLookup : JJBaseControl
             description = GetDescription(inputValue);
 
         var div = new HtmlElement(HtmlTag.Div);
-        
+
         var textGroup = new JJTextGroup
         {
-            TextBox = new JJTextBox
-            {
-                Name = Name,
-                CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue,description)} {CssClass}",
-                InputType = OnlyNumbers ? InputType.Number : InputType.Text,
-                MaxLength = MaxLength,
-                Text = inputValue,
-                Attributes = Attributes,
-                ToolTip = ToolTip,
-                ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description)),
-                Enabled = Enabled
-            },
+            Name = Name,
+            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            InputType = OnlyNumbers ? InputType.Number : InputType.Text,
+            MaxLength = MaxLength,
+            Text = inputValue,
+            Attributes = Attributes,
+            ToolTip = ToolTip,
+            ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description)),
+            Enabled = Enabled,
             Actions = new List<JJLinkButton>
             {
                 new()
@@ -193,8 +187,8 @@ public class JJLookup : JJBaseControl
     private string GetFeedbackIcon(string value, string description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
-           return " fa fa-check ";
-        if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description)) 
+            return " fa fa-check ";
+        if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description))
             return " fa fa-exclamation-triangle";
         return null;
     }
@@ -272,7 +266,7 @@ public class JJLookup : JJBaseControl
         }
 
         var filters = new Hashtable();
-        
+
         if (DataItem.ElementMap.Filters.Count > 0)
         {
             var exp = new ExpressionManager(UserValues, DataAccess);
@@ -336,13 +330,13 @@ public class JJLookup : JJBaseControl
     public static string ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
-        
+
         if (string.IsNullOrEmpty(lookupRoute)) return null;
-        
+
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
-        
+
         if (field == null) return null;
-        
+
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return lookup.GetHtml();
 

@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
@@ -241,13 +242,8 @@ internal class DataImpHelp
     private string GetHtmlComboHelp(FormElementField f)
     {
         var defaultValues = DataImp.FormManager.GetDefaultValues(null, PageState.Import);
-        var cbo = JJComboBox.GetInstance(f, PageState.Import, null, defaultValues, true, null);
-        cbo.DataAccess = DataImp.DataAccess;
-        cbo.UserValues = DataImp.UserValues;
-        cbo.Name = f.Name;
-        cbo.Visible = true;
-        cbo.DataItem = f.DataItem;
-
+        var expOptions = new ExpressionOptions(DataImp.UserValues, defaultValues, PageState.Import, DataImp.DataAccess);
+        var cbo = JJComboBox.GetInstance(f, expOptions, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)
             return string.Empty;

@@ -38,12 +38,8 @@
 
     @{
     var filterTextGroup = new JJTextGroup();
-    filterTextGroup.TextBox = new JJTextBox
-    {
-        Name = "filter",
-        PlaceHolder = Translate.Key("Search...")
-    };
-
+    filterTextGroup.Name = "filter";
+    filterTextGroup.PlaceHolder = Translate.Key("Search...");
     filterTextGroup.Actions.Add(new JJLinkButton
     {
         OnClientClick = null,

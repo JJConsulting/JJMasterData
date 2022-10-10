@@ -12,6 +12,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents;
@@ -658,13 +659,7 @@ public class JJGridView : JJBaseView
 
     public JJGridView(string elementName) : this()
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
-
-        Name = "jjview" + elementName.ToLower();
-        var dicParser = GetDictionary(elementName);
-        FormElement = dicParser.GetFormElement();
-        SetGridOptions(dicParser.UIOptions.Grid);
+        WebComponentFactory.SetGridViewParams(this, elementName);
     }
 
     public JJGridView(FormElement formElement) : this()
@@ -1559,7 +1554,8 @@ public class JJGridView : JJBaseView
                 {
                     value = values[f.Name].ToString();
                 }
-                var baseField = FieldManager.GetField(f, PageState.List, value, values, name);
+                var baseField = FieldManager.GetField(f, PageState.List, values, value);
+                baseField.Name = name;
                 baseField.Attributes.Add("nRowId", nRow.ToString());
                 baseField.CssClass = f.Name;
 
@@ -1600,7 +1596,7 @@ public class JJGridView : JJBaseView
                 {
                     if (f.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)FieldManager.GetField(f, PageState.List, value, values, null);
+                        var upload = (JJTextFile)FieldManager.GetField(f, PageState.List, values, value);
                         html.Append(upload.GetHtmlForGrid());
                     }
                     else
@@ -2662,7 +2658,6 @@ public class JJGridView : JJBaseView
             if (MaintainValuesOnLoad && FormElement != null)
                 ui = JJSession.GetSessionValue<GridUI>(string.Format("jjcurrentui_{0}", FormElement.Name));
 
-
             if (ui == null)
             {
                 ui = CurrentUI;
@@ -2673,8 +2668,6 @@ public class JJGridView : JJBaseView
                 ui.TotalPaginationButtons = o.TotalPaggingButton;
                 ui.IsHeaderFixed = o.HeaderFixed;
             }
-
-
 
             CurrentUI = ui;
         }

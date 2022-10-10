@@ -5,11 +5,9 @@ using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class JJTextGroup : JJBaseView
+public class JJTextGroup : JJTextBox
 {
-
     private List<JJLinkButton> _actions;
-    private JJTextBox _textBox;
 
     /// <summary>
     /// Actions of input
@@ -21,38 +19,31 @@ public class JJTextGroup : JJBaseView
     }
 
     /// <summary>
-    /// Represent a input component
-    /// </summary>
-    public JJTextBox TextBox
-    {
-        get => _textBox ??= new JJTextBox();
-        set => _textBox = value;
-    }
-
-    /// <summary>
     /// Text info on left of component
     /// </summary>
     public InputAddons Addons { get; set; }
 
 
+    public string GroupCssClass { get; set; }
+
     public static JJTextGroup GetInstance(FormElementField f, string name = null)
     {
-        return InputFactory.GetInstance(f, name);
+        return WebControlTextFactory.CreateTextGroup(f, name);
     }
 
     internal override HtmlElement GetHtmlElement()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
-        if (!TextBox.Enabled)
+        if (!Enabled)
         {
             if (defaultAction != null)
             {
-                TextBox.ReadOnly = true;
-                TextBox.Enabled = true;
+                ReadOnly = true;
+                Enabled = true;
             }
         }
 
-        var input = TextBox.GetHtmlElement();
+        var input = base.GetHtmlElement();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
@@ -67,10 +58,8 @@ public class JJTextGroup : JJBaseView
         }
 
         var inputGroup = new HtmlElement(HtmlTag.Div)
-            .WithAttributes(Attributes)
-            .WithNameAndId(Name)
             .WithCssClass("input-group jjform-action ")
-            .WithCssClass(CssClass);
+            .WithCssClass(GroupCssClass);
 
         if (hasAddons)
             inputGroup.AppendElement(GetHtmlAddons());

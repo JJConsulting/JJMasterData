@@ -234,9 +234,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = JJTextFile.GetInstance(field, PageState.List, value, values, false, null);
+        var textFile = new JJTextFile();
         textFile.FormElement = FormElement;
-
+        textFile.ElementField = field;
+        textFile.PageState = PageState.List;
+        textFile.Text = value;
+        textFile.FormValues = values;
+        textFile.Name = field.Name;
         return textFile.GetDownloadLink(fileName, true);
     }
 

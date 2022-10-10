@@ -16,14 +16,12 @@ public class JJSlider : JJBaseControl
         MaxValue = maxValue;
     }
     
-    public static JJBaseView GetInstance(FormElementField field, object value, bool enable, bool readOnly, string fieldName)
+    public static JJBaseControl GetInstance(FormElementField field, object value)
     {
         var slider = new JJSlider(field.MinValue ?? 0f, field.MaxValue ?? 100)
         {
-            Name = fieldName ?? field.Name,
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null,
-            Enabled = enable,
-            ReadOnly = readOnly
+            Name =  field.Name,
+            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null
         };
         return slider;
     }

@@ -16,11 +16,7 @@ public class JJTextArea : JJBaseControl
         Rows = 5;
     }
 
-    internal static JJTextArea GetInstance(FormElementField field,
-                                 object value,
-                                 bool enable = true,
-                                 bool readOnly = false,
-                                 string name = null)
+    internal static JJTextArea GetInstance(FormElementField field, object value)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -30,9 +26,7 @@ public class JJTextArea : JJBaseControl
         text.ToolTip = field.HelpDescription;
         text.MaxLength = field.Size;
         text.Text = value != null ? value.ToString() : "";
-        text.Enabled = enable;
-        text.ReadOnly = readOnly;
-        text.Name = name ?? field.Name;
+        text.Name = field.Name;
 
         return text;
     }

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -40,11 +39,6 @@ internal class ActionManager
     }
 
     /// <summary>
-    /// Informações sobre o request HTTP
-    /// </summary>
-    public JJHttpContext CurrentContext { get; set; }
-
-    /// <summary>
     /// Objeto responsável por fazer toda a comunicação com o banco de dados
     /// </summary>
     public IDataAccess DataAccess { get; set; }
@@ -54,9 +48,17 @@ internal class ActionManager
     /// </summary>
     public string ComponentName { get; set; }
 
+
+    public ActionManager(ExpressionOptions expOptions, FormElement formElement, string panelName)
+    {
+        UserValues = expOptions.UserValues;
+        DataAccess = expOptions.DataAccess;
+        ComponentName = panelName;
+        FormElement = formElement;
+    }
+
     public ActionManager(JJBaseView baseView, FormElement formElement)
     {
-        CurrentContext = baseView.CurrentContext;
         UserValues = baseView.UserValues;
         DataAccess = baseView.DataAccess;
         ComponentName = baseView.Name;
@@ -73,15 +75,13 @@ internal class ActionManager
         string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;
 
-        StringBuilder @params = new();
+        var @params = new StringBuilder();
 
         @params.Append("formname=");
         @params.Append(elementRedirect.ElementNameRedirect);
         @params.Append("&viewtype=");
         @params.Append((int)elementRedirect.ViewType);
-        @params.Append("&userid=");
-        @params.Append(CurrentContext.Session["USERID"]);
-
+        
         foreach (var r in elementRedirect.RelationFields)
         {
             if (formValues.ContainsKey(r.InternalField))
@@ -245,9 +245,9 @@ internal class ActionManager
         return GetLink(action, formValues, PageState.List, ActionOrigin.Toolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, Hashtable formValues, PageState pagestate, JJBaseView field)
+    public JJLinkButton GetLinkField(BasicAction action, Hashtable formValues, PageState pagestate, string panelName)
     {
-        return GetLink(action, formValues, pagestate, ActionOrigin.Field, field.Name);
+        return GetLink(action, formValues, pagestate, ActionOrigin.Field, panelName);
     }
 
     private JJLinkButton GetLink(BasicAction action, Hashtable formValues, PageState pagestate, ActionOrigin contextAction, string fieldName = null)

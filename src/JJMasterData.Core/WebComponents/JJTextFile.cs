@@ -7,6 +7,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
@@ -36,12 +37,8 @@ public class JJTextFile : JJBaseControl
 
     public FormElement FormElement { get; set; }
 
-    internal static JJTextFile GetInstance(FormElementField field,
-                                  PageState pagestate,
-                                  object value,
-                                  Hashtable formValues,
-                                  bool enable,
-                                  string name)
+    internal static JJTextFile GetInstance(FormElement formElement, 
+        FormElementField field, ExpressionOptions expOptions, object value, string panelName)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -52,13 +49,17 @@ public class JJTextFile : JJBaseControl
         var text = new JJTextFile
         {
             ElementField = field,
-            PageState = pagestate,
+            PageState = expOptions.PageState,
             Text = value != null ? value.ToString() : "",
-            FormValues = formValues,
-            Enabled = enable,
-            Name = name ?? field.Name,
-            ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly
+            FormValues = expOptions.FormValues,
+            Name = field.Name,
         };
+
+        text.Attributes.Add("pnlname", panelName);
+        text.DataAccess = expOptions.DataAccess;
+        text.UserValues = expOptions.UserValues;
+        text.FormElement = formElement;
+
         text.SetAttr(field.Attributes);
 
         return text;
@@ -97,13 +98,11 @@ public class JJTextFile : JJBaseControl
 
         var textGroup = new JJTextGroup();
         textGroup.CssClass = CssClass;
-
-        var textBox = textGroup.TextBox;
-        textBox.ReadOnly = true;
-        textBox.Name = $"v_{Name}";
-        textBox.ToolTip = ToolTip;
-        textBox.Attributes = Attributes;
-        textBox.Text = GetPresentationText(formUpload);
+        textGroup.ReadOnly = true;
+        textGroup.Name = $"v_{Name}";
+        textGroup.ToolTip = ToolTip;
+        textGroup.Attributes = Attributes;
+        textGroup.Text = GetPresentationText(formUpload);
 
         var btn = new JJLinkButton();
         btn.ShowAsButton = true;
