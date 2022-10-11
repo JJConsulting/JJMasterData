@@ -3,9 +3,12 @@
     "@popperjs/core": "^2.11.5",
     "@types/bootstrap": "^5.2.0",
     "@types/jquery": "^3.5.14",
+    "del": "5.1.0",
     "flatpickr": "^4.6.13",
-    "jquery-ui": "^1.13.2",
     "gulp": "4.0.2",
-    "del": "5.1.0"
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-terser": "^2.1.0",
+    "jquery-ui": "^1.13.2"
   }
 }

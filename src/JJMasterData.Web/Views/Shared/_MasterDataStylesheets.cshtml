@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Commons.Extensions
+@using JJMasterData.Web.Extensions
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration;
 
@@ -6,69 +7,81 @@
     string bootstrapTheme = Configuration.GetJJMasterData("Theme") ?? "default";
 }
 
-<link rel="stylesheet preload prefetch" href="~/css/fontawesome/all.min.css" />
-<link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-font-face.min.css" />
-<link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-shims.min.css" />
-
-@switch (BootstrapHelper.Version)
+@if (Html.IsDebug())
 {
-    case 3:
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap.min.css" />
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap-theme.css?v=6" />
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap-toggle.min.css" />
-        <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
-        break;
-    case 4:
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap.min.css" />
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap-grid.min.css" />
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap-reboot.min.css" />
-        <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
+    <link rel="stylesheet preload prefetch" href="~/css/fontawesome/all.min.css" />
+    <link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-font-face.min.css" />
+    <link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-shims.min.css" />
 
-        switch (bootstrapTheme)
-        {
-            case "jjmasterdata":
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/theme/jjmasterdata/bootstrap-jjmasterdata.min.css?v=20220518" />
-                break;
-            case "dark-blue":
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/theme/dark-blue/bootstrap-dark-blue.min.css?v=20220518" />
-                break;
-        }
+    @switch (BootstrapHelper.Version)
+    {
+        case 3:
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap.min.css" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap-theme.css?v=6" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap-toggle.min.css" />
+            <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
+            break;
+        case 4:
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap.min.css" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap-grid.min.css" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap4/bootstrap-reboot.min.css" />
+            <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap4-toggle.min.css" />
+            break;
+        default:
+            switch (bootstrapTheme)
+            {
+                case "jjmasterdata":
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap-grid.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap-reboot.min.css" />
+                    break;
+                case "dark-blue":
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap-grid.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap-reboot.min.css" />
+                    break;
+                default:
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap-grid.min.css" />
+                    <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap-reboot.min.css" />
+                    break;
+            }
+            <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select-bs5.min.css" />
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap4-toggle.min.css" />
+            break;
+    }
 
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap4-toggle.min.css" />
-        break;
-    default:
-        switch (bootstrapTheme)
-        {
-            case "jjmasterdata":
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap-grid.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/jjmasterdata/bootstrap-reboot.min.css" />
-                break;
-            case "dark-blue":
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap-grid.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/theme/dark-blue/bootstrap-reboot.min.css" />
-                break;
-            default:
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap-grid.min.css" />
-                <link rel="Stylesheet" href="~/css/bootstrap/bootstrap5/bootstrap-reboot.min.css" />
-                break;
-        }
-        <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select-bs5.min.css" />
-        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap4-toggle.min.css" />
-        break;
+    <link rel="stylesheet" href="~/css/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+    <link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="~/css/flatpickr/airbnb.css">
+    <link rel="stylesheet" href="~/css/highlightjs/ssms.min.css" />
+
+    <link asp-append-version="true" rel="Stylesheet" href="~/css/jjmasterdata/jjmasterdata.css" />
 }
-
-<link rel="stylesheet" href="~/css/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.css" />
-
-<link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
-<link rel="stylesheet" href="~/css/flatpickr/airbnb.css">
-<link rel="stylesheet" href="~/css/highlightjs/ssms.min.css" />
-
-<environment include="Development">
-    <link asp-append-version="true" rel="Stylesheet" href="~/css/jjmasterdata.css" />
-</environment>
-<environment exclude="Development">
-    <link asp-append-version="true" rel="Stylesheet" href="~/css/jjmasterdata.min.css" />
-</environment>
+else
+{
+@switch (BootstrapHelper.Version)
+    {
+        case 3:
+            <link rel="stylesheet" href="~/css/jjmasterdata/jjmasterdata-bundle-bootstrap3.min.css"/>
+            break;
+        case 4:
+            <link rel="stylesheet" href="~/css/jjmasterdata/jjmasterdata-bundle-bootstrap4.min.css"/>
+            break;
+        default:
+            switch (bootstrapTheme)
+            {
+                case "jjmasterdata":
+                    <link rel="stylesheet" href="~/css/jjmasterdata/jjmasterdata-bundle-bootstrap5-jjmasterdata.min.css"/>
+                    break;
+                case "dark-blue":
+                    <link rel="stylesheet" href="~/css/jjmasterdata/jjmasterdata-bundle-bootstrap5-dark-blue.min.css"/>
+                    break;
+                default:
+                    <link rel="stylesheet" href="~/css/jjmasterdata/jjmasterdata-bundle-bootstrap5.min.css"/>
+                    break;
+            }
+            break;
+    }
+}

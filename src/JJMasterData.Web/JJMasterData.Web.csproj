@@ -43,6 +43,14 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-brands-400.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-brands-400.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-regular-400.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-regular-400.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-solid-900.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-solid-900.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-v4compatibility.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\webfonts\fa-v4compatibility.woff2" />
     </ItemGroup>
 
     <ItemGroup>
