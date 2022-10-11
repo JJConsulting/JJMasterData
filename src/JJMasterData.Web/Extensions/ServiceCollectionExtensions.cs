@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddJJMasterDataServices();
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
+        
         return services.AddJJMasterData();
     }
 

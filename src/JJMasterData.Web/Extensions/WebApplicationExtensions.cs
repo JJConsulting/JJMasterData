@@ -1,7 +1,11 @@
+using System.Reflection;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace JJMasterData.Web.Extensions;
 
@@ -18,8 +22,16 @@ public static class WebApplicationExtensions
         
         app.UseSession();
         
-        app.UseStaticFiles();
         app.UseDefaultFiles();
+        app.UseStaticFiles();
+        
+#if DEBUG
+        app.UseFileServer(new FileServerOptions
+        {
+            FileProvider = new ManifestEmbeddedFileProvider(Assembly.GetExecutingAssembly(), "Scripts"),
+            RequestPath = new PathString("/Scripts"),
+        });
+#endif
 
         app.MapControllerRoute(
                  name: "JJMasterData",
