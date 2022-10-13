@@ -34,11 +34,11 @@ public sealed class JJMasterDataSettings : ISettings
     /// <summary>
     /// Default value is the Connection String with the name "ConnectionString"
     /// </summary>
-    public string ConnectionString { get; set; }
+    public string? ConnectionString { get; set; }
     /// <summary> 
     /// Default value: "System.Data.SqlClient"
     /// </summary>
-    public string ConnectionProvider { get; set; } 
+    public string? ConnectionProvider { get; set; } 
 
     /// <summary>
     /// Default value: 5 <br></br>
@@ -168,18 +168,18 @@ public sealed class JJMasterDataSettings : ISettings
         };
     }
 
-    public string GetConnectionString(string name)
+    public string? GetConnectionString(string name)
     {
         if(IsNetFramework)
-            return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+            return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
         return Configuration.GetConnectionString(name);
     }
             
 
-    public string GetConnectionProvider(string name)
+    public string? GetConnectionProvider(string name)
     {
         if (IsNetFramework)
-            return ConfigurationManager.ConnectionStrings[name].ProviderName;
+            return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
         return Configuration.GetJJMasterData("ConnectionProvider") ?? DataAccess.MSSQL;
     }
 
