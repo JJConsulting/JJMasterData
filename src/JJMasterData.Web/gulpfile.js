@@ -6,7 +6,7 @@ Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
 const gulp = require("gulp");
 const del = require("del");
 const cleanCss = require("gulp-clean-css");
-const jsmin = require("gulp-terser");
+const terser = require("gulp-terser");
 const concat = require("gulp-concat");
 
 function cleanJJMasterDataScripts() {
@@ -14,7 +14,7 @@ function cleanJJMasterDataScripts() {
 }
 
 function cleanCssBundles() {
-    return del(["wwwroot/css/*-bundle-*.min.css"]);
+    return del(["wwwroot/css/jjmasterdata/*-bundle-*.min.css"]);
 }
 
 function pipeJJMasterDataScripts() {
@@ -88,21 +88,80 @@ function bundleCssWithoutBootstrap() {
     bundleCss(getCommonCss(), "without-bootstrap")
 }
 
+function getCommonJs() {
+    return [
+        "!wwwroot/js/bootstrap/**/*.js",
+        "wwwroot/js/**/*.js",
+        "wwwroot/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js",
+        "wwwroot/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js",
+    ]
+}
+
+function bundleJs(files, bundleName) {
+    gulp.src(files)
+        .pipe(concat(`jjmasterdata-bundle-${bundleName}.min.js`))
+        .pipe(terser())
+        .pipe(gulp.dest('wwwroot/js/jjmasterdata'))
+}
+
+function bundleJsWithoutBootstrap() {
+    bundleJs(getCommonJs(), "without-bootstrap")
+}
+
+function bundleJsBootstrap3() {
+    const files = [
+        "wwwroot/js/bootstrap/bootstrap3/*.js",
+        "wwwroot/js/bootstrap/bootstrap-select/bootstrap-select.min.js",
+        "wwwroot/js/bootstrap/bootstrap3-toggle/bootstrap-toggle.min.js"
+    ].concat(getCommonCss())
+
+    bundleCss(files, "bootstrap3")
+}
+
+function bundleJsBootstrap4() {
+    const files = [
+        "wwwroot/js/bootstrap/bootstrap4/*.js",
+        "wwwroot/js/bootstrap/bootstrap-select/bootstrap-select.min.js",
+        "wwwroot/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"
+    ].concat(getCommonCss())
+
+    bundleCss(files, "bootstrap4")
+}
+
+function bundleJsBootstrap5() {
+    const files = [
+        "wwwroot/js/bootstrap/bootstrap4/*.js",
+        "wwwroot/js/bootstrap/bootstrap-select/bootstrap-select-bs5.min.js",
+        "wwwroot/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"
+    ].concat(getCommonCss())
+
+    bundleCss(files, "bootstrap5")
+}
+
 gulp.task("clean", function (done) {
     cleanJJMasterDataScripts();
     cleanCssBundles();
     done();
 });
 
-gulp.task("default", function (done) {
-    pipeJJMasterDataScripts();
-
+gulp.task("bundle-css", function (done) {
     bundleCssWithoutBootstrap();
     bundleCssBootstrap3();
     bundleCssBootstrap4();
     bundleCssBootstrap5();
     bundleCssBootstrap5WithTheme("jjmasterdata");
     bundleCssBootstrap5WithTheme("dark-blue");
+
+    done();
+});
+
+gulp.task("bundle-js", function (done) {
+    pipeJJMasterDataScripts();
+
+    bundleJsWithoutBootstrap();
+    bundleJsBootstrap3();
+    bundleJsBootstrap4();
+    bundleJsBootstrap5();
 
     done();
 });
