@@ -994,13 +994,15 @@ public class JJGridView : JJBaseView
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
-            var alert = new JJAlert();
-            alert.Color = PanelColor.Default;
-            alert.ShowCloseButton = true;
+            var alert = new JJAlert
+            {
+                Color = PanelColor.Default,
+                ShowCloseButton = true
+            };
 
             if (Filter.HasFilter())
             {
-                alert.Messages.Add("There are filters applied for this query");
+                alert.Messages.Add("There are filters applied for this query.");
                 alert.Icon = IconType.Filter;
             }
             else
