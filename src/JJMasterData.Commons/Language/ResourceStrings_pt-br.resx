@@ -2189,8 +2189,8 @@
     <value>Registro incluído com sucesso</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="Record already registered" xml:space="preserve">
-    <value>Registro já cadastrado</value>
+  <data name="Record already registered." xml:space="preserve">
+    <value>Registro já cadastrado.</value>
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Record Key" xml:space="preserve">
