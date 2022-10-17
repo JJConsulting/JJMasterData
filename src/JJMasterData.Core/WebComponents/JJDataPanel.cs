@@ -727,7 +727,7 @@ public class JJDataPanel : JJBaseView
         {
             sHtml.Append("\tfunction ");
             sHtml.Append(functionname);
-            sHtml.AppendLine("(objid) { ");
+            sHtml.AppendLine("(objid, fieldid) { ");
             sHtml.AppendLine("\t\tvar frm = $('form'); ");
             sHtml.AppendLine("\t\tvar surl = frm.attr('action'); ");
             sHtml.AppendLine("\t\tif (surl.includes('?'))");
@@ -743,7 +743,7 @@ public class JJDataPanel : JJBaseView
             sHtml.AppendLine("\t\t\tsuccess: function (data) { ");
             sHtml.AppendLine("\t\t\t\t$(\"#" + Name + "\").html(data); ");
             sHtml.AppendLine("\t\t\t\tjjloadform(); ");
-            sHtml.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
+            sHtml.AppendLine("\t\t\t\tjjutil.gotoNextFocus(fieldid); ");
             sHtml.AppendLine("\t\t\t}, ");
             sHtml.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
             sHtml.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
@@ -766,7 +766,7 @@ public class JJDataPanel : JJBaseView
         {
             foreach (FormElementField f in listFieldsPost)
             {
-                //WorkArroud para gatilhar o select do search
+                //WorkAround para gatilhar o select do search
                 if (f.Component == FormComponent.Search)
                 {
                     sHtml.Append("\t\t$(\"");
@@ -777,7 +777,8 @@ public class JJDataPanel : JJBaseView
                     sHtml.Append(functionname);
                     sHtml.Append("('");
                     sHtml.Append(f.Name);
-                    sHtml.AppendLine("');");
+                    sHtml.Append($"','{f.Name}_text'");
+                    sHtml.AppendLine(");");
                     sHtml.AppendLine("\t\t\t},200);");
                     sHtml.AppendLine("\t\t});");
                     sHtml.AppendLine("");
@@ -790,7 +791,7 @@ public class JJDataPanel : JJBaseView
                     sHtml.AppendLine("\").change(function () {");
                     sHtml.Append("\t\t\t");
                     sHtml.Append(functionname);
-                    sHtml.AppendLine("($(this).attr('id'));");
+                    sHtml.AppendLine("($(this).attr('id'),$(this).attr('id'));");
                     sHtml.AppendLine("\t\t});");
                     sHtml.AppendLine("");
                 }
