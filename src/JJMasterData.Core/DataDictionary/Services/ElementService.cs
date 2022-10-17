@@ -225,7 +225,7 @@ public class ElementService : BaseService
         var formView = new JJFormView(formElement);
         formView.Name = "List";
         formView.FilterAction.ExpandedByDefault = true;
-        formView.DataPanel.FormCols = 2;
+        formView.DataPanel.UISettings.FormCols = 2;
         formView.MaintainValuesOnLoad = true;
         formView.EnableMultSelect = true;
         formView.ExportAction.SetVisible(false);

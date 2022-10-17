@@ -199,7 +199,6 @@ public class JJSearchBox : JJBaseControl
         DataAccess = dataAccess;
     }
 
-
     internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
         var search = new JJSearchBox

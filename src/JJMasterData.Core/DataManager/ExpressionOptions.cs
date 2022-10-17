@@ -19,6 +19,7 @@ namespace JJMasterData.Core.DataManager
         public Hashtable FormValues { get; set; }
 
         public PageState PageState { get; set; }
+
         public IDataAccess DataAccess { get; set; }
 
         public ExpressionOptions(Hashtable userValues, Hashtable formValues, PageState pageState, IDataAccess dataAccess)

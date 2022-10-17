@@ -30,6 +30,7 @@ public class JJDataPanel : JJBaseView
     private FieldManager _fieldManager;
     private ActionManager _actionManager;
     private DataDictionaryManager _dataDictionaryManager;
+    private UIForm _uiFormSettings;
 
     private DataDictionaryManager DataDictionaryManager => _dataDictionaryManager ??= new DataDictionaryManager(FormElement);
 
@@ -49,13 +50,22 @@ public class JJDataPanel : JJBaseView
     public FormElement FormElement { get; set; }
 
     /// <summary>
-    /// Número de colunas onde os campos serão renderizados
-    /// Default 1
+    /// Layout form settings
     /// </summary>
-    /// <remarks>
-    /// Somente multiplos de 12
-    /// </remarks>
-    public int FormCols { get; set; }
+    public UIForm UISettings
+    {
+        get
+        {
+            if (_uiFormSettings == null)
+                _uiFormSettings = new UIForm();
+
+            return _uiFormSettings;
+        }
+        set
+        {
+            _uiFormSettings = value;
+        }
+    }
 
     /// <summary>
     /// Estado atual da pagina
@@ -75,31 +85,12 @@ public class JJDataPanel : JJBaseView
     public Hashtable Values { get; set; }
 
     /// <summary>
-    /// Tipo de layot para renderizar os campos
-    /// </summary>
-    public DataPanelLayout Layout { get; set; }
-
-    /// <summary>
-    /// Quando o painel estiver no modo de visualização
-    /// remover as bordas dos campos exibindo como texto.
-    /// </summary>
-    /// <remarks>
-    /// Valor padrão falso
-    /// </remarks>
-    public bool ShowViewModeAsStatic { get; set; }
-
-    /// <summary>
     /// Ao recarregar o painel, manter os valores digitados no formuário
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    /// <summary>
-    /// Comportamento da tecla enter no formulário
-    /// Default = DISABLED
-    /// </summary>
-    public FormEnterKey EnterKey { get; set; }
-
+    
     /// <summary>
     /// Renderiza agrupamento de campo
     /// </summary>
@@ -121,7 +112,7 @@ public class JJDataPanel : JJBaseView
         Erros = new Hashtable();
         AutoReloadFormFields = true;
         RenderPanelGroup = FormElement.Panels.Count > 0;
-        SetOptions(dicParser.UIOptions.Form);
+        UISettings = dicParser.UIOptions.Form;
     }
 
     public JJDataPanel(FormElement formElement)
@@ -134,10 +125,10 @@ public class JJDataPanel : JJBaseView
         Values = new Hashtable();
         Erros = new Hashtable();
         PageState = PageState.View;
-        Layout = DataPanelLayout.Vertical;
         AutoReloadFormFields = true;
-        EnterKey = FormEnterKey.Disabled;
         RenderPanelGroup = FormElement.Panels.Count > 0;
+        UISettings.IsVerticalLayout = true;
+        UISettings.EnterKey = FormEnterKey.Disabled;
     }
 
     public JJDataPanel(FormElement formElement, Hashtable values, Hashtable erros, PageState pageState) : this(formElement)
@@ -411,7 +402,7 @@ public class JJDataPanel : JJBaseView
         if (fields.Count == 0)
             return string.Empty;
 
-        if (Layout == DataPanelLayout.Vertical)
+        if (UISettings.IsVerticalLayout)
             return GetHtmlFormVertical(fields);
         return GetHtmlFormHorizontal(fields);
     }
@@ -419,9 +410,7 @@ public class JJDataPanel : JJBaseView
     private string GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
-        var controlFactory = new WebControlFactory(this);
-
-        int cols = FormCols;
+        int cols = UISettings.FormCols;
         if (cols > 12)
             cols = 12;
 
@@ -474,7 +463,7 @@ public class JJDataPanel : JJBaseView
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fieldClass += " has-error";
 
-            if (PageState == PageState.View && ShowViewModeAsStatic)
+            if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 fieldClass += " jjborder-static";
 
             html.AppendLine("\t\t<div class=\"" + fieldClass + "\">");
@@ -487,7 +476,7 @@ public class JJDataPanel : JJBaseView
 
             html.Append("\t\t\t");
 
-            if (PageState == PageState.View && ShowViewModeAsStatic)
+            if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
             {
                 html.Append("<p class=\"form-control-static\">");
                 //TODO: recuperar valor do texto corretamente quando for combo, search, etc..
@@ -497,7 +486,7 @@ public class JJDataPanel : JJBaseView
             else
             {
                 
-                var field = controlFactory.CreateControl(f, value);
+                var field = FieldManager.GetField(f, PageState, Values, value);
                 bool enable = FieldManager.IsEnable(f, PageState, Values);
                 field.Enabled = enable;
                 if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
@@ -524,7 +513,7 @@ public class JJDataPanel : JJBaseView
         string fieldClass = "";
         string fullClass = "";
 
-        int cols = FormCols;
+        int cols = UISettings.FormCols;
         if (cols == 1)
         {
             labelClass = "col-sm-2";
@@ -551,8 +540,7 @@ public class JJDataPanel : JJBaseView
             fullClass = "col-sm-8";
         }
 
-        var controlFactory = new WebControlFactory(this);
-        StringBuilder html = new();
+        var html = new StringBuilder();
         html.Append($"<div class=\"{BootstrapHelper.FormHorizontal}\">");
 
         int colCount = 1;
@@ -580,15 +568,13 @@ public class JJDataPanel : JJBaseView
             string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
 
-            var field = controlFactory.CreateControl(f, fieldValue);
+            var field = FieldManager.GetField(f,PageState, Values, fieldValue);
             bool enable = FieldManager.IsEnable(f, PageState, Values);
             field.Enabled = enable;
             if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
             {
                 field.CssClass = "is-invalid";
             }
-
-            
 
             if (f.Component == FormComponent.TextArea)
             {
@@ -604,7 +590,7 @@ public class JJDataPanel : JJBaseView
                 html.AppendLine(label.GetHtml());
                 html.AppendLine("\t\t\t<div class=\"" + fullClass + "\">");
                 html.Append("\t\t\t\t");
-                if (PageState == PageState.View && ShowViewModeAsStatic)
+                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 {
                     html.Append("<p class=\"form-control-static\">");
                     html.Append(fieldValue);
@@ -633,7 +619,7 @@ public class JJDataPanel : JJBaseView
                 html.AppendLine(label.GetHtml());
                 html.AppendLine("\t\t\t<div class=\"" + fieldClass + "\">");
                 html.Append("\t\t\t\t");
-                if (PageState == PageState.View && ShowViewModeAsStatic)
+                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 {
                     html.Append("<p class=\"form-control-static\">");
                     html.Append(fieldValue);
@@ -745,7 +731,7 @@ public class JJDataPanel : JJBaseView
 
         sHtml.AppendLine("\t$(document).ready(function () {");
 
-        if (EnterKey == FormEnterKey.Tab)
+        if (UISettings.EnterKey == FormEnterKey.Tab)
         {
             sHtml.AppendLine($"\t\tjjutil.replaceEntertoTab(\"{Name}\");");
             sHtml.AppendLine("");
@@ -1037,23 +1023,6 @@ public class JJDataPanel : JJBaseView
 
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
         }
-    }
-
-    /// <summary>
-    /// Atribui as configurações do usuário cadastrado no dicionário de dados
-    /// </summary>
-    /// <param name="o">
-    /// Configurações do usuário
-    /// </param>
-    public void SetOptions(UIForm o)
-    {
-        if (o == null)
-            return;
-
-        FormCols = o.FormCols;
-        Layout = o.IsVerticalLayout ? DataPanelLayout.Vertical : DataPanelLayout.Horizontal;
-        ShowViewModeAsStatic = o.ShowViewModeAsStatic;
-        EnterKey = o.EnterKey;
     }
 
 }

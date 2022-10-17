@@ -22,11 +22,11 @@ namespace JJMasterData.Core.WebComponents
         //public FormElement FormElement { get; set; }
 
 
-        ///// <summary>
-        ///// UI Form Settings
-        ///// </summary>
-        //public UIForm FormSettings { get; set; }
-        
+        /// <summary>
+        /// UI Form Settings
+        /// </summary>
+        public UIForm FormSettings { get; set; }
+
         //public PageState PageState { get; set; }
 
         ///// <summary>
@@ -41,7 +41,7 @@ namespace JJMasterData.Core.WebComponents
         ///// </summary>
         //public Hashtable Values { get; set; }
 
-        
+
         ///// <summary>
         ///// Ao recarregar o painel, manter os valores digitados no formuário
         ///// (Default=True)
