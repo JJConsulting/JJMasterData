@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Commons.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.SourceControl", "src\Plugins\JJMasterData.SourceControl\JJMasterData.SourceControl.csproj", "{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.DataDictionary", "src\JJMasterData.Web.DataDictionary\JJMasterData.Web.DataDictionary.csproj", "{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.Bootstraper", "src\JJMasterData.Web.Bootstraper\JJMasterData.Web.Bootstraper.csproj", "{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Api.Test", "test\JJMasterData.Api.Test\JJMasterData.Api.Test.csproj", "{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}"
 EndProject
