@@ -251,7 +251,7 @@ public class FieldManager
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        Hashtable newvalues = new Hashtable();
+        var newvalues = new Hashtable();
         if (values != null)
         {
             foreach (DictionaryEntry v in values)

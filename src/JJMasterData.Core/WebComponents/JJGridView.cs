@@ -997,7 +997,7 @@ public class JJGridView : JJBaseView
 
             if (Filter.HasFilter())
             {
-                alert.Messages.Add("There are filters applied for this query");
+                alert.Messages.Add("There are filters applied for this query.");
                 alert.Icon = IconType.Filter;
             }
             else

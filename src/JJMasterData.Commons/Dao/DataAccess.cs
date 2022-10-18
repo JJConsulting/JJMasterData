@@ -31,12 +31,12 @@ public class DataAccess : IDataAccess
     private bool _keepAlive;
 
 
-    public bool TranslateErrorMessage { get; set; }
+    public bool TranslateErrorMessage { get; set; } = true;
 
     ///<summary>
     ///Generate error log
     ///</summary>
-    public bool GenerateLog { get; set; }
+    public bool GenerateLog { get; set; } = true;
 
     ///<summary>
     ///Database connection string; 
@@ -64,7 +64,7 @@ public class DataAccess : IDataAccess
     ///<remarks>
     ///it is recommended that 0 means no timeout
     ///</remarks>
-    public int TimeOut { get; set; }
+    public int TimeOut { get; set; } = 240;
 
         
     /// <summary>
@@ -115,20 +115,19 @@ public class DataAccess : IDataAccess
     /// <summary>
     /// Initializes the class based on the connection string called "ConnectionString" configured in JJMasterDataSettings.
     /// </summary>
+    /// 
+
     public DataAccess()
     {
         ConnectionString = JJService.Settings.ConnectionString;
         ConnectionProvider = JJService.Settings.ConnectionProvider;
-        TimeOut = 240; // 4 minutes;
-        GenerateLog = true;
-        TranslateErrorMessage = true;
     }
 
     /// <summary>
     /// Initializes the class based on the name of the connection string
     /// </summary>
     /// <param name="connectionStringName">Connection String name configured in app.config</param>
-    public DataAccess(string connectionStringName) : this()
+    public DataAccess(string connectionStringName)
     {
         ConnectionString = JJService.Settings.GetConnectionString(connectionStringName);
         ConnectionProvider = JJService.Settings.GetConnectionProvider(connectionStringName);
@@ -147,7 +146,7 @@ public class DataAccess : IDataAccess
     /// <para>Informix</para>
     /// <para>Sybase</para>
     /// </param>
-    public DataAccess(string connectionString, string connectionProviderName) : this()
+    public DataAccess(string connectionString, string connectionProviderName)
     {
         ConnectionString = connectionString;
         ConnectionProvider = connectionProviderName;            
