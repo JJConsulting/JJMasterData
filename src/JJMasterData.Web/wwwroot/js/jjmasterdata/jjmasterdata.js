@@ -1109,7 +1109,7 @@ var jjview = (function () {
             $("#current_formaction_" + objid).val("");
             jjview.doRefresh(objid, true);
         },
-        doPaging: function (objid, enableAjax, v) {
+        doPagination: function (objid, enableAjax, v) {
             $("#current_tablepage_" + objid).val(v);
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
