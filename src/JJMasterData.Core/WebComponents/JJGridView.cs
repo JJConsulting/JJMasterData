@@ -571,7 +571,7 @@ public class JJGridView : JJBaseView
 
     protected override string RenderHtml()
     {
-        StringBuilder html = new();
+        var html = new StringBuilder();
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))
         {
@@ -642,15 +642,15 @@ public class JJGridView : JJBaseView
         {
             case SqlCommandAction cmdAction:
             {
-                string sRet = DoSqlCommand(actionMap, cmdAction);
-                html.AppendLine(sRet);
+                string error = _actionManager.ExecuteSqlCommand(this, actionMap, cmdAction);
+                html.AppendLine(error);
                 currentAction = string.Empty;
                 break;
             }
             case PythonScriptAction pyAction:
             {
-                string sRet = DoPythonScriptAction(actionMap, pyAction);
-                html.AppendLine(sRet);
+                string error = _actionManager.ExecutePythonScriptAction(this, actionMap, pyAction);
+                html.AppendLine(error);
                 currentAction = string.Empty;
                 break;
             }
@@ -1654,109 +1654,7 @@ public class JJGridView : JJBaseView
                 break;
         }
     }
-    
-    private string DoSqlCommand(ActionMap map, SqlCommandAction cmdAction)
-    {
-        try
-        {
-            var listSql = new ArrayList();
-            if (map.ContextAction == ActionOrigin.Toolbar && EnableMultSelect && cmdAction.ApplyOnSelected)
-            {
-                var selectedRows = GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
 
-                foreach (var row in selectedRows)
-                {
-                    string sql = ActionManager.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
-                    listSql.Add(sql);
-                }
-
-                DataAccess.SetCommand(listSql);
-                ClearSelectedGridValues();
-            }
-            else
-            {
-                Hashtable formValues;
-                if (map.PKFieldValues != null ||
-                    map.PKFieldValues.Count > 0)
-                {
-                    formValues = DataDictionaryManager.GetHashtable(map.PKFieldValues).Result;
-                }
-                else
-                {
-                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
-                }
-
-                string sql = ActionManager.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
-                listSql.Add(sql);
-                DataAccess.SetCommand(listSql);
-            }
-
-            _dataSource = null;
-        }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
-    }
-
-    private string DoPythonScriptAction(ActionMap map, PythonScriptAction action)
-    {
-
-        var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
-
-        try
-        {
-            if (map.ContextAction == ActionOrigin.Toolbar && EnableMultSelect && action.ApplyOnSelected)
-            {
-                var selectedRows = GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
-
-                foreach (var row in selectedRows)
-                    scriptManager.Execute(ActionManager.Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
-
-
-                ClearSelectedGridValues();
-            }
-            else
-            {
-                Hashtable formValues;
-                if (map.PKFieldValues != null ||
-                    map.PKFieldValues.Count > 0)
-                {
-                    formValues = DataDictionaryManager.GetHashtable(map.PKFieldValues).Result;
-                }
-                else
-                {
-                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
-                }
-                scriptManager.Execute(ActionManager.Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
-            }
-
-            _dataSource = null;
-        }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
-    }
-    
     /// <summary>
     /// Retrieves database records.
     /// </summary>

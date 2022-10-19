@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -16,18 +19,13 @@ internal class ActionManager
     private ExpressionManager _expression;
     private Hashtable _userValues;
 
-
     /// <summary>
-    /// Configurações pré-definidas do formulário
+    /// <see cref="FormElement"/>
     /// </summary>
     public FormElement FormElement { get; set; }
 
     public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
-
-    /// <summary>
-    /// Valores espeçificos do usuário.
-    /// Utilizado para substituir os valores em tempo de execução nos métodos que suportam expression.
-    /// </summary>
+    
     public Hashtable UserValues
     {
         get => _userValues ??= new Hashtable();
@@ -37,15 +35,9 @@ internal class ActionManager
             _userValues = value;
         }
     }
-
-    /// <summary>
-    /// Objeto responsável por fazer toda a comunicação com o banco de dados
-    /// </summary>
+    
     public IDataAccess DataAccess { get; set; }
-
-    /// <summary>
-    /// Nome da Grid ou Form
-    /// </summary>
+    
     public string ComponentName { get; set; }
 
 
@@ -93,8 +85,8 @@ internal class ActionManager
             }
         }
 
-        string url = string.Format("{0}InternalRedirect?parameters={1}",
-             ConfigurationHelper.GetUrlMasterData(), Cript.EnigmaEncryptRP(@params.ToString()));
+        string url =
+            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -325,4 +317,100 @@ internal class ActionManager
         return link;
     }
 
+    public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
+    {
+
+        var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
+
+        try
+        {
+            if (map.ContextAction == ActionOrigin.Toolbar && gridView.EnableMultSelect && action.ApplyOnSelected)
+            {
+                var selectedRows = gridView.GetSelectedGridValues();
+                if (selectedRows.Count == 0)
+                {
+                    string msg = Translate.Key("No lines selected.");
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
+                }
+
+                foreach (var row in selectedRows)
+                    scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
+
+                gridView.ClearSelectedGridValues();
+            }
+            else
+            {
+                Hashtable formValues;
+                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
+                                                  map.PKFieldValues.Count > 0))
+                {
+                    formValues = new DataDictionaryManager(FormElement).GetHashtable(map.PKFieldValues).Result;
+                }
+                else
+                {
+                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
+                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                }
+                scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+            }
+        }
+        catch (Exception ex)
+        {
+            string msg = ExceptionManager.GetMessage(ex);
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
+        }
+
+        return null;
+    }
+
+    public string ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
+    {
+        try
+        {
+            var listSql = new ArrayList();
+            if (map.ContextAction == ActionOrigin.Toolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            {
+                var selectedRows = gridView.GetSelectedGridValues();
+                if (selectedRows.Count == 0)
+                {
+                    string msg = Translate.Key("No lines selected.");
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
+                }
+
+                foreach (var row in selectedRows)
+                {
+                    string sql = this.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    listSql.Add(sql);
+                }
+
+                DataAccess.SetCommand(listSql);
+                gridView.ClearSelectedGridValues();
+            }
+            else
+            {
+                Hashtable formValues;
+                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
+                                                  map.PKFieldValues.Count > 0))
+                {
+                    formValues = new DataDictionaryManager(FormElement).GetHashtable(map.PKFieldValues).Result;
+                }
+                else
+                {
+                    var formManager = new FormManager(gridView.FormElement, UserValues, DataAccess);
+                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                }
+
+                string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
+                listSql.Add(sql);
+                DataAccess.SetCommand(listSql);
+            }
+        }
+        catch (Exception ex)
+        {
+            string msg = ExceptionManager.GetMessage(ex);
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
+        }
+
+        return null;
+    }
 }
