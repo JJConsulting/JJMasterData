@@ -1,4 +1,5 @@
 interface JQuery{
     selectpicker : Function
-    bootstrapToggle : Function
+    bootstrapToggle: Function
+    tagsinput : Function
 }
