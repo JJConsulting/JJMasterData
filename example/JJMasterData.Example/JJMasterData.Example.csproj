@@ -6,9 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
   
-    <ItemGroup>
-      <PackageReference Include="JJMasterData.Web" Version="3.0.20" />
-    </ItemGroup>
+    
   
     <ItemGroup>
       <Folder Include="wwwroot\" />
