@@ -402,9 +402,12 @@ public class JJDataPanel : JJBaseView
         if (fields.Count == 0)
             return string.Empty;
 
-        if (UISettings.IsVerticalLayout)
-            return GetHtmlFormVertical(fields);
-        return GetHtmlFormHorizontal(fields);
+        var controlpanel = new DataPanelControl(this);
+        return controlpanel.GetHtmlForm(fields).GetElementHtml();
+
+        //if (UISettings.IsVerticalLayout)
+        //    return GetHtmlFormVertical(fields);
+        //return GetHtmlFormHorizontal(fields);
     }
 
     private string GetHtmlFormVertical(List<FormElementField> fields)

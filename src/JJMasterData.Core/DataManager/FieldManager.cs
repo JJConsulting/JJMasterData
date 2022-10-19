@@ -45,7 +45,6 @@ public class FieldManager
     /// </summary>
     public IDataAccess DataAccess { get; set; }
 
-
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>

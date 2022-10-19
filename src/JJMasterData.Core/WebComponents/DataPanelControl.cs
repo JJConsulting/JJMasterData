@@ -1,23 +1,13 @@
-﻿using System;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Html;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
 
-internal class JJDataPanelControl : JJBaseView
+internal class DataPanelControl : JJBaseView
 {
-    //public FormElement FormElement { get; private set; }
-
     public UIForm UISettings { get; private set; }
 
     public FieldManager FieldManager { get; private set; }
@@ -30,13 +20,27 @@ internal class JJDataPanelControl : JJBaseView
 
     public string PanelName { get; private set; }
 
+    private bool IsViewModeAsStatic => PageState == PageState.View && UISettings.ShowViewModeAsStatic;
 
-    public JJDataPanelControl(JJDataPanel dataPanel)
+    public DataPanelControl(JJDataPanel dataPanel)
     {
-      
+        UISettings = dataPanel.UISettings;
+        FieldManager = dataPanel.FieldManager;
+        PageState = dataPanel.PageState;
+        Erros = dataPanel.Erros;
+        Values = dataPanel.Values;
+        PanelName = dataPanel.Name;
     }
 
-    private string GetHtmlFormVertical(List<FormElementField> fields)
+    public HtmlElement GetHtmlForm(List<FormElementField> fields)
+    {
+        if (UISettings.IsVerticalLayout)
+            return GetHtmlFormVertical(fields);
+
+        return GetHtmlFormHorizontal(fields);
+    }
+
+    private HtmlElement GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
         int cols = UISettings.FormCols;
@@ -46,18 +50,15 @@ internal class JJDataPanelControl : JJBaseView
         if (cols >= 1)
             colClass = string.Format(" col-sm-{0}", (12 / cols));
 
-        var html = new StringBuilder();
-
+        var html = new HtmlElement(HtmlTag.Div);
         int linegroup = int.MinValue;
-        bool isfirst = true;
+        HtmlElement row = null;
         foreach (var f in fields)
         {
             //visible expression
             bool visible = FieldManager.IsVisible(f, PageState, Values);
             if (!visible)
-            {
                 continue;
-            }
 
             //value
             object value = null;
@@ -66,76 +67,46 @@ internal class JJDataPanelControl : JJBaseView
 
             if (linegroup != f.LineGroup)
             {
-                if (isfirst)
-                    isfirst = false;
-                else
-                    html.AppendLine("\t</div>");
-
-                html.AppendLine("\t<div class=\"row\">");
                 linegroup = f.LineGroup;
+                row = new HtmlElement(HtmlTag.Div)
+                    .WithCssClass("row");
+                html.AppendElement(row);
             }
 
-            string fieldClass = BootstrapHelper.FormGroup;
+            var htmlField = new HtmlElement(HtmlTag.Div)
+                .WithCssClass(BootstrapHelper.FormGroup);
+
+            row.AppendElement(htmlField);
 
             if (!string.IsNullOrEmpty(f.CssClass))
             {
-                fieldClass += string.Format(" {0}", f.CssClass);
+                htmlField.WithCssClass(f.CssClass);
             }
             else
             {
-                if (cols > 1 && f.Component == FormComponent.TextArea)
-                    fieldClass += " col-sm-12";
+                if (f.Component == FormComponent.TextArea | f.Component == FormComponent.CheckBox)
+                    htmlField.WithCssClass("col-sm-12");
                 else
-                    fieldClass += colClass;
+                    htmlField.WithCssClass(colClass);
             }
 
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                fieldClass += " has-error";
+                htmlField.WithCssClass("has-error");
 
             if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                fieldClass += " jjborder-static";
-
-            html.AppendLine("\t\t<div class=\"" + fieldClass + "\">");
+                htmlField.WithCssClass("jjborder-static");
 
             if (f.Component != FormComponent.CheckBox)
-            {
-                html.Append("\t\t\t");
-                html.AppendLine(new JJLabel(f).GetHtml());
-            }
+                htmlField.AppendElement(new JJLabel(f));
 
-            html.Append("\t\t\t");
-
-            if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-            {
-                html.Append("<p class=\"form-control-static\">");
-                //TODO: recuperar valor do texto corretamente quando for combo, search, etc..
-                html.Append(value);
-                html.AppendLine("</p>");
-            }
-            else
-            {
-
-                var field = FieldManager.GetField(f, PageState, Values, value);
-                bool enable = FieldManager.IsEnable(f, PageState, Values);
-                field.Enabled = enable;
-                if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
-                {
-                    field.CssClass = "is-invalid";
-                }
-
-                html.AppendLine(field.GetHtml());
-            }
-
-            html.AppendLine("\t\t</div>");
+            htmlField.AppendElement(GetControlField(f, value));
 
         }
 
-        html.AppendLine("\t</div>");
-
-        return html.ToString();
+        return html;
     }
 
-    private string GetHtmlFormHorizontal(List<FormElementField> fields)
+    private HtmlElement GetHtmlFormHorizontal(List<FormElementField> fields)
     {
         string fldClass = "";
         string labelClass = "";
@@ -153,13 +124,13 @@ internal class JJDataPanelControl : JJBaseView
         {
             labelClass = "col-sm-2";
             fieldClass = "col-sm-4";
-            fullClass = "col-sm-10";
+            fullClass = "col-sm-9";
         }
         else if (cols == 3)
         {
             labelClass = "col-sm-2";
             fieldClass = "col-sm-2";
-            fullClass = "col-sm-10";
+            fullClass = "col-sm-9";
         }
         else if (cols >= 4)
         {
@@ -169,115 +140,99 @@ internal class JJDataPanelControl : JJBaseView
             fullClass = "col-sm-8";
         }
 
-        var html = new StringBuilder();
-        html.Append($"<div class=\"{BootstrapHelper.FormHorizontal}\">");
+        if (BootstrapHelper.Version > 3)
+        {
+            labelClass += " d-flex justify-content-end align-items-center";
+            fieldClass += " d-flex justify-content-start align-items-center";
+        }
+            
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithCssClass(BootstrapHelper.FormHorizontal);
 
         int colCount = 1;
+        HtmlElement row = null;
         foreach (var f in fields)
         {
             //visible expression
             bool visible = FieldManager.IsVisible(f, PageState, Values);
             if (!visible)
-            {
                 continue;
-            }
 
             //value
-            object fieldValue = null;
+            object value = null;
             if (Values != null && Values.Contains(f.Name))
-                fieldValue = FieldManager.FormatVal(Values[f.Name], f);
+                value = FieldManager.FormatVal(Values[f.Name], f);
 
             var label = new JJLabel(f);
             label.CssClass = labelClass;
-
+            
             fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : string.Format(" {0}", f.CssClass);
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fldClass += " has-error";
 
-            string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
+            if (colCount == 1 || colCount >= cols)
+            {
+                colCount = 1;
+                row = new HtmlElement(HtmlTag.Div)
+                    .WithCssClass("form-group")
+                    .WithCssClassIf(BootstrapHelper.Version > 3, "row mb-3");
+
+                html.AppendElement(row);
+            }
+
+            string colClass = fieldClass;
+            if (f.Component == FormComponent.TextArea)
+            {
+                colClass = fullClass;
+                colCount = 1;
+            }
+            else if (f.Component == FormComponent.CheckBox)
+            {
+                colCount++;
+                if (!IsViewModeAsStatic)
+                    label.Text = string.Empty;
+            }
+            else
+            {
+                colCount++;
+            }
+
+           row.WithCssClass(fldClass)
+            .AppendElement(label)
+            .AppendElement(HtmlTag.Div, col =>
+            {
+                col.WithCssClass(colClass);
+                col.AppendElement(GetControlField(f, value));
+            });
+
+        }
+
+        return html;
+    }
 
 
-            var field = FieldManager.GetField(f, PageState, Values, fieldValue);
-            bool enable = FieldManager.IsEnable(f, PageState, Values);
-            field.Enabled = enable;
+    private HtmlElement GetControlField(FormElementField f, object value)
+    {
+        if (IsViewModeAsStatic)
+        {
+            var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
+            var html = new HtmlElement(tag)
+                .WithCssClass("form-control-static")
+                .AppendText(FieldManager.ParseVal(Values, f));
+
+            return html;
+        }
+        else
+        {
+            var field = FieldManager.GetField(f, PageState, Values, value);
+            field.Enabled = FieldManager.IsEnable(f, PageState, Values);
             if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
             {
                 field.CssClass = "is-invalid";
             }
 
-            if (f.Component == FormComponent.TextArea)
-            {
-                if (colCount > 1)
-                    html.AppendLine("\t</div>");
-
-                html.AppendLine($"\t<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\">");
-                html.Append("\t\t");
-                html.Append("<div class=\"");
-                html.Append(fldClass);
-                html.AppendLine("\">");
-                html.Append("\t\t\t");
-                html.AppendLine(label.GetHtml());
-                html.AppendLine("\t\t\t<div class=\"" + fullClass + "\">");
-                html.Append("\t\t\t\t");
-                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                {
-                    html.Append("<p class=\"form-control-static\">");
-                    html.Append(fieldValue);
-                    html.AppendLine("</p>");
-                }
-                else
-                {
-                    html.AppendLine(field.GetHtml());
-                }
-                html.AppendLine("\t\t\t</div>");
-                html.AppendLine("\t\t</div>");
-                html.AppendLine("\t</div>");
-
-                colCount = 1;
-            }
-            else
-            {
-                if (colCount == 1)
-                    html.AppendLine($"\t<div class=\"{BootstrapHelper.FormGroup}\">");
-
-                html.Append("\t\t");
-                html.Append("<div class=\"");
-                html.Append($"{fldClass} {bs4Row}");
-                html.AppendLine("\">");
-                html.Append("\t\t\t");
-                html.AppendLine(label.GetHtml());
-                html.AppendLine("\t\t\t<div class=\"" + fieldClass + "\">");
-                html.Append("\t\t\t\t");
-                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                {
-                    html.Append("<p class=\"form-control-static\">");
-                    html.Append(fieldValue);
-                    html.AppendLine("</p>");
-                }
-                else
-                {
-                    html.AppendLine(field.GetHtml());
-                }
-                html.AppendLine("\t\t\t</div>");
-                html.AppendLine("\t\t</div>");
-
-                if (colCount >= cols)
-                {
-                    html.AppendLine("\t</div>");
-                    colCount = 1;
-                }
-                else
-                {
-                    colCount++;
-                }
-            }
-
+            return field.GetHtmlElement();
         }
-        if (colCount > 1)
-            html.AppendLine("\t</div>");
-
-        html.AppendLine("</div>");
-        return html.ToString();
     }
 
 }
