@@ -46,7 +46,7 @@ public class JJIcon : JJBaseView
         Title = title;
     }
     
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var element = new HtmlElement(HtmlTag.Span)
             .WithNameAndId(Name)

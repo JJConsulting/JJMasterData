@@ -70,9 +70,9 @@ public class JJLinkButton : JJBaseView, IAction
         Enabled = true;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
-        JJIcon icon = GetIcon();
+        var icon = GetIcon();
 
         var html = new HtmlElement(HtmlTag.A);
         html.WithNameAndId(Name);

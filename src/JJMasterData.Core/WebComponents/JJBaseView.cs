@@ -146,9 +146,16 @@ public abstract class JJBaseView
     /// </summary>
     // internal abstract HtmlElement GetHtmlElement();
     // TODO: after removing RenderHtml() make this method abstract.
-    internal virtual HtmlElement GetHtmlElement()
+    internal virtual HtmlElement RenderHtmlElement()
     {
         return new HtmlElement("    ");
+    }
+
+    public HtmlElement GetHtmlElement()
+    {
+        if (Visible)
+            return RenderHtmlElement();
+        return null;
     }
 
     /// <summary>
@@ -163,7 +170,7 @@ public abstract class JJBaseView
             return "";
 
         string result = null;
-        var element = GetHtmlElement();
+        var element = RenderHtmlElement();
         if (element != null)
         {
             var builder = new HtmlBuilder();

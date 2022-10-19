@@ -20,5 +20,5 @@ public class JJText : JJBaseView
         Text = text;
     }
 
-    internal override HtmlElement GetHtmlElement() => new(Text);
+    internal override HtmlElement RenderHtmlElement() => new(Text);
 }

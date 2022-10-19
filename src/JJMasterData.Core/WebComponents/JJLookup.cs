@@ -132,7 +132,7 @@ public class JJLookup : JJBaseControl
 
     #endregion
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (!IsLookupRoute())
             return GetLookupHtmlElement();

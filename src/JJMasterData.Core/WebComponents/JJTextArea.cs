@@ -32,7 +32,7 @@ public class JJTextArea : JJBaseControl
     }
 
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
 
         var html = new HtmlElement(HtmlTag.TextArea)

@@ -21,7 +21,7 @@ internal class GridPagination
 
     public HtmlElement GetHtmlElement()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalReg / (double)GridView.CurrentUI.TotalPerPage);
+        _totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentUI.TotalPerPage);
         _totalButtons = GridView.CurrentUI.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
@@ -117,7 +117,7 @@ internal class GridPagination
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText(GridView.TotalReg.ToString("N0"));
+                    span.AppendText(GridView.TotalRecords.ToString("N0"));
                     span.AppendText(Translate.Key("record(s)"));
                 });
             }
@@ -127,8 +127,8 @@ internal class GridPagination
                     GridView.CurrentUI.TotalPerPage + 1);
                 label.AppendText("-");
 
-                if (GridView.CurrentUI.TotalPerPage * GridView.CurrentPage > GridView.TotalReg)
-                    label.AppendText(GridView.TotalReg);
+                if (GridView.CurrentUI.TotalPerPage * GridView.CurrentPage > GridView.TotalRecords)
+                    label.AppendText(GridView.TotalRecords);
                 else
                     label.AppendText(GridView.CurrentUI.TotalPerPage * GridView.CurrentPage);
 
@@ -136,7 +136,7 @@ internal class GridPagination
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText(GridView.TotalReg.ToString("N0"));
+                    span.AppendText(GridView.TotalRecords.ToString("N0"));
                 });
             }
         });

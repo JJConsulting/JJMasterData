@@ -23,7 +23,7 @@ namespace JJMasterData.Core.WebComponents
             Messages = new List<string>();
         }
 
-        internal override HtmlElement GetHtmlElement()
+        internal override HtmlElement RenderHtmlElement()
         {
             var html = new HtmlElement(HtmlTag.Div)
                 .WithNameAndId(Name)

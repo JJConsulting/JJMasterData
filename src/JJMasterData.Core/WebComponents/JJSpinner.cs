@@ -14,14 +14,14 @@ public class JJSpinner : JJBaseView
             CssClass += " jj-blink";
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Span)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
             .WithAttributes(Attributes)
             .WithAttribute("role", "status")
-            .AppendElementIf(BootstrapHelper.Version == 3, new JJIcon(IconType.Circle).GetHtmlElement())
+            .AppendElementIf(BootstrapHelper.Version == 3, new JJIcon(IconType.Circle).RenderHtmlElement())
             .AppendElementIf(BootstrapHelper.Version != 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("visually-hidden");

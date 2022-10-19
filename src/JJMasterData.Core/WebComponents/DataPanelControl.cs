@@ -231,7 +231,7 @@ internal class DataPanelControl : JJBaseView
                 field.CssClass = "is-invalid";
             }
 
-            return field.GetHtmlElement();
+            return field.RenderHtmlElement();
         }
     }
 

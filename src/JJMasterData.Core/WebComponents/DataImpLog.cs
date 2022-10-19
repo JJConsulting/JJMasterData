@@ -144,7 +144,7 @@ internal class DataImpLog
                 .AppendElement(HtmlTag.Br)
                 .AppendText(reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
-        return panel.GetHtmlElement();
+        return panel.RenderHtmlElement();
     }
 
     private JJAlert GetAlertPanel()

@@ -33,7 +33,7 @@ namespace JJMasterData.Core.WebComponents
         ///// Fields with erros.
         ///// Key=Name of field, Value= Error Description
         ///// </summary>
-        //public Hashtable Erros { get; set; }
+        //public Hashtable Errors { get; set; }
 
         ///// <summary>
         ///// Field Values.

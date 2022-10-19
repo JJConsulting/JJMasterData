@@ -252,75 +252,72 @@ internal class ActionManager
 
     private JJLinkButton GetLink(BasicAction action, Hashtable formValues, PageState pagestate, ActionOrigin contextAction, string fieldName = null)
     {
-        var link = new JJLinkButton();
-        link.ToolTip = action.ToolTip;
-        link.Text = action.Text;
-        link.IsGroup = action.IsGroup;
-        link.IsDefaultOption = action.IsDefaultOption;
-        link.DividerLine = action.DividerLine;
-        link.ShowAsButton = action.ShowAsButton;
-        link.CssClass = action.CssClass;
-        link.IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw";
-        link.Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues);
-        link.Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues);
+        var link = new JJLinkButton
+        {
+            ToolTip = action.ToolTip,
+            Text = action.Text,
+            IsGroup = action.IsGroup,
+            IsDefaultOption = action.IsDefaultOption,
+            DividerLine = action.DividerLine,
+            ShowAsButton = action.ShowAsButton,
+            CssClass = action.CssClass,
+            IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw",
+            Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
+            Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues)
+        };
 
         string script;
-        if (action is ViewAction ||
-            action is InsertAction ||
-            action is EditAction ||
-            action is DeleteAction ||
-            action is DeleteSelectedRowsAction ||
-            action is ImportAction ||
-            action is LogAction)
+        switch (action)
         {
-            script = GetFormActionScript(action, formValues, contextAction);
-        }
-        else if (action is UrlRedirectAction redirectAction)
-        {
-            script = GetUrlRedirectScript(redirectAction, formValues, pagestate, contextAction, fieldName);
-        }
-        else if (action is InternalAction internalAction)
-        {
-            script = GetInternalUrlScript(internalAction, formValues);
-        }
-        else if (action is ScriptAction jsAction)
-        {
-            script = Expression.ParseExpression(jsAction.OnClientClick, pagestate, false, formValues);
-        }
-        else if (action is ConfigAction)
-        {
-            script = BootstrapHelper.GetModalScript($"config_modal_{ComponentName}");
-        }
-        else if (action is ExportAction)
-        {
-            script = $"JJDataExp.openExportUI('{ComponentName}');";
-        }
-        else if (action is RefreshAction)
-        {
-            script = $"jjview.doRefresh('{ComponentName}');";
-        }
-        else if (action is FilterAction filterAction)
-        {
-            if (filterAction.ShowAsCollapse)
-                link.Visible = false;
+            case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction or LogAction:
+                script = GetFormActionScript(action, formValues, contextAction);
+                break;
+            case UrlRedirectAction redirectAction:
+                script = GetUrlRedirectScript(redirectAction, formValues, pagestate, contextAction, fieldName);
+                break;
+            case InternalAction internalAction:
+                script = GetInternalUrlScript(internalAction, formValues);
+                break;
+            case ScriptAction jsAction:
+                script = Expression.ParseExpression(jsAction.OnClientClick, pagestate, false, formValues);
+                break;
+            case ConfigAction:
+                script = BootstrapHelper.GetModalScript($"config_modal_{ComponentName}");
+                break;
+            case ExportAction:
+                script = $"JJDataExp.openExportUI('{ComponentName}');";
+                break;
+            case RefreshAction:
+                script = $"jjview.doRefresh('{ComponentName}');";
+                break;
+            case FilterAction filterAction:
+            {
+                if (filterAction.ShowAsCollapse)
+                    link.Visible = false;
 
-            script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
-        }
-        else if (action is LegendAction)
-        {
-            script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
-        }
-        else if (action is SqlCommandAction | action is PythonScriptAction)
-        {
-            script = GetCommandScript(action, formValues, contextAction);
-        }
-        else if (action is SortAction)
-        {
-            script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
-        }
-        else
-        {
-            throw new NotImplementedException();
+                script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
+                break;
+            }
+            case LegendAction:
+                script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
+                break;
+            default:
+            {
+                if (action is SqlCommandAction | action is PythonScriptAction)
+                {
+                    script = GetCommandScript(action, formValues, contextAction);
+                }
+                else if (action is SortAction)
+                {
+                    script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                break;
+            }
         }
 
         link.OnClientClick = script;

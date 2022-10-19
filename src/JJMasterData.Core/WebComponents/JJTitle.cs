@@ -38,7 +38,7 @@ public class JJTitle : JJBaseView
         Size = HeadingSize.H1;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         return new HtmlElement(HtmlTag.Div)
             .WithNameAndId(Name)

@@ -22,7 +22,7 @@ public class JJModalDialog : JJBaseView
         Buttons = new List<JJLinkButton>();
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         string title = Translate.Key(Title);
 

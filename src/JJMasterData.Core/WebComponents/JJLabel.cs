@@ -53,7 +53,7 @@ public class JJLabel : JJBaseView
         IsRequired = f.IsRequired;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var element = new HtmlElement(HtmlTag.Label)
             .WithNameAndId(Name)

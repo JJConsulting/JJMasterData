@@ -113,7 +113,7 @@ public class JJDataImp : JJBaseProcess
 
     #endregion
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         HtmlElement html = null;
         Upload.OnPostFile += Upload_OnPostFile;

@@ -1209,7 +1209,7 @@
             (Default = true)
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.TotalReg">
+        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.TotalRecords">
             <summary>
             Quantidade total de registros existentes no banco
             </summary>
@@ -1282,7 +1282,7 @@
             <para/>
             Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
             <para/>
-            Se a propriedade TotalReg for igual zero a paginação não será exibida.
+            Se a propriedade TotalRecords for igual zero a paginação não será exibida.
             </remarks>
         </member>
         <member name="P:JJMasterData.Core.DataDictionary.UIGrid.HeaderFixed">
@@ -1990,7 +1990,7 @@
             Estado atual da pagina
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJDataPanel.Erros">
+        <member name="P:JJMasterData.Core.WebComponents.JJDataPanel.Errors">
             <summary>
             Campos com erro.
             Key=Nome do campo, Value=Descricão do erro
@@ -2509,7 +2509,7 @@
             Indica se o usuário preecheu manualmente o DataSource
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TotalReg">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TotalRecords">
             <summary>
             Quantidade total de registros existentes no banco
             </summary>
@@ -2639,10 +2639,10 @@
             <para/>
             Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
             <para/>
-            Se a propriedade TotalReg for igual zero a paginação não será exibida.
+            Se a propriedade TotalRecords for igual zero a paginação não será exibida.
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.Erros">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.Errors">
             <summary>
             Campos com erro.
             Key=Nome do campo, Value=Descricão do erro
@@ -2668,7 +2668,7 @@
             Key = Nome do campo, Value=Valor do campo
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.SizeTitle">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TitleSize">
             <summary>
             Tamanho da fonte do titulo (default(H1)
             </summary>

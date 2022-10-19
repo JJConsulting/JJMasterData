@@ -9,23 +9,12 @@ namespace JJMasterData.Core.WebComponents;
 /// </summary>
 public class JJMessageBox : JJBaseView
 {
-    private string _Text;
+    private string _text;
     public string Text
     {
-        get => _Text;
+        get => _text;
         
-        set
-        {
-            if (!string.IsNullOrEmpty(value))
-            {
-                _Text = value.Replace("'","`");
-            }
-            else
-            {
-                _Text = value;
-            }
-            
-        }
+        set => _text = !string.IsNullOrEmpty(value) ? value.Replace("'","`") : value;
     }
     
     public string Title { get; set; }
@@ -58,7 +47,7 @@ public class JJMessageBox : JJBaseView
     {
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")

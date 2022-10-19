@@ -113,7 +113,7 @@ public class JJUploadFile : JJBaseView
         MaxFileSize = GetMaxRequestLength();
     }
     
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))

@@ -60,7 +60,7 @@ public class JJValidationSummary : JJBaseView
         Errors.Add(error);
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var alert = new JJAlert()
         {
@@ -71,6 +71,6 @@ public class JJValidationSummary : JJBaseView
             Messages = Errors
         };
 
-        return alert.GetHtmlElement();
+        return alert.RenderHtmlElement();
     }
 }
