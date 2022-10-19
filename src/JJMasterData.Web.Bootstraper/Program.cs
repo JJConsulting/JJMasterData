@@ -1,11 +1,10 @@
+using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
-
-builder.Services.AddJJMasterDataWeb();
-
+builder.Services.AddJJMasterDataWeb().WithFormEvents();
 var app = builder.Build();
 
 if (app.Environment.IsProduction())

@@ -68,7 +68,11 @@
             var selector = divId + " input:enabled, " + divId + " select:enabled";
 
             $(selector).each(function () {
-                let currentObj: any = $(this);
+                let currentObj = $(this);
+
+                if (currentObj.hasClass("flatpickr-input")) {
+                    currentObj.val("")
+                }
 
                 let inputType : string = (this as any).type;
 
@@ -77,7 +81,6 @@
                 }
                 else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
                     currentObj.tagsinput('removeAll');
-
                 }
                 else if (inputType != "hidden") {
                     currentObj.val("");
