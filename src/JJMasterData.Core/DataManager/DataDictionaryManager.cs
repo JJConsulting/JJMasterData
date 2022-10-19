@@ -125,7 +125,6 @@ public class DataDictionaryManager
     {
         var errors = new Hashtable();
 
-        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
 
         if (sender is JJFormView formView)
         {
@@ -134,6 +133,8 @@ public class DataDictionaryManager
         }
 
         errors = validationFunc?.Invoke();
+
+        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
 
         OnBeforeUpdate?.Invoke(sender, beforeActionArgs);
 
@@ -168,8 +169,6 @@ public class DataDictionaryManager
     {
         var errors = new Hashtable();
 
-        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-
         if (sender is JJFormView formView)
         {
             OnAfterInsert += formView.InvokeOnAfterInsert;
@@ -178,6 +177,7 @@ public class DataDictionaryManager
 
         errors = validationFunc?.Invoke();
 
+        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
         OnBeforeInsert?.Invoke(sender, beforeActionArgs);
 
         if (errors?.Count > 0) return new(errors);
@@ -210,13 +210,13 @@ public class DataDictionaryManager
     {
         var errors = new Hashtable();
 
-        var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
-
         if (sender is JJFormView formView)
         {
             OnAfterDelete += formView.InvokeOnAfterDelete;
             OnBeforeDelete += formView.InvokeOnBeforeDelete;
         }
+
+        var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
 
         OnBeforeDelete?.Invoke(sender, beforeActionArgs);
 
