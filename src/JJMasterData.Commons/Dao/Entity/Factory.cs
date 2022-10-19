@@ -472,7 +472,7 @@ public class Factory
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
         var culture = CultureInfo.CreateSpecificCulture("en-US");
-
+        string currentField = null;
         DbConnection conn = null;
         try
         {
@@ -512,7 +512,7 @@ public class Factory
             int col = 0;
             int qtd = 0;
             var columns = new Dictionary<string, int>();
-
+           
             if (dr.HasRows)
             {
                 for (int i = 0; i < dr.FieldCount; i++)
@@ -525,6 +525,7 @@ public class Factory
                     qtd++;
                     foreach (ElementField field in element.Fields)
                     {
+                        currentField = field.Name;
                         if (!columns.ContainsKey(field.Name))
                             throw new Exception(Translate.Key("{0} field not found", field.Name));
 
@@ -617,9 +618,18 @@ public class Factory
         }
         catch (Exception ex)
         {
-            string sErr = Translate.Key("Error synchronizing object: {0}, page: {1}. Details: {2}",
-                element.Name, pag, ex.Message);
-            throw new Exception(sErr, ex);
+            var message = new StringBuilder();
+
+            message.AppendLine("Error synchronizing.");
+            message.AppendLine($"Object: {element.Name}");
+            message.AppendLine($"Page: {pag}");
+            message.AppendLine($"Field: {currentField}");
+            message.AppendLine($"Exception: {ex.Message}");
+            message.AppendLine($"Stacktrace: {ex.StackTrace}");
+
+            Log.AddError(message.ToString());
+
+            throw new Exception(message.ToString(), ex);
         }
         finally
         {

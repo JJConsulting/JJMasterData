@@ -200,7 +200,7 @@ textarea {
 
 
 input.loading-circle {
-    background: url('/images/input-ajax-loader.gif') no-repeat right 10px center;
+    background: url('../images/input-ajax-loader.gif') no-repeat right 10px center;
 }
 
 a.disabled {

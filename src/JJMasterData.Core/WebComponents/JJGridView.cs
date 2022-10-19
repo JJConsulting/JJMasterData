@@ -12,7 +12,6 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents;
@@ -20,6 +19,7 @@ using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.WebComponents;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -997,7 +997,7 @@ public class JJGridView : JJBaseView
 
             if (Filter.HasFilter())
             {
-                alert.Messages.Add("There are filters applied for this query");
+                alert.Messages.Add("There are filters applied for this query.");
                 alert.Icon = IconType.Filter;
             }
             else
@@ -1011,9 +1011,11 @@ public class JJGridView : JJBaseView
 
         html.AppendLine("\t<!-- End Table -->");
         html.AppendLine("");
-
-        //Paginação
-        html.Append(GetHtmlPaging(listSelectedValues));
+        
+        var gridPagination = new GridPagination(this);
+        
+        //TODO: AppendElement.
+        html.Append(gridPagination.GetHtmlElement().GetElementHtml());
 
         if (ShowToolbar)
         {
@@ -1685,199 +1687,6 @@ public class JJGridView : JJBaseView
             html.AppendLine("\t\t\t\t\t</td>");
         }
 
-
-        return html.ToString();
-    }
-
-    /// <summary>
-    /// Renderiza a paginação da grid
-    /// </summary>
-    /// <returns></returns>
-    private string GetHtmlPaging(List<Hashtable> listSelectedValues)
-    {
-        if (!IsPaggingEnabled())
-            return "";
-
-        int totalPages = (int)Math.Ceiling(TotalReg / (double)CurrentUI.TotalPerPage);
-        int qtdButtons = CurrentUI.TotalPaginationButtons;
-        int startButton = (((int)Math.Floor((CurrentPage - 1) / (double)qtdButtons)) * qtdButtons) + 1;
-        int endButton = startButton + qtdButtons;
-
-        StringBuilder html = new();
-        if (BootstrapHelper.Version != 3)
-        {
-            html.AppendLine("<div class=\"container-fluid p-0\">");
-        }
-
-        html.AppendLine("\t<!-- Start Pagging -->");
-        html.AppendLine("\t\t<div class=\"row justify-content-between\">");
-        html.AppendLine("\t\t\t<div class=\"col-sm-9\">");
-        html.AppendLine("\t\t\t\t<ul class=\"pagination\">");
-
-        if (startButton > qtdButtons)
-        {
-
-            html.Append("\t\t\t\t\t<li class=\"page-item\">");
-            html.Append("<a class=\"page-link\" style=\"cursor:pointer; cursor:hand;\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key("First record"));
-            html.Append("\" ");
-            html.Append("onclick =\"javascript:jjview.doPaging('");
-            html.Append(Name);
-            html.Append("',");
-            html.Append(EnableAjax ? "true" : "false");
-            html.Append(",'");
-            html.Append(1);
-            html.Append("');\">");
-            html.Append(new JJIcon(IconType.AngleDoubleLeft).GetHtml());
-            html.Append("</a>");
-            html.AppendLine("</li>");
-
-            html.Append("\t\t\t\t\t<li class=\"page-item\">");
-            html.Append("<a class=\"page-link\" style=\"cursor:pointer; cursor:hand;\" ");
-            html.Append("onclick =\"javascript:jjview.doPaging('");
-            html.Append(Name);
-            html.Append("',");
-            html.Append(EnableAjax ? "true" : "false");
-            html.Append(",'");
-            html.Append(startButton - 1);
-            html.Append("');\">");
-            html.Append(new JJIcon(IconType.AngleLeft).GetHtml());
-            html.Append("</a>");
-            html.AppendLine("</li>");
-
-        }
-
-
-        for (int i = startButton; i < endButton; i++)
-        {
-            if (i > totalPages || totalPages <= 1)
-                break;
-
-            html.Append("\t\t\t\t\t<li  class=\"page-item");
-            if (i == CurrentPage)
-                html.Append(" active");
-            html.Append("\">");
-
-            html.Append("<a href=\"#\"  class=\"page-link\" style=\"cursor:pointer; cursor:hand;\" ");
-            html.Append("onclick =\"javascript:jjview.doPaging('");
-            html.Append(Name);
-            html.Append("',");
-            html.Append(EnableAjax ? "true" : "false");
-            html.Append(",'");
-            html.Append(i);
-            html.Append("');\">");
-            html.Append(i);
-            html.Append("</a>");
-            html.AppendLine("</li>");
-        }
-
-        if (endButton <= totalPages)
-        {
-            html.Append("\t\t\t\t\t<li class=\"page-item\">");
-            html.Append("<a class=\"page-link\" href=\"#\" style=\"cursor:pointer; cursor:hand;\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(totalPages);
-            html.Append(" ");
-            html.Append(Translate.Key("pages"));
-            html.Append("\" ");
-            html.Append("onclick =\"javascript:jjview.doPaging('");
-            html.Append(Name);
-            html.Append("',");
-            html.Append(EnableAjax ? "true" : "false");
-            html.Append(",'");
-            html.Append(endButton);
-            html.Append("');\">");
-            html.Append(new JJIcon(IconType.AngleRight).GetHtml());
-            html.Append("</a>");
-            html.AppendLine("</li>");
-
-            html.Append("\t\t\t\t\t<li class=\"page-item\">");
-            html.Append("<a class=\"page-link\" href=\"#\" style=\"cursor:pointer; cursor:hand;\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key("Last record"));
-            html.Append("\" ");
-            html.Append("onclick =\"javascript:jjview.doPaging('");
-            html.Append(Name);
-            html.Append("',");
-            html.Append(EnableAjax ? "true" : "false");
-            html.Append(",'");
-            html.Append(totalPages);
-            html.Append("');\">");
-            html.Append(new JJIcon(IconType.AngleDoubleRight).GetHtml());
-            html.Append("</a>");
-            html.AppendLine("</li>");
-        }
-
-        html.AppendLine("\t\t\t\t</ul>");
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine($"\t\t\t<div class=\"col-sm-3 {BootstrapHelper.TextRight}\">");
-        html.AppendFormat("\t\t\t\t<label id=\"infotext_{0}\" class=\"small\">", Name);
-        html.Append(Translate.Key("Showing"));
-        html.Append(" ");
-        if (totalPages <= 1)
-        {
-            html.Append("<span id=\"");
-            html.Append(Name);
-            html.Append("_totrows\">");
-            html.Append(TotalReg.ToString("N0"));
-            html.Append("</span> ");
-            html.Append(Translate.Key("record(s)"));
-        }
-        else
-        {
-            html.Append((CurrentUI.TotalPerPage * CurrentPage) - CurrentUI.TotalPerPage + 1);
-            html.Append("-");
-            if ((CurrentUI.TotalPerPage * CurrentPage) > TotalReg)
-                html.Append(TotalReg);
-            else
-                html.Append(CurrentUI.TotalPerPage * CurrentPage);
-            html.Append(" ");
-            html.Append(Translate.Key("From"));
-            html.Append(" <span id=\"");
-            html.Append(Name);
-            html.Append("_totrows\">");
-            html.Append(TotalReg.ToString("N0"));
-            html.Append("</span>");
-        }
-        html.AppendLine("</label>");
-
-        if (EnableMultSelect)
-        {
-            string textInfo;
-            if (listSelectedValues == null || listSelectedValues.Count == 0)
-            {
-                textInfo = Translate.Key("No record selected");
-            }
-            else if (listSelectedValues.Count == 1)
-            {
-                textInfo = Translate.Key("A selected record");
-            }
-            else
-            {
-                textInfo = Translate.Key("{0} selected records", listSelectedValues.Count);
-            }
-            html.AppendLine("\t\t\t\t<br>");
-            html.Append("\t\t\t\t<span id=\"selectedtext_");
-            html.Append(Name);
-            html.Append("\" noSelStr=\"");
-            html.Append(Translate.Key("No record selected"));
-            html.Append("\" oneSelStr=\"");
-            html.Append(Translate.Key("A selected record"));
-            html.Append("\" paramSelStr=\"");
-            html.Append(Translate.Key("{0} selected records"));
-            html.Append("\">");
-            html.Append(textInfo);
-            html.AppendLine("</span>");
-        }
-
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t</div>");
-        html.AppendLine("\t<!-- End Pagging -->");
-        if (BootstrapHelper.Version != 3)
-        {
-            html.AppendLine("</div>");
-        }
 
         return html.ToString();
     }

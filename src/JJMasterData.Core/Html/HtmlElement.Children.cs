@@ -75,6 +75,18 @@ namespace JJMasterData.Core.Html
             AppendElement(childElement);
             return this;
         }
+        
+        /// <summary>
+        /// Insert string representation of the integer as a child of caller element.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HtmlElement AppendText(int value)
+        {
+            var childElement = new HtmlElement(value.ToString());
+            AppendElement(childElement);
+            return this;
+        }
 
         /// <summary>
         /// Conditional insert raw text as a child of caller element.

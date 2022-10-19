@@ -97,15 +97,25 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Configuração do painel com os campos do formulário
     /// </summary>
-    public JJDataPanel DataPanel =>
-        _dataPanel ??= new JJDataPanel(FormElement)
+    public JJDataPanel DataPanel
+    {
+        get
         {
-            Name = "jjpainel_" + Name,
-            DataAccess = DataAccess,
-            UserValues = UserValues,
-            RenderPanelGroup = true,
-            PageState = PageState
-        };
+            if (_dataPanel == null)
+            {
+                _dataPanel = new JJDataPanel(FormElement)
+                {
+                    Name = "jjpainel_" + Name,
+                    DataAccess = DataAccess,
+                    UserValues = UserValues,
+                    RenderPanelGroup = true
+                };
+            }
+            _dataPanel.PageState = PageState;
+
+            return _dataPanel;
+        }
+    }
 
 
     /// <summary>
@@ -1026,7 +1036,7 @@ public class JJFormView : JJGridView
     public Hashtable UpdateFormValues(Hashtable values)
     {
         var result = DataDictionaryManager.Update(this, values,
-            () => ValidateFields(values, PageState.Insert));
+            () => ValidateFields(values, PageState.Update));
         
         UrlRedirect = result.UrlRedirect;
         

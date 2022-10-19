@@ -19,5 +19,9 @@
       <ItemGroup>
         <ProjectReference Include="../JJMasterData.Web/JJMasterData.Web.csproj" />
       </ItemGroup>
+    
+      <ItemGroup>
+        <EmbeddedResource Include="wwwroot\favicon.ico" />
+      </ItemGroup>
         
     </Project>
