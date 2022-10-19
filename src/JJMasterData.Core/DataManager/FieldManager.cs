@@ -45,7 +45,6 @@ public class FieldManager
     /// </summary>
     public IDataAccess DataAccess { get; set; }
 
-
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
@@ -60,6 +59,9 @@ public class FieldManager
     /// Objeto responsável por parsear expressoões
     /// </summary>
     public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
+
+
+    public ExpressionOptions ExpressionOptions { get; private set; }
 
     #endregion
 
@@ -235,11 +237,10 @@ public class FieldManager
         return sVal;
     }
 
-    public JJBaseView GetField(FormElementField f, PageState pagestate, Hashtable formValues, object value = null)
+    public JJBaseControl GetField(FormElementField f, PageState pagestate, Hashtable formValues, object value = null)
     {
         var expOptions = new ExpressionOptions(UserValues, formValues, pagestate, DataAccess);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
-
         return controlFactory.CreateControl(f, value);
     }
 

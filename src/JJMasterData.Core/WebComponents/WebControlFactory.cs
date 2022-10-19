@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
+
 internal class WebControlFactory
 {
     public EventHandler<ActionEventArgs> OnRenderAction;
@@ -30,9 +31,9 @@ internal class WebControlFactory
 
     public string PanelName { get; private set; }
 
-    public FormElement FormElement { get; set; }
+    public ExpressionOptions ExpressionOptions { get; private set; }
 
-    public ExpressionOptions ExpressionOptions { get; set; }
+    public FormElement FormElement { get; set; }
 
     public WebControlFactory(JJDataPanel dataPanel)
     {

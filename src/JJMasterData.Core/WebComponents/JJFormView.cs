@@ -845,11 +845,7 @@ public class JJFormView : JJGridView
 
                 if (dic.UIOptions != null)
                 {
-                    chieldView.FormCols = dic.UIOptions.Form.FormCols;
-                    chieldView.Layout = dic.UIOptions.Form.IsVerticalLayout
-                        ? DataPanelLayout.Vertical
-                        : DataPanelLayout.Horizontal;
-                    chieldView.ShowViewModeAsStatic = dic.UIOptions.Form.ShowViewModeAsStatic;
+                    chieldView.UISettings = dic.UIOptions.Form;
                 }
 
                 sHtml.AppendLine(chieldView.GetHtml());
@@ -969,7 +965,7 @@ public class JJFormView : JJGridView
         {
             string typeButton = "button";
             string classButton = BootstrapHelper.DefaultButton;
-            if (DataPanel.EnterKey == FormEnterKey.Submit)
+            if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
             {
                 typeButton = "submit";
                 classButton = "btn-primary";
@@ -1130,7 +1126,7 @@ public class JJFormView : JJGridView
         ToolBarActions = options.ToolBarActions.GetAll();
         GridActions = options.GridActions.GetAll();
         ShowTitle = options.Grid.ShowTitle;
-        DataPanel.SetOptions(options.Form);
+        DataPanel.UISettings = options.Form;
         SetGridOptions(options.Grid);
     }
     
