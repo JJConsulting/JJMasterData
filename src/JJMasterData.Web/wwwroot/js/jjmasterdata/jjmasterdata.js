@@ -947,6 +947,9 @@ var jjview = (function () {
             var selector = divId + " input:enabled, " + divId + " select:enabled";
             $(selector).each(function () {
                 let currentObj = $(this);
+                if (currentObj.hasClass("flatpickr-input")) {
+                    currentObj.val("");
+                }
                 let inputType = this.type;
                 if (inputType == "checkbox") {
                     currentObj.prop("checked", false);

@@ -70,7 +70,7 @@ public class GridConfigSorting
 
         dialog.HtmlElementContent = htmlContent;
 
-        return dialog.GetHtmlElement();
+        return dialog.RenderHtmlElement();
     }
 
     private static HtmlElement GetHtmlHeader()

@@ -28,7 +28,7 @@ public class JJTabNav : JJBaseView
         ListTab = new List<NavContent>();
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Div)
             .WithAttributes(Attributes)

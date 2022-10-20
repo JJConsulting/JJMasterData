@@ -220,7 +220,7 @@ public class JJSearchBox : JJBaseControl
 
     #endregion
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement();
         if ("jjsearchbox".Equals(CurrentContext.Request.QueryString("t")))

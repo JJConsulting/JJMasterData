@@ -42,7 +42,7 @@ public class JJCheckBox : JJBaseControl
         return check;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")

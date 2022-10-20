@@ -26,7 +26,7 @@ public class JJCard : JJBaseView
         Color = PanelColor.Default;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (ShowAsWell)
             return GetHtmlWell();

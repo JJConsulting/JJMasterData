@@ -229,7 +229,7 @@ internal class DataPanelControl
                 field.CssClass = "is-invalid";
             }
 
-            return field.GetHtmlElement();
+            return field.RenderHtmlElement();
         }
     }
 

@@ -48,7 +48,7 @@ public class JJLegendView : JJBaseView
 
     #endregion
     
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (ShowAsModal)
         {
@@ -117,7 +117,7 @@ public class JJLegendView : JJBaseView
             HtmlContent = form.GetElementHtml()
         };
         
-        return dialog.GetHtmlElement();
+        return dialog.RenderHtmlElement();
     }
     
     private FormElementField GetFieldLegend()

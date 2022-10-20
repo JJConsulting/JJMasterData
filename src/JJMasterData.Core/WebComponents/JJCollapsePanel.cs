@@ -49,7 +49,7 @@ public class JJCollapsePanel : JJBaseView
         TitleIcon = null;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var root = new HtmlElement(HtmlTag.Div);
 
@@ -192,7 +192,7 @@ public class JJCollapsePanel : JJBaseView
                 foreach (var btn in Buttons)
                 {
                     div.AppendText("&nbsp;");
-                    div.AppendElement(btn.GetHtmlElement().WithCssClass("ms-1"));
+                    div.AppendElement(btn.RenderHtmlElement().WithCssClass("ms-1"));
                 }
 
             });

@@ -26,7 +26,7 @@ public class JJSlider : JJBaseControl
         return slider;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.Div)
             .WithCssClass(CssClass)

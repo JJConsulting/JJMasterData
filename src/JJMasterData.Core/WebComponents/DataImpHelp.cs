@@ -27,7 +27,7 @@ internal class DataImpHelp
         panel.ExpandedByDefault = true;
         panel.HtmlElementContent = GetHtmlContent();
 
-        var html = panel.GetHtmlElement()
+        var html = panel.RenderHtmlElement()
            .AppendHiddenInput("current_uploadaction", "")
            .AppendHiddenInput("filename", "")
            .AppendElement(GetBackButton());

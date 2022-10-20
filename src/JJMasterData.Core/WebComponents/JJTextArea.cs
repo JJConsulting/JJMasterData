@@ -30,14 +30,14 @@ public class JJTextArea : JJBaseControl
         return text;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var html = new HtmlElement(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
             .WithToolTip(ToolTip)
-            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder),"placeholder",PlaceHolder)
+            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("rows", Rows.ToString())
             .WithAttribute("cols", "20")
             .WithAttribute("strvalid", Translate.Key("Maximum limit of {0} characters!"))

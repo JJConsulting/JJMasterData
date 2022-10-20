@@ -78,7 +78,7 @@ public class JJDataExp : JJBaseProcess
 
     #endregion
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
     }
@@ -201,7 +201,7 @@ public class JJDataExp : JJBaseProcess
             Color = PanelColor.Danger
         };
 
-        return builder.StartElement(alert.GetHtmlElement()).GetElementHtml();
+        return builder.StartElement(alert.RenderHtmlElement()).GetElementHtml();
     }
 
     private BaseWriter CreateWriter()

@@ -27,7 +27,7 @@ namespace JJMasterData.Core.WebComponents
         {
         }
 
-        internal override HtmlElement GetHtmlElement()
+        internal override HtmlElement RenderHtmlElement()
         {
             var inputGroup = new HtmlElement(HtmlTag.Div)
                 .WithAttributes(Attributes)

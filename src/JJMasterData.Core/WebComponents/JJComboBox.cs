@@ -77,7 +77,7 @@ public class JJComboBox : JJBaseControl
         return cbo;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (DataItem == null)
             throw new ArgumentException(Translate.Key("[DataItem] properties not defined for combo"), Name);
@@ -226,7 +226,7 @@ public class JJComboBox : JJBaseControl
             var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
-            }.GetHtmlElement();
+            }.RenderHtmlElement();
 
             div.AppendElement(icon);
             

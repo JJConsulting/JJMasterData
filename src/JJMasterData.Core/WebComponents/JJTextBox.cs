@@ -20,7 +20,7 @@ public class JJTextBox : JJBaseControl
         Enabled = true;
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         string inputType = InputType.ToString().ToLower();
         if (NumberOfDecimalPlaces > 0)

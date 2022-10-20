@@ -34,7 +34,7 @@ public class JJDownloadFile : JJBaseView
         return new JJDownloadFile();
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));

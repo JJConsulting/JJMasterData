@@ -31,7 +31,7 @@ public class JJTextGroup : JJTextBox
         return WebControlTextFactory.CreateTextGroup(f, name);
     }
 
-    internal override HtmlElement GetHtmlElement()
+    internal override HtmlElement RenderHtmlElement()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -43,7 +43,7 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = base.GetHtmlElement();
+        var input = base.RenderHtmlElement();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
@@ -101,7 +101,7 @@ public class JJTextGroup : JJTextBox
         var html = new HtmlElement(HtmlTag.Span)
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
-             .AppendElementIf(Addons.Icon != null, Addons.Icon?.GetHtmlElement())
+             .AppendElementIf(Addons.Icon != null, Addons.Icon?.RenderHtmlElement())
              .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

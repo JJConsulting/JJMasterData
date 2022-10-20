@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Web;
 using JJMasterData.Commons.Dao;
@@ -19,58 +20,43 @@ using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
-using JJMasterData.Core.WebComponents;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Exibe os valores do banco de dados em uma tabela, 
-/// onde cada campo representa uma coluna e cada registro representa uma linha.
-/// Permite paginação, multiplos filtros, configuração de layout e ordenação de campos
+/// Display the database values in a table,
+/// where each field represents a column and each record represents a row.
+/// Allows pagination, multiple filters, layout configuration and field sorting
 /// </summary>
 /// <example>
-/// Exemplo
-///[!code-cs[Example](../../../doc/JJMasterData.Sample/JJFormViewBasicExample.aspx.cs)]
+/// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
 public class JJGridView : JJBaseView
 {
     #region "Events"
-
-    /// <summary>
-    /// Evento disparado ao renderizar o conteúdo HTML da celula
-    /// </summary>
-    /// <example>
-    /// Exemplo da pagina
-    ///[!code-html[Example](../../../doc/JJMasterData.Sample/JJGridViewRenderCell.aspx)]
-    ///[!code-cs[Example](../../../doc/JJMasterData.Sample/JJGridViewRenderCell.aspx.cs)]
-    /// Exemplo objeto
-    ///[!code-cs[Example](../../../doc/JJMasterData.Sample/Model/Cliente.cs)]
-    /// </example>
+    
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     /// <summary>
-    /// Evento disparado ao renderizar o checkbox utilizado para selecionar a linha da Grid.
-    /// <para/>Disparado somente quando a propriedade EnableMultSelect estiver habilitada.
-    /// </summary>       
+    /// Event fired when rendering the checkbox used to select the Grid row.
+    /// <para/>Fired only when EnableMultSelect property is enabled.
+    /// </summary>
     public event EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell;
 
     /// <summary>
-    /// Evento disparado para recuperar os dados da tabela
+    /// Event fired to retrieve table data
     /// </summary>
     /// <remarks>
-    /// O componente utiliza seguinte regra para recuperar os dados da grid:
-    /// <para/>1) Utiliza a propriedade DataSource;
-    /// <para/>2) Se a propriedade DataSource for nula, tenta executar a ação OnDataLoad;
-    /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
-    /// utilizando a proc informada no FormElement;
+    /// The component uses the following rule to retrieve grid data:
+    /// <para/>1) Use the DataSource property;
+    /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
+    /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
+    /// using the proc informed in the FormElement;
     /// </remarks>
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
-
-    /// <summary>
-    /// Evento disparado ao renderizar as ações
-    /// </summary>
+    
     public event EventHandler<ActionEventArgs> OnRenderAction;
 
     #endregion
@@ -149,10 +135,7 @@ public class JJGridView : JJBaseView
             return _pkFields;
         }
     }
-
-    /// <summary>
-    /// List of the fields in the grid with a default value.
-    /// </summary>
+    
     private List<FormElementField> VisibleFields
     {
         get
@@ -173,42 +156,24 @@ public class JJGridView : JJBaseView
             return _visibleFields;
         }
     }
-
-    /// <summary>
-    /// Funções úteis para manipular ações
-    /// </summary>
+    
     internal ActionManager ActionManager => _actionManager ??= new ActionManager(this, FormElement);
-
-    /// <summary>
-    /// Funções úteis para manipular campos no formulário
-    /// </summary>
+    
     internal FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
 
+    
     /// <summary>
-    /// Configurações pré-definidas do formulário
+    /// <see cref="FormElement"/>
     /// </summary>
-    /// <example>
-    /// Exemplo da pagina
-    /// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJGridViewWithLegend.aspx)]
-    /// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJGridViewWithLegend.aspx.cs)]
-    /// Exemplo objeto
-    /// [!code-cs[Example](../../../doc/JJMasterData.Sample/Model/Prospect.cs)]
-    /// O Resultado html ficará parecido com esse:
-    /// <img src="../media/JJGridViewWithLegend.png"/>
-    /// </example>
     public FormElement FormElement { get; set; }
 
-    /// <summary>
-    /// Tabela com os dados
-    /// </summary>
-    /// <remarks>
-    /// Datasource é propriedade responsável por controlar a origem de dados.
-    /// O componente utiliza seguinte regra para recuperar os dados da grid:
-    /// <para/>1) Utiliza a propriedade DataSource;
-    /// <para/>2) Se a propriedade DataSource for nula, tenta executar a ação OnDataLoad;
-    /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
-    /// utilizando a proc informada no FormElement;
-    /// </remarks>
+    
+    /// Datasource is the property responsible for controlling the data source.
+    /// The component uses the following rule to retrieve grid data:
+    /// <para/>1) Use the DataSource property;
+    /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
+    /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
+    /// Using the stored procedure informed in the FormElement;
     public DataTable DataSource
     {
         get => _dataSource;
@@ -217,52 +182,30 @@ public class JJGridView : JJBaseView
             _dataSource = value;
             if (value == null) return;
             IsUserSetDataSource = true;
-            TotalReg = value.Rows.Count;
+            TotalRecords = value.Rows.Count;
         }
     }
-
-    /// <summary>
-    /// Indica se o usuário preecheu manualmente o DataSource
-    /// </summary>
+    
     private bool IsUserSetDataSource { get; set; }
-
-    /// <summary>
-    /// Quantidade total de registros existentes no banco
-    /// </summary>
-    public int TotalReg { get; set; }
-
-    /// <summary>
-    /// Exibir título no cabeçalho da página
-    /// </summary>
+    
+    public int TotalRecords { get; set; }
+    
     public bool ShowTitle { get; set; }
-
-    /// <summary>
-    /// Habilitar filtros (Default = true) 
-    /// </summary>
-    /// <remarks>
-    /// Desabilita todos os campos e os botões de filtros 
-    /// impedindo o usuário de aplicar ou alterar os filtros.
-    /// </remarks>
+    
     public bool EnableFilter { get; set; }
-
-    /// <summary>
-    /// Exibir toolbar (Default = true) 
-    /// </summary>
+    
     public bool ShowToolbar { get; set; }
-
-    /// <summary>
-    /// Get = Recupera o filtro atual<para/>
-    /// </summary>
+    
     public Hashtable CurrentFilter => Filter.GetCurrentFilter();
 
     /// <summary>
-    /// Recupera a ordenação da tabela, 
-    /// por padrão utiliza o primeiro campo da chave primária
+    /// Retrieve the order of the table,
+    /// by default uses the first field of the primary key
     /// </summary>
-    /// <returns>Ordem atual da tabela</returns>
+    /// <returns>Current table order</returns>
     /// <remarks>
-    /// Para mais de um campo utilize virgula ex:
-    /// "Campo1 ASC, Campo2 DESC, Campo3 ASC"
+    /// For more than one field use comma ex:
+    /// "Field1 ASC, Field2 DESC, Field3 ASC"
     /// </remarks>
     public string CurrentOrder
     {
@@ -301,10 +244,6 @@ public class JJGridView : JJBaseView
             _currentOrder = value;
         }
     }
-
-    /// <summary>
-    /// Recupera a pagina atual da Grid
-    /// </summary>
     public int CurrentPage
     {
         get
@@ -366,7 +305,7 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Recupera as configurações da interface do usuário
+    /// <see cref="GridUI"/>
     /// </summary>
     public GridUI CurrentUI
     {
@@ -375,7 +314,7 @@ public class JJGridView : JJBaseView
             if (_currentUI != null)
                 return _currentUI;
 
-            //Se remover daqui ao chamar o metodo GetDataTable() fora da classe não respeita a paginação
+            // Removing it from here when calling the GetDataTable() method outside the class does not respect pagination
             var actionMap = CurrentActionMap;
             var action = GetCurrentAction(actionMap);
             if (action is ConfigAction)
@@ -405,24 +344,9 @@ public class JJGridView : JJBaseView
             _currentUI = value;
         }
     }
+    
+    internal GridFilter Filter => _filter ??= new GridFilter(this);
 
-    /// <summary>
-    /// Objeto responsável por renderizar o filtro
-    /// </summary>
-    internal GridFilter Filter
-    {
-        get
-        {
-            if (_filter == null)
-                _filter = new GridFilter(this);
-
-            return _filter;
-        }
-    }
-
-    /// <summary>
-    /// Recupera as configurações de exportação 
-    /// </summary>
     public ExportOptions CurrentExportConfig
     {
         get
@@ -438,112 +362,83 @@ public class JJGridView : JJBaseView
         }
         set => _currentExportConfig = value;
     }
-
-    /// <summary>
-    /// Realizar os posts via Ajax (Default = true)
-    /// </summary>
+    
     public bool EnableAjax { get; set; }
-
-    /// <summary>
-    /// Habilitar todos os campos para edição (Default = false)
-    /// </summary>
+    
     public bool EnableEditMode { get; set; }
-
-    /// <summary>
-    /// Habilita Ordenação das colunas (Default = true)
-    /// </summary>
+    
     /// <remarks>
-    /// Habilita ou não o link nos titulos permitindo a ordenação.
-    /// Mesmo quando configurado como falso, a grid respeita a propriedade CurrentOrder
+    /// Even when set to false, the grid respects the CurrentOrder property
     /// </remarks>
     public bool EnableSorting { get; set; }
-
-    /// <summary>
-    /// Permite selecionar multiplas linhas na Grid 
-    /// habilitando um checkbox na primeira coluna. (Defaut = false)
-    /// </summary>
+    
     public bool EnableMultSelect { get; set; }
 
     /// <summary>
-    /// Mantem os filtros, ordem e paginação da grid na sessão, 
-    /// e recupera na primeira carga da pagina. (Default = false)
+    /// Keep the grid filters, order and pagination in the session,
+    /// and recover on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
-    /// Ao utilizar esta propriedade, recomendamos alterar o parametro [Name] do objeto.
-    /// A propriedade [Name] é utilizada para compor o nome da variável de sessão.
+    /// When using this property, we recommend changing the object's [Name] parameter.
+    /// The [Name] property is used to compose the name of the session variable.
     /// </remarks>
     public bool MaintainValuesOnLoad { get; set; }
-
-
-
+    
     /// <summary>
-    /// Obtém ou define um valor que indica se o cabeçalho da gridview ficará visível quando não existir dados.
+    /// Show the header when no records are found.
     /// </summary>
-    /// <remarks>
-    /// Valor padrão = (Verdadeiro).
-    /// <para/>
-    /// Para alterar o texto da mensagem veja o método EmptyDataText
-    /// </remarks>
     public bool ShowHeaderWhenEmpty { get; set; }
 
     /// <summary>
-    /// Obtém ou define o texto a ser exibido na linha de dados vazia quando um controle JJGridView não contém registros.
+    /// Gets or sets the text to be displayed on the empty data row when a JJGridView control contains no records.
     /// </summary>
     /// <remarks>
-    /// Valor padrão = (Não existe registro para ser exibido).
+    /// Default value = (There is no record to be displayed).
     /// <para/>
-    /// Para ocultar as colunas ao exibir a mensagem veja o método
+    /// To hide the columns when displaying the message see the method
     /// <seealso cref="ShowHeaderWhenEmpty"/>.
     /// </remarks>
     public string EmptyDataText { get; set; }
 
     /// <summary>
-    /// Exibe os controles de paginação (Default = true) 
+    /// Display pagination controls (Default = true)
     /// </summary>
     /// <remarks>
-    /// Oculta todos os botões da paginação 
-    /// porem mantem os controles de paginação pré-definidos.
+    /// Hide all pagination buttons
+    /// but keep the default pagination controls.
     /// <para/>
-    /// A Paginãção será exibida se o numero de registros da grid ultrapassar a quantidade minima de registros em uma pagina.
+    /// The Pagination will be displayed if the number of grid records exceeds the minimum number of records on a page.
     /// <para/>
-    /// Se a propriedade CurrentPage for igual zero  a paginação não será exibida.
+    /// If the CurrentPage property is equal to zero, pagination will not be displayed.
     /// <para/>
-    /// Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
+    /// If the CurrentUI.TotalPerPage property is equal to zero, pagination will not be displayed.
     /// <para/>
-    /// Se a propriedade TotalReg for igual zero a paginação não será exibida.
+    /// If the TotalRecords property is equal to zero, pagination will not be displayed.
     /// </remarks>
     public bool ShowPagging { get; set; }
 
     /// <summary>
-    /// Campos com erro.
-    /// Key=Nome do campo, Value=Descricão do erro
+    /// Key-Value pairs with the errors.
     /// </summary>
-    /// <remarks>
-    /// Utilizado quando é permitido alteração de valores na grid
-    /// permitindo marcar exatamente o campo que esta com erro.
-    /// </remarks>
-    public Hashtable Erros { get; set; }
+    public Hashtable Errors { get; set; }
 
     /// <summary>
-    /// Ao recarregar o painel, manter os valores digitados no formuário.
-    /// Valido somente quando a propriedade EnableEditMode estiver ativada
+    /// When reloading the panel, keep the values entered in the form.
+    /// Valid only when EnableEditMode property is enabled
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
     /// <summary>
-    /// Valores a serem substituídos por relacionamento.
-    /// Se o nome do campo existir no relaciomento o valor será substituido
+    /// Values to be replaced by relationship.
+    /// If the field name exists in the relationship, the value will be replaced
     /// </summary>
     /// <remarks>
-    /// Key = Nome do campo, Value=Valor do campo
+    /// Key = Field name, Value=Field value
     /// </remarks>
     public Hashtable RelationValues { get; set; }
-
-    /// <summary>
-    /// Tamanho da fonte do titulo (default(H1)
-    /// </summary>
-    public HeadingSize SizeTitle { get; set; }
+    
+    public HeadingSize TitleSize { get; set; }
 
     private DataDictionaryManager DataDictionaryManager => _dataDictionaryManager ??= new DataDictionaryManager(FormElement);
 
@@ -553,7 +448,7 @@ public class JJGridView : JJBaseView
         {
             if (_defaultValues != null) return _defaultValues;
 
-            //Valor padrão dos campos
+            //Default field values.
             var formManager = new FormManager(FormElement, UserValues, DataAccess);
             _defaultValues = formManager.GetDefaultValues(null, PageState.List);
 
@@ -648,7 +543,7 @@ public class JJGridView : JJBaseView
         EmptyDataText = "No records found";
         AutoReloadFormFields = true;
         RelationValues = new Hashtable();
-        SizeTitle = HeadingSize.H1;
+        TitleSize = HeadingSize.H1;
     }
 
     public JJGridView(DataTable table) : this()
@@ -676,9 +571,7 @@ public class JJGridView : JJBaseView
 
     protected override string RenderHtml()
     {
-        StringBuilder html = new();
-
-        //Lookup Route
+        var html = new StringBuilder();
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))
         {
@@ -706,119 +599,30 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-
-    /// <summary>
-    /// Renderiza o conteúdo do título
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     public string GetHtmlTitle()
     {
-        var title = new JJTitle(FormElement.Title, FormElement.SubTitle);
-        title.Size = SizeTitle;
+        var title = new JJTitle(FormElement.Title, FormElement.SubTitle)
+        {
+            Size = TitleSize
+        };
         return title.GetHtml();
     }
-
-    /// <summary>
-    /// Renderiza o conteúdo do filtro
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     public string GetHtmlFilter() => Filter.GetHtmlFilter();
-
-    /// <summary>
-    /// Renderiza o conteúdo da barra de ferramentar da grid
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     public string GetHtmlGridToolbar()
     {
-        StringBuilder html = new();
-        html.AppendLine("<!-- Start Toolbar -->");
-        html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup}\"> ");
-        html.AppendLine("\t<div class=\"row\"> ");
-        html.AppendLine("\t\t<div class=\"col-sm-12\"> ");
-
-        var listActions = ToolBarActions.OrderBy(x => x.Order).ToList();
-        foreach (var action in listActions)
-        {
-            if (action is FilterAction filterAction)
-            {
-                bool isVisible = FieldManager.IsVisible(action, PageState.List, DefaultValues);
-                if (!isVisible)
-                    continue;
-
-                if (filterAction.EnableScreenSearch)
-                {
-                    html.Append('\t', 3);
-                    html.Append(Filter.GetHtmlToolBarSeach());
-                    continue;
-                }
-            }
-
-            var linkButton = ActionManager.GetLinkToolBar(action, DefaultValues);
-            if (linkButton.Visible)
-            {
-                if (action is ExportAction)
-                {
-                    if (DataExp.IsRunning())
-                    {
-                        linkButton.Spinner.Name = "dataexp_spinner_" + Name;
-                        linkButton.Spinner.Visible = true;
-                    }
-
-                }
-                else if (action is ImportAction)
-                {
-                    if (DataImp.IsRunning())
-                        linkButton.Spinner.Visible = true;
-                }
-            }
-
-
-            if (BootstrapHelper.Version != 3)
-            {
-                linkButton.CssClass += $" {BootstrapHelper.MarginRight}-1";
-            }
-
-
-            html.Append('\t', 3);
-
-            html.AppendLine(linkButton.GetHtml());
-        }
-        html.AppendLine("\t\t</div> ");
-
-
-        html.AppendLine("\t</div> ");
-        html.AppendLine("</div> ");
-        html.AppendLine("<!-- End Toolbar -->");
-        html.AppendLine("");
-
-        return html.ToString();
+        var toolbar = new GridToolbar(this);
+        return toolbar.GetHtmlElement().GetElementHtml();
     }
-
-    /// <summary>
-    /// Renderiza a modal para configurar a ordem dos registros da grid
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     private string GetHtmlConfigSorting()
     {
-        var configsorting = new GridConfigSorting(this);
-        return configsorting.GetHtmlElement().GetElementHtml();
+        var gridConfigSorting = new GridConfigSorting(this);
+        return gridConfigSorting.GetHtmlElement().GetElementHtml();
     }
-
-    /// <summary>
-    /// Renderiza o conteúdo da tabela
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     public string GetHtmlTable()
     {
         if (FormElement == null)
@@ -829,33 +633,30 @@ public class JJGridView : JJBaseView
                 Translate.Key("It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
 
         var html = new StringBuilder();
-
-        //Açoes da grid
-        string sAction = CurrentContext.Request["current_tableaction_" + Name];
+        
+        string currentAction = CurrentContext.Request["current_tableaction_" + Name];
         var actionMap = CurrentActionMap;
         var action = GetCurrentAction(actionMap);
-        //if (action is ExportAction)
-        //{
-        //    DoExport();
-        //    return null;
-        //}
-        //else 
-        if (action is SqlCommandAction cmdAction)
+
+        switch (action)
         {
-            string sRet = DoSqlCommand(actionMap, cmdAction);
-            html.AppendLine(sRet);
-            sAction = string.Empty;
+            case SqlCommandAction cmdAction:
+            {
+                string error = _actionManager.ExecuteSqlCommand(this, actionMap, cmdAction);
+                html.AppendLine(error);
+                currentAction = string.Empty;
+                break;
+            }
+            case PythonScriptAction pyAction:
+            {
+                string error = _actionManager.ExecutePythonScriptAction(this, actionMap, pyAction);
+                html.AppendLine(error);
+                currentAction = string.Empty;
+                break;
+            }
         }
-        else if (action is PythonScriptAction pyAction)
-        {
-            string sRet = DoPythonScriptAction(actionMap, pyAction);
-            html.AppendLine(sRet);
-            sAction = string.Empty;
-        }
-
-
-
-        //Se o post for via ajax
+        
+        //If the post is via AJAX
         string tRequest = CurrentContext.Request.QueryString("t");
         if ("tableexp".Equals(tRequest))
         {
@@ -865,13 +666,10 @@ public class JJGridView : JJBaseView
 
             return null;
         }
-
-        //Recupera os valores selecionados
+        
         var listSelectedValues = GetSelectedGridValues();
-
-        //Recupera os dados
+        
         GetDataTable();
-
 
         if ("tablerow".Equals(tRequest))
         {
@@ -880,7 +678,7 @@ public class JJGridView : JJBaseView
             {
                 int nRowId = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[nRowId];
-                html.Append(GetHtmlRow(row, nRowId, true, listSelectedValues));
+                html.Append(GetRowHtml(row, nRowId, true, listSelectedValues));
 
                 CurrentContext.Response.SendResponse(html.ToString());
             }
@@ -928,7 +726,7 @@ public class JJGridView : JJBaseView
         html.Append("\" name=\"current_tableaction_");
         html.Append(Name);
         html.Append("\" value=\"");
-        html.Append(sAction);
+        html.Append(currentAction);
         html.AppendLine("\" /> ");
 
         html.Append("\t<input type=\"hidden\" id=\"current_tablerow_");
@@ -977,7 +775,7 @@ public class JJGridView : JJBaseView
         foreach (DataRow row in DataSource.Rows)
         {
             nRow++;
-            html.Append(GetHtmlRow(row, nRow, false, listSelectedValues));
+            html.Append(GetRowHtml(row, nRow, false, listSelectedValues));
         }
         html.AppendLine("\t\t\t</tbody>");
 
@@ -1020,13 +818,13 @@ public class JJGridView : JJBaseView
         if (ShowToolbar)
         {
             //Modal para configuração de layout
-            html.Append(GetHtmlSetup());
+            html.Append(GetSettingsHtml());
 
             //Modal para exportação
-            html.Append(GetHtmlExport());
+            html.Append(GetExportHtml());
 
             //Modal para legenda
-            html.Append(GetHtmlLegend());
+            html.Append(GetLegendHtml());
         }
 
         html.AppendLine("</div>");
@@ -1043,16 +841,7 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-
-
-
-    /// <summary>
-    /// Renderiza todos os scripts relacionados a grid
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     private string GetHtmlScript()
     {
         var html = new StringBuilder();
@@ -1170,13 +959,7 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-    /// <summary>
-    /// Renderiza o cabeçalho da grid
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
+    
     private string GetHtmlHeader()
     {
         char TAB = '\t';
@@ -1202,7 +985,7 @@ public class JJGridView : JJBaseView
             }
             else
             {
-                int totalPages = (int)Math.Ceiling(TotalReg / (double)CurrentUI.TotalPerPage);
+                int totalPages = (int)Math.Ceiling(TotalRecords / (double)CurrentUI.TotalPerPage);
                 if (totalPages <= 1)
                     hasPages = false;
             }
@@ -1236,7 +1019,7 @@ public class JJGridView : JJBaseView
                 html.Append(TAB, 8);
                 html.AppendLine("</li>");
 
-                if (TotalReg <= 50000)
+                if (TotalRecords <= 50000)
                 {
                     html.Append(TAB, 8);
                     html.AppendLine("<li class=\"dropdown-item\">");
@@ -1244,7 +1027,7 @@ public class JJGridView : JJBaseView
                     html.Append("<a href=\"javascript: void(0);\" title=\"\" onclick=\"jjview.doSelectAll('");
                     html.Append(Name);
                     html.Append("');\">");
-                    html.Append(Translate.Key("Mark all {0} records", TotalReg));
+                    html.Append(Translate.Key("Mark all {0} records", TotalRecords));
                     html.AppendLine("</a>");
                     html.Append(TAB, 8);
                     html.AppendLine("</li>");
@@ -1262,26 +1045,34 @@ public class JJGridView : JJBaseView
         foreach (var field in VisibleFields)
         {
             string thStyle = string.Empty;
-            if (field.Component == FormComponent.ComboBox)
+            switch (field.Component)
             {
-                if (field.DataItem != null &&
-                    field.DataItem.ShowImageLegend && !field.DataItem.ReplaceTextOnGrid)
+                case FormComponent.ComboBox:
                 {
-                    thStyle = " style=\"text-align:center;\" ";
+                    if (field.DataItem != null &&
+                        field.DataItem.ShowImageLegend && !field.DataItem.ReplaceTextOnGrid)
+                    {
+                        thStyle = " style=\"text-align:center;\" ";
+                    }
+
+                    break;
                 }
-            }
-            else if (field.Component == FormComponent.CheckBox)
-            {
-                thStyle = " style=\"text-align:center;width:60px;\" ";
-            }
-            else if (field.Component == FormComponent.Cnpj)
-            {
-                thStyle = " style=\"min-width:130px;\" ";
-            }
-            else if (field.DataType == FieldType.Float || field.DataType == FieldType.Int)
-            {
-                if (!field.IsPk)
-                    thStyle = " style=\"text-align:right;\" ";
+                case FormComponent.CheckBox:
+                    thStyle = " style=\"text-align:center;width:60px;\" ";
+                    break;
+                case FormComponent.Cnpj:
+                    thStyle = " style=\"min-width:130px;\" ";
+                    break;
+                default:
+                {
+                    if (field.DataType == FieldType.Float || field.DataType == FieldType.Int)
+                    {
+                        if (!field.IsPk)
+                            thStyle = " style=\"text-align:right;\" ";
+                    }
+
+                    break;
+                }
             }
             html.Append(TAB, 5);
             html.Append("<th" + thStyle + ">");
@@ -1402,16 +1193,10 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-    /// <summary>
-    /// Renderiza a linha da grid
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
-    private string GetHtmlRow(DataRow row, int nRow, bool isAjax, List<Hashtable> listSelectedValues)
+    
+    private string GetRowHtml(DataRow row, int nRow, bool isAjax, List<Hashtable> listSelectedValues)
     {
-        Hashtable values = new Hashtable();
+        var values = new Hashtable();
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
@@ -1544,7 +1329,7 @@ public class JJGridView : JJBaseView
             if (EnableEditMode && f.DataBehavior != FieldBehavior.ViewOnly)
             {
                 string name = GetFieldName(f.Name, values);
-                bool hasError = Erros?.ContainsKey(name) ?? false;
+                bool hasError = Errors?.ContainsKey(name) ?? false;
                 if (hasError)
                     html.Append($"<div class=\"{BootstrapHelper.HasError}\">");
 
@@ -1690,11 +1475,8 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-    /// <summary>
-    /// UI Settings Modal
-    /// </summary>
-    private string GetHtmlSetup()
+    
+    private string GetSettingsHtml()
     {
         var action = ConfigAction;
         bool isVisible = ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, RelationValues);
@@ -1729,11 +1511,8 @@ public class JJGridView : JJBaseView
 
         return modal.GetHtml();
     }
-
-    /// <summary>
-    /// Rendeiza o formulário modal de exportação
-    /// </summary>
-    private string GetHtmlExport()
+    
+    private string GetExportHtml()
     {
         var action = ExportAction;
         bool isVisible = ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, RelationValues);
@@ -1748,11 +1527,8 @@ public class JJGridView : JJBaseView
 
         return modal.GetHtml();
     }
-
-    /// <summary>
-    /// Renderiza o formulário modal de legenda
-    /// </summary>
-    private string GetHtmlLegend()
+    
+    private string GetLegendHtml()
     {
         var action = LegendAction;
         bool isVisible = ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, RelationValues);
@@ -1764,10 +1540,7 @@ public class JJGridView : JJBaseView
         legend.Name = "iconlegend_modal_" + Name;
         return legend.GetHtml();
     }
-
-    /// <summary>
-    /// Constroi o nome único de um campo para grid
-    /// </summary>
+    
     private string GetFieldName(string fieldName, IDictionary row)
     {
         string name = "";
@@ -1785,10 +1558,7 @@ public class JJGridView : JJBaseView
 
         return name;
     }
-
-    /// <summary>
-    /// Constroi o nome único de um campo para grid
-    /// </summary>
+    
     private string GetPkValues(IDictionary row, char separator = ';')
     {
         string name = "";
@@ -1801,11 +1571,8 @@ public class JJGridView : JJBaseView
         }
         return name;
     }
-
-    /// <summary>
-    /// Constroi o nome único de um campo para grid
-    /// </summary>
-    private string GetPKValues(DataRow row, char separator = ';')
+    
+    private string GetPkValues(DataRow row, char separator = ';')
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1817,10 +1584,7 @@ public class JJGridView : JJBaseView
         }
         return name;
     }
-
-    /// <summary>
-    /// Recupera a chave do registro ao selecionar uma ação
-    /// </summary>
+    
     public Hashtable GetSelectedRowId()
     {
         var values = new Hashtable();
@@ -1838,179 +1602,70 @@ public class JJGridView : JJBaseView
 
         return values;
     }
-
-    /// <summary>
-    /// Exporta o arquivo com base nas parametrizações do usuário
-    /// </summary>
     private void DoExport()
     {
         var exp = DataExp;
-        string exptype = CurrentContext.Request.QueryString("exptype");
-        if (exptype.Equals("showoptions"))
+        string expressionType = CurrentContext.Request.QueryString("exptype");
+        switch (expressionType)
         {
-            CurrentContext.Response.SendResponse(exp.GetHtml());
-        }
-        else if (exptype.Equals("export"))
-        {
-            if (IsUserSetDataSource || OnDataLoad != null)
+            case "showoptions":
+                CurrentContext.Response.SendResponse(exp.GetHtml());
+                break;
+            case "export":
             {
-                var tot = int.MaxValue;
-                var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
-                exp.DoExport(dt);
-            }
-            else
-            {
-                try
+                if (IsUserSetDataSource || OnDataLoad != null)
                 {
-                    exp.ExportFileInBackground(CurrentFilter, CurrentOrder);
-                }
-                catch (Exception ex)
-                {
-                    var err = new JJValidationSummary(ExceptionManager.GetMessage(ex));
-                    err.MessageTitle = "Error";
-
-                    CurrentContext.Response.SendResponse(err.GetHtml());
-                    return;
-                }
-            }
-
-            var html = new HtmlBuilder();
-            html.StartElement(new DataExpLog(exp.Name).GetHtmlProcess());
-
-            CurrentContext.Response.SendResponse(html.RenderHtml());
-        }
-        else if (exptype.Equals("checkProcess"))
-        {
-            var dto = exp.GetCurrentProcess();
-            string json = JsonConvert.SerializeObject(dto);
-            CurrentContext.Response.SendResponse(json, "text/json");
-        }
-        else if (exptype.Equals("stopProcess"))
-        {
-            exp.AbortProcess();
-            CurrentContext.Response.SendResponse("{}", "text/json");
-        }
-    }
-
-
-
-
-    /// <summary>
-    /// Executa uma ação SQL
-    /// </summary>
-    private string DoSqlCommand(ActionMap map, SqlCommandAction cmdAction)
-    {
-        try
-        {
-            var listSql = new ArrayList();
-            if (map.ContextAction == ActionOrigin.Toolbar && EnableMultSelect && cmdAction.ApplyOnSelected)
-            {
-                var selectedRows = GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
-
-                foreach (var row in selectedRows)
-                {
-                    string sql = ActionManager.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
-                    listSql.Add(sql);
-                }
-
-                DataAccess.SetCommand(listSql);
-                ClearSelectedGridValues();
-            }
-            else
-            {
-                Hashtable formValues;
-                if (map.PKFieldValues != null ||
-                    map.PKFieldValues.Count > 0)
-                {
-                    formValues = DataDictionaryManager.GetHashtable(map.PKFieldValues).Result;
+                    var tot = int.MaxValue;
+                    var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
+                    exp.DoExport(dt);
                 }
                 else
                 {
-                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                    try
+                    {
+                        exp.ExportFileInBackground(CurrentFilter, CurrentOrder);
+                    }
+                    catch (Exception ex)
+                    {
+                        var err = new JJValidationSummary(ExceptionManager.GetMessage(ex));
+                        err.MessageTitle = "Error";
+
+                        CurrentContext.Response.SendResponse(err.GetHtml());
+                        return;
+                    }
                 }
 
-                string sql = ActionManager.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
-                listSql.Add(sql);
-                DataAccess.SetCommand(listSql);
+                var html = new HtmlBuilder();
+                html.StartElement(new DataExpLog(exp.Name).GetHtmlProcess());
+
+                CurrentContext.Response.SendResponse(html.RenderHtml());
+                break;
             }
-
-            _dataSource = null;
-        }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
-    }
-
-    private string DoPythonScriptAction(ActionMap map, PythonScriptAction action)
-    {
-
-        var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
-
-        try
-        {
-            if (map.ContextAction == ActionOrigin.Toolbar && EnableMultSelect && action.ApplyOnSelected)
+            case "checkProcess":
             {
-                var selectedRows = GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
-
-                foreach (var row in selectedRows)
-                    scriptManager.Execute(ActionManager.Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
-
-
-                ClearSelectedGridValues();
+                var dto = exp.GetCurrentProcess();
+                string json = JsonConvert.SerializeObject(dto);
+                CurrentContext.Response.SendResponse(json, "text/json");
+                break;
             }
-            else
-            {
-                Hashtable formValues;
-                if (map.PKFieldValues != null ||
-                    map.PKFieldValues.Count > 0)
-                {
-                    formValues = DataDictionaryManager.GetHashtable(map.PKFieldValues).Result;
-                }
-                else
-                {
-                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
-                }
-                scriptManager.Execute(ActionManager.Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
-            }
-
-            _dataSource = null;
+            case "stopProcess":
+                exp.AbortProcess();
+                CurrentContext.Response.SendResponse("{}", "text/json");
+                break;
         }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
     }
 
     /// <summary>
-    /// Recupera os registros do banco de dados com base nos filtros atuais.  
+    /// Retrieves database records.
     /// </summary>
     /// <returns>
-    /// Retorna um DataTable com os registros localizados. 
-    /// Se nenhum registro for localizado retorna nulo.
-    /// O componente utiliza seguinte regra para recuperar os dados da grid:
-    /// <para/>1) Utiliza a propriedade DataSource;
-    /// <para/>2) Se a propriedade DataSource for nula, tenta executar a ação OnDataLoad;
-    /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
-    /// utilizando a proc informada no FormElement;
+    /// Returns a DataTable with the found records.
+    /// If no record is found, returns null.
+    /// The component uses the following rule to retrieve grid data:
+    /// <para/>1) Use the DataSource property;
+    /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
+    /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
+    /// Using the stored procedure informed in the <see cref="FormElement"/>;
     /// </returns>
     public DataTable GetDataTable()
     {
@@ -2018,14 +1673,14 @@ public class JJGridView : JJBaseView
         if (_dataSource == null || IsUserSetDataSource)
         {
             _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentUI.TotalPerPage, CurrentPage, ref tot);
-            TotalReg = tot;
+            TotalRecords = tot;
 
             //Se estiver paginando e não retornar registros volta para pagina inicial
             if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
             {
                 CurrentPage = 1;
                 _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentUI.TotalPerPage, CurrentPage, ref tot);
-                TotalReg = tot;
+                TotalRecords = tot;
             }
         }
 
@@ -2033,33 +1688,19 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Recupera os registros do banco de dados com base no filtro.  
+    /// <inheritdoc cref="GetDataTable"/>
     /// </summary>
-    /// <param name="filters">Lista com os filtros a serem utilizados. [key(campo do BD), valor(valor armazenado no BD)]</param>
-    /// <param name="orderby">Order do registro apenas um campo seguido por espaço ASC ou DESC</param>
-    /// <param name="regporpag">Quantidade de registros a ser retornado por página</param>
-    /// <param name="currentPage">Pagina atual</param>
-    /// <param name="tot">Se o valor for igual a zero retorna como referência a quantidade de registros com base no filtro.</param>
-    /// <returns>
-    /// Retorna um DataTable com os registros localizados. 
-    /// Se nenhum registro for localizado retorna nulo.
-    /// O componente utiliza seguinte regra para recuperar os dados da grid:
-    /// <para/>1) Utiliza a propriedade DataSource;
-    /// <para/>2) Se a propriedade DataSource for nula, tenta executar a ação OnDataLoad;
-    /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
-    /// utilizando a proc informada no FormElement;
-    /// </returns>
-    private DataTable GetDataTable(Hashtable filters, string orderby, int regporpag, int currentPage, ref int tot)
+    private DataTable GetDataTable(Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref int total)
     {
         DataTable dt;
         if (IsUserSetDataSource)
         {
             var tempdt = DataSource;
             if (tempdt != null)
-                tot = tempdt.Rows.Count;
+                total = tempdt.Rows.Count;
 
             var dv = new DataView(tempdt);
-            dv.Sort = orderby;
+            dv.Sort = orderBy;
 
             dt = dv.ToTable();
             dv.Dispose();
@@ -2069,67 +1710,47 @@ public class JJGridView : JJBaseView
             var args = new GridDataLoadEventArgs
             {
                 Filters = filters,
-                OrderBy = orderby,
-                RegporPag = regporpag,
+                OrderBy = orderBy,
+                RegporPag = recordsPerPage,
                 CurrentPage = currentPage,
-                Tot = tot
+                Tot = total
             };
             OnDataLoad.Invoke(this, args);
-            tot = args.Tot;
+            total = args.Tot;
             dt = args.DataSource;
         }
         else
         {
-            var result = DataDictionaryManager.GetDataTable(filters, orderby, regporpag, currentPage);
+            var result = DataDictionaryManager.GetDataTable(filters, orderBy, recordsPerPage, currentPage);
             dt = result.Result;
-            tot = result.Total;
+            total = result.Total;
         }
 
         return dt;
     }
-
-    /// <summary>
-    /// Recupera os valores dos campos alterados na Grid
-    /// </summary>
-    /// <param name="regPerPage">Registros por página</param>
-    /// <param name="currentPage">Página atual</param>
-    /// <returns>
-    /// Retorna uma lista com um hash contendo nome do campo e valor
-    /// </returns>
+    
     /// <remarks>
-    /// Utilizado com a propriedade EnableEditMode
+    /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public List<Hashtable> GetGridValues(int regPerPage, int currentPage)
+    public List<Hashtable> GetGridValues(int recordPerPage, int currentPage)
     {
         int tot = 1;
-        DataTable dt = GetDataTable(CurrentFilter, CurrentOrder, regPerPage, currentPage, ref tot);
+        DataTable dt = GetDataTable(CurrentFilter, CurrentOrder, recordPerPage, currentPage, ref tot);
 
         return GetGridValues(dt);
     }
-
-    /// <summary>
-    /// Recupera os valores dos campos alterados na Grid
-    /// </summary>
-    /// <returns>
-    /// Retorna uma lista com um hash contendo nome do campo e valor
-    /// </returns>
+    
     /// <remarks>
-    /// Utilizado com a propriedade EnableEditMode
+    /// Used with the EnableEditMode property
     /// </remarks>
     public List<Hashtable> GetGridValues()
     {
         DataTable dt = GetDataTable();
         return GetGridValues(dt);
     }
-
-    /// <summary>
-    /// Recupera os valores dos campos alterados na Grid
-    /// </summary>
-    /// <returns>
-    /// Retorna uma lista com um hash contendo nome do campo e valor
-    /// </returns>
+    
     /// <remarks>
-    /// Utilizado com a propriedade EnableEditMode
+    /// Used with the EnableEditMode property
     /// </remarks>
     private List<Hashtable> GetGridValues(DataTable dt)
     {
@@ -2152,15 +1773,9 @@ public class JJGridView : JJBaseView
 
         return listValues;
     }
-
-    /// <summary>
-    /// Recupera os ids das linhas selecionadas na Grid
-    /// </summary>
-    /// <returns>
-    /// Retorna uma lista com um hash contendo nome do campo e valor
-    /// </returns>
+    
     /// <remarks>
-    /// Utilizado com a propriedade EnableMultSelect
+    /// Used with the EnableMultSelect property
     /// </remarks>
     public List<Hashtable> GetSelectedGridValues()
     {
@@ -2191,10 +1806,7 @@ public class JJGridView : JJBaseView
 
         return listValues;
     }
-
-    /// <summary>
-    /// Desmarca todas as linhas selecionadas na Grid
-    /// </summary>
+    
     public void ClearSelectedGridValues()
     {
         SelectedRowsId = string.Empty;
@@ -2213,7 +1825,7 @@ public class JJGridView : JJBaseView
             else
                 sIds.Append(",");
 
-            string values = GetPKValues(row);
+            string values = GetPkValues(row);
             sIds.Append(Cript.Cript64(values));
 
         }
@@ -2222,13 +1834,11 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Valida os campos habilitados para edição e 
-    /// retorna uma lista com erros encontrados
+    /// Validate the field and returns a Hashtable with the errors.
     /// </summary>
-    /// <param name="values">Dados do Formulário</param>
     /// <returns>
-    /// Chave = Nome do Campo
-    /// Valor = Mensagem de erro
+    /// Key = Field name
+    /// Value = Message
     /// </returns>
     public Hashtable ValidateGridFields(List<Hashtable> values)
     {
@@ -2237,7 +1847,7 @@ public class JJGridView : JJBaseView
 
         var errors = new Hashtable();
         int line = 0;
-        foreach (Hashtable row in values)
+        foreach (var row in values)
         {
             line++;
             foreach (var f in FormElement.Fields)
@@ -2263,45 +1873,30 @@ public class JJGridView : JJBaseView
 
         return errors;
     }
-
-    /// <summary>
-    /// Verifica se a paginação esta habilitada
-    /// </summary>
+    
     private bool IsPaggingEnabled()
     {
-        return !(!ShowPagging || CurrentPage == 0 || CurrentUI.TotalPerPage == 0 || TotalReg == 0);
+        return !(!ShowPagging || CurrentPage == 0 || CurrentUI.TotalPerPage == 0 || TotalRecords == 0);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na toolbar
-    /// </summary>
+    
     public void AddToolBarAction(SqlCommandAction action)
     {
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na toolbar
-    /// </summary>
+    
     public void AddToolBarAction(UrlRedirectAction action)
     {
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na toolbar
-    /// </summary>
+    
     public void AddToolBarAction(InternalAction action)
     {
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na toolbar
-    /// </summary>
+    
     public void AddToolBarAction(ScriptAction action)
     {
         ValidateAction(action);
@@ -2309,11 +1904,10 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Remover botão customizado na grid
+    /// Remove a custom button in the grid.
     /// </summary>
     ///<remarks>
-    ///Somente ações dos tipos ScriptAction, UrlRedirectAction ou InternalAction 
-    ///podem ser removidas
+    /// Only actions of types ScriptAction, UrlRedirectAction or InternalAction can be removed
     ///</remarks>
     public void RemoveToolBarAction(string actionName)
     {
@@ -2333,95 +1927,76 @@ public class JJGridView : JJBaseView
                 throw new ArgumentException(Translate.Key("This action can not be removed"));
         }
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na grid
-    /// </summary>
+    
     public void AddGridAction(SqlCommandAction action)
     {
         ValidateAction(action);
         GridActions.Add(action);
     }
 
-    /// <summary>
-    /// Adicionar botão customizado na grid
-    /// </summary>
     public void AddGridAction(UrlRedirectAction action)
     {
         ValidateAction(action);
         GridActions.Add(action);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na gtrid
-    /// </summary>
+    
     public void AddGridAction(InternalAction action)
     {
         ValidateAction(action);
         GridActions.Add(action);
     }
-
-    /// <summary>
-    /// Adicionar botão customizado na gtrid
-    /// </summary>
+    
     public void AddGridAction(ScriptAction action)
     {
         ValidateAction(action);
         GridActions.Add(action);
     }
 
+    private void AddGridAction(BasicAction action)
+    {
+        ValidateAction(action);
+        GridActions.Add(action);
+    }
+
     /// <summary>
-    /// Remover botão customizado na grid
+    /// Remove custom button from grid.
     /// </summary>
-    ///<remarks>
-    ///Somente ações dos tipos ScriptAction, UrlRedirectAction ou InternalAction 
-    ///podem ser removidas
-    ///</remarks>
+    /// <remarks>
+    /// Only actions of types ScriptAction, UrlRedirectAction or InternalAction
+    /// can be removed
+    /// </remarks>
     public void RemoveGridAction(string actionName)
     {
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
         var action = GridActions.Find(x => x.Name.Equals(actionName));
-        if (action == null)
-            throw new ArgumentException(Translate.Key("Action {0} not found", actionName));
-
-        if (action is ScriptAction ||
-            action is UrlRedirectAction ||
-            action is InternalAction)
+        switch (action)
         {
-            GridActions.Remove(action);
-        }
-        else
-        {
-            throw new ArgumentException(Translate.Key("This action can not be removed"));
+            case null:
+                throw new ArgumentException(Translate.Key("Action {0} not found", actionName));
+            case ScriptAction or UrlRedirectAction or InternalAction:
+                GridActions.Remove(action);
+                break;
+            default:
+                throw new ArgumentException(Translate.Key("This action can not be removed"));
         }
     }
-
-    /// <summary>
-    /// Recupera uma ação da ToolBar pelo nome
-    /// </summary>
-    /// <param name="actionName">Nome cadastrado na ação</param>
+    
     public BasicAction GetToolBarAction(string actionName)
     {
         return ToolBarActions.Find(x => x.Name.Equals(actionName));
     }
-
-    /// <summary>
-    /// Recupera uma ação da Grid pelo nome
-    /// </summary>
-    /// <param name="actionName">>Nome cadastrado na ação</param>
+    
     public BasicAction GetGridAction(string actionName)
     {
         return GridActions.Find(x => x.Name.Equals(actionName));
     }
 
     /// <summary>
-    /// Adiciona ou altera um valor no CurrentFilter.<br></br>
-    /// Se existir altera, caso contrário inclui.
+    /// Add or change a value in the CurrentFilter.<br></br>
+    /// If it exists, change it, otherwise it includes it.
     /// </summary>
-    /// <param name="field">Nome do Campo</param>
-    /// <param name="value">Valor do Campo</param>
     public void SetCurrentFilter(string field, object value)
     {
         if (CurrentFilter.ContainsKey(field))
@@ -2431,7 +2006,7 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// Verifica se ação é valida, se não for retorna uma exception
+    /// Verify if a action is valid, else, throws an exception.
     /// </summary>
     private void ValidateAction(BasicAction action)
     {
@@ -2441,24 +2016,18 @@ public class JJGridView : JJBaseView
         if (string.IsNullOrEmpty(action.Name))
             throw new ArgumentException(Translate.Key("Property name action is not valid"));
     }
-
-    /// <summary>
-    /// Atribui as configurações do usuário cadastrado no dicionário de dados
-    /// </summary>
-    /// <param name="o">
-    /// Configurações do usuário
-    /// </param>
-    public void SetGridOptions(UIGrid o)
+    
+    public void SetGridOptions(UIGrid options)
     {
-        if (o == null)
-            throw new ArgumentNullException(nameof(o), "Grid Options");
+        if (options == null)
+            throw new ArgumentNullException(nameof(options), "Grid Options");
 
         EnableAjax = true;
-        EnableSorting = o.EnableSorting;
-        EnableMultSelect = o.EnableMultSelect;
-        MaintainValuesOnLoad = o.MaintainValuesOnLoad;
-        ShowPagging = o.ShowPagging;
-        ShowToolbar = o.ShowToolBar;
+        EnableSorting = options.EnableSorting;
+        EnableMultSelect = options.EnableMultSelect;
+        MaintainValuesOnLoad = options.MaintainValuesOnLoad;
+        ShowPagging = options.ShowPagging;
+        ShowToolbar = options.ShowToolBar;
 
         if (!GridUI.HasFormValues(CurrentContext) | !ShowToolbar | !ConfigAction.IsVisible)
         {
@@ -2469,19 +2038,19 @@ public class JJGridView : JJBaseView
             if (ui == null)
             {
                 ui = CurrentUI;
-                ui.ShowRowHover = o.ShowRowHover;
-                ui.ShowRowStriped = o.ShowRowStriped;
-                ui.ShowBorder = o.ShowBorder;
-                ui.TotalPerPage = o.TotalPerPage;
-                ui.TotalPaginationButtons = o.TotalPaggingButton;
-                ui.IsHeaderFixed = o.HeaderFixed;
+                ui.ShowRowHover = options.ShowRowHover;
+                ui.ShowRowStriped = options.ShowRowStriped;
+                ui.ShowBorder = options.ShowBorder;
+                ui.TotalPerPage = options.TotalPerPage;
+                ui.TotalPaginationButtons = options.TotalPaggingButton;
+                ui.IsHeaderFixed = options.HeaderFixed;
             }
 
             CurrentUI = ui;
         }
 
-        ShowHeaderWhenEmpty = o.ShowHeaderWhenEmpty;
-        EmptyDataText = o.EmptyDataText;
+        ShowHeaderWhenEmpty = options.ShowHeaderWhenEmpty;
+        EmptyDataText = options.EmptyDataText;
     }
 
     internal BasicAction GetCurrentAction(ActionMap actionMap)
@@ -2498,10 +2067,7 @@ public class JJGridView : JJBaseView
             _ => null,
         };
     }
-
-    /// <summary>
-    /// Retorna verdadeiro se o post é uma chamada para exportação
-    /// </summary>
+    
     public bool IsExportPost()
     {
         var actionMap = CurrentActionMap;
