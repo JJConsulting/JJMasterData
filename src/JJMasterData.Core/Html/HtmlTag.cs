@@ -4,6 +4,7 @@
     {
         A,
         B,
+        Blockquote,
         Area,
         Br,
         Div,
@@ -34,6 +35,8 @@
         Hr,
         I,
         Section,
-        P
+        P,
+        Footer
+       
     }
 }

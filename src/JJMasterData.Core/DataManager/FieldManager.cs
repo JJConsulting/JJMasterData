@@ -208,7 +208,7 @@ public class FieldManager
                 break;
             case FormComponent.Currency:
                 if (double.TryParse(sVal, out var nCurrency))
-                    sVal = nCurrency.ToString("C" + field.NumberOfDecimalPlaces);             
+                    sVal = nCurrency.ToString("C" + field.NumberOfDecimalPlaces);
                 break;
             case FormComponent.Date:
             case FormComponent.DateTime:

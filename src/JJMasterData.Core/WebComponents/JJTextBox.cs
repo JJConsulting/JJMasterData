@@ -32,7 +32,7 @@ public class JJTextBox : JJBaseControl
         var html = new HtmlElement(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder),"placeholder",PlaceHolder)
+            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)

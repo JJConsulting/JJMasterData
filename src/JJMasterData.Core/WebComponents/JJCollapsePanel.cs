@@ -17,6 +17,8 @@ public class JJCollapsePanel : JJBaseView
 
     public string Title { get; set; }
 
+    public string SubTitle { get; set; }
+
     public JJIcon TitleIcon { get; set; }
 
     public string HtmlContent { get; set; }
@@ -152,26 +154,23 @@ public class JJCollapsePanel : JJBaseView
             });
         return panelHeading;
     }
-    private HtmlElement GetPanelBody()
-    {
-        var collapse = new HtmlElement(HtmlTag.Div)
-            .WithNameAndId(Name)
-            .WithCssClass("panel-collapse collapse")
-            .WithCssClassIf(IsCollapseOpen, "in show")
-            .AppendElement(GetBody());
 
-        return collapse;
-    }
     #endregion
 
     private HtmlElement GetBody()
     {
-        var panelBody = new HtmlElement(HtmlTag.Div)
-            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
-            .AppendElementIf(HtmlElementContent != null, HtmlElementContent)
-            .AppendElementIf(Buttons.Count > 0, GetButtons())
-            .WithCssClass(CssClass);
+        var panelBody = new HtmlElement(HtmlTag.Div);
 
+        if (!string.IsNullOrEmpty(SubTitle))
+        {
+            var title = new JJTitle(null, SubTitle);
+            panelBody.AppendElement(title.GetHtmlBlockquote());
+        }
+
+        panelBody.AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent);
+        panelBody.AppendElementIf(HtmlElementContent != null, HtmlElementContent);
+        panelBody.AppendElementIf(Buttons.Count > 0, GetButtons());
+        panelBody.WithCssClass(CssClass);
         panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
 
         return panelBody;

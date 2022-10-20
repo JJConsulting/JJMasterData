@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Html
         {
             if (element != null)
                 _children.Add(element);
-                
+
             return this;
         }
 
@@ -67,20 +67,16 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Insert raw text as a child of caller element.
         /// </summary>
-        /// <param name="rawText"></param>
-        /// <returns></returns>
         public HtmlElement AppendText(string rawText)
         {
             var childElement = new HtmlElement(rawText);
             AppendElement(childElement);
             return this;
         }
-        
+
         /// <summary>
         /// Insert string representation of the integer as a child of caller element.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public HtmlElement AppendText(int value)
         {
             var childElement = new HtmlElement(value.ToString());

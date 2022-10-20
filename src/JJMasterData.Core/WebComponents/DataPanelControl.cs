@@ -6,7 +6,11 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
 
-internal class DataPanelControl : JJBaseView
+
+/// <summary>
+/// Render components in a div
+/// </summary>
+internal class DataPanelControl 
 {
     public UIForm UISettings { get; private set; }
 
@@ -18,8 +22,6 @@ internal class DataPanelControl : JJBaseView
 
     public Hashtable Values { get; private set; }
 
-    public string PanelName { get; private set; }
-
     private bool IsViewModeAsStatic => PageState == PageState.View && UISettings.ShowViewModeAsStatic;
 
     public DataPanelControl(JJDataPanel dataPanel)
@@ -29,7 +31,6 @@ internal class DataPanelControl : JJBaseView
         PageState = dataPanel.PageState;
         Erros = dataPanel.Erros;
         Values = dataPanel.Values;
-        PanelName = dataPanel.Name;
     }
 
     public HtmlElement GetHtmlForm(List<FormElementField> fields)
@@ -100,7 +101,6 @@ internal class DataPanelControl : JJBaseView
                 htmlField.AppendElement(new JJLabel(f));
 
             htmlField.AppendElement(GetControlField(f, value));
-
         }
 
         return html;
@@ -145,7 +145,7 @@ internal class DataPanelControl : JJBaseView
             labelClass += " d-flex justify-content-end align-items-center";
             fieldClass += " d-flex justify-content-start align-items-center";
         }
-            
+
         var html = new HtmlElement(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
@@ -165,7 +165,7 @@ internal class DataPanelControl : JJBaseView
 
             var label = new JJLabel(f);
             label.CssClass = labelClass;
-            
+
             fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : string.Format(" {0}", f.CssClass);
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fldClass += " has-error";
@@ -197,19 +197,17 @@ internal class DataPanelControl : JJBaseView
                 colCount++;
             }
 
-           row.WithCssClass(fldClass)
-            .AppendElement(label)
-            .AppendElement(HtmlTag.Div, col =>
-            {
-                col.WithCssClass(colClass);
-                col.AppendElement(GetControlField(f, value));
-            });
-
+            row.WithCssClass(fldClass)
+             .AppendElement(label)
+             .AppendElement(HtmlTag.Div, col =>
+             {
+                 col.WithCssClass(colClass);
+                 col.AppendElement(GetControlField(f, value));
+             });
         }
 
         return html;
     }
-
 
     private HtmlElement GetControlField(FormElementField f, object value)
     {

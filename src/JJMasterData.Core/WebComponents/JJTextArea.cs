@@ -7,7 +7,6 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJTextArea : JJBaseControl
 {
-
     public int Rows { get; set; }
 
     public JJTextArea()
@@ -31,10 +30,8 @@ public class JJTextArea : JJBaseControl
         return text;
     }
 
-
     internal override HtmlElement GetHtmlElement()
     {
-
         var html = new HtmlElement(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)

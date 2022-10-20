@@ -81,9 +81,9 @@ public class JJCard : JJBaseView
         }
 
         html.AppendElement(HtmlElementContent);
-        
+
         return html;
     }
 
-   
+
 }

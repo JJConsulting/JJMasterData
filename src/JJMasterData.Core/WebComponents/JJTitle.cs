@@ -54,4 +54,28 @@ public class JJTitle : JJBaseView
                 });
             });
     }
+
+
+    internal HtmlElement GetHtmlBlockquote()
+    {
+        var row = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("row")
+            .AppendElement(HtmlTag.Blockquote, block =>
+            {
+                block.WithCssClass("blockquote mb-1");
+                block.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p =>
+                {
+                    p.AppendText(Title);
+                });
+                block.AppendElementIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
+                {
+                    p.WithCssClass("blockquote-footer");
+                    p.WithCssClassIf(string.IsNullOrEmpty(Title), "mt-1");
+                    p.AppendText(SubTitle);
+                });
+            });
+
+        return row;
+    }
+
 }
