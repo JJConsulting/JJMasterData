@@ -85,5 +85,4 @@ public class JJCard : JJBaseView
         return html;
     }
 
-
 }

@@ -8,7 +8,7 @@ namespace JJMasterData.Core.WebComponents;
 
 
 /// <summary>
-/// Render components in a div
+/// Render components fields in a div
 /// </summary>
 internal class DataPanelControl 
 {

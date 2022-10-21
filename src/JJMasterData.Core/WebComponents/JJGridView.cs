@@ -790,7 +790,9 @@ public class JJGridView : JJBaseView
             var alert = new JJAlert
             {
                 ShowCloseButton = true,
-                Color = PanelColor.Default
+                Color = PanelColor.Default,
+                Title = "No records found.",
+                Icon = IconType.InfoCircle
             };
 
             if (Filter.HasFilter())
@@ -798,12 +800,7 @@ public class JJGridView : JJBaseView
                 alert.Messages.Add("There are filters applied for this query.");
                 alert.Icon = IconType.Filter;
             }
-            else
-            {
-                alert.Messages.Add("No records found.");
-                alert.Icon = IconType.InfoCircle;
-            }
-
+           
             html.AppendLine(alert.GetHtml());
         }
 

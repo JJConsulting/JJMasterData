@@ -12,7 +12,7 @@ namespace JJMasterData.Core.WebComponents
         public string Title { get; set; }
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
-        
+
         /// <remarks>
         /// Default = true
         /// </remarks>
@@ -29,20 +29,22 @@ namespace JJMasterData.Core.WebComponents
                 .WithNameAndId(Name)
                 .WithAttributes(Attributes)
                 .WithCssClass(CssClass)
-                .WithCssClass($"alert alert-dismissible")
+                .WithCssClass("alert")
+                .WithCssClassIf(BootstrapHelper.Version > 3, "alert-dismissible")
                 .WithCssClass(GetClassType())
-                .WithAttribute("role", "alert")
-                .AppendElementIf(ShowCloseButton, GetCloseButton("alert"));
+                .WithAttribute("role", "alert");
+
+            if (ShowCloseButton)
+                html.AppendElement(GetCloseButton("alert"));
 
             if (ShowIcon)
                 html.AppendElement(new JJIcon(Icon));
 
-            html.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Strong, e =>
-                {
-                    e.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
-                });
+            if (!string.IsNullOrEmpty(Title))
+                html.AppendElement(HtmlTag.B)
+                    .AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
 
-            foreach(string message in Messages)
+            foreach (string message in Messages)
             {
                 html.AppendElement(HtmlTag.Br);
                 html.AppendText(Translate.Key(message));
@@ -55,9 +57,9 @@ namespace JJMasterData.Core.WebComponents
         {
             if (Color == PanelColor.Default)
                 return BootstrapHelper.Version == 3 ? "well" : "alert-secondary";
-            
+
             return $"alert-{Color.ToString().ToLower()}";
-        } 
+        }
 
         internal static HtmlElement GetCloseButton(string dimissValue)
         {
@@ -66,13 +68,14 @@ namespace JJMasterData.Core.WebComponents
                 .WithAttribute("aria-label", Translate.Key("Close"))
                 .WithDataAttribute("dismiss", dimissValue)
                 .WithCssClass(BootstrapHelper.Close)
-                .AppendText(BootstrapHelper.CloseButtonTimes);
+                .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>
+                {
+                    span.WithAttribute("aria-hidden", "true");
+                    span.AppendText("&times;");
+                });
 
             return btn;
-
         }
-
-
 
     }
 }
