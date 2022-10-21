@@ -136,7 +136,7 @@ public class JJGridView : JJBaseView
         }
     }
     
-    private List<FormElementField> VisibleFields
+    internal List<FormElementField> VisibleFields
     {
         get
         {
@@ -1874,7 +1874,7 @@ public class JJGridView : JJBaseView
         return errors;
     }
     
-    private bool IsPaggingEnabled()
+    internal bool IsPaggingEnabled()
     {
         return !(!ShowPagging || CurrentPage == 0 || CurrentUI.TotalPerPage == 0 || TotalRecords == 0);
     }
