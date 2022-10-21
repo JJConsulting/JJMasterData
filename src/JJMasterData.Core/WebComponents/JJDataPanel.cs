@@ -188,20 +188,17 @@ public class JJDataPanel : JJBaseView
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"jjform_pkval_{Name}", GetPkInputHidden());
+            html.AppendHiddenInput($"jjform_pkval_{Name}", GetCriptPkValues());
         }
 
         var panelGroup = new DataPanelGroup(this);
         html.AppendRange(panelGroup.GetListHtmlPanel());
-
         html.AppendScript(GetHtmlFormScript());
 
         return html;
-
-
     }
 
-    private string GetPkInputHidden()
+    private string GetCriptPkValues()
     {
         var sHtml = new StringBuilder();
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -223,93 +220,19 @@ public class JJDataPanel : JJBaseView
     private string GetHtmlFormScript()
     {
         var sHtml = new StringBuilder();
-        var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
-        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:") && !x.AutoPostBack);
+        //var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
+        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
 
-        if (listFieldsPost.Count == 0 &&
-            listFieldsExp.Count == 0)
-        {
-            return "";
-        }
-
-        string functionname = string.Format("do_reload_{0}", Name);
-        sHtml.AppendLine(" ");
+        //string functionname = string.Format("do_reload_{0}", Name);
         
-        if (listFieldsPost.Count > 0)
-        {
-            sHtml.Append("\tfunction ");
-            sHtml.Append(functionname);
-            sHtml.AppendLine("(objid) { ");
-            sHtml.AppendLine("\t\tvar frm = $('form'); ");
-            sHtml.AppendLine("\t\tvar surl = frm.attr('action'); ");
-            sHtml.AppendLine("\t\tif (surl.includes('?'))");
-            sHtml.AppendLine("\t\t\tsurl += '&t=reloadpainel&pnlname=" + Name + "&objname=' + objid;");
-            sHtml.AppendLine("\t\telse");
-            sHtml.AppendLine("\t\t\tsurl += '?t=reloadpainel&pnlname=" + Name + "&objname=' + objid;");
-            sHtml.AppendLine("");
-            sHtml.AppendLine("\t\t$.ajax({ ");
-            sHtml.AppendLine("\t\tasync: false,");
-            sHtml.AppendLine("\t\t\ttype: frm.attr('method'), ");
-            sHtml.AppendLine("\t\t\turl: surl, ");
-            sHtml.AppendLine("\t\t\tdata: frm.serialize(), ");
-            sHtml.AppendLine("\t\t\tsuccess: function (data) { ");
-            sHtml.AppendLine("\t\t\t\t$(\"#" + Name + "\").html(data); ");
-            sHtml.AppendLine("\t\t\t\tjjloadform(); ");
-            sHtml.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
-            sHtml.AppendLine("\t\t\t}, ");
-            sHtml.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(textStatus); ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
-            sHtml.AppendLine("\t\t\t} ");
-            sHtml.AppendLine("\t\t}); ");
-            sHtml.AppendLine("\t} ");
-        }
-
-        sHtml.AppendLine("\t$(document).ready(function () {");
+        sHtml.AppendLine("$(document).ready(function () { ");
 
         if (UISettings.EnterKey == FormEnterKey.Tab)
         {
-            sHtml.AppendLine($"\t\tjjutil.replaceEntertoTab(\"{Name}\");");
-            sHtml.AppendLine("");
+            sHtml.AppendLine($"jjutil.replaceEntertoTab('{Name}');");
         }
 
-        if (listFieldsPost.Count > 0)
-        {
-            foreach (FormElementField f in listFieldsPost)
-            {
-                //WorkArroud para gatilhar o select do search
-                if (f.Component == FormComponent.Search)
-                {
-                    sHtml.Append("\t\t$(\"");
-                    sHtml.Append($"#{f.Name}_text");
-                    sHtml.AppendLine("\").change(function () {");
-                    sHtml.AppendLine("\t\t\tsetTimeout(function() {");
-                    sHtml.Append("\t\t\t\t");
-                    sHtml.Append(functionname);
-                    sHtml.Append("('");
-                    sHtml.Append(f.Name);
-                    sHtml.AppendLine("');");
-                    sHtml.AppendLine("\t\t\t},200);");
-                    sHtml.AppendLine("\t\t});");
-                    sHtml.AppendLine("");
-                }
-                else
-                {
-                    sHtml.Append("\t\t$(\"");
-                    sHtml.Append("#");
-                    sHtml.Append(f.Name);
-                    sHtml.AppendLine("\").change(function () {");
-                    sHtml.Append("\t\t\t");
-                    sHtml.Append(functionname);
-                    sHtml.AppendLine("($(this).attr('id'));");
-                    sHtml.AppendLine("\t\t});");
-                    sHtml.AppendLine("");
-                }
-
-            }
-        }
-
+        //TODO: Parei aqui
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");

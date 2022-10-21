@@ -3,6 +3,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -10,8 +11,10 @@ namespace JJMasterData.Core.WebComponents;
 /// <summary>
 /// Render components fields in a div
 /// </summary>
-internal class DataPanelControl 
+internal class DataPanelControl
 {
+    public string Name { get; set; }
+
     public UIForm UISettings { get; private set; }
 
     public FieldManager FieldManager { get; private set; }
@@ -31,6 +34,7 @@ internal class DataPanelControl
         PageState = dataPanel.PageState;
         Erros = dataPanel.Erros;
         Values = dataPanel.Values;
+        Name = dataPanel.Name;
     }
 
     public HtmlElement GetHtmlForm(List<FormElementField> fields)
@@ -100,7 +104,10 @@ internal class DataPanelControl
             if (f.Component != FormComponent.CheckBox)
                 htmlField.AppendElement(new JJLabel(f));
 
-            htmlField.AppendElement(GetControlField(f, value));
+            if (IsViewModeAsStatic)
+                htmlField.AppendElement(GetStaticField(f));
+            else
+                htmlField.AppendElement(GetControlField(f, value));
         }
 
         return html;
@@ -202,35 +209,56 @@ internal class DataPanelControl
              .AppendElement(HtmlTag.Div, col =>
              {
                  col.WithCssClass(colClass);
-                 col.AppendElement(GetControlField(f, value));
+                 if (IsViewModeAsStatic)
+                     col.AppendElement(GetStaticField(f));
+                 else
+                     col.AppendElement(GetControlField(f, value));
              });
         }
 
         return html;
     }
 
+    private HtmlElement GetStaticField(FormElementField f)
+    {
+        var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
+        var html = new HtmlElement(tag)
+            .WithCssClass("form-control-static")
+            .AppendText(FieldManager.ParseVal(Values, f));
+
+        return html;
+    }
+
     private HtmlElement GetControlField(FormElementField f, object value)
     {
-        if (IsViewModeAsStatic)
+        var field = FieldManager.GetField(f, PageState, Values, value);
+        field.Enabled = FieldManager.IsEnable(f, PageState, Values);
+        if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
         {
-            var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
-            var html = new HtmlElement(tag)
-                .WithCssClass("form-control-static")
-                .AppendText(FieldManager.ParseVal(Values, f));
-
-            return html;
+            field.CssClass = "is-invalid";
         }
-        else
+
+        if (f.AutoPostBack & (PageState == PageState.Insert | PageState == PageState.Update))
         {
-            var field = FieldManager.GetField(f, PageState, Values, value);
-            field.Enabled = FieldManager.IsEnable(f, PageState, Values);
-            if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
-            {
-                field.CssClass = "is-invalid";
-            }
-
-            return field.RenderHtmlElement();
+            field.SetAttr("onchange", GetScriptReload(f));
         }
+
+        return field.RenderHtmlElement();
+    }
+
+    private string GetScriptReload(FormElementField f)
+    {
+        //WorkArroud to trigger event on search component
+        if (f.Component == FormComponent.Search)
+        {
+            var script = new StringBuilder();
+            script.Append("setTimeout(function() { ");
+            script.Append($"JJDataPanel.doReload('{Name}','{f.Name}'); ");
+            script.Append("}, 200);");
+            return script.ToString();
+        }
+
+        return $"JJDataPanel.doReload('{Name}','{f.Name}');";
     }
 
 }
