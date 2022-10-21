@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -15,6 +6,12 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -43,14 +40,12 @@ public class JJSearchBox : JJBaseControl
     private const string NumberOfItemsAttribute = "numberofitems";
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
-    
 
     private List<DataItemValue> _values;
     private string _selectedValue;
-
     private FormElementDataItem _dataItem;
-    
     private string _text;
+
     public new string Text
     {
         get
@@ -69,7 +64,7 @@ public class JJSearchBox : JJBaseControl
     /// Quantidade minima de caracteres digitado para disparar a pesquisa
     /// (Default = 1)
     /// </summary>
-    public int TriggerLength 
+    public int TriggerLength
     {
         get
         {
@@ -90,7 +85,7 @@ public class JJSearchBox : JJBaseControl
     /// Numero máximo de itens que será exibido na lista de pesquisa
     /// (Default = 10)
     /// </summary>
-    public int NumberOfItems 
+    public int NumberOfItems
     {
         get
         {
@@ -229,7 +224,7 @@ public class JJSearchBox : JJBaseControl
             {
                 string textSearch = CurrentContext.Request[Name + "_text"];
                 string json = GetJsonValues(textSearch);
-                
+
                 CurrentContext.Response.SendResponse(json, "application/json");
             }
         }
@@ -303,7 +298,7 @@ public class JJSearchBox : JJBaseControl
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
-        
+
         if (item != null)
             description = item.Description;
 
@@ -325,12 +320,12 @@ public class JJSearchBox : JJBaseControl
         {
             _values ??= GetValues(searchText, null);
         }
-        
+
         if (_values != null && searchText != null)
             return _values.ToList().FindAll(x => x.Description.ToLower().Contains(searchText.ToLower()));
         return null;
     }
-    
+
     /// <summary>
     /// <inheritdoc cref="GetValues"/>
     /// </summary>
@@ -351,7 +346,7 @@ public class JJSearchBox : JJBaseControl
                     if (!UserValues.ContainsKey("search_id"))
                         UserValues.Add("search_id", StringManager.ClearText(searchId));
                 }
-                    
+
                 if (searchText != null)
                 {
                     if (!UserValues.ContainsKey("search_text"))
@@ -385,7 +380,7 @@ public class JJSearchBox : JJBaseControl
 
         return values;
     }
-    
+
     private string GetJsonValues(string textSearch)
     {
         var listValue = GetValues(textSearch);

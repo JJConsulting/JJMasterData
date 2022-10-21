@@ -303,6 +303,32 @@ JJDataImp.updateCount = 0;
 JJDataImp.deleteCount = 0;
 JJDataImp.ignoreCount = 0;
 JJDataImp.errorCount = 0;
+class JJDataPanel {
+    static doReload(panelname, objid) {
+        const frm = $("form");
+        let surl = frm.attr("action");
+        surl += surl.includes("?") ? "&" : "?";
+        surl += "t=reloadpainel";
+        surl += "&pnlname=" + panelname;
+        surl += "&objname=" + objid;
+        $.ajax({
+            async: true,
+            type: frm.attr("method"),
+            url: surl,
+            data: frm.serialize(),
+            success: function (data) {
+                $("#" + panelname).html(data);
+                jjloadform();
+                jjutil.gotoNextFocus(objid);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                console.log(textStatus);
+                console.log(jqXHR);
+            }
+        });
+    }
+}
 var jjdictionary = (function () {
     return {
         deleteAction: function (actionName, url, questionStr) {
@@ -447,7 +473,7 @@ function jjloadform(event, prefixSelector) {
         enableTime: true,
         wrap: true,
         allowInput: true,
-        altInput: true,
+        altInput: false,
         time_24hr: true,
         altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
@@ -460,7 +486,7 @@ function jjloadform(event, prefixSelector) {
         enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
+        altInput: false,
         altFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         dateFormat: localeCode === "pt" ? "d-m-Y" : "m-d-Y",
         onOpen: function (selectedDates, dateStr, instance) {
@@ -473,7 +499,7 @@ function jjloadform(event, prefixSelector) {
         wrap: true,
         noCalendar: true,
         allowInput: true,
-        altInput: true,
+        altInput: false,
         dateFormat: "H:i",
         altFormat: "H:i",
         time_24hr: true,

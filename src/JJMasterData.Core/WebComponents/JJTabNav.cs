@@ -93,7 +93,7 @@ public class JJTabNav : JJBaseView
                 .WithAttribute("role", "tabpanel")
                 .WithCssClass("tab-pane fade")
                 .WithCssClassIf(SelectedTabIndex == i, "active" + BootstrapHelper.Show)
-                .AppendText(nav.HtmlContent);
+                .AppendElement(nav.HtmlContent);
 
             tabContent.AppendElement(divContent);
         }

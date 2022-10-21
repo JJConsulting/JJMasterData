@@ -23,7 +23,7 @@ public class JJFormLog : JJBaseView
         get
         {
             if (_auditLog != null) return _auditLog;
-            
+
             _auditLog = new(AuditLogSource.Form)
             {
                 DataAccess = DataAccess,
@@ -117,7 +117,7 @@ public class JJFormLog : JJBaseView
     {
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_NAME, FormElement.Name);
-        filter.Add(AuditLogService.DIC_KEY, Service.GetKey(FormElement,values));
+        filter.Add(AuditLogService.DIC_KEY, Service.GetKey(FormElement, values));
 
         string orderby = AuditLogService.DIC_MODIFIED + " DESC";
         int tot = 1;
@@ -156,7 +156,7 @@ public class JJFormLog : JJBaseView
         if (string.IsNullOrEmpty(logId))
         {
             var alert = new JJAlert();
-            alert.ShowIcon = true;  
+            alert.ShowIcon = true;
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = PanelColor.Warning;
             alert.Messages.Add(Translate.Key("No Records Found"));
@@ -196,7 +196,7 @@ public class JJFormLog : JJBaseView
         sHtml.AppendLine("<div class=\"jjrelative\">");
         sHtml.AppendLine("<div id=\"fieldDetail\"");
         sHtml.AppendLine($"<p><b>{Translate.Key("Snapshot Record")}:</b></p>");
-        sHtml.AppendLine(panel.GetHtmlPanel());
+        sHtml.AppendLine(panel.GetHtmlPanel().GetElementHtml());
         sHtml.AppendLine("</div>");
         sHtml.AppendLine("</div>");
         sHtml.AppendLine("</div>");
@@ -221,7 +221,7 @@ public class JJFormLog : JJBaseView
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
 
-        sHtml.AppendLine(panel.GetHtmlPanel());
+        sHtml.AppendLine(panel.GetHtmlPanel().GetElementHtml());
 
         return sHtml.ToString();
     }

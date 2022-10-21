@@ -50,6 +50,9 @@ public class DbTranslatorProvider : ITranslator
             if (string.IsNullOrEmpty(tablename))
                 return dic;
 
+            if (string.IsNullOrEmpty(DataAccess.ConnectionString))
+                return dic;
+
             var element = GetElement(tablename);
             if (!DataAccess.TableExists(element.TableName))
                 Factory.CreateDataModel(element);

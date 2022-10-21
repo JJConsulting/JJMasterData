@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -28,7 +29,6 @@ public class JJDataPanel : JJBaseView
     #region "Properties"
 
     private FieldManager _fieldManager;
-    private ActionManager _actionManager;
     private DataDictionaryManager _dataDictionaryManager;
     private UIForm _uiFormSettings;
 
@@ -38,11 +38,6 @@ public class JJDataPanel : JJBaseView
     /// Funções úteis para manipular campos no formulário
     /// </summary>
     public FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
-
-    /// <summary>
-    /// Funções úteis para manipular ações
-    /// </summary>
-    private ActionManager ActionManager => _actionManager ??= new ActionManager(this, FormElement);
 
     /// <summary>
     /// Configurações pré-definidas do formulário
@@ -90,7 +85,7 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    
+
     /// <summary>
     /// Renderiza agrupamento de campo
     /// </summary>
@@ -100,32 +95,27 @@ public class JJDataPanel : JJBaseView
 
     #region "Constructors"
 
-    public JJDataPanel(string elementName)
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
 
-        var dicParser = GetDictionary(elementName);
-        FormElement = dicParser.GetFormElement();
-        Name = "pnl_" + elementName.ToLower();
+    internal JJDataPanel()
+    {
         Values = new Hashtable();
         Erros = new Hashtable();
         AutoReloadFormFields = true;
-        RenderPanelGroup = FormElement.Panels.Count > 0;
-        UISettings = dicParser.UIOptions.Form;
+        PageState = PageState.View;
     }
 
-    public JJDataPanel(FormElement formElement)
+    public JJDataPanel(string elementName) : this()
+    {
+        WebComponentFactory.SetDataPanelParams(this, elementName);
+    }
+
+    public JJDataPanel(FormElement formElement) : this()
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
         FormElement = formElement;
         Name = "pnl_" + formElement.Name;
-        Values = new Hashtable();
-        Erros = new Hashtable();
-        PageState = PageState.View;
-        AutoReloadFormFields = true;
         RenderPanelGroup = FormElement.Panels.Count > 0;
         UISettings.IsVerticalLayout = true;
         UISettings.EnterKey = FormEnterKey.Disabled;
@@ -161,7 +151,7 @@ public class JJDataPanel : JJBaseView
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetHtmlPanel());
+            CurrentContext.Response.SendResponse(GetHtmlPanel().GetElementHtml());
             return null;
         }
 
@@ -185,476 +175,30 @@ public class JJDataPanel : JJBaseView
             return null;
         }
 
-        return GetHtmlPanel();
+        return GetHtmlPanel().GetElementHtml();
 
     }
 
-    internal string GetHtmlPanel()
+    internal HtmlElement GetHtmlPanel()
     {
-        var html = new StringBuilder();
-        html.AppendLine("<!-- Start Form -->");
-        html.Append("<div id=\"");
-        html.Append(Name);
-        html.Append("\"");
-        if (!string.IsNullOrEmpty(CssClass))
-        {
-            html.Append(" class=\"");
-            html.Append(CssClass);
-            html.Append("\"");
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(" ");
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-        }
-
-        html.AppendLine(">");
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithAttributes(Attributes)
+            .WithNameAndId(Name)
+            .WithCssClass(CssClass);
 
         if (PageState == PageState.Update)
         {
-            html.AppendLine(GetPkInputHidden());
+            html.AppendHiddenInput($"jjform_pkval_{Name}", GetCriptPkValues());
         }
 
-        var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
-        if (tabs.Count > 0)
-        {
-            var navTab = new JJTabNav
-            {
-                Name = "nav_" + Name
-            };
-            foreach (FormElementPanel panel in tabs)
-            {
-                string htmlContent = GetHtmlPanelGroup(panel);
-                if (!string.IsNullOrEmpty(htmlContent))
-                {
-                    var tabContent = new NavContent
-                    {
-                        Title = panel.Title,
-                        HtmlContent = htmlContent
-                    };
-                    navTab.ListTab.Add(tabContent);
-                }
-            }
-            html.AppendLine(navTab.GetHtml());
-        }
+        var panelGroup = new DataPanelGroup(this);
+        html.AppendRange(panelGroup.GetListHtmlPanel());
+        html.AppendScript(GetHtmlFormScript());
 
-        //Render other layout types
-        foreach (FormElementPanel panel in FormElement.Panels)
-        {
-            if (panel.Layout != PanelLayout.Tab)
-                html.AppendLine(GetHtmlPanelGroup(panel));
-        }
-
-        //Render fields without panel
-        if (FormElement.Fields.ToList().Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0")))
-        {
-            html.AppendLine(GetHtmlPanelGroup(null));
-        }
-
-        html.AppendLine("</div>");
-
-        html.AppendLine(GetHtmlFormScript());
-        html.AppendLine("<!-- End Form -->");
-
-        return html.ToString();
+        return html;
     }
 
-    private string GetHtmlPanelGroup(FormElementPanel panel)
-    {
-        var html = new StringBuilder();
-        if (panel == null)
-        {
-            if (!RenderPanelGroup)
-            {
-                html.AppendLine("<div class=\"container-fluid\">");
-                html.AppendLine(GetHtmlForm(null));
-                html.AppendLine("</div>");
-            }
-            else
-            {
-                html.AppendLine($"<div class=\"{BootstrapHelper.Well}\">");
-                if (BootstrapHelper.Version != 3)
-                    html.AppendLine("<div class=\"card-body\">");
-
-                html.AppendLine("<div class=\"container-fluid\">");
-                html.AppendLine(GetHtmlForm(null));
-                html.AppendLine("</div>");
-
-                if (BootstrapHelper.Version != 3)
-                    html.AppendLine("</div>");
-                html.AppendLine("</div>");
-            }
-
-            return html.ToString();
-        }
-
-        bool visible = FieldManager.Expression.GetBoolValue(panel.VisibleExpression, "Panel " + panel.Title, PageState, Values);
-        if (!visible)
-            return string.Empty;
-
-        if (panel.Layout == PanelLayout.Well)
-        {
-            html.AppendLine($"<div class=\"{BootstrapHelper.Well}\">");
-
-            if (BootstrapHelper.Version != 3)
-                html.Append("<div class=\"card-header\">");
-
-            html.AppendLine(GetHtmlPanelTitle(panel));
-
-            if (BootstrapHelper.Version != 3)
-                html.Append("</div>");
-
-            if (BootstrapHelper.Version != 3)
-                html.Append("<div class=\"card-body\">");
-
-            html.AppendLine("<div class=\"container-fluid\">");
-            html.AppendLine(GetHtmlForm(panel));
-            html.AppendLine("</div>");
-
-            if (BootstrapHelper.Version != 3)
-                html.Append("</div>");
-            html.AppendLine("</div>");
-        }
-        else if (panel.Layout == PanelLayout.Panel)
-        {
-            html.AppendFormat($"<div class=\"{BootstrapHelper.GetPanel(panel.Color.ToString().ToLower())}\">");
-            html.AppendLine("");
-            if (!string.IsNullOrEmpty(panel.Title))
-            {
-                html.AppendFormat($"<div class=\"{BootstrapHelper.GetPanelHeading(panel.Color.ToString().ToLower())}\">{panel.Title}</div>");
-                html.AppendLine("");
-            }
-
-            html.AppendLine($"<div class=\"{BootstrapHelper.PanelBody}\">");
-            html.AppendLine("<div class=\"container-fluid\">");
-
-            if (!string.IsNullOrEmpty(panel.SubTitle))
-            {
-                html.AppendLine(GetHtmlPanelTitle(null, panel.SubTitle));
-            }
-
-            html.AppendLine(GetHtmlForm(panel));
-            html.AppendLine("</div>");
-            html.AppendLine("</div>");
-            html.AppendLine("</div>");
-        }
-        else if (panel.Layout == PanelLayout.Collapse)
-        {
-            var sContent = new StringBuilder();
-            sContent.AppendLine("<div class=\"container-fluid\">");
-            if (!string.IsNullOrEmpty(panel.SubTitle))
-                sContent.AppendLine(GetHtmlPanelTitle(null, panel.SubTitle));
-
-            sContent.AppendLine(GetHtmlForm(panel));
-            sContent.AppendLine("</div>");
-            var collapse = new JJCollapsePanel();
-            collapse.Title = panel.Title;
-            collapse.Name = Name + "_panel" + panel.PanelId;
-            collapse.CssClass = panel.CssClass;
-            collapse.HtmlContent = sContent.ToString();
-            collapse.ExpandedByDefault = panel.ExpandedByDefault;
-            collapse.Color = panel.Color;
-
-            html.AppendLine(collapse.GetHtml());
-        }
-        else if (panel.Layout == PanelLayout.Tab)
-        {
-            html.AppendLine("<div class=\"container-fluid\">");
-            html.AppendLine(GetHtmlPanelTitle(null, panel.SubTitle));
-            html.AppendLine(GetHtmlForm(panel));
-            html.AppendLine("</div>");
-        }
-        else
-        {
-            html.AppendLine("<div class=\"container-fluid\">");
-            html.AppendLine(GetHtmlPanelTitle(panel));
-            html.AppendLine(GetHtmlForm(panel));
-            html.AppendLine("</div>");
-        }
-
-        return html.ToString();
-    }
-
-    private string GetHtmlForm(FormElementPanel panel)
-    {
-        bool panelEnable = true;
-        int panelId = 0;
-
-        if (panel != null)
-        {
-            panelEnable = FieldManager.Expression.GetBoolValue(panel.EnableExpression, "Panel " + panel.Title, PageState, Values);
-            panelId = panel.PanelId;
-        }
-
-        List<FormElementField> fields = FormElement.Fields.ToList()
-                                 .FindAll(x => x.PanelId == panelId)
-                                 .OrderBy(x => x.LineGroup)
-                                 .ThenBy(x => x.Order)
-                                 .ToList();
-
-        if (fields.Count == 0)
-            return string.Empty;
-
-        var controlpanel = new DataPanelControl(this);
-        return controlpanel.GetHtmlForm(fields).GetElementHtml();
-
-        //if (UISettings.IsVerticalLayout)
-        //    return GetHtmlFormVertical(fields);
-        //return GetHtmlFormHorizontal(fields);
-    }
-
-    private string GetHtmlFormVertical(List<FormElementField> fields)
-    {
-        string colClass = "";
-        int cols = UISettings.FormCols;
-        if (cols > 12)
-            cols = 12;
-
-        if (cols >= 1)
-            colClass = string.Format(" col-sm-{0}", (12 / cols));
-
-        var html = new StringBuilder();
-
-        int linegroup = int.MinValue;
-        bool isfirst = true;
-        foreach (var f in fields)
-        {
-            //visible expression
-            bool visible = FieldManager.IsVisible(f, PageState, Values);
-            if (!visible)
-            {
-                continue;
-            }
-
-            //value
-            object value = null;
-            if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(Values[f.Name], f);
-
-            if (linegroup != f.LineGroup)
-            {
-                if (isfirst)
-                    isfirst = false;
-                else
-                    html.AppendLine("\t</div>");
-
-                html.AppendLine("\t<div class=\"row\">");
-                linegroup = f.LineGroup;
-            }
-
-            string fieldClass = BootstrapHelper.FormGroup;
-
-            if (!string.IsNullOrEmpty(f.CssClass))
-            {
-                fieldClass += string.Format(" {0}", f.CssClass);
-            }
-            else
-            {
-                if (cols > 1 && f.Component == FormComponent.TextArea)
-                    fieldClass += " col-sm-12";
-                else
-                    fieldClass += colClass;
-            }
-
-            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                fieldClass += " has-error";
-
-            if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                fieldClass += " jjborder-static";
-
-            html.AppendLine("\t\t<div class=\"" + fieldClass + "\">");
-
-            if (f.Component != FormComponent.CheckBox)
-            {
-                html.Append("\t\t\t");
-                html.AppendLine(new JJLabel(f).GetHtml());
-            }
-
-            html.Append("\t\t\t");
-
-            if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-            {
-                html.Append("<p class=\"form-control-static\">");
-                //TODO: recuperar valor do texto corretamente quando for combo, search, etc..
-                html.Append(value);
-                html.AppendLine("</p>");
-            }
-            else
-            {
-                
-                var field = FieldManager.GetField(f, PageState, Values, value);
-                bool enable = FieldManager.IsEnable(f, PageState, Values);
-                field.Enabled = enable;
-                if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
-                {
-                    field.CssClass = "is-invalid";
-                }
-
-                html.AppendLine(field.GetHtml());
-            }
-
-            html.AppendLine("\t\t</div>");
-
-        }
-
-        html.AppendLine("\t</div>");
-
-        return html.ToString();
-    }
-
-    private string GetHtmlFormHorizontal(List<FormElementField> fields)
-    {
-        string fldClass = "";
-        string labelClass = "";
-        string fieldClass = "";
-        string fullClass = "";
-
-        int cols = UISettings.FormCols;
-        if (cols == 1)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-9";
-            fullClass = "col-sm-9";
-        }
-        else if (cols == 2)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-4";
-            fullClass = "col-sm-10";
-        }
-        else if (cols == 3)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-2";
-            fullClass = "col-sm-10";
-        }
-        else if (cols >= 4)
-        {
-            cols = 4;
-            labelClass = "col-sm-1";
-            fieldClass = "col-sm-2";
-            fullClass = "col-sm-8";
-        }
-
-        var html = new StringBuilder();
-        html.Append($"<div class=\"{BootstrapHelper.FormHorizontal}\">");
-
-        int colCount = 1;
-        foreach (var f in fields)
-        {
-            //visible expression
-            bool visible = FieldManager.IsVisible(f, PageState, Values);
-            if (!visible)
-            {
-                continue;
-            }
-
-            //value
-            object fieldValue = null;
-            if (Values != null && Values.Contains(f.Name))
-                fieldValue = FieldManager.FormatVal(Values[f.Name], f);
-
-            var label = new JJLabel(f);
-            label.CssClass = labelClass;
-
-            fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : string.Format(" {0}", f.CssClass);
-            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                fldClass += " has-error";
-
-            string bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
-
-
-            var field = FieldManager.GetField(f,PageState, Values, fieldValue);
-            bool enable = FieldManager.IsEnable(f, PageState, Values);
-            field.Enabled = enable;
-            if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
-            {
-                field.CssClass = "is-invalid";
-            }
-
-            if (f.Component == FormComponent.TextArea)
-            {
-                if (colCount > 1)
-                    html.AppendLine("\t</div>");
-
-                html.AppendLine($"\t<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\">");
-                html.Append("\t\t");
-                html.Append("<div class=\"");
-                html.Append(fldClass);
-                html.AppendLine("\">");
-                html.Append("\t\t\t");
-                html.AppendLine(label.GetHtml());
-                html.AppendLine("\t\t\t<div class=\"" + fullClass + "\">");
-                html.Append("\t\t\t\t");
-                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                {
-                    html.Append("<p class=\"form-control-static\">");
-                    html.Append(fieldValue);
-                    html.AppendLine("</p>");
-                }
-                else
-                {
-                    html.AppendLine(field.GetHtml());
-                }
-                html.AppendLine("\t\t\t</div>");
-                html.AppendLine("\t\t</div>");
-                html.AppendLine("\t</div>");
-
-                colCount = 1;
-            }
-            else
-            {
-                if (colCount == 1)
-                    html.AppendLine($"\t<div class=\"{BootstrapHelper.FormGroup}\">");
-
-                html.Append("\t\t");
-                html.Append("<div class=\"");
-                html.Append($"{fldClass} {bs4Row}");
-                html.AppendLine("\">");
-                html.Append("\t\t\t");
-                html.AppendLine(label.GetHtml());
-                html.AppendLine("\t\t\t<div class=\"" + fieldClass + "\">");
-                html.Append("\t\t\t\t");
-                if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
-                {
-                    html.Append("<p class=\"form-control-static\">");
-                    html.Append(fieldValue);
-                    html.AppendLine("</p>");
-                }
-                else
-                {
-                    html.AppendLine(field.GetHtml());
-                }
-                html.AppendLine("\t\t\t</div>");
-                html.AppendLine("\t\t</div>");
-
-                if (colCount >= cols)
-                {
-                    html.AppendLine("\t</div>");
-                    colCount = 1;
-                }
-                else
-                {
-                    colCount++;
-                }
-            }
-
-        }
-        if (colCount > 1)
-            html.AppendLine("\t</div>");
-
-        html.AppendLine("</div>");
-        return html.ToString();
-    }
-
-    private string GetPkInputHidden()
+    private string GetCriptPkValues()
     {
         var sHtml = new StringBuilder();
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -670,113 +214,25 @@ public class JJDataPanel : JJBaseView
             pkval += Values[pkField.Name].ToString();
         }
 
-        sHtml.Append("\t<input type=\"hidden\" ");
-        sHtml.Append("id=\"jjform_pkval_");
-        sHtml.Append(Name);
-        sHtml.Append("\" ");
-        sHtml.Append("name=\"jjform_pkval_");
-        sHtml.Append(Name);
-        sHtml.Append("\" ");
-        sHtml.Append("value=\"");
-        if (!string.IsNullOrEmpty(pkval))
-            sHtml.Append(Cript.Cript64(pkval));
-        sHtml.AppendLine("\"/>");
-
-        return sHtml.ToString();
+        return Cript.Cript64(pkval);
     }
 
     private string GetHtmlFormScript()
     {
-        StringBuilder sHtml = new StringBuilder();
-        var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
-        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:") && !x.AutoPostBack);
+        var sHtml = new StringBuilder();
+        //var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
+        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
 
-        if (listFieldsPost.Count == 0 &&
-            listFieldsExp.Count == 0)
-        {
-            return "";
-        }
-
-        string functionname = string.Format("do_reload_{0}", Name);
-        sHtml.AppendLine(" ");
-        sHtml.AppendLine("<script type=\"text/javascript\">");
-
-        if (listFieldsPost.Count > 0)
-        {
-            sHtml.Append("\tfunction ");
-            sHtml.Append(functionname);
-            sHtml.AppendLine("(objid, fieldid) { ");
-            sHtml.AppendLine("\t\tvar frm = $('form'); ");
-            sHtml.AppendLine("\t\tvar surl = frm.attr('action'); ");
-            sHtml.AppendLine("\t\tif (surl.includes('?'))");
-            sHtml.AppendLine("\t\t\tsurl += '&t=reloadpainel&pnlname=" + Name + "&objname=' + objid;");
-            sHtml.AppendLine("\t\telse");
-            sHtml.AppendLine("\t\t\tsurl += '?t=reloadpainel&pnlname=" + Name + "&objname=' + objid;");
-            sHtml.AppendLine("");
-            sHtml.AppendLine("\t\t$.ajax({ ");
-            sHtml.AppendLine("\t\tasync: false,");
-            sHtml.AppendLine("\t\t\ttype: frm.attr('method'), ");
-            sHtml.AppendLine("\t\t\turl: surl, ");
-            sHtml.AppendLine("\t\t\tdata: frm.serialize(), ");
-            sHtml.AppendLine("\t\t\tsuccess: function (data) { ");
-            sHtml.AppendLine("\t\t\t\t$(\"#" + Name + "\").html(data); ");
-            sHtml.AppendLine("\t\t\t\tjjloadform(); ");
-            sHtml.AppendLine("\t\t\t\tjjutil.gotoNextFocus(fieldid); ");
-            sHtml.AppendLine("\t\t\t}, ");
-            sHtml.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(textStatus); ");
-            sHtml.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
-            sHtml.AppendLine("\t\t\t} ");
-            sHtml.AppendLine("\t\t}); ");
-            sHtml.AppendLine("\t} ");
-        }
-
-        sHtml.AppendLine("\t$(document).ready(function () {");
+        //string functionname = string.Format("do_reload_{0}", Name);
+        
+        sHtml.AppendLine("$(document).ready(function () { ");
 
         if (UISettings.EnterKey == FormEnterKey.Tab)
         {
-            sHtml.AppendLine($"\t\tjjutil.replaceEntertoTab(\"{Name}\");");
-            sHtml.AppendLine("");
+            sHtml.AppendLine($"jjutil.replaceEntertoTab('{Name}');");
         }
 
-        if (listFieldsPost.Count > 0)
-        {
-            foreach (FormElementField f in listFieldsPost)
-            {
-                //WorkAround para gatilhar o select do search
-                if (f.Component == FormComponent.Search)
-                {
-                    sHtml.Append("\t\t$(\"");
-                    sHtml.Append($"#{f.Name}_text");
-                    sHtml.AppendLine("\").change(function () {");
-                    sHtml.AppendLine("\t\t\tsetTimeout(function() {");
-                    sHtml.Append("\t\t\t\t");
-                    sHtml.Append(functionname);
-                    sHtml.Append("('");
-                    sHtml.Append(f.Name);
-                    sHtml.Append($"','{f.Name}_text'");
-                    sHtml.AppendLine(");");
-                    sHtml.AppendLine("\t\t\t},200);");
-                    sHtml.AppendLine("\t\t});");
-                    sHtml.AppendLine("");
-                }
-                else
-                {
-                    sHtml.Append("\t\t$(\"");
-                    sHtml.Append("#");
-                    sHtml.Append(f.Name);
-                    sHtml.AppendLine("\").change(function () {");
-                    sHtml.Append("\t\t\t");
-                    sHtml.Append(functionname);
-                    sHtml.AppendLine("($(this).attr('id'),$(this).attr('id'));");
-                    sHtml.AppendLine("\t\t});");
-                    sHtml.AppendLine("");
-                }
-
-            }
-        }
-
+        //TODO: Parei aqui
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
@@ -871,51 +327,10 @@ public class JJDataPanel : JJBaseView
         }
 
         sHtml.AppendLine("\t});");
-        sHtml.AppendLine("</script>");
 
         return sHtml.ToString();
     }
 
-    private string GetHtmlPanelTitle(FormElementPanel panel)
-    {
-        if (panel.HasTitle())
-            return GetHtmlPanelTitle(panel.Title, panel.SubTitle);
-        return string.Empty;
-    }
-
-    private string GetHtmlPanelTitle(string title, string subTitle)
-    {
-        if (string.IsNullOrEmpty(title) &&
-            string.IsNullOrEmpty(subTitle))
-            return string.Empty;
-
-        var html = new StringBuilder();
-
-        if (BootstrapHelper.Version != 3)
-        {
-            if (!string.IsNullOrEmpty(title))
-                html.AppendFormat("<span>{0}</span>", Translate.Key(title));
-
-            if (!string.IsNullOrEmpty(subTitle))
-                html.AppendFormat("<footer>{0}</footer>", Translate.Key(subTitle));
-
-            return html.ToString();
-        }
-
-        html.AppendLine("<div class=\"row\">");
-        html.AppendLine("<blockquote>");
-        if (!string.IsNullOrEmpty(title))
-            html.AppendFormat("<p>{0}</p>", Translate.Key(title));
-
-        if (!string.IsNullOrEmpty(subTitle))
-            html.AppendFormat("<footer>{0}</footer>", Translate.Key(subTitle));
-
-        html.AppendLine("</blockquote>");
-        html.AppendLine("</div>");
-
-
-        return html.ToString();
-    }
 
     /// <summary>
     /// Recupera os dados do Form, aplicando o valor padrão e as triggers
