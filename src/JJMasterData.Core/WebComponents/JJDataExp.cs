@@ -315,7 +315,7 @@ public class JJDataExp : JJBaseProcess
         html.Append(TAB, 6);
         html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup} {bs4Row}\" id=\"{objname}_div_export_fistline\">");
         html.Append(TAB, 7);
-        html.Append($"<label for=\"{objname}{ExportOptions.ExportFirstLine}\" class=\"{label} col-sm-4\">");
+        html.Append($"<label for=\"{objname}{ExportOptions.ExportTableFirstLine}\" class=\"{label} col-sm-4\">");
         html.Append(Translate.Key("Export first line as title"));
         html.AppendLine("</label>");
         html.Append(TAB, 7);
@@ -324,8 +324,8 @@ public class JJDataExp : JJBaseProcess
         html.Append("<input type=\"checkbox\" ");
         html.Append("value =\"1\" ");
         html.Append("class=\"form-control\" ");
-        html.Append($"id=\"{objname}{ExportOptions.ExportFirstLine}\" ");
-        html.Append($"name=\"{objname}{ExportOptions.ExportFirstLine}\" ");
+        html.Append($"id=\"{objname}{ExportOptions.ExportTableFirstLine}\" ");
+        html.Append($"name=\"{objname}{ExportOptions.ExportTableFirstLine}\" ");
         html.Append("data-toggle=\"toggle\" ");
         html.AppendFormat("data-on=\"{0}\" ", Translate.Key("Yes"));
         html.AppendFormat("data-off=\"{0}\"", Translate.Key("No"));
