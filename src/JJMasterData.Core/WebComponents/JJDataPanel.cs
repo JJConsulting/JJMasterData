@@ -194,7 +194,7 @@ public class JJDataPanel : JJBaseView
         var panelGroup = new DataPanelGroup(this);
         html.AppendRange(panelGroup.GetListHtmlPanel());
 
-        //html.AppendLine(GetHtmlFormScript());
+        html.AppendScript(GetHtmlFormScript());
 
         return html;
 
@@ -222,7 +222,7 @@ public class JJDataPanel : JJBaseView
 
     private string GetHtmlFormScript()
     {
-        StringBuilder sHtml = new StringBuilder();
+        var sHtml = new StringBuilder();
         var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
         var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:") && !x.AutoPostBack);
 
@@ -234,8 +234,7 @@ public class JJDataPanel : JJBaseView
 
         string functionname = string.Format("do_reload_{0}", Name);
         sHtml.AppendLine(" ");
-        sHtml.AppendLine("<script type=\"text/javascript\">");
-
+        
         if (listFieldsPost.Count > 0)
         {
             sHtml.Append("\tfunction ");
@@ -405,7 +404,6 @@ public class JJDataPanel : JJBaseView
         }
 
         sHtml.AppendLine("\t});");
-        sHtml.AppendLine("</script>");
 
         return sHtml.ToString();
     }

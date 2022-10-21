@@ -8,14 +8,13 @@ namespace JJMasterData.Core.WebComponents;
 
 internal class DataPanelGroup
 {
-    public FormElement FormElement { private get; set; }
+    public string Name { get; set; }
 
     public bool RenderPanelGroup { get; set; }
 
+    public FormElement FormElement { private get; set; }
+
     public DataPanelControl DataPanelControl { get; set; }
-
-    public string Name { get; set; }
-
 
     public DataPanelGroup(JJDataPanel dataPanel)
     {
