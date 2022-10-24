@@ -5,7 +5,7 @@
     }
     
     $(prefixSelector + ".selectpicker").selectpicker({
-        iconBase:'fa'
+        iconBase: 'fa'
     });
     
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
@@ -23,7 +23,6 @@
         },
         locale: localeCode
     });
-
 
     $(prefixSelector + ".jjform-date").flatpickr({
         enableTime: false,
