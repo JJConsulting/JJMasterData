@@ -203,7 +203,7 @@ public class MasterApiService
                 formManager.ValidateFields(newvalues, PageState.Insert, false)
             );
 
-            if (result.Errors.Count == 0)
+            if (result.IsValid)
             {
                 ret.Status = (int)HttpStatusCode.Created;
                 ret.Message = Translate.Key("Record added successfully");
@@ -246,7 +246,7 @@ public class MasterApiService
                 formManager.ValidateFields(newvalues, PageState.Update, false)
             );
             
-            if (result.Errors.Count == 0)
+            if (result.IsValid)
             {
                 ret.Status = (int)HttpStatusCode.OK;
                 ret.Message = Translate.Key("Record updated successfully");
@@ -349,7 +349,7 @@ public class MasterApiService
                 formManager.ValidateFields(newvalues, PageState.Update, false)
             );
             
-            if (result.Errors.Count == 0)
+            if (result.IsValid)
             {
                 ret.Status = (int)HttpStatusCode.OK;
                 ret.Message = Translate.Key("Record updated successfully");
