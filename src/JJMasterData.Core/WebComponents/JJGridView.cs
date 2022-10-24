@@ -9,6 +9,7 @@ using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -747,6 +748,11 @@ public class JJGridView : JJBaseView
         }
 
         //Inicio Grid
+        //TODO: Append GridTable
+        var table = new GridTable(this);
+        table.Body.OnRenderAction += OnRenderAction;
+        table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+        
         if (CurrentUI.IsResponsive)
             html.AppendLine("\t<div class=\"table-responsive\">");
 
@@ -766,9 +772,9 @@ public class JJGridView : JJBaseView
         html.AppendLine("\">");
 
         //Cabeçalho
-        html.AppendLine("\t\t\t<thead>");
-        html.AppendLine(GetHtmlHeader());
-        html.AppendLine("\t\t\t</thead>");
+
+        //TODO:AppendElement
+        html.AppendLine(new GridTableHeader(this).GetHtmlElement().GetElementHtml());
         
         html.AppendLine($"\t\t\t<tbody id=\"table_{Name}\">");
         int nRow = -1;
@@ -956,241 +962,7 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-    
-    private string GetHtmlHeader()
-    {
-        char TAB = '\t';
 
-        if (DataSource.Rows.Count == 0 && !ShowHeaderWhenEmpty)
-            return string.Empty;
-
-        //Actions
-        var basicActions = GridActions.OrderBy(x => x.Order).ToList();
-        var listAction = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
-        var listActionGroup = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-
-        var html = new StringBuilder();
-        html.Append(TAB, 4);
-        html.AppendLine("<tr>");
-
-        if (EnableMultSelect)
-        {
-            bool hasPages = true;
-            if (!IsPaggingEnabled())
-            {
-                hasPages = false;
-            }
-            else
-            {
-                int totalPages = (int)Math.Ceiling(TotalRecords / (double)CurrentUI.TotalPerPage);
-                if (totalPages <= 1)
-                    hasPages = false;
-            }
-
-            html.Append(TAB, 5);
-            html.AppendLine("<th class=\"jjselect\">");
-            html.Append(TAB, 6);
-            html.Append("<input type=\"checkbox\" ");
-            html.Append("id=\"jjchk_all\" ");
-            html.Append("name=\"jjchk_all\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.AppendFormat("title=\"{0}\" ", Translate.Key("Mark|Unmark all from page"));
-            html.AppendLine("onclick =\"$('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();\">");
-
-            if (hasPages)
-            {
-                html.Append(TAB, 6);
-                html.AppendLine("<span class=\"dropdown\">");
-                html.Append(TAB, 7);
-                html.AppendLine($"<a href=\"#\" {BootstrapHelper.DataToggle}=\"dropdown\" class=\"dropdown-toggle\">{(BootstrapHelper.Version == 3 ? "<span class=\"fa fa-caret-down fa-fw fa-lg\"></span>" : string.Empty)}</a>");
-                html.Append(TAB, 7);
-                html.AppendLine("<ul class=\"dropdown-menu\">");
-                html.Append(TAB, 8);
-                html.AppendLine("<li class=\"dropdown-item\">");
-                html.Append(TAB, 9);
-                html.Append("<a href=\"javascript: void(0);\" title=\"\" onclick=\"jjview.doUnSelectAll('");
-                html.Append(Name);
-                html.Append("');\">");
-                html.Append(Translate.Key("Unmark all selected records"));
-                html.AppendLine("</a>");
-                html.Append(TAB, 8);
-                html.AppendLine("</li>");
-
-                if (TotalRecords <= 50000)
-                {
-                    html.Append(TAB, 8);
-                    html.AppendLine("<li class=\"dropdown-item\">");
-                    html.Append(TAB, 9);
-                    html.Append("<a href=\"javascript: void(0);\" title=\"\" onclick=\"jjview.doSelectAll('");
-                    html.Append(Name);
-                    html.Append("');\">");
-                    html.Append(Translate.Key("Mark all {0} records", TotalRecords));
-                    html.AppendLine("</a>");
-                    html.Append(TAB, 8);
-                    html.AppendLine("</li>");
-                }
-
-                html.Append(TAB, 7);
-                html.AppendLine("</ul>");
-                html.Append(TAB, 6);
-                html.AppendLine("</span>");
-            }
-            html.Append(TAB, 5);
-            html.AppendLine("</th>");
-        }
-
-        foreach (var field in VisibleFields)
-        {
-            string thStyle = string.Empty;
-            switch (field.Component)
-            {
-                case FormComponent.ComboBox:
-                {
-                    if (field.DataItem != null &&
-                        field.DataItem.ShowImageLegend && !field.DataItem.ReplaceTextOnGrid)
-                    {
-                        thStyle = " style=\"text-align:center;\" ";
-                    }
-
-                    break;
-                }
-                case FormComponent.CheckBox:
-                    thStyle = " style=\"text-align:center;width:60px;\" ";
-                    break;
-                case FormComponent.Cnpj:
-                    thStyle = " style=\"min-width:130px;\" ";
-                    break;
-                default:
-                {
-                    if (field.DataType == FieldType.Float || field.DataType == FieldType.Int)
-                    {
-                        if (!field.IsPk)
-                            thStyle = " style=\"text-align:right;\" ";
-                    }
-
-                    break;
-                }
-            }
-            html.Append(TAB, 5);
-            html.Append("<th" + thStyle + ">");
-
-            html.Append("<span ");
-            if (EnableSorting && field.DataBehavior != FieldBehavior.Virtual)
-            {
-                html.Append("class=\"jjenable-sorting\" ");
-                html.Append("onclick =\"jjview.doSorting('");
-                html.Append(Name);
-                html.Append("',");
-                html.Append(EnableAjax ? "true" : "false");
-                html.Append(",'");
-                html.Append(field.Name);
-                html.Append("');\"");
-            }
-            html.Append(">");
-
-            //Título
-            html.Append("<span");
-            if (!string.IsNullOrEmpty(field.HelpDescription))
-            {
-                html.AppendFormat($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"{0}\"", Translate.Key(field.HelpDescription));
-            }
-            html.Append(">");
-            html.Append(field.GetTranslatedLabel());
-            html.Append("</span>");
-
-            //Ico Ordem
-            if (!string.IsNullOrEmpty(CurrentOrder))
-            {
-                foreach (string orderField in CurrentOrder.Split(','))
-                {
-                    string order = orderField.Trim();
-                    if (string.IsNullOrWhiteSpace(order))
-                        break;
-
-                    if (order.StartsWith("["))
-                    {
-                        order = order.Replace("[", "");
-                        order = order.Replace("]", "");
-                    }
-
-                    if (order.Equals(field.Name + " DESC"))
-                        html.Append(GetDescendingIcon());
-                    else if (order.Equals(field.Name + " ASC") || order.Equals(field.Name))
-                        html.Append(GetAscendingIcon());
-                }
-            }
-            else
-            {
-                if (field.Name.EndsWith("::DESC"))
-                    html.Append(GetDescendingIcon());
-                else if (field.Name.EndsWith("::ASC"))
-                    html.Append(GetAscendingIcon());
-            }
-
-            //Ico Filter
-            if (CurrentFilter != null &&
-                field.Filter.Type != FilterMode.None &&
-                !RelationValues.ContainsKey(field.Name) &&
-                (CurrentFilter.ContainsKey(field.Name) || CurrentFilter.ContainsKey(field.Name + "_from"))
-                )
-            {
-                html.Append("&nbsp;");
-                html.Append("<span class=\"fa fa-filter\" ");
-                html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-                html.AppendFormat("title=\"{0}\">", Translate.Key("Applied filter"));
-                html.Append("</span>");
-            }
-
-            html.Append("</span>");
-            html.Append(TAB, 5);
-            html.AppendLine("</th>");
-
-        }
-
-        foreach (var action in listAction)
-        {
-            html.Append(TAB, 5);
-            html.Append("<th>");
-            if (action.ShowTitle)
-                html.Append(action.Text);
-            html.AppendLine("\t</th>");
-        }
-
-        if (listActionGroup.Count > 0)
-        {
-            html.Append(TAB, 5);
-            html.Append("<th>");
-            html.AppendLine("\t</th>");
-        }
-
-        html.Append(TAB, 4);
-        html.AppendLine("</tr>");
-
-        return html.ToString();
-    }
-
-    private string GetDescendingIcon()
-    {
-        var html = new StringBuilder();
-        html.Append("<span class=\"fa fa-sort-amount-desc\" ");
-        html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-        html.AppendFormat("title=\"{0}\">", Translate.Key("Descending order"));
-        html.Append("</span>");
-
-        return html.ToString();
-    }
-
-    private string GetAscendingIcon()
-    {
-        var html = new StringBuilder();
-        html.Append("<span class=\"fa fa-sort-amount-asc\" ");
-        html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-        html.AppendFormat("title=\"{0}\">", Translate.Key("Ascending order"));
-        html.Append("</span>");
-
-        return html.ToString();
-    }
-    
     private string GetRowHtml(DataRow row, int nRow, bool isAjax, List<Hashtable> listSelectedValues)
     {
         var values = new Hashtable();
@@ -1207,13 +979,13 @@ public class JJGridView : JJBaseView
 
         //Actions
         var basicActions = GridActions.OrderBy(x => x.Order).ToList();
-        var defaulAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
+        var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        StringBuilder html = new StringBuilder();
+        var html = new StringBuilder();
         if (!isAjax)
         {
             html.AppendFormat("\t\t\t\t<tr id=\"row{0}\"", nRow);
-            if (!EnableEditMode && (defaulAction != null || EnableMultSelect))
+            if (!EnableEditMode && (defaultAction != null || EnableMultSelect))
             {
                 html.Append(" class=\"jjgrid-action\"");
             }
@@ -1221,13 +993,13 @@ public class JJGridView : JJBaseView
         }
 
         string scriptOnClick = "";
-        if (!EnableEditMode && defaulAction != null)
+        if (!EnableEditMode && defaultAction != null)
         {
-            var linkDefaultAction = ActionManager.GetLinkGrid(defaulAction, values);
+            var linkDefaultAction = ActionManager.GetLinkGrid(defaultAction, values);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
-                var args = new ActionEventArgs(defaulAction, linkDefaultAction, values);
+                var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
                 onRender.Invoke(this, args);
 
                 if (args.ResultHtml != null)
@@ -1236,34 +1008,35 @@ public class JJGridView : JJBaseView
                 }
             }
 
-            if (linkDefaultAction != null)
+            if (linkDefaultAction is { Visible: true })
             {
-                if (linkDefaultAction.Visible)
-                {
-                    if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
-                        scriptOnClick = $" onclick =\"{linkDefaultAction.OnClientClick}\"";
-                    else if (!string.IsNullOrEmpty(linkDefaultAction.UrlAction))
-                        scriptOnClick = $" onclick =\"window.location.href = '{linkDefaultAction.UrlAction}'\"";
-                }
+                if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
+                    scriptOnClick = $" onclick =\"{linkDefaultAction.OnClientClick}\"";
+                else if (!string.IsNullOrEmpty(linkDefaultAction.UrlAction))
+                    scriptOnClick = $" onclick =\"window.location.href = '{linkDefaultAction.UrlAction}'\"";
             }
         }
 
         if (EnableMultSelect)
         {
             string value = GetPkValues(values);
-            var chkBase = new JJCheckBox();
-            chkBase.Name = "jjchk_" + nRow;
-            chkBase.Value = Cript.Cript64(value);
-            chkBase.IsChecked = listSelectedValues.Any(x => x.ContainsValue(value));
+            var chkBase = new JJCheckBox
+            {
+                Name = "jjchk_" + nRow,
+                Value = Cript.Cript64(value),
+                IsChecked = listSelectedValues.Any(x => x.ContainsValue(value))
+            };
 
             html.Append("\t\t\t\t\t<td class=\"jjselect\">");
             var renderSelectedCell = OnRenderSelectedCell;
             if (renderSelectedCell != null)
             {
-                var args = new GridSelectedCellEventArgs();
-                args.DataRow = row;
-                args.CheckBox = chkBase;
-                OnRenderSelectedCell?.Invoke(this, args);
+                var args = new GridSelectedCellEventArgs
+                {
+                    DataRow = row,
+                    CheckBox = chkBase
+                };
+                renderSelectedCell.Invoke(this, args);
                 if (args.CheckBox != null)
                     html.Append(chkBase.GetHtml());
             }
@@ -1292,8 +1065,7 @@ public class JJGridView : JJBaseView
             {
                 case FormComponent.ComboBox:
                     {
-                        if (f.DataItem != null &&
-                            f.DataItem.ShowImageLegend && !f.DataItem.ReplaceTextOnGrid)
+                        if (f.DataItem is { ShowImageLegend: true, ReplaceTextOnGrid: false })
                         {
                             tdStyle = " style=\"text-align:center;\" ";
                         }
@@ -1538,7 +1310,7 @@ public class JJGridView : JJBaseView
         return legend.GetHtml();
     }
     
-    private string GetFieldName(string fieldName, IDictionary row)
+    internal string GetFieldName(string fieldName, IDictionary row)
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1556,7 +1328,7 @@ public class JJGridView : JJBaseView
         return name;
     }
     
-    private string GetPkValues(IDictionary row, char separator = ';')
+    internal string GetPkValues(DataRow row, char separator = ';')
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1569,7 +1341,7 @@ public class JJGridView : JJBaseView
         return name;
     }
     
-    private string GetPkValues(DataRow row, char separator = ';')
+    internal string GetPkValues(IDictionary row, char separator = ';')
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1581,7 +1353,7 @@ public class JJGridView : JJBaseView
         }
         return name;
     }
-    
+
     public Hashtable GetSelectedRowId()
     {
         var values = new Hashtable();
@@ -1736,23 +1508,18 @@ public class JJGridView : JJBaseView
 
         return GetGridValues(dt);
     }
-    
+
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public List<Hashtable> GetGridValues()
-    {
-        DataTable dt = GetDataTable();
-        return GetGridValues(dt);
-    }
-    
-    /// <remarks>
-    /// Used with the EnableEditMode property
-    /// </remarks>
-    private List<Hashtable> GetGridValues(DataTable dt)
+    private List<Hashtable> GetGridValues(DataTable dt = null)
     {
         if (dt == null)
-            return null;
+        {
+            dt = GetDataTable();
+            if (dt == null)
+                return null;
+        }
 
         var listValues = new List<Hashtable>();
         foreach (DataRow row in dt.Rows)
@@ -1763,9 +1530,9 @@ public class JJGridView : JJBaseView
                 values.Add(row.Table.Columns[i].ColumnName, row[i]);
             }
 
-            string prefixname = GetFieldName("", values);
-            var newvalues = FieldManager.GetFormValues(prefixname, FormElement, PageState.List, values, AutoReloadFormFields);
-            listValues.Add(newvalues);
+            string prefixValue = GetFieldName("", values);
+            var newValues = FieldManager.GetFormValues(prefixValue, FormElement, PageState.List, values, AutoReloadFormFields);
+            listValues.Add(newValues);
         }
 
         return listValues;
