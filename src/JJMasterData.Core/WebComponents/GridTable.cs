@@ -1,33 +1,38 @@
+using System;
 using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 internal class GridTable
 {
-    private JJGridView GridView { get; }
+    private GridUI Ui { get; }
+
+    internal GridTableHeader Header { get; }
+    
+    internal GridTableBody Body { get; }
 
     public GridTable(JJGridView gridView)
     {
-        GridView = gridView;
+        Header = new GridTableHeader(gridView);
+        Body = new GridTableBody(gridView);
+        Ui = gridView.CurrentUI;
     }
 
     public HtmlElement GetHtmlElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
-            .WithCssClassIf(GridView.CurrentUI.IsResponsive, "table-responsive")
-            .AppendElement(HtmlTag.Table, table =>
-            {
-                var ui = GridView.CurrentUI;
+        var table = new HtmlElement(HtmlTag.Table);
 
-                table.WithCssClass("table")
-                    .WithCssClassIf(ui.IsResponsive, "table-responsive")
-                    .WithCssClassIf(ui.ShowBorder, "table-bordered")
-                    .WithCssClassIf(ui.IsResponsive, "table-hover")
-                    .WithCssClassIf(ui.ShowRowStriped, "table-striped")
-                    .WithCssClassIf(ui.IsHeaderFixed, "table-fix-head")
-                    .AppendElement(new GridTableHeader(GridView).GetHtmlElement());
-            });
-
-        return div;
+        table.WithCssClass("table");
+        
+        table.WithCssClassIf(Ui.IsResponsive, "table-responsive");
+        table.WithCssClassIf(Ui.ShowBorder, "table-bordered");
+        table.WithCssClassIf(Ui.IsResponsive, "table-hover");
+        table.WithCssClassIf(Ui.ShowRowStriped, "table-striped");
+        table.WithCssClassIf(Ui.IsHeaderFixed, "table-fix-head");
+        
+        table.AppendElement(Header.GetHtmlElement());
+        table.AppendElement(Body.GetHtmlElement());
+        
+        return table;
     }
 }
