@@ -188,7 +188,7 @@ public class JJDataPanel : JJBaseView
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"jjform_pkval_{Name}", GetCriptPkValues());
+            html.AppendHiddenInput($"jjform_pkval_{Name}", GetPkInputHidden());
         }
 
         var panelGroup = new DataPanelGroup(this);
@@ -196,9 +196,11 @@ public class JJDataPanel : JJBaseView
         html.AppendScript(GetHtmlFormScript());
 
         return html;
+
+
     }
 
-    private string GetCriptPkValues()
+    private string GetPkInputHidden()
     {
         var sHtml = new StringBuilder();
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -232,7 +234,6 @@ public class JJDataPanel : JJBaseView
             sHtml.AppendLine($"jjutil.replaceEntertoTab('{Name}');");
         }
 
-        //TODO: Parei aqui
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
