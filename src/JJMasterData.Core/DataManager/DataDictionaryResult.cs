@@ -36,7 +36,7 @@ public class DataDictionaryResult
 
     public DataDictionaryResult(Hashtable errors)
     {
-        Errors = errors;
+        _errors = errors;
     }
 }
 
