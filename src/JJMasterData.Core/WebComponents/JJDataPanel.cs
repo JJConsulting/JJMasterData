@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -11,6 +6,10 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -130,7 +129,7 @@ public class JJDataPanel : JJBaseView
 
     #endregion
 
-    protected override string RenderHtml()
+    internal override HtmlElement RenderHtmlElement()
     {
         Values = GetFormValues();
         string requestType = CurrentContext.Request.QueryString("t");
@@ -139,15 +138,24 @@ public class JJDataPanel : JJBaseView
 
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
-            return JJLookup.ResponseRoute(this);
+        {
+            CurrentContext.Response.SendResponse(JJLookup.ResponseRoute(this));
+            return null;
+        }
 
         //FormUpload Route
         if (JJTextFile.IsFormUploadRoute(this))
-            return JJTextFile.ResponseRoute(this);
+        {
+            CurrentContext.Response.SendResponse(JJTextFile.ResponseRoute(this));
+            return null;
+        }
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+        {
+            CurrentContext.Response.SendResponse(JJDownloadFile.ResponseRoute(this));
+            return null;
+        }
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
@@ -175,8 +183,7 @@ public class JJDataPanel : JJBaseView
             return null;
         }
 
-        return GetHtmlPanel().GetElementHtml();
-
+        return GetHtmlPanel();
     }
 
     internal HtmlElement GetHtmlPanel()
@@ -196,8 +203,6 @@ public class JJDataPanel : JJBaseView
         html.AppendScript(GetHtmlFormScript());
 
         return html;
-
-
     }
 
     private string GetPkInputHidden()
@@ -221,115 +226,23 @@ public class JJDataPanel : JJBaseView
 
     private string GetHtmlFormScript()
     {
-        var sHtml = new StringBuilder();
-        //var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
-        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
-
-        //string functionname = string.Format("do_reload_{0}", Name);
-        
-        sHtml.AppendLine("$(document).ready(function () { ");
+        var script = new StringBuilder();
+        script.AppendLine("");
+        script.AppendLine("$(document).ready(function () { ");
 
         if (UISettings.EnterKey == FormEnterKey.Tab)
         {
-            sHtml.AppendLine($"jjutil.replaceEntertoTab('{Name}');");
+            script.AppendLine($"\tjjutil.replaceEntertoTab('{Name}');");
         }
 
-        foreach (var f in listFieldsExp)
+        var listField = FormElement.Fields.ToList();
+        if (!listField.Exists(x => x.AutoPostBack))
         {
-            string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("{pagestate}", string.Format("'{0}'", PageState.ToString()));
-            exp = exp.Replace("{PAGESTATE}", string.Format("'{0}'", PageState.ToString()));
-            exp = exp
-                .Replace(" and ", " && ")
-                .Replace(" or ", " || ")
-                .Replace(" AND ", " && ")
-                .Replace(" OR ", " || ")
-                .Replace("=", " == ")
-                .Replace("<>", " != ");
-
-            List<string> list = StringManager.FindValuesByInterval(exp, '{', '}');
-            if (list.Count > 0)
-            {
-                foreach (string field in list)
-                {
-                    string val = null;
-                    if (UserValues.Contains(field))
-                    {
-                        //Valor customizado pelo usuário
-                        val = string.Format("'{0}'", UserValues[field]);
-                    }
-                    else if (CurrentContext.Session[field] != null)
-                    {
-                        //Valor da Sessão
-                        val = string.Format("'{0}'", CurrentContext.Session[field]);
-                    }
-                    else
-                    {
-                        //Campos ocultos
-                        if (Values.Contains(field))
-                        {
-                            var fTemp = FormElement.Fields.ToList().Find(x => x.Name.Equals(field));
-                            if (fTemp != null)
-                            {
-                                bool visible = FieldManager.IsVisible(fTemp, PageState, Values);
-                                if (!visible)
-                                {
-                                    val = string.Format("'{0}'", Values[field]);
-                                }
-                            }
-                        }
-                    }
-
-                    if (val != null)
-                    {
-                        // Note: Use "{{" to denote a single "{" 
-                        exp = exp.Replace(string.Format("{{{0}}}", field), val);
-                    }
-                }
-
-                sHtml.Append("\t\t$(\"");
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (i > 0)
-                        sHtml.Append(",");
-
-                    sHtml.Append("#");
-                    sHtml.Append(list[i]);
-                }
-
-                sHtml.AppendLine("\").change(function () {");
-                sHtml.Append("\t\t\tvar exp = \"");
-                sHtml.Append(exp);
-                sHtml.AppendLine("\";");
-
-                for (int i = 0; i < list.Count; i++)
-                {
-                    sHtml.Append("\t\t\texp = exp.replace(\"");
-                    sHtml.Append("{");
-                    sHtml.Append(list[i]);
-                    sHtml.Append("}\", \"'\" + $(\"#");
-                    sHtml.Append(list[i]);
-                    sHtml.AppendLine("\").val() + \"'\"); ");
-                }
-
-                sHtml.AppendLine("\t\t\tvar enable = eval(exp);");
-                sHtml.AppendLine("\t\t\tif (enable)");
-                sHtml.Append("\t\t\t\t$(\"#");
-                sHtml.Append(f.Name);
-                sHtml.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
-                sHtml.AppendLine("\t\t\telse");
-                sHtml.Append("\t\t\t\t$(\"#");
-                sHtml.Append(f.Name);
-
-                //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
-                sHtml.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
-                sHtml.AppendLine("\t\t});");
-            }
+            script.AppendLine(new DataPanelScript(this).GetHtmlFormScript());
         }
 
-        sHtml.AppendLine("\t});");
-
-        return sHtml.ToString();
+        script.AppendLine("});");
+        return script.ToString();
     }
 
 

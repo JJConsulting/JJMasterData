@@ -1,41 +1,32 @@
-﻿using System;
-using System.Collections;
+﻿using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Html;
-using Newtonsoft.Json;
-
 
 namespace JJMasterData.Core.WebComponents;
 
 internal class DataPanelScript
-{
-    public PageState PageState { get; set; }
+{   
+    private JJDataPanel DataPanel { get; set; }
 
-    public FormElement FormElement { get; set; }
+    private FormElement FormElement => DataPanel.FormElement;
 
-    private string GetHtmlFormScript()
+    public DataPanelScript(JJDataPanel dataPanel)
     {
-        var sHtml = new StringBuilder();
-        //var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
+        DataPanel = dataPanel;
+    }
+
+    public string GetHtmlFormScript()
+    {
+        var script = new StringBuilder();
         var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
-
-        //string functionname = string.Format("do_reload_{0}", Name);
-
-     
 
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("{pagestate}", string.Format("'{0}'", PageState.ToString()));
-            exp = exp.Replace("{PAGESTATE}", string.Format("'{0}'", PageState.ToString()));
+            exp = exp.Replace("{pagestate}", string.Format("'{0}'", DataPanel.PageState.ToString()));
+            exp = exp.Replace("{PAGESTATE}", string.Format("'{0}'", DataPanel.PageState.ToString()));
             exp = exp
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")
@@ -45,89 +36,90 @@ internal class DataPanelScript
                 .Replace("<>", " != ");
 
             List<string> list = StringManager.FindValuesByInterval(exp, '{', '}');
-            if (list.Count > 0)
+            if (list.Count == 0)
+                continue;
+
+            exp = ParseExpression(exp, list);
+
+            string selector = string.Join(",", list.Select(x => $"'#{x}'"));
+            script.Append('\t');
+            script.AppendLine($"$({selector}).change(function () {{");
+            script.Append('\t', 2);
+            script.AppendLine($"var exp = \"{exp}\";");
+
+            for (int i = 0; i < list.Count; i++)
             {
-                foreach (string field in list)
-                {
-                    string val = null;
-                    if (UserValues.Contains(field))
-                    {
-                        //Valor customizado pelo usuário
-                        val = string.Format("'{0}'", UserValues[field]);
-                    }
-                    else if (CurrentContext.Session[field] != null)
-                    {
-                        //Valor da Sessão
-                        val = string.Format("'{0}'", CurrentContext.Session[field]);
-                    }
-                    else
-                    {
-                        //Campos ocultos
-                        if (Values.Contains(field))
-                        {
-                            var fTemp = FormElement.Fields.ToList().Find(x => x.Name.Equals(field));
-                            if (fTemp != null)
-                            {
-                                bool visible = FieldManager.IsVisible(fTemp, PageState, Values);
-                                if (!visible)
-                                {
-                                    val = string.Format("'{0}'", Values[field]);
-                                }
-                            }
-                        }
-                    }
+                script.Append('\t', 2);
+                script.Append("exp = exp.replace(\"");
+                script.Append("{");
+                script.Append(list[i]);
+                script.Append("}\", \"'\" + $(\"#");
+                script.Append(list[i]);
+                script.AppendLine("\").val() + \"'\"); ");
+            }
 
-                    if (val != null)
+            script.Append('\t', 2);
+            script.AppendLine("var enable = eval(exp);");
+            script.Append('\t', 2);
+            script.AppendLine("if (enable)");
+            script.Append('\t', 3);
+            script.Append("$(\"#");
+            script.Append(f.Name);
+            script.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
+            script.Append('\t', 2);
+            script.AppendLine("else");
+            script.Append('\t', 3);
+            script.Append("$(\"#");
+            script.Append(f.Name);
+
+            //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
+            script.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
+            script.Append('\t');
+            script.AppendLine("});");
+        }
+
+        return script.ToString();
+    }
+
+    private string ParseExpression(string exp, List<string> list)
+    {
+        foreach (string fieldName in list)
+        {
+            string val = null;
+            var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
+            if (field != null && field.AutoPostBack)
+                continue;
+
+            if (DataPanel.UserValues.Contains(fieldName))
+            {
+                //Valor customizado pelo usuário
+                val = string.Format("'{0}'", DataPanel.UserValues[fieldName]);
+            }
+            else if (DataPanel.CurrentContext.Session[fieldName] != null)
+            {
+                //Valor da Sessão
+                val = string.Format("'{0}'", DataPanel.CurrentContext.Session[fieldName]);
+            }
+            else if (DataPanel.Values.Contains(fieldName))
+            {
+                //Campos ocultos
+                if (field != null)
+                {
+                    bool visible = DataPanel.FieldManager.IsVisible(field, DataPanel.PageState, DataPanel.Values);
+                    if (!visible)
                     {
-                        // Note: Use "{{" to denote a single "{" 
-                        exp = exp.Replace(string.Format("{{{0}}}", field), val);
+                        val = string.Format("'{0}'", DataPanel.Values[fieldName]);
                     }
                 }
+            }
 
-                sHtml.Append("\t\t$(\"");
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (i > 0)
-                        sHtml.Append(",");
-
-                    sHtml.Append("#");
-                    sHtml.Append(list[i]);
-                }
-
-                sHtml.AppendLine("\").change(function () {");
-                sHtml.Append("\t\t\tvar exp = \"");
-                sHtml.Append(exp);
-                sHtml.AppendLine("\";");
-
-                for (int i = 0; i < list.Count; i++)
-                {
-                    sHtml.Append("\t\t\texp = exp.replace(\"");
-                    sHtml.Append("{");
-                    sHtml.Append(list[i]);
-                    sHtml.Append("}\", \"'\" + $(\"#");
-                    sHtml.Append(list[i]);
-                    sHtml.AppendLine("\").val() + \"'\"); ");
-                }
-
-                sHtml.AppendLine("\t\t\tvar enable = eval(exp);");
-                sHtml.AppendLine("\t\t\tif (enable)");
-                sHtml.Append("\t\t\t\t$(\"#");
-                sHtml.Append(f.Name);
-                sHtml.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
-                sHtml.AppendLine("\t\t\telse");
-                sHtml.Append("\t\t\t\t$(\"#");
-                sHtml.Append(f.Name);
-
-                //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
-                sHtml.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
-                sHtml.AppendLine("\t\t});");
+            if (val != null)
+            {
+                // Note: Use "{{" to denote a single "{" 
+                exp = exp.Replace(string.Format("{{{0}}}", fieldName), val);
             }
         }
 
-
-
-        return sHtml.ToString();
+        return exp;
     }
-
-
 }
