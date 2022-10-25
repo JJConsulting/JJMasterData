@@ -18,7 +18,7 @@ internal class GridTableBody
 {
     private string Name => $"table_{GridView.Name}";
     private JJGridView GridView { get; }
-    
+
     //TODO: When C# 11 releases, add the required keyword
     public EventHandler<ActionEventArgs> OnRenderAction { get; set; }
     public EventHandler<GridCellEventArgs> OnRenderCell { get; set; }
@@ -70,10 +70,10 @@ internal class GridTableBody
 
         string onClickScript = GetOnClickScript(values, defaultAction);
 
-        html.AppendElementIf(GridView.EnableMultSelect, () => GetMultiSelectRow(row, index, values,ref onClickScript));
+        html.AppendElementIf(GridView.EnableMultSelect, () => GetMultiSelectRow(row, index, values, ref onClickScript));
 
         html.AppendRange(GetVisibleFieldsHtmlList(row, index, values, onClickScript));
-        
+
         return html;
     }
 
@@ -90,47 +90,12 @@ internal class GridTableBody
 
             var td = new HtmlElement(HtmlTag.Td);
             string style = GetTdStyle(field);
-            td.WithAttributeIf(!string.IsNullOrEmpty(style),"style",style );
+            td.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
             td.WithAttribute("onclick", onClickScript);
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
             {
-                string name = GridView.GetFieldName(field.Name, values);
-                bool hasError = GridView.Errors?.ContainsKey(name) ?? false;
-
-                td.AppendElement(HtmlTag.Div, div =>
-                {
-                    div.WithCssClassIf(hasError, BootstrapHelper.HasError);
-                    if ((field.Component == FormComponent.ComboBox
-                         | field.Component == FormComponent.CheckBox
-                         | field.Component == FormComponent.Search)
-                        & values.Contains(field.Name))
-                    {
-                        value = values[field.Name].ToString();
-                    }
-                    var baseField = GridView.FieldManager.GetField(field, PageState.List, values, value);
-                    baseField.Name = name;
-                    baseField.Attributes.Add("nRowId", index);
-                    baseField.CssClass = field.Name;
-
-                    var renderCell = OnRenderCell;
-                    if (renderCell != null)
-                    {
-                        var args = new GridCellEventArgs
-                        {
-                            Field = field,
-                            DataRow = row,
-                            Sender = baseField
-                        };
-                    
-                        OnRenderCell.Invoke(this, args);
-                        div.AppendText(args.HtmlResult);
-                    }
-                    else
-                    {
-                        div.AppendElement(baseField);
-                    }
-                });
+                td.AppendElement(GetEditModeFieldHtml(field, row, index, values, value));
             }
             else
             {
@@ -161,12 +126,48 @@ internal class GridTableBody
             }
 
             htmlList.Add(td);
-
         }
-        htmlList.Add(new (GetHtmlAction(values)));
+
+        //TODO:GetHtmlAction return a true element.
+        htmlList.Add(new(GetHtmlAction(values)));
         return htmlList;
     }
-    
+
+    HtmlElement GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values, string value)
+    {
+        string name = GridView.GetFieldName(field.Name, values);
+        bool hasError = GridView.Errors?.ContainsKey(name) ?? false;
+
+        var div = new HtmlElement(HtmlTag.Div);
+
+        div.WithCssClassIf(hasError, BootstrapHelper.HasError);
+        if ((field.Component == FormComponent.ComboBox | field.Component == FormComponent.CheckBox |
+             field.Component == FormComponent.Search) & values.Contains(field.Name))
+        {
+            value = values[field.Name].ToString();
+        }
+
+        var baseField = GridView.FieldManager.GetField(field, PageState.List, values, value);
+        baseField.Name = name;
+        baseField.Attributes.Add("nRowId", index);
+        baseField.CssClass = field.Name;
+
+        var renderCell = OnRenderCell;
+        if (renderCell != null)
+        {
+            var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = baseField };
+
+            OnRenderCell.Invoke(this, args);
+            div.AppendText(args.HtmlResult);
+        }
+        else
+        {
+            div.AppendElement(baseField);
+        }
+
+        return div;
+    }
+
     public string GetHtmlAction(Hashtable values)
     {
         //Actions
@@ -202,7 +203,8 @@ internal class GridTableBody
         {
             html.AppendLine("\t\t\t\t\t<td class=\"table-action\">");
             html.AppendLine($"\t\t\t\t\t\t<div class=\"{BootstrapHelper.InputGroupBtn}\">");
-            html.AppendLine($"\t\t\t\t\t\t\t<{(BootstrapHelper.Version == 3 ? "button" : "a")} type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
+            html.AppendLine(
+                $"\t\t\t\t\t\t\t<{(BootstrapHelper.Version == 3 ? "button" : "a")} type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
             html.Append('\t', 8);
             html.Append("<span class=\"caret\" ");
             html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
@@ -230,6 +232,7 @@ internal class GridTableBody
                 html.AppendLine(link.GetHtml());
                 html.AppendLine("\t\t\t\t\t\t\t\t</li>");
             }
+
             html.AppendLine("\t\t\t\t\t\t\t</ul>");
             html.AppendLine("\t\t\t\t\t\t</div>");
             html.AppendLine("\t\t\t\t\t</td>");
@@ -282,7 +285,7 @@ internal class GridTableBody
             Value = Cript.Cript64(pkValues),
             IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsValue(pkValues))
         };
-        
+
         if (OnRenderSelectedCell != null)
         {
             var args = new GridSelectedCellEventArgs
@@ -301,7 +304,8 @@ internal class GridTableBody
 
         if (onClickScript == string.Empty)
         {
-            onClickScript = $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
+            onClickScript =
+                $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
         }
 
         return td;
@@ -309,28 +313,29 @@ internal class GridTableBody
 
     private string GetOnClickScript(Hashtable values, BasicAction defaultAction)
     {
-        if (!GridView.EnableEditMode && defaultAction != null)
+        if (GridView.EnableEditMode || defaultAction == null) return string.Empty;
+
+        var linkDefaultAction = GridView.ActionManager.GetLinkGrid(defaultAction, values);
+
+        if (OnRenderAction != null)
         {
-            var linkDefaultAction = GridView.ActionManager.GetLinkGrid(defaultAction, values);
-            
-            if (OnRenderAction != null)
-            {
-                var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
-                OnRenderAction.Invoke(this, args);
+            var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
+            OnRenderAction.Invoke(this, args);
 
-                if (args.ResultHtml != null)
-                {
-                    linkDefaultAction = null;
-                }
-            }
-
-            if (linkDefaultAction is { Visible: true })
+            if (args.ResultHtml != null)
             {
-                if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
-                    return linkDefaultAction.OnClientClick;
-                if (!string.IsNullOrEmpty(linkDefaultAction.UrlAction))
-                   return $"window.location.href = '{linkDefaultAction.UrlAction}'";
+                linkDefaultAction = null;
             }
+        }
+
+        if (linkDefaultAction is { Visible: true })
+        {
+            if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
+                return linkDefaultAction.OnClientClick;
+
+            return !string.IsNullOrEmpty(linkDefaultAction.UrlAction)
+                ? $"window.location.href = '{linkDefaultAction.UrlAction}'"
+                : string.Empty;
         }
 
         return string.Empty;
@@ -346,9 +351,9 @@ internal class GridTableBody
         }
 
         if (!GridView.EnableEditMode) return values;
-        
+
         string prefixName = GridView.GetFieldName(string.Empty, values);
-        
+
         values = GridView.FieldManager.GetFormValues(prefixName, GridView.FormElement, PageState.List, values,
             GridView.AutoReloadFormFields);
 

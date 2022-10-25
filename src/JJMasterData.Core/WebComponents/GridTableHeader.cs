@@ -36,7 +36,7 @@ internal class GridTableHeader
     private IList<HtmlElement> GetActionsThList()
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
-        var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup );
+        var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 
         var thList = new List<HtmlElement>();
@@ -44,7 +44,7 @@ internal class GridTableHeader
         foreach (var action in actions)
         {
             var th = new HtmlElement(HtmlTag.Th);
-            th.AppendTextIf(action.ShowTitle,action.Text);
+            th.AppendTextIf(action.ShowTitle, action.Text);
             thList.Add(th);
         }
 
@@ -69,25 +69,9 @@ internal class GridTableHeader
             {
                 if (GridView.EnableSorting && field.DataBehavior != FieldBehavior.Virtual)
                 {
-                    span.WithCssClass("jjenable-sorting");
-
-                    string ajax = GridView.EnableAjax ? "true" : "false";
-
-                    span.WithAttribute("onclick",
-                        $"jjview.doSorting('{GridView.Name}','{ajax}','{field.Name}')");
-
-                    span.AppendElement(HtmlTag.Span, span =>
-                    {
-                        if (!string.IsNullOrEmpty(field.HelpDescription))
-                        {
-                            span.WithToolTip(Translate.Key(field.HelpDescription));
-                        }
-
-                        span.AppendText(field.GetTranslatedLabel());
-                    });
+                    SetSortAttributes(span, field);
                 }
             });
-
 
             if (!string.IsNullOrEmpty(GridView.CurrentOrder))
             {
@@ -117,12 +101,13 @@ internal class GridTableHeader
                     th.AppendElement(GetAscendingIcon());
             }
 
-            if (GridView.CurrentFilter != null &&
-                field.Filter.Type != FilterMode.None &&
-                !GridView.RelationValues.ContainsKey(field.Name) &&
-                (GridView.CurrentFilter.ContainsKey(field.Name) ||
-                 GridView.CurrentFilter.ContainsKey(field.Name + "_from"))
-               )
+            bool isAppliedFilter = GridView.CurrentFilter != null &&
+                                   field.Filter.Type != FilterMode.None &&
+                                   !GridView.RelationValues.ContainsKey(field.Name) &&
+                                   (GridView.CurrentFilter.ContainsKey(field.Name) ||
+                                    GridView.CurrentFilter.ContainsKey(field.Name + "_from"));
+
+            if (isAppliedFilter)
             {
                 th.AppendText("&nbsp;");
                 th.AppendElement(new JJIcon("fa fa-filter").GetHtmlElement()
@@ -133,6 +118,26 @@ internal class GridTableHeader
         }
 
         return thList;
+    }
+
+    private void SetSortAttributes(HtmlElement span, FormElementField field)
+    {
+        span.WithCssClass("jjenable-sorting");
+
+        string ajax = GridView.EnableAjax ? "true" : "false";
+
+        span.WithAttribute("onclick",
+            $"jjview.doSorting('{GridView.Name}','{ajax}','{field.Name}')");
+
+        span.AppendElement(HtmlTag.Span, span =>
+        {
+            if (!string.IsNullOrEmpty(field.HelpDescription))
+            {
+                span.WithToolTip(Translate.Key(field.HelpDescription));
+            }
+
+            span.AppendText(field.GetTranslatedLabel());
+        });
     }
 
     private HtmlElement GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlElement()
