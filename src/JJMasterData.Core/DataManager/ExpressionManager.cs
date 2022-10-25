@@ -98,7 +98,7 @@ public class ExpressionManager
 
             if (interval.Begin == '{' && interval.End == '}')
             {
-                parsedExpression = parsedExpression.Replace(string.Format("{{{0}}}", field), val);
+                parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
             }
             else
             {

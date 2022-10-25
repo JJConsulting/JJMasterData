@@ -270,7 +270,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         title = HttpUtility.UrlEncode(title, Encoding.UTF8);
         string ext = Configuration.FileExtension.ToString().ToLower();
 
-        return string.Format("{0}_{1}.{2}", title, DateTime.Now.ToString("yyyMMdd_HHmmss"), ext);
+        return $"{title}_{DateTime.Now.ToString("yyyMMdd_HHmmss")}.{ext}";
     }
 
 

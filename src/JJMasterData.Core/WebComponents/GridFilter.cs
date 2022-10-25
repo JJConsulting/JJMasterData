@@ -386,7 +386,7 @@ internal class GridFilter
             html.AppendLine("\t$(document).ready(function () {");
             foreach (FormElementField f in listFieldsPost)
             {
-                string namePrefix = string.Format("{0}{1}", FIELD_NAME_PREFIX, f.Name);
+                string namePrefix = $"{FIELD_NAME_PREFIX}{f.Name}";
                 //WorkArroud para gatilhar o select do search
                 if (f.Component == FormComponent.Search)
                 {
@@ -598,7 +598,7 @@ internal class GridFilter
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
-            string name = string.Format("{0}{1}", FIELD_NAME_PREFIX, f.Name);
+            string name = $"{FIELD_NAME_PREFIX}{f.Name}";
 
             if (f.Filter.Type == FilterMode.Range)
             {
@@ -683,7 +683,7 @@ internal class GridFilter
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
-            string name = string.Format("{0}{1}", FIELD_NAME_PREFIX, f.Name);
+            string name = $"{FIELD_NAME_PREFIX}{f.Name}";
 
             if (f.Filter.Type == FilterMode.Range)
             {

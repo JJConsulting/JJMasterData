@@ -213,10 +213,10 @@ public class JJGridView : JJBaseView
             {
                 if (MaintainValuesOnLoad)
                 {
-                    object tableorder = CurrentContext.Session[string.Format("jjcurrentorder_{0}", Name)];
-                    if (tableorder != null)
+                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    if (tableOrder != null)
                     {
-                        _currentOrder = tableorder.ToString();
+                        _currentOrder = tableOrder.ToString();
                     }
                 }
             }
@@ -225,10 +225,10 @@ public class JJGridView : JJBaseView
                 _currentOrder = CurrentContext.Request["current_tableorder_" + Name];
                 if (_currentOrder == null)
                 {
-                    object tableorder = CurrentContext.Session[string.Format("jjcurrentorder_{0}", Name)];
-                    if (tableorder != null)
+                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    if (tableOrder != null)
                     {
-                        _currentOrder = tableorder.ToString();
+                        _currentOrder = tableOrder.ToString();
                     }
                 }
             }
@@ -237,7 +237,7 @@ public class JJGridView : JJBaseView
         }
         set
         {
-            CurrentContext.Session[string.Format("jjcurrentorder_{0}", Name)] = value;
+            CurrentContext.Session[$"jjcurrentorder_{Name}"] = value;
             _currentOrder = value;
         }
     }
@@ -262,7 +262,7 @@ public class JJGridView : JJBaseView
                 }
                 else
                 {
-                    object tablePage = CurrentContext.Session[string.Format("jjcurrentpage_{0}", Name)];
+                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
                         int nAuxPage;
@@ -278,7 +278,7 @@ public class JJGridView : JJBaseView
                 int page = 1;
                 if (MaintainValuesOnLoad)
                 {
-                    object tablePage = CurrentContext.Session[string.Format("jjcurrentpage_{0}", Name)];
+                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
                         int nAuxPage;
@@ -295,7 +295,7 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.Session[string.Format("jjcurrentpage_{0}", Name)] = value.ToString();
+                CurrentContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
 
             _currentPage = value;
         }
@@ -850,7 +850,7 @@ public class JJGridView : JJBaseView
                 html.AppendLine("\t\t\tdata: frm.serialize(), ");
                 html.AppendLine("\t\t\tsuccess: function (data) { ");
                 html.AppendLine($"\t\t\t\t$(\"#jjgridview_{Name} #row\" + nRow).html(data); ");
-                html.AppendLine(string.Format("\t\t\t\tdo_change_{0}(nRow);", Name));
+                html.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
                 html.AppendLine("\t\t\t\tjjloadform(null, \"#row\" + nRow + \" \"); ");
                 html.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
                 html.AppendLine("\t\t\t}, ");
@@ -916,7 +916,7 @@ public class JJGridView : JJBaseView
 
                 html.AppendLine("");
                 html.AppendLine("\t$(document).ready(function () {");
-                html.AppendLine(string.Format("\t\tdo_change_{0}(null);", Name));
+                html.AppendLine($"\t\tdo_change_{Name}(null);");
                 html.AppendLine("\t});");
             }
         }
@@ -1550,7 +1550,7 @@ public class JJGridView : JJBaseView
         {
             GridUI ui = null;
             if (MaintainValuesOnLoad && FormElement != null)
-                ui = JJSession.GetSessionValue<GridUI>(string.Format("jjcurrentui_{0}", FormElement.Name));
+                ui = JJSession.GetSessionValue<GridUI>($"jjcurrentui_{FormElement.Name}");
 
             if (ui == null)
             {

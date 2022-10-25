@@ -53,7 +53,7 @@ internal class DataPanelControl
             cols = 12;
 
         if (cols >= 1)
-            colClass = string.Format(" col-sm-{0}", (12 / cols));
+            colClass = $" col-sm-{(12 / cols)}";
 
         var html = new HtmlElement(HtmlTag.Div);
         int linegroup = int.MinValue;
@@ -173,7 +173,7 @@ internal class DataPanelControl
             var label = new JJLabel(f);
             label.CssClass = labelClass;
 
-            fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : string.Format(" {0}", f.CssClass);
+            fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : $" {f.CssClass}";
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fldClass += " has-error";
 

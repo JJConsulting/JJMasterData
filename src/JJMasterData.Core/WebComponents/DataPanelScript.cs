@@ -25,8 +25,8 @@ internal class DataPanelScript
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("{pagestate}", string.Format("'{0}'", DataPanel.PageState.ToString()));
-            exp = exp.Replace("{PAGESTATE}", string.Format("'{0}'", DataPanel.PageState.ToString()));
+            exp = exp.Replace("{pagestate}", $"'{DataPanel.PageState.ToString()}'");
+            exp = exp.Replace("{PAGESTATE}", $"'{DataPanel.PageState.ToString()}'");
             exp = exp
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")
@@ -93,12 +93,12 @@ internal class DataPanelScript
             if (DataPanel.UserValues.Contains(fieldName))
             {
                 //Valor customizado pelo usuário
-                val = string.Format("'{0}'", DataPanel.UserValues[fieldName]);
+                val = $"'{DataPanel.UserValues[fieldName]}'";
             }
             else if (DataPanel.CurrentContext.Session[fieldName] != null)
             {
                 //Valor da Sessão
-                val = string.Format("'{0}'", DataPanel.CurrentContext.Session[fieldName]);
+                val = $"'{DataPanel.CurrentContext.Session[fieldName]}'";
             }
             else if (DataPanel.Values.Contains(fieldName))
             {
@@ -108,7 +108,7 @@ internal class DataPanelScript
                     bool visible = DataPanel.FieldManager.IsVisible(field, DataPanel.PageState, DataPanel.Values);
                     if (!visible)
                     {
-                        val = string.Format("'{0}'", DataPanel.Values[fieldName]);
+                        val = $"'{DataPanel.Values[fieldName]}'";
                     }
                 }
             }
@@ -116,7 +116,7 @@ internal class DataPanelScript
             if (val != null)
             {
                 // Note: Use "{{" to denote a single "{" 
-                exp = exp.Replace(string.Format("{{{0}}}", fieldName), val);
+                exp = exp.Replace($"{{{fieldName}}}", val);
             }
         }
 
