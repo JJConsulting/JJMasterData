@@ -61,7 +61,7 @@ public class JJLinkButton : JJBaseView, IAction
     /// </summary>
     public bool ShowAsButton { get; set; }
 
-    public LinkButtonType RenderMode { get; set; }
+    public LinkButtonType Type { get; set; }
 
     public string OnClientClick { get; set; }
     
@@ -72,7 +72,7 @@ public class JJLinkButton : JJBaseView, IAction
     public JJLinkButton()
     {
         Enabled = true;
-        RenderMode = LinkButtonType.Link;
+        Type = LinkButtonType.Link;
     }
 
     internal override HtmlElement RenderHtmlElement()
@@ -100,13 +100,13 @@ public class JJLinkButton : JJBaseView, IAction
         if (_spinner != null)
             html.AppendElement(Spinner);
 
-        if (RenderMode == LinkButtonType.Submit)
+        if (Type == LinkButtonType.Submit)
         {
             html.Tag.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
-        else if (RenderMode == LinkButtonType.Button)
+        else if (Type == LinkButtonType.Button)
         {
             html.Tag.TagName = HtmlTag.Button;
             html.WithAttribute("type", "button");
@@ -137,7 +137,7 @@ public class JJLinkButton : JJBaseView, IAction
             cssClass = cssClass.Replace("float-end", "pull-right");
         }
 
-        if (RenderMode != LinkButtonType.Link | ShowAsButton)
+        if (Type != LinkButtonType.Link | ShowAsButton)
         {
             if (!cssClass.Contains("btn ") &&
                 !cssClass.Contains(" btn") &&

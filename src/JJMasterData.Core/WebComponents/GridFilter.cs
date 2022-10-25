@@ -445,7 +445,7 @@ internal class GridFilter
             Enabled = GridView.EnableFilter,
             Text = "Filter",
             IconClass = "fa fa-search",
-            RenderMode = LinkButtonType.Submit,
+            Type = LinkButtonType.Submit,
             OnClientClick = $"return jjview.doFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
         };
 

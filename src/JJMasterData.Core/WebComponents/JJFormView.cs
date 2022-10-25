@@ -1168,7 +1168,7 @@ public class JJFormView : JJGridView
     private JJLinkButton GetButtonBack()
     {
         var btn = new JJLinkButton();
-        btn.RenderMode = LinkButtonType.Button;
+        btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
         btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
         btn.Text = "Back";
