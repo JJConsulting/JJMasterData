@@ -534,7 +534,7 @@ internal class GridFilter
     {
         var body = new StringBuilder();
         body.AppendLine("<div class=\"col-sm-12\">");
-        body.Append(GetHtmlToolBarSeach(false));
+        body.Append(GetHtmlToolBarSearch(false));
         body.AppendLine("</div>");
 
         var painel = new JJCollapsePanel
@@ -548,7 +548,7 @@ internal class GridFilter
         return painel.GetHtml();
     }
 
-    public string GetHtmlToolBarSeach(bool isToolBar = true)
+    public string GetHtmlToolBarSearch(bool isToolBar = true)
     {
         StringBuilder sHtml = new StringBuilder();
         string searchId = "jjsearch_" + GridView.Name;

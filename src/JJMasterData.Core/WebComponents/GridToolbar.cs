@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -24,58 +25,68 @@ internal class GridToolbar
                 div.AppendElement(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("col-sm-12");
-                    var listActions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
-                    foreach (var action in listActions)
-                    {
-                        if (action is FilterAction filterAction)
-                        {
-                            bool isVisible =
-                                GridView.FieldManager.IsVisible(action, PageState.List, GridView.DefaultValues);
-                            if (!isVisible)
-                                continue;
-
-                            if (filterAction.EnableScreenSearch)
-                            {
-                                div.AppendText(GridView.Filter.GetHtmlToolBarSeach());
-                                continue;
-                            }
-                        }
-
-                        var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
-                        if (linkButton.Visible)
-                        {
-                            switch (action)
-                            {
-                                case ExportAction:
-                                {
-                                    if (GridView.DataExp.IsRunning())
-                                    {
-                                        linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
-                                        linkButton.Spinner.Visible = true;
-                                    }
-
-                                    break;
-                                }
-                                case ImportAction:
-                                {
-                                    if (GridView.DataImp.IsRunning())
-                                        linkButton.Spinner.Visible = true;
-                                    break;
-                                }
-                            }
-                        }
-
-
-                        if (BootstrapHelper.Version != 3)
-                        {
-                            linkButton.CssClass += $" {BootstrapHelper.MarginRight}-1";
-                        }
-
-                        div.AppendElement(linkButton);
-                    }
+                    div.AppendRange(GetActionsHtmlElement());
                 });
             });
 
         return toolbar;
+    }
+
+    private IList<HtmlElement> GetActionsHtmlElement()
+    {
+        var htmlList = new List<HtmlElement>();
+        var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
+        
+        foreach (var action in actions)
+        {
+            if (action is FilterAction filterAction)
+            {
+                bool isVisible =
+                    GridView.FieldManager.IsVisible(action, PageState.List, GridView.DefaultValues);
+                if (!isVisible)
+                    continue;
+
+                if (filterAction.EnableScreenSearch)
+                {
+                    htmlList.Add(new HtmlElement(GridView.Filter.GetHtmlToolBarSearch()));
+                    continue;
+                }
+            }
+
+            var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
+            if (linkButton.Visible)
+            {
+                switch (action)
+                {
+                    case ExportAction:
+                    {
+                        if (GridView.DataExp.IsRunning())
+                        {
+                            linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
+                            linkButton.Spinner.Visible = true;
+                        }
+
+                        break;
+                    }
+                    case ImportAction:
+                    {
+                        if (GridView.DataImp.IsRunning())
+                            linkButton.Spinner.Visible = true;
+                        break;
+                    }
+                }
+            }
+
+
+            if (BootstrapHelper.Version != 3)
+            {
+                linkButton.CssClass += $" {BootstrapHelper.MarginRight}-1";
+            }
+
+            htmlList.Add(linkButton.GetHtmlElement());
+            
+        }
+
+        return htmlList;
     }
 }
