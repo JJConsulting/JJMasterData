@@ -14,6 +14,7 @@ using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.FormEvents.Handlers;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -209,8 +210,8 @@ public class JJFormView : JJGridView
     }
 
     #endregion
-
-    protected override string RenderHtml()
+    
+    internal override HtmlElement RenderHtmlElement()
     {
         string t = CurrentContext.Request.QueryString("t");
         string objname = CurrentContext.Request.QueryString("objname");
@@ -219,15 +220,15 @@ public class JJFormView : JJGridView
 
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
-            return dataPainel.GetHtml();
+            return new HtmlElement(dataPainel.GetHtml());
 
         //FormUpload Route
         if (JJTextFile.IsFormUploadRoute(this))
-            return dataPainel.GetHtml();
+            return new HtmlElement(dataPainel.GetHtml());
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+            return new HtmlElement(JJDownloadFile.ResponseRoute(this));
 
         if ("jjsearchbox".Equals(t))
         {
@@ -281,7 +282,7 @@ public class JJFormView : JJGridView
             return null;
         }
 
-        return sHtml.ToString();
+        return new HtmlElement(sHtml.ToString());
     }
 
     private string GetHtmlForm()
@@ -336,7 +337,7 @@ public class JJFormView : JJGridView
 
     private string GetHtmlGrid()
     {
-        return base.RenderHtml();
+        return base.RenderHtmlElement().GetElementHtml();
     }
 
     private string GetHtmlUpdate(ref PageState pageState)
@@ -1167,20 +1168,14 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonBack()
     {
-        var btn = new JJLinkButton();
-        btn.Type = LinkButtonType.Button;
-        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
-        btn.Text = "Back";
-        btn.OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');";
-        //html.Append(
-        //        $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-        //html.AppendLine($"jjview.doPainelAction('{Name}','CANCEL');\"> ");
-        //html.AppendLine("\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
-        //html.Append("\t\t\t\t<span>&nbsp;");
-        //html.Append(Translate.Key("Back"));
-        //html.AppendLine("</span>");
-        //html.AppendLine("\t\t\t</button> ");
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
+            IconClass = IconHelper.GetClassName(IconType.ArrowLeft),
+            Text = "Back",
+            OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');"
+        };
         return btn;
     }
 
