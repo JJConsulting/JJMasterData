@@ -5,7 +5,6 @@ using System.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Linq;
-using System.Text;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
@@ -128,12 +127,12 @@ internal class GridTableBody
             htmlList.Add(td);
         }
 
-        //TODO:GetHtmlAction return a true element.
-        htmlList.Add(new(GetHtmlAction(values)));
+        htmlList.AddRange(GetActionsHtmlList(values));
         return htmlList;
     }
 
-    HtmlElement GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values, string value)
+    private HtmlElement GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values,
+        string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
         bool hasError = GridView.Errors?.ContainsKey(name) ?? false;
@@ -168,78 +167,109 @@ internal class GridTableBody
         return div;
     }
 
-    public string GetHtmlAction(Hashtable values)
+    public IEnumerable<HtmlElement> GetActionsHtmlList(Hashtable values)
     {
-        //Actions
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
-        var listAction = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
-        var listActionGroup = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
+        var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
+        var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
+        var htmlList = new List<HtmlElement>();
 
-        var html = new StringBuilder();
-        foreach (var action in listAction)
+        htmlList.AddRange(GetActionsWithoutGroupHtml(actionsWithoutGroup, values));
+
+        if (groupedActions.Count > 0)
         {
-            html.AppendLine("\t\t\t\t\t<td class=\"table-action\">");
-            html.Append("\t\t\t\t\t\t");
+            htmlList.Add(GetGroupedActionsHtml(groupedActions, values));
+        }
+
+        return htmlList;
+    }
+
+    private IEnumerable<HtmlElement> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
+        Hashtable values)
+    {
+        var tdList = new List<HtmlElement>();
+        foreach (var action in actionsWithoutGroup)
+        {
+            var td = new HtmlElement(HtmlTag.Td);
+            td.WithCssClass("table-action");
+
             var link = GridView.ActionManager.GetLinkGrid(action, values);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
                 var args = new ActionEventArgs(action, link, values);
                 onRender.Invoke(this, args);
-                if (args.ResultHtml != null)
+                if (args.HtmlResult != null)
                 {
-                    html.AppendLine(args.ResultHtml);
+                    td.AppendText(args.HtmlResult);
                     link = null;
                 }
             }
 
             if (link != null)
-                html.AppendLine(link.GetHtml());
-
-            html.AppendLine("\t\t\t\t\t</td>");
+                td.AppendElement(link);
+            tdList.Add(td);
         }
 
-        if (listActionGroup.Count > 0)
-        {
-            html.AppendLine("\t\t\t\t\t<td class=\"table-action\">");
-            html.AppendLine($"\t\t\t\t\t\t<div class=\"{BootstrapHelper.InputGroupBtn}\">");
-            html.AppendLine(
-                $"\t\t\t\t\t\t\t<{(BootstrapHelper.Version == 3 ? "button" : "a")} type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
-            html.Append('\t', 8);
-            html.Append("<span class=\"caret\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.AppendFormat("title=\"{0}\">", Translate.Key("More Options"));
-            html.AppendLine("</span>");
-            html.AppendLine($"\t\t\t\t\t\t\t</{(BootstrapHelper.Version == 3 ? "button" : "a")}>");
-            html.AppendLine("\t\t\t\t\t\t\t<ul class=\"dropdown-menu dropdown-menu-right\">");
-            foreach (var action in listActionGroup)
+        return tdList;
+    }
+
+    private HtmlElement GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, Hashtable values)
+    {
+        var td = new HtmlElement(HtmlTag.Td)
+            .WithCssClass("table-action")
+            .AppendElement(HtmlTag.Div, div =>
             {
-                var link = GridView.ActionManager.GetLinkGrid(action, values);
-                var onRender = OnRenderAction;
-                if (onRender != null)
+                div.WithCssClass(BootstrapHelper.InputGroupBtn);
+                div.AppendElement(BootstrapHelper.Version == 3 ? HtmlTag.Button : HtmlTag.A,
+                    element =>
+                    {
+                        element.WithAttribute("type", "button");
+                        element.WithCssClass("btn-link dropdown-toggle");
+                        element.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
+                        element.WithAttribute("aria-haspopup", "true");
+                        element.WithAttribute("aria-expanded", "false");
+                        element.AppendElement(HtmlTag.Span, span =>
+                        {
+                            span.WithCssClass("caret");
+                            span.WithToolTip(Translate.Key("More Options"));
+                        });
+                    });
+                div.AppendElement(HtmlTag.Ul, ul =>
                 {
-                    var args = new ActionEventArgs(action, link, values);
-                    onRender.Invoke(this, args);
-                }
+                    ul.WithCssClass("dropdown-menu dropdown-menu-right");
+                    foreach (var action in actionsWithGroup)
+                    {
+                        var link = GridView.ActionManager.GetLinkGrid(action, values);
+                        var onRender = OnRenderAction;
+                        if (onRender != null)
+                        {
+                            var args = new ActionEventArgs(action, link, values);
+                            onRender.Invoke(this, args);
+                        }
 
-                if (link is not { Visible: true }) continue;
+                        if (link is { Visible: true })
+                        {
+                            ul.AppendElementIf(action.DividerLine, GetDividerHtml);
+                            ul.AppendElement(HtmlTag.Li, li =>
+                            {
+                                li.WithCssClass("dropdown-item");
+                                li.AppendElement(link);
+                            });
+                        }
+                    }
+                });
+            });
+        return td;
+    }
 
-                if (action.DividerLine)
-                    html.AppendLine("\t\t\t\t\t\t\t\t<li role=\"separator\" class=\"divider\"></li>");
+    private static HtmlElement GetDividerHtml()
+    {
+        var li = new HtmlElement(HtmlTag.Li)
+            .WithCssClass("separator")
+            .WithCssClass("divider");
 
-                html.AppendLine("\t\t\t\t\t\t\t\t<li class=\"dropdown-item\">");
-                html.Append("\t\t\t\t\t\t\t\t\t");
-                html.AppendLine(link.GetHtml());
-                html.AppendLine("\t\t\t\t\t\t\t\t</li>");
-            }
-
-            html.AppendLine("\t\t\t\t\t\t\t</ul>");
-            html.AppendLine("\t\t\t\t\t\t</div>");
-            html.AppendLine("\t\t\t\t\t</td>");
-        }
-
-
-        return html.ToString();
+        return li;
     }
 
     private static string GetTdStyle(FormElementField field)
@@ -322,7 +352,7 @@ internal class GridTableBody
             var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
             OnRenderAction.Invoke(this, args);
 
-            if (args.ResultHtml != null)
+            if (args.HtmlResult != null)
             {
                 linkDefaultAction = null;
             }

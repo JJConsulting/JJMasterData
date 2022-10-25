@@ -944,9 +944,9 @@ public class JJGridView : JJBaseView
             {
                 var args = new ActionEventArgs(action, link, values);
                 onRender.Invoke(this, args);
-                if (args.ResultHtml != null)
+                if (args.HtmlResult != null)
                 {
-                    html.AppendLine(args.ResultHtml);
+                    html.AppendLine(args.HtmlResult);
                     link = null;
                 }
             }
