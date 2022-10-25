@@ -53,6 +53,14 @@ namespace JJMasterData.Core.Html
             return this;
         }
 
+        public HtmlElement AppendElementIf(bool condition, Func<HtmlElement> func)
+        {
+            if (condition)
+                AppendElement(func.Invoke());
+
+            return this;
+        }
+
         /// <summary>
         /// Conditional insert HTML element as a child of caller element.
         /// </summary>

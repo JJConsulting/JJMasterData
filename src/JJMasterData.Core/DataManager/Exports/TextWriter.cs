@@ -85,7 +85,7 @@ public class TextWriter : BaseWriter, ITextWriter
                     args.DataRow = row;
                     args.Sender = new JJText(value);
                     OnRenderCell.Invoke(this, args);
-                    value = args.ResultHtml;
+                    value = args.HtmlResult;
                 }
 
                 sw.Write(value);

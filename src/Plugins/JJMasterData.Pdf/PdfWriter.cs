@@ -176,7 +176,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
             ev.Invoke(this, args);
 
-            value = args.ResultHtml;
+            value = args.HtmlResult;
             value = value.Replace("<br>", "\r\n");
             value = value.Replace("<center>", string.Empty);
             value = value.Replace("</center>", string.Empty);

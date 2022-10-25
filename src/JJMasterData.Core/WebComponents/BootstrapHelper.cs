@@ -22,7 +22,7 @@ public static class BootstrapHelper
     private static string Button(string className) => " btn btn-" + className;
     public static string DefaultButton => Version switch
     {
-        >= 4 => Button("light border border-secondary"),
+        >= 4 => Button("secondary"),
         _ => Button("default")
     };
     #endregion

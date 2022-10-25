@@ -343,29 +343,30 @@ public class JJTextFile : JJBaseControl
         };
     }
 
-    internal string GetHtmlForGrid()
+    internal HtmlElement GetButtonGroupHtml()
     {
         if (string.IsNullOrEmpty(Text))
-            return string.Empty;
+            return new HtmlElement(string.Empty);
 
         string[] files = Text.Split(',');
         if (files.Length == 1)
         {
             var btn = GetLinkButton(files[0]);
-            return btn.GetHtml();
+            return btn.GetHtmlElement();
         }
-        else
+
+        var btnGroup = new JJLinkButtonGroup
         {
-            var btnGroup = new JJLinkButtonGroup();
-            btnGroup.CaretText =  $"{files.Length}&nbsp;{Translate.Key("Files")}";
+            CaretText = $"{files.Length}&nbsp;{Translate.Key("Files")}"
+        };
 
-            foreach (var filename in files)
-            {
-                btnGroup.Actions.Add(GetLinkButton(filename));
-            }
-
-            return btnGroup.GetHtml();
+        foreach (var filename in files)
+        {
+            btnGroup.Actions.Add(GetLinkButton(filename));
         }
+
+        return btnGroup.GetHtmlElement();
+        
     }
 
     private JJLinkButton GetLinkButton(string filename)

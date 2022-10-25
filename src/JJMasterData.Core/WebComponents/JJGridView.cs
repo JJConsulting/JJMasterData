@@ -3,21 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
@@ -673,11 +669,14 @@ public class JJGridView : JJBaseView
 
             return null;
         }
-        
-        var listSelectedValues = GetSelectedGridValues();
-        
+
         GetDataTable();
 
+        var table = new GridTable(this);
+        table.Body.OnRenderAction += OnRenderAction;
+        table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+        table.Body.OnRenderCell += OnRenderCell;
+        
         if ("tablerow".Equals(tRequest))
         {
             string gridName = CurrentContext.Request.QueryString("gridName");
@@ -685,7 +684,7 @@ public class JJGridView : JJBaseView
             {
                 int nRowId = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[nRowId];
-                html.Append(GetRowHtml(row, nRowId, true, listSelectedValues));
+                html.Append(table.Body.GetRowHtmlElement(row, nRowId, true).GetElementHtml());
 
                 CurrentContext.Response.SendResponse(html.ToString());
             }
@@ -752,76 +751,16 @@ public class JJGridView : JJBaseView
             html.Append(SelectedRowsId);
             html.AppendLine("\" /> ");
         }
-
-        //Inicio Grid
-        //TODO: Append GridTable
-        var table = new GridTable(this);
-        table.Body.OnRenderAction += OnRenderAction;
-        table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
         
-        if (CurrentUI.IsResponsive)
-            html.AppendLine("\t<div class=\"table-responsive\">");
-
-        html.Append("\t\t<table class=\"table");
-        if (CurrentUI.ShowBorder)
-            html.Append(" table-bordered");
-
-        if (CurrentUI.ShowRowHover)
-            html.Append(" table-hover");
-
-        if (CurrentUI.ShowRowStriped)
-            html.Append(" table-striped");
-
-        if (CurrentUI.IsHeaderFixed)
-            html.Append(" table-fix-head");
-
-        html.AppendLine("\">");
-
-        //Cabeçalho
-
-        //TODO:AppendElement
-        html.AppendLine(new GridTableHeader(this).GetHtmlElement().GetElementHtml());
+        html.Append(table.GetHtmlElement().GetElementHtml());
         
-        html.AppendLine($"\t\t\t<tbody id=\"table_{Name}\">");
-        int nRow = -1;
-        foreach (DataRow row in DataSource.Rows)
-        {
-            nRow++;
-            html.Append(GetRowHtml(row, nRow, false, listSelectedValues));
-        }
-        html.AppendLine("\t\t\t</tbody>");
-
-
-        html.AppendLine("\t\t</table>");
-
-        if (CurrentUI.IsResponsive)
-            html.AppendLine("\t</div>");
-
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
-            var alert = new JJAlert
-            {
-                ShowCloseButton = true,
-                Color = PanelColor.Default,
-                Title = "No records found.",
-                Icon = IconType.InfoCircle
-            };
-
-            if (Filter.HasFilter())
-            {
-                alert.Messages.Add("There are filters applied for this query.");
-                alert.Icon = IconType.Filter;
-            }
-           
-            html.AppendLine(alert.GetHtml());
+            html.Append(GetNoRecordsAlert().GetElementHtml());
         }
-
-        html.AppendLine("\t<!-- End Table -->");
-        html.AppendLine("");
         
         var gridPagination = new GridPagination(this);
         
-        //TODO: AppendElement.
         html.Append(gridPagination.GetHtmlElement().GetElementHtml());
 
         if (ShowToolbar)
@@ -849,6 +788,24 @@ public class JJGridView : JJBaseView
         }
 
         return html.ToString();
+    }
+    
+    private HtmlElement GetNoRecordsAlert()
+    {
+        var alert = new JJAlert
+        {
+            ShowCloseButton = true,
+            Color = PanelColor.Default,
+            Title = Translate.Key("No records found."),
+            Icon = IconType.InfoCircle
+        };
+
+        if (!Filter.HasFilter()) return alert.GetHtmlElement();
+
+        alert.Messages.Add("There are filters applied for this query.");
+        alert.Icon = IconType.Filter;
+
+        return alert.GetHtmlElement();
     }
     
     private string GetHtmlScript()
@@ -968,217 +925,7 @@ public class JJGridView : JJBaseView
 
         return html.ToString();
     }
-
-    private string GetRowHtml(DataRow row, int nRow, bool isAjax, List<Hashtable> listSelectedValues)
-    {
-        var values = new Hashtable();
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
-
-        if (EnableEditMode)
-        {
-            string prefixname = GetFieldName("", values);
-            values = FieldManager.GetFormValues(prefixname, FormElement, PageState.List, values, AutoReloadFormFields);
-        }
-
-        //Actions
-        var basicActions = GridActions.OrderBy(x => x.Order).ToList();
-        var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
-
-        var html = new StringBuilder();
-        if (!isAjax)
-        {
-            html.AppendFormat("\t\t\t\t<tr id=\"row{0}\"", nRow);
-            if (!EnableEditMode && (defaultAction != null || EnableMultSelect))
-            {
-                html.Append(" class=\"jjgrid-action\"");
-            }
-            html.AppendLine(">");
-        }
-
-        string scriptOnClick = "";
-        if (!EnableEditMode && defaultAction != null)
-        {
-            var linkDefaultAction = ActionManager.GetLinkGrid(defaultAction, values);
-            var onRender = OnRenderAction;
-            if (onRender != null)
-            {
-                var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
-                onRender.Invoke(this, args);
-
-                if (args.ResultHtml != null)
-                {
-                    linkDefaultAction = null;
-                }
-            }
-
-            if (linkDefaultAction is { Visible: true })
-            {
-                if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
-                    scriptOnClick = $" onclick =\"{linkDefaultAction.OnClientClick}\"";
-                else if (!string.IsNullOrEmpty(linkDefaultAction.UrlAction))
-                    scriptOnClick = $" onclick =\"window.location.href = '{linkDefaultAction.UrlAction}'\"";
-            }
-        }
-
-        if (EnableMultSelect)
-        {
-            string value = GetPkValues(values);
-            var chkBase = new JJCheckBox
-            {
-                Name = "jjchk_" + nRow,
-                Value = Cript.Cript64(value),
-                IsChecked = listSelectedValues.Any(x => x.ContainsValue(value))
-            };
-
-            html.Append("\t\t\t\t\t<td class=\"jjselect\">");
-            var renderSelectedCell = OnRenderSelectedCell;
-            if (renderSelectedCell != null)
-            {
-                var args = new GridSelectedCellEventArgs
-                {
-                    DataRow = row,
-                    CheckBox = chkBase
-                };
-                renderSelectedCell.Invoke(this, args);
-                if (args.CheckBox != null)
-                    html.Append(chkBase.GetHtml());
-            }
-            else
-            {
-                html.Append(chkBase.GetHtml());
-            }
-
-            html.AppendLine("</td>");
-            if (string.IsNullOrEmpty(scriptOnClick))
-            {
-                scriptOnClick = $" onclick=\"$('#{chkBase.Name}').not(':disabled').prop('checked',!$('#{chkBase.Name}').is(':checked')).change();\"";
-            }
-        }
-
-        foreach (var f in VisibleFields)
-        {
-            string value = string.Empty;
-            if (values.Contains(f.Name))
-            {
-                value = FieldManager.ParseVal(values, f);
-            }
-
-            string tdStyle = "";
-            switch (f.Component)
-            {
-                case FormComponent.ComboBox:
-                    {
-                        if (f.DataItem is { ShowImageLegend: true, ReplaceTextOnGrid: false })
-                        {
-                            tdStyle = " style=\"text-align:center;\" ";
-                        }
-
-                        break;
-                    }
-                case FormComponent.CheckBox:
-                    tdStyle = " style=\"text-align:center;\" ";
-                    break;
-                case FormComponent.File:
-                    scriptOnClick = "";
-                    break;
-                default:
-                    {
-                        if (f.DataType == FieldType.Float || f.DataType == FieldType.Int)
-                        {
-                            if (!f.IsPk)
-                                tdStyle = " style=\"text-align:right;\" ";
-                        }
-
-                        break;
-                    }
-            }
-
-            html.Append("\t\t\t\t\t<td");
-            html.Append(tdStyle);
-            html.Append(scriptOnClick);
-            html.Append(">");
-
-            if (EnableEditMode && f.DataBehavior != FieldBehavior.ViewOnly)
-            {
-                string name = GetFieldName(f.Name, values);
-                bool hasError = Errors?.ContainsKey(name) ?? false;
-                if (hasError)
-                    html.Append($"<div class=\"{BootstrapHelper.HasError}\">");
-
-                if ((f.Component == FormComponent.ComboBox
-                   | f.Component == FormComponent.CheckBox
-                   | f.Component == FormComponent.Search)
-                   & values.Contains(f.Name))
-                {
-                    value = values[f.Name].ToString();
-                }
-                var baseField = FieldManager.GetField(f, PageState.List, values, value);
-                baseField.Name = name;
-                baseField.Attributes.Add("nRowId", nRow.ToString());
-                baseField.CssClass = f.Name;
-
-                var renderCell = OnRenderCell;
-                if (renderCell != null)
-                {
-                    var args = new GridCellEventArgs();
-                    args.Field = f;
-                    args.DataRow = row;
-                    args.Sender = baseField;
-                    //args.ResultHtml = baseField.GetHtml(); medrei
-                    OnRenderCell.Invoke(this, args);
-                    html.Append(args.ResultHtml);
-                }
-                else
-                {
-                    html.AppendLine(baseField.GetHtml());
-                }
-
-                if (hasError)
-                    html.Append("</div>");
-            }
-            else
-            {
-                var renderCell = OnRenderCell;
-                if (renderCell != null)
-                {
-                    var args = new GridCellEventArgs
-                    {
-                        Field = f,
-                        DataRow = row,
-                        Sender = new JJText(value)
-                    };
-                    OnRenderCell.Invoke(this, args);
-                    html.Append(args.ResultHtml);
-                }
-                else
-                {
-                    if (f.Component == FormComponent.File)
-                    {
-                        var upload = (JJTextFile)FieldManager.GetField(f, PageState.List, values, value);
-                        html.Append(upload.GetHtmlForGrid());
-                    }
-                    else
-                    {
-                        html.Append(value.Trim());
-                    }
-                }
-            }
-
-            html.AppendLine("\t</td>");
-        }
-
-        html.AppendLine(GetHtmlAction(values));
-
-        if (!isAjax)
-        {
-            html.AppendLine("\t\t\t\t</tr>");
-        }
-        return html.ToString();
-    }
-
+    
     public string GetHtmlAction(Hashtable values)
     {
         //Actions
