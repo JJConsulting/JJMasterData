@@ -343,67 +343,60 @@ public class JJFormView : JJGridView
     {
         var html = new StringBuilder();
         string formAction = "";
-        
+
         if (CurrentContext.Request["current_painelaction_" + Name] != null)
             formAction = CurrentContext.Request["current_painelaction_" + Name];
 
-
-        switch (formAction)
+        if ("OK".Equals(formAction))
         {
-            case "OK":
+            var values = GetFormValues();
+            var errors = UpdateFormValues(values);
+
+            if (errors.Count == 0)
             {
-                var values = GetFormValues();
-                var errors = UpdateFormValues(values);
-
-                if (errors.Count == 0)
+                if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    if (!string.IsNullOrEmpty(UrlRedirect))
-                    {
-                        CurrentContext.Response.ResponseRedirect(UrlRedirect);
-                        return null;
-                    }
-
-                    html.AppendLine(GetHtmlGrid());
-                    pageState = PageState.List;
-                }
-                else
-                {
-                    pageState = PageState.Update;
-                    html.AppendLine(GetHtmlDataPainel(values, errors, pageState, true));
+                    CurrentContext.Response.ResponseRedirect(UrlRedirect);
+                    return null;
                 }
 
-                break;
+                html.AppendLine(GetHtmlGrid());
+                pageState = PageState.List;
             }
-            case "CANCEL":
-                ClearTempFiles();
-                CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
-                break;
-            case "REFRESH":
+            else
             {
-                var values = GetFormValues();
-                html.AppendLine(GetHtmlDataPainel(values, null, pageState, true));
-                break;
-            }
-            default:
-            {
-                bool autoReloadFields;
-                Hashtable values;
-                if (pageState == PageState.Update)
-                {
-                    autoReloadFields = true;
-                    values = GetFormValues();
-                }
-                else
-                {
-                    autoReloadFields = false;
-                    var acMap = CurrentActionMap;
-                    values = Factory.GetFields(FormElement, acMap.PKFieldValues);
-                }
-
                 pageState = PageState.Update;
-                html.AppendLine(GetHtmlDataPainel(values, null, pageState, autoReloadFields));
-                break;
+                html.AppendLine(GetHtmlDataPainel(values, errors, pageState, true));
             }
+        }
+        else if ("CANCEL".Equals(formAction))
+        {
+            ClearTempFiles();
+            CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
+        }
+        else if ("REFRESH".Equals(formAction))
+        {
+            var values = GetFormValues();
+            html.AppendLine(GetHtmlDataPainel(values, null, pageState, true));
+        }
+        else
+        {
+            bool autoReloadFields;
+            Hashtable values;
+            if (pageState == PageState.Update)
+            {
+                autoReloadFields = true;
+                values = GetFormValues();
+            }
+            else
+            {
+                autoReloadFields = false;
+                var acMap = CurrentActionMap;
+                values = Factory.GetFields(FormElement, acMap.PKFieldValues);
+            }
+
+            pageState = PageState.Update;
+            html.AppendLine(GetHtmlDataPainel(values, null, pageState, autoReloadFields));
         }
 
         return html.ToString();
@@ -1005,7 +998,7 @@ public class JJFormView : JJGridView
     private void FormSelectedOnRenderAction(object sender, ActionEventArgs e)
     {
         if (!e.Action.Name.Equals("_jjselaction")) return;
-        
+
         if (sender is JJGridView grid)
         {
             var map = new ActionMap(ActionOrigin.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
@@ -1020,12 +1013,12 @@ public class JJFormView : JJGridView
     /// </summary>
     /// <returns>The list of errors.</returns>
     public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
-    { 
+    {
         var result = DataDictionaryManager.Insert(this, values,
             () => validateFields ? ValidateFields(values, PageState.Insert) : null);
-        
+
         UrlRedirect = result.UrlRedirect;
-        
+
         return result.Errors;
     }
 
@@ -1037,9 +1030,9 @@ public class JJFormView : JJGridView
     {
         var result = DataDictionaryManager.Update(this, values,
             () => ValidateFields(values, PageState.Update));
-        
+
         UrlRedirect = result.UrlRedirect;
-        
+
         return result.Errors;
     }
 
@@ -1071,7 +1064,7 @@ public class JJFormView : JJGridView
         var values = painel.GetFormValues();
 
         if (RelationValues == null) return values;
-        
+
         foreach (DictionaryEntry val in RelationValues)
         {
             if (values.ContainsKey(val.Key))
@@ -1122,14 +1115,14 @@ public class JJFormView : JJGridView
     public void SetOptions(UIOptions options)
     {
         if (options == null) return;
-        
+
         ToolBarActions = options.ToolBarActions.GetAll();
         GridActions = options.GridActions.GetAll();
         ShowTitle = options.Grid.ShowTitle;
         DataPanel.UISettings = options.Form;
         SetGridOptions(options.Grid);
     }
-    
+
     internal void InvokeOnBeforeUpdate(object sender, FormBeforeActionEventArgs eventArgs) =>
         OnBeforeUpdate?.Invoke(sender, eventArgs);
     internal void InvokeOnAfterUpdate(object sender, FormAfterActionEventArgs eventArgs) =>
@@ -1142,7 +1135,7 @@ public class JJFormView : JJGridView
         OnBeforeDelete?.Invoke(sender, eventArgs);
     internal void InvokeOnAfterDelete(object sender, FormAfterActionEventArgs eventArgs) =>
         OnAfterDelete?.Invoke(sender, eventArgs);
-    
+
     private void AddFormEvent(string name)
     {
         var assemblyFormEvent = FormEventManager.GetFormEvent(name);
@@ -1151,7 +1144,7 @@ public class JJFormView : JJGridView
             AddFormEvent(assemblyFormEvent);
         }
     }
-    
+
     private void AddFormEvent(IFormEvent assemblyFormEvent)
     {
         foreach (var method in FormEventManager.GetFormEventMethods(assemblyFormEvent))
@@ -1170,4 +1163,25 @@ public class JJFormView : JJGridView
             }
         }
     }
+
+
+    private JJLinkButton GetButtonBack()
+    {
+        var btn = new JJLinkButton();
+        btn.RenderMode = LinkButtonType.Button;
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
+        btn.Text = "Back";
+        btn.OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');";
+        //html.Append(
+        //        $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
+        //html.AppendLine($"jjview.doPainelAction('{Name}','CANCEL');\"> ");
+        //html.AppendLine("\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
+        //html.Append("\t\t\t\t<span>&nbsp;");
+        //html.Append(Translate.Key("Back"));
+        //html.AppendLine("</span>");
+        //html.AppendLine("\t\t\t</button> ");
+        return btn;
+    }
+
 }

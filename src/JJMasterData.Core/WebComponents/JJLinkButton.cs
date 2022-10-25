@@ -55,10 +55,14 @@ public class JJLinkButton : JJBaseView, IAction
     /// </remarks>
     public string IconClass { get; set; }
     
+    /// <summary>
+    /// Add btn class on render. 
+    /// Default = false
+    /// </summary>
     public bool ShowAsButton { get; set; }
-    
-    public bool IsSubmit { get; set; }
-    
+
+    public LinkButtonType RenderMode { get; set; }
+
     public string OnClientClick { get; set; }
     
     public string UrlAction { get; set; }
@@ -68,6 +72,7 @@ public class JJLinkButton : JJBaseView, IAction
     public JJLinkButton()
     {
         Enabled = true;
+        RenderMode = LinkButtonType.Link;
     }
 
     internal override HtmlElement RenderHtmlElement()
@@ -95,11 +100,16 @@ public class JJLinkButton : JJBaseView, IAction
         if (_spinner != null)
             html.AppendElement(Spinner);
 
-        if (IsSubmit)
+        if (RenderMode == LinkButtonType.Submit)
         {
             html.Tag.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
             html.WithAttributeIf(ShowAsButton, "role", "button");
+        }
+        else if (RenderMode == LinkButtonType.Button)
+        {
+            html.Tag.TagName = HtmlTag.Button;
+            html.WithAttribute("type", "button");
         }
         else
         {
@@ -127,19 +137,13 @@ public class JJLinkButton : JJBaseView, IAction
             cssClass = cssClass.Replace("float-end", "pull-right");
         }
 
-        if (IsSubmit)
+        if (RenderMode != LinkButtonType.Link | ShowAsButton)
         {
             if (!cssClass.Contains("btn ") &&
                 !cssClass.Contains(" btn") &&
                 !cssClass.Equals("btn"))
             {
-                cssClass += " btn";
-            }
-
-            if (!cssClass.Contains("btn-default") ||
-                !cssClass.Contains("btn-primary"))
-            {
-                cssClass += BootstrapHelper.DefaultButton;
+                cssClass += BootstrapHelper.DefaultButton; 
             }
         }
 
@@ -161,4 +165,12 @@ public class JJLinkButton : JJBaseView, IAction
         return icon;
     }
 
+}
+
+
+public enum LinkButtonType
+{
+    Link = 0,
+    Button = 1,
+    Submit = 2
 }

@@ -13,12 +13,8 @@ using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
-/// <summary>
-/// Responsável por renderizar os campos do formulário
-/// </summary>
 public class JJDataPanel : JJBaseView
 {
-
     #region "Events"
 
     public EventHandler<ActionEventArgs> OnRenderAction;
@@ -34,14 +30,10 @@ public class JJDataPanel : JJBaseView
     private DataDictionaryManager DataDictionaryManager => _dataDictionaryManager ??= new DataDictionaryManager(FormElement);
 
     /// <summary>
-    /// Funções úteis para manipular campos no formulário
+    /// Useful functions for manipulating fields on the form
     /// </summary>
     public FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
 
-    /// <summary>
-    /// Configurações pré-definidas do formulário
-    /// </summary>
-    public FormElement FormElement { get; set; }
 
     /// <summary>
     /// Layout form settings
@@ -55,45 +47,48 @@ public class JJDataPanel : JJBaseView
 
             return _uiFormSettings;
         }
-        set
+        internal set
         {
             _uiFormSettings = value;
         }
     }
 
     /// <summary>
-    /// Estado atual da pagina
+    /// Predefined form settings
+    /// </summary>
+    public FormElement FormElement { get; set; }
+
+    /// <summary>
+    /// Current state of the form
     /// </summary>
     public PageState PageState { get; set; }
 
     /// <summary>
-    /// Campos com erro.
-    /// Key=Nome do campo, Value=Descricão do erro
+    /// Fields with error.
+    /// Key=Field Name, Value=Error Description
     /// </summary>
     public Hashtable Erros { get; set; }
 
     /// <summary>
-    /// Conteúdo dos campos.
-    /// Key=Nome do campo, Value=Contúdo do campo
+    /// Field Values.
+    /// Key=Field Name, Value=Error Description
     /// </summary>
     public Hashtable Values { get; set; }
 
     /// <summary>
-    /// Ao recarregar o painel, manter os valores digitados no formuário
+    /// When reloading the panel, keep the values ​​entered in the form
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-
     /// <summary>
-    /// Renderiza agrupamento de campo
+    /// Render field grouping
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
     #endregion
 
     #region "Constructors"
-
 
     internal JJDataPanel()
     {

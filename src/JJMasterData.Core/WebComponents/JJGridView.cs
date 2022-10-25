@@ -603,13 +603,19 @@ public class JJGridView : JJBaseView
     
     public string GetHtmlTitle()
     {
+        var title = GetTitle();
+        return title.GetHtml();
+    }
+    
+    internal JJTitle GetTitle()
+    {
         var title = new JJTitle(FormElement.Title, FormElement.SubTitle)
         {
             Size = TitleSize
         };
-        return title.GetHtml();
+        return title;
     }
-    
+
     public string GetHtmlFilter() => Filter.GetHtmlFilter();
     
     public string GetHtmlGridToolbar()
