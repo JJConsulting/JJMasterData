@@ -616,8 +616,7 @@ internal class GridFilter
                 {
                     if (f.DataType == FieldType.DateTime && f.Component == FormComponent.Date)
                     {
-                        DateTime dto;
-                        if (DateTime.TryParse(sto, out dto))
+                        if (DateTime.TryParse(sto, out var dto))
                             sto = dto.ToShortDateString() + " " + DateTime.MaxValue.ToLongTimeString();
                     }
 

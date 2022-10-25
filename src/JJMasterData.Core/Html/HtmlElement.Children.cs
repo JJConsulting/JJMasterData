@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Html
     public partial class HtmlElement
     {
         /// <summary>
-        /// Insert HTML element as a child of caller element.
+        /// Insert a HTML element as a child of caller element.
         /// </summary>
         public HtmlElement AppendElement(HtmlElement element)
         {
@@ -32,7 +32,7 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert HTML element as a child of caller element.
+        /// Insert a HTML element as a child of caller element.
         /// </summary>
         public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction = null)
         {
@@ -43,7 +43,7 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Conditional insert HTML element as a child of caller element.
+        /// Conditional insert a HTML element as a child of caller element.
         /// </summary>
         public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
         {
@@ -52,7 +52,10 @@ namespace JJMasterData.Core.Html
 
             return this;
         }
-
+        
+        /// <summary>
+        /// Conditional insert a HTML element from a return of a function. Use this to improve performance.
+        /// </summary>
         public HtmlElement AppendElementIf(bool condition, Func<HtmlElement> func)
         {
             if (condition)
@@ -125,7 +128,7 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert tag script with a script text
+        /// Insert a script tag with a rawScript
         /// </summary>
         public HtmlElement AppendScript(string rawScript)
         {
@@ -137,7 +140,7 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert Component as a child of caller element.
+        /// Insert a JJ component as a child of caller element.
         /// </summary>
         public HtmlElement AppendElement(JJBaseView component)
         {

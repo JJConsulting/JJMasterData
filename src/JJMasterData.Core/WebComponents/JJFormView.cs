@@ -748,7 +748,7 @@ public class JJFormView : JJGridView
         var sHtml = new StringBuilder();
 
         if (ShowTitle)
-            sHtml.AppendLine(GetHtmlTitle());
+            sHtml.AppendLine(GetTitleHtml());
 
         pageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -779,7 +779,7 @@ public class JJFormView : JJGridView
         var sHtml = new StringBuilder();
 
         if (ShowTitle)
-            sHtml.AppendLine(GetHtmlTitle());
+            sHtml.AppendLine(GetTitleHtml());
 
         if (relations.Count == 0)
         {
