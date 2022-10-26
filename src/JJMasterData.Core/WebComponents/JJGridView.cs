@@ -66,6 +66,7 @@ public class JJGridView : JJBaseView
     private GridUI _currentUI;
     private ExportOptions _currentExportConfig;
     private GridFilter _filter;
+    private GridTable _table;
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private FieldManager _fieldManager;
@@ -341,6 +342,22 @@ public class JJGridView : JJBaseView
     }
 
     internal GridFilter Filter => _filter ??= new GridFilter(this);
+    
+    internal GridTable Table
+    {
+        get
+        {
+            if (_table != null) 
+                return _table;
+            
+            _table = new GridTable(this);
+            _table.Body.OnRenderAction += OnRenderAction;
+            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+            _table.Body.OnRenderCell += OnRenderCell;
+
+            return _table;
+        }
+    }
 
     public ExportOptions CurrentExportConfig
     {
@@ -582,16 +599,11 @@ public class JJGridView : JJBaseView
         AssertProperties();
         
         string requestType = CurrentContext.Request.QueryString("t");
-        
-        var table = new GridTable(this);
-        table.Body.OnRenderAction += OnRenderAction;
-        table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
-        table.Body.OnRenderCell += OnRenderCell;
-        
+
         if (CheckForExportation(requestType)) 
             return null;
         
-        if (CheckForTableRow(requestType, table)) 
+        if (CheckForTableRow(requestType, Table)) 
             return null;
         
         if (CheckForSelectAllRows(requestType)) 
@@ -605,7 +617,8 @@ public class JJGridView : JJBaseView
         
         html.AppendText(GetHtmlScript());
         html.AppendRange(GetHiddenInputs());
-        html.AppendElement(table.GetHtmlElement());
+
+        html.AppendElement(Table.GetHtmlElement());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
@@ -814,18 +827,18 @@ public class JJGridView : JJBaseView
 
     private string GetHtmlScript()
     {
-        var html = new StringBuilder();
+        var script = new StringBuilder();
 
         //Scripts
-        html.AppendLine("\t<script type=\"text/javascript\"> ");
+        script.AppendLine("\t<script type=\"text/javascript\"> ");
 
         if (EnableMultSelect)
         {
-            html.AppendLine("\t$(document).ready(function () {");
-            html.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            html.AppendLine("\t\t\tjjview.doSelectItem('" + Name + "', $(this)); ");
-            html.AppendLine("\t\t});");
-            html.AppendLine("\t});");
+            script.AppendLine("\t$(document).ready(function () {");
+            script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
+            script.AppendLine("\t\t\tjjview.doSelectItem('" + Name + "', $(this)); ");
+            script.AppendLine("\t\t});");
+            script.AppendLine("\t});");
         }
 
         if (EnableEditMode)
@@ -834,175 +847,101 @@ public class JJGridView : JJBaseView
             string functionname = "do_rowreload_" + Name;
             if (listFieldsPost.Count > 0)
             {
-                html.AppendLine("");
-                html.Append("\tfunction ");
-                html.Append(functionname);
-                html.AppendLine("(nRow, objname, objid) { ");
-                html.AppendLine("\t\tvar frm = $('form'); ");
-                html.AppendLine("\t\tvar surl = frm.attr('action'); ");
-                html.AppendLine("\t\tif (surl.includes('?'))");
-                html.AppendLine("\t\t\tsurl += '&t=tablerow&nRow=' + nRow;");
-                html.AppendLine("\t\telse");
-                html.AppendLine("\t\t\tsurl += '?t=tablerow&nRow=' + nRow;");
-                html.AppendLine("");
-                html.AppendLine("\t\tsurl += '&objname=' + objname;");
-                html.AppendLine($"\t\tsurl += '&gridName={Name}';");
-                html.AppendLine("\t\t$.ajax({ ");
-                html.AppendLine("\t\tasync: false,");
-                html.AppendLine("\t\t\ttype: frm.attr('method'), ");
-                html.AppendLine("\t\t\turl: surl, ");
-                html.AppendLine("\t\t\tdata: frm.serialize(), ");
-                html.AppendLine("\t\t\tsuccess: function (data) { ");
-                html.AppendLine($"\t\t\t\t$(\"#jjgridview_{Name} #row\" + nRow).html(data); ");
-                html.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
-                html.AppendLine("\t\t\t\tjjloadform(null, \"#row\" + nRow + \" \"); ");
-                html.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
-                html.AppendLine("\t\t\t}, ");
-                html.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
-                html.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
-                html.AppendLine("\t\t\t\tconsole.log(textStatus); ");
-                html.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
-                html.AppendLine("\t\t\t} ");
-                html.AppendLine("\t\t}); ");
-                html.AppendLine("\t} ");
+                script.AppendLine("");
+                script.Append("\tfunction ");
+                script.Append(functionname);
+                script.AppendLine("(nRow, objname, objid) { ");
+                script.AppendLine("\t\tvar frm = $('form'); ");
+                script.AppendLine("\t\tvar surl = frm.attr('action'); ");
+                script.AppendLine("\t\tif (surl.includes('?'))");
+                script.AppendLine("\t\t\tsurl += '&t=tablerow&nRow=' + nRow;");
+                script.AppendLine("\t\telse");
+                script.AppendLine("\t\t\tsurl += '?t=tablerow&nRow=' + nRow;");
+                script.AppendLine("");
+                script.AppendLine("\t\tsurl += '&objname=' + objname;");
+                script.AppendLine($"\t\tsurl += '&gridName={Name}';");
+                script.AppendLine("\t\t$.ajax({ ");
+                script.AppendLine("\t\tasync: false,");
+                script.AppendLine("\t\t\ttype: frm.attr('method'), ");
+                script.AppendLine("\t\t\turl: surl, ");
+                script.AppendLine("\t\t\tdata: frm.serialize(), ");
+                script.AppendLine("\t\t\tsuccess: function (data) { ");
+                script.AppendLine($"\t\t\t\t$(\"#jjgridview_{Name} #row\" + nRow).html(data); ");
+                script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
+                script.AppendLine("\t\t\t\tjjloadform(null, \"#row\" + nRow + \" \"); ");
+                script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
+                script.AppendLine("\t\t\t}, ");
+                script.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
+                script.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
+                script.AppendLine("\t\t\t\tconsole.log(textStatus); ");
+                script.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
+                script.AppendLine("\t\t\t} ");
+                script.AppendLine("\t\t}); ");
+                script.AppendLine("\t} ");
 
-                html.AppendLine("");
-                html.Append("\tfunction ");
-                html.AppendFormat("do_change_{0}", Name);
-                html.AppendLine("(nRow) { ");
-                html.AppendLine("\t\tvar prefixSelector = \"\";");
-                html.AppendLine("\t\tif(nRow != null) {");
-                html.AppendLine("\t\t\tprefixSelector = \"tr#row\" + nRow + \" \";");
-                html.AppendLine("\t\t}");
+                script.AppendLine("");
+                script.Append("\tfunction ");
+                script.AppendFormat("do_change_{0}", Name);
+                script.AppendLine("(nRow) { ");
+                script.AppendLine("\t\tvar prefixSelector = \"\";");
+                script.AppendLine("\t\tif(nRow != null) {");
+                script.AppendLine("\t\t\tprefixSelector = \"tr#row\" + nRow + \" \";");
+                script.AppendLine("\t\t}");
 
 
-                foreach (FormElementField f in listFieldsPost)
+                foreach (var f in listFieldsPost)
                 {
                     //WorkArroud para gatilhar o select do search
                     if (f.Component == FormComponent.Search)
                     {
-                        html.Append("\t\t$(prefixSelector + \"");
-                        html.Append(".");
-                        html.Append(f.Name);
-                        html.AppendLine("\").change(function () {");
-                        html.AppendLine("\t\tvar obj = $(this);");
-                        html.AppendLine("\t\tsetTimeout(function() {");
-                        html.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
-                        html.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
-                        html.Append("\t\t\t");
-                        html.Append(functionname);
-                        html.Append("(nRowId, \"");
-                        html.Append(f.Name);
-                        html.AppendLine("\", objid);");
-                        html.AppendLine("\t\t\t},200);");
-                        html.AppendLine("\t\t});");
-                        html.AppendLine("");
+                        script.Append("\t\t$(prefixSelector + \"");
+                        script.Append(".");
+                        script.Append(f.Name);
+                        script.AppendLine("\").change(function () {");
+                        script.AppendLine("\t\tvar obj = $(this);");
+                        script.AppendLine("\t\tsetTimeout(function() {");
+                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
+                        script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
+                        script.Append("\t\t\t");
+                        script.Append(functionname);
+                        script.Append("(nRowId, \"");
+                        script.Append(f.Name);
+                        script.AppendLine("\", objid);");
+                        script.AppendLine("\t\t\t},200);");
+                        script.AppendLine("\t\t});");
+                        script.AppendLine("");
                     }
                     else
                     {
-                        html.Append("\t\t$(prefixSelector + \"");
-                        html.Append(".");
-                        html.Append(f.Name);
-                        html.AppendLine("\").change(function () {");
-                        html.AppendLine("\t\t\tvar obj = $(this);");
-                        html.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
-                        html.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
-                        html.Append("\t\t\t");
-                        html.Append(functionname);
-                        html.Append("(nRowId, \"");
-                        html.Append(f.Name);
-                        html.AppendLine("\", objid);");
-                        html.AppendLine("\t\t});");
-                        html.AppendLine("");
+                        script.Append("\t\t$(prefixSelector + \"");
+                        script.Append(".");
+                        script.Append(f.Name);
+                        script.AppendLine("\").change(function () {");
+                        script.AppendLine("\t\t\tvar obj = $(this);");
+                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
+                        script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
+                        script.Append("\t\t\t");
+                        script.Append(functionname);
+                        script.Append("(nRowId, \"");
+                        script.Append(f.Name);
+                        script.AppendLine("\", objid);");
+                        script.AppendLine("\t\t});");
+                        script.AppendLine("");
                     }
                 }
 
-                html.AppendLine("\t}");
+                script.AppendLine("\t}");
 
-                html.AppendLine("");
-                html.AppendLine("\t$(document).ready(function () {");
-                html.AppendLine($"\t\tdo_change_{Name}(null);");
-                html.AppendLine("\t});");
+                script.AppendLine("");
+                script.AppendLine("\t$(document).ready(function () {");
+                script.AppendLine($"\t\tdo_change_{Name}(null);");
+                script.AppendLine("\t});");
             }
         }
 
-        html.AppendLine("\t</script> ");
+        script.AppendLine("\t</script> ");
 
-        return html.ToString();
-    }
-
-    public string GetHtmlAction(Hashtable values)
-    {
-        //Actions
-        var basicActions = GridActions.OrderBy(x => x.Order).ToList();
-        var listAction = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
-        var listActionGroup = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-
-        var html = new StringBuilder();
-        foreach (var action in listAction)
-        {
-            html.AppendLine("\t\t\t\t\t<td class=\"table-action\">");
-            html.Append("\t\t\t\t\t\t");
-            var link = ActionManager.GetLinkGrid(action, values);
-            var onRender = OnRenderAction;
-            if (onRender != null)
-            {
-                var args = new ActionEventArgs(action, link, values);
-                onRender.Invoke(this, args);
-                if (args.HtmlResult != null)
-                {
-                    html.AppendLine(args.HtmlResult);
-                    link = null;
-                }
-            }
-
-            if (link != null)
-                html.AppendLine(link.GetHtml());
-
-            html.AppendLine("\t\t\t\t\t</td>");
-        }
-
-        if (listActionGroup.Count > 0)
-        {
-            html.AppendLine("\t\t\t\t\t<td class=\"table-action\">");
-            html.AppendLine($"\t\t\t\t\t\t<div class=\"{BootstrapHelper.InputGroupBtn}\">");
-            html.AppendLine(
-                $"\t\t\t\t\t\t\t<{(BootstrapHelper.Version == 3 ? "button" : "a")} type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
-            html.Append('\t', 8);
-            html.Append("<span class=\"caret\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.AppendFormat("title=\"{0}\">", Translate.Key("More Options"));
-            html.AppendLine("</span>");
-            html.AppendLine($"\t\t\t\t\t\t\t</{(BootstrapHelper.Version == 3 ? "button" : "a")}>");
-            html.AppendLine("\t\t\t\t\t\t\t<ul class=\"dropdown-menu dropdown-menu-right\">");
-            foreach (var action in listActionGroup)
-            {
-                var link = ActionManager.GetLinkGrid(action, values);
-                var onRender = OnRenderAction;
-                if (onRender != null)
-                {
-                    var args = new ActionEventArgs(action, link, values);
-                    onRender.Invoke(this, args);
-                }
-
-                if (link is not { Visible: true }) continue;
-
-                if (action.DividerLine)
-                    html.AppendLine("\t\t\t\t\t\t\t\t<li role=\"separator\" class=\"divider\"></li>");
-
-                html.AppendLine("\t\t\t\t\t\t\t\t<li class=\"dropdown-item\">");
-                html.Append("\t\t\t\t\t\t\t\t\t");
-                html.AppendLine(link.GetHtml());
-                html.AppendLine("\t\t\t\t\t\t\t\t</li>");
-            }
-
-            html.AppendLine("\t\t\t\t\t\t\t</ul>");
-            html.AppendLine("\t\t\t\t\t\t</div>");
-            html.AppendLine("\t\t\t\t\t</td>");
-        }
-
-
-        return html.ToString();
+        return script.ToString();
     }
 
     private HtmlElement GetSettingsHtml()
@@ -1328,10 +1267,10 @@ public class JJGridView : JJBaseView
         if (string.IsNullOrEmpty(inputHidden))
             return listValues;
 
-        string[] listPk = inputHidden.Split(',');
+        string[] pkList = inputHidden.Split(',');
 
         List<FormElementField> pkFields = PrimaryKeyFields;
-        foreach (string pk in listPk)
+        foreach (string pk in pkList)
         {
             Hashtable values = new();
             string descriptval = Cript.Descript64(pk);
