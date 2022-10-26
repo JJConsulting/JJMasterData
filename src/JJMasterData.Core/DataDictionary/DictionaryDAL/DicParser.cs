@@ -30,7 +30,8 @@ public class DicParser
         {
             Title = Form.Title,
             SubTitle = Form.SubTitle,
-            Panels = Form.Panels
+            Panels = Form.Panels,
+            Graphic = Table.Graphic
         };
 
         foreach (var item in Form.FormFields)

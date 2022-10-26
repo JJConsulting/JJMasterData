@@ -1,6 +1,9 @@
+using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
@@ -8,6 +11,7 @@ using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -17,7 +21,7 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    public ElementController(ElementService elementService,ThemeService themeService)
+    public ElementController(ElementService elementService, ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
@@ -65,7 +69,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-           
+
         var upload = new JJUploadFile
         {
             Name = "dicImport",
@@ -107,6 +111,48 @@ public class ElementController : DataDictionaryController
         ViewBag.DictionaryName = dictionaryName;
 
         return View("ClassSourceCode", "_Layout.Popup");
+    }
+
+    public IActionResult GraficoTeste(string dicName)
+    {
+        var DicDao = new DictionaryDao();
+        var formElement = DicDao.GetFormElement(dicName);
+
+        var model = formElement.Graphic;
+
+        return View(model);
+    }
+
+    public IActionResult GraficoDataSet(string dicName)
+    {
+        var DicDao = new DictionaryDao();
+        var formElement = DicDao.GetFormElement(dicName);
+
+        var model = formElement.Graphic;
+        var dao = new DataAccess();
+
+        List<object> dataSet = new List<object>();
+        DataTable dt = dao.GetDataTable(model.QueryDataSet);
+
+        foreach (var dataSetList in model.DataSet)
+        {
+
+            List<object> iDados = new List<object>();
+
+            foreach (DataColumn dc in dt.Columns)
+            {
+
+                if (dc.ColumnName.Equals("chave") || dc.ColumnName.ToLower().Equals(dataSetList.NameDataSet.ToLower()))
+                {
+                    List<object> x = new List<object>();
+                    x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+                    iDados.Add(x);
+                }
+            }
+            dataSet.Add(iDados);
+        }
+
+        return Json(dataSet);
     }
 
     public IActionResult Scripts(string dictionaryName, bool isDefault = false)
@@ -178,7 +224,7 @@ public class ElementController : DataDictionaryController
         catch (Exception ex)
         {
             var error = new { success = false, message = ex.Message };
-            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error};
+            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
     }
 
@@ -278,7 +324,7 @@ public class ElementController : DataDictionaryController
         };
 
         formView.AddToolBarAction(btnAbout);
-        
+
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
@@ -287,7 +333,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Log"),
-            UrlRedirect = Url.Action("Index", "Log", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Log", new { Area = "MasterData" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -313,7 +359,7 @@ public class ElementController : DataDictionaryController
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-        
+
         return formView;
     }
 

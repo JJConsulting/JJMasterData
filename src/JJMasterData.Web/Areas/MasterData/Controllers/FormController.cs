@@ -13,6 +13,7 @@ public class FormController : MasterDataController
     public IActionResult Render(string dictionaryName)
     {
         var form = GetFormView(dictionaryName);
+        var aaaa = form.IsExportPost();
 
         return View(form);
     }

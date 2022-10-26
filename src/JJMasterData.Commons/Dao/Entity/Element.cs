@@ -81,11 +81,15 @@ public class Element
     [DataMember(Name = "mode")]
     public SyncMode SyncMode { get; set; }
 
+    [DataMember(Name = "graphic")]
+    public Graphic Graphic { get; set; }
+
     public Element()
     {
         Fields = new ElementList();
         Indexes = new List<ElementIndex>();
         Relations = new List<ElementRelation>();
+        Graphic = new Graphic();
         SyncMode = SyncMode.Online;
         Sync = false;
     }

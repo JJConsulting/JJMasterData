@@ -124,7 +124,7 @@ public class FormElement : Element
         base.Fields.Add(field);
         _formFields.Add(new FormElementField(field));
     }
-        
+
     public FormElementPanel GetPanelById(int id)
     {
         return Panels.Find(x => x.PanelId == id);
