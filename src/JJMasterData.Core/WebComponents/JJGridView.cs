@@ -2699,8 +2699,6 @@ public class JJGridView : JJBaseView
     /// </summary>
     public bool IsExportPost()
     {
-        var actionMap = CurrentActionMap;
-        var action = GetCurrentAction(actionMap);
-        return action is ExportAction;
+        return "export".Equals(CurrentContext.Request["exptype"]) && Name.Equals(CurrentContext.Request["gridName"]);
     }
 }
