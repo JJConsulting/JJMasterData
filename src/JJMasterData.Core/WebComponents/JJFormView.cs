@@ -216,8 +216,7 @@ public class JJFormView : JJGridView
         string t = CurrentContext.Request.QueryString("t");
         string objname = CurrentContext.Request.QueryString("objname");
         var dataPainel = DataPanel;
-        var sHtml = new StringBuilder();
-
+        
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
             return new HtmlElement(dataPainel.GetHtml());
@@ -254,9 +253,8 @@ public class JJFormView : JJGridView
             if (filter != null && filter.Count > 0)
                 values = Factory.GetFields(FormElement, filter);
 
-            sHtml.AppendLine(GetHtmlDataPainel(values, null, PageState, true));
-
-            CurrentContext.Response.SendResponse(sHtml.ToString());
+            string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).GetElementHtml();
+            CurrentContext.Response.SendResponse(htmlPanel);
             return null;
         }
         else if ("jjupload".Equals(t) || "ajaxdataimp".Equals(t))
@@ -273,21 +271,20 @@ public class JJFormView : JJGridView
             dataPainel.ResponseUrlAction();
             return null;
         }
-
-        sHtml.Append(GetHtmlForm());
+        var htmlForm = GetHtmlForm();
 
         if ("ajax".Equals(t) && Name.Equals(objname))
         {
-            CurrentContext.Response.SendResponse(sHtml.ToString());
+            CurrentContext.Response.SendResponse(htmlForm.GetElementHtml());
             return null;
         }
 
-        return new HtmlElement(sHtml.ToString());
+        return htmlForm;
     }
 
-    private string GetHtmlForm()
+    private HtmlElement GetHtmlForm()
     {
-        var html = new StringBuilder();
+        HtmlElement html;
         PageState pageState = PageState;
 
         var acMap = CurrentActionMap;
@@ -295,54 +292,54 @@ public class JJFormView : JJGridView
 
         if (ac is EditAction || pageState == PageState.Update)
         {
-            html.AppendLine(GetHtmlUpdate(ref pageState));
+            html = GetHtmlUpdate(ref pageState);
         }
         else if (ac is InsertAction || pageState == PageState.Insert)
         {
-            html.AppendLine(GetHtmlInsert(ref pageState));
+            html = GetHtmlInsert(ref pageState);
         }
         else if (ac is ImportAction || pageState == PageState.Import)
         {
-            html.AppendLine(GetHtmlDataImp(ref pageState));
+            html = GetHtmlDataImp(ref pageState);
         }
         else if (ac is LogAction || pageState == PageState.Log)
         {
-            html.AppendLine(GetHtmlLog(ref pageState));
+            html = new HtmlElement(GetHtmlLog(ref pageState));
         }
         else if (ac is DeleteAction)
         {
-            html.AppendLine(GetHtmlDelete(ref pageState));
+            html = GetHtmlDelete(ref pageState);
         }
         else if (ac is DeleteSelectedRowsAction)
         {
-            html.AppendLine(GetHtmlDeleteSelectedRows(ref pageState));
+            html = GetHtmlDeleteSelectedRows(ref pageState);
         }
         else if (ac is ViewAction || pageState == PageState.View)
         {
-            html.AppendLine(GetHtmlView(ref pageState));
+            html = GetHtmlView(ref pageState);
         }
         else
         {
-            html.AppendLine(GetHtmlGrid());
+            html = GetHtmlGrid();
         }
 
-        //Render PageState
-        html.AppendLine(
-            $"<input type=\"hidden\" id=\"current_pagestate_{Name}\" name=\"current_pagestate_{Name}\" value=\"{(int)pageState}\" /> ");
-        html.AppendLine(
-            $"<input type=\"hidden\" id=\"current_formaction_{Name}\" name=\"current_formaction_{Name}\" value=\"\" /> ");
-
-        return html.ToString();
+        if (html != null)
+        {
+            html.AppendHiddenInput($"current_pagestate_{Name}", ((int)pageState).ToString());
+            html.AppendHiddenInput($"current_formaction_{Name}", "");
+        }
+        
+        return html;
     }
 
-    private string GetHtmlGrid()
+    private HtmlElement GetHtmlGrid()
     {
-        return base.RenderHtmlElement().GetElementHtml();
+        //TODO: Use GetHtmlElement
+        return base.RenderHtmlElement();
     }
 
-    private string GetHtmlUpdate(ref PageState pageState)
+    private HtmlElement GetHtmlUpdate(ref PageState pageState)
     {
-        var html = new StringBuilder();
         string formAction = "";
 
         if (CurrentContext.Request["current_painelaction_" + Name] != null)
@@ -361,24 +358,25 @@ public class JJFormView : JJGridView
                     return null;
                 }
 
-                html.AppendLine(GetHtmlGrid());
                 pageState = PageState.List;
+                return GetHtmlGrid();
             }
             else
             {
                 pageState = PageState.Update;
-                html.AppendLine(GetHtmlDataPainel(values, errors, pageState, true));
+                return GetHtmlDataPainel(values, errors, pageState, true);
             }
         }
         else if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
             CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
+            return null;
         }
         else if ("REFRESH".Equals(formAction))
         {
             var values = GetFormValues();
-            html.AppendLine(GetHtmlDataPainel(values, null, pageState, true));
+            return GetHtmlDataPainel(values, null, pageState, true);
         }
         else
         {
@@ -397,13 +395,11 @@ public class JJFormView : JJGridView
             }
 
             pageState = PageState.Update;
-            html.AppendLine(GetHtmlDataPainel(values, null, pageState, autoReloadFields));
+            return GetHtmlDataPainel(values, null, pageState, autoReloadFields);
         }
-
-        return html.ToString();
     }
 
-    private string GetHtmlInsert(ref PageState pageState)
+    private HtmlElement GetHtmlInsert(ref PageState pageState)
     {
         var action = InsertAction;
         bool isVisible =
@@ -433,6 +429,8 @@ public class JJFormView : JJGridView
 
                 if (action.ReopenForm)
                 {
+                    pageState = PageState.Insert;
+
                     var alert = new JJAlert();
                     alert.Name = $"pnl_insertmsg_{Name}";
                     alert.Messages.Add(Translate.Key("Record added successfully"));
@@ -440,72 +438,66 @@ public class JJFormView : JJGridView
                     alert.ShowIcon = true;
                     alert.Icon = IconType.CheckCircleO;
 
-                    html.Append(alert.GetHtml());
-
-                    html.AppendLine($"<div id=\"pnl_insert_{Name}\" style=\"display:none\">");
-                    html.AppendLine(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
-                    html.AppendLine("</div>");
-
-                    html.AppendLine("<script>");
-                    html.AppendLine($"jjview.showInsertSucess('{Name}');");
-                    html.AppendLine("</script>");
-
-                    pageState = PageState.Insert;
+                    var alertHtml = alert.GetHtmlElement();
+                    alertHtml.AppendElement(HtmlTag.Div, div =>
+                    {
+                        div.WithAttribute("id", $"pnl_insert_{Name}")
+                           .WithAttribute("style", "display:none")
+                           .AppendElement(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
+                    });
+                    alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
+                    return alertHtml;
                 }
                 else
                 {
-                    html.AppendLine(GetHtmlGrid());
                     pageState = PageState.List;
+                    return GetHtmlGrid();
                 }
             }
             else
             {
                 pageState = PageState.Insert;
-                html.AppendLine(GetHtmlDataPainel(values, erros, pageState, true));
+                return GetHtmlDataPainel(values, erros, pageState, true);
             }
         }
         else if (formAction.Equals("CANCEL"))
         {
-            ClearTempFiles();
-            html.AppendLine(GetHtmlGrid());
             pageState = PageState.List;
+            ClearTempFiles();
+            return GetHtmlGrid();
         }
         else if (formAction.Equals("ELEMENTSEL"))
         {
-            html.Append(GetHtmlElementInsert(ref pageState));
+            return GetHtmlElementInsert(ref pageState);
         }
         else if (formAction.Equals("ELEMENTLIST"))
         {
-            html.AppendLine(GetHtmlElementList(action));
             pageState = PageState.Insert;
+            return GetHtmlElementList(action);
         }
         else
         {
             if (pageState == PageState.Insert)
             {
-                html.AppendLine(GetHtmlDataPainel(GetFormValues(), null, pageState, true));
+                return GetHtmlDataPainel(GetFormValues(), null, pageState, true);
             }
             else
             {
+                pageState = PageState.Insert;
                 if (string.IsNullOrEmpty(action.ElementNameToSelect))
-                    html.AppendLine(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
+                    return GetHtmlDataPainel(RelationValues, null, PageState.Insert, false);
                 else
-                    html.AppendLine(GetHtmlElementList(action));
+                    return GetHtmlElementList(action);
             }
-
-            pageState = PageState.Insert;
         }
-
-        return html.ToString();
     }
 
-    private string GetHtmlElementList(InsertAction action)
+    private HtmlElement GetHtmlElementList(InsertAction action)
     {
-        var sHtml = new StringBuilder();
-        sHtml.AppendLine(
-            $"<input type=\"hidden\" id=\"current_painelaction_{Name}\" name=\"current_painelaction_{Name}\" value=\"ELEMENTLIST\" /> ");
-        sHtml.AppendLine(
-            $"<input type=\"hidden\" id=\"current_selaction_{Name}\" name=\"current_selaction_{Name}\" value=\"\" /> ");
+        var sHtml = new HtmlElement(HtmlTag.Div);
+        sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
+        sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
+
 
         var dicParser = GetDictionary(action.ElementNameToSelect);
         var formsel = new JJFormView(dicParser.GetFormElement(), DataAccess);
@@ -533,18 +525,18 @@ public class JJFormView : JJGridView
 
         formsel.OnRenderAction += FormSelectedOnRenderAction;
 
-        sHtml.AppendLine(formsel.GetHtml());
+        sHtml.AppendElement(formsel);
 
-        return sHtml.ToString();
+        return sHtml;
     }
 
-    private string GetHtmlElementInsert(ref PageState pageState)
+    private HtmlElement GetHtmlElementInsert(ref PageState pageState)
     {
         string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
-        var sHtml = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
         var selValues = Factory.GetFields(InsertAction.ElementNameToSelect, map.PKFieldValues);
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
         var values = formManager.GetTriggerValues(selValues, PageState.Insert, true);
@@ -560,42 +552,40 @@ public class JJFormView : JJGridView
                 sMsg.Append("<br>");
             }
 
-            sHtml.Append(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning).GetHtml());
-            sHtml.AppendLine(GetHtmlElementList(InsertAction));
+            html.AppendElement(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning));
+            html.AppendElement(GetHtmlElementList(InsertAction));
             pageState = PageState.Insert;
         }
         else
         {
             pageState = PageState.Update;
-            sHtml.AppendLine(GetHtmlDataPainel(values, null, pageState, false));
+            html.AppendElement(GetHtmlDataPainel(values, null, pageState, false));
         }
 
-        return sHtml.ToString();
+        return html;
     }
 
-    private string GetHtmlView(ref PageState pageState)
+    private HtmlElement GetHtmlView(ref PageState pageState)
     {
         var html = new StringBuilder();
         var acMap = CurrentActionMap;
         if (acMap == null)
         {
-            html.AppendLine(GetHtmlGrid());
             pageState = PageState.List;
+            return GetHtmlGrid();
         }
         else
         {
+            pageState = PageState.View;
             var filter = acMap.PKFieldValues;
             var values = Factory.GetFields(FormElement, filter);
-            html.AppendLine(GetHtmlDataPainel(values, null, PageState.View, false));
-            pageState = PageState.View;
+            return GetHtmlDataPainel(values, null, PageState.View, false);
         }
-
-        return html.ToString();
     }
 
-    private string GetHtmlDelete(ref PageState pageState)
+    private HtmlElement GetHtmlDelete(ref PageState pageState)
     {
-        var html = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
         try
         {
             var acMap = CurrentActionMap;
@@ -613,7 +603,7 @@ public class JJFormView : JJGridView
                     errorMessage.AppendLine("<br>");
                 }
 
-                html.AppendLine(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning).GetHtml());
+                html.AppendElement(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning));
             }
             else
             {
@@ -623,7 +613,7 @@ public class JJFormView : JJGridView
         }
         catch (Exception ex)
         {
-            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error).GetHtml());
+            html.AppendElement(new JJMessageBox(ex.Message, MessageIcon.Error));
         }
 
         if (!string.IsNullOrEmpty(UrlRedirect))
@@ -632,15 +622,15 @@ public class JJFormView : JJGridView
             return null;
         }
 
-        html.AppendLine(GetHtmlGrid());
+        html.AppendElement(GetHtmlGrid());
         pageState = PageState.List;
 
-        return html.ToString();
+        return html;
     }
 
-    private string GetHtmlDeleteSelectedRows(ref PageState pageState)
+    private HtmlElement GetHtmlDeleteSelectedRows(ref PageState pageState)
     {
-        var html = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
         var errorMessage = new StringBuilder();
         int errorCount = 0;
         int successCount = 0;
@@ -689,22 +679,22 @@ public class JJFormView : JJGridView
                     icon = MessageIcon.Warning;
                 }
 
-                html.AppendLine(new JJMessageBox(message.ToString(), icon).GetHtml());
+                html.AppendElement(new JJMessageBox(message.ToString(), icon));
 
                 ClearSelectedGridValues();
             }
         }
         catch (Exception ex)
         {
-            html.AppendLine(new JJMessageBox(ex.Message, MessageIcon.Error).GetHtml());
+            html.AppendElement(new JJMessageBox(ex.Message, MessageIcon.Error));
         }
         finally
         {
-            html.AppendLine(GetHtmlGrid());
+            html.AppendElement(GetHtmlGrid());
             pageState = PageState.List;
         }
 
-        return html.ToString();
+        return html;
     }
 
     private string GetHtmlLog(ref PageState pageState)
@@ -726,7 +716,7 @@ public class JJFormView : JJGridView
         {
             var sHtml = new StringBuilder();
             sHtml.AppendLine(LogHistory.GetDetailLog(acMap.PKFieldValues));
-            sHtml.AppendLine(GetHtmlFormLogToolbar(acMap.PKFieldValues).GetElementHtml());
+            sHtml.AppendLine(GetFormLogBottombar(acMap.PKFieldValues).GetHtml());
             pageState = PageState.Log;
             return sHtml.ToString();
         }
@@ -737,7 +727,7 @@ public class JJFormView : JJGridView
         return LogHistory.GetHtml();
     }
 
-    private string GetHtmlDataImp(ref PageState pageState)
+    private HtmlElement GetHtmlDataImp(ref PageState pageState)
     {
         var action = ImportAction;
         bool isVisible =
@@ -746,10 +736,10 @@ public class JJFormView : JJGridView
         if (!isVisible)
             throw new UnauthorizedAccessException(Translate.Key("Import action not enabled"));
 
-        var sHtml = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
 
         if (ShowTitle)
-            sHtml.AppendLine(GetTitleHtml());
+            html.AppendElement(GetTitle());
 
         pageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -761,54 +751,51 @@ public class JJFormView : JJGridView
         dataImpView.BackButton.OnClientClick = sScriptImport.ToString();
         dataImpView.ProcessOptions = action.ProcessOptions;
         dataImpView.EnableHistoryLog = LogAction.IsVisible;
-        sHtml.AppendLine(dataImpView.GetHtml());
+        html.AppendElement(dataImpView);
 
-        return sHtml.ToString();
+        return html;
     }
 
-    private string GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
+    private HtmlElement GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
     {
+        var html = new HtmlElement(HtmlTag.Div);
+        var relations = FormElement.Relations.FindAll(x => x.ViewType != RelationType.None);
+
         var painel = DataPanel;
         painel.PageState = pageState;
         painel.Erros = erros;
         painel.Values = values;
         painel.AutoReloadFormFields = autoReloadFormFields;
 
-
-        var relations = FormElement.Relations.FindAll(x => x.ViewType != RelationType.None);
-
-        var sHtml = new StringBuilder();
-
         if (ShowTitle)
-            sHtml.AppendLine(GetTitleHtml());
+            html.AppendElement(GetTitle());
 
         if (relations.Count == 0)
         {
-            sHtml.AppendLine(painel.GetHtml());
-
+            html.AppendElement(painel);
+            
             if (erros != null)
-                sHtml.AppendLine(new JJValidationSummary(erros).GetHtml());
+                html.AppendElement(new JJValidationSummary(erros));
 
-            sHtml.AppendLine(GetHtmlFormToolbar(pageState, values).GetElementHtml());
+            html.AppendElement(GetFormBottombar(pageState, values));
+            html.AppendHiddenInput($"current_painelaction_{Name}");
         }
         else
         {
-            var sPainel = new StringBuilder();
-            sPainel.AppendLine(painel.GetHtml());
-
-
+            var sPainel = painel.GetHtmlElement();
+            
             if (erros != null)
-                sPainel.AppendLine(new JJValidationSummary(erros).GetHtml());
+                sPainel.AppendElement(new JJValidationSummary(erros));
 
-            sPainel.AppendLine(GetHtmlFormToolbar(pageState, values).GetElementHtml());
+            sPainel.AppendElement(GetFormBottombar(pageState, values));
+            sPainel.AppendHiddenInput($"current_painelaction_{Name}");
 
             var collapse = new JJCollapsePanel();
             collapse.Name = "collapse_" + Name;
             collapse.Title = FormElement.Title;
             collapse.ExpandedByDefault = true;
-            collapse.HtmlContent = sPainel.ToString();
-
-            sHtml.AppendLine(collapse.GetHtml());
+            collapse.HtmlElementContent = sPainel;
+            html.AppendElement(collapse);
         }
 
 
@@ -842,7 +829,7 @@ public class JJFormView : JJGridView
                     chieldView.UISettings = dic.UIOptions.Form;
                 }
 
-                sHtml.AppendLine(chieldView.GetHtml());
+                html.AppendElement(chieldView);
             }
             else if (relation.ViewType == RelationType.List)
             {
@@ -865,15 +852,15 @@ public class JJFormView : JJGridView
                 collapse.Title = childElement.Title;
                 collapse.HtmlContent = chieldGrid.GetHtml();
 
-                sHtml.AppendLine(collapse.GetHtml());
+                html.AppendElement(collapse);
             }
         }
 
 
-        return sHtml.ToString();
+        return html;
     }
 
-    private HtmlElement GetHtmlFormLogToolbar(Hashtable values)
+    private JJToolbar GetFormLogBottombar(Hashtable values)
     {
         var backScript = new StringBuilder();
         backScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
@@ -888,15 +875,13 @@ public class JJFormView : JJGridView
         toolbar.CssClass = "pb-3 mt-3";
         toolbar.ListElement.Add(btnBack.GetHtmlElement());
         toolbar.ListElement.Add(btnHideLog.GetHtmlElement());
-
-        return toolbar.GetHtmlElement();
+        return toolbar;
     }
 
-    private HtmlElement GetHtmlFormToolbar(PageState pageState, Hashtable values)
+    private JJToolbar GetFormBottombar(PageState pageState, Hashtable values)
     {
         var toolbar = new JJToolbar();
         toolbar.CssClass = "pb-3 mt-3";
-        
         if (pageState == PageState.View)
         {
             toolbar.ListElement.Add(GetButtonBack().GetHtmlElement());
@@ -909,11 +894,7 @@ public class JJFormView : JJGridView
             toolbar.ListElement.Add(GetButtonOk().GetHtmlElement());
             toolbar.ListElement.Add(GetButtonCancel().GetHtmlElement());
         }
-
-        var html = toolbar.GetHtmlElement();
-        html.AppendHiddenInput($"current_painelaction_{Name}");
-        
-        return html;
+        return toolbar;
     }
 
     private void FormSelectedOnRenderAction(object sender, ActionEventArgs e)

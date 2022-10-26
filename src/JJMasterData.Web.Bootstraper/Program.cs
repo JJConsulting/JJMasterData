@@ -1,30 +1,23 @@
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
-namespace JJMasterData.Web.Bootstraper;
+var builder = WebApplication.CreateBuilder(args);
 
-public static class Program
-{
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews().AddViewLocalization();
+builder.Services.AddJJMasterDataWeb().WithFormEvents();
+var app = builder.Build();
 
-        builder.Services.AddControllersWithViews().AddViewLocalization();
-        builder.Services.AddJJMasterDataWeb().WithFormEvents();
-        
-        var app = builder.Build();
+if (app.Environment.IsProduction())
+    app.UseHsts();
 
-        if (app.Environment.IsProduction())
-            app.UseHsts();
+app.UseExceptionHandler("/Error");
+app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 
-        app.UseExceptionHandler("/Error");
-        app.UseStatusCodePagesWithReExecute("/Error","?statusCode={0}");
+app.UseHttpsRedirection();
+app.UseRouting();
 
-        app.UseHttpsRedirection();
-        app.UseRouting();
+app.UseJJMasterDataWeb();
 
-        app.UseJJMasterDataWeb();
+app.Run();
 
-        app.Run();
-    }
-}
+public partial class Program { }

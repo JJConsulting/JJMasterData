@@ -34,7 +34,6 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
 
-
     /// <summary>
     /// Layout form settings
     /// </summary>

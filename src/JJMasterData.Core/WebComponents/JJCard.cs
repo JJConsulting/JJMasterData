@@ -28,10 +28,20 @@ public class JJCard : JJBaseView
 
     internal override HtmlElement RenderHtmlElement()
     {
+        HtmlElement html;
         if (ShowAsWell)
-            return GetHtmlWell();
+            html = GetHtmlWell();
         else
-            return GetHtmlPanel();
+            html = GetHtmlPanel();
+
+        if (BootstrapHelper.Version > 3)
+        {
+            return new HtmlElement(HtmlTag.Div)
+                .WithCssClass("mb-3")
+                .AppendElement(html);
+        }
+            
+        return html;
     }
 
     private HtmlElement GetHtmlPanel()

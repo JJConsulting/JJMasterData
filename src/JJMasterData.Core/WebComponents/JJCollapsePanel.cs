@@ -71,7 +71,7 @@ public class JJCollapsePanel : JJBaseView
     private HtmlElement GetAccordion()
     {
         var accordion = new HtmlElement(HtmlTag.Div)
-                .WithCssClass("accordion pb-1")
+                .WithCssClass("accordion pb-1 mb-3")
                 .WithAttribute("id", $"{Name}")
                 .AppendElement(HtmlTag.Div, div =>
                 {

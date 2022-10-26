@@ -41,7 +41,7 @@ internal class JJToolbar : JJBaseView
                 continue;
 
             if (i != 0)
-                element.WithCssClassIf(BootstrapHelper.Version > 3, $" {BootstrapHelper.MarginLeft}-1");
+                element.WithAttribute("style", "margin-left: 3px;");
 
             div.AppendElement(element);
         }

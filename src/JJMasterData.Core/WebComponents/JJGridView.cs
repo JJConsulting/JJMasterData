@@ -605,7 +605,6 @@ public class JJGridView : JJBaseView
         
         html.AppendText(GetHtmlScript());
         html.AppendRange(GetHiddenInputs());
-
         html.AppendElement(table.GetHtmlElement());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
