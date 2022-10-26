@@ -6,9 +6,27 @@ namespace JJMasterData.Core.DataManager;
 
 public class DataDictionaryResult
 {
+    Hashtable? _errors;
+
+    public Hashtable Errors 
+    {
+        get
+        {
+            if (_errors == null)
+                _errors = new Hashtable();
+
+            return _errors;
+        }
+        set
+        {
+            _errors = value;
+        } 
+    }
+
+    public bool IsValid => _errors == null || _errors.Count == 0;
+
     public int Total { get; set; }
-    public Hashtable? Errors { get; set; }
-    public bool IsValid => Errors == null || Errors.Count == 0;
+
     public string? UrlRedirect { get; set; }
     
     public DataDictionaryResult()
@@ -18,7 +36,7 @@ public class DataDictionaryResult
 
     public DataDictionaryResult(Hashtable errors)
     {
-        Errors = errors;
+        _errors = errors;
     }
 }
 
