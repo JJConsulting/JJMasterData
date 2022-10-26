@@ -7,7 +7,7 @@ using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class GridConfigSorting
+public class GridSortingConfig
 {
     public string CurrentOrder { get; set; }
 
@@ -15,7 +15,7 @@ public class GridConfigSorting
 
     public string Name { get; set; }
 
-    public GridConfigSorting(JJGridView grid)
+    public GridSortingConfig(JJGridView grid)
     {
         if (grid == null)
             throw new ArgumentNullException(nameof(grid));

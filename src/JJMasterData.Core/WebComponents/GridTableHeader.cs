@@ -22,10 +22,10 @@ internal class GridTableHeader
         var html = new HtmlElement(HtmlTag.Thead);
         if (GridView.DataSource.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
-        
+
         html.AppendElement(HtmlTag.Tr, tr =>
         {
-            html.AppendElementIf(GridView.EnableMultSelect, GetMultSelectThHtmlElement());
+            html.AppendElementIf(GridView.EnableMultSelect, GetMultSelectThHtmlElement);
             html.AppendRange(GetVisibleFieldsThList());
             html.AppendRange(GetActionsThList());
         });
@@ -36,15 +36,15 @@ internal class GridTableHeader
     private IList<HtmlElement> GetActionsThList()
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
-        var actionsWithTitle  = basicActions.FindAll(x => x.IsVisible && !x.IsGroup && x.ShowTitle);
+        var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 
         var thList = new List<HtmlElement>();
-        
-        foreach (var action in actionsWithTitle )
+
+        foreach (var action in actions)
         {
             var th = new HtmlElement(HtmlTag.Th);
-            th.AppendText(action.Text);
+            th.AppendTextIf(action.ShowTitle, action.Text);
             thList.Add(th);
         }
 
@@ -55,37 +55,24 @@ internal class GridTableHeader
 
         return thList;
     }
-    
+
     private IList<HtmlElement> GetVisibleFieldsThList()
-     { 
-         var thList = new List<HtmlElement>();
+    {
+        var thList = new List<HtmlElement>();
         foreach (var field in GridView.VisibleFields)
         {
             var th = new HtmlElement(HtmlTag.Th);
-            th.WithAttribute("style", GetFieldStyle(field));
+            string style = GetFieldStyle(field);
+
+            th.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
             th.AppendElement(HtmlTag.Span, span =>
             {
                 if (GridView.EnableSorting && field.DataBehavior != FieldBehavior.Virtual)
                 {
-                    span.WithCssClass("jjenable-sorting");
-
-                    string ajax = GridView.EnableAjax ? "true" : "false";
-                    
-                    span.WithAttribute("onclick",
-                        $"jjview.doSorting('{GridView.Name}','{ajax}','{field.Name}')");
+                    SetSortAttributes(span, field);
                 }
             });
 
-            th.AppendElement(HtmlTag.Span, span =>
-            {
-                if (!string.IsNullOrEmpty(field.HelpDescription))
-                {
-                    span.WithToolTip(Translate.Key(field.HelpDescription));
-                }
-
-                span.AppendText(field.GetTranslatedLabel());
-            });
-            
             if (!string.IsNullOrEmpty(GridView.CurrentOrder))
             {
                 foreach (string orderField in GridView.CurrentOrder.Split(','))
@@ -113,15 +100,18 @@ internal class GridTableHeader
                 else if (field.Name.EndsWith("::ASC"))
                     th.AppendElement(GetAscendingIcon());
             }
-            
-            if (GridView.CurrentFilter != null &&
-                field.Filter.Type != FilterMode.None &&
-                !GridView.RelationValues.ContainsKey(field.Name) &&
-                (GridView.CurrentFilter.ContainsKey(field.Name) || GridView.CurrentFilter.ContainsKey(field.Name + "_from"))
-               )
+
+            bool isAppliedFilter = GridView.CurrentFilter != null &&
+                                   field.Filter.Type != FilterMode.None &&
+                                   !GridView.RelationValues.ContainsKey(field.Name) &&
+                                   (GridView.CurrentFilter.ContainsKey(field.Name) ||
+                                    GridView.CurrentFilter.ContainsKey(field.Name + "_from"));
+
+            if (isAppliedFilter)
             {
                 th.AppendText("&nbsp;");
-                th.AppendElement(new JJIcon("fa fa-filter").GetHtmlElement().WithToolTip(Translate.Key("Applied filter")));
+                th.AppendElement(new JJIcon("fa fa-filter").GetHtmlElement()
+                    .WithToolTip(Translate.Key("Applied filter")));
             }
 
             thList.Add(th);
@@ -129,8 +119,33 @@ internal class GridTableHeader
 
         return thList;
     }
-    private HtmlElement GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlElement().WithToolTip(Translate.Key("Descending order"));
-    private HtmlElement GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlElement().WithToolTip(Translate.Key("Ascending order"));
+
+    private void SetSortAttributes(HtmlElement span, FormElementField field)
+    {
+        span.WithCssClass("jjenable-sorting");
+
+        string ajax = GridView.EnableAjax ? "true" : "false";
+
+        span.WithAttribute("onclick",
+            $"jjview.doSorting('{GridView.Name}','{ajax}','{field.Name}')");
+
+        span.AppendElement(HtmlTag.Span, span =>
+        {
+            if (!string.IsNullOrEmpty(field.HelpDescription))
+            {
+                span.WithToolTip(Translate.Key(field.HelpDescription));
+            }
+
+            span.AppendText(field.GetTranslatedLabel());
+        });
+    }
+
+    private HtmlElement GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlElement()
+        .WithToolTip(Translate.Key("Descending order"));
+
+    private HtmlElement GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlElement()
+        .WithToolTip(Translate.Key("Ascending order"));
+
     private string GetFieldStyle(FormElementField field)
     {
         string style = string.Empty;
@@ -165,6 +180,7 @@ internal class GridTableHeader
 
         return style;
     }
+
     private HtmlElement GetMultSelectThHtmlElement()
     {
         var th = new HtmlElement(HtmlTag.Th);
@@ -186,6 +202,7 @@ internal class GridTableHeader
             {
                 input.WithAttribute("type", "checkbox")
                     .WithNameAndId("jjchk_all")
+                    .WithCssClass("form-check-input")
                     .WithToolTip(Translate.Key("Mark|Unmark all from page"))
                     .WithAttribute("onclick",
                         "('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();");

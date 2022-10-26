@@ -210,8 +210,8 @@ public class JJFormView : JJGridView
     }
 
     #endregion
-
-    protected override string RenderHtml()
+    
+    internal override HtmlElement RenderHtmlElement()
     {
         string t = CurrentContext.Request.QueryString("t");
         string objname = CurrentContext.Request.QueryString("objname");
@@ -220,15 +220,15 @@ public class JJFormView : JJGridView
 
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
-            return dataPainel.GetHtml();
+            return new HtmlElement(dataPainel.GetHtml());
 
         //FormUpload Route
         if (JJTextFile.IsFormUploadRoute(this))
-            return dataPainel.GetHtml();
+            return new HtmlElement(dataPainel.GetHtml());
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+            return new HtmlElement(JJDownloadFile.ResponseRoute(this));
 
         if ("jjsearchbox".Equals(t))
         {
@@ -282,7 +282,7 @@ public class JJFormView : JJGridView
             return null;
         }
 
-        return sHtml.ToString();
+        return new HtmlElement(sHtml.ToString());
     }
 
     private string GetHtmlForm()
@@ -337,7 +337,7 @@ public class JJFormView : JJGridView
 
     private string GetHtmlGrid()
     {
-        return base.RenderHtml();
+        return base.RenderHtmlElement().GetElementHtml();
     }
 
     private string GetHtmlUpdate(ref PageState pageState)
@@ -749,7 +749,7 @@ public class JJFormView : JJGridView
         var sHtml = new StringBuilder();
 
         if (ShowTitle)
-            sHtml.AppendLine(GetHtmlTitle());
+            sHtml.AppendLine(GetTitleHtml());
 
         pageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -780,7 +780,7 @@ public class JJFormView : JJGridView
         var sHtml = new StringBuilder();
 
         if (ShowTitle)
-            sHtml.AppendLine(GetHtmlTitle());
+            sHtml.AppendLine(GetTitleHtml());
 
         if (relations.Count == 0)
         {

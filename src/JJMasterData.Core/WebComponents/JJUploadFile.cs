@@ -284,7 +284,7 @@ public class JJUploadFile : JJBaseView
     }
     public bool IsPostAfterUploadAllFiles()
     {
-        string namefield = string.Format("uploadaction_{0}", Name);
+        string namefield = $"uploadaction_{Name}";
         string action = CurrentContext.Request[namefield];
         return "afteruploadall".Equals(action);
     }

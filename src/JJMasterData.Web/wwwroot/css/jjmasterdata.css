@@ -76,6 +76,10 @@
         float: right;
     }
 
+    .table .jjselect .dropdown-toggle{
+        margin-left: 3px;
+    }
+
 .table .jjgrid-action {
     cursor: pointer;
 }
@@ -696,4 +700,25 @@ button.dropdown-toggle.form-control {
     background-repeat: no-repeat;
     background-position: right calc(.375em + .1875rem) center;
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+}
+
+.btn-secondary {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.btn-secondary:focus {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #8c8c8c;
+}
+.btn-secondary:hover {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+.btn-secondary:active {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
 }

@@ -299,7 +299,7 @@
 
         formAction: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
-                var result = confirm(confirmMessage);
+                const result = confirm(confirmMessage);
                 if (!result) {
                     return false;
                 }

@@ -218,7 +218,7 @@ internal class DataImpHelp
         var text = new StringBuilder();
         text.Append(Translate.Key("To bulk insert records, select a file of type"));
         text.Append("<b>");
-        text.Append(upload.AllowedTypes.Replace(",", string.Format(" {0} ", Translate.Key("or"))));
+        text.Append(upload.AllowedTypes.Replace(",", $" {Translate.Key("or")} "));
         text.Append("</b>");
         text.Append(", ");
         text.Append(Translate.Key("with the maximum size of"));

@@ -149,7 +149,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             args.DataRow = row;
             args.Sender = new JJText(value);
             OnRenderCell.Invoke(this, args);
-            value = args.ResultHtml;
+            value = args.HtmlResult;
         }
 
         return value;

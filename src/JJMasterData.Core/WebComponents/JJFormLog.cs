@@ -151,7 +151,7 @@ public class JJFormLog : JJBaseView
         var sHtml = new StringBuilder();
 
         if (GridView.ShowTitle)
-            sHtml.AppendLine(GridView.GetHtmlTitle());
+            sHtml.AppendLine(GridView.GetTitleHtml());
 
         if (string.IsNullOrEmpty(logId))
         {

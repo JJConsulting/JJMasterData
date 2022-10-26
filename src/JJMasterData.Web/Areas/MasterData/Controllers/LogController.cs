@@ -93,7 +93,7 @@ public class LogController : Controller
             msg = e.Sender.GetHtml();
         }
 
-        e.ResultHtml = msg;
+        e.HtmlResult = msg;
     }
 
 }
