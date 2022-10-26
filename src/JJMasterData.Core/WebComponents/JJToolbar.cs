@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
 
-internal class JJTollbar : JJBaseView
+internal class JJToolbar : JJBaseView
 {
     public List<HtmlElement> ListElement { get; set; }
 
-    public JJTollbar()
+    public JJToolbar()
     {
         ListElement = new List<HtmlElement>();
     }

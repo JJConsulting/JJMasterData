@@ -17,7 +17,7 @@ internal class GridToolbar
 
     public HtmlElement GetHtmlElement()
     {
-        var toolbar = new JJTollbar();
+        var toolbar = new JJToolbar();
         toolbar.ListElement.AddRange(GetActionsHtmlElement());
         return toolbar.GetHtmlElement();
     }

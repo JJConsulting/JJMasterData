@@ -884,7 +884,7 @@ public class JJFormView : JJGridView
 
         var btnHideLog = GetButtonHideLog(values);
 
-        var toolbar = new JJTollbar();
+        var toolbar = new JJToolbar();
         toolbar.CssClass = "pb-3 mt-3";
         toolbar.ListElement.Add(btnBack.GetHtmlElement());
         toolbar.ListElement.Add(btnHideLog.GetHtmlElement());
@@ -894,7 +894,7 @@ public class JJFormView : JJGridView
 
     private HtmlElement GetHtmlFormToolbar(PageState pageState, Hashtable values)
     {
-        var toolbar = new JJTollbar();
+        var toolbar = new JJToolbar();
         toolbar.CssClass = "pb-3 mt-3";
         
         if (pageState == PageState.View)
