@@ -77,7 +77,7 @@ public class JJFormView : JJGridView
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
-    private DataDictionaryManager _dataDictionaryManager;
+    private FormService _dataDictionaryManager;
     private JJFormLog LogHistory =>
         _logHistory ??= new JJFormLog(FormElement)
         {
@@ -150,8 +150,8 @@ public class JJFormView : JJGridView
         }
     }
 
-    private DataDictionaryManager DataDictionaryManager =>
-        _dataDictionaryManager ??= new DataDictionaryManager(FormElement,
+    private FormService DataDictionaryManager =>
+        _dataDictionaryManager ??= new FormService(FormElement,
             LogAction.IsVisible ? LogHistory.Service : null);
 
     public InsertAction InsertAction => (InsertAction)ToolBarActions.Find(x => x is InsertAction);

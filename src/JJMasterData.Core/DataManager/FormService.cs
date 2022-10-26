@@ -16,7 +16,7 @@ using CommandType = JJMasterData.Commons.Dao.Entity.CommandType;
 
 namespace JJMasterData.Core.DataManager;
 
-public class DataDictionaryManager
+public class FormService
 {
     #region Properties
 
@@ -39,7 +39,7 @@ public class DataDictionaryManager
 
     #region Constructors
 
-    public DataDictionaryManager(string elementName, AuditLogService auditLogService = null,
+    public FormService(string elementName, AuditLogService auditLogService = null,
         bool enableFormEvents = true)
     {
         _dictionaryDao = new DictionaryDao();
@@ -50,7 +50,7 @@ public class DataDictionaryManager
             AddFormEvent(FormEventManager.GetFormEvent(FormElement.Name));
     }
 
-    public DataDictionaryManager(FormElement formElement, AuditLogService auditLogService = null,
+    public FormService(FormElement formElement, AuditLogService auditLogService = null,
         bool enableFormEvents = true)
     {
         _dictionaryDao = new DictionaryDao();
@@ -121,7 +121,7 @@ public class DataDictionaryManager
     /// <param name="sender">Object that called this method. Used for events.</param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="validationFunc">Function to validate the fields.</param>
-    public DataDictionaryResult Update(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
+    public FormLetter Update(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
     {
         var errors = new Hashtable();
 
@@ -150,7 +150,7 @@ public class DataDictionaryManager
         var afterEventArgs = new FormAfterActionEventArgs(values);
         OnAfterUpdate?.Invoke(sender, afterEventArgs);
 
-        var result = new DataDictionaryResult
+        var result = new FormLetter
         {
             Errors = errors,
             UrlRedirect = afterEventArgs.UrlRedirect
@@ -165,7 +165,7 @@ public class DataDictionaryManager
     /// <param name="sender">Object that called this method. Used for events.</param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="validationFunc">Function to validate the fields.</param>
-    public DataDictionaryResult Insert(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
+    public FormLetter Insert(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
     {
         var errors = new Hashtable();
 
@@ -192,7 +192,7 @@ public class DataDictionaryManager
         var afterEventArgs = new FormAfterActionEventArgs(values);
         OnAfterInsert?.Invoke(sender, afterEventArgs);
 
-        var result = new DataDictionaryResult
+        var result = new FormLetter
         {
             Errors = errors,
             UrlRedirect = afterEventArgs.UrlRedirect
@@ -206,7 +206,7 @@ public class DataDictionaryManager
     /// </summary>
     /// <param name="sender">Object that called this method. Used for events.</param>
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
-    public DataDictionaryResult Delete(object sender, Hashtable primaryKeys)
+    public FormLetter Delete(object sender, Hashtable primaryKeys)
     {
         var errors = new Hashtable();
 
@@ -232,7 +232,7 @@ public class DataDictionaryManager
 
         _auditLogService?.AddLog(FormElement, primaryKeys, CommandType.Delete);
 
-        var result = new DataDictionaryResult
+        var result = new FormLetter
         {
             Errors = errors,
             Total = total,

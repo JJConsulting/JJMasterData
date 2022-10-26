@@ -66,7 +66,7 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
 
-        var manager = new DataDictionaryManager(elementName);
+        var manager = new FormService(elementName);
         var result = manager.GetDataTable(filters, orderby, regporpag, pag);
 
         if (result == null || result.Total.Equals(0))
@@ -106,7 +106,7 @@ public class MasterApiService
 
         var filters = ParseFilter(dictionary, paramValues);
 
-        var dataDictionaryManager = new DataDictionaryManager(elementName);
+        var dataDictionaryManager = new FormService(elementName);
         
         var result = dataDictionaryManager.GetHashtable(filters);
 
@@ -196,7 +196,7 @@ public class MasterApiService
 
             bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
 
-            var dictionaryManager = new DataDictionaryManager(dictionary.GetFormElement(),
+            var dictionaryManager = new FormService(dictionary.GetFormElement(),
                 logActionIsVisible ? _auditLogService : null);
 
             var result = dictionaryManager.Insert(this, newvalues, () =>
@@ -239,7 +239,7 @@ public class MasterApiService
 
             bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
 
-            var dictionaryManager = new DataDictionaryManager(dictionary.GetFormElement(),
+            var dictionaryManager = new FormService(dictionary.GetFormElement(),
                 logActionIsVisible ? _auditLogService : null);
 
             var result = dictionaryManager.Update(this, newvalues, () =>
@@ -342,7 +342,7 @@ public class MasterApiService
 
             bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
 
-            var dictionaryManager = new DataDictionaryManager(dictionary.Table.Name,
+            var dictionaryManager = new FormService(dictionary.Table.Name,
                 logActionIsVisible ? _auditLogService : null);
 
             var result = dictionaryManager.Update(this, newvalues, () =>
@@ -411,7 +411,7 @@ public class MasterApiService
         
         var formElement = dictionary.GetFormElement();
 
-        var dataDictionaryManager = new DataDictionaryManager(formElement, logActionIsVisible ? _auditLogService : null);
+        var dataDictionaryManager = new FormService(formElement, logActionIsVisible ? _auditLogService : null);
 
         if (!dictionary.Api.EnableDel)
             throw new UnauthorizedAccessException();

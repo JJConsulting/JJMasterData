@@ -24,10 +24,10 @@ public class JJDataPanel : JJBaseView
     #region "Properties"
 
     private FieldManager _fieldManager;
-    private DataDictionaryManager _dataDictionaryManager;
+    private FormService _dataDictionaryManager;
     private UIForm _uiFormSettings;
 
-    private DataDictionaryManager DataDictionaryManager => _dataDictionaryManager ??= new DataDictionaryManager(FormElement);
+    private FormService DataDictionaryManager => _dataDictionaryManager ??= new FormService(FormElement);
 
     /// <summary>
     /// Useful functions for manipulating fields on the form

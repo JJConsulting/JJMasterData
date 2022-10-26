@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace JJMasterData.Core.DataManager;
 
-public class DataDictionaryResult
+public class FormLetter
 {
     Hashtable? _errors;
 
@@ -29,18 +29,18 @@ public class DataDictionaryResult
 
     public string? UrlRedirect { get; set; }
     
-    public DataDictionaryResult()
+    public FormLetter()
     {
             
     }
 
-    public DataDictionaryResult(Hashtable errors)
+    public FormLetter(Hashtable errors)
     {
         _errors = errors;
     }
 }
 
-public class DataDictionaryResult<T> : DataDictionaryResult
+public class DataDictionaryResult<T> : FormLetter
 {
     public T? Result { get; set; }
 }
