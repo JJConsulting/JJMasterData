@@ -14,6 +14,7 @@ using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.FormEvents.Handlers;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -725,7 +726,7 @@ public class JJFormView : JJGridView
         {
             var sHtml = new StringBuilder();
             sHtml.AppendLine(LogHistory.GetDetailLog(acMap.PKFieldValues));
-            sHtml.AppendLine(GetHtmlFormToolbar(acMap.PKFieldValues));
+            sHtml.AppendLine(GetHtmlFormLogToolbar(acMap.PKFieldValues).GetElementHtml());
             pageState = PageState.Log;
             return sHtml.ToString();
         }
@@ -788,7 +789,7 @@ public class JJFormView : JJGridView
             if (erros != null)
                 sHtml.AppendLine(new JJValidationSummary(erros).GetHtml());
 
-            sHtml.AppendLine(GetHtmlFormToolbarDefault(pageState, values));
+            sHtml.AppendLine(GetHtmlFormToolbar(pageState, values).GetElementHtml());
         }
         else
         {
@@ -799,7 +800,7 @@ public class JJFormView : JJGridView
             if (erros != null)
                 sPainel.AppendLine(new JJValidationSummary(erros).GetHtml());
 
-            sPainel.AppendLine(GetHtmlFormToolbarDefault(pageState, values));
+            sPainel.AppendLine(GetHtmlFormToolbar(pageState, values).GetElementHtml());
 
             var collapse = new JJCollapsePanel();
             collapse.Name = "collapse_" + Name;
@@ -872,127 +873,47 @@ public class JJFormView : JJGridView
         return sHtml.ToString();
     }
 
-    private string GetHtmlFormToolbar(Hashtable values)
+    private HtmlElement GetHtmlFormLogToolbar(Hashtable values)
     {
         var backScript = new StringBuilder();
         backScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
         backScript.AppendLine("$('form:first').submit(); ");
 
-        var html = new StringBuilder();
-        html.AppendLine("");
-        html.AppendLine("<!-- Start Toolbar -->");
-        if (BootstrapHelper.Version > 3)
-            html.AppendLine("<div class=\"container-fluid\"> ");
-        html.AppendLine($"\t<div class=\"{BootstrapHelper.FormGroup}\"> ");
-        html.AppendLine("\t\t<div class=\"row\"> ");
-        html.AppendLine("\t\t\t<div class=\"col-sm-12\"> ");
+        var btnBack = GetButtonBack();
+        btnBack.OnClientClick = backScript.ToString();
 
+        var btnHideLog = GetButtonHideLog(values);
 
-        html.Append($"\t\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-        html.AppendLine($"{backScript}\"> ");
-        html.AppendLine("\t\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
-        html.Append("\t\t\t\t\t<span>&nbsp;");
-        html.Append(Translate.Key("Back"));
-        html.AppendLine("</span>");
-        html.AppendLine("\t\t\t\t</button> ");
+        var toolbar = new JJTollbar();
+        toolbar.CssClass = "pb-3 mt-3";
+        toolbar.ListElement.Add(btnBack.GetHtmlElement());
+        toolbar.ListElement.Add(btnHideLog.GetHtmlElement());
 
-        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionOrigin.Grid);
-
-        html.Append("\t\t\t<button type=\"button\" class=\"btn btn-primary btn-small\" onclick=\"");
-        html.AppendLine($"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}\"> ");
-        html.AppendLine("\t\t\t\t<span class=\"fa fa-film\"></span> ");
-        html.Append("\t\t\t\t<span>&nbsp;");
-        html.Append(Translate.Key("Hide Log"));
-        html.AppendLine("</span>");
-        html.AppendLine("\t\t\t</button> ");
-
-
-        html.AppendLine("\t\t</div> ");
-        html.AppendLine("\t</div> ");
-        html.AppendLine("</div> ");
-        if (BootstrapHelper.Version > 3)
-            html.AppendLine("</div> ");
-        html.AppendLine("");
-        html.AppendLine("<!-- End Toolbar -->");
-
-        return html.ToString();
+        return toolbar.GetHtmlElement();
     }
 
-    private string GetHtmlFormToolbarDefault(PageState pageState, Hashtable values)
+    private HtmlElement GetHtmlFormToolbar(PageState pageState, Hashtable values)
     {
-        var html = new StringBuilder();
-        html.AppendLine("");
-        html.AppendLine("<!-- Start Toolbar -->");
-        if (BootstrapHelper.Version > 3)
-            html.AppendLine("<div class=\"container-fluid\"> ");
-        html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup}\"> ");
-        html.AppendLine("\t<div class=\"row\"> ");
-        html.AppendLine("\t\t<div class=\"col-sm-12\"> ");
-
+        var toolbar = new JJTollbar();
+        toolbar.CssClass = "pb-3 mt-3";
+        
         if (pageState == PageState.View)
         {
-            html.Append(
-                $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-            html.AppendLine($"jjview.doPainelAction('{Name}','CANCEL');\"> ");
-            html.AppendLine("\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
-            html.Append("\t\t\t\t<span>&nbsp;");
-            html.Append(Translate.Key("Back"));
-            html.AppendLine("</span>");
-            html.AppendLine("\t\t\t</button> ");
+            toolbar.ListElement.Add(GetButtonBack().GetHtmlElement());
 
             if (LogAction.IsVisible)
-            {
-                string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionOrigin.Toolbar);
-
-                html.Append(
-                    $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-                html.AppendLine($"{scriptAction}\"> ");
-                html.AppendLine("\t\t\t\t<span class=\"fa fa-film\"></span> ");
-                html.Append("\t\t\t\t<span>&nbsp;");
-                html.Append(Translate.Key("View Log"));
-                html.AppendLine("</span>");
-                html.AppendLine("\t\t\t</button> ");
-            }
+                toolbar.ListElement.Add(GetButtonViewLog(values).GetHtmlElement());
         }
         else
         {
-            string typeButton = "button";
-            string classButton = BootstrapHelper.DefaultButton;
-            if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
-            {
-                typeButton = "submit";
-                classButton = "btn-primary";
-            }
-
-            html.AppendFormat("\t\t\t<button type=\"{0}\" class=\"btn {1} btn-small\" onclick=\"", typeButton,
-                classButton);
-            html.AppendLine($"return jjview.doPainelAction('{Name}','OK');\"> ");
-            html.AppendLine("\t\t\t\t<span class=\"fa fa-check\"></span> ");
-            html.Append("\t\t\t\t<span>&nbsp;");
-            html.Append(Translate.Key("Save"));
-            html.AppendLine("</span> ");
-            html.AppendLine("\t\t\t</button> ");
-            html.Append(
-                $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-            html.AppendLine($"jjview.doPainelAction('{Name}','CANCEL');\"> ");
-            html.AppendLine("\t\t\t\t<span class=\"fa fa-times\"></span> ");
-            html.Append("\t\t\t\t<span>&nbsp;");
-            html.Append(Translate.Key("Cancel"));
-            html.Append("</span> ");
-            html.AppendLine("\t\t\t</button> ");
+            toolbar.ListElement.Add(GetButtonOk().GetHtmlElement());
+            toolbar.ListElement.Add(GetButtonCancel().GetHtmlElement());
         }
 
-        html.AppendLine("\t\t</div> ");
-        html.AppendLine("\t</div> ");
-        html.AppendLine("</div> ");
-        if (BootstrapHelper.Version > 3)
-            html.AppendLine("</div> ");
-        html.AppendLine("");
-        html.AppendLine(
-            $"<input type=\"hidden\" id=\"current_painelaction_{Name}\" name=\"current_painelaction_{Name}\" value=\"\" /> ");
-        html.AppendLine("<!-- End Toolbar -->");
-
-        return html.ToString();
+        var html = toolbar.GetHtmlElement();
+        html.AppendHiddenInput($"current_painelaction_{Name}");
+        
+        return html;
     }
 
     private void FormSelectedOnRenderAction(object sender, ActionEventArgs e)
@@ -1165,22 +1086,65 @@ public class JJFormView : JJGridView
     }
 
 
-    private JJLinkButton GetButtonBack()
+    private JJLinkButton GetButtonOk()
+    {
+        var btn = new JJLinkButton();
+        btn.Text = "Save";
+        btn.IconClass = IconHelper.GetClassName(IconType.Check);
+        btn.OnClientClick = $"return jjview.doPainelAction('{Name}','OK');";
+        if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
+        {
+            btn.Type = LinkButtonType.Submit;
+            btn.CssClass = "btn btn-primary btn-small";
+        }
+        else
+        {
+            btn.Type = LinkButtonType.Button;
+            btn.CssClass = BootstrapHelper.DefaultButton + " btn-small";
+        }
+        return btn;
+    }
+
+    private JJLinkButton GetButtonCancel()
     {
         var btn = new JJLinkButton();
         btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');";
+        btn.IconClass = IconHelper.GetClassName(IconType.Times);
+        btn.Text = "Cancel";
+        return btn;
+    }
+
+    private JJLinkButton GetButtonBack()
+    {
+        var btn = GetButtonCancel();
         btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
         btn.Text = "Back";
-        btn.OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');";
-        //html.Append(
-        //        $"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-        //html.AppendLine($"jjview.doPainelAction('{Name}','CANCEL');\"> ");
-        //html.AppendLine("\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
-        //html.Append("\t\t\t\t<span>&nbsp;");
-        //html.Append(Translate.Key("Back"));
-        //html.AppendLine("</span>");
-        //html.AppendLine("\t\t\t</button> ");
+        return btn;
+    }
+
+    private JJLinkButton GetButtonHideLog(Hashtable values)
+    {
+        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionOrigin.Grid);
+        var btn = new JJLinkButton();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "Hide Log";
+        btn.IconClass = IconHelper.GetClassName(IconType.Film);
+        btn.CssClass = "btn btn-primary btn-small";
+        btn.OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}";
+        return btn;
+    }
+
+    private JJLinkButton GetButtonViewLog(Hashtable values)
+    {
+        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionOrigin.Toolbar);
+        var btn = new JJLinkButton();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "View Log";
+        btn.IconClass = IconHelper.GetClassName(IconType.Film);
+        btn.CssClass = BootstrapHelper.DefaultButton + " btn-small";
+        btn.OnClientClick = scriptAction;
         return btn;
     }
 

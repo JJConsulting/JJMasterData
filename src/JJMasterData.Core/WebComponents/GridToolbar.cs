@@ -17,19 +17,9 @@ internal class GridToolbar
 
     public HtmlElement GetHtmlElement()
     {
-        var toolbar = new HtmlElement(HtmlTag.Div)
-            .WithCssClass(BootstrapHelper.FormGroup)
-            .AppendElement(HtmlTag.Div, div =>
-            {
-                div.WithCssClass("row");
-                div.AppendElement(HtmlTag.Div, div =>
-                {
-                    div.WithCssClass("col-sm-12");
-                    div.AppendRange(GetActionsHtmlElement());
-                });
-            });
-
-        return toolbar;
+        var toolbar = new JJTollbar();
+        toolbar.ListElement.AddRange(GetActionsHtmlElement());
+        return toolbar.GetHtmlElement();
     }
 
     private IList<HtmlElement> GetActionsHtmlElement()
@@ -41,8 +31,7 @@ internal class GridToolbar
         {
             if (action is FilterAction filterAction)
             {
-                bool isVisible =
-                    GridView.FieldManager.IsVisible(action, PageState.List, GridView.DefaultValues);
+                bool isVisible = GridView.FieldManager.IsVisible(action, PageState.List, GridView.DefaultValues);
                 if (!isVisible)
                     continue;
 
@@ -56,35 +45,18 @@ internal class GridToolbar
             var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
             if (linkButton.Visible)
             {
-                switch (action)
+                if (action is ExportAction && GridView.DataExp.IsRunning())
                 {
-                    case ExportAction:
-                    {
-                        if (GridView.DataExp.IsRunning())
-                        {
-                            linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
-                            linkButton.Spinner.Visible = true;
-                        }
-
-                        break;
-                    }
-                    case ImportAction:
-                    {
-                        if (GridView.DataImp.IsRunning())
-                            linkButton.Spinner.Visible = true;
-                        break;
-                    }
+                    linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
+                    linkButton.Spinner.Visible = true;
                 }
+                else if (action is ImportAction && GridView.DataImp.IsRunning())
+                {
+                    linkButton.Spinner.Visible = true;
+                }
+
+                htmlList.Add(linkButton.GetHtmlElement());
             }
-
-
-            if (BootstrapHelper.Version != 3)
-            {
-                linkButton.CssClass += $" {BootstrapHelper.MarginRight}-1";
-            }
-
-            htmlList.Add(linkButton.GetHtmlElement());
-            
         }
 
         return htmlList;
