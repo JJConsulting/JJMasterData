@@ -13,6 +13,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
@@ -499,43 +500,57 @@ public class JJFormUpload : JJBaseView
         return GridView.GetHtml();
     }
 
-    private string GetHtmlGalleryView()
+    private HtmlElement GetHtmlGalleryView()
     {
         var files = GetFiles();
-        var html = new StringBuilder();
 
-        if (files.Count > 0)
+        if (files.Count <= 0) return null;
+        
+        foreach (var ac in GridView.GridActions)
         {
-
-            foreach (var ac in GridView.GridActions)
-            {
-                ac.IsGroup = false;
-            }
-
-            html.Append("<div class=\"row\">");
-            foreach (var file in files)
-            {
-                html.Append("<div class=\"col-sm-3\">");
-                html.Append("<ul class=\"list-group list-group-flush\">");
-                html.Append(GetPreviewImage(file.FileName));
-                html.AppendFormat($"<li class=\"list-group-item\"><b>{Translate.Key("Name")}: </b>{{0}}</li>",
-                    file.FileName);
-                html.AppendFormat($"<li class=\"list-group-item\"><b>{Translate.Key("Size")}: </b>{{0}} Bytes</li>",
-                    file.SizeBytes);
-                html.AppendFormat($"<li class=\"list-group-item\"><b>{Translate.Key("Last Modified")}: </b>{{0}}</li>",
-                    file.LastWriteTime);
-                html.AppendFormat("<li class=\"list-group-item\"><table class=\"table-gallery\">{0}</table></li>",
-                    GridView.GetHtmlAction(ConvertToHashtable(file)));
-                html.Append("</ul>");
-                html.AppendLine("</div>");
-            }
-
-            html.Append("</div>");
+            ac.IsGroup = false;
         }
 
-        return html.ToString();
+        var div = new HtmlElement(HtmlTag.Div).WithCssClass("row");
+        foreach (var file in files)
+        {
+            div.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass("col-sm-3");
+                div.AppendElement(HtmlTag.Ul, ul =>
+                {
+                    ul.WithCssClass("list-group list-group-flush");
+                    ul.AppendText(GetPreviewImage(file.FileName));
+                    ul.AppendElement(GetGalleryListItem(Translate.Key("Name"),file.FileName));
+                    ul.AppendElement(GetGalleryListItem(Translate.Key("Size"),file.SizeBytes + " Bytes"));
+                    ul.AppendElement(GetGalleryListItem(Translate.Key("Last Modified"), file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
+                    ul.AppendElement(HtmlTag.Li, li =>
+                    {
+                        li.WithCssClass("list-group-item");
+                        li.AppendElement(HtmlTag.Table, table =>
+                        {
+                            table.WithCssClass("table-gallery");
+                            table.AppendRange(GridView.Table.Body.GetActionsHtmlList(ConvertToHashtable(file)).ToList());
+                        });
+                    });
+                });
+            });
+
+        }
+
+        return div;
     }
-    
+
+    private HtmlElement GetGalleryListItem(String label, String value = null)
+    {
+        return new HtmlElement(HtmlTag.Li).WithCssClass("list-group-item")
+            .AppendElement(HtmlTag.B, b =>
+            {
+                b.AppendText(label);
+            })
+            .AppendText($"{{0}} {value}");
+    }
+
 
     private string GetPreviewImage(string fileName)
     {
