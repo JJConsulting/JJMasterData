@@ -1,0 +1,32 @@
+﻿@model JJMasterData.Commons.Dao.Entity.Graphic
+
+<style>
+
+    .chart-container {
+        height: 80vh;
+        width: 40vw;
+    }
+</style>
+
+<div class="container">
+
+    <div class="row">
+        <div class="chart-container">
+            <div class=""><h1> @Model.Name</h1> </div>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    $(document).ready(function() {
+
+    @Html.Raw(Model.CreateScriptAjax(Url.Action("GraficoDataSet","Element",new {dicName = Model.DicName})))
+
+    });
+
+</script>

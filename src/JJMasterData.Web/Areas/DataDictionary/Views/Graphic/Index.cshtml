@@ -1,0 +1,121 @@
+﻿@using JJMasterData.Commons.Dao.Entity
+@model JJMasterData.Commons.Dao.Entity.Graphic
+
+@using (Html.BeginForm())
+{
+    <br />
+    <div class="row">
+        @Html.HiddenFor(m=>m.DicName)
+        <div class="col-sm-3">
+            @Html.Label("Nome")
+            <input asp-for="Name" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-sm-3">
+            @Html.Label("Tipo")
+            <select asp-for="Type" class="form-control form-select" asp-items="@Html.GetEnumSelectList<TypeChart>()"></select>
+        </div>
+    </div>
+    // Criar List de Data Set
+
+    <div id="divManualValues" class="col-sm-12 mt-3 ">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th> @Html.Label("Nome DataSet")</th>           @*<th style="width:120px;">@Translate.Key("Name")</th>*@
+                    <th> @Html.Label("Cor de Fundo")</th>@*<th>@Translate.Key("Description")</th>*@
+                    <th> @Html.Label("Cor da Bordar")</th> @*<th>@Translate.Key("IconId")</th>*@
+                    <th style="width:60px;">@Translate.Key("Remove")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.DataSet.Count; i++)
+                {
+
+                    <tr>
+                        <td>
+                            <input asp-for="DataSet[i].NameDataSet" class="form-control">
+                        </td>
+                        <td>
+                            <input type="color" asp-for="DataSet[i].ColorBackground" class="form-control">
+                        </td>
+                        <td>
+                            <input type="color" asp-for="DataSet[i].ColorBorder" class="form-control">
+                        </td>
+                        <td align="center" valign="middle">
+                            @{
+                                var nameDataSet = Model.DataSet[i].NameDataSet;
+                            }
+                            <button type="submit" class="btn" title="@Translate.Key("Remove")" formaction=@Url.Action("RemoveDataSet",new { acao = "Delete", dicName=Model.DicName, nameDataSet}) formmethod="post">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">
+                        <div class="btn-group dropup">
+                            <button type="submit" class="@BootstrapHelper.DefaultButton btn-small" formaction=@Url.Action("AddDataSet",new { acao = "Create", dicName=Model.DicName}) formmethod="post">
+                                <span class="fa fa-plus-circle"></span>
+                                <span>&nbsp;@Translate.Key("Add")</span>
+                            </button>
+                        </div>
+
+                        <button class="@BootstrapHelper.DefaultButton btn-small" formaction=@Url.Action("RemoveDataSet",new { acao = "DeleteAll", dicName=Model.DicName}) formmethod="post">
+                            <span class="fa fa-trash"></span>
+                            <span>&nbsp;@Translate.Key("Remove All")</span>
+                        </button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre o DataSet">@Translate.Key("SQL Command")</label>
+            <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@Translate.Key("(Type Ctrl+Space to AutoComplete)")</span>
+            <div class="@BootstrapHelper.Well" style="margin-bottom:0px">
+
+                @if (!BootstrapHelper.Version.Equals(3))
+                {
+                    <div class="card-body">
+                        <textarea asp-for="QueryDataSet" rows="8" class="form-control"></textarea>
+                         <span asp-validation-for="QueryDataSet" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <textarea asp-for="QueryDataSet" rows="8" class="form-control"></textarea>
+                     <span asp-validation-for="QueryDataSet" class="text-danger"></span>
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;Salvar</span>
+            </button>
+
+            <button type="button" class=" btn btn-light border border-secondary btn-small" onclick="window.parent.popup.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;Cancelar</span>
+            </button>
+        </div>
+    </div>
+
+
+}
+
+<script>
+
+
+</script>
