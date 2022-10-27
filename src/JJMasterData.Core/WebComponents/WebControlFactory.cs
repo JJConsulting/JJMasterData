@@ -55,12 +55,6 @@ internal class WebControlFactory
         if (f == null)
             throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
 
-
-        if (ExpressionOptions.PageState == PageState.Filter & f.Filter.Type == FilterMode.Range)
-        {
-            //return TODO: Barrinho JJTextRange.GetInstance();
-        }
-
         bool viewOnly = f.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
         JJBaseControl baseView;
         switch (f.Component)

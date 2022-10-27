@@ -23,7 +23,7 @@ internal class DataPanelControl
 
     public Hashtable Erros { get; private set; }
 
-    public Hashtable Values { get; private set; }
+    public Hashtable Values { get; set; }
 
     public string FieldNamePrefix { get; set; }
 
@@ -38,6 +38,18 @@ internal class DataPanelControl
         Erros = dataPanel.Erros;
         Values = dataPanel.Values;
         Name = dataPanel.Name;
+    }
+    
+    public DataPanelControl(JJGridView gridView)
+    {
+        UISettings = new UIForm
+        {
+            IsVerticalLayout = false
+        };
+        FieldManager = gridView.FieldManager;
+        PageState = PageState.Filter;
+        Erros = new Hashtable();
+        Name = gridView.Name;
     }
 
     public HtmlElement GetHtmlForm(List<FormElementField> fields)
@@ -172,12 +184,12 @@ internal class DataPanelControl
         HtmlElement row = null;
         foreach (var f in fields)
         {
-            //visible expression
+            //Visible expression
             bool visible = FieldManager.IsVisible(f, PageState, Values);
             if (!visible)
                 continue;
 
-            //value
+            //Value
             object value = null;
             if (Values != null && Values.Contains(f.Name))
                 value = FieldManager.FormatVal(Values[f.Name], f);
@@ -200,12 +212,7 @@ internal class DataPanelControl
             }
 
             string colClass = fieldClass;
-            if (IsRange(f))
-            {
-                colCount = 1;
-                colClass = string.Empty;
-            }
-            else if (f.Component == FormComponent.TextArea)
+            if (f.Component == FormComponent.TextArea)
             {
                 colCount = 1;
                 colClass = fullClass;
@@ -220,17 +227,26 @@ internal class DataPanelControl
             {
                 colCount++;
             }
-
+            
             row.WithCssClass(fldClass)
-             .AppendElement(label)
-             .AppendElement(HtmlTag.Div, col =>
-             {
-                 col.WithCssClass(colClass);
-                 if (IsViewModeAsStatic)
-                     col.AppendElement(GetStaticField(f));
-                 else
-                     col.AppendElement(GetControlField(f, value));
-             });
+             .AppendElement(label);
+
+            if (IsRange(f))
+            {
+                row.AppendElement(GetControlField(f, value));
+            }
+            else
+            {
+                row.AppendElement(HtmlTag.Div, col =>
+                {
+                    col.WithCssClass(colClass);
+                    if (IsViewModeAsStatic)
+                        col.AppendElement(GetStaticField(f));
+                    else
+                        col.AppendElement(GetControlField(f, value));
+                });
+            }
+
         }
 
         return html;

@@ -142,7 +142,7 @@ internal class GridPagination
         });
 
         div.AppendElementIf(GridView.EnableMultSelect, HtmlTag.Br);
-        div.AppendElementIf(GridView.EnableMultSelect, GetEnableMultSelectTotalRecords());
+        div.AppendElementIf(GridView.EnableMultSelect, GetEnableMultSelectTotalRecords);
         
         return div;
     }

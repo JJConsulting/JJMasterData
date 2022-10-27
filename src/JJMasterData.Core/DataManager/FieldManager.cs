@@ -237,10 +237,16 @@ public class FieldManager
         return sVal;
     }
 
-    public JJBaseControl GetField(FormElementField f, PageState pagestate, Hashtable formValues, object value = null)
+    public JJBaseControl GetField(FormElementField f, PageState pageState, Hashtable formValues, object value = null)
     {
-        var expOptions = new ExpressionOptions(UserValues, formValues, pagestate, DataAccess);
+        if (pageState == PageState.Filter & f.Filter.Type == FilterMode.Range)
+        {
+            return JJTextRange.GetInstance(f, formValues);
+        }
+        
+        var expOptions = new ExpressionOptions(UserValues, formValues, pageState, DataAccess);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
+
         return controlFactory.CreateControl(f, value);
     }
 
@@ -340,4 +346,8 @@ public class FieldManager
         return formManager.GetTriggerValues(newvalues, state, !IsPostBack);
     }
 
+    public bool IsRange(FormElementField f, PageState pageState)
+    {
+        return pageState == PageState.Filter & f.Filter.Type == FilterMode.Range;
+    }
 }

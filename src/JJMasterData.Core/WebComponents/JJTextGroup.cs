@@ -101,7 +101,7 @@ public class JJTextGroup : JJTextBox
         var html = new HtmlElement(HtmlTag.Span)
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
-             .AppendElementIf(Addons.Icon != null, Addons.Icon?.RenderHtmlElement())
+             .AppendElementIf(Addons.Icon != null,()=> Addons.Icon.RenderHtmlElement())
              .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

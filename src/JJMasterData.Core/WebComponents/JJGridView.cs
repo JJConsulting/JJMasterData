@@ -586,7 +586,7 @@ public class JJGridView : JJBaseView
             return GetLookupHtml(lookupRoute);
 
         html.AppendElementIf(ShowTitle, GetTitle().GetHtmlElement);
-        html.AppendElementIf(FilterAction.IsVisible, new HtmlElement(GetFilterHtml()));
+        html.AppendElementIf(FilterAction.IsVisible,()=> new HtmlElement(GetFilterHtml()));
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlElement);
 
         html.AppendElement(GetTableHtmlElement());

@@ -217,7 +217,7 @@ internal class GridTableHeader
                 a.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
                 a.WithCssClass("dropdown-toggle");
                 a.AppendElementIf(BootstrapHelper.Version == 3,
-                    new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlElement());
+                    new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlElement);
             });
 
             span.AppendElement(HtmlTag.Ul, ul =>

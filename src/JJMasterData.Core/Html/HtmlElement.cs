@@ -58,6 +58,8 @@ public partial class HtmlElement
         if (_hasRawText || Tag == null)
         {
             html.Append(_rawText);
+            html.Append(GetElementContent(tabCount));
+            
             return html.ToString();
         }
 

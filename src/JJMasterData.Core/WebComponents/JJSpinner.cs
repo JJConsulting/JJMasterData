@@ -21,7 +21,7 @@ public class JJSpinner : JJBaseView
             .WithCssClass(CssClass)
             .WithAttributes(Attributes)
             .WithAttribute("role", "status")
-            .AppendElementIf(BootstrapHelper.Version == 3, new JJIcon(IconType.Circle).RenderHtmlElement())
+            .AppendElementIf(BootstrapHelper.Version == 3,()=> new JJIcon(IconType.Circle).RenderHtmlElement())
             .AppendElementIf(BootstrapHelper.Version != 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("visually-hidden");

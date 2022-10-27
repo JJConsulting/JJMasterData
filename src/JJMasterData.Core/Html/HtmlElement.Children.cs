@@ -43,15 +43,15 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Conditional insert a HTML element as a child of caller element.
+        /// Conditional insert a HTML element as a child of caller element. 
         /// </summary>
-        public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
-        {
-            if (condition)
-                AppendElement(htmlElement);
-
-            return this;
-        }
+        // public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
+        // {
+        //     if (condition)
+        //         AppendElement(htmlElement);
+        //
+        //     return this;
+        // }
         
         /// <summary>
         /// Conditional insert a HTML element from a return of a function. Use this to improve performance.

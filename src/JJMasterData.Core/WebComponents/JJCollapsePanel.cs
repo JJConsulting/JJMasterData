@@ -168,8 +168,8 @@ public class JJCollapsePanel : JJBaseView
         }
 
         panelBody.AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent);
-        panelBody.AppendElementIf(HtmlElementContent != null, HtmlElementContent);
-        panelBody.AppendElementIf(Buttons.Count > 0, GetButtons());
+        panelBody.AppendElementIf(HtmlElementContent != null,()=> HtmlElementContent);
+        panelBody.AppendElementIf(Buttons.Count > 0,GetButtons);
         panelBody.WithCssClass(CssClass);
         panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
 

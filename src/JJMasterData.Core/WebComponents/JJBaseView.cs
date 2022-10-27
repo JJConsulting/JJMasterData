@@ -10,8 +10,8 @@ using System.Collections;
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Classe de apoio aos objetos que renderizam em html.
-/// Todos os controles herdam dessa classe.
+/// Base class of every component that renders to HTML.
+/// Every public component inherits from this class.
 /// </summary>
 public abstract class JJBaseView
 {
@@ -151,9 +151,7 @@ public abstract class JJBaseView
 
     public HtmlElement GetHtmlElement()
     {
-        if (Visible)
-            return RenderHtmlElement();
-        return null;
+        return Visible ? RenderHtmlElement() : null;
     }
 
     /// <summary>

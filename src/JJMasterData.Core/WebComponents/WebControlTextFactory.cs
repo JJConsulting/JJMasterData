@@ -25,8 +25,7 @@ namespace JJMasterData.Core.WebComponents
         {
             if (f == null)
                 throw new ArgumentNullException(nameof(FormElementField));
-
-
+            
             var textGroup = new JJTextGroup();
             textGroup.SetAttr(f.Attributes);
             textGroup.MaxLength = f.Size;

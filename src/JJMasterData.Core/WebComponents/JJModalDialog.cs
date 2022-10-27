@@ -68,13 +68,13 @@ public class JJModalDialog : JJBaseView
         var btn = JJAlert.GetCloseButton("modal");
         var header = new HtmlElement(HtmlTag.Div)
             .WithCssClass("modal-header")
-            .AppendElementIf(BootstrapHelper.Version == 3, btn)
+            .AppendElementIf(BootstrapHelper.Version == 3, ()=>btn)
             .AppendElement(HtmlTag.H4, h4 =>
             {
                 h4.WithCssClass("modal-title")
                   .AppendText(Translate.Key(Title));
             })
-            .AppendElementIf(BootstrapHelper.Version > 3, btn);
+            .AppendElementIf(BootstrapHelper.Version > 3,()=> btn);
 
         return header;
     }
