@@ -37,7 +37,6 @@ public class OptionsController : DataDictionaryController
         ViewBag.MenuId = "Options";
 
         return View(uIOptions);
-
     }
 
     private UIOptions Populate(string dictionaryName)
