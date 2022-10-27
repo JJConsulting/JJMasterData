@@ -290,7 +290,7 @@ public class JJFormView : JJGridView
         }
         else if (ac is LogAction || pageState == PageState.Log)
         {
-            html = new HtmlElement(GetHtmlLog(ref pageState));
+            html = GetHtmlLog(ref pageState);
         }
         else if (ac is DeleteAction)
         {
@@ -553,7 +553,6 @@ public class JJFormView : JJGridView
 
     private HtmlElement GetHtmlView(ref PageState pageState)
     {
-        var html = new StringBuilder();
         var acMap = CurrentActionMap;
         if (acMap == null)
         {
@@ -683,10 +682,9 @@ public class JJFormView : JJGridView
         return html;
     }
 
-    private string GetHtmlLog(ref PageState pageState)
+    private HtmlElement GetHtmlLog(ref PageState pageState)
     {
         var acMap = _currentActionMap;
-
         var sScript = new StringBuilder();
         sScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
         sScript.AppendLine("$('form:first').submit(); ");
@@ -700,17 +698,16 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var sHtml = new StringBuilder();
-            sHtml.AppendLine(LogHistory.GetDetailLog(acMap.PKFieldValues));
-            sHtml.AppendLine(GetFormLogBottombar(acMap.PKFieldValues).GetHtml());
+            var html = LogHistory.GetDetailLog(acMap.PKFieldValues);
+            html.AppendElement(GetFormLogBottombar(acMap.PKFieldValues));
             pageState = PageState.Log;
-            return sHtml.ToString();
+            return html;
         }
 
         LogHistory.GridView.AddToolBarAction(goBackAction);
         LogHistory.DataPainel = DataPanel;
         pageState = PageState.Log;
-        return LogHistory.GetHtml();
+        return LogHistory.GetHtmlElement();
     }
 
     private HtmlElement GetHtmlDataImp(ref PageState pageState)
@@ -1070,7 +1067,7 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonViewLog(Hashtable values)
     {
-        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionOrigin.Toolbar);
+        string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionOrigin.Toolbar);
         var btn = new JJLinkButton();
         btn.Type = LinkButtonType.Button;
         btn.Text = "View Log";

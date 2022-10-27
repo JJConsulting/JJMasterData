@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Data;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.AuditLog;
+using JJMasterData.Core.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Data;
+using System.Linq;
 using CommandType = JJMasterData.Commons.Dao.Entity.CommandType;
 
 namespace JJMasterData.Core.WebComponents;
@@ -57,7 +57,6 @@ public class JJFormLog : JJBaseView
 
     public FormElement FormElement { get; set; }
 
-
     private JJFormLog()
     {
         Name = "loghistory";
@@ -82,35 +81,33 @@ public class JJFormLog : JJBaseView
         FormElement = formElement;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlElement RenderHtmlElement()
     {
+        Service.CreateTableIfNotExist();
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("viewid_" + Name);
-        var sHtml = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(viewId))
         {
-            sHtml.AppendLine(GridView.GetHtml());
+            html.AppendElement(GridView);
         }
         else
         {
             if ("ajax".Equals(ajax))
             {
-                sHtml.AppendLine(GetDetailPanel(viewId));
-                CurrentContext.Response.SendResponse(sHtml.ToString());
+                var panel = GetDetailPanel(viewId);
+                CurrentContext.Response.SendResponse(panel.GetHtml());
                 return null;
             }
 
-            sHtml.AppendLine(GetDetailLog(viewId));
-            sHtml.AppendLine(GetHtmlFormToolbarDefault());
+            html.AppendElement(GetDetailLog(viewId));
+            html.AppendElement(GetFormBottombar());
         }
 
-        sHtml.Append("\t<input type=\"hidden\" ");
-        sHtml.Append($"id=\"viewid_{Name}\" ");
-        sHtml.Append($"name=\"viewid_{Name}\" ");
-        sHtml.AppendLine($"value=\"{viewId}\"/>");
+        html.AppendHiddenInput($"viewid_{Name}", viewId);
 
-        return sHtml.ToString();
+        return html;
     }
 
     private string GetKeyLog(Hashtable values)
@@ -131,27 +128,20 @@ public class JJFormLog : JJBaseView
         return viewId;
     }
 
-    public string GetDetailLog(Hashtable values)
+    public HtmlElement GetDetailLog(Hashtable values)
     {
-        var sHtml = new StringBuilder();
-        string viewId = (GetKeyLog(values));
-
-        sHtml.Append("\t<input type=\"hidden\" ");
-        sHtml.Append($"id=\"viewid_{Name}\" ");
-        sHtml.Append($"name=\"viewid_{Name}\" ");
-        sHtml.AppendLine($"value=\"{viewId}\"/>");
-        sHtml.AppendLine(GetDetailLog(viewId));
-
-        return sHtml.ToString();
+        string viewId = GetKeyLog(values);
+        var html = GetDetailLog(viewId);
+        html.AppendHiddenInput($"viewid_{Name}", viewId);
+        return html;
     }
 
-    private string GetDetailLog(string logId)
+    private HtmlElement GetDetailLog(string logId)
     {
-
-        var sHtml = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Div);
 
         if (GridView.ShowTitle)
-            sHtml.AppendLine(GridView.GetTitleHtml());
+            html.AppendElement(GridView.GetTitle());
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -161,7 +151,7 @@ public class JJFormLog : JJBaseView
             alert.Color = PanelColor.Warning;
             alert.Messages.Add(Translate.Key("No Records Found"));
 
-            return alert.GetHtml();
+            return alert.GetHtmlElement();
         }
 
         var filter = new Hashtable();
@@ -170,41 +160,68 @@ public class JJFormLog : JJBaseView
         var values = Factory.GetFields(Service.GetElement(), filter);
         string json = values[AuditLogService.DIC_JSON].ToString();
         string recordsKey = values[AuditLogService.DIC_KEY].ToString();
-
         Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
-
 
         var panel = DataPainel;
         panel.PageState = PageState.View;
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
 
+        var row = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("row");
 
-        sHtml.AppendLine("<div class=\"col-sm-3\">");
-        sHtml.AppendLine("<div class=\"jjrelative\">");
-        sHtml.AppendLine("<div id=\"listField\"");
-        sHtml.AppendLine($"<p><b>{Translate.Key("Change History")}:</b></p>");
-        sHtml.AppendLine("<div class=\"list-group sortable_grid\" id=\"sortable_grid\">");
-        sHtml.AppendLine(GetHtmlGridInfo(recordsKey, logId));
-        sHtml.AppendLine("</div>");
-        sHtml.AppendLine("</div>");
-        sHtml.AppendLine("</div>");
-        sHtml.AppendLine("</div>");
+        row.AppendElement(HtmlTag.Div, d =>
+        {
+            d.WithCssClass("col-sm-3");
+            d.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass("jjrelative");
+                div.AppendElement(HtmlTag.Div, divFields =>
+                {
+                    divFields.WithCssClass("listField")
+                      .AppendElement(HtmlTag.P, p =>
+                      {
+                          p.AppendElement(HtmlTag.B, b =>
+                          {
+                              b.AppendText($"{Translate.Key("Change History")}:");
+                          });
+                      });
+                    divFields.AppendElement(HtmlTag.Div, group =>
+                    {
+                        group.WithAttribute("id", "sortable_grid");
+                        group.WithCssClass("list-group sortable_grid");
+                        group.AppendElement(GetHtmlGridInfo(recordsKey, logId));
+                    });
+                });
+            });
+        });
 
+        row.AppendElement(HtmlTag.Div, d =>
+        {
+            d.WithCssClass("col-sm-9");
+            d.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass("jjrelative");
+                div.AppendElement(HtmlTag.Div, divDetail =>
+                {
+                    divDetail.WithCssClass("fieldDetail")
+                      .AppendElement(HtmlTag.P, p =>
+                      {
+                          p.AppendElement(HtmlTag.B, b =>
+                          {
+                              b.AppendText($"{Translate.Key("Snapshot Record")}:");
+                          });
+                      });
+                    divDetail.AppendElement(panel);
+                });
+            });
+        });
 
-        sHtml.AppendLine("<div class=\"col-sm-9\">");
-        sHtml.AppendLine("<div class=\"jjrelative\">");
-        sHtml.AppendLine("<div id=\"fieldDetail\"");
-        sHtml.AppendLine($"<p><b>{Translate.Key("Snapshot Record")}:</b></p>");
-        sHtml.AppendLine(panel.GetHtmlPanel().GetElementHtml());
-        sHtml.AppendLine("</div>");
-        sHtml.AppendLine("</div>");
-        sHtml.AppendLine("</div>");
-
-
-        return sHtml.ToString();
+        html.AppendElement(row);
+        return html;
     }
-    public string GetDetailPanel(string logId)
+
+    public JJDataPanel GetDetailPanel(string logId)
     {
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_ID, logId);
@@ -214,16 +231,12 @@ public class JJFormLog : JJBaseView
 
         Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
 
-        var sHtml = new StringBuilder();
-
         var panel = DataPainel;
         panel.PageState = PageState.View;
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
 
-        sHtml.AppendLine(panel.GetHtmlPanel().GetElementHtml());
-
-        return sHtml.ToString();
+        return panel;
     }
 
     private JJGridView CreateGridViewLog()
@@ -254,42 +267,27 @@ public class JJFormLog : JJBaseView
         btnViewLog.ToolTip = "View";
         btnViewLog.Name = nameof(btnViewLog);
         btnViewLog.OnClientClick = $"jjview.viewLog('{Name}','{{{AuditLogService.DIC_ID}}}');";
-        //btnViewLog.EnableExpression = "exp:{" + AuditLogService.DIC_ACTION + "} <> '" + (int)TCommand.DELETE + "'";
 
         grid.GridActions.Add(btnViewLog);
 
         return grid;
     }
 
-    private string GetHtmlFormToolbarDefault()
+    private JJToolbar GetFormBottombar()
     {
-        StringBuilder html = new();
-        html.AppendLine("");
-        html.AppendLine("<!-- Start Toolbar -->");
-        html.AppendLine($"<div class=\"{BootstrapHelper.FormGroup}\"> ");
-        html.AppendLine("\t<div class=\"row\"> ");
-        html.AppendLine("\t\t<div class=\"col-sm-12\"> ");
+        var btn = new JJLinkButton();
+        btn.Type = LinkButtonType.Button;
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"jjview.viewLog('{Name}','');";
+        btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
+        btn.Text = "Back";
 
-
-        html.Append($"\t\t\t<button type=\"button\" class=\"{BootstrapHelper.DefaultButton} btn-small\" onclick=\"");
-        html.AppendLine($"jjview.viewLog('{Name}','');\"> ");
-        html.AppendLine("\t\t\t\t<span class=\"fa fa-arrow-left\"></span> ");
-        html.Append("\t\t\t\t<span>&nbsp;");
-        html.Append(Translate.Key("Back"));
-        html.AppendLine("</span>");
-        html.AppendLine("\t\t\t</button> ");
-
-
-        html.AppendLine("\t\t</div> ");
-        html.AppendLine("\t</div> ");
-        html.AppendLine("</div> ");
-        html.AppendLine("");
-        html.AppendLine("<!-- End Toolbar -->");
-
-        return html.ToString();
+        var toolbar = new JJToolbar();
+        toolbar.ListElement.Add(btn.GetHtmlElement());
+        return toolbar;
     }
 
-    private string GetHtmlGridInfo(string recordsKey, string viewId)
+    private HtmlElement GetHtmlGridInfo(string recordsKey, string viewId)
     {
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_KEY, recordsKey);
@@ -300,9 +298,7 @@ public class JJFormLog : JJBaseView
 
         DataTable dt = Factory.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
 
-        var sHtml = new StringBuilder();
-
-
+        var html = new HtmlElement(HtmlTag.Div);
         foreach (DataRow row in dt.Rows)
         {
             string icon = "";
@@ -338,24 +334,52 @@ public class JJFormLog : JJBaseView
                 origem = AuditLogSource.Upload.ToString();
 
             string logId = row["id"].ToString();
+            string message = Translate.Key("{0} from {1} by user:{2}", action, origem, row["userId"].ToString());
 
-            string p = Translate.Key("{0} from {1} by user:{2}", action, origem, row["userId"].ToString());
+            html.AppendElement(HtmlTag.A, a =>
+            {
+                a.WithAttribute("href", $"javascript:jjview.loadFrameLog('{Name}','{logId}')");
+                a.WithNameAndId(logId);
+                a.WithCssClass("list-group-item ui-sortable-handle");
+                a.WithCssClassIf(logId.Equals(viewId), "active");
 
-            sHtml.AppendFormat("<a href=\"javascript:jjview.loadFrameLog('{1}','{2}')\" class=\"list-group-item {0} ui-sortable-handle\" id=\"{2}\">", logId.Equals(viewId) ? "active" : "", Name, logId);
-            sHtml.AppendLine("<div style=\"height: 50px;\">");
-            sHtml.AppendLine($"<span class=\"{icon}\" style=\"color:{color};\" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"\" data-original-title=\"{action}\"></span>");
-            sHtml.AppendLine($"<b>{p}<b><b>");
-            sHtml.AppendLine($"<span style=\"float:right\">{Translate.Key("Browser info.")}");
-            sHtml.AppendLine($"<span class=\"fa fa-info-circle help-description\" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"\" data-original-title=\"{row["browser"]}\"></span>");
-            sHtml.AppendLine("</span></b></br>");
-            sHtml.AppendLine($"<b>{row["modified"]}</b>");
-            sHtml.AppendLine("</br>");
-            sHtml.AppendLine($"<b>IP: {row["ip"]}</b>");
-            sHtml.AppendLine("</div>");
-            sHtml.AppendLine("</a>");
+                a.AppendElement(HtmlTag.Div, div =>
+                {
+                    div.WithAttribute("style", "height: 60px;");
+                    div.AppendElement(HtmlTag.Span, span =>
+                    {
+                        span.WithCssClass(icon);
+                        span.WithAttribute("style", $"color:{color};");
+                        span.WithToolTip(action);
+                    });
+                    div.AppendElement(HtmlTag.B, b =>
+                    {
+                        b.AppendText(message);
+                    });
+                    div.AppendElement(HtmlTag.Span, span =>
+                    {
+                        span.WithAttribute("style", "float:right");
+                        span.AppendText(Translate.Key("Browser info."));
+                        span.WithToolTip(row["browser"].ToString());
 
+                        var icon = new JJIcon(IconType.InfoCircle);
+                        icon.CssClass = "help-description";
+                        span.AppendElement(icon);
+                    });
+                    div.AppendElement(HtmlTag.Br);
+                    div.AppendElement(HtmlTag.B, b =>
+                    {
+                        b.AppendText(row["modified"].ToString());
+                    });
+                    div.AppendElement(HtmlTag.Br);
+                    div.AppendElement(HtmlTag.B, b =>
+                    {
+                        b.AppendText("IP: " + row["ip"].ToString());
+                    });
+                });
+            });
         }
 
-        return sHtml.ToString();
+        return html;
     }
 }

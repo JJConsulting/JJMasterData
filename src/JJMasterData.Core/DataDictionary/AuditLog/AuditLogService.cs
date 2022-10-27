@@ -74,16 +74,20 @@ public class AuditLogService
         };
 
         var logElement = GetElement();
+        CreateTableIfNotExist();
+        Factory.Insert(logElement, values);
+    }
 
+    public void CreateTableIfNotExist()
+    {
         if (!_hasAuditLogTable)
         {
+            var logElement = GetElement();
             if (!DataAccess.TableExists(logElement.TableName))
                 Factory.CreateDataModel(logElement);
 
             _hasAuditLogTable = true;
         }
-
-        Factory.Insert(logElement, values);
     }
 
     private string GetJsonFields(Hashtable formValues)
