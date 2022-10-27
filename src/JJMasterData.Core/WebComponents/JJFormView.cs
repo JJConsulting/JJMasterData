@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
@@ -10,12 +6,14 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.FormEvents.Handlers;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -198,13 +196,13 @@ public class JJFormView : JJGridView
     }
 
     #endregion
-    
+
     internal override HtmlElement RenderHtmlElement()
     {
         string t = CurrentContext.Request.QueryString("t");
         string objname = CurrentContext.Request.QueryString("objname");
         var dataPainel = DataPanel;
-        
+
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
             return new HtmlElement(dataPainel.GetHtml());
@@ -316,7 +314,7 @@ public class JJFormView : JJGridView
             html.AppendHiddenInput($"current_pagestate_{Name}", ((int)pageState).ToString());
             html.AppendHiddenInput($"current_formaction_{Name}", "");
         }
-        
+
         return html;
     }
 
@@ -761,7 +759,7 @@ public class JJFormView : JJGridView
         if (relations.Count == 0)
         {
             html.AppendElement(painel);
-            
+
             if (erros != null)
                 html.AppendElement(new JJValidationSummary(erros));
 
@@ -771,7 +769,7 @@ public class JJFormView : JJGridView
         else
         {
             var sPainel = painel.GetHtmlElement();
-            
+
             if (erros != null)
                 sPainel.AppendElement(new JJValidationSummary(erros));
 
@@ -844,7 +842,6 @@ public class JJFormView : JJGridView
             }
         }
 
-
         return html;
     }
 
@@ -896,7 +893,6 @@ public class JJFormView : JJGridView
             e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
         }
     }
-
 
     /// <summary>
     /// Insert the records in the database.
@@ -1021,7 +1017,6 @@ public class JJFormView : JJGridView
         OnAfterDelete?.Invoke(sender, eventArgs);
     internal void InvokeOnInstanceCreated(JJFormView sender) =>
         OnInstanceCreated?.Invoke(sender);
-    
 
     private JJLinkButton GetButtonOk()
     {

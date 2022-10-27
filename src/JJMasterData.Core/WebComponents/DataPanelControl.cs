@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using System.Collections;
@@ -24,7 +25,10 @@ internal class DataPanelControl
 
     public Hashtable Values { get; private set; }
 
+    public string FieldNamePrefix { get; set; }
+
     private bool IsViewModeAsStatic => PageState == PageState.View && UISettings.ShowViewModeAsStatic;
+
 
     public DataPanelControl(JJDataPanel dataPanel)
     {
@@ -82,17 +86,26 @@ internal class DataPanelControl
 
             row.AppendElement(htmlField);
 
-            if (!string.IsNullOrEmpty(f.CssClass))
+            string fieldClass;
+            if (IsRange(f))
             {
-                htmlField.WithCssClass(f.CssClass);
+                fieldClass = string.Empty;
+            }
+            else if (!string.IsNullOrEmpty(f.CssClass))
+            {
+                fieldClass = f.CssClass;
             }
             else
             {
                 if (f.Component == FormComponent.TextArea | f.Component == FormComponent.CheckBox)
-                    htmlField.WithCssClass("col-sm-12");
+                    fieldClass = "col-sm-12";
                 else
-                    htmlField.WithCssClass(colClass);
+                    fieldClass = colClass;
             }
+            htmlField.WithCssClass(fieldClass);
+
+            if (IsRange(f))
+
 
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 htmlField.WithCssClass("has-error");
@@ -187,14 +200,19 @@ internal class DataPanelControl
             }
 
             string colClass = fieldClass;
-            if (f.Component == FormComponent.TextArea)
+            if (IsRange(f))
             {
-                colClass = fullClass;
                 colCount = 1;
+                colClass = string.Empty;
+            }
+            else if (f.Component == FormComponent.TextArea)
+            {
+                colCount = 1;
+                colClass = fullClass;
             }
             else if (f.Component == FormComponent.CheckBox)
             {
-                colCount++;
+                colCount = 1;
                 if (!IsViewModeAsStatic)
                     label.Text = string.Empty;
             }
@@ -231,6 +249,10 @@ internal class DataPanelControl
     private HtmlElement GetControlField(FormElementField f, object value)
     {
         var field = FieldManager.GetField(f, PageState, Values, value);
+
+        if (!string.IsNullOrEmpty(FieldNamePrefix))
+            field.Name = FieldNamePrefix + f.Name;
+
         field.Enabled = FieldManager.IsEnable(f, PageState, Values);
         if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
         {
@@ -258,6 +280,11 @@ internal class DataPanelControl
         }
 
         return $"JJDataPanel.doReload('{Name}','{f.Name}');";
+    }
+
+    private bool IsRange(FormElementField f)
+    {
+        return PageState == PageState.Filter & f.Filter.Type == FilterMode.Range;
     }
 
 }

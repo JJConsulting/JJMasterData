@@ -1302,7 +1302,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="FormView" xml:space="preserve">
-    <value>Vista de formulário</value>
+    <value>Visualização do formulário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="From" xml:space="preserve">
@@ -1354,7 +1354,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="GridView" xml:space="preserve">
-    <value>Visualização em grade</value>
+    <value>Visualização da grid</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Group Line" xml:space="preserve">
