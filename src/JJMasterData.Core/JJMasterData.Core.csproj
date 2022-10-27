@@ -44,7 +44,7 @@
   
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.14</Version>
+    <Version>3.1.0</Version>
     <Company>JJ Consulting</Company>
     <Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
