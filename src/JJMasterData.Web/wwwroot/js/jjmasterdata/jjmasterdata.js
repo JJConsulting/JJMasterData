@@ -475,8 +475,7 @@ function jjloadform(event, prefixSelector) {
         allowInput: true,
         altInput: false,
         time_24hr: true,
-        altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
+        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
@@ -487,8 +486,7 @@ function jjloadform(event, prefixSelector) {
         wrap: true,
         allowInput: true,
         altInput: false,
-        altFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        dateFormat: localeCode === "pt" ? "d-m-Y" : "m-d-Y",
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
@@ -501,7 +499,6 @@ function jjloadform(event, prefixSelector) {
         allowInput: true,
         altInput: false,
         dateFormat: "H:i",
-        altFormat: "H:i",
         time_24hr: true,
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
