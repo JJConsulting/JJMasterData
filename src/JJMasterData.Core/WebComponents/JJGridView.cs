@@ -562,7 +562,7 @@ public class JJGridView : JJBaseView
 
     public JJGridView(string elementName) : this()
     {
-        WebComponentFactory.SetGridViewParams(this, elementName);
+        GridViewFactory.SetGridViewParams(this, elementName);
     }
 
     public JJGridView(FormElement formElement) : this()
@@ -1498,38 +1498,7 @@ public class JJGridView : JJBaseView
 
     public void SetGridOptions(UIGrid options)
     {
-        if (options == null)
-            throw new ArgumentNullException(nameof(options), "Grid Options");
-
-        EnableAjax = true;
-        EnableSorting = options.EnableSorting;
-        EnableMultSelect = options.EnableMultSelect;
-        MaintainValuesOnLoad = options.MaintainValuesOnLoad;
-        ShowPagging = options.ShowPagging;
-        ShowToolbar = options.ShowToolBar;
-
-        if (!GridUI.HasFormValues(CurrentContext) | !ShowToolbar | !ConfigAction.IsVisible)
-        {
-            GridUI ui = null;
-            if (MaintainValuesOnLoad && FormElement != null)
-                ui = JJSession.GetSessionValue<GridUI>($"jjcurrentui_{FormElement.Name}");
-
-            if (ui == null)
-            {
-                ui = CurrentUI;
-                ui.ShowRowHover = options.ShowRowHover;
-                ui.ShowRowStriped = options.ShowRowStriped;
-                ui.ShowBorder = options.ShowBorder;
-                ui.TotalPerPage = options.TotalPerPage;
-                ui.TotalPaginationButtons = options.TotalPaggingButton;
-                ui.IsHeaderFixed = options.HeaderFixed;
-            }
-
-            CurrentUI = ui;
-        }
-
-        ShowHeaderWhenEmpty = options.ShowHeaderWhenEmpty;
-        EmptyDataText = options.EmptyDataText;
+        GridViewFactory.SetGridOptions(this, options);
     }
 
     internal BasicAction GetCurrentAction(ActionMap actionMap)

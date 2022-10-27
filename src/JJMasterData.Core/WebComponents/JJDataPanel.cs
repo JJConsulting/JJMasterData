@@ -13,6 +13,9 @@ using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
+/// <summary>
+/// Render panels with fields
+/// </summary>
 public class JJDataPanel : JJBaseView
 {
     #region "Events"
@@ -99,19 +102,12 @@ public class JJDataPanel : JJBaseView
 
     public JJDataPanel(string elementName) : this()
     {
-        WebComponentFactory.SetDataPanelParams(this, elementName);
+        DataPanelFactory.SetDataPanelParams(this, elementName);
     }
 
     public JJDataPanel(FormElement formElement) : this()
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        FormElement = formElement;
-        Name = "pnl_" + formElement.Name;
-        RenderPanelGroup = FormElement.Panels.Count > 0;
-        UISettings.IsVerticalLayout = true;
-        UISettings.EnterKey = FormEnterKey.Disabled;
+        DataPanelFactory.SetDataPanelParams(this, formElement);   
     }
 
     public JJDataPanel(FormElement formElement, Hashtable values, Hashtable erros, PageState pageState) : this(formElement)
@@ -241,7 +237,7 @@ public class JJDataPanel : JJBaseView
 
 
     /// <summary>
-    /// Recupera os dados do Form, aplicando o valor padrão e as triggers
+    /// Load form data with default values and triggers
     /// </summary>
     public Hashtable GetFormValues()
     {
@@ -285,8 +281,7 @@ public class JJDataPanel : JJBaseView
     }
 
     /// <summary>
-    /// Carregar os valores do banco de dados de todos os campos do formulário 
-    /// e atribui na propriedade Values
+    /// Load values from database
     /// </summary>
     public void LoadValuesFromPK(Hashtable pks)
     {
@@ -294,14 +289,10 @@ public class JJDataPanel : JJBaseView
     }
 
     /// <summary>
-    /// Valida os campos do formulário e 
-    /// retorna uma lista com erros encontrados
-    /// </summary>
-    /// <param name="values">Dados do Formulário</param>
-    /// <param name="pageState">Estado atual da pagina</param>
+    /// Validate form fields and return a list with errors
     /// <returns>
-    /// Chave = Nome do Campo
-    /// Valor = Mensagem de erro
+    /// Key = Field Name
+    /// Valor = Error message
     /// </returns>
     public Hashtable ValidateFields(Hashtable values, PageState pageState)
     {
@@ -309,15 +300,11 @@ public class JJDataPanel : JJBaseView
     }
 
     /// <summary>
-    /// Valida os campos do formulário e 
-    /// retorna uma lista com erros encontrados
+    /// Validate form fields and return a list with errors
     /// </summary>
-    /// <param name="values">Dados do Formulário</param>
-    /// <param name="pageState">Estado atual da pagina</param>
-    /// <param name="enableErrorLink">Inclui link nos campos de errro</param>
     /// <returns>
-    /// Chave = Nome do Campo
-    /// Valor = Mensagem de erro
+    /// Key = Field Name
+    /// Valor = Error message
     /// </returns>
     public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
     {

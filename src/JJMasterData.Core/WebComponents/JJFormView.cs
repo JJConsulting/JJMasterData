@@ -171,7 +171,7 @@ public class JJFormView : JJGridView
 
     #region "Constructors"
 
-    private JJFormView()
+    internal JJFormView()
     {
         ShowTitle = true;
         ToolBarActions.Add(new InsertAction());
@@ -184,19 +184,7 @@ public class JJFormView : JJGridView
 
     public JJFormView(string elementName) : this()
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
-
-        Name = "jjview" + elementName.ToLower();
-        var dicParser = GetDictionary(elementName);
-
-        FormElement = dicParser.GetFormElement();
-
-        SetOptions(dicParser.UIOptions);
-
-        AddFormEvent(dicParser.Table.Name);
-
-        OnInstanceCreated?.Invoke(this);
+        FormFactory.SetFormViewParams(this, elementName);
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -1016,13 +1004,7 @@ public class JJFormView : JJGridView
     /// </param>
     public void SetOptions(UIOptions options)
     {
-        if (options == null) return;
-
-        ToolBarActions = options.ToolBarActions.GetAll();
-        GridActions = options.GridActions.GetAll();
-        ShowTitle = options.Grid.ShowTitle;
-        DataPanel.UISettings = options.Form;
-        SetGridOptions(options.Grid);
+        FormFactory.SetFormptions(this, options);
     }
 
     internal void InvokeOnBeforeUpdate(object sender, FormBeforeActionEventArgs eventArgs) =>
@@ -1037,35 +1019,9 @@ public class JJFormView : JJGridView
         OnBeforeDelete?.Invoke(sender, eventArgs);
     internal void InvokeOnAfterDelete(object sender, FormAfterActionEventArgs eventArgs) =>
         OnAfterDelete?.Invoke(sender, eventArgs);
-
-    private void AddFormEvent(string name)
-    {
-        var assemblyFormEvent = FormEventManager.GetFormEvent(name);
-        if (assemblyFormEvent != null)
-        {
-            AddFormEvent(assemblyFormEvent);
-        }
-    }
-
-    private void AddFormEvent(IFormEvent assemblyFormEvent)
-    {
-        foreach (var method in FormEventManager.GetFormEventMethods(assemblyFormEvent))
-        {
-            switch (method)
-            {
-                case "OnBeforeImport":
-                    DataImp.OnBeforeImport += assemblyFormEvent.OnBeforeImport;
-                    break;
-                case "OnAfterImport":
-                    DataImp.OnAfterImport += assemblyFormEvent.OnAfterImport;
-                    break;
-                case "OnInstanceCreated":
-                    OnInstanceCreated += assemblyFormEvent.OnInstanceCreated;
-                    break;
-            }
-        }
-    }
-
+    internal void InvokeOnInstanceCreated(JJFormView sender) =>
+        OnInstanceCreated?.Invoke(sender);
+    
 
     private JJLinkButton GetButtonOk()
     {

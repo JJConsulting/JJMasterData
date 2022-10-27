@@ -7,7 +7,6 @@ using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
-
 /// <summary>
 /// Render components fields in a div
 /// </summary>

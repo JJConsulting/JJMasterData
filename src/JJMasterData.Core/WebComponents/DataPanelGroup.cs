@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
 
+/// <summary>
+/// Render panels with fields
+/// </summary>
 internal class DataPanelGroup
 {
     public string Name { get; set; }
