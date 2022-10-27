@@ -280,6 +280,24 @@ internal class DataPanelControl
             field.SetAttr("onchange", GetScriptReload(f));
         }
 
+        if (PageState == PageState.Filter)
+        {
+            if (field is JJTextGroup textGroup)
+            {
+                if (f.Filter.Type == FilterMode.MultValuesContain ||
+                    f.Filter.Type == FilterMode.MultValuesEqual)
+                {
+                    textGroup.Attributes.Add("data-role", "tagsinput");
+                    textGroup.MaxLength = 0;
+                }
+            }
+            else if (field is JJComboBox comboBox)
+            {
+                if (f.Filter.Type == FilterMode.MultValuesEqual)
+                    comboBox.MultiSelect = true;
+            }
+        }
+
         return field.RenderHtmlElement();
     }
 

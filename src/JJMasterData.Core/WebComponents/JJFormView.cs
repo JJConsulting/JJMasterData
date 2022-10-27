@@ -152,14 +152,14 @@ public class JJFormView : JJGridView
         _dataDictionaryManager ??= new FormService(FormElement,
             LogAction.IsVisible ? LogHistory.Service : null);
 
+    public DeleteSelectedRowsAction DeleteSelectedRowsAction
+       => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
+
     public InsertAction InsertAction => (InsertAction)ToolBarActions.Find(x => x is InsertAction);
 
     public EditAction EditAction => (EditAction)GridActions.Find(x => x is EditAction);
 
     public DeleteAction DeleteAction => (DeleteAction)GridActions.Find(x => x is DeleteAction);
-
-    public DeleteSelectedRowsAction DeleteSelectedRowsAction
-        => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
 
     public ViewAction ViewAction => (ViewAction)GridActions.Find(x => x is ViewAction);
 

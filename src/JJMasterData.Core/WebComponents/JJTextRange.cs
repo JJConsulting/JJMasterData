@@ -178,8 +178,9 @@ public class JJTextRange : JJBaseControl
 
     private string GetjQueryFromToScript(string valueFrom, string valueTo, bool isTimeAware)
     {
-        string timeAwareFrom = isTimeAware ? "00:00" : string.Empty;
-        string timeAwareTo = isTimeAware ? "23:59" : string.Empty;
-        return $"$('#{Name}_from').val('{valueFrom} {timeAwareFrom}');$('#{Name}_to').val('{valueTo} {timeAwareTo}')";
+        
+        string timeAwareTo = isTimeAware ? " 23:59" : string.Empty;
+        string timeAwareFrom = isTimeAware ? " 00:00" : string.Empty;
+        return $"$('#{Name}_from').val('{valueFrom}{timeAwareFrom}');$('#{Name}_to').val('{valueTo}{timeAwareTo}')";
     }
 }

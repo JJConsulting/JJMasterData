@@ -8,6 +8,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
@@ -161,6 +162,12 @@ internal class GridFilter
         var fields = GridView.FormElement.Fields.ToList().FindAll(
             x => x.Filter.Type != FilterMode.None && !x.VisibleExpression.Equals("val:0"));
 
+        foreach(var field in fields)
+        {
+            if (!GridView.EnableFilter || GridView.RelationValues.ContainsKey(field.Name))
+                field.EnableExpression = "val:0";
+        }
+
         if (fields.Count == 0)
             return "";
 
@@ -172,279 +179,13 @@ internal class GridFilter
             Values = values
         };
 
-        var html = panel.GetHtmlForm(fields.DeepCopy());
-        // html.AppendHiddenInput($"current_filteraction_{GridView.Name}");
-        //
-        // var sHtml = new StringBuilder();
-        // sHtml.Append('\t', 3);
-        // sHtml.AppendLine("<!-- Start Painel Grid Filter -->");
-        // sHtml.Append('\t', 3);
-        // sHtml.AppendLine("<div id=\"pnlgridfilter\">");
-        //
-        // sHtml.Append('\t', 4);
-        // sHtml.Append("<input type=\"hidden\" id=\"current_filteraction_");
-        // sHtml.Append(GridView.Name);
-        // sHtml.Append("\" name=\"current_filteraction_");
-        // sHtml.Append(GridView.Name);
-        // sHtml.AppendLine("\" value=\"\" /> ");
-        //
-        // sHtml.Append('\t', 4);
-        // sHtml.Append("<div id=\"gridfilter_");
-        // sHtml.Append(GridView.Name);
-        // sHtml.AppendLine($"\" class=\"{BootstrapHelper.FormHorizontal}\">");
-        // foreach (var f in fields)
-        // {
-        //     string fldClass;
-        //     bool visible = GridView.FieldManager.IsVisible(f, PageState.Filter, values);
-        //     if (!visible)
-        //     {
-        //         continue;
-        //     }
-        //
-        //     FirstOptionMode tempValue = FirstOptionMode.None;
-        //     if (f.Component == FormComponent.ComboBox)
-        //     {
-        //         tempValue = f.DataItem.FirstOption;
-        //         if (f.Filter.IsRequired || f.Filter.Type == FilterMode.MultValuesEqual || f.Filter.Type == FilterMode.MultValuesContain)
-        //             f.DataItem.FirstOption = FirstOptionMode.None;
-        //         else
-        //             f.DataItem.FirstOption = FirstOptionMode.All;
-        //     }
-        //
-        //     string name = $"{FIELD_NAME_PREFIX}{f.Name}";
-        //     object value = null;
-        //     if (values != null && values.Contains(f.Name))
-        //         value = values[f.Name];
-        //
-        //     var reqClass = (f.Filter.IsRequired ? " required" : "");
-        //     sHtml.Append('\t', 5);
-        //     sHtml.Append($"<div class=\"{BootstrapHelper.FormGroup} {(BootstrapHelper.Version == 3 ? string.Empty : "row")}");
-        //     sHtml.Append(reqClass);
-        //     sHtml.AppendLine("\">");
-        //
-        //     sHtml.Append('\t', 6);
-        //     if (f.Component == FormComponent.CheckBox)
-        //     {
-        //         sHtml.AppendLine("<div class=\"col-sm-2\"></div>");
-        //     }
-        //     else
-        //     {
-        //         var label = new JJLabel(f);
-        //         label.CssClass = "col-sm-2";
-        //         label.LabelFor = name;
-        //         label.IsRequired = false;
-        //         sHtml.AppendLine(label.GetHtml());
-        //     }
-        //
-        //     if (f.DataType is FieldType.Int or FieldType.Float or FieldType.Date or FieldType.DateTime)
-        //     {
-        //         if (f.Filter.Type == FilterMode.Range)
-        //         { 
-        //             var field = GridView.FieldManager.GetField(f, PageState.Filter, values, value);
-        //
-        //             //From
-        //             if (values != null && values.Contains(f.Name + "_from"))
-        //                 value = values[f.Name + "_from"];
-        //
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("<div class=\"col-sm-3\">");
-        //             sHtml.Append('\t', 7);
-        //             var componentFrom = GridView.FieldManager.GetField(f, PageState.Filter, values, value);
-        //             componentFrom.Name = name + "_from";
-        //             if (componentFrom is JJBaseControl controlFrom)
-        //             {
-        //                 controlFrom.PlaceHolder = Translate.Key("From");
-        //                 if (!GridView.EnableFilter)
-        //                     controlFrom.Enabled = false;
-        //             }
-        //             sHtml.AppendLine(componentFrom.GetHtml());
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("</div>");
-        //
-        //             //To
-        //             if (values != null && values.Contains(f.Name + "_to"))
-        //                 value = values[f.Name + "_to"];
-        //
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("<div class=\"col-sm-3\">");
-        //             sHtml.Append('\t', 7);
-        //
-        //             var componentTo = GridView.FieldManager.GetField(f, PageState.Filter, values, value);
-        //             componentTo.Name = name + "_to";
-        //             if (componentTo is JJBaseControl controlTo)
-        //             {
-        //                 controlTo.PlaceHolder = Translate.Key("To");
-        //                 if (!GridView.EnableFilter)
-        //                     controlTo.Enabled = false;
-        //             }
-        //
-        //             sHtml.AppendLine(componentTo.GetHtml());
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("</div>");
-        //
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("<div class=\"col-sm-4\">");
-        //             //sHtml.AppendLine(GetHtmlListPeriod(f.DataType, name));
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("</div>");
-        //         }
-        //         else
-        //         {
-        //             if (!string.IsNullOrEmpty(f.CssClass))
-        //                 fldClass = f.CssClass;
-        //             else
-        //                 fldClass = "col-sm-3";
-        //
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine($"<div class=\"{fldClass}\">");
-        //             sHtml.Append('\t', 7);
-        //
-        //             sHtml.AppendLine(GetHtmlField(f, value, values, name));
-        //
-        //             sHtml.Append('\t', 6);
-        //             sHtml.AppendLine("</div>");
-        //             if (string.IsNullOrEmpty(f.CssClass))
-        //             {
-        //                 sHtml.Append("\t\t\t\t\t\t");
-        //                 sHtml.AppendLine("<div class=\"col-sm-7\"></div>");
-        //             }
-        //         }
-        //     }
-        //     else
-        //     {
-        //         if (!string.IsNullOrEmpty(f.CssClass)
-        //             && !f.CssClass.Contains("-11")
-        //             && !f.CssClass.Contains("-12"))
-        //         {
-        //             fldClass = f.CssClass;
-        //         }
-        //         else
-        //         {
-        //             fldClass = "col-sm-10";
-        //         }
-        //
-        //         sHtml.Append('\t', 6);
-        //         sHtml.AppendLine($"<div class=\"{fldClass}\">");
-        //         sHtml.Append('\t', 7);
-        //         sHtml.AppendLine(GetHtmlField(f, value, values, name));
-        //         sHtml.Append('\t', 6);
-        //         sHtml.AppendLine("</div>");
-        //     }
-        //
-        //     sHtml.Append('\t', 5);
-        //     sHtml.AppendLine("</div>");
-        //
-        //     if (f.Component == FormComponent.ComboBox)
-        //     {
-        //         f.DataItem.FirstOption = tempValue;
-        //     }
-        //
-        // }
-        // sHtml.Append('\t', 4);
-        // sHtml.AppendLine("</div> ");
-        //
-        // var listFieldsPost = fields.FindAll(x => x.AutoPostBack);
-        // string functionname = "do_reloadgridfilter_" + GridView.Name;
-        // if (listFieldsPost.Count > 0)
-        // {
-        //     sHtml.AppendLine("<script type=\"text/javascript\"> ");
-        //     sHtml.AppendLine("");
-        //     sHtml.Append("\tfunction ");
-        //     sHtml.Append(functionname);
-        //     sHtml.AppendLine("(objid) { ");
-        //     sHtml.AppendLine("\t\t$('#current_filteraction_" + GridView.Name + "').val('FILTERACTION');");
-        //     sHtml.AppendLine("\t\tvar frm = $('form'); ");
-        //     sHtml.AppendLine("\t\tvar surl = frm.attr('action'); ");
-        //     sHtml.AppendLine("\t\tif (surl.includes('?'))");
-        //     sHtml.AppendLine("\t\t\tsurl += '&t=reloadgridfilter&pnlname=" + GridView.Name + "&objname=' + objid;");
-        //     sHtml.AppendLine("\t\telse");
-        //     sHtml.AppendLine("\t\t\tsurl += '?t=reloadgridfilter&pnlname=" + GridView.Name + "&objname=' + objid;");
-        //     sHtml.AppendLine("");
-        //
-        //     if (GridView.EnableAjax)
-        //     {
-        //         sHtml.AppendLine("\t\t$.ajax({ ");
-        //         sHtml.AppendLine("\t\tasync: true,");
-        //         sHtml.AppendLine("\t\t\ttype: frm.attr('method'), ");
-        //         sHtml.AppendLine("\t\t\turl: surl, ");
-        //         sHtml.AppendLine("\t\t\tdata: frm.serialize(), ");
-        //         sHtml.AppendLine("\t\t\tsuccess: function (data) { ");
-        //         sHtml.AppendLine("\t\t\t\t$('#pnlgridfilter').html(data); ");
-        //         sHtml.AppendLine("\t\t\t\tjjloadform(); ");
-        //         sHtml.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
-        //         sHtml.AppendLine("\t\t\t\t$('#current_filteraction_" + GridView.Name + "').val('');");
-        //         sHtml.AppendLine("\t\t\t}, ");
-        //         sHtml.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
-        //         sHtml.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
-        //         sHtml.AppendLine("\t\t\t\tconsole.log(textStatus); ");
-        //         sHtml.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
-        //         sHtml.AppendLine("\t\t\t} ");
-        //         sHtml.AppendLine("\t\t}); ");
-        //     }
-        //     else
-        //     {
-        //         sHtml.AppendLine("\t\t$(\"form:first\").submit(); ");
-        //     }
-        //
-        //     sHtml.AppendLine("\t} ");
-        //     sHtml.AppendLine("");
-        //
-        //     sHtml.AppendLine("\t$(document).ready(function () {");
-        //     foreach (FormElementField f in listFieldsPost)
-        //     {
-        //         string namePrefix = $"{FIELD_NAME_PREFIX}{f.Name}";
-        //         //WorkArroud para gatilhar o select do search
-        //         if (f.Component == FormComponent.Search)
-        //         {
-        //             sHtml.Append("\t\t$(\"");
-        //             sHtml.Append("#");
-        //             sHtml.Append(namePrefix);
-        //             sHtml.AppendLine("\").change(function () {");
-        //             sHtml.AppendLine("\t\t\tsetTimeout(function() {");
-        //             sHtml.Append("\t\t\t\t");
-        //             sHtml.Append(functionname);
-        //             sHtml.Append("('");
-        //             sHtml.Append(f.Name);
-        //             sHtml.AppendLine("');");
-        //             sHtml.AppendLine("\t\t\t},200);");
-        //             sHtml.AppendLine("\t\t});");
-        //             sHtml.AppendLine("");
-        //         }
-        //         //WorkArroud para gatilhar o campo com mascara no IE Edge
-        //         else if (f.Component == FormComponent.Number && f.NumberOfDecimalPlaces > 0)
-        //         {
-        //             sHtml.Append("\t\t$(\"");
-        //             sHtml.Append("#");
-        //             sHtml.Append(namePrefix);
-        //             sHtml.AppendLine("\").blur(function () {");
-        //             sHtml.Append("\t\t\t");
-        //             sHtml.Append(functionname);
-        //             sHtml.AppendLine("($(this).attr('id'));");
-        //             sHtml.AppendLine("\t\t});");
-        //             sHtml.AppendLine("");
-        //         }
-        //         else
-        //         {
-        //             sHtml.Append("\t\t$(\"");
-        //             sHtml.Append("#");
-        //             sHtml.Append(namePrefix);
-        //             sHtml.AppendLine("\").change(function () {");
-        //             sHtml.Append("\t\t\t");
-        //             sHtml.Append(functionname);
-        //             sHtml.AppendLine("($(this).attr('id'));");
-        //             sHtml.AppendLine("\t\t});");
-        //             sHtml.AppendLine("");
-        //         }
-        //     }
-        //     sHtml.AppendLine("\t});");
-        //     sHtml.AppendLine("</script> ");
-        // }
-        //
-        // sHtml.Append('\t', 3);
-        // sHtml.AppendLine("</div> ");
-        // sHtml.Append('\t', 3);
-        // sHtml.AppendLine("<!-- End Painel Grid Filter -->");
-        // sHtml.AppendLine("");
+        var htmlPanel = panel.GetHtmlForm(fields.DeepCopy());
+        htmlPanel.WithAttribute("id", $"gridfilter_{GridView.Name}");
+
+        var html = new HtmlElement(HtmlTag.Div)
+            .WithAttribute("id", "pnlgridfilter")
+            .AppendHiddenInput($"current_filteraction_{GridView.Name}")
+            .AppendElement(htmlPanel);
 
         var btnDoFilter = new JJLinkButton
         {
@@ -502,39 +243,6 @@ internal class GridFilter
         return sRet.ToString();
     }
 
-    private string GetHtmlField(FormElementField f, object value, Hashtable formValues, string name)
-    {
-        var baseField = GridView.FieldManager.GetField(f, PageState.Filter, formValues, value);
-        baseField.Name = name;
-        if (baseField is JJTextGroup textGroup)
-        {
-            if (f.Filter.Type == FilterMode.MultValuesContain ||
-                f.Filter.Type == FilterMode.MultValuesEqual)
-            {
-                textGroup.Attributes.Add("data-role", "tagsinput");
-                textGroup.MaxLength = 0;
-            }
-        }
-
-        else if (baseField is JJComboBox comboBox)
-        {
-            if (f.Filter.Type == FilterMode.MultValuesEqual)
-            {
-                comboBox.MultiSelect = true;
-            }
-        }
-
-        if (baseField is JJBaseControl control)
-        {
-            if (!GridView.EnableFilter ||
-                GridView.RelationValues.ContainsKey(f.Name))
-            {
-                control.Enabled = false;
-            }
-        }
-
-        return baseField.GetHtml();
-    }
 
     private string GetHtmlFilterScreen()
     {

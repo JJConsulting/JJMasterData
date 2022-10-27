@@ -419,6 +419,11 @@ public class JJFormUpload : JJBaseView
     {
         var html = new StringBuilder();
 
+
+        var panel = new JJCollapsePanel();
+        panel.Title = "New File";
+        panel.ExpandedByDefault = CollapseAriaExpanded;
+
         html.AppendLine(
             $"<input type=\"hidden\" id=\"uploadaction_{Name}\" name=\"uploadaction_{Name}\" value=\"\" />");
         html.AppendLine($"<input type=\"hidden\" id=\"filename_{Name}\" name=\"filename_{Name}\" />");
@@ -427,7 +432,7 @@ public class JJFormUpload : JJBaseView
         if (!ShowAddFile) return html.ToString();
 
         html.AppendLine(
-            $"<div class=\"{BootstrapHelper.PanelGroup}\" id=\"divNovo\" runat=\"server\" enableviewstate=\"false\">");
+            $"<div class=\"{BootstrapHelper.PanelGroup}\" id=\"divNovo\"  enableviewstate=\"false\">");
         html.AppendLine($"\t<div class=\"{BootstrapHelper.GetPanel("default")}\">");
         html.Append(
             $"\t\t<div class=\"{BootstrapHelper.GetPanelHeading("default")}\" href=\"#collapse1\" {BootstrapHelper.DataToggle}=\"collapse\" data-target=\"#collapse1\" aria-expanded=\"");

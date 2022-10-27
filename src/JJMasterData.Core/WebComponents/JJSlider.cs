@@ -33,6 +33,7 @@ public class JJSlider : JJBaseControl
             .AppendElement(HtmlTag.Div, row =>
             {
                 row.WithCssClass(ShowInput ? "col-sm-9" : "col-sm-12");
+                row.WithCssClassIf(BootstrapHelper.Version > 3, "d-flex justify-content-end align-items-center");
                 row.AppendElement(GetHtmlSlider());
             });
 
