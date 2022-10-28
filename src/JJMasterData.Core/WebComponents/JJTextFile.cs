@@ -148,7 +148,7 @@ public class JJTextFile : JJBaseControl
         if (title == null)
             title = "Manage Files";
         else
-            title.Replace('\'', '`').Replace('\"', ' ');
+            title = title.Replace('\'', '`').Replace('\"', ' ');
 
         title = Translate.Key(title);
         return $"jjview.openUploadForm('{Name}','{title}','{value}');";
@@ -377,7 +377,7 @@ public class JJTextFile : JJBaseControl
     {
         string filePath = GetFolderPath() + fileName;
         string url = absoluteUri ?? HttpContext.Current.Request.Url.AbsoluteUri;
-        if (url.Contains("?"))
+        if (url.Contains('?'))
             url += "&";
         else
             url += "?";

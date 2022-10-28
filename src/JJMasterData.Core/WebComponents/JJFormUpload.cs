@@ -641,7 +641,7 @@ public class JJFormUpload : JJBaseView
     {
         string videoUrl = CurrentContext.Request.AbsoluteUri;
 
-        if (videoUrl.Contains("?"))
+        if (videoUrl.Contains('?'))
             videoUrl += "&";
         else
             videoUrl += "?";
@@ -923,7 +923,7 @@ public class JJFormUpload : JJBaseView
     public void RenameFile(string currentName, string newName)
     {
         if (string.IsNullOrEmpty(currentName))
-            throw new ArgumentException(nameof(currentName));
+            throw new ArgumentNullException(nameof(currentName));
 
         if (string.IsNullOrWhiteSpace(newName))
             throw new Exception(Translate.Key("Required file name"));

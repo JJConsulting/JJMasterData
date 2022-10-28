@@ -214,9 +214,9 @@ public class JJLookup : JJBaseControl
             foreach (DictionaryEntry filter in elementMap.Filters)
             {
                 string filterParsed = exp.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
-                @params.Append("&");
+                @params.Append('&');
                 @params.Append(filter.Key);
-                @params.Append("=");
+                @params.Append('=');
                 @params.Append(filterParsed);
             }
         }
