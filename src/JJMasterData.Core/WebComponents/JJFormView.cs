@@ -213,7 +213,7 @@ public class JJFormView : JJGridView
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
-            return new HtmlElement(JJDownloadFile.ResponseRoute(this));
+            return JJDownloadFile.ResponseRoute(this);
 
         if ("jjsearchbox".Equals(t))
         {

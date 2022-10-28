@@ -28,7 +28,7 @@ public class JJModalDialog : JJBaseView
 
         var html = new HtmlElement(HtmlTag.Div)
             .WithAttributes(Attributes)
-            .WithNameAndId(Name)
+            .WithAttribute("id", Name)
             .WithCssClass("modal")
             .WithCssClass(CssClass)
             .WithAttribute("role", "dialog")

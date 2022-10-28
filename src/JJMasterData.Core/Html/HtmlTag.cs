@@ -36,7 +36,10 @@
         I,
         Section,
         P,
-        Footer
+        Footer,
+        Img,
+        Center,
+        Video
        
     }
 }

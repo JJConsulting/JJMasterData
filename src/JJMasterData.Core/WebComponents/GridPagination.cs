@@ -111,13 +111,15 @@ internal class GridPagination
         {
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
-            label.AppendText(Translate.Key("Showing "));
+            label.AppendText(Translate.Key("Showing"));
             if (_totalPages <= 1)
             {
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
+                    span.AppendText("&nbsp;");
                     span.AppendText(GridView.TotalRecords.ToString("N0"));
+                    span.AppendText("&nbsp;");
                     span.AppendText(Translate.Key("record(s)"));
                 });
             }
@@ -136,6 +138,7 @@ internal class GridPagination
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
+                    span.AppendText("&nbsp;");
                     span.AppendText(GridView.TotalRecords.ToString("N0"));
                 });
             }

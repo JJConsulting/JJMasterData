@@ -128,25 +128,16 @@ public class JJDataPanel : JJBaseView
 
         //Lookup Route
         if (JJLookup.IsLookupRoute(this))
-        {
-            CurrentContext.Response.SendResponse(JJLookup.ResponseRoute(this));
-            return null;
-        }
+            return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
         if (JJTextFile.IsFormUploadRoute(this))
-        {
-            CurrentContext.Response.SendResponse(JJTextFile.ResponseRoute(this));
-            return null;
-        }
+            return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
-        {
-            CurrentContext.Response.SendResponse(JJDownloadFile.ResponseRoute(this));
-            return null;
-        }
-
+            return JJDownloadFile.ResponseRoute(this);
+            
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
             CurrentContext.Response.SendResponse(GetHtmlPanel().GetElementHtml());

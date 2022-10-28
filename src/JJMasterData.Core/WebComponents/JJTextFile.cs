@@ -67,7 +67,7 @@ public class JJTextFile : JJBaseControl
     }
 
 
-    protected override string RenderHtml()
+    internal override HtmlElement RenderHtmlElement()
     {
         if (IsFormUploadRoute())
         {
@@ -76,18 +76,15 @@ public class JJTextFile : JJBaseControl
             LoadDirectValues();
             var formUpload = GetFormUpload();
 
-            var html = new StringBuilder();
-            html.AppendLine(formUpload.GetHtml());
-            html.AppendLine(GetRefreshScript(formUpload));
-            return html.ToString();
+            var html = new HtmlElement();
+            html.AppendElement(formUpload);
+            html.AppendScript(GetRefreshScript(formUpload));
+            return html;
         }
         else
         {
-            var html = new HtmlBuilder();
-            html.StartElement(GetHtmlTextGroup());
-            return html.RenderHtml();
+            return GetHtmlTextGroup();
         }
-
     }
 
     private HtmlElement GetHtmlTextGroup()
@@ -132,12 +129,7 @@ public class JJTextFile : JJBaseControl
         script.AppendLine($"window.parent.$(\"#{Name}\").val(\"{GetFileName(formUpload)}\");");
         script.AppendLine("});");
 
-        var html = new HtmlBuilder();
-        html.StartElement(HtmlTag.Script)
-            .WithAttribute("type", "text/javascript")
-            .AppendText(script.ToString());
-
-        return html.RenderHtml();
+        return script.ToString();
     }
 
     private string GetOpenUploadFormAction()
@@ -420,7 +412,7 @@ public class JJTextFile : JJBaseControl
         return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
 
-    public static string ResponseRoute(JJDataPanel view)
+    public static HtmlElement ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
         
@@ -431,7 +423,7 @@ public class JJTextFile : JJBaseControl
         if (field == null) return null;
         
         var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return upload.GetHtml();
+        return upload.GetHtmlElement();
 
     }
 

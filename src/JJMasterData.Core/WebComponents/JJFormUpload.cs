@@ -221,10 +221,10 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_renameAction != null) return _renameAction;
+            if (_renameAction != null) 
+                return _renameAction;
 
             string promptStr = Translate.Key("Enter the new name for the file:");
-
             _renameAction = new ScriptAction
             {
                 Icon = IconType.PencilSquareO,
@@ -252,245 +252,208 @@ public class JJFormUpload : JJBaseView
         AutoSave = true;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlElement RenderHtmlElement()
     {
         Upload.OnPostFile += UploadOnPostFile;
-
-        var html = new StringBuilder();
-
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
-        {
-            string fileName = Cript.Descript64(previewImage);
-            var file = GetFile(fileName);
-            
-            if (file == null)
-                return null;
-            
-            string src;
-            if (file.IsInMemory)
-            {
-                src =  $"data:image/{Path.GetExtension(fileName).Replace(".","")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
-            }
-            else
-            {
-                var filePath = Path.Combine(FolderPath,fileName);
-                var appPath = HttpContext.Current!.Request.ApplicationPath;
-
-                if (!appPath.EndsWith("/"))
-                    appPath += "/";
-
-                var culture = CultureInfo.CurrentCulture.Name + "/";
-                src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
-            }
-         
-            html.Append("<center>");
-            html.AppendFormat(
-                "<img src=\"{0}\" alt=\"{1}\" title=\"{1}\" class=\"img-responsive\" style=\"max-height:350px;display:none;\" id=\"img\" />",
-                src, fileName);
-            html.Append("</center>");
-
-            html.AppendLine("<script type=\"text/javascript\"> ");
-            html.AppendLine(" ");
-            html.AppendLine("	$(document).ready(function () { ");
-            html.AppendLine("   $('#img').css('max-height',window.innerHeight);");
-            html.AppendLine("   $('#img').show('slow');");
-            html.AppendLine("	}); ");
-            html.AppendLine("</script>");
-
-            return html.ToString();
-        }
+            return GetHtmlPreviewImage(previewImage);
 
         string previewVideo = CurrentContext.Request["previewVideo"];
         if (!string.IsNullOrEmpty(previewVideo))
-        {
-            string fileName = Cript.Descript64(previewVideo);
-            var video = GetFile(fileName);
+            return GetHtmlPreviewVideo(previewVideo);
 
-            string srcVideo = "data:video/mp4;base64," +
-                              Convert.ToBase64String(video.FileStream.ToArray(), 0, video.FileStream.ToArray().Length);
-
-            html.Append("<center>");
-            html.AppendFormat(
-                "<video autoplay width=\"100%\" height=\"100%\"controls src=\"{0}\" id=\"video\" class=\"img-responsive\" id=\"video\">",
-                srcVideo);
-            html.Append("</video>");
-            html.Append("</center>");
-
-            html.AppendLine("<script type=\"text/javascript\"> ");
-            html.AppendLine(" ");
-            html.AppendLine("	$(document).ready(function () { ");
-            html.AppendLine(
-                "  window.parent.$('#popup-modal').find('.close').click(function(){$('#video').trigger('pause')})");
-            html.AppendLine("   $('#video').css('max-height',window.innerHeight);");
-            html.AppendLine("	}); ");
-            html.AppendLine("</script>");
-
-            return html.ToString();
-        }
+        var html = new HtmlElement();
 
         string uploadAction = CurrentContext.Request["uploadaction_" + Name];
-
         if (!string.IsNullOrEmpty(uploadAction))
-            html.Append(GetResponseAction(uploadAction));
+            html.AppendElement(GetResponseAction(uploadAction));
 
         if (!string.IsNullOrEmpty(Title))
-            html.Append(GetHtmlTitle());
+            html.AppendElement(new JJTitle(Title, SubTitle));
 
-        html.Append(GetHtmlForm());
+        html.AppendElement(GetHtmlForm());
+        html.AppendElement(ViewGallery ? GetHtmlGallery() : GetHtmlGridView());
+        html.AppendElement(GetHtmlPreviewModal());
 
-        html.Append(ViewGallery ? GetHtmlGalleryView() : GetHtmlGridView());
-
-        html.Append(GetHtmlPreviewModal());
-
-        return html.ToString();
+        return html;
     }
 
-    private string GetResponseAction(string uploadAction)
+    private HtmlElement GetHtmlPreviewVideo(string previewVideo)
+    {
+        string fileName = Cript.Descript64(previewVideo);
+        var video = GetFile(fileName);
+
+        string srcVideo = "data:video/mp4;base64," +
+                          Convert.ToBase64String(video.FileStream.ToArray(), 0, video.FileStream.ToArray().Length);
+
+
+        var script = new StringBuilder();
+        script.AppendLine("	$(document).ready(function () { ");
+        script.AppendLine("   window.parent.$('#popup-modal').find('.close').click(function(){$('#video').trigger('pause')})");
+        script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
+        script.AppendLine("	}); ");
+        
+        var html = new HtmlElement(HtmlTag.Div);
+        html.AppendElement(HtmlTag.Center, c =>
+        {
+            c.AppendElement(HtmlTag.Video, video =>
+            {
+                video.WithAttribute("id", "video")
+                     .WithAttribute("src", srcVideo)
+                     .WithAttribute("autoplay", "autoplay")
+                     .WithAttribute("style", "width:100%;height:100%;")
+                     .WithCssClass("img-responsive");
+            });
+        });
+        html.AppendScript(script.ToString());
+        return html;
+    }
+
+    private HtmlElement GetHtmlPreviewImage(string previewImage)
+    {
+        string fileName = Cript.Descript64(previewImage);
+        var file = GetFile(fileName);
+
+        if (file == null)
+            return null;
+
+        string src;
+        if (file.IsInMemory)
+        {
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
+        }
+        else
+        {
+            var filePath = Path.Combine(FolderPath, fileName);
+            var appPath = HttpContext.Current!.Request.ApplicationPath;
+
+            if (!appPath.EndsWith("/"))
+                appPath += "/";
+
+            var culture = CultureInfo.CurrentCulture.Name + "/";
+            src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
+        }
+
+        var script = new StringBuilder();
+        script.AppendLine("	$(document).ready(function () { ");
+        script.AppendLine("   $('#img').css('max-height',window.innerHeight);");
+        script.AppendLine("   $('#img').show('slow');");
+        script.AppendLine("	}); ");
+
+        var html = new HtmlElement(HtmlTag.Div);
+        html.AppendElement(HtmlTag.Center, c =>
+        {
+            c.AppendElement(HtmlTag.Img, img =>
+            {
+                img.WithAttribute("id", "img")
+                   .WithAttribute("src", src)
+                   .WithAttribute("alt", fileName)
+                   .WithAttribute("style", "max-height:350px;display:none;")
+                   .WithCssClass("img-responsive");
+            });
+        });
+        html.AppendScript(script.ToString());
+        return html;
+    }
+
+    private HtmlElement GetResponseAction(string uploadAction)
     {
         string fileName = CurrentContext.Request.Form("filename_" + Name);
         try
         {
-            switch (uploadAction)
+            if ("DELFILE".Equals(uploadAction))
             {
-                case "DELFILE":
+                if (OnDeleteFile != null)
                 {
-                    if (OnDeleteFile != null)
-                    {
-                        var args = new FormDeleteFileEventArgs(fileName);
-                        OnDeleteFile.Invoke(this, args);
+                    var args = new FormDeleteFileEventArgs(fileName);
+                    OnDeleteFile.Invoke(this, args);
 
-                        if (!string.IsNullOrEmpty(args.ErrorMessage))
-                            throw new Exception(args.ErrorMessage);
-                    }
-
-                    DeleteFile(fileName);
-                    break;
+                    if (!string.IsNullOrEmpty(args.ErrorMessage))
+                        throw new Exception(args.ErrorMessage);
                 }
-                case "DOWNLOADFILE":
+
+                DeleteFile(fileName);
+            }
+            else if ("DOWNLOADFILE".Equals(uploadAction))
+            {
+                if (OnDownloadFile != null)
                 {
-                    if (OnDownloadFile != null)
-                    {
-                        var args = new FormDownloadFileEventArgs(fileName, null);
-                        OnDownloadFile.Invoke(this, args);
+                    var args = new FormDownloadFileEventArgs(fileName, null);
+                    OnDownloadFile.Invoke(this, args);
 
-                        if (!string.IsNullOrEmpty(args.ErrorMessage))
-                            throw new Exception(args.ErrorMessage);
-                    }
-
-                    DownloadFile(Path.Combine(FolderPath, fileName));
-                    break;
+                    if (!string.IsNullOrEmpty(args.ErrorMessage))
+                        throw new Exception(args.ErrorMessage);
                 }
-                case "RENAMEFILE":
+
+                DownloadFile(Path.Combine(FolderPath, fileName));
+            }
+            else if ("RENAMEFILE".Equals(uploadAction))
+            {
+                string[] names = fileName.Split(';');
+                string currentName = names[0];
+                string newName = names[1];
+
+                if (OnRenameFile != null)
                 {
-                    string[] names = fileName.Split(';');
-                    string currentName = names[0];
-                    string newName = names[1];
+                    var args = new FormRenameFileEventArgs(currentName, newName);
+                    OnRenameFile.Invoke(this, args);
 
-                    if (OnRenameFile != null)
-                    {
-                        var args = new FormRenameFileEventArgs(currentName, newName);
-                        OnRenameFile.Invoke(this, args);
-
-                        if (!string.IsNullOrEmpty(args.ErrorMessage))
-                            throw new Exception(args.ErrorMessage);
-                    }
-
-                    RenameFile(currentName, newName);
-                    break;
+                    if (!string.IsNullOrEmpty(args.ErrorMessage))
+                        throw new Exception(args.ErrorMessage);
                 }
+
+                RenameFile(currentName, newName);
             }
         }
         catch (Exception ex)
         {
-            return new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtml();
+            return new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtmlElement();
         }
 
-        return string.Empty;
+        return null;
     }
 
-    private string GetHtmlTitle()
+    private HtmlElement GetHtmlForm()
     {
-        var title = new JJTitle(Title, SubTitle);
-        return title.GetHtml();
-    }
+        var html = new HtmlElement()
+            .AppendHiddenInput($"uploadaction_{Name}")
+            .AppendHiddenInput($"filename_{Name}");
 
-    private string GetHtmlForm()
-    {
-        var html = new StringBuilder();
+        if (!ShowAddFile) return html;
 
-
-        var panel = new JJCollapsePanel();
-        panel.Title = "New File";
-        panel.ExpandedByDefault = CollapseAriaExpanded;
-
-        html.AppendLine(
-            $"<input type=\"hidden\" id=\"uploadaction_{Name}\" name=\"uploadaction_{Name}\" value=\"\" />");
-        html.AppendLine($"<input type=\"hidden\" id=\"filename_{Name}\" name=\"filename_{Name}\" />");
-        html.AppendLine(string.Empty);
-
-        if (!ShowAddFile) return html.ToString();
-
-        html.AppendLine(
-            $"<div class=\"{BootstrapHelper.PanelGroup}\" id=\"divNovo\"  enableviewstate=\"false\">");
-        html.AppendLine($"\t<div class=\"{BootstrapHelper.GetPanel("default")}\">");
-        html.Append(
-            $"\t\t<div class=\"{BootstrapHelper.GetPanelHeading("default")}\" href=\"#collapse1\" {BootstrapHelper.DataToggle}=\"collapse\" data-target=\"#collapse1\" aria-expanded=\"");
-        html.Append(CollapseAriaExpanded ? "true" : "false");
-        html.AppendLine("\">");
-        html.AppendLine($"\t\t\t<h4 class=\"{BootstrapHelper.PanelTitle}\">");
-        html.Append("\t\t\t\t<a>");
-        html.Append(Translate.Key("New File"));
-        html.AppendLine("</a>");
-        html.AppendLine("\t\t\t</h4>");
-        html.AppendLine("\t\t</div>");
-        html.Append("\t\t<div id=\"collapse1\" ");
-        if (BootstrapHelper.Version == 3)
-        {
-            html.Append("\" class=\"panel-collapse collapse ");
-            if (CollapseAriaExpanded)
-                html.Append("in ");
-        }
-        else
-        {
-            html.Append($"\" class=\"panel-collapse in collapse {(CollapseAriaExpanded ? "show" : string.Empty)} ");
-        }
-
-
-        html.AppendLine("\">");
-        html.AppendLine($"\t\t\t<div class=\"{BootstrapHelper.PanelBody}\">");
-        html.AppendLine("");
+        var panelContent = new HtmlElement();
         if (!Upload.AllowedTypes.Equals("*"))
         {
-            html.Append("\t\t\t\t<label>");
-            html.Append(Translate.Key("File Type:"));
-            html.Append(" ");
-            html.Append(Upload.AllowedTypes);
-            html.Append(" </label>");
+            panelContent.AppendElement(HtmlTag.Label, label =>
+            {
+                label.AppendText(Translate.Key("File Type:"));
+                label.AppendText("&nbsp;");
+                label.AppendText(Upload.AllowedTypes);
+            });
         }
-
-        html.AppendLine("");
 
         if (!Upload.Multiple && CountFiles() > 0)
             Upload.AddLabel = Translate.Key("Update");
 
-        html.AppendLine(Upload.GetHtml());
+        panelContent.AppendElement(Upload);
 
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t\t</div>");
-        html.AppendLine("\t</div>");
-        html.AppendLine("</div>");
-        return html.ToString();
+        var panel = new JJCollapsePanel();
+        panel.Title = "New File";
+        panel.ExpandedByDefault = CollapseAriaExpanded;
+        panel.HtmlElementContent = panelContent;
+
+        return panel.GetHtmlElement();
     }
 
-    private string GetHtmlGridView()
+    private HtmlElement GetHtmlGridView()
     {
         if (GridView.DataSource == null &&
             GridView.FormElement == null)
         {
             var dt = GetDataTableFiles();
 
-            if (dt == null) return GridView.GetHtml();
+            if (dt == null) return GridView.GetHtmlElement();
 
             GridView.FormElement = new FormElement(dt);
             GridView.DataSource = dt;
@@ -502,178 +465,195 @@ public class JJFormUpload : JJBaseView
                 GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
         }
 
-        return GridView.GetHtml();
+        return GridView.GetHtmlElement();
     }
 
-    private HtmlElement GetHtmlGalleryView()
+    private HtmlElement GetHtmlGallery()
     {
         var files = GetFiles();
 
         if (files.Count <= 0) return null;
-        
+
         foreach (var ac in GridView.GridActions)
         {
             ac.IsGroup = false;
         }
 
-        var div = new HtmlElement(HtmlTag.Div).WithCssClass("row");
+        var row = new HtmlElement(HtmlTag.Div)
+            .WithCssClass("row");
+
         foreach (var file in files)
         {
-            div.AppendElement(HtmlTag.Div, div =>
+            var col = new HtmlElement(HtmlTag.Div);
+            col.WithCssClass("col-sm-3");
+            col.AppendElement(HtmlTag.Ul, ul =>
             {
-                div.WithCssClass("col-sm-3");
-                div.AppendElement(HtmlTag.Ul, ul =>
+                ul.WithCssClass("list-group list-group-flush");
+                ul.AppendElement(GetHtmlGalleryPreview(file.FileName));
+                ul.AppendElement(GetHtmlGalleryListItem("Name", file.FileName));
+                ul.AppendElement(GetHtmlGalleryListItem("Size", file.SizeBytes + " Bytes"));
+                ul.AppendElement(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
+                ul.AppendElement(HtmlTag.Li, li =>
                 {
-                    ul.WithCssClass("list-group list-group-flush");
-                    ul.AppendText(GetPreviewImage(file.FileName));
-                    ul.AppendElement(GetGalleryListItem(Translate.Key("Name"),file.FileName));
-                    ul.AppendElement(GetGalleryListItem(Translate.Key("Size"),file.SizeBytes + " Bytes"));
-                    ul.AppendElement(GetGalleryListItem(Translate.Key("Last Modified"), file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                    ul.AppendElement(HtmlTag.Li, li =>
+                    li.WithCssClass("list-group-item");
+                    li.AppendElement(HtmlTag.Table, table =>
                     {
-                        li.WithCssClass("list-group-item");
-                        li.AppendElement(HtmlTag.Table, table =>
-                        {
-                            table.WithCssClass("table-gallery");
-                            table.AppendRange(GridView.Table.Body.GetActionsHtmlList(ConvertToHashtable(file)).ToList());
-                        });
+                        table.WithCssClass("table-gallery");
+                        table.AppendRange(GridView.Table.Body.GetActionsHtmlList(ConvertToHashtable(file)).ToList());
                     });
                 });
             });
 
+            row.AppendElement(col);
         }
 
-        return div;
+        return row;
     }
 
-    private HtmlElement GetGalleryListItem(String label, String value = null)
+    private HtmlElement GetHtmlGalleryListItem(String label, String value = null)
     {
-        return new HtmlElement(HtmlTag.Li).WithCssClass("list-group-item")
+        return new HtmlElement(HtmlTag.Li)
+            .WithCssClass("list-group-item")
             .AppendElement(HtmlTag.B, b =>
             {
-                b.AppendText(label);
+                b.AppendText(Translate.Key(label));
             })
             .AppendText($"{{0}} {value}");
     }
 
-
-    private string GetPreviewImage(string fileName)
+    private HtmlElement GetHtmlGalleryPreview(string fileName)
     {
-        var html = new StringBuilder();
+        var html = new HtmlElement(HtmlTag.Li)
+            .WithCssClass("list-group-item");
+
         switch (Path.GetExtension(fileName))
         {
             case ".png":
             case ".jpg":
             case ".jpeg":
-                var file = GetFile(fileName);
-                var url = CurrentContext.Request.AbsoluteUri;
-                
-                string src;
-                string filePath = Path.Combine(FolderPath,fileName);
-                
-                if (file.IsInMemory)
-                {
-                    src =  $"data:image/{Path.GetExtension(fileName).Replace(".","")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
-                }
-                else
-                {
-                    var appPath = HttpContext.Current!.Request.ApplicationPath;
-
-                    if (!appPath.EndsWith("/"))
-                        appPath += "/";
-
-                    var culture = CultureInfo.CurrentCulture.Name + "/";
-                    src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
-                }
-                
-
-                if (url.Contains('?'))
-                    url += "&";
-                else
-                    url += "?";
-
-                url += "previewImage=";
-                url += Cript.Cript64(fileName);
-
-                html.Append("<li class=\"list-group-item\"  >");
-                html.AppendFormat("<a href=\"javascript:popup.show('{1}','{0}',4)\" >", url, fileName);
-                html.AppendFormat("<img loading=\"lazy\" src=\"{0}\" alt=\"{1}\" title=\"{1}\" style=\"height:180px\" class=\"img-responsive\" />",src, fileName);
-                html.Append("</a>");
-                html.Append("</li>");
+                html.AppendElement(GetHtmlImageBox(fileName));
                 break;
             case ".mp4":
-                string videoUrl = CurrentContext.Request.AbsoluteUri;
-
-                if (videoUrl.Contains("?"))
-                    videoUrl += "&";
-                else
-                    videoUrl += "?";
-
-                videoUrl += "previewVideo=";
-                videoUrl += Cript.Cript64(fileName);
-
-                html.Append("<li class=\"list-group-item text-center\" >");
-                html.AppendFormat("<a href=\"javascript:popup.show('{1}','{0}',4)\" >", videoUrl, fileName);
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-play-circle\" title=\"{0}\" style=\"color:red;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</a>");
-                html.Append("</li>");
-
+                html.WithCssClass("text-center");
+                html.AppendElement(GetHtmlVideoBox(fileName));
                 break;
             case ".pdf":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-pdf-o\" title=\"{0}\" style=\"color:red;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-pdf-o", "red"));
                 break;
             case ".pptx":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-powerpoint-o\" title=\"{0}\" style=\"color:red;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-powerpoint-o", "red"));
                 break;
             case ".docx":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-word-o\" title=\"{0}\" style=\"color:blue;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-word-o", "blue"));
                 break;
             case ".csv":
             case ".txt":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-text-o\" title=\"{0}\" style=\"color:black;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-text-o", "black"));
                 break;
             case ".xls":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-excel-o\" title=\"{0}\" style=\"color:green;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-excel-o", "green"));
                 break;
             case ".rar":
             case ".zip":
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-zip-o\" title=\"{0}\" style=\"color:#d2bb1c;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-zip-o", "#d2bb1c"));
                 break;
             default:
-                html.Append("<li class=\"list-group-item text-center\" style=\"background-color:#f5f5f5\">");
-                html.Append("<div style=\"height:180px;\">");
-                html.AppendFormat("<span class=\"fa fa-file-o\" title=\"{0}\" style=\"color:gray;padding-top:45px;font-size:100px;\"></span>", fileName);
-                html.Append("</div>");
-                html.Append("</li>");
+                html.WithCssClass("text-center");
+                html.WithAttribute("style", "background-color:#f5f5f5");
+                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-o", "gray"));
                 break;
         }
 
-        return html.ToString();
+        return html;
+    }
+
+    private HtmlElement GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
+    {
+        var div = new HtmlElement(HtmlTag.Div)
+            .WithAttribute("style", "height:180px;")
+            .AppendElement(HtmlTag.Span, span =>
+            {
+                span.WithCssClass(cssIcon)
+                    .WithToolTip(fileName)
+                    .WithAttribute("style", $"color:{colorIcon};padding-top:45px;font-size:100px;");
+            });
+        return div;
+    }
+
+    private HtmlElement GetHtmlImageBox(string fileName)
+    {
+        var file = GetFile(fileName);
+        var url = CurrentContext.Request.AbsoluteUri;
+
+        string src;
+        string filePath = Path.Combine(FolderPath, fileName);
+
+        if (file.IsInMemory)
+        {
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
+        }
+        else
+        {
+            var appPath = HttpContext.Current!.Request.ApplicationPath;
+
+            if (!appPath.EndsWith("/"))
+                appPath += "/";
+
+            var culture = CultureInfo.CurrentCulture.Name + "/";
+            src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
+        }
+
+        if (url.Contains('?'))
+            url += "&";
+        else
+            url += "?";
+
+        url += "previewImage=";
+        url += Cript.Cript64(fileName);
+
+        var html = new HtmlElement(HtmlTag.A)
+        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}',4)")
+        .AppendElement(HtmlTag.Img, img =>
+        {
+            img.WithAttribute("loading", "lazy")
+               .WithAttribute("src", src)
+               .WithAttribute("style", "height:180px;")
+               .WithCssClass("img-responsive")
+               .WithToolTip(fileName);
+        });
+
+        return html;
+    }
+
+    private HtmlElement GetHtmlVideoBox(string fileName)
+    {
+        string videoUrl = CurrentContext.Request.AbsoluteUri;
+
+        if (videoUrl.Contains("?"))
+            videoUrl += "&";
+        else
+            videoUrl += "?";
+
+        videoUrl += "previewVideo=";
+        videoUrl += Cript.Cript64(fileName);
+
+        var html = new HtmlElement(HtmlTag.A)
+         .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}',4)")
+         .AppendElement(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
+
+        return html;
     }
 
     private Hashtable ConvertToHashtable(FormUploadFile file)
@@ -682,313 +662,79 @@ public class JJFormUpload : JJBaseView
         hash.Add(FileName, file.FileName);
         hash.Add(LastWriteTime, file.LastWriteTime);
         hash.Add(Size, file.SizeBytes);
-        hash.Add(FileNameJs, file.FileName.Replace("'","\\'"));
+        hash.Add(FileNameJs, file.FileName.Replace("'", "\\'"));
 
         return hash;
     }
 
-    private string GetHtmlPreviewModal()
+    private JJModalDialog GetHtmlPreviewModal()
     {
+        var html = new HtmlElement(HtmlTag.Div);
 
-        int bootstrapVersion = BootstrapHelper.Version;
-        
-        StringBuilder html = new();
-        html.AppendFormat("<div id=\"preview_modal_{0}\" ", Upload.Name);
-        html.Append("class=\"modal fade\" ");
-        html.Append("tabindex=\"-1\" ");
-        html.Append("role=\"dialog\" ");
-        html.AppendLine("style=\"display:none\">");
-        html.AppendLine("\t<div class=\"modal-dialog modal-lg\" role=\"document\">");
-        html.AppendLine("\t\t<div class=\"modal-content\">");
-        html.AppendLine("\t\t\t<div class=\"modal-header\">");
-        html.Append("\t\t\t\t<h4 class=\"modal-title\">");
-        html.Append(Translate.Key("Would you like to save the image below?"));
-        if (bootstrapVersion < 5)
-            html.Append(GetCloseBtnHtml());
-        html.AppendLine("</h4>");
-        if (bootstrapVersion >= 5)
-            html.Append(GetCloseBtnHtml());
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t\t\t<div class=\"modal-body\">");
-        html.AppendLine("\t\t\t\t<div class=\"row\">");
-        html.AppendLine("\t\t\t\t\t<div class=\"col-sm-12\">");
-        html.AppendFormat("\t\t\t\t\t\t<label for=\"preview_filename_{0}\">", Upload.Name);
-        html.Append(Translate.Key("File name"));
-        html.AppendLine("</label>");
-        html.AppendLine("\t\t\t\t\t\t<div class=\"input-group\">");
-        html.Append('\t', 7);
-        html.AppendFormat("<input id=\"preview_filename_{0}\" ", Upload.Name);
-        html.AppendLine("type=\"text\" class=\"form-control\" value=\"image\">");
-        html.AppendLine("\t\t\t\t\t\t\t<span class=\"input-group-addon\">.png</span>");
-        html.AppendLine("\t\t\t\t\t\t</div>");
-        html.AppendLine("\t\t\t\t\t</div>");
-        html.AppendLine("\t\t\t\t</div>");
-        html.AppendLine("\t\t\t\t<div class=\"row\">");
-        html.AppendLine("\t\t\t\t\t<div class=\"col-sm-12\">");
-        html.AppendLine("\t\t\t\t\t\t<hr />");
-        html.AppendLine("\t\t\t\t\t</div>");
-        html.AppendLine("\t\t\t\t\t<div class=\"col-sm-12\">");
-        html.Append('\t', 6);
-        html.AppendFormat("<img id=\"pastedimage_{0}\" ", Upload.Name);
-        html.AppendLine("class=\"img-responsive\" style=\"max-height:350px;\" alt=\"Preview Image\" />");
-        html.AppendLine("\t\t\t\t\t</div>");
-        html.AppendLine("\t\t\t\t</div>");
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t\t\t<div class=\"modal-footer\">");
-        html.Append('\t', 4);
-        html.AppendFormat("<button id=\"btnDoUpload_{0}\" ", Upload.Name);
-        html.Append("type=\"button\" ");
-        html.Append("class=\"btn btn-primary\">");
-        html.Append(Translate.Key("Save"));
-        html.AppendLine("</button>");
-        html.Append('\t', 4);
-        html.Append($"<button type=\"button\" class=\"{BootstrapHelper.DefaultButton}\" {BootstrapHelper.DataDismiss}=\"modal\">");
-        html.Append(Translate.Key("Cancel"));
-        html.AppendLine("</button>");
-        html.AppendLine("\t\t\t</div>");
-        html.AppendLine("\t\t</div>");
-        html.AppendLine("\t</div>");
-        html.AppendLine("</div>");
-
-        return html.ToString();
-    }
-
-    private string GetCloseBtnHtml()
-    {
-        StringBuilder html = new();
-
-        html.Append($"\t\t\t\t<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"modal\" ");
-        html.AppendFormat("aria-label=\"{0}\">", Translate.Key("Close"));
-        html.Append($"<span aria-hidden=\"true\">{BootstrapHelper.CloseButtonTimes}</span>");
-        html.AppendLine("</button>");
-
-        return html.ToString();
-    }
-    
-    public List<FormUploadFile> GetFiles()
-    {
-        List<FormUploadFile> files = null;
-        
-        if (!AutoSave || string.IsNullOrEmpty(FolderPath))
-            files = MemoryFiles;
-
-        return files ?? GetPhysicalFiles();
-    }
-
-    /// <summary>
-    /// Recovers the list of files in a DataTable object.
-    /// </summary>
-    /// <returns>
-    /// A data table with the following columns:<para></para>
-    /// Name, Size, LastWriteTime
-    /// </returns>
-    public DataTable GetDataTableFiles()
-    {
-        var files = GetFiles();
-        var dt = new DataTable();
-        dt.Columns.Add(FileName, typeof(string));
-        dt.Columns.Add(Size, typeof(string));
-        dt.Columns.Add(LastWriteTime, typeof(string));
-        dt.Columns.Add(FileNameJs, typeof(string));
-
-        foreach (var mFiles in files.Where(mFiles => !mFiles.Deleted))
+        html.AppendElement(HtmlTag.Div, row =>
         {
-            var dataRow = dt.NewRow();
-            dataRow["Name"] = mFiles.FileName;
-            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
-            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
-            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
-            dt.Rows.Add(dataRow);
-        }
-
-        return dt;
-    }
-    
-    public void CreateFile(string fileName, MemoryStream memoryStream)
-    {
-        if (fileName?.LastIndexOf("\\") > 0)
-            fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
-
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
-        {
-            SavePhysicalFile(FolderPath, fileName, memoryStream);
-        }
-        else
-        {
-            var files = GetFiles();
-            var currentFile = files.Find(x => x.FileName.Equals(fileName));
-            if (currentFile == null)
+            row.WithCssClass("row");
+            row.AppendElement(HtmlTag.Div, col =>
             {
-                var file = new FormUploadFile
+                col.WithCssClass("col-sm-12")
+                   .AppendElement(new JJLabel
+                   {
+                       LabelFor = $"preview_filename_{Upload.Name}",
+                       Text = "File name"
+                   })
+                   .AppendElement(new JJTextGroup
+                   {
+                       Name = $"preview_filename_{Upload.Name}",
+                       Addons = new InputAddons(".png"),
+                       Text = "image"
+                   });
+            });
+        });
+
+        html.AppendElement(HtmlTag.Div, row =>
+        {
+            row.WithCssClass("row");
+            row.AppendElement(HtmlTag.Div, col =>
+            {
+                col.WithCssClass("col-sm-12");
+                col.AppendElement(HtmlTag.Hr);
+            });
+            row.AppendElement(HtmlTag.Div, col =>
+            {
+                col.WithCssClass("col-sm-12");
+                col.AppendElement(HtmlTag.Img, img =>
                 {
-                    FileName = fileName,
-                    FileStream = memoryStream,
-                    LastWriteTime = DateTime.Now,
-                    SizeBytes = memoryStream.Length
-                };
-                files.Add(file);
-            }
-            else
-            {
-                currentFile.Deleted = false;
-                currentFile.FileStream = memoryStream;
-                currentFile.LastWriteTime = DateTime.Now;
-                currentFile.SizeBytes = memoryStream.Length;
-            }
+                    img.WithAttribute("id", $"pastedimage_{0}")
+                       .WithAttribute("style", "max-height:350px;")
+                       .WithAttribute("alt", Translate.Key("Preview Image"))
+                       .WithCssClass("img-responsive");
+                });
+            });
+        });
 
-            MemoryFiles = files;
-
-        }
-    }
-    
-    public void DeleteFile(string fileName)
-    {
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        var btnOk = new JJLinkButton
         {
-            File.Delete(FolderPath + fileName);
-        }
-        else
+            Type = LinkButtonType.Button,
+            Name = $"btnDoUpload_{Upload.Name}",
+            CssClass = "btn btn-primary",
+            Text = "Save"
+        };
+
+        var btnCancel = new JJLinkButton
         {
-            var files = GetFiles();
-            var file = files.Find(x => x.FileName.Equals(fileName));
-            if (file != null)
-            {
-                if (!file.IsInMemory)
-                    file.Deleted = true;
-                else
-                    files.Remove(file);
-            }
+            Type = LinkButtonType.Button,
+            Text = "Cancel"
+        };
+        btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
 
-            MemoryFiles = files;
-        }
-    }
-    
-    public void DownloadFile(string fileName)
-    {
-        var download = new JJDownloadFile(fileName);
+        var modal = new JJModalDialog();
+        modal.Name = $"preview_modal_{Upload.Name}";
+        modal.Title = "Would you like to save the image below?";
+        modal.HtmlElementContent = html;
+        modal.Buttons.Add(btnOk);
+        modal.Buttons.Add(btnCancel);
 
-        download.ResponseDirectDownload();
-    }
-    
-    public void RenameFile(string currentName, string newName)
-    {
-        if (string.IsNullOrEmpty(currentName))
-            throw new ArgumentException(nameof(currentName));
-
-        if (string.IsNullOrWhiteSpace(newName))
-            throw new Exception(Translate.Key("Required file name"));
-
-        if (!Validate.ValidFileName(newName))
-            throw new Exception(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
-
-        if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new Exception(Translate.Key("The file extension must remain the same"));
-
-        var files = GetFiles();
-        if (files.Exists(x => x.FileName.Equals(newName)))
-            throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
-
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
-        {
-            File.Move(FolderPath + currentName, FolderPath + newName);
-        }
-        else
-        {
-            var file = files.Find(x => x.FileName.Equals(currentName));
-            if (file == null)
-                throw new Exception(Translate.Key("file {0} not found!", currentName));
-
-            file.FileName = newName;
-            if (file.FileStream == null & string.IsNullOrEmpty(file.OriginName))
-                file.OriginName = currentName;
-
-            MemoryFiles = files;
-        }
-    }
-
-    /// <summary>
-    /// Recupera o conteúdo do arquivo
-    /// </summary>
-    /// <param name="fileName">Nome do arquivo</param>
-    /// <returns>
-    /// Stream com o conteúdo do arquivo
-    /// </returns>
-    public FormUploadFile GetFile(string fileName)
-    {
-        var files = GetFiles();
-        return files.Find(x => x.FileName.Equals(fileName));
-    }
-
-    /// <summary>
-    /// Disable all actions, except the download.
-    /// </summary>
-    public void Disable()
-    {
-        ShowAddFile = false;
-        foreach (BasicAction ac in GridView.GridActions)
-        {
-            ac.SetVisible(false);
-        }
-        DownloadAction.SetVisible(true);
-    }
-
-    /// <summary>
-    /// Save the files from the memory to the disk.
-    /// </summary>
-    public void SaveMemoryFiles(string folderPath)
-    {
-        if (string.IsNullOrEmpty(folderPath))
-        {
-            throw new ArgumentNullException(nameof(folderPath));
-        }
-
-        if (MemoryFiles == null)
-            return;
-
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
-
-        foreach (var file in MemoryFiles)
-        {
-            if (file.Deleted)
-            {
-                string filename = string.IsNullOrEmpty(file.OriginName) ? file.FileName : file.OriginName;
-                File.Delete(folderPath + filename);
-            }
-            else if (!string.IsNullOrEmpty(file.OriginName))
-            {
-                File.Move(folderPath + file.OriginName, folderPath + file.FileName);
-            }
-            else if (file.FileStream != null && file.IsInMemory)
-            {
-                SavePhysicalFile(folderPath, file.FileName, file.FileStream);
-            }
-        }
-
-        FolderPath = folderPath;
-        MemoryFiles = null;
-    }
-    
-    public void ClearMemoryFiles()
-    {
-        MemoryFiles = null;
-    }
-    
-    public void DeleteAll()
-    {
-        if (!string.IsNullOrEmpty(FolderPath))
-        {
-            if (Directory.Exists(FolderPath))
-                Directory.Delete(FolderPath, true);
-        }
-
-        MemoryFiles = null;
-    }
-    
-    public int CountFiles()
-    {
-        var listFiles = GetFiles();
-        return listFiles.Count(x => !x.Deleted);
+        return modal;
     }
 
     private void SavePhysicalFile(string folderPath, string fileName, MemoryStream ms)
@@ -1004,9 +750,6 @@ public class JJFormUpload : JJBaseView
         fileStream.Close();
     }
 
-    /// <summary>
-    /// Recupera os arquivos salvos na pasta
-    /// </summary>
     private List<FormUploadFile> GetPhysicalFiles()
     {
         var formfiles = new List<FormUploadFile>();
@@ -1070,6 +813,225 @@ public class JJFormUpload : JJBaseView
             e.ErrorMessage = ex.Message;
         }
 
+    }
+    
+    public List<FormUploadFile> GetFiles()
+    {
+        List<FormUploadFile> files = null;
+
+        if (!AutoSave || string.IsNullOrEmpty(FolderPath))
+            files = MemoryFiles;
+
+        return files ?? GetPhysicalFiles();
+    }
+
+    /// <summary>
+    /// Recovers the list of files in a DataTable object.
+    /// </summary>
+    /// <returns>
+    /// A data table with the following columns:<para></para>
+    /// Name, Size, LastWriteTime
+    /// </returns>
+    public DataTable GetDataTableFiles()
+    {
+        var files = GetFiles();
+        var dt = new DataTable();
+        dt.Columns.Add(FileName, typeof(string));
+        dt.Columns.Add(Size, typeof(string));
+        dt.Columns.Add(LastWriteTime, typeof(string));
+        dt.Columns.Add(FileNameJs, typeof(string));
+
+        foreach (var mFiles in files.Where(mFiles => !mFiles.Deleted))
+        {
+            var dataRow = dt.NewRow();
+            dataRow["Name"] = mFiles.FileName;
+            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
+            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
+            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
+            dt.Rows.Add(dataRow);
+        }
+
+        return dt;
+    }
+
+    public void CreateFile(string fileName, MemoryStream memoryStream)
+    {
+        if (fileName?.LastIndexOf("\\") > 0)
+            fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
+
+        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        {
+            SavePhysicalFile(FolderPath, fileName, memoryStream);
+        }
+        else
+        {
+            var files = GetFiles();
+            var currentFile = files.Find(x => x.FileName.Equals(fileName));
+            if (currentFile == null)
+            {
+                var file = new FormUploadFile
+                {
+                    FileName = fileName,
+                    FileStream = memoryStream,
+                    LastWriteTime = DateTime.Now,
+                    SizeBytes = memoryStream.Length
+                };
+                files.Add(file);
+            }
+            else
+            {
+                currentFile.Deleted = false;
+                currentFile.FileStream = memoryStream;
+                currentFile.LastWriteTime = DateTime.Now;
+                currentFile.SizeBytes = memoryStream.Length;
+            }
+
+            MemoryFiles = files;
+
+        }
+    }
+
+    public void DeleteFile(string fileName)
+    {
+        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        {
+            File.Delete(FolderPath + fileName);
+        }
+        else
+        {
+            var files = GetFiles();
+            var file = files.Find(x => x.FileName.Equals(fileName));
+            if (file != null)
+            {
+                if (!file.IsInMemory)
+                    file.Deleted = true;
+                else
+                    files.Remove(file);
+            }
+
+            MemoryFiles = files;
+        }
+    }
+
+    public void DownloadFile(string fileName)
+    {
+        var download = new JJDownloadFile(fileName);
+
+        download.ResponseDirectDownload();
+    }
+
+    public void RenameFile(string currentName, string newName)
+    {
+        if (string.IsNullOrEmpty(currentName))
+            throw new ArgumentException(nameof(currentName));
+
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new Exception(Translate.Key("Required file name"));
+
+        if (!Validate.ValidFileName(newName))
+            throw new Exception(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
+
+        if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
+            throw new Exception(Translate.Key("The file extension must remain the same"));
+
+        var files = GetFiles();
+        if (files.Exists(x => x.FileName.Equals(newName)))
+            throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
+
+        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        {
+            File.Move(FolderPath + currentName, FolderPath + newName);
+        }
+        else
+        {
+            var file = files.Find(x => x.FileName.Equals(currentName));
+            if (file == null)
+                throw new Exception(Translate.Key("file {0} not found!", currentName));
+
+            file.FileName = newName;
+            if (file.FileStream == null & string.IsNullOrEmpty(file.OriginName))
+                file.OriginName = currentName;
+
+            MemoryFiles = files;
+        }
+    }
+
+    public FormUploadFile GetFile(string fileName)
+    {
+        var files = GetFiles();
+        return files.Find(x => x.FileName.Equals(fileName));
+    }
+
+    /// <summary>
+    /// Disable all actions, except the download.
+    /// </summary>
+    public void Disable()
+    {
+        ShowAddFile = false;
+        foreach (BasicAction ac in GridView.GridActions)
+        {
+            ac.SetVisible(false);
+        }
+        DownloadAction.SetVisible(true);
+    }
+
+    /// <summary>
+    /// Save the files from the memory to the disk.
+    /// </summary>
+    public void SaveMemoryFiles(string folderPath)
+    {
+        if (string.IsNullOrEmpty(folderPath))
+        {
+            throw new ArgumentNullException(nameof(folderPath));
+        }
+
+        if (MemoryFiles == null)
+            return;
+
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
+        foreach (var file in MemoryFiles)
+        {
+            if (file.Deleted)
+            {
+                string filename = string.IsNullOrEmpty(file.OriginName) ? file.FileName : file.OriginName;
+                File.Delete(folderPath + filename);
+            }
+            else if (!string.IsNullOrEmpty(file.OriginName))
+            {
+                File.Move(folderPath + file.OriginName, folderPath + file.FileName);
+            }
+            else if (file.FileStream != null && file.IsInMemory)
+            {
+                SavePhysicalFile(folderPath, file.FileName, file.FileStream);
+            }
+        }
+
+        FolderPath = folderPath;
+        MemoryFiles = null;
+    }
+
+    public void ClearMemoryFiles()
+    {
+        MemoryFiles = null;
+    }
+
+    public void DeleteAll()
+    {
+        if (!string.IsNullOrEmpty(FolderPath))
+        {
+            if (Directory.Exists(FolderPath))
+                Directory.Delete(FolderPath, true);
+        }
+
+        MemoryFiles = null;
+    }
+
+    public int CountFiles()
+    {
+        var listFiles = GetFiles();
+        return listFiles.Count(x => !x.Deleted);
     }
 
 }

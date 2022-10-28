@@ -327,7 +327,7 @@ public class JJLookup : JJBaseControl
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
-    public static string ResponseRoute(JJDataPanel view)
+    public static HtmlElement ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
 
@@ -338,7 +338,7 @@ public class JJLookup : JJBaseControl
         if (field == null) return null;
 
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return lookup.GetHtml();
+        return lookup.GetHtmlElement();
 
     }
 }

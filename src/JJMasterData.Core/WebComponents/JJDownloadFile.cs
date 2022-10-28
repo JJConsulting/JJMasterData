@@ -128,7 +128,7 @@ public class JJDownloadFile : JJBaseView
         return false;
     }
 
-    public static string ResponseRoute(JJBaseView view)
+    public static HtmlElement ResponseRoute(JJBaseView view)
     {
         bool isExternalLink = false;
         string criptFilePath = view.CurrentContext.Request.QueryString(DownloadParameter);
@@ -151,7 +151,7 @@ public class JJDownloadFile : JJBaseView
             IsExternalLink = isExternalLink
         };
 
-        return download.GetHtml();
+        return download.GetHtmlElement();
     }
 
 
