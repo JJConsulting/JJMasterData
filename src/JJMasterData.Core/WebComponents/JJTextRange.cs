@@ -52,9 +52,9 @@ public class JJTextRange : JJBaseControl
         return range;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var div = new HtmlElement(string.Empty);
+        var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
         div.AppendElement(HtmlTag.Div, div =>
@@ -84,11 +84,11 @@ public class JJTextRange : JJBaseControl
         return div;
     }
 
-    private HtmlElement GetDatePeriodsHtmlElement()
+    private HtmlBuilder GetDatePeriodsHtmlElement()
     {
         var now = DateTime.Today;
 
-        var dropdown = new HtmlElement(HtmlTag.Div)
+        var dropdown = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("dropdown")
             .AppendElement(GetDropdownButton())
             .AppendElement(HtmlTag.Ul, ul =>
@@ -106,9 +106,9 @@ public class JJTextRange : JJBaseControl
         return dropdown;
     }
     
-    private HtmlElement GetDropdownButton()
+    private HtmlBuilder GetDropdownButton()
     {
-        return new HtmlElement(HtmlTag.Button)
+        return new HtmlBuilder(HtmlTag.Button)
             .WithCssClass(BootstrapHelper.DefaultButton)
             .WithCssClass("dropdown-toggle")
             .WithAttribute("type", "button")
@@ -163,9 +163,9 @@ public class JJTextRange : JJBaseControl
         return GetjQueryFromToScript(now.ToShortDateString(), now.ToShortDateString(), IsTimeAware);
     }
 
-    private HtmlElement GetListItem(string label, string script)
+    private HtmlBuilder GetListItem(string label, string script)
     {
-        return new HtmlElement(HtmlTag.Li)
+        return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("dropdown-item")
             .AppendElement(HtmlTag.A, a =>
             {

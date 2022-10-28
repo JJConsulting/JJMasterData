@@ -133,25 +133,14 @@ public abstract class JJBaseView
 
     #endregion
 
-    [Obsolete("Please use GetHtmlElement and remove this method before merging into main.")]
-    protected virtual string RenderHtml()
-    {
-        return string.Empty;
-    }
-
     /// <summary>
     /// Returns the object representation of the HTML
     /// </summary>
-    // internal abstract HtmlElement GetHtmlElement();
-    // TODO: after removing RenderHtml() make this method abstract.
-    internal virtual HtmlElement RenderHtmlElement()
-    {
-        return new HtmlElement("    ");
-    }
+    internal abstract HtmlBuilder RenderHtml();
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlBuilder()
     {
-        return Visible ? RenderHtmlElement() : null;
+        return Visible ? RenderHtml() : null;
     }
 
     /// <summary>
@@ -162,21 +151,7 @@ public abstract class JJBaseView
     /// </returns>
     public string GetHtml()
     {
-        if (!Visible)
-            return "";
-
-        string result = null;
-        var element = RenderHtmlElement();
-        if (element != null)
-        {
-            var builder = new HtmlBuilder();
-            builder.StartElement(element);
-            result = builder.RenderHtml(false);
-        }
-        
-        //TODO: Remove RenderHtml
-        return string.IsNullOrWhiteSpace(result) ? RenderHtml() : result;
-
+        return Visible ? RenderHtml()?.GetHtml() : string.Empty;
     }
 
     protected DicParser GetDictionary(string elementName) => new DictionaryDao(DataAccess).GetDictionary(elementName);

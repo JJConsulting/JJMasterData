@@ -28,9 +28,9 @@ internal class GridTableBody
         GridView = gridView;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
-        var tbody = new HtmlElement(HtmlTag.Tbody);
+        var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
         tbody.WithAttribute("id", Name);
         tbody.AppendRange(GetRowsList());
@@ -38,10 +38,10 @@ internal class GridTableBody
         return tbody;
     }
 
-    private IList<HtmlElement> GetRowsList(bool isAjax = false)
+    private IList<HtmlBuilder> GetRowsList(bool isAjax = false)
     {
         var rows = GridView.DataSource.Rows;
-        var trList = new List<HtmlElement>();
+        var trList = new List<HtmlBuilder>();
 
         for (int i = 0; i < rows.Count; i++)
         {
@@ -51,14 +51,14 @@ internal class GridTableBody
         return trList;
     }
 
-    internal HtmlElement GetRowHtmlElement(DataRow row, int index, bool isAjax)
+    internal HtmlBuilder GetRowHtmlElement(DataRow row, int index, bool isAjax)
     {
         var values = GetValues(row);
 
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        var html = new HtmlElement(!isAjax ? HtmlTag.Tr : HtmlTag.Div);
+        var html = new HtmlBuilder(!isAjax ? HtmlTag.Tr : HtmlTag.Div);
 
         if (!isAjax)
         {
@@ -76,9 +76,9 @@ internal class GridTableBody
         return html;
     }
 
-    private IList<HtmlElement> GetVisibleFieldsHtmlList(DataRow row, int index, Hashtable values, string onClickScript)
+    private IList<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, Hashtable values, string onClickScript)
     {
-        var htmlList = new List<HtmlElement>();
+        var htmlList = new List<HtmlBuilder>();
         foreach (var field in GridView.VisibleFields)
         {
             string value = string.Empty;
@@ -87,7 +87,7 @@ internal class GridTableBody
                 value = GridView.FieldManager.ParseVal(values, field);
             }
 
-            var td = new HtmlElement(HtmlTag.Td);
+            var td = new HtmlBuilder(HtmlTag.Td);
             string style = GetTdStyle(field);
             td.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
             td.WithAttribute("onclick", onClickScript);
@@ -131,13 +131,13 @@ internal class GridTableBody
         return htmlList;
     }
 
-    private HtmlElement GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values,
+    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
         bool hasError = GridView.Errors?.ContainsKey(name) ?? false;
 
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
         if ((field.Component == FormComponent.ComboBox | field.Component == FormComponent.CheckBox |
@@ -167,12 +167,12 @@ internal class GridTableBody
         return div;
     }
 
-    public IEnumerable<HtmlElement> GetActionsHtmlList(Hashtable values)
+    public IEnumerable<HtmlBuilder> GetActionsHtmlList(Hashtable values)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-        var htmlList = new List<HtmlElement>();
+        var htmlList = new List<HtmlBuilder>();
 
         htmlList.AddRange(GetActionsWithoutGroupHtml(actionsWithoutGroup, values));
 
@@ -184,13 +184,13 @@ internal class GridTableBody
         return htmlList;
     }
 
-    private IEnumerable<HtmlElement> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
+    private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
         Hashtable values)
     {
-        var tdList = new List<HtmlElement>();
+        var tdList = new List<HtmlBuilder>();
         foreach (var action in actionsWithoutGroup)
         {
-            var td = new HtmlElement(HtmlTag.Td);
+            var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
 
             var link = GridView.ActionManager.GetLinkGrid(action, values);
@@ -214,9 +214,9 @@ internal class GridTableBody
         return tdList;
     }
 
-    private HtmlElement GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, Hashtable values)
+    private HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, Hashtable values)
     {
-        var td = new HtmlElement(HtmlTag.Td)
+        var td = new HtmlBuilder(HtmlTag.Td)
             .WithCssClass("table-action")
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -263,9 +263,9 @@ internal class GridTableBody
         return td;
     }
 
-    private static HtmlElement GetDividerHtml()
+    private static HtmlBuilder GetDividerHtml()
     {
-        var li = new HtmlElement(HtmlTag.Li)
+        var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("separator")
             .WithCssClass("divider");
 
@@ -302,11 +302,11 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private HtmlElement GetMultiSelectRow(DataRow row, int index, Hashtable values, ref string onClickScript)
+    private HtmlBuilder GetMultiSelectRow(DataRow row, int index, Hashtable values, ref string onClickScript)
     {
         string pkValues = GridView.GetPkValues(values);
 
-        var td = new HtmlElement(HtmlTag.Td);
+        var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
         var checkBox = new JJCheckBox

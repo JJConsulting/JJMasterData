@@ -5,16 +5,16 @@ namespace JJMasterData.Core.WebComponents;
 
 internal class JJToolbar : JJBaseView
 {
-    public List<HtmlElement> ListElement { get; set; }
+    public List<HtmlBuilder> ListElement { get; set; }
 
     public JJToolbar()
     {
-        ListElement = new List<HtmlElement>();
+        ListElement = new List<HtmlBuilder>();
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(BootstrapHelper.FormGroup)
@@ -28,9 +28,9 @@ internal class JJToolbar : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlCol()
+    private HtmlBuilder GetHtmlCol()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("col-sm-12");
 
         int totElement = ListElement.Count;

@@ -27,15 +27,15 @@ internal class DataPanelGroup
         Name = dataPanel.Name;
     }
 
-    public List<HtmlElement> GetListHtmlPanel()
+    public List<HtmlBuilder> GetListHtmlPanel()
     {
-        var list = new List<HtmlElement>();
+        var list = new List<HtmlBuilder>();
 
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
         if (tabs.Count > 0)
         {
             var navTab = GetTabNav(tabs);
-            list.Add(navTab.GetHtmlElement());
+            list.Add(navTab.GetHtmlBuilder());
         }
 
         //Render other layout types
@@ -60,8 +60,8 @@ internal class DataPanelGroup
             {
                 var card = new JJCard();
                 card.ShowAsWell = true;
-                card.HtmlElementContent = GetHtmlForm(null);
-                list.Add(card.GetHtmlElement());
+                card.HtmlBuilderContent = GetHtmlForm(null);
+                list.Add(card.GetHtmlBuilder());
             }
         }
 
@@ -91,7 +91,7 @@ internal class DataPanelGroup
         return navTab;
     }
 
-    private HtmlElement GetHtmlPanelGroup(FormElementPanel panel)
+    private HtmlBuilder GetHtmlPanelGroup(FormElementPanel panel)
     {
         if (!IsVisible(panel))
             return null;
@@ -104,11 +104,11 @@ internal class DataPanelGroup
                 SubTitle = panel.SubTitle,
                 Name = Name + "_panel" + panel.PanelId,
                 CssClass = panel.CssClass,
-                HtmlElementContent = GetHtmlForm(panel),
+                HtmlBuilderContent = GetHtmlForm(panel),
                 ExpandedByDefault = panel.ExpandedByDefault,
                 Color = panel.Color
             };
-            return collapse.GetHtmlElement();
+            return collapse.GetHtmlBuilder();
         }
         else
         {
@@ -117,13 +117,13 @@ internal class DataPanelGroup
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
                 ShowAsWell = panel.Layout == PanelLayout.Well,
-                HtmlElementContent = GetHtmlForm(panel)
+                HtmlBuilderContent = GetHtmlForm(panel)
             };
-            return card.GetHtmlElement();
+            return card.GetHtmlBuilder();
         }
     }
 
-    private HtmlElement GetHtmlForm(FormElementPanel panel)
+    private HtmlBuilder GetHtmlForm(FormElementPanel panel)
     {
         int panelId = panel == null ? 0 : panel.PanelId;
         var fields = FormElement.Fields.ToList()
@@ -143,7 +143,7 @@ internal class DataPanelGroup
         }
 
         var contentform = DataPanelControl.GetHtmlForm(fields);
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("container-fluid")
             .AppendElement(contentform);
 

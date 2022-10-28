@@ -77,7 +77,7 @@ public class JJComboBox : JJBaseControl
         return cbo;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         if (DataItem == null)
             throw new ArgumentException(Translate.Key("[DataItem] properties not defined for combo"), Name);
@@ -87,7 +87,7 @@ public class JJComboBox : JJBaseControl
         if (values == null)
             throw new ArgumentException(Translate.Key("Data source not defined for combo"), Name);
 
-        var combobox = new HtmlElement(HtmlTag.Div);
+        var combobox = new HtmlBuilder(HtmlTag.Div);
 
         if (ReadOnly)
         {
@@ -101,9 +101,9 @@ public class JJComboBox : JJBaseControl
         return combobox;
     }
 
-    private HtmlElement GetSelectElement(List<DataItemValue> values)
+    private HtmlBuilder GetSelectElement(List<DataItemValue> values)
     {
-        var select = new HtmlElement(HtmlTag.Select)
+        var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control ")
             .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
@@ -118,11 +118,11 @@ public class JJComboBox : JJBaseControl
         return select;
     }
 
-    private List<HtmlElement> GetOptions(List<DataItemValue> values)
+    private List<HtmlBuilder> GetOptions(List<DataItemValue> values)
     {
-        var options = new List<HtmlElement>();
+        var options = new List<HtmlBuilder>();
 
-        var firstOption = new HtmlElement(HtmlTag.Option)
+        var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, Translate.Key("(All)"))
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, Translate.Key("(Choose)"));
@@ -133,7 +133,7 @@ public class JJComboBox : JJBaseControl
         {
             var label = IsManualValues() ? Translate.Key(value.Description) : value.Description;
 
-            var option = new HtmlElement(HtmlTag.Option)
+            var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(SelectedValue != null && SelectedValue.Equals(value.Id), "selected", "selected")
                 .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", IconHelper.GetClassName(value.Icon))
@@ -145,11 +145,11 @@ public class JJComboBox : JJBaseControl
         return options;
     }
 
-    private List<HtmlElement> GetReadOnlyInputs(List<DataItemValue> values)
+    private List<HtmlBuilder> GetReadOnlyInputs(List<DataItemValue> values)
     {
-        var inputs = new List<HtmlElement>();
+        var inputs = new List<HtmlBuilder>();
 
-        var hiddenInput = new HtmlElement(HtmlTag.Input)
+        var hiddenInput = new HtmlBuilder(HtmlTag.Input)
             .WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithValue(SelectedValue);
@@ -158,7 +158,7 @@ public class JJComboBox : JJBaseControl
 
         var selectedText = GetSelectedText(values);
 
-        var readonlyInput = new HtmlElement(HtmlTag.Input)
+        var readonlyInput = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId("cboview_" + Name)
             .WithCssClass("form-control form-select")
             .WithCssClass(CssClass)
@@ -221,12 +221,12 @@ public class JJComboBox : JJBaseControl
 
         if (DataItem.ShowImageLegend)
         {
-            var div = new HtmlElement(HtmlTag.Div);
+            var div = new HtmlBuilder(HtmlTag.Div);
             
             var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
-            }.RenderHtmlElement();
+            }.RenderHtml();
 
             div.AppendElement(icon);
             
@@ -235,7 +235,7 @@ public class JJComboBox : JJBaseControl
                 div.AppendText("&nbsp;");
                 div.AppendText(label);
             }
-            description = div.GetElementHtml();
+            description = div.GetHtml();
         }
         else
         {

@@ -25,9 +25,9 @@ internal class DataExpSettings
         _dataExp = dataExp;
     }
 
-    internal HtmlElement GetHtmlElement()
+    internal HtmlBuilder GetHtmlElement()
     {
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         html.AppendElement(GetFormHtmlElement());
 
@@ -64,9 +64,9 @@ internal class DataExpSettings
         return html;
     }
 
-    private HtmlElement GetFormHtmlElement()
+    private HtmlBuilder GetFormHtmlElement()
     {
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass(BootstrapHelper.FormHorizontal);
         div.WithAttribute("role", "form");
 
@@ -106,9 +106,9 @@ internal class DataExpSettings
         return div;
     }
 
-    private HtmlElement GetFileExtensionField()
+    private HtmlBuilder GetFileExtensionField()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .AppendElement(HtmlTag.Label, label =>
             {
@@ -153,9 +153,9 @@ internal class DataExpSettings
             });
     }
 
-    private HtmlElement GetOrientationField()
+    private HtmlBuilder GetOrientationField()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("id", $"{_dataExp.Name}_div_export_orientation")
             .WithAttribute("style", "display:none")
@@ -187,9 +187,9 @@ internal class DataExpSettings
             });
     }
 
-    private HtmlElement GetExportAllField()
+    private HtmlBuilder GetExportAllField()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("id", $"{_dataExp.Name}_div_export_all")
             .AppendElement(HtmlTag.Label, label =>
@@ -220,9 +220,9 @@ internal class DataExpSettings
             });
     }
 
-    private HtmlElement GetDelimiterField()
+    private HtmlBuilder GetDelimiterField()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("style", "display:none;")
             .WithAttribute("id", $"{_dataExp.Name}_div_export_delimiter")
@@ -259,9 +259,9 @@ internal class DataExpSettings
             });
     }
 
-    private HtmlElement GetFirstLineField()
+    private HtmlBuilder GetFirstLineField()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("id", $"{_dataExp.Name}_div_export_fistline")
             .AppendElement(HtmlTag.Label, label =>
@@ -319,18 +319,18 @@ internal class DataExpSettings
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
             Title = Translate.Key("Recently generated files") + $" ({files.Count})",
-            HtmlElementContent = GetLastFilesHtmlElement(files)
+            HtmlBuilderContent = GetLastFilesHtmlElement(files)
         };
 
         return panel;
     }
 
-    private HtmlElement GetLastFilesHtmlElement(List<FileInfo> files)
+    private HtmlBuilder GetLastFilesHtmlElement(List<FileInfo> files)
     {
         if (files == null || files.Count == 0)
-            return new HtmlElement(Translate.Key("No recently generated files."));
+            return new HtmlBuilder(Translate.Key("No recently generated files."));
 
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)
         {
             if (FileIO.IsFileLocked(file))
@@ -339,7 +339,7 @@ internal class DataExpSettings
             var icon = _dataExp.GetFileIcon(file.Extension);
             string url = _dataExp.GetDownloadUrl(file.FullName);
 
-            var div = new HtmlElement(HtmlTag.Div);
+            var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");
             div.AppendElement(icon);
             div.AppendText("&nbsp;");

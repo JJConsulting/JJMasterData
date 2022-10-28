@@ -12,9 +12,9 @@ internal class DataExpLog
         _name = name;
     }
 
-    internal HtmlElement GetHtmlProcess()
+    internal HtmlBuilder GetHtmlProcess()
     {
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
         
         div.WithCssClass("text-center");
         
@@ -58,9 +58,9 @@ internal class DataExpLog
         return div;
     }
 
-    private static HtmlElement GetLoading()
+    private static HtmlBuilder GetLoading()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align:center;")
             .AppendHiddenInput("current_uploadaction", string.Empty)
@@ -71,9 +71,9 @@ internal class DataExpLog
             });
     }
 
-    private HtmlElement GetProgressData()
+    private HtmlBuilder GetProgressData()
     {
-        return new HtmlElement(HtmlTag.Div)
+        return new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Div, div =>
             {
                 div.WithAttribute("id", "divStatus");

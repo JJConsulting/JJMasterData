@@ -67,7 +67,7 @@ public class JJTextFile : JJBaseControl
     }
 
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         if (IsFormUploadRoute())
         {
@@ -76,7 +76,7 @@ public class JJTextFile : JJBaseControl
             LoadDirectValues();
             var formUpload = GetFormUpload();
 
-            var html = new HtmlElement();
+            var html = new HtmlBuilder();
             html.AppendElement(formUpload);
             html.AppendScript(GetRefreshScript(formUpload));
             return html;
@@ -87,7 +87,7 @@ public class JJTextFile : JJBaseControl
         }
     }
 
-    private HtmlElement GetHtmlTextGroup()
+    private HtmlBuilder GetHtmlTextGroup()
     {
         var formUpload = GetFormUpload();
 
@@ -109,7 +109,7 @@ public class JJTextFile : JJBaseControl
         btn.IconClass = IconHelper.GetClassName(IconType.Paperclip);
         textGroup.Actions.Add(btn);
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(textGroup)
             .AppendElement(HtmlTag.Input, i =>
                 {
@@ -335,16 +335,16 @@ public class JJTextFile : JJBaseControl
         };
     }
 
-    internal HtmlElement GetButtonGroupHtml()
+    internal HtmlBuilder GetButtonGroupHtml()
     {
         if (string.IsNullOrEmpty(Text))
-            return new HtmlElement(string.Empty);
+            return new HtmlBuilder(string.Empty);
 
         string[] files = Text.Split(',');
         if (files.Length == 1)
         {
             var btn = GetLinkButton(files[0]);
-            return btn.GetHtmlElement();
+            return btn.GetHtmlBuilder();
         }
 
         var btnGroup = new JJLinkButtonGroup
@@ -357,7 +357,7 @@ public class JJTextFile : JJBaseControl
             btnGroup.Actions.Add(GetLinkButton(filename));
         }
 
-        return btnGroup.GetHtmlElement();
+        return btnGroup.GetHtmlBuilder();
         
     }
 
@@ -412,7 +412,7 @@ public class JJTextFile : JJBaseControl
         return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
 
-    public static HtmlElement ResponseRoute(JJDataPanel view)
+    public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
         
@@ -423,7 +423,7 @@ public class JJTextFile : JJBaseControl
         if (field == null) return null;
         
         var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return upload.GetHtmlElement();
+        return upload.GetHtmlBuilder();
 
     }
 

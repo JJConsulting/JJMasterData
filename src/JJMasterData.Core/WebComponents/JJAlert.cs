@@ -23,9 +23,9 @@ namespace JJMasterData.Core.WebComponents
             Messages = new List<string>();
         }
 
-        internal override HtmlElement RenderHtmlElement()
+        internal override HtmlBuilder RenderHtml()
         {
-            var html = new HtmlElement(HtmlTag.Div)
+            var html = new HtmlBuilder(HtmlTag.Div)
                 .WithNameAndId(Name)
                 .WithAttributes(Attributes)
                 .WithCssClass(CssClass)
@@ -61,9 +61,9 @@ namespace JJMasterData.Core.WebComponents
             return $"alert-{Color.ToString().ToLower()}";
         }
 
-        internal static HtmlElement GetCloseButton(string dimissValue)
+        internal static HtmlBuilder GetCloseButton(string dimissValue)
         {
-            var btn = new HtmlElement(HtmlTag.Button)
+            var btn = new HtmlBuilder(HtmlTag.Button)
                 .WithAttribute("type", "button")
                 .WithAttribute("aria-label", Translate.Key("Close"))
                 .WithDataAttribute("dismiss", dimissValue)

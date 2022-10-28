@@ -119,7 +119,7 @@ public class JJDataPanel : JJBaseView
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         Values = GetFormValues();
         string requestType = CurrentContext.Request.QueryString("t");
@@ -140,7 +140,7 @@ public class JJDataPanel : JJBaseView
             
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetHtmlPanel().GetElementHtml());
+            CurrentContext.Response.SendResponse(GetHtmlPanel().GetHtml());
             return null;
         }
 
@@ -167,9 +167,9 @@ public class JJDataPanel : JJBaseView
         return GetHtmlPanel();
     }
 
-    internal HtmlElement GetHtmlPanel()
+    internal HtmlBuilder GetHtmlPanel()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass);

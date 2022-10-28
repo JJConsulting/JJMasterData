@@ -17,7 +17,7 @@ public class JJCard : JJBaseView
 
     public PanelColor Color { get; set; }
 
-    public HtmlElement HtmlElementContent { get; set; }
+    public HtmlBuilder HtmlBuilderContent { get; set; }
 
     private bool HasTitle => !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
 
@@ -26,9 +26,9 @@ public class JJCard : JJBaseView
         Color = PanelColor.Default;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        HtmlElement html;
+        HtmlBuilder html;
         if (ShowAsWell)
             html = GetHtmlWell();
         else
@@ -36,7 +36,7 @@ public class JJCard : JJBaseView
 
         if (BootstrapHelper.Version > 3)
         {
-            return new HtmlElement(HtmlTag.Div)
+            return new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("mb-3")
                 .AppendElement(html);
         }
@@ -44,9 +44,9 @@ public class JJCard : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlPanel()
+    private HtmlBuilder GetHtmlPanel()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
@@ -66,15 +66,15 @@ public class JJCard : JJBaseView
                 var title = new JJTitle(null, SubTitle);
                 d.AppendElement(title.GetHtmlBlockquote());
             }
-            d.AppendElement(HtmlElementContent);
+            d.AppendElement(HtmlBuilderContent);
         });
 
         return html;
     }
 
-    private HtmlElement GetHtmlWell()
+    private HtmlBuilder GetHtmlWell()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
@@ -90,7 +90,7 @@ public class JJCard : JJBaseView
             html.AppendElement(title.GetHtmlBlockquote());
         }
 
-        html.AppendElement(HtmlElementContent);
+        html.AppendElement(HtmlBuilderContent);
 
         return html;
     }

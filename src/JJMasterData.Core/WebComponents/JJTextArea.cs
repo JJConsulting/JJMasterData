@@ -30,9 +30,9 @@ public class JJTextArea : JJBaseControl
         return text;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.TextArea)
+        var html = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)

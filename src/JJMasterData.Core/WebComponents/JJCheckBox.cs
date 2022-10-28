@@ -42,9 +42,9 @@ public class JJCheckBox : JJBaseControl
         return check;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
             .WithCssClassIf(!Enabled, "disabled")
             .AppendElement(HtmlTag.Label, label =>
@@ -57,9 +57,9 @@ public class JJCheckBox : JJBaseControl
         return html;
     }
 
-    private HtmlElement GetInputHtml()
+    private HtmlBuilder GetInputHtml()
     {
-        var input = new HtmlElement(HtmlTag.Input)
+        var input = new HtmlBuilder(HtmlTag.Input)
             .WithAttributes(Attributes)
             .WithAttribute("type", "checkbox")
             .WithNameAndId(Name)

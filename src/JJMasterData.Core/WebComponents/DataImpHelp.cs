@@ -19,15 +19,15 @@ internal class DataImpHelp
         DataImp = dataImp;
     }
 
-    public HtmlElement GetHtmlHelp()
+    public HtmlBuilder GetHtmlHelp()
     {
         var panel = new JJCollapsePanel();
         panel.Title = "Import File - Help";
         panel.TitleIcon = new JJIcon(IconType.QuestionCircle);
         panel.ExpandedByDefault = true;
-        panel.HtmlElementContent = GetHtmlContent();
+        panel.HtmlBuilderContent = GetHtmlContent();
 
-        var html = panel.RenderHtmlElement()
+        var html = panel.RenderHtml()
            .AppendHiddenInput("current_uploadaction", "")
            .AppendHiddenInput("filename", "")
            .AppendElement(GetBackButton());
@@ -35,10 +35,10 @@ internal class DataImpHelp
         return html;
     }
 
-    private HtmlElement GetHtmlContent()
+    private HtmlBuilder GetHtmlContent()
     {
         var list = GetListImportedField();
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Div, row =>
             {
                 row.WithCssClass("row")
@@ -64,9 +64,9 @@ internal class DataImpHelp
         return html;
     }
 
-    private HtmlElement GetHeaderColums()
+    private HtmlBuilder GetHeaderColums()
     {
-        var head = new HtmlElement(HtmlTag.Thead)
+        var head = new HtmlBuilder(HtmlTag.Thead)
             .AppendElement(HtmlTag.Tr, tr =>
             {
                 tr.AppendElement(HtmlTag.Th, th =>
@@ -97,13 +97,13 @@ internal class DataImpHelp
         return head;
     }
 
-    private HtmlElement GetBodyColums(List<FormElementField> list)
+    private HtmlBuilder GetBodyColums(List<FormElementField> list)
     {
-        var body = new HtmlElement(HtmlTag.Tbody);
+        var body = new HtmlBuilder(HtmlTag.Tbody);
         int orderField = 1;
         foreach (FormElementField field in list)
         {
-            var tr = new HtmlElement(HtmlTag.Tr);
+            var tr = new HtmlBuilder(HtmlTag.Tr);
             tr.AppendElement(HtmlTag.Td, td =>
             {
                 td.AppendText(orderField.ToString());

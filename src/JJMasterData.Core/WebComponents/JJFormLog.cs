@@ -81,12 +81,12 @@ public class JJFormLog : JJBaseView
         FormElement = formElement;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         Service.CreateTableIfNotExist();
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("viewid_" + Name);
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(viewId))
         {
@@ -128,7 +128,7 @@ public class JJFormLog : JJBaseView
         return viewId;
     }
 
-    public HtmlElement GetDetailLog(Hashtable values)
+    public HtmlBuilder GetDetailLog(Hashtable values)
     {
         string viewId = GetKeyLog(values);
         var html = GetDetailLog(viewId);
@@ -136,9 +136,9 @@ public class JJFormLog : JJBaseView
         return html;
     }
 
-    private HtmlElement GetDetailLog(string logId)
+    private HtmlBuilder GetDetailLog(string logId)
     {
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (GridView.ShowTitle)
             html.AppendElement(GridView.GetTitle());
@@ -151,7 +151,7 @@ public class JJFormLog : JJBaseView
             alert.Color = PanelColor.Warning;
             alert.Messages.Add(Translate.Key("No Records Found"));
 
-            return alert.GetHtmlElement();
+            return alert.GetHtmlBuilder();
         }
 
         var filter = new Hashtable();
@@ -167,7 +167,7 @@ public class JJFormLog : JJBaseView
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
 
-        var row = new HtmlElement(HtmlTag.Div)
+        var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
         row.AppendElement(HtmlTag.Div, d =>
@@ -283,11 +283,11 @@ public class JJFormLog : JJBaseView
         btn.Text = "Back";
 
         var toolbar = new JJToolbar();
-        toolbar.ListElement.Add(btn.GetHtmlElement());
+        toolbar.ListElement.Add(btn.GetHtmlBuilder());
         return toolbar;
     }
 
-    private HtmlElement GetHtmlGridInfo(string recordsKey, string viewId)
+    private HtmlBuilder GetHtmlGridInfo(string recordsKey, string viewId)
     {
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_KEY, recordsKey);
@@ -298,7 +298,7 @@ public class JJFormLog : JJBaseView
 
         DataTable dt = Factory.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
 
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         foreach (DataRow row in dt.Rows)
         {
             string icon = "";

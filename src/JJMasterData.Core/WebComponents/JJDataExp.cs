@@ -74,7 +74,7 @@ public class JJDataExp : JJBaseProcess
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
     }
@@ -104,7 +104,7 @@ public class JJDataExp : JJBaseProcess
         if (!reporter.HasError)
         {
             string url = GetDownloadUrl(reporter.FilePath);
-            var html = new HtmlElement(HtmlTag.Div);
+            var html = new HtmlBuilder(HtmlTag.Div);
 
             if (reporter.HasError)
             {
@@ -187,7 +187,7 @@ public class JJDataExp : JJBaseProcess
                 });
             });
 
-            return builder.StartElement(html).GetElementHtml();
+            return html.GetHtml();
         }
 
         var alert = new JJAlert()
@@ -197,7 +197,7 @@ public class JJDataExp : JJBaseProcess
             Color = PanelColor.Danger
         };
 
-        return builder.StartElement(alert.RenderHtmlElement()).GetElementHtml();
+        return alert.GetHtml();
     }
 
     private BaseWriter CreateWriter()

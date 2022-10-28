@@ -1,60 +1,113 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace JJMasterData.Core.Html;
 
 /// <summary>
-/// Main HTML builder.
+/// Implementation of HTML builder.
 /// </summary>
-public class HtmlBuilder 
+public partial class HtmlBuilder
 {
-    private HtmlElement _element;
+    private readonly Dictionary<string, string> _attributes;
+    private readonly string _rawText;
+    private readonly bool _hasRawText;
+    private readonly HtmlBuilderCollection _children;
 
     /// <summary>
-    /// Start fluent building HTML element.
+    /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
     /// </summary>
-    public HtmlElement StartElement(HtmlTag tag)
+    internal HtmlBuilder()
     {
-        _element = new HtmlElement(tag);
-
-        return _element;
+        _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        _children = new HtmlBuilderCollection();
     }
 
     /// <summary>
-    /// Start fluent building HTML element.
+    /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
     /// </summary>
-    public HtmlElement StartElement(HtmlElement element)
+    /// <param name="rawText"></param>
+    internal HtmlBuilder(string rawText) : this()
     {
-        if (element == null)
-            throw new ArgumentNullException(nameof(element));
+        _rawText = rawText;
+        _hasRawText = true;
+    }
 
-        _element = element; 
-        return _element;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
+    /// </summary>
+    internal HtmlBuilder(HtmlTag tag) : this()
+    {
+        Tag = new HtmlElementTag(tag);
+    }
+
+    /// <summary>
+    /// Tag of the current builder.
+    /// </summary>
+    public HtmlElementTag Tag { get; private set; }
+
+    /// <summary>
+    /// Gets current builder HTML.
+    /// </summary>
+    internal string GetHtml(int tabCount = 0)
+    {
+        var html = new StringBuilder();
+        if (tabCount > 0)
+            html.AppendLine("").Append('\t', tabCount);
+
+        if (_hasRawText || Tag == null)
+        {
+            html.Append(GetHtmlContent(tabCount));
+            html.Append(_rawText);
+            
+            return html.ToString();
+        }
+
+        html.Append("<");
+        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(GetAttributesHtml());
+
+        if (!Tag.HasClosingTag)
+        {
+            html.Append(" />");
+            return html.ToString();
+        }
+
+        html.Append(">");
+        html.Append(GetHtmlContent(tabCount));
+
+        if (tabCount > 0)
+            html.AppendLine("").Append('\t', tabCount);
+
+        html.Append("</");
+        html.Append(Tag.TagName.ToString().ToLower());
+        html.Append(">");
+
+        return html.ToString();
+    }
+
+    private string GetHtmlContent(int tabCount)
+    {
+        if (tabCount > 0)
+            tabCount++;
+
+        var content = new StringBuilder();
+        foreach (var child in _children)
+        {
+            content.Append(child.GetHtml(tabCount));
+        }
+
+        return content.ToString();
     }
     
-    /// <summary>
-    /// Returns the root HTML element.
-    /// </summary>
-    public HtmlElement GetElement() => _element;
-
-    /// <summary>
-    /// Render HTML content based on built element.
-    /// </summary>
-    public string RenderHtml(bool indentHtml = true)
+    private string GetAttributesHtml()
     {
-        if (_element == null)
+        var attrs = new StringBuilder();
+        foreach (var item in _attributes)
         {
-            return null;
-            //throw new ArgumentNullException("HTML Element", "HTML element is not build. Use StartElement method to build your HTML element");
+            attrs.Append($" {item.Key}=\"{item.Value}\"");
         }
-        int tabCount = indentHtml ? 1 : 0;
-        return _element.GetElementHtml(tabCount);
-    }
 
-    /// <summary>
-    /// Reset builder element.
-    /// </summary>
-    public void Reset()
-    {
-        _element = null;
+        return attrs.ToString();
     }
 }

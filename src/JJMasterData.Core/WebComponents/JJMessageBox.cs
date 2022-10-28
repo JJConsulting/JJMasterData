@@ -47,9 +47,9 @@ public class JJMessageBox : JJBaseView
     {
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Script)
+        var html = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
             .WithAttribute("lang", "javascript")
             .AppendText(GetScript());

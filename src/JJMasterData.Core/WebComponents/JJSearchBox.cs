@@ -215,9 +215,9 @@ public class JJSearchBox : JJBaseControl
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement();
+        var html = new HtmlBuilder();
         if ("jjsearchbox".Equals(CurrentContext.Request.QueryString("t")))
         {
             if (Id.Equals(CurrentContext.Request.QueryString("objname")))
@@ -236,12 +236,12 @@ public class JJSearchBox : JJBaseControl
         return html;
     }
 
-    private HtmlElement GetSearchBoxHtmlElement()
+    private HtmlBuilder GetSearchBoxHtmlElement()
     {
         if (DataItem == null)
             throw new ArgumentException(Translate.Key("[DataItem] property not set"), Name);
 
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Input, input =>
             {
                 input.WithAttribute("id", Id + "_text");

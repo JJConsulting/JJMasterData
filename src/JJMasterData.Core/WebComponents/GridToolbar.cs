@@ -15,16 +15,16 @@ internal class GridToolbar
         GridView = gridView;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
         var toolbar = new JJToolbar();
         toolbar.ListElement.AddRange(GetActionsHtmlElement());
-        return toolbar.GetHtmlElement();
+        return toolbar.GetHtmlBuilder();
     }
 
-    private IList<HtmlElement> GetActionsHtmlElement()
+    private IList<HtmlBuilder> GetActionsHtmlElement()
     {
-        var htmlList = new List<HtmlElement>();
+        var htmlList = new List<HtmlBuilder>();
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         
         foreach (var action in actions)
@@ -37,7 +37,7 @@ internal class GridToolbar
 
                 if (filterAction.EnableScreenSearch)
                 {
-                    htmlList.Add(new HtmlElement(GridView.Filter.GetHtmlToolBarSearch()));
+                    htmlList.Add(GridView.Filter.GetHtmlToolBarSearch());
                     continue;
                 }
             }
@@ -55,7 +55,7 @@ internal class GridToolbar
                     linkButton.Spinner.Visible = true;
                 }
 
-                htmlList.Add(linkButton.GetHtmlElement());
+                htmlList.Add(linkButton.GetHtmlBuilder());
             }
         }
 

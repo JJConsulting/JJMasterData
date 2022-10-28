@@ -9,7 +9,7 @@ public class JJModalDialog : JJBaseView
 
     public string HtmlContent { get; set; }
     
-    public HtmlElement HtmlElementContent { get; set; }
+    public HtmlBuilder HtmlBuilderContent { get; set; }
     
     public List<JJLinkButton> Buttons { get; set; }
 
@@ -22,11 +22,11 @@ public class JJModalDialog : JJBaseView
         Buttons = new List<JJLinkButton>();
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         string title = Translate.Key(Title);
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithAttribute("id", Name)
             .WithCssClass("modal")
@@ -46,7 +46,7 @@ public class JJModalDialog : JJBaseView
                     {
                         body.WithCssClass("modal-body")
                             .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
-                            .AppendElement(HtmlElementContent);
+                            .AppendElement(HtmlBuilderContent);
                     });
                     content.AppendElementIf(Buttons.Count > 0, HtmlTag.Div, footer =>
                     {
@@ -63,10 +63,10 @@ public class JJModalDialog : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlHeader()
+    private HtmlBuilder GetHtmlHeader()
     {
         var btn = JJAlert.GetCloseButton("modal");
-        var header = new HtmlElement(HtmlTag.Div)
+        var header = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("modal-header")
             .AppendElementIf(BootstrapHelper.Version == 3, ()=>btn)
             .AppendElement(HtmlTag.H4, h4 =>

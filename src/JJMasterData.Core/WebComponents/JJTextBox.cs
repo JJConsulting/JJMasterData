@@ -20,7 +20,7 @@ public class JJTextBox : JJBaseControl
         Enabled = true;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         string inputType = InputType.ToString().ToLower();
         if (NumberOfDecimalPlaces > 0)
@@ -29,7 +29,7 @@ public class JJTextBox : JJBaseControl
             CssClass += " jjdecimal";
         }
 
-        var html = new HtmlElement(HtmlTag.Input)
+        var html = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)

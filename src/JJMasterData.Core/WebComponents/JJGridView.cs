@@ -577,16 +577,16 @@ public class JJGridView : JJBaseView
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
 
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
 
-        html.AppendElementIf(ShowTitle, GetTitle().GetHtmlElement);
-        html.AppendElementIf(FilterAction.IsVisible,()=> new HtmlElement(GetFilterHtml()));
+        html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
+        html.AppendElementIf(FilterAction.IsVisible,()=> Filter.GetHtmlFilter());
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlElement);
 
         html.AppendElement(GetTableHtmlElement());
@@ -594,7 +594,7 @@ public class JJGridView : JJBaseView
         return html;
     }
 
-    private HtmlElement GetTableHtmlElement()
+    private HtmlBuilder GetTableHtmlElement()
     {
         AssertProperties();
         
@@ -611,7 +611,7 @@ public class JJGridView : JJBaseView
         
         GetDataTable();
         
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
         
@@ -649,27 +649,27 @@ public class JJGridView : JJBaseView
         return html;
     }
 
-    private bool CheckForAjaxResponse(string requestType, HtmlElement html)
+    private bool CheckForAjaxResponse(string requestType, HtmlBuilder html)
     {
         string objName = CurrentContext.Request.QueryString("objname");
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(html.GetElementHtml());
+            CurrentContext.Response.SendResponse(html.GetHtml());
             return true;
         }
 
         return false;
     }
 
-    private IList<HtmlElement> GetHiddenInputs()
+    private IList<HtmlBuilder> GetHiddenInputs()
     {
-        var elementList = new List<HtmlElement>();
+        var elementList = new List<HtmlBuilder>();
         
-        var (currentAction, error ) = GetAndExecuteCurrentAction();
+        var (error,currentAction  ) = GetAndExecuteCurrentAction();
 
         if (!string.IsNullOrEmpty(error))
         {
-            elementList.Add(new HtmlElement(error));
+            elementList.Add(new HtmlBuilder(error));
         }
 
         elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
@@ -685,9 +685,9 @@ public class JJGridView : JJBaseView
         return elementList;
     }
 
-    private HtmlElement GetHiddenInput(string name, string value)
+    private HtmlBuilder GetHiddenInput(string name, string value)
     {
-        var input = new HtmlElement(HtmlTag.Input);
+        var input = new HtmlBuilder(HtmlTag.Input);
         input.WithAttribute("hidden", "hidden");
         input.WithNameAndId(name);
         input.WithValue(value);
@@ -715,7 +715,7 @@ public class JJGridView : JJBaseView
             {
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[rowIndex];
-                string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).GetElementHtml();
+                string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).GetHtml();
 
                 CurrentContext.Response.SendResponse(responseHtml);
             }
@@ -740,9 +740,9 @@ public class JJGridView : JJBaseView
         return false;
     }
 
-    private HtmlElement GetLookupHtml(string lookupRoute)
+    private HtmlBuilder GetLookupHtml(string lookupRoute)
     {
-        string fieldName = lookupRoute.Substring(GridFilter.FIELD_NAME_PREFIX.Length);
+        string fieldName = lookupRoute.Substring(GridFilter.FilterFieldPrefix.Length);
         var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
 
         if (field == null) return null;
@@ -750,7 +750,7 @@ public class JJGridView : JJBaseView
         var lookup = (JJLookup)FieldManager.GetField(field, PageState.Filter, null, null);
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
-        return lookup.GetHtmlElement();
+        return lookup.GetHtmlBuilder();
     }
 
     internal JJTitle GetTitle()
@@ -762,13 +762,13 @@ public class JJGridView : JJBaseView
         return title;
     }
 
-    internal HtmlElement GetToolbarHtmlElement() => new GridToolbar(this).GetHtmlElement();
+    internal HtmlBuilder GetToolbarHtmlElement() => new GridToolbar(this).GetHtmlElement();
 
-    public string GetFilterHtml() => Filter.GetHtmlFilter();
+    public string GetFilterHtml() => Filter.GetHtmlFilter().GetHtml();
 
-    public string GetToolbarHtml() => GetToolbarHtmlElement().GetElementHtml();
+    public string GetToolbarHtml() => GetToolbarHtmlElement().GetHtml();
 
-    private HtmlElement GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
+    private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
 
     public string GetTitleHtml() => GetTitle().GetHtml();
 
@@ -807,7 +807,7 @@ public class JJGridView : JJBaseView
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
     }
 
-    private HtmlElement GetNoRecordsAlert()
+    private HtmlBuilder GetNoRecordsAlert()
     {
         var alert = new JJAlert
         {
@@ -817,12 +817,12 @@ public class JJGridView : JJBaseView
             Icon = IconType.InfoCircle
         };
 
-        if (!Filter.HasFilter()) return alert.GetHtmlElement();
+        if (!Filter.HasFilter()) return alert.GetHtmlBuilder();
 
         alert.Messages.Add("There are filters applied for this query.");
         alert.Icon = IconType.Filter;
 
-        return alert.GetHtmlElement();
+        return alert.GetHtmlBuilder();
     }
 
     private string GetHtmlScript()
@@ -944,14 +944,14 @@ public class JJGridView : JJBaseView
         return script.ToString();
     }
 
-    private HtmlElement GetSettingsHtml()
+    private HtmlBuilder GetSettingsHtml()
     {
         var action = ConfigAction;
         bool isVisible =
             ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
-            return new HtmlElement(string.Empty);
+            return new HtmlBuilder(string.Empty);
 
         var modal = new JJModalDialog
         {
@@ -977,19 +977,19 @@ public class JJGridView : JJBaseView
         };
         modal.Buttons.Add(btnCancel);
 
-        modal.HtmlContent = CurrentUI.GetHtmlElement(IsPaggingEnabled()).GetElementHtml();
+        modal.HtmlContent = CurrentUI.GetHtmlElement(IsPaggingEnabled()).GetHtml();
 
-        return modal.GetHtmlElement();
+        return modal.GetHtmlBuilder();
     }
 
-    private HtmlElement GetExportHtml()
+    private HtmlBuilder GetExportHtml()
     {
         var action = ExportAction;
         bool isVisible =
             ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
-            return new HtmlElement(string.Empty);
+            return new HtmlBuilder(string.Empty);
 
         var modal = new JJModalDialog
         {
@@ -997,24 +997,24 @@ public class JJGridView : JJBaseView
             Title = "Export"
         };
 
-        return modal.GetHtmlElement();
+        return modal.GetHtmlBuilder();
     }
 
-    private HtmlElement GetLegendHtml()
+    private HtmlBuilder GetLegendHtml()
     {
         var action = LegendAction;
         bool isVisible =
             ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
-            return new HtmlElement(string.Empty);
+            return new HtmlBuilder(string.Empty);
 
         var legend = new JJLegendView(FormElement, DataAccess)
         {
             ShowAsModal = true,
             Name = "iconlegend_modal_" + Name
         };
-        return legend.GetHtmlElement();
+        return legend.GetHtmlBuilder();
     }
 
     internal string GetFieldName(string fieldName, IDictionary row)
@@ -1117,10 +1117,9 @@ public class JJGridView : JJBaseView
                     }
                 }
 
-                var html = new HtmlBuilder();
-                html.StartElement(new DataExpLog(exp.Name).GetHtmlProcess());
+                var html = new DataExpLog(exp.Name).GetHtmlProcess();
 
-                CurrentContext.Response.SendResponse(html.RenderHtml());
+                CurrentContext.Response.SendResponse(html.GetHtml());
                 break;
             }
             case "checkProcess":

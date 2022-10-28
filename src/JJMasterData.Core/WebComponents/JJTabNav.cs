@@ -28,9 +28,9 @@ public class JJTabNav : JJBaseView
         ListTab = new List<NavContent>();
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
             .AppendElement(GetNavTabs())
@@ -45,9 +45,9 @@ public class JJTabNav : JJBaseView
         return html;
     }
 
-    private HtmlElement GetNavTabs()
+    private HtmlBuilder GetNavTabs()
     {
-        var ul = new HtmlElement(HtmlTag.Ul)
+        var ul = new HtmlBuilder(HtmlTag.Ul)
             .WithAttribute("role", "tablist")
             .WithCssClass("nav nav-tabs");
 
@@ -80,15 +80,15 @@ public class JJTabNav : JJBaseView
         return ul;
     }
 
-    private HtmlElement GetTabContent()
+    private HtmlBuilder GetTabContent()
     {
-        var tabContent = new HtmlElement(HtmlTag.Div)
+        var tabContent = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("tab-content");
 
         for (int i = 0; i < ListTab.Count; i++)
         {
             NavContent nav = ListTab[i];
-            var divContent = new HtmlElement(HtmlTag.Div)
+            var divContent = new HtmlBuilder(HtmlTag.Div)
                 .WithAttribute("id", $"{Name}_nav_{i}")
                 .WithAttribute("role", "tabpanel")
                 .WithCssClass("tab-pane fade")

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
@@ -17,7 +16,7 @@ internal class GridFilter
 {
     private const string FILTERACTION = "FILTERACTION";
     private const string CLEARACTION = "CLEARACTION";
-    internal const string FIELD_NAME_PREFIX = "filter_";
+    internal const string FilterFieldPrefix = "filter_";
 
     private Hashtable _currentFilter;
     private JJGridView GridView { get; set; }
@@ -72,13 +71,9 @@ internal class GridFilter
     {
         return !string.IsNullOrEmpty(GridView.CurrentContext.Request.QueryString("t"));
     }
-
-    /// <summary>
-    /// Aplica filtros na grid mantendo os valores padrões
-    /// </summary>
+    
     public void ApplyCurrentFilter(Hashtable values)
     {
-        //Relation Values
         if (values == null)
         {
             values = GridView.RelationValues;
@@ -93,8 +88,7 @@ internal class GridFilter
                     values.Add(r.Key, r.Value);
             }
         }
-
-        //QueryString values
+        
         Hashtable qValues = GetFilterQueryString();
         if (qValues != null)
         {
@@ -106,38 +100,30 @@ internal class GridFilter
         }
 
 
-        //Default values
-        var fManager = new FormManager(GridView.FormElement, GridView.UserValues, GridView.DataAccess);
-        _currentFilter = fManager.ApplyDefaultValues(values, PageState.List);
-
-        //Save on session
+        var formManager = new FormManager(GridView.FormElement, GridView.UserValues, GridView.DataAccess);
+        _currentFilter = formManager.ApplyDefaultValues(values, PageState.List);
+        
         JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
-
-    /// <summary>
-    /// Renderiza o conteúdo do filtro
-    /// </summary>
-    /// <returns>
-    /// Retorna Html renderizado
-    /// </returns>
-    public string GetHtmlFilter()
+    
+    public HtmlBuilder GetHtmlFilter()
     {
         bool isVisible = GridView.FieldManager.IsVisible(
             GridView.FilterAction, PageState.List, GridView.DefaultValues);
 
         if (!isVisible)
-            return string.Empty;
+            return new HtmlBuilder(string.Empty);
 
         if (GridView.FilterAction.ShowAsCollapse &
             GridView.FilterAction.EnableScreenSearch)
         {
-            return GetHtmlFilterScreen();
+            return GetHtmlFilterScreen().RenderHtml();
         }
 
         return GetHtmlFilterDefault();
     }
 
-    private string GetHtmlFilterDefault()
+    private HtmlBuilder GetHtmlFilterDefault()
     {
         string requestType = GridView.CurrentContext.Request.QueryString("t");
         string objName = GridView.CurrentContext.Request.QueryString("objname");
@@ -145,14 +131,14 @@ internal class GridFilter
 
         if ("jjsearchbox".Equals(requestType))
         {
-            if (objName == null || !objName.StartsWith(FIELD_NAME_PREFIX))
+            if (objName == null || !objName.StartsWith(FilterFieldPrefix))
                 return null;
 
-            string oName = objName.Substring(FIELD_NAME_PREFIX.Length);
-            if (!GridView.FormElement.Fields.Contains(oName))
+            string filterName = objName.Substring(FilterFieldPrefix.Length);
+            if (!GridView.FormElement.Fields.Contains(filterName))
                 return null;
 
-            var field = GridView.FormElement.Fields[oName];
+            var field = GridView.FormElement.Fields[filterName];
             var jjSearchBox = GridView.FieldManager.GetField(field, PageState.Filter, GridView.CurrentFilter, null);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
@@ -169,20 +155,20 @@ internal class GridFilter
         }
 
         if (fields.Count == 0)
-            return "";
+            return new HtmlBuilder("");
 
         var values = GetCurrentFilter();
 
-        var panel = new DataPanelControl(GridView)
+        var dataPanelControl = new DataPanelControl(GridView)
         {
-            FieldNamePrefix = FIELD_NAME_PREFIX,
+            FieldNamePrefix = FilterFieldPrefix,
             Values = values
         };
 
-        var htmlPanel = panel.GetHtmlForm(fields.DeepCopy());
+        var htmlPanel = dataPanelControl.GetHtmlForm(fields.DeepCopy());
         htmlPanel.WithAttribute("id", $"gridfilter_{GridView.Name}");
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "pnlgridfilter")
             .AppendHiddenInput($"current_filteraction_{GridView.Name}")
             .AppendElement(htmlPanel);
@@ -205,104 +191,109 @@ internal class GridFilter
             OnClientClick = $"jjview.doClearFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
         };
 
-        StringBuilder sRet = new StringBuilder();
+        
         if (action.ShowAsCollapse)
         {
-            var painel = new JJCollapsePanel
+            var panel = new JJCollapsePanel
             {
                 Name = "filter_collapse_" + GridView.Name,
-                HtmlElementContent = html,
+                HtmlBuilderContent = html,
                 Title = "Detailed Filters"
             };
-            painel.Buttons.Add(btnDoFilter);
-            painel.Buttons.Add(btnCancel);
-            painel.ExpandedByDefault = action.ExpandedByDefault;
-            sRet.AppendLine(painel.GetHtml());
+            panel.Buttons.Add(btnDoFilter);
+            panel.Buttons.Add(btnCancel);
+            panel.ExpandedByDefault = action.ExpandedByDefault;
+
+            html = panel.GetHtmlBuilder();
         }
         else
         {
-            var painel = new JJModalDialog
+            var modal = new JJModalDialog
             {
                 Name = "filter_modal_" + GridView.Name
             };
-            btnDoFilter.OnClientClick += "$('#" + painel.Name + "').modal('hide');";
-            btnCancel.OnClientClick += "$('#" + painel.Name + "').modal('hide');";
-            painel.HtmlElementContent = html;
-            painel.Title = "Detailed Filters";
-            painel.Buttons.Add(btnDoFilter);
-            painel.Buttons.Add(btnCancel);
-            sRet.AppendLine(painel.GetHtml());
+            btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
+            btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
+
+            modal.HtmlBuilderContent = html;
+            modal.Title = "Detailed Filters";
+            modal.Buttons.Add(btnDoFilter);
+            modal.Buttons.Add(btnCancel);
+            
+            html = modal.GetHtmlBuilder();
         }
 
         if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
         {
-            GridView.CurrentContext.Response.SendResponse(html.GetElementHtml());
+            GridView.CurrentContext.Response.SendResponse(html.GetHtml());
             return null;
         }
 
-        return sRet.ToString();
+        return html;
     }
 
 
-    private string GetHtmlFilterScreen()
+    private JJCollapsePanel GetHtmlFilterScreen()
     {
-        var body = new StringBuilder();
-        body.AppendLine("<div class=\"col-sm-12\">");
-        body.Append(GetHtmlToolBarSearch(false));
-        body.AppendLine("</div>");
-
-        var painel = new JJCollapsePanel
+        var body = new HtmlBuilder(HtmlTag.Div);
+        body.WithCssClass("col-sm-12");
+        body.AppendElement(GetHtmlToolBarSearch(isToolBar:false));
+        
+        var panel = new JJCollapsePanel
         {
             Name = "filter_collapse_" + GridView.Name,
-            HtmlContent = body.ToString(),
+            HtmlBuilderContent = body,
             Title = "Filter",
             ExpandedByDefault = GridView.FilterAction.ExpandedByDefault
         };
 
-        return painel.GetHtml();
+        return panel;
     }
 
-    public string GetHtmlToolBarSearch(bool isToolBar = true)
+    public HtmlBuilder GetHtmlToolBarSearch(bool isToolBar = true)
     {
-        StringBuilder sHtml = new StringBuilder();
         string searchId = "jjsearch_" + GridView.Name;
 
+        var textBox = new JJTextBox()
+        {
+            Attributes =
+            {
+                { "onkeyup", $"jjview.doSearch('{GridView.Name}', this);" }
+            },
+            ToolTip = Translate.Key("Filter by any field visible in the list"),
+            PlaceHolder = Translate.Key("Filter"),
+            CssClass = "jj-icon-search",
+            Name = searchId,
+            Text = GridView.CurrentContext.Request.Form(searchId)
+        };
+        
+        var html = new HtmlBuilder();
         if (isToolBar)
         {
-            sHtml.Append($"<div class=\"input-group {BootstrapHelper.PullRight} jjsearch\">");
+            html.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass($"{BootstrapHelper.PullRight}");
+                div.AppendElement(textBox);
+            });
         }
         else
         {
-            sHtml.Append($"<div class=\"{BootstrapHelper.FormGroup} has-feedback jjsearch\">");
-            sHtml.Append($"<label class=\"{BootstrapHelper.Label}\">");
-            sHtml.Append(Translate.Key("Filter by any field visible in the list"));
-            sHtml.Append("</label>");
+            html.AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass(BootstrapHelper.FormGroup);
+                div.WithCssClass("has-feedback jjsearch");
+                div.AppendElement(HtmlTag.Label, label =>
+                {
+                    label.WithCssClass(BootstrapHelper.Label);
+                    label.AppendText(Translate.Key("Filter by any field visible in the list"));
+                });
+                div.AppendElement(textBox);
+            });
         }
 
-        sHtml.Append("<input class=\"form-control\" ");
-        sHtml.Append("type=\"search\" ");
-        if (isToolBar)
-        {
-            sHtml.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            sHtml.Append("title=\"");
-            sHtml.Append(Translate.Key("Filter by any field visible in the list"));
-            sHtml.Append("\" ");
-        }
-        sHtml.AppendFormat("placeholder=\"{0}\" ", Translate.Key("Filter"));
-        sHtml.Append($"value=\"{GridView.CurrentContext.Request.Form(searchId)}\" ");
-        sHtml.Append($"id=\"{searchId}\" ");
-        sHtml.Append($"name=\"{searchId}\" ");
-        sHtml.Append($"onkeyup =\"jjview.doSearch('{GridView.Name}', this);\" />");
-        sHtml.Append("<span class=\"fa fa-search form-control-feedback\"></span>");
-        sHtml.AppendLine("</div> ");
-
-        return sHtml.ToString();
+        return html;
     }
 
-    /// <summary>
-    /// Recupera os filtros do formulário
-    /// </summary>
-    /// <returns>[Nome da Coluna], [Valor]</returns>
     public Hashtable GetFilterFormValues()
     {
         if (GridView.FormElement == null)
@@ -312,7 +303,7 @@ internal class GridFilter
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
-            string name = $"{FIELD_NAME_PREFIX}{f.Name}";
+            string name = $"{FilterFieldPrefix}{f.Name}";
 
             if (f.Filter.Type == FilterMode.Range)
             {
@@ -381,12 +372,7 @@ internal class GridFilter
 
         return values;
     }
-
-
-    /// <summary>
-    /// Recupera os filtros passados por url
-    /// </summary>
-    /// <returns>[Nome da Coluna], [Valor]</returns>
+    
     public Hashtable GetFilterQueryString()
     {
         if (GridView.FormElement == null)
@@ -396,7 +382,7 @@ internal class GridFilter
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
-            string name = $"{FIELD_NAME_PREFIX}{f.Name}";
+            string name = $"{FilterFieldPrefix}{f.Name}";
 
             if (f.Filter.Type == FilterMode.Range)
             {
@@ -430,11 +416,7 @@ internal class GridFilter
 
         return values;
     }
-
-
-    /// <summary>
-    /// Verifica se existe filtros do usuário aplicados
-    /// </summary>
+    
     public bool HasFilter()
     {
         if (GridView.FormElement == null)

@@ -25,7 +25,7 @@ public class GridSortingConfig
         Name = grid.Name;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
         var dialog = new JJModalDialog
         {
@@ -54,7 +54,7 @@ public class GridSortingConfig
 
         dialog.Buttons.Add(btnCancel);
 
-        var htmlContent = new HtmlElement(HtmlTag.Div)
+        var htmlContent = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Div, div =>
             {
                 div.AppendElement(new JJIcon("text-info fa fa-triangle-exclamation"));
@@ -68,14 +68,14 @@ public class GridSortingConfig
                 table.AppendElement(GetHtmlBody());
             });
 
-        dialog.HtmlElementContent = htmlContent;
+        dialog.HtmlBuilderContent = htmlContent;
 
-        return dialog.RenderHtmlElement();
+        return dialog.RenderHtml();
     }
 
-    private static HtmlElement GetHtmlHeader()
+    private static HtmlBuilder GetHtmlHeader()
     {
-        var thead = new HtmlElement(HtmlTag.Thead);
+        var thead = new HtmlBuilder(HtmlTag.Thead);
         thead.AppendElement(HtmlTag.Tr, tr =>
         {
             tr.AppendElement(HtmlTag.Th, th =>
@@ -97,9 +97,9 @@ public class GridSortingConfig
         return thead;
     }
 
-    private HtmlElement GetHtmlBody()
+    private HtmlBuilder GetHtmlBody()
     {
-        var tbody = new HtmlElement(HtmlTag.Tbody);
+        var tbody = new HtmlBuilder(HtmlTag.Tbody);
         tbody.WithAttribute("id", $"sortable_{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 

@@ -16,9 +16,9 @@ internal class DataImpLog
         reporter = dataImp.GetCurrentReporter();
     }
 
-    public HtmlElement GetHtmlLog()
+    public HtmlBuilder GetHtmlLog()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(GetAlertPanel())
             .AppendElement(GetHtmlResume())
             .AppendElement(HtmlTag.Div, div =>
@@ -30,9 +30,9 @@ internal class DataImpLog
         return html;
     }
 
-    public HtmlElement GetHtmlResume()
+    public HtmlBuilder GetHtmlResume()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("style", "text-align: center;")
             .WithCssClass("jjlabel-process");
 
@@ -108,13 +108,13 @@ internal class DataImpLog
         return html;
     }
 
-    private HtmlElement GetHtmlLogDetails()
+    private HtmlBuilder GetHtmlLogDetails()
     {
         var panel = new JJCollapsePanel();
         panel.Title = "(Click here for more details)";
         panel.TitleIcon = new JJIcon(IconType.Film);
         panel.ExpandedByDefault = false;
-        panel.HtmlElementContent = new HtmlElement(HtmlTag.Div)
+        panel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Label, label =>
             {
                 label.AppendText(Translate.Key("Date:"));
@@ -131,7 +131,7 @@ internal class DataImpLog
 
         if (!string.IsNullOrEmpty(reporter.UserId))
         {
-            panel.HtmlElementContent.AppendElement(HtmlTag.Label, label =>
+            panel.HtmlBuilderContent.AppendElement(HtmlTag.Label, label =>
             {
                 label.AppendText(Translate.Key("User Id:"));
             })
@@ -140,11 +140,11 @@ internal class DataImpLog
             .AppendElement(HtmlTag.Br);
         }
 
-        panel.HtmlElementContent
+        panel.HtmlBuilderContent
                 .AppendElement(HtmlTag.Br)
                 .AppendText(reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
-        return panel.RenderHtmlElement();
+        return panel.RenderHtml();
     }
 
     private JJAlert GetAlertPanel()

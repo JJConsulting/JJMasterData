@@ -77,9 +77,9 @@ public class GridUI
     internal static bool HasFormValues(JJHttpContext currentContext) =>
         currentContext.Request[TableTotalPerPage] != null;
 
-    internal HtmlElement GetHtmlElement(bool isPaginationEnabled)
+    internal HtmlBuilder GetHtmlElement(bool isPaginationEnabled)
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{(BootstrapHelper.Version == 3 ? "form-horizontal" : string.Empty)}")
             .WithAttribute("role", "form")
             .AppendHiddenInput(TableTotalPaginationButtons, TotalPaginationButtons.ToString())
@@ -101,9 +101,9 @@ public class GridUI
         return div;
     }
 
-    private HtmlElement GetHighlightLineElement()
+    private HtmlBuilder GetHighlightLineElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .AppendElement(HtmlTag.Label, label =>
             {
@@ -121,9 +121,9 @@ public class GridUI
         return div;
     }
 
-    private HtmlElement GetShowRowsStripedElement()
+    private HtmlBuilder GetShowRowsStripedElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .AppendElement(HtmlTag.Label, label =>
             {
@@ -140,9 +140,9 @@ public class GridUI
         return div;
     }
 
-    private HtmlElement GetShowBorderElement()
+    private HtmlBuilder GetShowBorderElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .AppendElement(HtmlTag.Label, label =>
             {
@@ -160,9 +160,9 @@ public class GridUI
         return div;
     }
 
-    private HtmlElement GetPaginationElement()
+    private HtmlBuilder GetPaginationElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .AppendElement(HtmlTag.Label, label =>
             {
@@ -180,9 +180,9 @@ public class GridUI
         return div;
     }
 
-    private HtmlElement GetTotalPerPageSelectElement()
+    private HtmlBuilder GetTotalPerPageSelectElement()
     {
-        var select = new HtmlElement(HtmlTag.Select)
+        var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
             .WithNameAndId(TableTotalPerPage);
 
@@ -200,9 +200,9 @@ public class GridUI
         return select;
     }
 
-    private HtmlElement GetDataToggleElement(string name, bool isChecked)
+    private HtmlBuilder GetDataToggleElement(string name, bool isChecked)
     {
-        var input = new HtmlElement(HtmlTag.Input)
+        var input = new HtmlBuilder(HtmlTag.Input)
             .WithAttribute("type", "checkbox")
             .WithValue("1")
             .WithCssClass("form-control")

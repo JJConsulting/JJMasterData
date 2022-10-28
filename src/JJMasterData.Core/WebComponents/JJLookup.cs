@@ -132,7 +132,7 @@ public class JJLookup : JJBaseControl
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         if (!IsLookupRoute())
             return GetLookupHtmlElement();
@@ -145,7 +145,7 @@ public class JJLookup : JJBaseControl
         return null;
     }
 
-    private HtmlElement GetLookupHtmlElement()
+    private HtmlBuilder GetLookupHtmlElement()
     {
         string inputValue = SelectedValue;
 
@@ -154,7 +154,7 @@ public class JJLookup : JJBaseControl
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
             description = GetDescription(inputValue);
 
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         var textGroup = new JJTextGroup
         {
@@ -327,7 +327,7 @@ public class JJLookup : JJBaseControl
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
-    public static HtmlElement ResponseRoute(JJDataPanel view)
+    public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
 
@@ -338,7 +338,7 @@ public class JJLookup : JJBaseControl
         if (field == null) return null;
 
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return lookup.GetHtmlElement();
+        return lookup.GetHtmlBuilder();
 
     }
 }

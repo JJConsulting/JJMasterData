@@ -113,9 +113,9 @@ public class JJDataImp : JJBaseProcess
 
     #endregion
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        HtmlElement html = null;
+        HtmlBuilder html = null;
         Upload.OnPostFile += Upload_OnPostFile;
 
         string action = CurrentContext.Request["current_uploadaction"];
@@ -161,7 +161,7 @@ public class JJDataImp : JJBaseProcess
         return html;
     }
 
-    private HtmlElement GetHtmlLogProcess()
+    private HtmlBuilder GetHtmlLogProcess()
     {
         var html = new DataImpLog(this).GetHtmlLog()
          .AppendHiddenInput("current_uploadaction")
@@ -171,13 +171,13 @@ public class JJDataImp : JJBaseProcess
         return html;
     }
 
-    private HtmlElement GetHtmlWaitProcess()
+    private HtmlBuilder GetHtmlWaitProcess()
     {
         var reporter = GetCurrentReporter();
         if (reporter == null)
             return null;
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
             .AppendScript($"JJDataImp.startProcess('{Upload.Name}'); ")
@@ -235,9 +235,9 @@ public class JJDataImp : JJBaseProcess
         return html;
     }
 
-    private HtmlElement GetHtmlForm(string keyprocess)
+    private HtmlBuilder GetHtmlForm(string keyprocess)
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .AppendScript("JJDataImp.addPasteListener();")
             .AppendHiddenInput("current_uploadaction")
@@ -253,7 +253,7 @@ public class JJDataImp : JJBaseProcess
         collapsePanel.TitleIcon = new JJIcon(IconType.FolderOpenO);
         collapsePanel.Title = "Import File";
         collapsePanel.ExpandedByDefault = ExpandedByDefault;
-        collapsePanel.HtmlElementContent = new HtmlElement(HtmlTag.Div)
+        collapsePanel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Label, label =>
             {
                 label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));

@@ -113,7 +113,7 @@ public class JJUploadFile : JJBaseView
         MaxFileSize = GetMaxRequestLength();
     }
     
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
@@ -125,9 +125,9 @@ public class JJUploadFile : JJBaseView
         return GetFieldHtmlElement();
     }
 
-    private HtmlElement GetFieldHtmlElement()
+    private HtmlBuilder GetFieldHtmlElement()
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
             .AppendHiddenInput($"uploadaction_{Name}", string.Empty)
             .AppendElement(HtmlTag.Div,  div =>

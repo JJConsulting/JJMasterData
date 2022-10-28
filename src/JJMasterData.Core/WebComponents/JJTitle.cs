@@ -38,9 +38,11 @@ public class JJTitle : JJBaseView
         Size = HeadingSize.H1;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        return new HtmlElement(HtmlTag.Div)
+        var builder = new HtmlBuilder();
+                
+        return new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
@@ -56,9 +58,9 @@ public class JJTitle : JJBaseView
     }
 
 
-    internal HtmlElement GetHtmlBlockquote()
+    internal HtmlBuilder GetHtmlBlockquote()
     {
-        var row = new HtmlElement(HtmlTag.Div)
+        var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
             .AppendElement(HtmlTag.Blockquote, block =>
             {

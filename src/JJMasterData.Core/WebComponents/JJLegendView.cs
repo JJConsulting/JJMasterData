@@ -48,7 +48,7 @@ public class JJLegendView : JJBaseView
 
     #endregion
     
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         if (ShowAsModal)
         {
@@ -59,9 +59,9 @@ public class JJLegendView : JJBaseView
         return GetHtmlLegend(field);
     }
 
-    private HtmlElement GetHtmlLegend(FormElementField field)
+    private HtmlBuilder GetHtmlLegend(FormElementField field)
     {
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
 
         if (field != null)
         {
@@ -101,11 +101,11 @@ public class JJLegendView : JJBaseView
         return div;
     }
 
-    private HtmlElement GetHtmlModal()
+    private HtmlBuilder GetHtmlModal()
     {
         var field = GetFieldLegend();
 
-        var form = new HtmlElement(HtmlTag.Div)
+        var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
             .WithAttribute("role", "form")
             .AppendElement(GetHtmlLegend(field));
@@ -114,10 +114,10 @@ public class JJLegendView : JJBaseView
         {
             Name = Name,
             Title = Translate.Key("Information"),
-            HtmlContent = form.GetElementHtml()
+            HtmlContent = form.GetHtml()
         };
         
-        return dialog.RenderHtmlElement();
+        return dialog.RenderHtml();
     }
     
     private FormElementField GetFieldLegend()

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.Html
 {
-    public partial class HtmlElement
+    public partial class HtmlBuilder
     {
         /// <summary>
-        /// Set HTML element name and ID.
+        /// Set HTML builder name and ID.
         /// </summary>
-        public HtmlElement WithNameAndId(string id)
+        public HtmlBuilder WithNameAndId(string id)
         {
             if (!string.IsNullOrWhiteSpace(id))
                 WithAttribute("id", id).WithAttribute("name", id);
@@ -18,18 +18,18 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Set attribute to the HTML element.
+        /// Set attribute to the HTML builder.
         /// </summary>
-        public HtmlElement WithAttribute(string name, string value)
+        public HtmlBuilder WithAttribute(string name, string value)
         {
             _attributes.Add(name, value);
             return this;
         }
 
         /// <summary>
-        /// Set attribute to the HTML element on condition.
+        /// Set attribute to the HTML builder on condition.
         /// </summary>
-        public HtmlElement WithAttributeIf(bool condition, string name, string value)
+        public HtmlBuilder WithAttributeIf(bool condition, string name, string value)
         {
             if (condition)
                 WithAttribute(name, value);
@@ -38,17 +38,17 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Set attribute to the HTML element.
+        /// Set attribute to the HTML builder.
         /// </summary>
-        public HtmlElement WithSingleAttribute(string nameAndValue)
+        public HtmlBuilder WithSingleAttribute(string nameAndValue)
         {
             return WithAttribute(nameAndValue, nameAndValue);
         }
 
         /// <summary>
-        /// Set attribute to the HTML element on condition.
+        /// Set attribute to the HTML builder on condition.
         /// </summary>
-        public HtmlElement WithAttributeIf(bool condition, string nameAndValue)
+        public HtmlBuilder WithAttributeIf(bool condition, string nameAndValue)
         {
             return WithAttributeIf(condition, nameAndValue, nameAndValue);
         }
@@ -56,7 +56,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Set CSS classes attributes, if already exists it will be ignored.
         /// </summary>
-        public HtmlElement WithCssClass(string classes)
+        public HtmlBuilder WithCssClass(string classes)
         {
             if (string.IsNullOrWhiteSpace(classes))
                 return this;
@@ -80,7 +80,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Conditional to set classes attributes, if already exists it will be ignored.
         /// </summary>
-        public HtmlElement WithCssClassIf(bool conditional, string classes)
+        public HtmlBuilder WithCssClassIf(bool conditional, string classes)
         {
             if (conditional)
                 WithCssClass(classes);
@@ -91,7 +91,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Set range of attrs
         /// </summary>
-        internal HtmlElement WithAttributes(Hashtable attributes)
+        internal HtmlBuilder WithAttributes(Hashtable attributes)
         {
             foreach (DictionaryEntry v in attributes)
             {
@@ -104,7 +104,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Sets a tooltip to the HTML Element
         /// </summary>
-        public HtmlElement WithToolTip(string tooltip)
+        public HtmlBuilder WithToolTip(string tooltip)
         {
             if (!string.IsNullOrEmpty(tooltip))
             {
@@ -123,17 +123,17 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Set custom data attribute to HTML element.
+        /// Set custom data attribute to HTML builder.
         /// </summary>
-        public HtmlElement WithValue(string @value)
+        public HtmlBuilder WithValue(string @value)
         {
             return WithAttribute("value", @value);
         }
 
         /// <summary>
-        /// Set a custom Bootstrap data attribute to HTML element.
+        /// Set a custom Bootstrap data attribute to HTML builder.
         /// </summary>
-        public HtmlElement WithDataAttribute(string name, string value)
+        public HtmlBuilder WithDataAttribute(string name, string value)
         {
             string attrName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
             attrName += name;

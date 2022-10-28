@@ -26,9 +26,9 @@ public class JJSlider : JJBaseControl
         return slider;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(CssClass)
             .AppendElement(HtmlTag.Div, row =>
             {
@@ -58,9 +58,9 @@ public class JJSlider : JJBaseControl
         return html;
     }
 
-    private HtmlElement GetHtmlSlider()
+    private HtmlBuilder GetHtmlSlider()
     {
-        var slider = new HtmlElement(HtmlTag.Input)
+        var slider = new HtmlBuilder(HtmlTag.Input)
            .WithAttributes(Attributes)
            .WithAttribute("type", "range")
            .WithNameAndId(Name)

@@ -10,13 +10,13 @@ internal abstract class JJBaseData : JJBaseView
 
     public HeadingSize TitleSize { get; set; }
 
-    internal abstract HtmlElement GetHtmlForm();
+    internal abstract HtmlBuilder GetHtmlForm();
 
-    internal abstract HtmlElement GetHtmlBottomBar();
+    internal abstract HtmlBuilder GetHtmlBottomBar();
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
             html.AppendElement(GetTitle());

@@ -31,7 +31,7 @@ public class JJTextGroup : JJTextBox
         return WebControlTextFactory.CreateTextGroup(f, name);
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -43,7 +43,7 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = base.RenderHtmlElement();
+        var input = base.RenderHtml();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
@@ -57,7 +57,7 @@ public class JJTextGroup : JJTextBox
             input.WithAttribute("onchange", defaultAction.OnClientClick);
         }
 
-        var inputGroup = new HtmlElement(HtmlTag.Div)
+        var inputGroup = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("input-group jjform-action ")
             .WithCssClass(GroupCssClass);
 
@@ -72,36 +72,36 @@ public class JJTextGroup : JJTextBox
         return inputGroup;
     }
 
-    private void AddActionsAt(HtmlElement inputGroup)
+    private void AddActionsAt(HtmlBuilder inputGroup)
     {
-        HtmlElement elementGroup;
+        HtmlBuilder builderGroup;
         if (BootstrapHelper.Version >= 5)
         {
-            elementGroup = inputGroup;
+            builderGroup = inputGroup;
         }
         else
         {
-            elementGroup = new HtmlElement(HtmlTag.Div)
+            builderGroup = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.InputGroupBtn);
 
-            inputGroup.AppendElement(elementGroup);
+            inputGroup.AppendElement(builderGroup);
         }
 
         var btnGroup = new JJLinkButtonGroup();
         btnGroup.Actions = Actions;
         btnGroup.ShowAsButton = true;
 
-        //Add element Actions
-        btnGroup.AddActionsAt(elementGroup);
+        //Add builder Actions
+        btnGroup.AddActionsAt(builderGroup);
     }
 
 
-    private HtmlElement GetHtmlAddons()
+    private HtmlBuilder GetHtmlAddons()
     {
-        var html = new HtmlElement(HtmlTag.Span)
+        var html = new HtmlBuilder(HtmlTag.Span)
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
-             .AppendElementIf(Addons.Icon != null,()=> Addons.Icon.RenderHtmlElement())
+             .AppendElementIf(Addons.Icon != null,()=> Addons.Icon.RenderHtml())
              .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

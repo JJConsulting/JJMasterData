@@ -46,9 +46,9 @@ public class JJIcon : JJBaseView
         Title = title;
     }
     
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
-        var element = new HtmlElement(HtmlTag.Span)
+        var element = new HtmlBuilder(HtmlTag.Span)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(IconClass)

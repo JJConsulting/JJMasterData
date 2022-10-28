@@ -252,7 +252,7 @@ public class JJFormUpload : JJBaseView
         AutoSave = true;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         Upload.OnPostFile += UploadOnPostFile;
         string previewImage = CurrentContext.Request["previewImage"];
@@ -263,7 +263,7 @@ public class JJFormUpload : JJBaseView
         if (!string.IsNullOrEmpty(previewVideo))
             return GetHtmlPreviewVideo(previewVideo);
 
-        var html = new HtmlElement();
+        var html = new HtmlBuilder();
 
         string uploadAction = CurrentContext.Request["uploadaction_" + Name];
         if (!string.IsNullOrEmpty(uploadAction))
@@ -279,7 +279,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlPreviewVideo(string previewVideo)
+    private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = Cript.Descript64(previewVideo);
         var video = GetFile(fileName);
@@ -294,7 +294,7 @@ public class JJFormUpload : JJBaseView
         script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
         script.AppendLine("	}); ");
         
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendElement(HtmlTag.Center, c =>
         {
             c.AppendElement(HtmlTag.Video, video =>
@@ -310,7 +310,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlPreviewImage(string previewImage)
+    private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
         string fileName = Cript.Descript64(previewImage);
         var file = GetFile(fileName);
@@ -341,7 +341,7 @@ public class JJFormUpload : JJBaseView
         script.AppendLine("   $('#img').show('slow');");
         script.AppendLine("	}); ");
 
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendElement(HtmlTag.Center, c =>
         {
             c.AppendElement(HtmlTag.Img, img =>
@@ -357,7 +357,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlElement GetResponseAction(string uploadAction)
+    private HtmlBuilder GetResponseAction(string uploadAction)
     {
         string fileName = CurrentContext.Request.Form("filename_" + Name);
         try
@@ -408,21 +408,21 @@ public class JJFormUpload : JJBaseView
         }
         catch (Exception ex)
         {
-            return new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtmlElement();
+            return new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtmlBuilder();
         }
 
         return null;
     }
 
-    private HtmlElement GetHtmlForm()
+    private HtmlBuilder GetHtmlForm()
     {
-        var html = new HtmlElement()
+        var html = new HtmlBuilder()
             .AppendHiddenInput($"uploadaction_{Name}")
             .AppendHiddenInput($"filename_{Name}");
 
         if (!ShowAddFile) return html;
 
-        var panelContent = new HtmlElement();
+        var panelContent = new HtmlBuilder();
         if (!Upload.AllowedTypes.Equals("*"))
         {
             panelContent.AppendElement(HtmlTag.Label, label =>
@@ -441,19 +441,19 @@ public class JJFormUpload : JJBaseView
         var panel = new JJCollapsePanel();
         panel.Title = "New File";
         panel.ExpandedByDefault = CollapseAriaExpanded;
-        panel.HtmlElementContent = panelContent;
+        panel.HtmlBuilderContent = panelContent;
 
-        return panel.GetHtmlElement();
+        return panel.GetHtmlBuilder();
     }
 
-    private HtmlElement GetHtmlGridView()
+    private HtmlBuilder GetHtmlGridView()
     {
         if (GridView.DataSource == null &&
             GridView.FormElement == null)
         {
             var dt = GetDataTableFiles();
 
-            if (dt == null) return GridView.GetHtmlElement();
+            if (dt == null) return GridView.GetHtmlBuilder();
 
             GridView.FormElement = new FormElement(dt);
             GridView.DataSource = dt;
@@ -465,10 +465,10 @@ public class JJFormUpload : JJBaseView
                 GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
         }
 
-        return GridView.GetHtmlElement();
+        return GridView.GetHtmlBuilder();
     }
 
-    private HtmlElement GetHtmlGallery()
+    private HtmlBuilder GetHtmlGallery()
     {
         var files = GetFiles();
 
@@ -479,12 +479,12 @@ public class JJFormUpload : JJBaseView
             ac.IsGroup = false;
         }
 
-        var row = new HtmlElement(HtmlTag.Div)
+        var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
         foreach (var file in files)
         {
-            var col = new HtmlElement(HtmlTag.Div);
+            var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
             col.AppendElement(HtmlTag.Ul, ul =>
             {
@@ -510,9 +510,9 @@ public class JJFormUpload : JJBaseView
         return row;
     }
 
-    private HtmlElement GetHtmlGalleryListItem(String label, String value = null)
+    private HtmlBuilder GetHtmlGalleryListItem(String label, String value = null)
     {
-        return new HtmlElement(HtmlTag.Li)
+        return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item")
             .AppendElement(HtmlTag.B, b =>
             {
@@ -521,9 +521,9 @@ public class JJFormUpload : JJBaseView
             .AppendText($"{{0}} {value}");
     }
 
-    private HtmlElement GetHtmlGalleryPreview(string fileName)
+    private HtmlBuilder GetHtmlGalleryPreview(string fileName)
     {
-        var html = new HtmlElement(HtmlTag.Li)
+        var html = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item");
 
         switch (Path.GetExtension(fileName))
@@ -579,9 +579,9 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
+    private HtmlBuilder GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
     {
-        var div = new HtmlElement(HtmlTag.Div)
+        var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("style", "height:180px;")
             .AppendElement(HtmlTag.Span, span =>
             {
@@ -592,7 +592,7 @@ public class JJFormUpload : JJBaseView
         return div;
     }
 
-    private HtmlElement GetHtmlImageBox(string fileName)
+    private HtmlBuilder GetHtmlImageBox(string fileName)
     {
         var file = GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
@@ -623,7 +623,7 @@ public class JJFormUpload : JJBaseView
         url += "previewImage=";
         url += Cript.Cript64(fileName);
 
-        var html = new HtmlElement(HtmlTag.A)
+        var html = new HtmlBuilder(HtmlTag.A)
         .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}',4)")
         .AppendElement(HtmlTag.Img, img =>
         {
@@ -637,7 +637,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlElement GetHtmlVideoBox(string fileName)
+    private HtmlBuilder GetHtmlVideoBox(string fileName)
     {
         string videoUrl = CurrentContext.Request.AbsoluteUri;
 
@@ -649,7 +649,7 @@ public class JJFormUpload : JJBaseView
         videoUrl += "previewVideo=";
         videoUrl += Cript.Cript64(fileName);
 
-        var html = new HtmlElement(HtmlTag.A)
+        var html = new HtmlBuilder(HtmlTag.A)
          .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}',4)")
          .AppendElement(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
 
@@ -669,7 +669,7 @@ public class JJFormUpload : JJBaseView
 
     private JJModalDialog GetHtmlPreviewModal()
     {
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         html.AppendElement(HtmlTag.Div, row =>
         {
@@ -730,7 +730,7 @@ public class JJFormUpload : JJBaseView
         var modal = new JJModalDialog();
         modal.Name = $"preview_modal_{Upload.Name}";
         modal.Title = "Would you like to save the image below?";
-        modal.HtmlElementContent = html;
+        modal.HtmlBuilderContent = html;
         modal.Buttons.Add(btnOk);
         modal.Buttons.Add(btnCancel);
 

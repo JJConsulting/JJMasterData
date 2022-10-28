@@ -4,23 +4,23 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.Html
 {
-    public partial class HtmlElement
+    public partial class HtmlBuilder
     {
         /// <summary>
-        /// Insert a HTML element as a child of caller element.
+        /// Insert a HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendElement(HtmlElement element)
+        public HtmlBuilder AppendElement(HtmlBuilder builder)
         {
-            if (element != null)
-                _children.Add(element);
+            if (builder != null)
+                _children.Add(builder);
 
             return this;
         }
 
         /// <summary>
-        /// Insert a list of HTML element as a child of caller element.
+        /// Insert a list of HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendRange(IList<HtmlElement> listelement)
+        public HtmlBuilder AppendRange(IList<HtmlBuilder> listelement)
         {
             if (listelement != null)
             {
@@ -32,20 +32,20 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert a HTML element as a child of caller element.
+        /// Insert a HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendElement(HtmlTag tag, Action<HtmlElement> elementAction = null)
+        public HtmlBuilder AppendElement(HtmlTag tag, Action<HtmlBuilder> elementAction = null)
         {
-            var childElement = new HtmlElement(tag);
+            var childElement = new HtmlBuilder(tag);
             elementAction?.Invoke(childElement);
             AppendElement(childElement);
             return this;
         }
 
         /// <summary>
-        /// Conditional insert a HTML element as a child of caller element. 
+        /// Conditional insert a HTML builder as a child of caller builder. 
         /// </summary>
-        // public HtmlElement AppendElementIf(bool condition, HtmlElement htmlElement = null)
+        // public HtmlBuilder AppendElementIf(bool condition, HtmlBuilder htmlElement = null)
         // {
         //     if (condition)
         //         AppendElement(htmlElement);
@@ -54,9 +54,9 @@ namespace JJMasterData.Core.Html
         // }
         
         /// <summary>
-        /// Conditional insert a HTML element from a return of a function. Use this to improve performance.
+        /// Conditional insert a HTML builder from a return of a function. Use this to improve performance.
         /// </summary>
-        public HtmlElement AppendElementIf(bool condition, Func<HtmlElement> func)
+        public HtmlBuilder AppendElementIf(bool condition, Func<HtmlBuilder> func)
         {
             if (condition)
                 AppendElement(func.Invoke());
@@ -65,9 +65,9 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Conditional insert HTML element as a child of caller element.
+        /// Conditional insert HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendElementIf(bool condition, HtmlTag tag, Action<HtmlElement> elementAction = null)
+        public HtmlBuilder AppendElementIf(bool condition, HtmlTag tag, Action<HtmlBuilder> elementAction = null)
         {
             if (condition)
                 AppendElement(tag, elementAction);
@@ -76,29 +76,29 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert raw text as a child of caller element.
+        /// Insert raw text as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendText(string rawText)
+        public HtmlBuilder AppendText(string rawText)
         {
-            var childElement = new HtmlElement(rawText);
+            var childElement = new HtmlBuilder(rawText);
             AppendElement(childElement);
             return this;
         }
 
         /// <summary>
-        /// Insert string representation of the integer as a child of caller element.
+        /// Insert string representation of the integer as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendText(int value)
+        public HtmlBuilder AppendText(int value)
         {
-            var childElement = new HtmlElement(value.ToString());
+            var childElement = new HtmlBuilder(value.ToString());
             AppendElement(childElement);
             return this;
         }
 
         /// <summary>
-        /// Conditional insert raw text as a child of caller element.
+        /// Conditional insert raw text as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendTextIf(bool condition, string rawText)
+        public HtmlBuilder AppendTextIf(bool condition, string rawText)
         {
             if (condition)
                 AppendText(rawText);
@@ -109,7 +109,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Append a hidden input to the Element tree.
         /// </summary>
-        public HtmlElement AppendHiddenInput(string name, string value)
+        public HtmlBuilder AppendHiddenInput(string name, string value)
         {
             return AppendElement(HtmlTag.Input, input =>
             {
@@ -122,7 +122,7 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Append a hidden input to the Element tree.
         /// </summary>
-        public HtmlElement AppendHiddenInput(string name)
+        public HtmlBuilder AppendHiddenInput(string name)
         {
             return AppendHiddenInput(name, string.Empty);
         }
@@ -130,9 +130,9 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Insert a script tag with a rawScript
         /// </summary>
-        public HtmlElement AppendScript(string rawScript)
+        public HtmlBuilder AppendScript(string rawScript)
         {
-            var childElement = new HtmlElement(HtmlTag.Script)
+            var childElement = new HtmlBuilder(HtmlTag.Script)
                 .WithAttribute("type", "text/javascript")
                 .AppendText(rawScript);
 
@@ -140,12 +140,12 @@ namespace JJMasterData.Core.Html
         }
 
         /// <summary>
-        /// Insert a JJ component as a child of caller element.
+        /// Insert a JJ component as a child of caller builder.
         /// </summary>
-        public HtmlElement AppendElement(JJBaseView component)
+        public HtmlBuilder AppendElement(JJBaseView component)
         {
             if (component != null)
-                AppendElement(component.GetHtmlElement());
+                AppendElement(component.GetHtmlBuilder());
 
             return this;
         }

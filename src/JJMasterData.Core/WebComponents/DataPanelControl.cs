@@ -52,7 +52,7 @@ internal class DataPanelControl
         Name = gridView.Name;
     }
 
-    public HtmlElement GetHtmlForm(List<FormElementField> fields)
+    public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
     {
         if (UISettings.IsVerticalLayout)
             return GetHtmlFormVertical(fields);
@@ -60,7 +60,7 @@ internal class DataPanelControl
         return GetHtmlFormHorizontal(fields);
     }
 
-    private HtmlElement GetHtmlFormVertical(List<FormElementField> fields)
+    private HtmlBuilder GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
         int cols = UISettings.FormCols;
@@ -70,9 +70,9 @@ internal class DataPanelControl
         if (cols >= 1)
             colClass = $" col-sm-{(12 / cols)}";
 
-        var html = new HtmlElement(HtmlTag.Div);
+        var html = new HtmlBuilder(HtmlTag.Div);
         int linegroup = int.MinValue;
-        HtmlElement row = null;
+        HtmlBuilder row = null;
         foreach (var f in fields)
         {
             //visible expression
@@ -88,12 +88,12 @@ internal class DataPanelControl
             if (linegroup != f.LineGroup)
             {
                 linegroup = f.LineGroup;
-                row = new HtmlElement(HtmlTag.Div)
+                row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("row");
                 html.AppendElement(row);
             }
 
-            var htmlField = new HtmlElement(HtmlTag.Div)
+            var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
             row.AppendElement(htmlField);
@@ -137,7 +137,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private HtmlElement GetHtmlFormHorizontal(List<FormElementField> fields)
+    private HtmlBuilder GetHtmlFormHorizontal(List<FormElementField> fields)
     {
         string fldClass = "";
         string labelClass = "";
@@ -177,11 +177,11 @@ internal class DataPanelControl
             fieldClass += " d-flex justify-content-start align-items-center";
         }
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
         int colCount = 1;
-        HtmlElement row = null;
+        HtmlBuilder row = null;
         foreach (var f in fields)
         {
             //Visible expression
@@ -204,7 +204,7 @@ internal class DataPanelControl
             if (colCount == 1 || colCount >= cols)
             {
                 colCount = 1;
-                row = new HtmlElement(HtmlTag.Div)
+                row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("form-group")
                     .WithCssClassIf(BootstrapHelper.Version > 3, "row mb-3");
 
@@ -252,17 +252,17 @@ internal class DataPanelControl
         return html;
     }
 
-    private HtmlElement GetStaticField(FormElementField f)
+    private HtmlBuilder GetStaticField(FormElementField f)
     {
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
-        var html = new HtmlElement(tag)
+        var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
             .AppendText(FieldManager.ParseVal(Values, f));
 
         return html;
     }
 
-    private HtmlElement GetControlField(FormElementField f, object value)
+    private HtmlBuilder GetControlField(FormElementField f, object value)
     {
         var field = FieldManager.GetField(f, PageState, Values, value);
 
@@ -298,7 +298,7 @@ internal class DataPanelControl
             }
         }
 
-        return field.RenderHtmlElement();
+        return field.RenderHtml();
     }
 
     private string GetScriptReload(FormElementField f)

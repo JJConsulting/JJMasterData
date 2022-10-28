@@ -29,9 +29,9 @@ internal class GridTable
         Filter = gridView.Filter;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
-        var table = new HtmlElement(HtmlTag.Table);
+        var table = new HtmlBuilder(HtmlTag.Table);
 
         table.WithCssClass("table");
 

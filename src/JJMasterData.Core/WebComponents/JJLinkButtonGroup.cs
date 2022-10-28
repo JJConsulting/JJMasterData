@@ -27,9 +27,9 @@ namespace JJMasterData.Core.WebComponents
         {
         }
 
-        internal override HtmlElement RenderHtmlElement()
+        internal override HtmlBuilder RenderHtml()
         {
-            var inputGroup = new HtmlElement(HtmlTag.Div)
+            var inputGroup = new HtmlBuilder(HtmlTag.Div)
                 .WithAttributes(Attributes)
                 .WithNameAndId(Name)
                 .WithCssClass("btn-group")
@@ -40,7 +40,7 @@ namespace JJMasterData.Core.WebComponents
             return inputGroup;
         }
 
-        internal void AddActionsAt(HtmlElement inputGroup)
+        internal void AddActionsAt(HtmlBuilder inputGroup)
         {
             var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
             var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
@@ -65,7 +65,7 @@ namespace JJMasterData.Core.WebComponents
             }
         }
 
-        private void AddGroupActions(HtmlElement ul, List<JJLinkButton> listAction)
+        private void AddGroupActions(HtmlBuilder ul, List<JJLinkButton> listAction)
         {
             foreach (var action in listAction)
             {
@@ -86,9 +86,9 @@ namespace JJMasterData.Core.WebComponents
             }
         }
 
-        private HtmlElement GetHtmlCaretButton()
+        private HtmlBuilder GetHtmlCaretButton()
         {
-            var html = new HtmlElement(HtmlTag.A)
+            var html = new HtmlBuilder(HtmlTag.A)
                 .WithAttribute("href", "#")
                 .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
                 .WithAttribute("aria-haspopup", "true")

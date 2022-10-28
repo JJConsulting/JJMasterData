@@ -17,9 +17,9 @@ internal class GridTableHeader
         GridView = gridView;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
-        var html = new HtmlElement(HtmlTag.Thead);
+        var html = new HtmlBuilder(HtmlTag.Thead);
         if (GridView.DataSource.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
 
@@ -33,35 +33,35 @@ internal class GridTableHeader
         return html;
     }
 
-    private IList<HtmlElement> GetActionsThList()
+    private IList<HtmlBuilder> GetActionsThList()
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 
-        var thList = new List<HtmlElement>();
+        var thList = new List<HtmlBuilder>();
 
         foreach (var action in actions)
         {
-            var th = new HtmlElement(HtmlTag.Th);
+            var th = new HtmlBuilder(HtmlTag.Th);
             th.AppendTextIf(action.ShowTitle, action.Text);
             thList.Add(th);
         }
 
         if (actionsWithGroupCount > 0)
         {
-            thList.Add(new HtmlElement(HtmlTag.Th));
+            thList.Add(new HtmlBuilder(HtmlTag.Th));
         }
 
         return thList;
     }
 
-    private IList<HtmlElement> GetVisibleFieldsThList()
+    private IList<HtmlBuilder> GetVisibleFieldsThList()
     {
-        var thList = new List<HtmlElement>();
+        var thList = new List<HtmlBuilder>();
         foreach (var field in GridView.VisibleFields)
         {
-            var th = new HtmlElement(HtmlTag.Th);
+            var th = new HtmlBuilder(HtmlTag.Th);
             string style = GetFieldStyle(field);
 
             th.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
@@ -110,7 +110,7 @@ internal class GridTableHeader
             if (isAppliedFilter)
             {
                 th.AppendText("&nbsp;");
-                th.AppendElement(new JJIcon("fa fa-filter").GetHtmlElement()
+                th.AppendElement(new JJIcon("fa fa-filter").GetHtmlBuilder()
                     .WithToolTip(Translate.Key("Applied filter")));
             }
 
@@ -120,7 +120,7 @@ internal class GridTableHeader
         return thList;
     }
 
-    private void SetSortAttributes(HtmlElement span, FormElementField field)
+    private void SetSortAttributes(HtmlBuilder span, FormElementField field)
     {
         span.WithCssClass("jjenable-sorting");
 
@@ -140,10 +140,10 @@ internal class GridTableHeader
         });
     }
 
-    private HtmlElement GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlElement()
+    private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
         .WithToolTip(Translate.Key("Descending order"));
 
-    private HtmlElement GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlElement()
+    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
         .WithToolTip(Translate.Key("Ascending order"));
 
     private string GetFieldStyle(FormElementField field)
@@ -181,9 +181,9 @@ internal class GridTableHeader
         return style;
     }
 
-    private HtmlElement GetMultSelectThHtmlElement()
+    private HtmlBuilder GetMultSelectThHtmlElement()
     {
-        var th = new HtmlElement(HtmlTag.Th);
+        var th = new HtmlBuilder(HtmlTag.Th);
 
         bool hasPages = true;
         if (!GridView.IsPaggingEnabled())
@@ -217,7 +217,7 @@ internal class GridTableHeader
                 a.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
                 a.WithCssClass("dropdown-toggle");
                 a.AppendElementIf(BootstrapHelper.Version == 3,
-                    new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlElement);
+                    new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlBuilder);
             });
 
             span.AppendElement(HtmlTag.Ul, ul =>

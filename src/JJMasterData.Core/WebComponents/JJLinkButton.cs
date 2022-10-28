@@ -75,11 +75,11 @@ public class JJLinkButton : JJBaseView, IAction
         Type = LinkButtonType.Link;
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         var icon = GetIcon();
 
-        var html = new HtmlElement(HtmlTag.A);
+        var html = new HtmlBuilder(HtmlTag.A);
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);

@@ -34,7 +34,7 @@ public class JJDownloadFile : JJBaseView
         return new JJDownloadFile();
     }
 
-    internal override HtmlElement RenderHtmlElement()
+    internal override HtmlBuilder RenderHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
@@ -47,7 +47,7 @@ public class JJDownloadFile : JJBaseView
         return null;
     }
 
-    private HtmlElement GetDownloadHtmlElement()
+    private HtmlBuilder GetDownloadHtmlElement()
     {
         var file = new FileInfo(FilePath);
         string fileName = file.Name;
@@ -55,7 +55,7 @@ public class JJDownloadFile : JJBaseView
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
         string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
             .AppendElement(HtmlTag.Section, section =>
             {
@@ -128,7 +128,7 @@ public class JJDownloadFile : JJBaseView
         return false;
     }
 
-    public static HtmlElement ResponseRoute(JJBaseView view)
+    public static HtmlBuilder ResponseRoute(JJBaseView view)
     {
         bool isExternalLink = false;
         string criptFilePath = view.CurrentContext.Request.QueryString(DownloadParameter);
@@ -151,7 +151,7 @@ public class JJDownloadFile : JJBaseView
             IsExternalLink = isExternalLink
         };
 
-        return download.GetHtmlElement();
+        return download.GetHtmlBuilder();
     }
 
 

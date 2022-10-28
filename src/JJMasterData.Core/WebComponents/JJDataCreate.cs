@@ -9,12 +9,12 @@ namespace JJMasterData.Core.WebComponents
 {
     internal class JJDataCreate : JJBaseData
     {
-        internal override HtmlElement GetHtmlBottomBar()
+        internal override HtmlBuilder GetHtmlBottomBar()
         {
             throw new NotImplementedException();
         }
 
-        internal override HtmlElement GetHtmlForm()
+        internal override HtmlBuilder GetHtmlForm()
         {
             throw new NotImplementedException();
         }

@@ -19,14 +19,14 @@ internal class GridPagination
         GridView = gridView;
     }
 
-    public HtmlElement GetHtmlElement()
+    public HtmlBuilder GetHtmlElement()
     {
         _totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentUI.TotalPerPage);
         _totalButtons = GridView.CurrentUI.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
 
-        var html = new HtmlElement(HtmlTag.Div)
+        var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -42,9 +42,9 @@ internal class GridPagination
         return html;
     }
 
-    private HtmlElement GetPaginationHtmlElement()
+    private HtmlBuilder GetPaginationHtmlElement()
     {
-        var ul = new HtmlElement(HtmlTag.Ul);
+        var ul = new HtmlBuilder(HtmlTag.Ul);
         ul.WithCssClass("pagination");
 
         if (_startButtonIndex > _totalButtons)
@@ -71,9 +71,9 @@ internal class GridPagination
         return ul;
     }
 
-    private HtmlElement GetPageButton(int page, IconType? icon = null, string tooltip = null)
+    private HtmlBuilder GetPageButton(int page, IconType? icon = null, string tooltip = null)
     {
-        var li = new HtmlElement(HtmlTag.Li)
+        var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .WithCssClassIf(page == GridView.CurrentPage, "active")
             .AppendElement(HtmlTag.A, a =>
@@ -103,9 +103,9 @@ internal class GridPagination
         return $"javascript:jjview.doPagination('{name}', {enableAjax}, {page})";
     }
 
-    private HtmlElement GetTotalRecordsHtmlElement()
+    private HtmlBuilder GetTotalRecordsHtmlElement()
     {
-        var div = new HtmlElement(HtmlTag.Div);
+        var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
         div.AppendElement(HtmlTag.Label, label =>
         {
@@ -150,14 +150,14 @@ internal class GridPagination
         return div;
     }
 
-    private HtmlElement GetEnableMultSelectTotalRecords()
+    private HtmlBuilder GetEnableMultSelectTotalRecords()
     {
         var selectedValues = GridView.GetSelectedGridValues();
         string noRecordSelected = Translate.Key("No record selected");
         string oneRecordSelected = Translate.Key("A selected record");
         string multipleRecordsSelected = Translate.Key("{0} selected records", selectedValues);
 
-        var span = new HtmlElement(HtmlTag.Span);
+        var span = new HtmlBuilder(HtmlTag.Span);
         span.WithAttribute("id", $"selectedtext_{GridView.Name}");
         span.WithAttribute("noSelStr", noRecordSelected);
         span.WithAttribute("oneSelectedStr", oneRecordSelected);

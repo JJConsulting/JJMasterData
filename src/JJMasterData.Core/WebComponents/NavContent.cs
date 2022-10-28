@@ -6,6 +6,6 @@ public class NavContent
 {
     public string Title { get; set; }
 
-    public HtmlElement HtmlContent { get; set; }
+    public HtmlBuilder HtmlContent { get; set; }
     
 }
