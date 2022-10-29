@@ -78,27 +78,7 @@ public class JJLinkButton : JJBaseView, IAction
     internal override HtmlBuilder RenderHtml()
     {
         var icon = GetIcon();
-
         var html = new HtmlBuilder(HtmlTag.A);
-        html.WithNameAndId(Name);
-        html.WithCssClass(GetCssClassWithCompatibility());
-        html.WithAttributes(Attributes);
-        html.WithToolTip(Translate.Key(ToolTip));
-        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
-        html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
-        html.WithCssClassIf(!Enabled, "disabled");
-
-        if (icon != null)
-            html.AppendElement(icon);
-
-        if (!string.IsNullOrEmpty(Text))
-            html.AppendElement(HtmlTag.Span, s =>
-                {
-                    s.AppendText("&nbsp " + Translate.Key(Text));
-                });
-
-        if (_spinner != null)
-            html.AppendElement(Spinner);
 
         if (Type == LinkButtonType.Submit)
         {
@@ -118,6 +98,26 @@ public class JJLinkButton : JJBaseView, IAction
             else
                 html.WithAttribute("href", "javascript: void(0);");
         }
+
+        html.WithNameAndId(Name);
+        html.WithCssClass(GetCssClassWithCompatibility());
+        html.WithAttributes(Attributes);
+        html.WithToolTip(Translate.Key(ToolTip));
+        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
+        html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
+        html.WithCssClassIf(!Enabled, "disabled");
+
+        if (icon != null)
+            html.AppendElement(icon);
+
+        if (!string.IsNullOrEmpty(Text))
+            html.AppendElement(HtmlTag.Span, s =>
+                {
+                    s.AppendText("&nbsp;" + Translate.Key(Text));
+                });
+
+        if (_spinner != null)
+            html.AppendElement(Spinner);
 
         return html;
     }
@@ -166,7 +166,6 @@ public class JJLinkButton : JJBaseView, IAction
     }
 
 }
-
 
 public enum LinkButtonType
 {

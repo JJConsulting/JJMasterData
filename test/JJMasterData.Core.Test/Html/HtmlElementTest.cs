@@ -1,4 +1,5 @@
 using JJMasterData.Core.Html;
+using System.Text;
 
 namespace JJMasterData.Core.Test.Html;
 
@@ -14,9 +15,9 @@ public class HtmlElementTest
         var result = builder.ToString();
 
         string formattedTag = tag.ToString().ToLower();
-        Assert.Equal($"<{formattedTag}></{formattedTag}>",result);
+        Assert.Equal($"<{formattedTag}></{formattedTag}>", result);
     }
-    
+
     [Theory]
     [InlineData(HtmlTag.Br)]
     public void RenderTagSelfClosed_Test(HtmlTag tag)
@@ -25,6 +26,43 @@ public class HtmlElementTest
         var result = builder.ToString();
 
         string formattedTag = tag.ToString().ToLower();
-        Assert.Equal($"<{formattedTag}/>",result);
+        Assert.Equal($"<{formattedTag} />", result);
     }
+
+    [Fact]
+    public void RenderElementText_Test()
+    {
+        var builder = new HtmlBuilder(HtmlTag.Span)
+            .AppendText("test");
+
+        Assert.Equal("<span>test</span>", builder.ToString());
+
+    }
+
+    [Fact]
+    public void RenderElementIndentation_Test()
+    {
+        var builder = new HtmlBuilder(HtmlTag.Div)
+             .AppendText("test2")
+             .AppendElement(HtmlTag.Span, s =>
+             {
+                 s.AppendText("test1");
+             });
+
+        var shtml = new StringBuilder();
+        shtml.AppendLine().Append(' ', 2);
+        shtml.Append("<div>");
+        shtml.AppendLine().Append(' ', 4);
+        shtml.Append("test2");
+        shtml.AppendLine().Append(' ', 4);
+        shtml.Append("<span>");
+        shtml.AppendLine().Append(' ', 6);
+        shtml.Append("test1");
+        shtml.AppendLine().Append(' ', 4);
+        shtml.Append("</span>");
+        shtml.AppendLine().Append(' ', 2);
+        shtml.Append("</div>");
+        Assert.Equal(shtml.ToString(), builder.ToString(true));
+    }
+
 }

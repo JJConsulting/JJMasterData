@@ -9,9 +9,9 @@ namespace JJMasterData.Core.Html;
 /// </summary>
 public partial class HtmlBuilder
 {
-    private readonly Dictionary<string, string> _attributes;
     private readonly string _rawText;
     private readonly bool _hasRawText;
+    private readonly Dictionary<string, string> _attributes;
     private readonly HtmlBuilderCollection _children;
 
     /// <summary>
@@ -67,13 +67,17 @@ public partial class HtmlBuilder
     private string GetHtml(int tabCount)
     {
         var html = new StringBuilder();
+
         if (tabCount > 0)
-            html.AppendLine().Append('\t', tabCount);
+        {
+            html.AppendLine().Append(' ', tabCount * 2);
+        }
 
         if (_hasRawText || Tag == null)
         {
-            html.Append(GetHtmlContent(tabCount));
             html.Append(_rawText);
+            html.Append(GetHtmlContent(tabCount));
+
             return html.ToString();
         }
 
@@ -83,7 +87,7 @@ public partial class HtmlBuilder
 
         if (!Tag.HasClosingTag)
         {
-            html.Append("/>");
+            html.Append(" />");
             return html.ToString();
         }
 
@@ -91,7 +95,9 @@ public partial class HtmlBuilder
         html.Append(GetHtmlContent(tabCount));
 
         if (tabCount > 0)
-            html.AppendLine().Append('\t', tabCount);
+        {
+            html.AppendLine().Append(' ', tabCount * 2);
+        }
 
         html.Append("</");
         html.Append(Tag.TagName.ToString().ToLower());
@@ -112,7 +118,7 @@ public partial class HtmlBuilder
         }
         return content.ToString();
     }
-    
+
     private string GetAttributesHtml()
     {
         var attrs = new StringBuilder();
@@ -122,4 +128,5 @@ public partial class HtmlBuilder
         }
         return attrs.ToString();
     }
+
 }

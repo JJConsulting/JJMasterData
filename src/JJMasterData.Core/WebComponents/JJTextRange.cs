@@ -109,14 +109,13 @@ public class JJTextRange : JJBaseControl
     private HtmlBuilder GetDropdownButton()
     {
         return new HtmlBuilder(HtmlTag.Button)
-            .WithCssClass(BootstrapHelper.DefaultButton)
-            .WithCssClass("dropdown-toggle")
             .WithAttribute("type", "button")
             .WithAttribute("id", $"dropdown_{Name}")
+            .WithCssClass("dropdown-toggle" + BootstrapHelper.DefaultButton)
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
-            .AppendText(Translate.Key("Periods") + "&nbsp")
+            .AppendText(Translate.Key("Periods") + "&nbsp;")
             .AppendElement(HtmlTag.Span, span => { span.WithCssClass("caret"); });
     }
 

@@ -36,7 +36,7 @@ public class ElementController : DataDictionaryController
 
     private void OnRenderAction(object? sender, ActionEventArgs e)
     {
-        var formName = e.FieldValues["name"]!.ToString();
+        var formName = e.FieldValues["name"]?.ToString();
         switch (e.Action.Name)
         {
             case "tools":
