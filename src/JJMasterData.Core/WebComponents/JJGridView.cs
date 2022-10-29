@@ -654,7 +654,7 @@ public class JJGridView : JJBaseView
         string objName = CurrentContext.Request.QueryString("objname");
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(html.GetHtml());
+            CurrentContext.Response.SendResponse(html.ToString());
             return true;
         }
 
@@ -715,7 +715,7 @@ public class JJGridView : JJBaseView
             {
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[rowIndex];
-                string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).GetHtml();
+                string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).ToString();
 
                 CurrentContext.Response.SendResponse(responseHtml);
             }
@@ -764,9 +764,9 @@ public class JJGridView : JJBaseView
 
     internal HtmlBuilder GetToolbarHtmlElement() => new GridToolbar(this).GetHtmlElement();
 
-    public string GetFilterHtml() => Filter.GetHtmlFilter().GetHtml();
+    public string GetFilterHtml() => Filter.GetHtmlFilter().ToString();
 
-    public string GetToolbarHtml() => GetToolbarHtmlElement().GetHtml();
+    public string GetToolbarHtml() => GetToolbarHtmlElement().ToString();
 
     private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
 
@@ -976,8 +976,7 @@ public class JJGridView : JJBaseView
             OnClientClick = $"jjview.doConfigCancel('{Name}');"
         };
         modal.Buttons.Add(btnCancel);
-
-        modal.HtmlContent = CurrentUI.GetHtmlElement(IsPaggingEnabled()).GetHtml();
+        modal.HtmlBuilderContent = CurrentUI.GetHtmlElement(IsPaggingEnabled());
 
         return modal.GetHtmlBuilder();
     }
@@ -1119,7 +1118,7 @@ public class JJGridView : JJBaseView
 
                 var html = new DataExpLog(exp.Name).GetHtmlProcess();
 
-                CurrentContext.Response.SendResponse(html.GetHtml());
+                CurrentContext.Response.SendResponse(html.ToString());
                 break;
             }
             case "checkProcess":

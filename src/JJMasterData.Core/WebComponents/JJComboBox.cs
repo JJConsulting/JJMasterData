@@ -235,7 +235,7 @@ public class JJComboBox : JJBaseControl
                 div.AppendText("&nbsp;");
                 div.AppendText(label);
             }
-            description = div.GetHtml();
+            description = div.ToString();
         }
         else
         {

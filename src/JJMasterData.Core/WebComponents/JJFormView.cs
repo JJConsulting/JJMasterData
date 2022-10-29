@@ -239,7 +239,7 @@ public class JJFormView : JJGridView
             if (filter != null && filter.Count > 0)
                 values = Factory.GetFields(FormElement, filter);
 
-            string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).GetHtml();
+            string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
             CurrentContext.Response.SendResponse(htmlPanel);
             return null;
         }
@@ -261,7 +261,7 @@ public class JJFormView : JJGridView
 
         if ("ajax".Equals(t) && Name.Equals(objname))
         {
-            CurrentContext.Response.SendResponse(htmlForm.GetHtml());
+            CurrentContext.Response.SendResponse(htmlForm.ToString());
             return null;
         }
 

@@ -114,7 +114,7 @@ public class JJLegendView : JJBaseView
         {
             Name = Name,
             Title = Translate.Key("Information"),
-            HtmlContent = form.GetHtml()
+            HtmlBuilderContent = form
         };
         
         return dialog.RenderHtml();

@@ -225,7 +225,7 @@ internal class GridFilter
 
         if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
         {
-            GridView.CurrentContext.Response.SendResponse(html.GetHtml());
+            GridView.CurrentContext.Response.SendResponse(html.ToString());
             return null;
         }
 

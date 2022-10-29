@@ -140,7 +140,7 @@ public class JJDataPanel : JJBaseView
             
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetHtmlPanel().GetHtml());
+            CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
             return null;
         }
 

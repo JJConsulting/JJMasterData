@@ -187,7 +187,7 @@ public class JJDataExp : JJBaseProcess
                 });
             });
 
-            return html.GetHtml();
+            return html.ToString();
         }
 
         var alert = new JJAlert()

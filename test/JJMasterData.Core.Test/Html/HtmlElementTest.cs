@@ -11,8 +11,8 @@ public class HtmlElementTest
     public void RenderTagWithCloseTag_Test(HtmlTag tag)
     {
         var builder = new HtmlBuilder();
-        builder.StartElement(tag);
-        var result = builder.RenderHtml(false);
+        builder.AppendElement(tag);
+        var result = builder.ToString();
 
         string formattedTag = tag.ToString().ToLower();
         Assert.Equal($"<{formattedTag}></{formattedTag}>",result);
@@ -22,9 +22,8 @@ public class HtmlElementTest
     [InlineData(HtmlTag.Br)]
     public void RenderTagSelfClosed_Test(HtmlTag tag)
     {
-        var builder = new HtmlBuilder();
-        builder.StartElement(tag);
-        var result = builder.RenderHtml(false);
+        var builder = new HtmlBuilder(tag);
+        var result = builder.ToString();
 
         string formattedTag = tag.ToString().ToLower();
         Assert.Equal($"<{formattedTag}/>",result);
