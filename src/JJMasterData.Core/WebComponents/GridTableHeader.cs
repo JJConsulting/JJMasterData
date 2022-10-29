@@ -205,7 +205,7 @@ internal class GridTableHeader
                     .WithCssClass("form-check-input")
                     .WithToolTip(Translate.Key("Mark|Unmark all from page"))
                     .WithAttribute("onclick",
-                        "('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();");
+                        "$('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();");
             });
 
         th.AppendElementIf(hasPages, HtmlTag.Span, span =>

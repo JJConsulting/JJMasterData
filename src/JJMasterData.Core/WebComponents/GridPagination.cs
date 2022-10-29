@@ -160,7 +160,7 @@ internal class GridPagination
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithAttribute("id", $"selectedtext_{GridView.Name}");
         span.WithAttribute("noSelStr", noRecordSelected);
-        span.WithAttribute("oneSelectedStr", oneRecordSelected);
+        span.WithAttribute("oneSelStr", oneRecordSelected);
         span.WithAttribute("paramSelStr", Translate.Key("{0} selected records"));
 
         if (selectedValues == null || selectedValues.Count == 0)

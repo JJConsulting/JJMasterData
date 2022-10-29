@@ -83,7 +83,7 @@ public partial class HtmlBuilder
 
         if (!Tag.HasClosingTag)
         {
-            html.Append(" />");
+            html.Append("/>");
             return html.ToString();
         }
 
