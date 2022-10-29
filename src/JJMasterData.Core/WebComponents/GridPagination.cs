@@ -117,9 +117,7 @@ internal class GridPagination
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText("&nbsp;");
-                    span.AppendText(GridView.TotalRecords.ToString("N0"));
-                    span.AppendText("&nbsp;");
+                    span.AppendText($" {GridView.TotalRecords.ToString("N0")} ");
                     span.AppendText(Translate.Key("record(s)"));
                 });
             }
