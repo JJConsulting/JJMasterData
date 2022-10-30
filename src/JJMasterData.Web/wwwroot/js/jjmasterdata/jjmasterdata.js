@@ -833,7 +833,7 @@ class JJUpload {
                 dragdropWidth: ($(this).width() - 10),
                 statusBarWidth: ($(this).width() - 10),
                 autoSubmit: true,
-                uploadButtonClass: bootstrapVersion == 3 ? "btn btn-default" : "btn btn-outline-dark",
+                uploadButtonClass: "btn btn-primary",
                 allowedTypes: allowedTypes,
                 acceptFiles: acceptFiles,
                 uploadStr: obj.attr("uploadStr"),
@@ -1294,7 +1294,7 @@ var jjview = (function () {
             surl += surl.includes("?") ? "&" : "?";
             surl += "jjuploadform_" + pnlname + "=" + objid;
             surl += "&uploadvalues=" + values;
-            popup.show(title, surl);
+            popup.show(title, surl, 1);
         },
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();

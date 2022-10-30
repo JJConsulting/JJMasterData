@@ -510,7 +510,7 @@ public class JJFormUpload : JJBaseView
         return row;
     }
 
-    private HtmlBuilder GetHtmlGalleryListItem(String label, String value = null)
+    private HtmlBuilder GetHtmlGalleryListItem(string label, string value)
     {
         return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item")
@@ -518,7 +518,7 @@ public class JJFormUpload : JJBaseView
             {
                 b.AppendText(Translate.Key(label));
             })
-            .AppendText($"{{0}} {value}");
+            .AppendText(value);
     }
 
     private HtmlBuilder GetHtmlGalleryPreview(string fileName)
@@ -624,7 +624,7 @@ public class JJFormUpload : JJBaseView
         url += Cript.Cript64(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}',4)")
+        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
         .AppendElement(HtmlTag.Img, img =>
         {
             img.WithAttribute("loading", "lazy")
@@ -650,7 +650,7 @@ public class JJFormUpload : JJBaseView
         videoUrl += Cript.Cript64(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-         .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}',4)")
+         .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")
          .AppendElement(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
 
         return html;
