@@ -194,8 +194,10 @@ internal class DataPanelControl
             if (Values != null && Values.Contains(f.Name))
                 value = FieldManager.FormatVal(Values[f.Name], f);
 
-            var label = new JJLabel(f);
-            label.CssClass = labelClass;
+            var label = new JJLabel(f)
+            {
+                CssClass = labelClass
+            };
 
             fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : $" {f.CssClass}";
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
@@ -240,10 +242,7 @@ internal class DataPanelControl
                 row.AppendElement(HtmlTag.Div, col =>
                 {
                     col.WithCssClass(colClass);
-                    if (IsViewModeAsStatic)
-                        col.AppendElement(GetStaticField(f));
-                    else
-                        col.AppendElement(GetControlField(f, value));
+                    col.AppendElement(IsViewModeAsStatic ? GetStaticField(f) : GetControlField(f, value));
                 });
             }
 

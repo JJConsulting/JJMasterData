@@ -180,7 +180,7 @@ public class JJDataPanel : JJBaseView
         }
 
         var panelGroup = new DataPanelGroup(this);
-        html.AppendRange(panelGroup.GetListHtmlPanel());
+        html.AppendRange(panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
         return html;

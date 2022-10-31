@@ -5,7 +5,7 @@ using System.Text;
 namespace JJMasterData.Core.Html;
 
 /// <summary>
-/// Implementation of HTML builder.
+/// Represents a mutable string of HTML tags.
 /// </summary>
 public partial class HtmlBuilder
 {

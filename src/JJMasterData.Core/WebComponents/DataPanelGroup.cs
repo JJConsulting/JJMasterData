@@ -27,42 +27,68 @@ internal class DataPanelGroup
         Name = dataPanel.Name;
     }
 
-    public List<HtmlBuilder> GetListHtmlPanel()
+    public List<HtmlBuilder> GetHtmlPanelList()
     {
         var list = new List<HtmlBuilder>();
 
+        list.AddRange(GetTabPanels());
+
+        list.AddRange(GetNonTabPanels());
+        
+        list.AddRange(GetFieldsWithoutPanel());
+
+        return list;
+    }
+
+    private IEnumerable<HtmlBuilder> GetTabPanels()
+    {
+        var list = new List<HtmlBuilder>();
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
-        if (tabs.Count > 0)
+
+        if (tabs.Count <= 0) return list;
+        
+        var navTab = GetTabNav(tabs);
+        list.Add(navTab.GetHtmlBuilder());
+
+        return list;
+    }
+
+    private IEnumerable<HtmlBuilder> GetNonTabPanels()
+    {
+        var list = new List<HtmlBuilder>();
+        
+        foreach (var panel in FormElement.Panels.Where(p => p.Layout != PanelLayout.Tab))
         {
-            var navTab = GetTabNav(tabs);
-            list.Add(navTab.GetHtmlBuilder());
+            var htmlPanel = GetHtmlPanelGroup(panel);
+            if (htmlPanel != null)
+                list.Add(htmlPanel);
         }
 
-        //Render other layout types
-        foreach (FormElementPanel panel in FormElement.Panels)
-        {
-            if (panel.Layout != PanelLayout.Tab)
-            {
-                var htmlPanel = GetHtmlPanelGroup(panel);
-                if (htmlPanel != null)
-                    list.Add(htmlPanel);
-            }
-        }
+        return list;
+    }
 
-        //Render fields without panel
-        if (FormElement.Fields.ToList().Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0")))
+    private IEnumerable<HtmlBuilder> GetFieldsWithoutPanel()
+    {
+        var list = new List<HtmlBuilder>();
+
+        bool dontContainsVisibleFields = !FormElement.Fields.ToList()
+            .Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0"));
+        
+        if (dontContainsVisibleFields)
+            return list;
+        
+        if (!RenderPanelGroup)
         {
-            if (!RenderPanelGroup)
+            list.Add(GetHtmlForm(null));
+        }
+        else
+        {
+            var card = new JJCard
             {
-                list.Add(GetHtmlForm(null));
-            }
-            else
-            {
-                var card = new JJCard();
-                card.ShowAsWell = true;
-                card.HtmlBuilderContent = GetHtmlForm(null);
-                list.Add(card.GetHtmlBuilder());
-            }
+                ShowAsWell = true,
+                HtmlBuilderContent = GetHtmlForm(null)
+            };
+            list.Add(card.GetHtmlBuilder());
         }
 
         return list;
@@ -74,7 +100,7 @@ internal class DataPanelGroup
         {
             Name = "nav_" + Name
         };
-        foreach (FormElementPanel panel in tabs)
+        foreach (var panel in tabs)
         {
             var htmlPanel = GetHtmlForm(panel);
             if (htmlPanel != null)
@@ -125,7 +151,7 @@ internal class DataPanelGroup
 
     private HtmlBuilder GetHtmlForm(FormElementPanel panel)
     {
-        int panelId = panel == null ? 0 : panel.PanelId;
+        int panelId = panel?.PanelId ?? 0;
         var fields = FormElement.Fields.ToList()
             .FindAll(x => x.PanelId == panelId)
             .OrderBy(x => x.LineGroup)
@@ -142,10 +168,10 @@ internal class DataPanelGroup
                 field.EnableExpression = "val:0";
         }
 
-        var contentform = DataPanelControl.GetHtmlForm(fields);
+        var formContent = DataPanelControl.GetHtmlForm(fields);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("container-fluid")
-            .AppendElement(contentform);
+            .AppendElement(formContent);
 
         return html;
     }

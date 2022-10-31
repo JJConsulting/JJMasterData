@@ -18,15 +18,11 @@ using System.Text;
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Representa um GRUD.
-/// Onde é possível: Listar, Visualizar, Incluir, Alterar e Excluir registros no banco de dados. 
+/// Represents a CRUD.
 /// </summary>
 /// <example>
-/// Exemplo da pagina
 /// [!code-cshtml[Example](../../../doc/JJMasterData.Examples/Views/Example/JJFormView.cshtml)]
-/// Exemplo objeto
-/// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJFormViewExample.aspx.cs)]
-/// O Resultado html ficará parecido com esse:
+/// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
 public class JJFormView : JJGridView
@@ -199,23 +195,20 @@ public class JJFormView : JJGridView
 
     internal override HtmlBuilder RenderHtml()
     {
-        string t = CurrentContext.Request.QueryString("t");
-        string objname = CurrentContext.Request.QueryString("objname");
+        string requestType = CurrentContext.Request.QueryString("t");
+        string objName = CurrentContext.Request.QueryString("objname");
         var dataPanel = DataPanel;
-
-        //Lookup Route
+        
         if (JJLookup.IsLookupRoute(this))
             return new HtmlBuilder(dataPanel.GetHtml());
-
-        //FormUpload Route
+        
         if (JJTextFile.IsFormUploadRoute(this))
             return new HtmlBuilder(dataPanel.GetHtml());
-
-        //DownloadFile Route
+        
         if (JJDownloadFile.IsDownloadRoute(this))
             return JJDownloadFile.ResponseRoute(this);
 
-        if ("jjsearchbox".Equals(t))
+        if ("jjsearchbox".Equals(requestType))
         {
             string pnlname = CurrentContext.Request.QueryString("pnlname");
             if (dataPanel.Name.Equals(pnlname))
@@ -231,35 +224,35 @@ public class JJFormView : JJGridView
                 return null;
             }
         }
-        else if ("reloadpainel".Equals(t))
+        else if ("reloadpainel".Equals(requestType))
         {
             //TODO: eliminar metodo GetSelectedRowId
             Hashtable filter = GetSelectedRowId();
             Hashtable values = null;
-            if (filter != null && filter.Count > 0)
+            if (filter is { Count: > 0 })
                 values = Factory.GetFields(FormElement, filter);
 
             string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
             CurrentContext.Response.SendResponse(htmlPanel);
             return null;
         }
-        else if ("jjupload".Equals(t) || "ajaxdataimp".Equals(t))
+        else if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
         {
-            if (!DataImp.Upload.Name.Equals(objname))
+            if (!DataImp.Upload.Name.Equals(objName))
                 return null;
 
             //Ajax upload de arquivo
             var pageState = PageState;
             GetHtmlDataImp(ref pageState);
         }
-        else if ("geturlaction".Equals(t))
+        else if ("geturlaction".Equals(requestType))
         {
             dataPanel.ResponseUrlAction();
             return null;
         }
         var htmlForm = GetHtmlForm();
 
-        if ("ajax".Equals(t) && Name.Equals(objname))
+        if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
             CurrentContext.Response.SendResponse(htmlForm.ToString());
             return null;
@@ -271,36 +264,36 @@ public class JJFormView : JJGridView
     private HtmlBuilder GetHtmlForm()
     {
         HtmlBuilder html;
-        PageState pageState = PageState;
+        var pageState = PageState;
 
-        var acMap = CurrentActionMap;
-        var ac = GetCurrentAction(acMap);
+        var actionMap = CurrentActionMap;
+        var currentAction = GetCurrentAction(actionMap);
 
-        if (ac is EditAction || pageState == PageState.Update)
+        if (currentAction is EditAction || pageState == PageState.Update)
         {
             html = GetHtmlUpdate(ref pageState);
         }
-        else if (ac is InsertAction || pageState == PageState.Insert)
+        else if (currentAction is InsertAction || pageState == PageState.Insert)
         {
             html = GetHtmlInsert(ref pageState);
         }
-        else if (ac is ImportAction || pageState == PageState.Import)
+        else if (currentAction is ImportAction || pageState == PageState.Import)
         {
             html = GetHtmlDataImp(ref pageState);
         }
-        else if (ac is LogAction || pageState == PageState.Log)
+        else if (currentAction is LogAction || pageState == PageState.Log)
         {
             html = GetHtmlLog(ref pageState);
         }
-        else if (ac is DeleteAction)
+        else if (currentAction is DeleteAction)
         {
             html = GetHtmlDelete(ref pageState);
         }
-        else if (ac is DeleteSelectedRowsAction)
+        else if (currentAction is DeleteSelectedRowsAction)
         {
             html = GetHtmlDeleteSelectedRows(ref pageState);
         }
-        else if (ac is ViewAction || pageState == PageState.View)
+        else if (currentAction is ViewAction || pageState == PageState.View)
         {
             html = GetHtmlView(ref pageState);
         }
@@ -346,19 +339,18 @@ public class JJFormView : JJGridView
                 pageState = PageState.List;
                 return GetHtmlGrid();
             }
-            else
-            {
-                pageState = PageState.Update;
-                return GetHtmlDataPainel(values, errors, pageState, true);
-            }
+
+            pageState = PageState.Update;
+            return GetHtmlDataPainel(values, errors, pageState, true);
         }
-        else if ("CANCEL".Equals(formAction))
+
+        if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
             CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
             return null;
         }
-        else if ("REFRESH".Equals(formAction))
+        if ("REFRESH".Equals(formAction))
         {
             var values = GetFormValues();
             return GetHtmlDataPainel(values, null, pageState, true);
@@ -392,8 +384,7 @@ public class JJFormView : JJGridView
                 RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(Translate.Key("Insert action not enabled"));
-
-        var html = new StringBuilder();
+        
         string formAction = "";
 
         if (CurrentContext.Request["current_painelaction_" + Name] != null)
@@ -401,8 +392,8 @@ public class JJFormView : JJGridView
 
         if (formAction.Equals("OK"))
         {
-            Hashtable values = GetFormValues();
-            Hashtable erros = InsertFormValues(values);
+            var values = GetFormValues();
+            var erros = InsertFormValues(values);
 
             if (erros.Count == 0)
             {
@@ -433,48 +424,42 @@ public class JJFormView : JJGridView
                     alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
                     return alertHtml;
                 }
-                else
-                {
-                    pageState = PageState.List;
-                    return GetHtmlGrid();
-                }
+ 
+                pageState = PageState.List;
+                return GetHtmlGrid();
+
             }
-            else
-            {
-                pageState = PageState.Insert;
-                return GetHtmlDataPainel(values, erros, pageState, true);
-            }
+  
+            pageState = PageState.Insert;
+            return GetHtmlDataPainel(values, erros, pageState, true);
+
         }
-        else if (formAction.Equals("CANCEL"))
+
+        if (formAction.Equals("CANCEL"))
         {
             pageState = PageState.List;
             ClearTempFiles();
             return GetHtmlGrid();
         }
-        else if (formAction.Equals("ELEMENTSEL"))
+        if (formAction.Equals("ELEMENTSEL"))
         {
             return GetHtmlElementInsert(ref pageState);
         }
-        else if (formAction.Equals("ELEMENTLIST"))
+        if (formAction.Equals("ELEMENTLIST"))
         {
             pageState = PageState.Insert;
             return GetHtmlElementList(action);
         }
-        else
+        if (pageState == PageState.Insert)
         {
-            if (pageState == PageState.Insert)
-            {
-                return GetHtmlDataPainel(GetFormValues(), null, pageState, true);
-            }
-            else
-            {
-                pageState = PageState.Insert;
-                if (string.IsNullOrEmpty(action.ElementNameToSelect))
-                    return GetHtmlDataPainel(RelationValues, null, PageState.Insert, false);
-                else
-                    return GetHtmlElementList(action);
-            }
+            return GetHtmlDataPainel(GetFormValues(), null, pageState, true);
         }
+
+        pageState = PageState.Insert;
+        
+        if (string.IsNullOrEmpty(action.ElementNameToSelect))
+            return GetHtmlDataPainel(RelationValues, null, PageState.Insert, false);
+        return GetHtmlElementList(action);
     }
 
     private HtmlBuilder GetHtmlElementList(InsertAction action)
@@ -485,27 +470,34 @@ public class JJFormView : JJGridView
 
 
         var dicParser = GetDictionary(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(), DataAccess);
-        formsel.Name = action.ElementNameToSelect;
+        var formsel = new JJFormView(dicParser.GetFormElement(), DataAccess)
+        {
+            Name = action.ElementNameToSelect
+        };
         formsel.SetOptions(dicParser.UIOptions);
 
-        var sGoBackScript = new StringBuilder();
-        sGoBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
-        sGoBackScript.AppendLine("$('form:first').submit(); ");
-        var goBackAction = new ScriptAction();
-        goBackAction.Name = "_jjgobacktion";
-        goBackAction.Icon = IconType.ArrowLeft;
-        goBackAction.Text = "Back";
-        goBackAction.ShowAsButton = true;
-        goBackAction.OnClientClick = sGoBackScript.ToString();
-        goBackAction.IsDefaultOption = true;
+        var goBackScript = new StringBuilder();
+        goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
+        goBackScript.AppendLine("$('form:first').submit(); ");
+        
+        var goBackAction = new ScriptAction
+        {
+            Name = "_jjgobacktion",
+            Icon = IconType.ArrowLeft,
+            Text = "Back",
+            ShowAsButton = true,
+            OnClientClick = goBackScript.ToString(),
+            IsDefaultOption = true
+        };
         formsel.AddToolBarAction(goBackAction);
 
-        var selAction = new ScriptAction();
-        selAction.Name = "_jjselaction";
-        selAction.Icon = IconType.CaretRight;
-        selAction.ToolTip = "Select";
-        selAction.IsDefaultOption = true;
+        var selAction = new ScriptAction
+        {
+            Name = "_jjselaction",
+            Icon = IconType.CaretRight,
+            ToolTip = "Select",
+            IsDefaultOption = true
+        };
         formsel.AddGridAction(selAction);
 
         formsel.OnRenderAction += FormSelectedOnRenderAction;
@@ -558,13 +550,11 @@ public class JJFormView : JJGridView
             pageState = PageState.List;
             return GetHtmlGrid();
         }
-        else
-        {
-            pageState = PageState.View;
-            var filter = acMap.PKFieldValues;
-            var values = Factory.GetFields(FormElement, filter);
-            return GetHtmlDataPainel(values, null, PageState.View, false);
-        }
+
+        pageState = PageState.View;
+        var filter = acMap.PKFieldValues;
+        var values = Factory.GetFields(FormElement, filter);
+        return GetHtmlDataPainel(values, null, PageState.View, false);
     }
 
     private HtmlBuilder GetHtmlDelete(ref PageState pageState)
@@ -625,7 +615,7 @@ public class JJFormView : JJGridView
             foreach (Hashtable row in rows)
             {
                 Hashtable errors = DeleteFormValues(row);
-                if (errors != null && errors.Count > 0)
+                if (errors is { Count: > 0 })
                 {
                     foreach (DictionaryEntry err in errors)
                     {
@@ -683,22 +673,24 @@ public class JJFormView : JJGridView
 
     private HtmlBuilder GetHtmlLog(ref PageState pageState)
     {
-        var acMap = _currentActionMap;
-        var sScript = new StringBuilder();
-        sScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
-        sScript.AppendLine("$('form:first').submit(); ");
+        var actionMap = _currentActionMap;
+        var script = new StringBuilder();
+        script.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
+        script.AppendLine("$('form:first').submit(); ");
 
-        var goBackAction = new ScriptAction();
-        goBackAction.Name = "goBackAction";
-        goBackAction.Icon = IconType.Backward;
-        goBackAction.ShowAsButton = true;
-        goBackAction.Text = "Back";
-        goBackAction.OnClientClick = sScript.ToString();
+        var goBackAction = new ScriptAction
+        {
+            Name = "goBackAction",
+            Icon = IconType.Backward,
+            ShowAsButton = true,
+            Text = "Back",
+            OnClientClick = script.ToString()
+        };
 
         if (pageState == PageState.View)
         {
-            var html = LogHistory.GetDetailLog(acMap.PKFieldValues);
-            html.AppendElement(GetFormLogBottombar(acMap.PKFieldValues));
+            var html = LogHistory.GetDetailLog(actionMap.PKFieldValues);
+            html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
@@ -772,11 +764,13 @@ public class JJFormView : JJGridView
             sPainel.AppendElement(GetFormBottombar(pageState, values));
             sPainel.AppendHiddenInput($"current_painelaction_{Name}");
 
-            var collapse = new JJCollapsePanel();
-            collapse.Name = "collapse_" + Name;
-            collapse.Title = FormElement.Title;
-            collapse.ExpandedByDefault = true;
-            collapse.HtmlBuilderContent = sPainel;
+            var collapse = new JJCollapsePanel
+            {
+                Name = "collapse_" + Name,
+                Title = FormElement.Title,
+                ExpandedByDefault = true,
+                HtmlBuilderContent = sPainel
+            };
             html.AppendElement(collapse);
         }
 
@@ -788,23 +782,22 @@ public class JJFormView : JJGridView
             var childElement = dic.GetFormElement();
 
             var filter = new Hashtable();
-            foreach (var col in relation.Columns)
+            foreach (var col in relation.Columns.Where(col => values.ContainsKey(col.PkColumn)))
             {
-                if (values.ContainsKey(col.PkColumn))
-                {
-                    filter.Add(col.FkColumn, values[col.PkColumn]);
-                }
+                filter.Add(col.FkColumn, values[col.PkColumn]);
             }
 
             if (relation.ViewType == RelationType.View)
             {
                 var childvalues = Factory.GetFields(childElement, filter);
-                var chieldView = new JJDataPanel(childElement);
-                chieldView.DataAccess = DataAccess;
-                chieldView.PageState = PageState.View;
-                chieldView.UserValues = UserValues;
-                chieldView.Values = childvalues;
-                chieldView.RenderPanelGroup = true;
+                var chieldView = new JJDataPanel(childElement)
+                {
+                    DataAccess = DataAccess,
+                    PageState = PageState.View,
+                    UserValues = UserValues,
+                    Values = childvalues,
+                    RenderPanelGroup = true
+                };
 
                 if (dic.UIOptions != null)
                 {
@@ -815,11 +808,16 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var chieldGrid = new JJFormView(childElement);
-                chieldGrid.DataAccess = DataAccess;
-                chieldGrid.UserValues = UserValues;
-                chieldGrid.FilterAction.ShowAsCollapse = false;
-                chieldGrid.Name = "jjgridview_" + childElement.Name;
+                var chieldGrid = new JJFormView(childElement)
+                {
+                    DataAccess = DataAccess,
+                    UserValues = UserValues,
+                    FilterAction =
+                    {
+                        ShowAsCollapse = false
+                    },
+                    Name = "jjgridview_" + childElement.Name
+                };
                 chieldGrid.Filter.ApplyCurrentFilter(filter);
 
                 if (dic.UIOptions != null)
@@ -829,10 +827,12 @@ public class JJFormView : JJGridView
 
                 chieldGrid.ShowTitle = false;
 
-                var collapse = new JJCollapsePanel();
-                collapse.Name = "collapse_" + chieldGrid.Name;
-                collapse.Title = childElement.Title;
-                collapse.HtmlContent = chieldGrid.GetHtml();
+                var collapse = new JJCollapsePanel
+                {
+                    Name = "collapse_" + chieldGrid.Name,
+                    Title = childElement.Title,
+                    HtmlContent = chieldGrid.GetHtml()
+                };
 
                 html.AppendElement(collapse);
             }
@@ -852,8 +852,10 @@ public class JJFormView : JJGridView
 
         var btnHideLog = GetButtonHideLog(values);
 
-        var toolbar = new JJToolbar();
-        toolbar.CssClass = "pb-3 mt-3";
+        var toolbar = new JJToolbar
+        {
+            CssClass = "pb-3 mt-3"
+        };
         toolbar.ListElement.Add(btnBack.GetHtmlBuilder());
         toolbar.ListElement.Add(btnHideLog.GetHtmlBuilder());
         return toolbar;
@@ -861,8 +863,10 @@ public class JJFormView : JJGridView
 
     private JJToolbar GetFormBottombar(PageState pageState, Hashtable values)
     {
-        var toolbar = new JJToolbar();
-        toolbar.CssClass = "pb-3 mt-3";
+        var toolbar = new JJToolbar
+        {
+            CssClass = "pb-3 mt-3"
+        };
         if (pageState == PageState.View)
         {
             toolbar.ListElement.Add(GetButtonBack().GetHtmlBuilder());
@@ -882,12 +886,11 @@ public class JJFormView : JJGridView
     {
         if (!e.Action.Name.Equals("_jjselaction")) return;
 
-        if (sender is JJGridView grid)
-        {
-            var map = new ActionMap(ActionOrigin.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
-            string criptId = map.GetCriptJson();
-            e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
-        }
+        if (sender is not JJGridView grid) return;
+        
+        var map = new ActionMap(ActionOrigin.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
+        string criptId = map.GetCriptJson();
+        e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
     }
 
     /// <summary>
@@ -917,13 +920,7 @@ public class JJFormView : JJGridView
 
         return result.Errors;
     }
-
-    /// <summary>
-    /// Exclui o registro no banco de dados. 
-    /// Retorna lista de erros
-    /// </summary>
-    /// <param name="filter">Valores chaves para o filtro</param>
-    /// <returns>Retorna lista de erros</returns>
+    
     public Hashtable DeleteFormValues(Hashtable filter)
     {
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
@@ -936,10 +933,7 @@ public class JJFormView : JJGridView
 
         return result.Errors;
     }
-
-    /// <summary>
-    /// Recupera os dados do Form
-    /// </summary>
+    
     public Hashtable GetFormValues()
     {
         var painel = DataPanel;
@@ -957,17 +951,7 @@ public class JJFormView : JJGridView
 
         return values;
     }
-
-    /// <summary>
-    /// Valida os campos do formulário e 
-    /// retorna uma lista com erros encontrados
-    /// </summary>
-    /// <param name="values">Dados do Formulário</param>
-    /// <param name="pageState">Estado atual da pagina</param>
-    /// <returns>
-    /// Chave = Nome do Campo
-    /// Valor = Mensagem de erro
-    /// </returns>
+    
     public Hashtable ValidateFields(Hashtable values, PageState pageState)
     {
         var painel = DataPanel;
@@ -987,13 +971,7 @@ public class JJFormView : JJGridView
                 CurrentContext.Session[sessionName] = null;
         }
     }
-
-    /// <summary>
-    /// Atribui as configurações do usuário cadastrado no dicionário de dados
-    /// </summary>
-    /// <param name="options">
-    /// Configurações do usuário
-    /// </param>
+    
     public void SetOptions(UIOptions options)
     {
         FormFactory.SetFormptions(this, options);
@@ -1016,10 +994,12 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonOk()
     {
-        var btn = new JJLinkButton();
-        btn.Text = "Save";
-        btn.IconClass = IconHelper.GetClassName(IconType.Check);
-        btn.OnClientClick = $"return jjview.doPainelAction('{Name}','OK');";
+        var btn = new JJLinkButton
+        {
+            Text = "Save",
+            IconClass = IconHelper.GetClassName(IconType.Check),
+            OnClientClick = $"return jjview.doPainelAction('{Name}','OK');"
+        };
         if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
         {
             btn.Type = LinkButtonType.Submit;
@@ -1035,12 +1015,14 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonCancel()
     {
-        var btn = new JJLinkButton();
-        btn.Type = LinkButtonType.Button;
-        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');";
-        btn.IconClass = IconHelper.GetClassName(IconType.Times);
-        btn.Text = "Cancel";
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
+            OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');",
+            IconClass = IconHelper.GetClassName(IconType.Times),
+            Text = "Cancel"
+        };
         return btn;
     }
 
@@ -1055,24 +1037,28 @@ public class JJFormView : JJGridView
     private JJLinkButton GetButtonHideLog(Hashtable values)
     {
         string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionOrigin.Grid);
-        var btn = new JJLinkButton();
-        btn.Type = LinkButtonType.Button;
-        btn.Text = "Hide Log";
-        btn.IconClass = IconHelper.GetClassName(IconType.Film);
-        btn.CssClass = "btn btn-primary btn-small";
-        btn.OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}";
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            Text = "Hide Log",
+            IconClass = IconHelper.GetClassName(IconType.Film),
+            CssClass = "btn btn-primary btn-small",
+            OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}"
+        };
         return btn;
     }
 
     private JJLinkButton GetButtonViewLog(Hashtable values)
     {
         string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionOrigin.Toolbar);
-        var btn = new JJLinkButton();
-        btn.Type = LinkButtonType.Button;
-        btn.Text = "View Log";
-        btn.IconClass = IconHelper.GetClassName(IconType.Film);
-        btn.CssClass = BootstrapHelper.DefaultButton + " btn-small";
-        btn.OnClientClick = scriptAction;
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            Text = "View Log",
+            IconClass = IconHelper.GetClassName(IconType.Film),
+            CssClass = BootstrapHelper.DefaultButton + " btn-small",
+            OnClientClick = scriptAction
+        };
         return btn;
     }
 

@@ -21,11 +21,13 @@ internal class DataImpHelp
 
     public HtmlBuilder GetHtmlHelp()
     {
-        var panel = new JJCollapsePanel();
-        panel.Title = "Import File - Help";
-        panel.TitleIcon = new JJIcon(IconType.QuestionCircle);
-        panel.ExpandedByDefault = true;
-        panel.HtmlBuilderContent = GetHtmlContent();
+        var panel = new JJCollapsePanel
+        {
+            Title = "Import File - Help",
+            TitleIcon = new JJIcon(IconType.QuestionCircle),
+            ExpandedByDefault = true,
+            HtmlBuilderContent = GetHtmlContent()
+        };
 
         var html = panel.RenderHtml()
            .AppendHiddenInput("current_uploadaction", "")
@@ -56,7 +58,7 @@ internal class DataImpHelp
                     .AppendElement(HtmlTag.Table, table =>
                     {
                         table.WithCssClass("table table-hover")
-                             .AppendElement(GetHeaderColums())
+                             .AppendElement(GetHeaderColumns())
                              .AppendElement(GetBodyColums(list));
                     });
              });
@@ -64,7 +66,7 @@ internal class DataImpHelp
         return html;
     }
 
-    private HtmlBuilder GetHeaderColums()
+    private HtmlBuilder GetHeaderColumns()
     {
         var head = new HtmlBuilder(HtmlTag.Thead)
             .AppendElement(HtmlTag.Tr, tr =>

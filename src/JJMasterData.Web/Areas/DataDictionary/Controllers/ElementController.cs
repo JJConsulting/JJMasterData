@@ -9,6 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Reflection;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -129,10 +130,12 @@ public class ElementController : DataDictionaryController
     public IActionResult About()
     {
         var service = new AboutService();
-
+        var executingAssembly = Assembly.GetExecutingAssembly();
         var model = new AboutViewModel
         {
-            AssemblyInfoHtml = service.GetAssemblyInfo(),
+            ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
+            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
+            ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
             BootstrapVersion = BootstrapHelper.Version.ToString(),
             Dependencies = service.GetJJAssemblies()
         };
