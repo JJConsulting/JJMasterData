@@ -3053,10 +3053,6 @@
     <value>Atenção!</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Warning: This computer program is protected by copyright law and international treaties." xml:space="preserve">
-    <value>Aviso: Este programa de computador é protegido por leis de direitos autorais e tratados internacionais.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="We recommend consulting your current database documentation before proceeding." xml:space="preserve">
     <value>Recomendamos consultar a documentação atual do seu banco de dados antes de avançar.</value>
     <comment>JJMasterDataWeb</comment>
@@ -3359,5 +3355,14 @@
   </data>
   <data name="No Order" xml:space="preserve">
     <value>Sem Ordem</value>
+  </data>
+  <data name="Warning: This software is protected by the GPL license." xml:space="preserve">
+    <value>Aviso: Este software é protegido pela licença GPL</value>
+  </data>
+  <data name="For more information, please check our" xml:space="preserve">
+    <value>Para mais informações, por favor leia nossa </value>
+  </data>
+  <data name="LICENSE" xml:space="preserve">
+    <value>LICENÇA</value>
   </data>
 </root>

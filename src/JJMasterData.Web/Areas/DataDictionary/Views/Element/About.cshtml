@@ -28,20 +28,24 @@
             <div class="@(BootstrapHelper.Version != 3 ? "container-fluid" : string.Empty)">
                 <div class="row">
                     <div class="col-xs-12">
-                        @Html.Raw(Model.AssemblyInfoHtml)
+                        <b>@Model.ExecutingAssemblyProduct</b>
+                        <br/>
+                        Version: @Model.ExecutingAssemblyVersion
+                        <br/>
+                        @Model.ExecutingAssemblyCopyright
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <ul class='list-group'>
+    <ul class="list-group">
 
-        @foreach (var assembly in Model.Dependencies)
+        @foreach (var assembly in Model.Dependencies!)
         {
             <li class="list-group-item">
                 <span>@assembly.GetName().Name</span>
                 <br />
-                <span>Version: @assembly.GetName().Version.ToString()</span>
+                <span>Version: @assembly.GetName().Version?.ToString()</span>
                 <br />
             </li>
         }
@@ -57,8 +61,7 @@
     <hr />
     <span class="text-warning fa fa-exclamation-triangle"></span>
     <span class="small">
-        @Translate.Key("Warning: This computer program is protected by copyright law and international treaties.")
-        @Translate.Key("Unauthorized reproduction or distribution of this program, or any portion of it,")
-        @Translate.Key("may result in severe civil and criminal penalties, and will be prosecuted to the maximum extend possible under the law.")
+        @Translate.Key("Warning: This software is protected by the GPL license.")
+        @Translate.Key("For more information, please check our ") <a href="https://github.com/JJConsulting/JJMasterData/blob/main/LICENSE">@Translate.Key("LICENSE").</a>
     </span>
 </div>

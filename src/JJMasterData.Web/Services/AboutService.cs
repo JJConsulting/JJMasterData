@@ -5,35 +5,21 @@ namespace JJMasterData.Web.Services;
 
 public class AboutService
 {
-    public List<Assembly>? GetJJAssemblies() => AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.Contains("JJ")).ToList();
-    
-    public string GetAssemblyInfo()
+    public List<Assembly> GetJJAssemblies() => AppDomain.CurrentDomain.GetAssemblies().Where(a =>
     {
-        var assemblyInfo = new StringBuilder();
-        var executingAssembly = Assembly.GetExecutingAssembly();
+        var name = a.GetName().Name;
+        return name != null && name.Contains("JJ");
+    }).ToList();
 
-        assemblyInfo.Append("<b>");
-        assemblyInfo.Append(GetAssemblyProduct(executingAssembly));
-        assemblyInfo.AppendLine("</b><br>");
-        assemblyInfo.Append("Version: ");
-        assemblyInfo.Append(executingAssembly.GetName().Version);
-        assemblyInfo.AppendLine("<br>");
-        assemblyInfo.Append(GetAssemblyCopyright(executingAssembly));
-        assemblyInfo.AppendLine("<br>");
-        assemblyInfo.AppendLine("All rights reserved.");
-
-        return assemblyInfo.ToString();
-    }
-
-    private string GetAssemblyCopyright(Assembly a)
+    public string GetAssemblyCopyright(Assembly assembly)
     {
-        object[] attributes = a.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+        object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
         return attributes.Length == 0 ? string.Empty : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
     }
 
-    private string GetAssemblyProduct(Assembly a)
+    public string GetAssemblyProduct(Assembly assembly)
     {
-        object[] attributes = a.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+        object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
         return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
     }
 

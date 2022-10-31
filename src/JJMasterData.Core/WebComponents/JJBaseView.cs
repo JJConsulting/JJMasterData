@@ -22,10 +22,7 @@ public abstract class JJBaseView
     private Hashtable _userValues;
     private Hashtable _attributes;
     private string _userId;
-
-    /// <summary>
-    /// Indica se a pagina esta sendo renderizada pela primeira vez
-    /// </summary>
+    
     internal bool IsPostBack => CurrentContext.Request.HttpMethod.Equals("POST");
 
     /// <summary>
@@ -38,7 +35,7 @@ public abstract class JJBaseView
     }
 
     /// <summary>
-    /// Objeto responsável por traduzir o elemento base em comandos para o banco de dados
+    /// Object responsible for translating the base element into commands for the database
     /// </summary>
     public Factory Factory
     {
@@ -55,34 +52,25 @@ public abstract class JJBaseView
         get => _userValues ??= new Hashtable();
         set => _userValues = value;
     }
-
-    /// <summary>
-    /// Informações sobre o request HTTP
-    /// </summary>
+    
     internal JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-
-    /// <summary>
-    /// Obtém ou define um valor que indica se o controle será ou não renderizado.
-    /// </summary>
+    
     public bool Visible { get; set; } = true;
 
     /// <summary>
-    /// Id e nome do componente
+    /// Represents the component unique identifier
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
+    /// HTML attributes represented by key/value pairs
     /// </summary>
     public Hashtable Attributes
     {
         get => _attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
     }
-
-    /// <summary>
-    /// Classe CSS (Folha de Estilos em Cascata) aplicado no controle
-    /// </summary>
+    
     public string CssClass { get; set; }
 
 

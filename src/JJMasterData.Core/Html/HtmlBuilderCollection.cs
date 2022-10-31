@@ -24,7 +24,7 @@ public class HtmlBuilderCollection : List<HtmlBuilder>
     {
         var element = new HtmlBuilder();
         elementAction.Invoke(element);
-        this.Add(element);
+        Add(element);
         return this;
     }
 }
