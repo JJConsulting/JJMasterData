@@ -27,10 +27,7 @@ public static class WriterFactory
 
     public static ITextWriter GetTextWriter()
     {
-        var writer = JJService.Provider.GetService<ITextWriter>();
-
-        if (writer == null)
-            writer = new TextWriter();
+        var writer = JJService.Provider.GetService<ITextWriter>() ?? new TextWriter();
 
         return writer;
     }
@@ -68,7 +65,7 @@ public static class WriterFactory
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)pdfWriter;
+                writer = pdfWriter as BaseWriter;
 
                 break;
             default:

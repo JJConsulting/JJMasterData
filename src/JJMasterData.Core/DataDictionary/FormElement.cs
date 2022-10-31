@@ -16,22 +16,13 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElement : Element
 {
     private List<FormElementField> _formFields = new List<FormElementField>();
-
-    /// <summary>
-    /// Titulo do Formulário
-    /// </summary>
+    
     [DataMember(Name = "title")]
     public string Title { get; set; }
-
-    /// <summary>
-    /// Sub-Titulo do Formulário
-    /// </summary>
+    
     [DataMember(Name = "subTitle")]
     public string SubTitle { get; set; }
-
-    /// <summary>
-    /// Campos do Formulário
-    /// </summary>
+    
     [DataMember(Name = "fields")]
     public new FormElementList Fields { get; private set; }
 
@@ -85,15 +76,15 @@ public class FormElement : Element
             f.IsRequired = !col.AllowDBNull;
             f.IsPk = col.Unique;
 
-            Type type = col.DataType;
+            var type = col.DataType;
             if (type == typeof(int) ||
-                type == typeof(Int16) ||
-                type == typeof(Int32) ||
-                type == typeof(Int64) ||
-                type == typeof(UInt16) ||
-                type == typeof(UInt32) ||
-                type == typeof(UInt64) ||
-                type == typeof(Single))
+                type == typeof(short) ||
+                type == typeof(int) ||
+                type == typeof(long) ||
+                type == typeof(ushort) ||
+                type == typeof(uint) ||
+                type == typeof(ulong) ||
+                type == typeof(float))
             {
                 f.DataType = FieldType.Int;
             }
@@ -129,7 +120,8 @@ public class FormElement : Element
     {
         return Panels.Find(x => x.PanelId == id);
     }
-
+    
+    [Obsolete("Please use DeepCopy extension method.")]
     public Element DeepCopyElement()
     {
         var element = new Element();
@@ -144,7 +136,7 @@ public class FormElement : Element
         element.Sync = Sync;
 
         element.Fields = new ElementList();
-        foreach (FormElementField f in Fields)
+        foreach (var f in Fields)
             element.Fields.Add(f.DeepCopyField());
 
         return element;

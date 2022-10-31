@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.WebComponents;
 
-abstract public class JJBaseControl : JJBaseView
+public abstract class JJBaseControl : JJBaseView
 {
     private string _text;
 
@@ -19,7 +19,7 @@ abstract public class JJBaseControl : JJBaseView
     /// Obtém ou define um valor que indica se o controle está habilitado.
     /// (Default = true)
     /// </summary>
-    public bool Enable { get; set; }
+    public bool Enabled { get; set; }
 
     /// <summary>
     /// Obtém ou define um valor que indica se o controle é somente leitura
@@ -29,17 +29,7 @@ abstract public class JJBaseControl : JJBaseView
     /// <summary>
     /// Texto que especifica uma dica curta que descreve o valor esperado de um campo de entrada
     /// </summary>
-    public string PlaceHolder 
-    {
-        get
-        {
-            return GetAttr("placeholder");
-        }
-        set
-        {
-            SetAttr("placeholder", value);
-        } 
-    }
+    public string PlaceHolder { get; set; }
 
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
@@ -64,10 +54,7 @@ abstract public class JJBaseControl : JJBaseView
             }
             return _text;
         }
-        set
-        {
-            _text = value;
-        }
+        set => _text = value;
     }
 
 

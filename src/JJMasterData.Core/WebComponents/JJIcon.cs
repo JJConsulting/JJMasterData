@@ -1,19 +1,16 @@
-﻿using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJIcon : JJBaseView
 {
-    /// <summary>
-    /// Classe do icone
-    /// </summary>
+
     /// <remarks>
-    /// classe da fonte fontawesome ou glyphicons 
+    /// Font Awesome icon class
     /// </remarks>
     public string IconClass { get; set; }
-
     public string Color { get; set; }
     public string Title { get; set; }
 
@@ -34,7 +31,6 @@ public class JJIcon : JJBaseView
         Title = title;
     }
 
-    
     public JJIcon(string iconClass)
     {
         IconClass = iconClass;
@@ -50,30 +46,16 @@ public class JJIcon : JJBaseView
         Title = title;
     }
     
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        var sHtml = new StringBuilder();
-        if (CssClass == null)
-            CssClass = string.Empty;
+        var element = new HtmlBuilder(HtmlTag.Span)
+            .WithNameAndId(Name)
+            .WithAttributes(Attributes)
+            .WithCssClass(IconClass)
+            .WithCssClass(CssClass)
+            .WithToolTip(Translate.Key(Title))
+            .WithAttributeIf(!string.IsNullOrEmpty(Color), "style",$"color:{Color}");
 
-        sHtml.Append($"<span class=\"{IconClass} {CssClass}\"");
-
-        if (!string.IsNullOrEmpty(Color))
-        {
-            sHtml.Append(" style=\"color:");
-            sHtml.Append(Color);
-            sHtml.Append(";\"");
-        }
-
-        if (!string.IsNullOrEmpty(Title))
-        {
-            sHtml.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            sHtml.Append(Translate.Key(Title));
-            sHtml.Append("\"");
-        }
-        sHtml.Append(">");
-        sHtml.Append("</span>");
-       
-        return sHtml.ToString();
+        return element;
     }
 }

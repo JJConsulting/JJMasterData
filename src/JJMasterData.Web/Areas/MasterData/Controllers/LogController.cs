@@ -58,9 +58,9 @@ public class LogController : Controller
 
         var tipo = f.Fields[Logger.Settings.Table.LevelColumnName];
         tipo.Component = FormComponent.ComboBox;
-        tipo.DataItem.Itens.Add(new DataItemValue("I", "Info"));
-        tipo.DataItem.Itens.Add(new DataItemValue("W", "Alerta"));
-        tipo.DataItem.Itens.Add(new DataItemValue("E", "Erro"));
+        tipo.DataItem.Items.Add(new DataItemValue("I", "Info"));
+        tipo.DataItem.Items.Add(new DataItemValue("W", "Alerta"));
+        tipo.DataItem.Items.Add(new DataItemValue("E", "Erro"));
 
         var gridView = new JJGridView(f);
         gridView.CurrentOrder = $"{Logger.Settings.Table.DateColumnName} DESC";
@@ -93,7 +93,7 @@ public class LogController : Controller
             msg = e.Sender.GetHtml();
         }
 
-        e.ResultHtml = msg;
+        e.HtmlResult = msg;
     }
 
 }

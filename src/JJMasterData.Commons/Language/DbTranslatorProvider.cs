@@ -7,6 +7,7 @@ using System.Resources;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Settings;
 
 namespace JJMasterData.Commons.Language;
@@ -43,27 +44,36 @@ public class DbTranslatorProvider : ITranslator
     public Dictionary<string, string> GetDictionaryStrings(string culture)
     {
         var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-
-        string tablename = JJService.Settings.ResourcesTableName;
-        if (string.IsNullOrEmpty(tablename))
-            return dic;
-
-        var element = GetElement(tablename);
-        if (!DataAccess.TableExists(element.TableName))
-            Factory.CreateDataModel(element);
-
-        dic = GetDatabaseValues(element, culture);
-        if (dic.Count > 0)
-            return dic;
-
-        var values = GetDefaultValues(culture);
-        if (values?.Count > 0)
+        try
         {
-            AddDefaultValues(element, values);
-            foreach (Hashtable row in values)
-                dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
-        }
+            string tablename = JJService.Settings.ResourcesTableName;
+            if (string.IsNullOrEmpty(tablename))
+                return dic;
 
+            if (string.IsNullOrEmpty(DataAccess.ConnectionString))
+                return dic;
+
+            var element = GetElement(tablename);
+            if (!DataAccess.TableExists(element.TableName))
+                Factory.CreateDataModel(element);
+
+            dic = GetDatabaseValues(element, culture);
+            if (dic.Count > 0)
+                return dic;
+
+            var values = GetDefaultValues(culture);
+            if (values?.Count > 0)
+            {
+                AddDefaultValues(element, values);
+                foreach (Hashtable row in values)
+                    dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.AddError(ex.ToString());
+        }
+        
         return dic;
     }
 

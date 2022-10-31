@@ -1,34 +1,21 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJTextArea : JJBaseControl
 {
-
-    public int Rows
-    {
-        get
-        {
-            string val = GetAttr("rows");
-            return string.IsNullOrEmpty(val) ? 5 : int.Parse(val);
-        }
-        set => SetAttr("rows", value);
-    }
+    public int Rows { get; set; }
 
     public JJTextArea()
     {
+        Attributes.Add("class", "form-control");
         Rows = 5;
     }
 
-    internal static JJTextArea GetInstance(FormElementField field,
-                                 object value,
-                                 bool enable = true,
-                                 bool readOnly = false,
-                                 string name = null)
+    internal static JJTextArea GetInstance(FormElementField field, object value)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -38,57 +25,28 @@ public class JJTextArea : JJBaseControl
         text.ToolTip = field.HelpDescription;
         text.MaxLength = field.Size;
         text.Text = value != null ? value.ToString() : "";
-        text.Enable = enable;
-        text.ReadOnly = readOnly;
-        text.Name = name ?? field.Name;
+        text.Name = field.Name;
 
         return text;
     }
 
-
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        StringBuilder html = new StringBuilder();
-        html.AppendFormat("<textarea name=\"{0}\" ", Name);
-        html.AppendFormat("id=\"{0}\" ", Name);
+        var html = new HtmlBuilder(HtmlTag.TextArea)
+            .WithAttributes(Attributes)
+            .WithNameAndId(Name)
+            .WithCssClass(CssClass)
+            .WithToolTip(ToolTip)
+            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
+            .WithAttribute("rows", Rows.ToString())
+            .WithAttribute("cols", "20")
+            .WithAttribute("strvalid", Translate.Key("Maximum limit of {0} characters!"))
+            .WithAttribute("strchars", Translate.Key("({0} characters remaining)"))
+            .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
+            .WithAttributeIf(ReadOnly, "readonly", "readonly")
+            .WithAttributeIf(!Enabled, "disabled", "disabled")
+            .AppendText(Text);
 
-        if (MaxLength > 0)
-        {
-            html.AppendFormat("maxlength=\"{0}\" ", MaxLength);
-        }
-
-        html.Append("cols=\"20\" ");
-        html.AppendFormat("strvalid=\"{0}\" ", Translate.Key("Maximum limit of {0} characters!"));
-        html.AppendFormat("strchars=\"{0}\" ", Translate.Key("({0} characters remaining)"));
-
-        if (ReadOnly)
-            html.Append("readonly ");
-
-        if (!Enable)
-            html.Append("disabled ");
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.AppendFormat("title=\"{0}\" ", Translate.Key(ToolTip));
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append('"');
-            }
-            html.Append(' ');
-        }
-
-        html.Append("class=\"form-control\">");
-        html.Append(Text);
-        html.Append("</textarea> ");
-
-        return html.ToString();
+        return html;
     }
 }

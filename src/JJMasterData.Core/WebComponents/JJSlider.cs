@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Text;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -17,66 +16,61 @@ public class JJSlider : JJBaseControl
         MaxValue = maxValue;
     }
     
-    public static JJBaseView GetInstance(FormElementField field, object value, bool enable, bool readOnly, string fieldName)
+    public static JJBaseControl GetInstance(FormElementField field, object value)
     {
         var slider = new JJSlider(field.MinValue ?? 0f, field.MaxValue ?? 100)
         {
-            Name = fieldName ?? field.Name,
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null,
-            Enable = enable,
-            ReadOnly = readOnly
+            Name =  field.Name,
+            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null
         };
         return slider;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new StringBuilder();
-
-        html.Append($"<div class=\"{CssClass}\">");
-        html.Append("   <div class=\"row\">");
-        html.Append($"<div class=\"{(ShowInput ? "col-sm-9" : "col-sm-12")}\">");
-        html.Append(
-            "<input " +
-            $"name=\"{Name}\"" +
-            " type=\"range\" " +
-
-            $" min=\"{MinValue}\"" +
-            "  step=\"1\"" +
-            $" max=\"{MaxValue}\" " +
-            $" value=\"{Value}\"" +
-            " class=\"jjslider form-range\" ");
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(attr.Key);
-            if (attr.Value != null)
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass(CssClass)
+            .AppendElement(HtmlTag.Div, row =>
             {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append('"');
-            }
-            html.Append(' ');
-        }
-        html.Append($" id=\"{Name}\"/>");
-        html.Append("</div>");
+                row.WithCssClass(ShowInput ? "col-sm-9" : "col-sm-12");
+                row.WithCssClassIf(BootstrapHelper.Version > 3, "d-flex justify-content-end align-items-center");
+                row.AppendElement(GetHtmlSlider());
+            });
 
         if (ShowInput)
         {
-            html.Append("<div class=\"col-sm-3\">");
-            html.Append(
-                "  <input class=\"jjslider-value form-control\" " +
-                $"  id=\"{Name}-value\" " +
-                $"  min={MinValue} max={MaxValue}" +
-                "   type=\"number\"" +
-                $"  value=\"{Value}\"" +
-                $"  name=\"{Name}-value\"/>");
-            html.Append("</div>");
+            var number = new JJTextBox
+            {
+                InputType = InputType.Number,
+                Name = $"{Name}-value",
+                MinValue = MinValue,
+                MaxValue = MaxValue,
+                CssClass = "jjslider-value"
+            };
+
+            html.AppendElement(HtmlTag.Div, row =>
+            {
+                row.WithCssClass("col-sm-3");
+                row.AppendElement(number);
+            });
         }
 
-        html.Append("   </div>");
-        html.Append("</div>");
-        return html.ToString();
+        return html;
     }
 
+    private HtmlBuilder GetHtmlSlider()
+    {
+        var slider = new HtmlBuilder(HtmlTag.Input)
+           .WithAttributes(Attributes)
+           .WithAttribute("type", "range")
+           .WithNameAndId(Name)
+           .WithCssClass("jjslider form-range")
+           .WithAttribute("min", MinValue.ToString())
+           .WithAttribute("max", MaxValue.ToString())
+           .WithAttribute("step", "1")
+           .WithAttributeIf(Value.HasValue, "value", Value?.ToString());
+
+        return slider;
+    }
 
 }

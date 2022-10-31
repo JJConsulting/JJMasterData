@@ -1,9 +1,9 @@
-﻿
+﻿using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Represents a string.
+/// Represents a plain text.
 /// </summary>
 public class JJText : JJBaseView
 {
@@ -19,11 +19,6 @@ public class JJText : JJBaseView
         Visible = true;
         Text = text;
     }
-    
-    protected override string RenderHtml()
-    {
-        return Text;
-    }
 
-    
+    internal override HtmlBuilder RenderHtml() => new(Text);
 }

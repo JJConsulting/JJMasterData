@@ -18,13 +18,7 @@ public class ExpressionManager
 {
     #region "Properties"
 
-    /// <summary>
-    /// User specified values.
-    /// Use to replace values that support expressions.
-    /// </summary>
-    /// <remarks>
-    /// Key = Field name, Value= Field value
-    /// </remarks>
+    
     public Hashtable UserValues { get; set; }
 
     private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
@@ -104,7 +98,7 @@ public class ExpressionManager
 
             if (interval.Begin == '{' && interval.End == '}')
             {
-                parsedExpression = parsedExpression.Replace(string.Format("{{{0}}}", field), val);
+                parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
             }
             else
             {
@@ -286,7 +280,7 @@ public class ExpressionManager
     }
 
 
-    public bool ParseBool(object value)
+    public static bool ParseBool(object value)
     {
         if (value == null)
             return false;

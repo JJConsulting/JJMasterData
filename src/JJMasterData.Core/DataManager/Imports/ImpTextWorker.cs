@@ -246,7 +246,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             string value = cols[i];
             if (field.Component == FormComponent.CheckBox)
             {
-                if (FormManager.Expression.ParseBool(value))
+                if (ExpressionManager.ParseBool(value))
                     value = "1";
                 else
                     value = "0";

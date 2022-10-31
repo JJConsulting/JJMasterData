@@ -1302,7 +1302,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="FormView" xml:space="preserve">
-    <value>Vista de formulário</value>
+    <value>Visualização do formulário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="From" xml:space="preserve">
@@ -1354,7 +1354,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="GridView" xml:space="preserve">
-    <value>Visualização em grade</value>
+    <value>Visualização da grid</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Group Line" xml:space="preserve">
@@ -3053,10 +3053,6 @@
     <value>Atenção!</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Warning: This computer program is protected by copyright law and international treaties." xml:space="preserve">
-    <value>Aviso: Este programa de computador é protegido por leis de direitos autorais e tratados internacionais.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="We recommend consulting your current database documentation before proceeding." xml:space="preserve">
     <value>Recomendamos consultar a documentação atual do seu banco de dados antes de avançar.</value>
     <comment>JJMasterDataWeb</comment>
@@ -3341,5 +3337,32 @@
   <data name="The [Name] field contains a reserved word used in the database." xml:space="preserve">
     <value>Campo [Nome] contém uma palavra reservada utilizada no banco de dados.</value>
     <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="[DataItem] properties not defined for combo" xml:space="preserve">
+    <value>Propriedades [DataItem] não definidas para combo</value>
+  </data>
+  <data name="Data source not defined for combo" xml:space="preserve">
+    <value>Origem de dados não definida para combo</value>
+  </data>
+  <data name="Error loading data from JJComboBox {0}. Error Details: {1}" xml:space="preserve">
+    <value>Erro carregar os dados da JJComboBox {0}. Detalhes do Erro: {1}</value>
+  </data>
+  <data name="(All)" xml:space="preserve">
+    <value>(Todos)</value>
+  </data>
+  <data name="(Choose)" xml:space="preserve">
+    <value>(Escolha)</value>
+  </data>
+  <data name="No Order" xml:space="preserve">
+    <value>Sem Ordem</value>
+  </data>
+  <data name="Warning: This software is protected by the GPL license." xml:space="preserve">
+    <value>Aviso: Este software é protegido pela licença GPL</value>
+  </data>
+  <data name="For more information, please check our" xml:space="preserve">
+    <value>Para mais informações, por favor leia nossa </value>
+  </data>
+  <data name="LICENSE" xml:space="preserve">
+    <value>LICENÇA</value>
   </data>
 </root>

@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Text;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -17,52 +19,38 @@ internal class ActionManager
     private ExpressionManager _expression;
     private Hashtable _userValues;
 
-
     /// <summary>
-    /// Configurações pré-definidas do formulário
+    /// <see cref="FormElement"/>
     /// </summary>
     public FormElement FormElement { get; set; }
 
     public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
-
-    /// <summary>
-    /// Valores espeçificos do usuário.
-    /// Utilizado para substituir os valores em tempo de execução nos métodos que suportam expression.
-    /// </summary>
+    
     public Hashtable UserValues
     {
-        get
-        {
-            if (_userValues == null)
-                _userValues = new Hashtable();
-
-            return _userValues;
-        }
+        get => _userValues ??= new Hashtable();
         set
         {
             _expression = null;
             _userValues = value;
         }
     }
-
-    /// <summary>
-    /// Informações sobre o request HTTP
-    /// </summary>
-    public JJHttpContext CurrentContext { get; set; }
-
-    /// <summary>
-    /// Objeto responsável por fazer toda a comunicação com o banco de dados
-    /// </summary>
+    
     public IDataAccess DataAccess { get; set; }
-
-    /// <summary>
-    /// Nome da Grid ou Form
-    /// </summary>
+    
     public string ComponentName { get; set; }
+
+
+    public ActionManager(ExpressionOptions expOptions, FormElement formElement, string panelName)
+    {
+        UserValues = expOptions.UserValues;
+        DataAccess = expOptions.DataAccess;
+        ComponentName = panelName;
+        FormElement = formElement;
+    }
 
     public ActionManager(JJBaseView baseView, FormElement formElement)
     {
-        CurrentContext = baseView.CurrentContext;
         UserValues = baseView.UserValues;
         DataAccess = baseView.DataAccess;
         ComponentName = baseView.Name;
@@ -79,15 +67,13 @@ internal class ActionManager
         string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;
 
-        StringBuilder @params = new();
+        var @params = new StringBuilder();
 
         @params.Append("formname=");
         @params.Append(elementRedirect.ElementNameRedirect);
         @params.Append("&viewtype=");
         @params.Append((int)elementRedirect.ViewType);
-        @params.Append("&userid=");
-        @params.Append(CurrentContext.Session["USERID"]);
-
+        
         foreach (var r in elementRedirect.RelationFields)
         {
             if (formValues.ContainsKey(r.InternalField))
@@ -99,8 +85,8 @@ internal class ActionManager
             }
         }
 
-        string url = string.Format("{0}InternalRedirect?parameters={1}",
-             ConfigurationHelper.GetUrlMasterData(), Cript.EnigmaEncryptRP(@params.ToString()));
+        string url =
+            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -251,82 +237,79 @@ internal class ActionManager
         return GetLink(action, formValues, PageState.List, ActionOrigin.Toolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, Hashtable formValues, PageState pagestate, JJBaseView field)
+    public JJLinkButton GetLinkField(BasicAction action, Hashtable formValues, PageState pagestate, string panelName)
     {
-        return GetLink(action, formValues, pagestate, ActionOrigin.Field, field.Name);
+        return GetLink(action, formValues, pagestate, ActionOrigin.Field, panelName);
     }
 
     private JJLinkButton GetLink(BasicAction action, Hashtable formValues, PageState pagestate, ActionOrigin contextAction, string fieldName = null)
     {
-        var link = new JJLinkButton();
-        link.ToolTip = action.ToolTip;
-        link.Text = action.Text;
-        link.IsGroup = action.IsGroup;
-        link.IsDefaultOption = action.IsDefaultOption;
-        link.DividerLine = action.DividerLine;
-        link.ShowAsButton = action.ShowAsButton;
-        link.CssClass = action.CssClass;
-        link.IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw";
-        link.Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues);
-        link.Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues);
+        var link = new JJLinkButton
+        {
+            ToolTip = action.ToolTip,
+            Text = action.Text,
+            IsGroup = action.IsGroup,
+            IsDefaultOption = action.IsDefaultOption,
+            DividerLine = action.DividerLine,
+            ShowAsButton = action.ShowAsButton,
+            CssClass = action.CssClass,
+            IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw",
+            Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
+            Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues)
+        };
 
         string script;
-        if (action is ViewAction ||
-            action is InsertAction ||
-            action is EditAction ||
-            action is DeleteAction ||
-            action is DeleteSelectedRowsAction ||
-            action is ImportAction ||
-            action is LogAction)
+        switch (action)
         {
-            script = GetFormActionScript(action, formValues, contextAction);
-        }
-        else if (action is UrlRedirectAction)
-        {
-            script = GetUrlRedirectScript((UrlRedirectAction)action, formValues, pagestate, contextAction, fieldName);
-        }
-        else if (action is InternalAction)
-        {
-            script = GetInternalUrlScript((InternalAction)action, formValues);
-        }
-        else if (action is ScriptAction jsAction)
-        {
-            script = Expression.ParseExpression(jsAction.OnClientClick, pagestate, false, formValues);
-        }
-        else if (action is ConfigAction)
-        {
-            script = BootstrapHelper.GetModalScript($"config_modal_{ComponentName}");
-        }
-        else if (action is ExportAction)
-        {
-            script = $"JJDataExp.openExportUI('{ComponentName}');";
-        }
-        else if (action is RefreshAction)
-        {
-            script = $"jjview.doRefresh('{ComponentName}');";
-        }
-        else if (action is FilterAction filterAction)
-        {
-            if (filterAction.ShowAsCollapse)
-                link.Visible = false;
+            case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction or LogAction:
+                script = GetFormActionScript(action, formValues, contextAction);
+                break;
+            case UrlRedirectAction redirectAction:
+                script = GetUrlRedirectScript(redirectAction, formValues, pagestate, contextAction, fieldName);
+                break;
+            case InternalAction internalAction:
+                script = GetInternalUrlScript(internalAction, formValues);
+                break;
+            case ScriptAction jsAction:
+                script = Expression.ParseExpression(jsAction.OnClientClick, pagestate, false, formValues);
+                break;
+            case ConfigAction:
+                script = BootstrapHelper.GetModalScript($"config_modal_{ComponentName}");
+                break;
+            case ExportAction:
+                script = $"JJDataExp.openExportUI('{ComponentName}');";
+                break;
+            case RefreshAction:
+                script = $"jjview.doRefresh('{ComponentName}');";
+                break;
+            case FilterAction filterAction:
+            {
+                if (filterAction.ShowAsCollapse)
+                    link.Visible = false;
 
-            script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
-        }
-        else if (action is LegendAction)
-        {
-            script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
-        }
-        else if (action is SqlCommandAction | action is PythonScriptAction)
-        {
-            script = GetCommandScript(action, formValues, contextAction);
-        }
-        else if (action is SortAction)
-        {
-            script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
-        }
-        else
-        {
-            throw new NotImplementedException();
+                script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
+                break;
+            }
+            case LegendAction:
+                script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
+                break;
+            default:
+            {
+                if (action is SqlCommandAction | action is PythonScriptAction)
+                {
+                    script = GetCommandScript(action, formValues, contextAction);
+                }
+                else if (action is SortAction)
+                {
+                    script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                break;
+            }
         }
 
         link.OnClientClick = script;
@@ -334,4 +317,100 @@ internal class ActionManager
         return link;
     }
 
+    public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
+    {
+
+        var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
+
+        try
+        {
+            if (map.ContextAction == ActionOrigin.Toolbar && gridView.EnableMultSelect && action.ApplyOnSelected)
+            {
+                var selectedRows = gridView.GetSelectedGridValues();
+                if (selectedRows.Count == 0)
+                {
+                    string msg = Translate.Key("No lines selected.");
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
+                }
+
+                foreach (var row in selectedRows)
+                    scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
+
+                gridView.ClearSelectedGridValues();
+            }
+            else
+            {
+                Hashtable formValues;
+                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
+                                                  map.PKFieldValues.Count > 0))
+                {
+                    formValues = new FormService(FormElement).GetHashtable(map.PKFieldValues).Result;
+                }
+                else
+                {
+                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
+                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                }
+                scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+            }
+        }
+        catch (Exception ex)
+        {
+            string msg = ExceptionManager.GetMessage(ex);
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
+        }
+
+        return null;
+    }
+
+    public string ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
+    {
+        try
+        {
+            var listSql = new ArrayList();
+            if (map.ContextAction == ActionOrigin.Toolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            {
+                var selectedRows = gridView.GetSelectedGridValues();
+                if (selectedRows.Count == 0)
+                {
+                    string msg = Translate.Key("No lines selected.");
+                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
+                }
+
+                foreach (var row in selectedRows)
+                {
+                    string sql = this.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    listSql.Add(sql);
+                }
+
+                DataAccess.SetCommand(listSql);
+                gridView.ClearSelectedGridValues();
+            }
+            else
+            {
+                Hashtable formValues;
+                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
+                                                  map.PKFieldValues.Count > 0))
+                {
+                    formValues = new FormService(FormElement).GetHashtable(map.PKFieldValues).Result;
+                }
+                else
+                {
+                    var formManager = new FormManager(gridView.FormElement, UserValues, DataAccess);
+                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                }
+
+                string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
+                listSql.Add(sql);
+                DataAccess.SetCommand(listSql);
+            }
+        }
+        catch (Exception ex)
+        {
+            string msg = ExceptionManager.GetMessage(ex);
+            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
+        }
+
+        return null;
+    }
 }

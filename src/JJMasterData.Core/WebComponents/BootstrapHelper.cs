@@ -22,7 +22,7 @@ public static class BootstrapHelper
     private static string Button(string className) => " btn btn-" + className;
     public static string DefaultButton => Version switch
     {
-        >= 4 => Button("light border border-secondary"),
+        >= 4 => Button("secondary"),
         _ => Button("default")
     };
     #endregion
@@ -98,7 +98,7 @@ public static class BootstrapHelper
     public static string Show => Version switch
     {
         >= 4 => " show",
-        _ => string.Empty
+        _ => " in"
     };
     public static string Label => Version switch
     {
@@ -134,6 +134,12 @@ public static class BootstrapHelper
     {
         >= 4 => "d-block mx-auto",
         _ => "center-block"
+    };
+
+    public static string PageHeader => Version switch
+    {
+        >= 4 => "pb-2 mt-4 mb-2 border-bottom",
+        _ => "page-header"
     };
 
     #endregion
@@ -212,6 +218,31 @@ public static class BootstrapHelper
         _ => "pull-left"
     };
 
+
+    public static string LabelSucess => Version switch
+    {
+        >= 4 => "badge bg-success",
+        _ => "label label-success"
+    };
+
+    public static string LabelDefault => Version switch
+    {
+        >= 4 => "badge bg-secondary",
+        _ => "label label-default"
+    };
+
+    public static string LabelWarning => Version switch
+    {
+        >= 4 => "badge bg-warning",
+        _ => "label label-warning"
+    };
+
+    public static string LabelDanger => Version switch
+    {
+        >= 4 => "badge bg-danger",
+        _ => "label label-danger"
+    };
+
     public static string GetDataToggle(string value)
     {
         return $"{DataToggle}={value}";
@@ -224,7 +255,6 @@ public static class BootstrapHelper
     };
 
     #endregion
-
     public static string ApplyCompatibility(string cssClass)
     {
         if (Version == 3) return null;

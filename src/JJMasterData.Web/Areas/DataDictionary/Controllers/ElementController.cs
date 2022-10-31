@@ -9,6 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Reflection;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -36,7 +37,7 @@ public class ElementController : DataDictionaryController
 
     private void OnRenderAction(object? sender, ActionEventArgs e)
     {
-        var formName = e.FieldValues["name"]!.ToString();
+        var formName = e.FieldValues["name"]?.ToString();
         switch (e.Action.Name)
         {
             case "tools":
@@ -69,7 +70,7 @@ public class ElementController : DataDictionaryController
         var upload = new JJUploadFile
         {
             Name = "dicImport",
-            LabelAdd = Translate.Key("Select Dictionaries"),
+            AddLabel = Translate.Key("Select Dictionaries"),
             AllowedTypes = "json",
             AutoSubmitAfterUploadAll = false
         };
@@ -129,10 +130,12 @@ public class ElementController : DataDictionaryController
     public IActionResult About()
     {
         var service = new AboutService();
-
+        var executingAssembly = Assembly.GetExecutingAssembly();
         var model = new AboutViewModel
         {
-            AssemblyInfoHtml = service.GetAssemblyInfo(),
+            ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
+            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
+            ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
             BootstrapVersion = BootstrapHelper.Version.ToString(),
             Dependencies = service.GetJJAssemblies()
         };

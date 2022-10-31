@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
+//Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
     #region "Properties"
@@ -21,25 +23,13 @@ public class JJLookup : JJBaseControl
     private FormElementDataItem _dataItem;
     private Hashtable FormValues { get; set; }
 
-    /// <summary>
-    /// Estado atual da pagina
-    /// </summary>
     internal PageState PageState { get; set; }
 
-    /// <summary>
-    /// Ao recarregar o painel, manter os valores digitados no formuário
-    /// (Default=True)
-    /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    /// <summary>
-    /// Permite somente números
-    /// </summary>
     public bool OnlyNumbers { get; set; }
 
-    /// <summary>
-    /// Tamanho da modal que será aberta para selecionar os itens
-    /// </summary>
+
     public PopupSize PopSize
     {
         get
@@ -52,18 +42,12 @@ public class JJLookup : JJBaseControl
         set => SetAttr("popupsize", value);
     }
 
-    /// <summary>
-    /// Título que será exibido na modal
-    /// </summary>
     public string PopTitle
     {
         get => GetAttr("popuptitle");
         set => SetAttr("popuptitle", value);
     }
 
-    /// <summary>
-    /// Conteudo da caixa de texto 
-    /// </summary>
     public new string Text
     {
         get
@@ -75,12 +59,9 @@ public class JJLookup : JJBaseControl
 
             return _text;
         }
-        set { _text = value; }
+        set => _text = value;
     }
 
-    /// <summary>
-    /// Id correspondente ao texto pesquisado
-    /// </summary>
     public string SelectedValue
     {
         get
@@ -95,9 +76,7 @@ public class JJLookup : JJBaseControl
         set => _selectedValue = value;
     }
 
-    /// <summary>
-    /// Origem dos dados
-    /// </summary>
+
     public FormElementDataItem DataItem
     {
         get => _dataItem ??= new FormElementDataItem();
@@ -110,7 +89,7 @@ public class JJLookup : JJBaseControl
 
     public JJLookup()
     {
-        Enable = true;
+        Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
         PageState = PageState.List;
@@ -123,24 +102,21 @@ public class JJLookup : JJBaseControl
         DataAccess = dataAccess;
     }
 
-    internal static JJLookup GetInstance(FormElementField f,
-        PageState pagestate,
-        object value,
-        Hashtable formValues,
-        bool enable,
-        string name)
+    internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
         var search = new JJLookup();
         search.SetAttr(f.Attributes);
-        search.Name = name ?? f.Name;
-        search.SelectedValue = (string)value;
+        search.Name = f.Name;
+        search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
-        search.Enable = enable;
-        search.ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && pagestate != PageState.Filter;
         search.AutoReloadFormFields = false;
-        search.FormValues = formValues;
-        search.PageState = pagestate;
+        search.Attributes.Add("pnlname", panelName);
+        search.FormValues = expOptions.FormValues;
+        search.PageState = expOptions.PageState;
+        search.DataAccess = expOptions.DataAccess;
+        search.UserValues = expOptions.UserValues;
+
         if (f.DataType == FieldType.Int)
         {
             search.OnlyNumbers = true;
@@ -156,21 +132,68 @@ public class JJLookup : JJBaseControl
 
     #endregion
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        if (!IsLookupRoute()) return GetHtmlLookup();
-        
+        if (!IsLookupRoute())
+            return GetLookupHtmlElement();
+
         if (IsAjaxGetDescription())
             ResponseAjax();
         else
-            ResponseParms();
+            ResponseParams();
 
         return null;
-
     }
 
+    private HtmlBuilder GetLookupHtmlElement()
+    {
+        string inputValue = SelectedValue;
 
-    public void ResponseParms()
+        string description = Text;
+
+        if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
+            description = GetDescription(inputValue);
+
+        var div = new HtmlBuilder(HtmlTag.Div);
+
+        var textGroup = new JJTextGroup
+        {
+            Name = Name,
+            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            InputType = OnlyNumbers ? InputType.Number : InputType.Text,
+            MaxLength = MaxLength,
+            Text = inputValue,
+            Attributes = Attributes,
+            ToolTip = ToolTip,
+            ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description)),
+            Enabled = Enabled,
+            Actions = new List<JJLinkButton>
+            {
+                new()
+                {
+                    Name = $"btn_{Name}",
+                    Enabled = Enabled,
+                    ShowAsButton = true,
+                    IconClass = "fa fa-search"
+                }
+            }
+        };
+
+        div.AppendElement(textGroup);
+        div.AppendHiddenInput($"id_{Name}", SelectedValue);
+        return div;
+    }
+
+    private string GetFeedbackIcon(string value, string description)
+    {
+        if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
+            return " fa fa-check ";
+        if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description))
+            return " fa fa-exclamation-triangle";
+        return null;
+    }
+
+    public void ResponseParams()
     {
         var elementMap = DataItem.ElementMap;
 
@@ -191,9 +214,9 @@ public class JJLookup : JJBaseControl
             foreach (DictionaryEntry filter in elementMap.Filters)
             {
                 string filterParsed = exp.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
-                @params.Append("&");
+                @params.Append('&');
                 @params.Append(filter.Key);
-                @params.Append("=");
+                @params.Append('=');
                 @params.Append(filterParsed);
             }
         }
@@ -221,136 +244,6 @@ public class JJLookup : JJBaseControl
         CurrentContext.Response.SendResponse(json, "application/json");
     }
 
-    private string GetHtmlLookup()
-    {
-        if (DataItem == null)
-            throw new ArgumentException(Translate.Key("[DataItem] property not set"), Name);
-
-        var html = new StringBuilder();
-        string cssClass = "form-control jjlookup ";
-        cssClass += !string.IsNullOrEmpty(CssClass) ? CssClass : "";
-
-        html.AppendLine("<!-- Start JJLookup -->");
-        html.AppendLine($"<div class=\"{(BootstrapHelper.Version == 3 ? "input-group" : string.Empty)}\"> ");
-        html.AppendLine("\t<div class=\"has-feedback\">");
-
-        string value = SelectedValue;
-
-        string description = Text;
-
-        if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(value))
-            description = GetDescription(value);
-
-
-        if (BootstrapHelper.Version == 3)
-            html.Append(GetInputHtml(value, description, cssClass));
-
-        html.AppendLine("</div>");
-        html.Append($"\t<span class=\"{BootstrapHelper.InputGroupBtn}\"> ");
-        
-        if (BootstrapHelper.Version > 3)
-            html.Append(GetInputHtml(value, description, cssClass));
-
-        html.Append('\t', 2);
-
-        html.Append("<button type=\"button\" ");
-
-        html.Append(Enable ? $"id=\"btn_{Name}\" " : "disabled ");
-
-        html.Append(
-            $"class=\"{(BootstrapHelper.Version == 3 ? BootstrapHelper.DefaultButton : "input-group-text")}\">");
-        html.AppendLine("\t\t\t\t<span class=\"fa fa-search\"></span> ");
-        html.AppendLine("\t\t\t</button>");
-        html.Append("\t</span> ");
-        html.AppendLine("</div> ");
-
-        html.AppendLine("<!-- End JJLookup -->");
-
-        return html.ToString();
-    }
-
-    private string GetInputHtml(string value, string description, string cssClass)
-    {
-        var html = new StringBuilder();
-
-        html.Append("\t\t<input ");
-        html.Append($"id=\"{Name}\" ");
-        html.Append($"name=\"{Name}\" ");
-        html.Append($"class=\"{cssClass}\" ");
-        html.Append("autocomplete =\"off\" ");
-        html.Append("type=\"text\" ");
-
-        if (OnlyNumbers)
-            html.Append("onkeypress=\"return jjutil.justNumber(event);\" ");
-
-        if (MaxLength > 0)
-            html.Append($"maxlength =\"{MaxLength}\" ");
-
-        if (!string.IsNullOrEmpty(description))
-        {
-            html.Append($"value =\"{description}\" ");
-        }
-        else if (!string.IsNullOrEmpty(value))
-        {
-            html.Append($"value =\"{value}\" ");
-        }
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key(ToolTip));
-            html.Append("\" ");
-        }
-
-        if (ReadOnly | (Enable & !string.IsNullOrEmpty(description)))
-            html.Append("readonly ");
-
-        if (!Enable)
-            html.Append("disabled ");
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-
-            html.Append(' ');
-        }
-
-        html.AppendLine("/>");
-
-
-        html.Append("\t\t<span ");
-        html.Append($" class=\"{(BootstrapHelper.Version > 3 ? " bg-transparent input-group-text" : string.Empty)} ");
-
-
-        html.Append("\" aria-hidden=\"true\">");
-        html.AppendLine($"<span id=\"st_{Name}\" class=\"form-control-feedback ");
-        if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
-            html.Append(" fa fa-check ");
-        else if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description))
-            html.Append(" fa fa-exclamation-triangle");
-        else if(BootstrapHelper.Version > 3)
-            html.Append(" fa fa-ellipsis-h");
-        html.AppendLine("\"></span>");
-        html.AppendLine("</span>");
-
-
-        html.Append("\t\t<input id=\"id_");
-        html.Append(Name);
-        html.Append("\" name=\"id_");
-        html.Append(Name);
-        html.Append("\" value=\"");
-        html.Append(SelectedValue);
-        html.AppendLine("\" type=\"hidden\"/>");
-
-        return html.ToString();
-    }
-
     /// <summary>
     /// Recovers the description based on the selected value
     /// </summary>
@@ -373,13 +266,13 @@ public class JJLookup : JJBaseControl
         }
 
         var filters = new Hashtable();
-        //Filters
+
         if (DataItem.ElementMap.Filters.Count > 0)
         {
             var exp = new ExpressionManager(UserValues, DataAccess);
             foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
             {
-                string filterParsed = exp.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
+                string filterParsed = exp.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
                 filters.Add(filter.Key, StringManager.ClearText(filterParsed));
             }
         }
@@ -401,9 +294,9 @@ public class JJLookup : JJBaseControl
             return null;
 
         if (string.IsNullOrEmpty(DataItem.ElementMap.FieldDescription))
-            return fields[DataItem.ElementMap.FieldKey].ToString();
+            return fields[DataItem.ElementMap.FieldKey]?.ToString();
 
-        return fields[DataItem.ElementMap.FieldDescription].ToString();
+        return fields[DataItem.ElementMap.FieldDescription]?.ToString();
     }
 
     private bool IsAjaxGetDescription()
@@ -416,7 +309,7 @@ public class JJLookup : JJBaseControl
     {
         string pnlName = string.Empty;
         if (Attributes.ContainsKey("pnlname"))
-            pnlName = Attributes["pnlname"].ToString();
+            pnlName = Attributes["pnlname"]?.ToString();
 
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + pnlName);
         return Name.Equals(lookupRoute);
@@ -434,18 +327,18 @@ public class JJLookup : JJBaseControl
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
-    public static string ResponseRoute(JJDataPanel view)
+    public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
-        
+
         if (string.IsNullOrEmpty(lookupRoute)) return null;
-        
+
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
-        
+
         if (field == null) return null;
-        
+
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return lookup.GetHtml();
+        return lookup.GetHtmlBuilder();
 
     }
 }

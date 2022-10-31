@@ -8,10 +8,11 @@ using System.Web.Configuration;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.FormEvents.Args;
-
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
+/// TODO: Breaking change suggestion: JJUploadField, JJUploadFile sounds like a action in English.
 public class JJUploadFile : JJBaseView
 {
     public delegate string OnPostFileAction(JJFormFile file);
@@ -41,152 +42,121 @@ public class JJUploadFile : JJBaseView
     /// </summary>
     public bool Multiple { get; set; }
 
-    /// <summary>
-    /// String botão Upload 
+    /// <remarks>
     /// Default = "Add"
-    /// </summary>
-    public string LabelAdd { get; set; }
+    /// </remarks>
+    public string AddLabel { get; set; }
 
-    /// <summary>
-    /// String Done
+    /// <remarks>
     /// Default = "Done"
-    /// </summary>
-    public string LabelDone { get; set; }
+    /// </remarks>
+    public string DoneLabel { get; set; }
 
-    /// <summary>
-    /// String Cancel
+    /// <remarks>
     /// Default = "Cancel"
-    /// </summary>
-    public string LabelCancel { get; set; }
+    /// </remarks>
+    public string CancelLabel { get; set; }
 
-    /// <summary>
-    /// String Stop
+    /// <remarks>
     /// Default = "Stop"
-    /// </summary>
-    public string LabelStop { get; set; }
+    /// </remarks>
+    public string AbortLabel { get; set; }
 
-    /// <summary>
-    /// String Extension Error
+    /// <remarks>
     /// Default = "is not allowed. Allowed extensions: "
-    /// </summary>
-    public string LabelExtError { get; set; }
+    /// </remarks>
+    public string NotAllowedExtensionErrorLabel { get; set; }
 
-    /// <summary>
-    /// String Size Error
+    /// <remarks>
     /// Default = "is not allowed. Allowed Max size: "
-    /// </summary>
-    public string LabelSizeError { get; set; }
+    /// </remarks>
+    public string SizeErrorLabel { get; set; }
 
-    /// <summary>
-    /// String Drag and Drop
+    /// <remarks>
     /// Default = "Paste or Drag and Drop Files"
-    /// </summary>
-    public string LabelDragDrop{ get; set; }
+    /// </remarks>
+    public string DragDropLabel{ get; set; }
+    
+    public bool EnableDragDrop { get; set; }
+    
+    public bool EnableCopyPaste { get; set; }
 
-    /// <summary>
-    /// Habilita Drag and Drop
-    /// Default = True
-    /// </summary>
-    public bool DragDrop { get; set; }
-
-    /// <summary>
-    /// Habilita Colar print de tela
-    /// Default = True
-    /// </summary>
-    public bool CopyPaste { get; set; }
-
-    /// <summary>
-    /// Exibir o tamanho do arquivo
+    /// <remarks>
     /// Default = True 
-    /// </summary>
+    /// </remarks>
     public bool ShowFileSize { get; set; }
 
-    /// <summary>
-    /// Tamanho máximo do arquivo em bytes
-    /// </summary>
+    /// <remarks>
+    /// Measured in bytes
+    /// </remarks>
     public int MaxFileSize { get; set; }
-
-    /// <summary>
-    /// Executa um postback na pagina após o upload de todos os arquivos
-    /// Default = True 
-    /// </summary>
+    
     public bool AutoSubmitAfterUploadAll { get; set; }
-
-
+    
     public JJUploadFile()
     {
         AllowedTypes = "*";
         Name = "uploadFile1";
         Multiple = true;
-        DragDrop = true;
-        CopyPaste = true;
+        EnableDragDrop = true;
+        EnableCopyPaste = true;
         ShowFileSize = true;
         AutoSubmitAfterUploadAll = true;
-        LabelAdd = "Add";
-        LabelDone = "Done";
-        LabelCancel = "Cancel";
-        LabelStop = "Stop";
-        LabelExtError = "is not allowed. Allowed extensions: ";
-        LabelSizeError = "is not allowed. Allowed Max size: ";
-        LabelDragDrop = "Paste or Drag & Drop Files";
+        AddLabel = "Add";
+        DoneLabel = "Done";
+        CancelLabel = "Cancel";
+        AbortLabel = "Stop";
+        NotAllowedExtensionErrorLabel = "is not allowed. Allowed extensions: ";
+        SizeErrorLabel = "is not allowed. Allowed Max size: ";
+        DragDropLabel = "Paste or Drag & Drop Files";
 
         MaxFileSize = GetMaxRequestLength();
     }
-
-    protected override string RenderHtml()
+    
+    internal override HtmlBuilder RenderHtml()
     {
-        //Se o post for via ajax
-        string t = CurrentContext.Request.QueryString("t");
-        if ("jjupload".Equals(t))
+        string requestType = CurrentContext.Request.QueryString("t");
+        if ("jjupload".Equals(requestType))
         {
             UploadFile();
             return null;
         }
 
-        return GetHtmlField();
+        return GetFieldHtmlElement();
     }
 
-    private string GetHtmlField()
+    private HtmlBuilder GetFieldHtmlElement()
     {
-        StringBuilder html = new();
+        var div = new HtmlBuilder(HtmlTag.Div)
+            .WithAttribute("id", "divupload")
+            .AppendHiddenInput($"uploadaction_{Name}", string.Empty)
+            .AppendElement(HtmlTag.Div,  div =>
+                {
+                    div.WithCssClass("fileUpload");
+                    div.WithAttribute("id", Name);
+                    div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
+                    div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
+                    div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());
+                    div.WithAttribute("copyPaste", EnableCopyPaste.ToString().ToLower());
+                    div.WithAttribute("showFileSize", ShowFileSize.ToString().ToLower());
+                    div.WithAttribute("autoSubmit", AutoSubmitAfterUploadAll.ToString().ToLower());
+                    div.WithAttribute("allowedTypes", AllowedTypes);
+                    div.WithAttribute("uploadStr", Translate.Key(AddLabel));
+                    div.WithAttribute("dragDropStr", Translate.Key(DragDropLabel));
+                    div.WithAttribute("doneStr", Translate.Key(DoneLabel));
+                    div.WithAttribute("cancelStr", Translate.Key(CancelLabel));
+                    div.WithAttribute("abortStr", Translate.Key(AbortLabel));
+                    div.WithAttribute("extErrorStr", Translate.Key(NotAllowedExtensionErrorLabel));
+                    div.WithAttribute("sizeErrorStr", Translate.Key(SizeErrorLabel));
+                });
 
-        string nameaction = string.Format("uploadaction_{0}", Name);
-        html.AppendLine("\t<div id=\"divupload\">");
-        html.AppendFormat("\t\t<input type=\"hidden\" id=\"{0}\" name=\"{0}\" value=\"\" />\r\n", nameaction);
-        html.AppendLine("\t\t<div class=\"areaArquivos\">");
-        html.Append("\t\t\t<div ");
-        html.Append("class=\"fileUpload\" ");
-        html.AppendFormat("id =\"{0}\" ", Name);
-        html.AppendFormat("jjmultiple=\"{0}\" ", Multiple ? "true" : "false");
-        html.AppendFormat("maxFileSize=\"{0}\" ", MaxFileSize);
-        html.AppendFormat("dragDrop=\"{0}\" ", DragDrop ? "true" : "false");
-        html.AppendFormat("copyPaste=\"{0}\" ", CopyPaste ? "true" : "false");
-        html.AppendFormat("showFileSize=\"{0}\" ", ShowFileSize ? "true" : "false");
-        html.AppendFormat("autoSubmit=\"{0}\" ", AutoSubmitAfterUploadAll ? "true" : "false");
-        html.AppendFormat("allowedTypes=\"{0}\" ", AllowedTypes);
-        html.AppendFormat("uploadStr=\"{0}\" ", Translate.Key(LabelAdd));
-        html.AppendFormat("dragDropStr=\"{0}\" ", Translate.Key(LabelDragDrop));
-        html.AppendFormat("doneStr=\"{0}\" ", Translate.Key(LabelDone));
-        html.AppendFormat("cancelStr=\"{0}\" ", Translate.Key(LabelCancel));
-        html.AppendFormat("abortStr=\"{0}\" ", Translate.Key(LabelStop));
-        html.AppendFormat("extErrorStr=\"{0}\" ", Translate.Key(LabelExtError));
-        html.AppendFormat("sizeErrorStr=\"{0}\" ", Translate.Key(LabelSizeError));
-        html.AppendLine("></div>");
-        html.AppendLine("\t\t</div>");
-        html.AppendLine("\t</div>");
-
-        return html.ToString();
+        return div;
     }
 
-    /// <summary>
-    /// Recupera o tamanho máximo permitido para upload
-    /// </summary>
     /// <remarks>
-    /// Para alterar o tamanho máximo permito
-    /// Configure a chave httpRuntime maxRequestLength...
-    /// no Web.Config 
+    /// To change this in .NET Framework, change web.config in system.web/httpRuntime
+    /// Measured in bytes
     /// </remarks>
-    /// <returns>Tamanho em bytes</returns>
     public int GetMaxRequestLength()
     {
         int maxRequestLength;
@@ -207,7 +177,7 @@ public class JJUploadFile : JJBaseView
     }
 
     /// <summary>
-    /// Recupera o arquivo após o post
+    /// Recovers the file after the POST
     /// </summary>
     private JJFormFile GetFile() => new(CurrentContext.Request.GetFile("file"));
     private void UploadFile()
@@ -250,7 +220,6 @@ public class JJUploadFile : JJBaseView
 
         CurrentContext.Response.SendResponse(data,"text/json");
     }
-
     private void ValidateSystemFiles(string filename)
     {
         if (!AllowedTypes.Equals("*"))
@@ -313,13 +282,9 @@ public class JJUploadFile : JJBaseView
             throw new Exception(Translate.Key("You cannot upload system files"));
 
     }
-
-    /// <summary>
-    /// Se for post depois de subir todos os arquivos
-    /// </summary>
-    public bool IsPostAfterUploadAll()
+    public bool IsPostAfterUploadAllFiles()
     {
-        string namefield = string.Format("uploadaction_{0}", Name);
+        string namefield = $"uploadaction_{Name}";
         string action = CurrentContext.Request[namefield];
         return "afteruploadall".Equals(action);
     }

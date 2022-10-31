@@ -481,11 +481,11 @@ namespace JJMasterData.Swagger
 
                     if (item.Component == FormComponent.ComboBox
                         && item.DataItem != null
-                        && item.DataItem.Itens != null
-                        && item.DataItem.Itens.Count > 0)
+                        && item.DataItem.Items != null
+                        && item.DataItem.Items.Count > 0)
                     {
                         p.@enum = new List<object>();
-                        foreach (DataItemValue dataItem in item.DataItem.Itens)
+                        foreach (DataItemValue dataItem in item.DataItem.Items)
                         {
                             p.@enum.Add(dataItem.Id);
                             description += "<br>" + dataItem.Id + " = " + dataItem.Description;
@@ -652,10 +652,10 @@ namespace JJMasterData.Swagger
 
             if (item.Component == FormComponent.ComboBox
                         && item.DataItem != null
-                        && item.DataItem.Itens != null
-                        && item.DataItem.Itens.Count > 0)
+                        && item.DataItem.Items != null
+                        && item.DataItem.Items.Count > 0)
             {
-                foreach (DataItemValue dataItem in item.DataItem.Itens)
+                foreach (DataItemValue dataItem in item.DataItem.Items)
                 {
                     itemSchema.description += "<br>" + dataItem.Id + " = " + dataItem.Description;
                 }

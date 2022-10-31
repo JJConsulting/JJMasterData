@@ -210,22 +210,22 @@ public class ElementService : BaseService
         formElement.Fields["type"].VisibleExpression = "val:0";
         formElement.Fields["type"].DefaultValue = "val:F";
         formElement.Fields["type"].Component = FormComponent.ComboBox;
-        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("F", "Form"));
-        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("T", "Table"));
+        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
+        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
 
         formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
 
         formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields["sync"].Component = FormComponent.ComboBox;
-        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("1", "Yes"));
-        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("0", "No"));
+        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
+        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
 
         formElement.Fields["modified"].Component = FormComponent.DateTime;
 
         var formView = new JJFormView(formElement);
         formView.Name = "List";
         formView.FilterAction.ExpandedByDefault = true;
-        formView.DataPanel.FormCols = 2;
+        formView.DataPanel.UISettings.FormCols = 2;
         formView.MaintainValuesOnLoad = true;
         formView.EnableMultSelect = true;
         formView.ExportAction.SetVisible(false);

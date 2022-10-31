@@ -35,14 +35,14 @@ public class ResourcesService : BaseService
         cultureField.IsRequired = true;
         cultureField.Component = FormComponent.Search;
         cultureField.DataItem = new FormElementDataItem();
-        cultureField.DataItem.Itens = new List<DataItemValue>();
+        cultureField.DataItem.Items = new List<DataItemValue>();
         cultureField.DataItem.ReplaceTextOnGrid = false;
         foreach (CultureInfo ci in supportedCultures)
         {
             var item = new DataItemValue();
             item.Id = ci.Name;
             item.Description = ci.Name + " " + ci.DisplayName;
-            cultureField.DataItem.Itens.Add(item);
+            cultureField.DataItem.Items.Add(item);
         }
    
         formView.FormElement.Fields["resourceKey"].IsRequired = true;

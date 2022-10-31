@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -14,26 +13,30 @@ public class JJLabel : JJBaseView
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
     /// </summary>
+    /// 
     public string ToolTip { get; set; }
 
     /// <summary>
     /// Nome do controle referente ao label
     /// </summary>
-    public string LabelFor { get; set; }
+    public string LabelFor
+    {
+        get => GetAttr("for");
+        set => SetAttr("for", value);
+    }
 
     /// <summary>
     /// Descrição do label
     /// </summary>
     public string Text { get; set; }
 
-    public Boolean IsRequired { get; set; }
+    public bool IsRequired { get; set; }
 
     /// <summary>
     /// Inicializa uma nova instância da classe JJLabel
     /// </summary>
     public JJLabel()
     {
-        
     }
 
     /// <summary>
@@ -50,47 +53,26 @@ public class JJLabel : JJBaseView
         IsRequired = f.IsRequired;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        StringBuilder sHtml = new StringBuilder();
-        sHtml.Append($"<label class=\"{BootstrapHelper.Label} ");
-        sHtml.Append(!string.IsNullOrEmpty(CssClass) ? CssClass : "");
-        sHtml.Append("\" for=\"");
-        sHtml.Append(LabelFor);
-        sHtml.Append("\"");
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            sHtml.Append(" ");
-            sHtml.Append(attr.Key);
-            if (attr.Value != null)
+        var element = new HtmlBuilder(HtmlTag.Label)
+            .WithNameAndId(Name)
+            .WithAttributes(Attributes)
+            .WithCssClass(BootstrapHelper.Label)
+            .WithCssClass(CssClass)
+            .AppendText(Translate.Key(Text))
+            .AppendElementIf(IsRequired, HtmlTag.Span, s =>
             {
-                sHtml.Append("=\"");
-                sHtml.Append(attr.Value);
-                sHtml.Append("\"");
-            }
-        }
-
-        sHtml.Append(">");
-        sHtml.Append(Translate.Key(Text));
-
-        if (IsRequired)
-        {
-            sHtml.Append("<span class=\"required-symbol\">*</span>");
-        }
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            sHtml.Append("<span class=\"fa fa-question-circle help-description\" ");
-            sHtml.Append($" {BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            sHtml.Append(Translate.Key(ToolTip));
-            sHtml.Append("\"></span>");
-        }
-
-        sHtml.Append("</label>");
-
-        
-
-        return sHtml.ToString();
+                s.WithCssClass("required-symbol");
+                s.AppendText("*");
+                s.WithToolTip(Translate.Key("Required"));
+            })
+            .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
+            {
+                s.WithCssClass("fa fa-question-circle help-description");
+                s.WithToolTip(Translate.Key(ToolTip));
+            });
+          
+        return element;
     }
 }

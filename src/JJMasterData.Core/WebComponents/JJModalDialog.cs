@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
+using JJMasterData.Core.Html;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
-
 public class JJModalDialog : JJBaseView
 {
     public string Title { get; set; }
 
     public string HtmlContent { get; set; }
-
+    
+    public HtmlBuilder HtmlBuilderContent { get; set; }
+    
     public List<JJLinkButton> Buttons { get; set; }
 
     public MessageSize Size { get; set; }
@@ -21,71 +22,68 @@ public class JJModalDialog : JJBaseView
         Buttons = new List<JJLinkButton>();
     }
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
         string title = Translate.Key(Title);
 
-        const char tab = '\t';
-        StringBuilder html = new();
-        html.Append(tab, 1);
-        html.AppendLine($"<div class=\"modal {CssClass}\" id=\"{Name}\" role=\"dialog\"  aria-labelledby=\"{Name}-label\" aria-hidden=\"true\"> ");
-        html.Append(tab, 2);
-        html.Append("<div class=\"modal-dialog ");
-        html.Append(GetSizeClass());
-        html.AppendLine("\"> ");
-        html.Append(tab, 3);
-        html.AppendLine("<div class=\"modal-content\"> ");
-        html.Append(tab, 4);
-        html.AppendLine("<div class=\"modal-header\"> ");
-        html.Append(tab, 5);
-        html.AppendLine($"<div id=\"{Name}-label\" class=\"modal-title\">{title}</h4> ");
-        if(BootstrapHelper.Version == 3)
-        {
-            html.AppendLine($"<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"modal\">{BootstrapHelper.CloseButtonTimes}</button> ");
-        }
-        html.Append(tab, 4);
-        html.Append(tab, 5);
-        html.AppendLine("</div> ");
-        if(BootstrapHelper.Version > 3)
-        {
-            html.AppendLine($"<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"modal\">{BootstrapHelper.CloseButtonTimes}</button> ");
-        }
-        html.AppendLine("</div> ");
-        html.Append(tab, 4);
-        html.AppendLine("<div class=\"modal-body\"> ");
-        html.AppendLine(HtmlContent);
-        html.Append(tab, 4);
-        html.AppendLine("</div> ");
-
-        if (Buttons.Count > 0)
-        {
-            html.Append(tab, 4);
-            html.AppendLine("<div class=\"modal-footer\"> ");
-            foreach (var btn in Buttons)
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithAttributes(Attributes)
+            .WithAttribute("id", Name)
+            .WithCssClass("modal")
+            .WithCssClass(CssClass)
+            .WithAttribute("role", "dialog")
+            .WithAttribute("aria-hidden", "true")
+            .WithAttribute("aria-labelledby", $"{Name}-label")
+            .AppendElement(HtmlTag.Div, div =>
             {
-                html.Append(tab, 5);
-                html.AppendLine(btn.GetHtml());
-            }
-            html.Append(tab, 4);
-            html.AppendLine("</div> ");
-        }
-        
-        html.Append(tab, 3);
-        html.AppendLine("</div> ");
-        html.Append(tab, 2);
-        html.AppendLine("</div> ");
-        html.Append(tab, 1);
-        html.AppendLine("</div>");
+                div.WithCssClass(GetSizeClass());
+                div.AppendElement(HtmlTag.Div, content =>
+                {
+                    content.WithCssClass("modal-content");
+                    content.AppendElement(GetHtmlHeader());
+                    
+                    content.AppendElement(HtmlTag.Div, body =>
+                    {
+                        body.WithCssClass("modal-body")
+                            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
+                            .AppendElement(HtmlBuilderContent);
+                    });
+                    content.AppendElementIf(Buttons.Count > 0, HtmlTag.Div, footer =>
+                    {
+                        footer.WithCssClass("modal-footer");
+                        foreach (var btn in Buttons)
+                        {
+                            footer.AppendElement(btn);
+                        }
+                    });
 
-        return html.ToString();
+                });
+            });
+
+        return html;
     }
 
+    private HtmlBuilder GetHtmlHeader()
+    {
+        var btn = JJAlert.GetCloseButton("modal");
+        var header = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("modal-header")
+            .AppendElementIf(BootstrapHelper.Version == 3, ()=>btn)
+            .AppendElement(HtmlTag.H4, h4 =>
+            {
+                h4.WithCssClass("modal-title")
+                  .AppendText(Translate.Key(Title));
+            })
+            .AppendElementIf(BootstrapHelper.Version > 3,()=> btn);
 
-    private string GetSizeClass() => 
+        return header;
+    }
+
+    private string GetSizeClass() =>
         Size switch
         {
-            MessageSize.Small => "modal-sm",
-            MessageSize.Default => "modal-md",
-            _ => "modal-lg",
+            MessageSize.Small => "modal-dialog modal-sm",
+            MessageSize.Default => "modal-dialog modal-md",
+            _ => "modal-dialog modal-lg",
         };
 }

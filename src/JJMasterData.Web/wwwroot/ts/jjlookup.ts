@@ -17,7 +17,9 @@
             url += "jjlookup_";
             url += panelName + "=" + lookupId;
 
-
+            const jjLookupSelector = "#" + lookupId + "";
+            const jjHiddenLookupSelector = "#id_" + lookupId + "";
+            
             $("#btn_" + lookupId).on("click",function () {
 
                 let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
@@ -52,12 +54,8 @@
 
             lookupInput.on("blur",function () {
                 showWaitOnPost = false;
-                $("#id_" + lookupId).val(lookupInput.val());
-                $("#st_" + lookupId)
-                    .removeClass("fa-check")
-                    .removeClass("fa-exclamation-triangle")
-                    .removeClass("fa-ellipsis-h")
-                    .removeClass("fa-times");
+                $(jjHiddenLookupSelector).val(lookupInput.val());
+                JJFeedbackIcon.removeAllIcons(jjLookupSelector)
 
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
@@ -76,15 +74,10 @@
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-check")
-                                .addClass("fa fa-exclamation-triangle");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass)
                             lookupInput.removeAttr("readonly");
                         } else {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-exclamation-triangle")
-                                .removeClass("fa fa-ellipsis-h")
-                                .addClass("fa fa-check");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass)
                             lookupInput.attr("readonly", "readonly").val(data.description);
                         }
 
@@ -92,9 +85,7 @@
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        $("#st_" + lookupId)
-                            .removeClass("fa fa-check")
-                            .addClass("fa fa-times");
+                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass)
 
                         console.log(errorThrown);
                         console.log(textStatus);

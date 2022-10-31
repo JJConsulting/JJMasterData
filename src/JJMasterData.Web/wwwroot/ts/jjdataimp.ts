@@ -1,5 +1,11 @@
-﻿class JJDataImp{
-    private static setLoadMessage(){
+﻿class JJDataImp {
+    private static insertCount = 0;
+    private static updateCount = 0;
+    private static deleteCount = 0;
+    private static ignoreCount = 0;
+    private static errorCount = 0;
+
+    private static setLoadMessage() {
         const options = {
             lines: 13, // The number of lines to draw
             length: 38, // The length of each line
@@ -27,11 +33,11 @@
         // @ts-ignore
         new Spinner(options).spin(target);
     }
-    
-    private static checkProcess(objname){
+
+    private static checkProcess(objname) {
         showWaitOnPost = false;
         const form = $("form");
-        let url : string = form.attr("action");
+        let url: string = form.attr("action");
         if (url.includes("?"))
             url += "&t=ajaxdataimp&current_uploadaction=process_check&objname=" + objname;
         else
@@ -52,52 +58,81 @@
 
                 if (result.Insert > 0) {
                     $("#lblInsert").css("display", "");
-                    $("#lblInsertCount").text(result.Insert);
+                    if (result.PercentProcess == 100)
+                        $("#lblInsertCount").text(result.Insert);
+                    else
+                        jjutil.animateValue("lblInsertCount", JJDataImp.insertCount, result.Insert, 1000);
+
+                    JJDataImp.insertCount = result.Insert;
                 }
 
                 if (result.Update > 0) {
                     $("#lblUpdate").css("display", "");
-                    $("#lblUpdateCount").text(result.Update);
+                    if (result.PercentProcess == 100)
+                        $("#lblUpdateCount").text(result.Update);
+                    else
+                        jjutil.animateValue("lblUpdateCount", JJDataImp.updateCount, result.Update, 1000);
+
+                    JJDataImp.updateCount = result.Update;
                 }
 
                 if (result.Delete > 0) {
                     $("#lblDelete").css("display", "");
-                    $("#lblDeleteCount").text(result.Delete);
+                    if (result.PercentProcess == 100)
+                        $("#lblDeleteCount").text(result.Delete);
+                    else
+                        jjutil.animateValue("lblDeleteCount", JJDataImp.deleteCount, result.Delete, 1000);
+
+                    JJDataImp.deleteCount = result.Delete;
                 }
 
                 if (result.Ignore > 0) {
                     $("#lblIgnore").css("display", "");
-                    $("#lblIgnoreCount").text(result.Ignore);
+                    if (result.PercentProcess == 100)
+                        $("#lblIgnoreCount").text(result.Ignore);
+                    else
+                        jjutil.animateValue("lblIgnoreCount", JJDataImp.ignoreCount, result.Ignore, 1000);
+
+                    JJDataImp.ignoreCount = result.Ignore;
                 }
 
                 if (result.Error > 0) {
                     $("#lblError").css("display", "");
-                    $("#lblErrorCount").text(result.Error);
+                    if (result.PercentProcess == 100)
+                        $("#lblErrorCount").text(result.Error);
+                    else
+                        jjutil.animateValue("lblErrorCount", JJDataImp.errorCount, result.Error, 1000);
+
+                    JJDataImp.errorCount = result.Error;
                 }
 
                 if (!result.IsProcessing) {
                     $("#current_uploadaction").val("process_finished");
-                    $("form:first").submit();
+                    setTimeout(function () {
+                        $("form:first").submit()
+                    }, 1000);
                 }
             }
         });
     }
-    
-    static startProcess(objname){
-        this.setLoadMessage();
 
-        setInterval(function () {
-            JJDataImp.checkProcess(objname);
-        }, (3 * 1000));
+    static startProcess(objname) {
+        $(document).ready(function () {
+            JJDataImp.setLoadMessage();
+
+            setInterval(function () {
+                JJDataImp.checkProcess(objname);
+            }, 3000);
+        });
     }
-    
+
     static stopProcess(objname, stopStr) {
         $("#divMsgProcess").html(stopStr);
         showWaitOnPost = false;
 
         const form = $("form");
 
-        let url : string = form.attr("action");
+        let url: string = form.attr("action");
 
         if (url.includes("?"))
             url += "&t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
@@ -110,4 +145,26 @@
             cache: false
         });
     }
+
+    static addPasteListener() {
+        $(document).ready(function () {
+            document.addEventListener("paste", (e: Event) => {
+                var pastedText = undefined;
+                if (window.clipboardData && window.clipboardData.getData) { // IE 
+                    pastedText = window.clipboardData.getData("Text");
+                } else if (e.clipboardData && e.clipboardData.getData) {
+                    pastedText = e.clipboardData.getData("text/plain");
+                }
+                e.preventDefault();
+                if (pastedText != undefined) {
+
+                    $("#current_uploadaction").val("posted_past_text");
+                    $("#pasteValue").val(pastedText);
+                    $("form:first").submit();
+                }
+                return false;
+            });
+        });
+    }
+
 }

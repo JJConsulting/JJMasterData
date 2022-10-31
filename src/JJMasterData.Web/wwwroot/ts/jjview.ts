@@ -262,7 +262,7 @@
 
         },
 
-        doPaging: function (objid, enableAjax, v) {
+        doPagination: function (objid, enableAjax, v) {
             $("#current_tablepage_" + objid).val(v);
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
@@ -299,7 +299,7 @@
 
         formAction: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
-                var result = confirm(confirmMessage);
+                const result = confirm(confirmMessage);
                 if (!result) {
                     return false;
                 }
@@ -453,7 +453,7 @@
             surl += surl.includes("?") ? "&" : "?";
             surl += "jjuploadform_" + pnlname + "=" + objid;
             surl += "&uploadvalues=" + values;
-            popup.show(title, surl);
+            popup.show(title, surl , 1);
         },
 
         directDownload: function (objid, pnlname, filename) {

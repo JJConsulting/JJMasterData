@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
+using System;
+using System.Collections;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Classe de apoio aos objetos que renderizam em html.
-/// Todos os controles herdam dessa classe.
+/// Base class of every component that renders to HTML.
+/// Every public component inherits from this class.
 /// </summary>
 public abstract class JJBaseView
 {
@@ -22,10 +22,7 @@ public abstract class JJBaseView
     private Hashtable _userValues;
     private Hashtable _attributes;
     private string _userId;
-
-    /// <summary>
-    /// Indica se a pagina esta sendo renderizada pela primeira vez
-    /// </summary>
+    
     internal bool IsPostBack => CurrentContext.Request.HttpMethod.Equals("POST");
 
     /// <summary>
@@ -38,11 +35,11 @@ public abstract class JJBaseView
     }
 
     /// <summary>
-    /// Objeto responsável por traduzir o elemento base em comandos para o banco de dados
+    /// Object responsible for translating the base element into commands for the database
     /// </summary>
     public Factory Factory
     {
-        get => _factory ??= new Factory(DataAccess); 
+        get => _factory ??= new Factory(DataAccess);
         set => _factory = value;
     }
 
@@ -55,34 +52,25 @@ public abstract class JJBaseView
         get => _userValues ??= new Hashtable();
         set => _userValues = value;
     }
-
-    /// <summary>
-    /// Informações sobre o request HTTP
-    /// </summary>
+    
     internal JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-
-    /// <summary>
-    /// Obtém ou define um valor que indica se o controle será ou não renderizado.
-    /// </summary>
+    
     public bool Visible { get; set; } = true;
 
     /// <summary>
-    /// Id e nome do componente
+    /// Represents the component unique identifier
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
+    /// HTML attributes represented by key/value pairs
     /// </summary>
     public Hashtable Attributes
     {
         get => _attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
     }
-
-    /// <summary>
-    /// Classe CSS (Folha de Estilos em Cascata) aplicado no controle
-    /// </summary>
+    
     public string CssClass { get; set; }
 
 
@@ -98,9 +86,9 @@ public abstract class JJBaseView
         get
         {
             if (_userId != null) return _userId;
-            
+
             const string userid = "USERID";
-            
+
             if (UserValues.Contains(userid))
             {
                 //Valor customizado pelo usuário
@@ -133,7 +121,15 @@ public abstract class JJBaseView
 
     #endregion
 
-    protected abstract string RenderHtml();
+    /// <summary>
+    /// Returns the object representation of the HTML
+    /// </summary>
+    internal abstract HtmlBuilder RenderHtml();
+
+    public HtmlBuilder GetHtmlBuilder()
+    {
+        return Visible ? RenderHtml() : null;
+    }
 
     /// <summary>
     /// Renders the content in HTML.
@@ -143,20 +139,11 @@ public abstract class JJBaseView
     /// </returns>
     public string GetHtml()
     {
-        if (!Visible)
-            return "";
-        try
-        {
-            return RenderHtml();
-        }
-        catch (JJBaseException)
-        {
-            return null;
-        }
+        return Visible ? RenderHtml()?.ToString(true) : string.Empty;
     }
 
     protected DicParser GetDictionary(string elementName) => new DictionaryDao(DataAccess).GetDictionary(elementName);
-    
+
     public string GetAttr(string key)
     {
         return Attributes.ContainsKey(key) ? Attributes[key].ToString() : string.Empty;
@@ -183,6 +170,7 @@ public abstract class JJBaseView
             SetAttr(v.Key.ToString(), v.Value);
         }
     }
+
 
     /// <summary>
     /// Add or update a value in UserValues.<br></br>

@@ -11,9 +11,9 @@ namespace JJMasterData.Commons.Tasks;
 public static class AsyncHelper
 {
     /// <summary>
-    /// Execute's an async Task<T> method which has a void return value synchronously
+    /// Execute is an async Task method which has a void return value synchronously
     /// </summary>
-    /// <param name="task">Task<T> method to execute.</param>
+    /// <param name="task">Task method to execute.</param>
     public static void RunSync(Func<Task> task)
     {
         var oldContext = SynchronizationContext.Current;
@@ -41,11 +41,10 @@ public static class AsyncHelper
     }
 
     /// <summary>
-    /// Execute's an async Task<T> method which has a T return type synchronously
+    /// Execute is an async Task method which has a T return type synchronously
     /// </summary>
     /// <typeparam name="T">Return Type</typeparam>
-    /// <param name="task">Task<T> method to execute</param>
-    /// <returns></returns>
+    /// <param name="task">Task method to execute</param>
     public static T RunSync<T>(Func<Task<T>> task)
     {
         var oldContext = SynchronizationContext.Current;

@@ -52,16 +52,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public DataExpReporter ProcessReporter
-    {
-        get
-        {
-            if (_processReporter == null)
-                _processReporter = new DataExpReporter();
-
-            return _processReporter;
-        }
-    }
+    public DataExpReporter ProcessReporter => _processReporter ??= new DataExpReporter();
 
     public ExportOptions Configuration { get; set; }
 
@@ -69,15 +60,12 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement);
+            if (_fieldManager != null) return _fieldManager;
+            _fieldManager = new FieldManager(FormElement);
 
             return _fieldManager;
         }
-        set
-        {
-            _fieldManager = value;
-        }
+        set => _fieldManager = value;
     }
 
     /// <summary>
@@ -140,6 +128,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public string UserId { get; set; }
     public HttpContext CurrentContext { get; internal set; }
+
+    //We need this property because Current.Context.Request is disposed inside a thread.
+    public string AbsoluteUri { get; set; }
 
     #endregion
 
@@ -220,8 +211,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public void Reporter(DataExpReporter processReporter)
     {
-        if (OnProgressChanged != null)
-            OnProgressChanged.Invoke(this, processReporter);
+        OnProgressChanged?.Invoke(this, processReporter);
     }
 
     public abstract void GenerateDocument(Stream ms, CancellationToken token);
@@ -246,10 +236,17 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = JJTextFile.GetInstance(field, PageState.List, value, values, false, null);
-        textFile.FormElement = FormElement;
+        var textFile = new JJTextFile
+        {
+            FormElement = FormElement,
+            ElementField = field,
+            PageState = PageState.List,
+            Text = value,
+            FormValues = values,
+            Name = field.Name
+        };
 
-        return textFile.GetDownloadLink(fileName, true);
+        return textFile.GetDownloadLink(fileName, true, AbsoluteUri);
     }
 
 
@@ -273,7 +270,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         title = HttpUtility.UrlEncode(title, Encoding.UTF8);
         string ext = Configuration.FileExtension.ToString().ToLower();
 
-        return string.Format("{0}_{1}.{2}", title, DateTime.Now.ToString("yyyMMdd_HHmmss"), ext);
+        return $"{title}_{DateTime.Now.ToString("yyyMMdd_HHmmss")}.{ext}";
     }
 
 

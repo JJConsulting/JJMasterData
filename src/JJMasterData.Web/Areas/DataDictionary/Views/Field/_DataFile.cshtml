@@ -24,7 +24,8 @@
     var slider = new JJSlider(0, 28)
     {
         Name = @Html.NameFor(m=>m.DataFile.MaxFileSize),
-        Value = Model.DataFile.MaxFileSize
+        Value = Model.DataFile.MaxFileSize,
+        CssClass = "row"
     };
 }
 

@@ -1,9 +1,7 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using System.Collections;
+using JJMasterData.Core.Html;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -14,120 +12,70 @@ namespace JJMasterData.Core.WebComponents
         public string Title { get; set; }
         public List<string> Messages { get; set; }
         public bool ShowCloseButton { get; set; }
-        public bool ShowIcon { get; set; }
 
-        private string ClassType
-        {
-            get
-            {
-                if (Color.Equals(PanelColor.Default))
-                {
-                    return "secondary";
-                }
-                return Color.ToString().ToLower();
+        /// <remarks>
+        /// Default = true
+        /// </remarks>
+        public bool ShowIcon { get; set; } = true;
 
-            }
-        }
         public JJAlert()
         {
             Messages = new List<string>();
         }
 
-
-        private string GetSplittedMessages() => string.Join("<br>", Messages.Select(m => Translate.Key(m)));
-
-        protected override string RenderHtml()
+        internal override HtmlBuilder RenderHtml()
         {
-            if (BootstrapHelper.Version == 3 & (Color == PanelColor.Default || Color == PanelColor.Primary))
-            {
-                return GetAlertDefaultBs3();
-            }
-            else
-            {
-                return GetAlert();
-            }
-
-        }
-
-        private string GetAlertDefaultBs3()
-        {
-            var html = new StringBuilder();
-
-            html.AppendLine($"\t<div class=\"alert {BootstrapHelper.Well}\" ");
-            html.Append(GetProps());
-            html.AppendLine(">");
-
-            html.Append($"\t\t<a href=\"#\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"");
-            html.Append(Translate.Key("Close"));
-            html.AppendLine($"\">{BootstrapHelper.CloseButtonTimes}</a>");
-            html.Append("\t\t");
-            html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
-            html.AppendLine($"{Translate.Key(Title)}");
-            html.AppendLine($"</strong>");
-            html.AppendLine(GetSplittedMessages());
-
-            html.Append("\t</div>");
-
-            return html.ToString();
-        }
-
-        private string GetAlert()
-        {
-            var html = new StringBuilder();
-
-            html.AppendLine($"<div class=\"alert alert-{ClassType} {CssClass} alert-dismissible\" role=\"alert\" ");
-            html.Append(GetProps());
-            html.AppendLine(">");
+            var html = new HtmlBuilder(HtmlTag.Div)
+                .WithNameAndId(Name)
+                .WithAttributes(Attributes)
+                .WithCssClass(CssClass)
+                .WithCssClass("alert")
+                .WithCssClassIf(BootstrapHelper.Version > 3, "alert-dismissible")
+                .WithCssClass(GetClassType())
+                .WithAttribute("role", "alert");
 
             if (ShowCloseButton)
-            {
-                html.AppendLine($"<button type=\"button\" class=\"{BootstrapHelper.Close}\" {BootstrapHelper.DataDismiss}=\"alert\" aria-label=\"close\">");
-                html.AppendLine($"<span aria-hidden=\"true\">{BootstrapHelper.CloseButtonTimes}</span>");
-                html.AppendLine("</button>");
-            }
+                html.AppendElement(GetCloseButton("alert"));
 
             if (ShowIcon)
-            {
-                html.AppendLine($"{new JJIcon(Icon).GetHtml()}<strong>");
-            }
+                html.AppendElement(new JJIcon(Icon));
 
             if (!string.IsNullOrEmpty(Title))
+                html.AppendElement(HtmlTag.B)
+                    .AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
+
+            foreach (string message in Messages)
             {
-                html.AppendLine($"{Translate.Key(Title)}<br>");
-
+                html.AppendElement(HtmlTag.Br);
+                html.AppendText(Translate.Key(message));
             }
-            html.AppendLine($"</strong>");
-            html.AppendLine(GetSplittedMessages());
-            html.AppendLine("</div>");
 
-            return html.ToString();
-
+            return html;
         }
 
-        private string GetProps()
+        private string GetClassType()
         {
-            var html = new StringBuilder();
-            if (!string.IsNullOrEmpty(Name))
-            {
-                html.Append($"id=\"{Name}\" name=\"{Name}\"");
-            }
+            if (Color == PanelColor.Default)
+                return BootstrapHelper.Version == 3 ? "well" : "alert-secondary";
 
-            foreach (DictionaryEntry attr in Attributes)
-            {
-                html.Append(' ');
-                html.Append(attr.Key);
-                if (attr.Value != null)
+            return $"alert-{Color.ToString().ToLower()}";
+        }
+
+        internal static HtmlBuilder GetCloseButton(string dimissValue)
+        {
+            var btn = new HtmlBuilder(HtmlTag.Button)
+                .WithAttribute("type", "button")
+                .WithAttribute("aria-label", Translate.Key("Close"))
+                .WithDataAttribute("dismiss", dimissValue)
+                .WithCssClass(BootstrapHelper.Close)
+                .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>
                 {
-                    html.Append("=\"");
-                    html.Append(attr.Value);
-                    html.Append('"');
-                }
-            }
+                    span.WithAttribute("aria-hidden", "true");
+                    span.AppendText("&times;");
+                });
 
-            return html.ToString();
+            return btn;
         }
 
     }
 }
-
-

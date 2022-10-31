@@ -6,10 +6,10 @@ JJMasterData dependencies can be represented by the following diagram:
 
 ## Assemblies
 
-### JJMasterData.Web.DataDictionary 
+### JJMasterData.Web.Bootstraper 
 Target: .NET 6
 </br>
-Website to use the Razor Class Library.
+Website to use the Razor Class Library during development.
 ### JJMasterData.Web 
 Target: .NET 6 
 </br>

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using Newtonsoft.Json;
+using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -35,12 +37,8 @@ public class JJTextFile : JJBaseControl
 
     public FormElement FormElement { get; set; }
 
-    internal static JJTextFile GetInstance(FormElementField field,
-                                  PageState pagestate,
-                                  object value,
-                                  Hashtable formValues,
-                                  bool enable,
-                                  string name)
+    internal static JJTextFile GetInstance(FormElement formElement,
+        FormElementField field, ExpressionOptions expOptions, object value, string panelName)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -51,148 +49,92 @@ public class JJTextFile : JJBaseControl
         var text = new JJTextFile
         {
             ElementField = field,
-            PageState = pagestate,
+            PageState = expOptions.PageState,
             Text = value != null ? value.ToString() : "",
-            FormValues = formValues,
-            Enable = enable,
-            Name = name ?? field.Name,
-            ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly
+            FormValues = expOptions.FormValues,
+            Name = field.Name,
         };
+
+        text.Attributes.Add("pnlname", panelName);
+        text.DataAccess = expOptions.DataAccess;
+        text.UserValues = expOptions.UserValues;
+        text.FormElement = formElement;
+
         text.SetAttr(field.Attributes);
 
         return text;
     }
 
-
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        var html = new StringBuilder();
         if (IsFormUploadRoute())
         {
             //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
             //por esse motivo passamos os valores nessários do form anterior por parametro o:)
             LoadDirectValues();
-
             var formUpload = GetFormUpload();
-            html.AppendLine(formUpload.GetHtml());
-            html.AppendLine(GetRefreshScript());
+
+            var html = new HtmlBuilder();
+            html.AppendElement(formUpload);
+            html.AppendScript(GetRefreshScript(formUpload));
+            return html;
         }
         else
         {
-            html.AppendLine($"<div id=\"div_{Name}\">");
-            html.AppendLine(RenderTextHtml());
-            html.Append("</div>");
+            return GetHtmlTextGroup();
         }
-        return html.ToString();
     }
 
-    private string RenderTextHtml()
+    private HtmlBuilder GetHtmlTextGroup()
     {
         var formUpload = GetFormUpload();
 
-        string cssClass = !string.IsNullOrEmpty(CssClass) ? CssClass : string.Empty;
-        int tabIdent = 5;
-
-        if (!Enable)
+        if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var html = new StringBuilder();
-        html.Append('\t', tabIdent);
-        html.Append($"<div class=\"input-group jjform-upload {cssClass}\" >");
+        var textGroup = new JJTextGroup();
+        textGroup.CssClass = CssClass;
+        textGroup.ReadOnly = true;
+        textGroup.Name = $"v_{Name}";
+        textGroup.ToolTip = ToolTip;
+        textGroup.Attributes = Attributes;
+        textGroup.Text = GetPresentationText(formUpload);
 
-        html.Append('\t', tabIdent);
-        html.Append("<input type=\"hidden\" ");
-        html.Append($"id=\"{Name}\" ");
-        html.Append($"name=\"{Name}\" ");
-        html.AppendLine($"value =\"{GetFileName(formUpload)}\" >");
+        var btn = new JJLinkButton();
+        btn.ShowAsButton = true;
+        btn.OnClientClick = GetOpenUploadFormAction();
+        btn.ToolTip = "Manage Files";
+        btn.IconClass = IconHelper.GetClassName(IconType.Paperclip);
+        textGroup.Actions.Add(btn);
 
-        html.Append('\t', tabIdent);
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .AppendElement(textGroup)
+            .AppendElement(HtmlTag.Input, i =>
+                {
+                    i.WithAttribute("type", "hidden")
+                     .WithNameAndId(Name)
+                     .WithAttribute("value", GetFileName(formUpload));
+                });
 
-        if(BootstrapHelper.Version < 5)
-            html.Append(GetInputHtml(cssClass, formUpload));
-
-        html.Append('\t', tabIdent);
-        html.AppendLine($"<span class=\"{BootstrapHelper.InputGroupBtn}\"> ");
-        html.Append('\t', ++tabIdent);
-        if (BootstrapHelper.Version >= 5)
-            html.Append(GetInputHtml(cssClass, formUpload));
-        html.Append("<button type=\"button\" ");
-        html.Append($"onclick=\"{GetOpenUploadFormAction()}\" ");
-        html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-        html.AppendFormat("title=\"{0}\" ", Translate.Key("Manage Files"));
-        html.AppendLine($"class=\"{(BootstrapHelper.Version ==3 ? BootstrapHelper.DefaultButton : "input-group-text")}\">");
-        html.Append('\t', ++tabIdent);
-        html.AppendLine(new JJIcon(IconType.Paperclip).GetHtml());
-        html.Append('\t', --tabIdent);
-        html.AppendLine("</button>");
-        html.Append('\t', --tabIdent);
-        html.AppendLine("</span> ");
-        html.Append('\t', --tabIdent);
-        html.Append("</div>");
-
-        return html.ToString();
+        return html;
     }
 
-    private string GetInputHtml(string cssClass, JJFormUpload formUpload)
+    private string GetRefreshScript(JJFormUpload formUpload)
     {
+        var script = new StringBuilder();
+        script.AppendLine("$(document).ready(function () {");
+        script.AppendLine($"window.parent.$(\"#v_{Name}\").val(\"{GetPresentationText(formUpload)}\");");
+        script.AppendLine($"window.parent.$(\"#{Name}\").val(\"{GetFileName(formUpload)}\");");
+        script.AppendLine("});");
 
-        var html = new StringBuilder();
-
-        html.Append("<input type=\"text\" readonly ");
-        html.Append($"id=\"v_{Name}\" ");
-        html.Append($"name=\"v_{Name}\" ");
-        html.Append($"class=\"{cssClass} form-control\" ");
-        html.Append($"value =\"{GetPresentationText(formUpload)}\" ");
-
-        if (!string.IsNullOrEmpty(ToolTip))
-        {
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" title=\"");
-            html.Append(Translate.Key(ToolTip));
-            html.Append("\" ");
-        }
-
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(" ");
-            html.Append(attr.Key);
-            if (attr.Value != null)
-            {
-                html.Append("=\"");
-                html.Append(attr.Value);
-                html.Append("\"");
-            }
-        }
-
-        html.AppendLine("/>");
-
-        return html.ToString();
-    }
-
-    private string GetRefreshScript()
-    {
-        var html = new StringBuilder();
-
-        string fieldHtml = RenderTextHtml().Replace("\r\n", "").Replace("\t", "").Replace("\"", "\\\"");
-
-        //Scripts
-        html.Append('\t', 1);
-        html.AppendLine("<script type=\"text/javascript\"> ");
-        html.Append('\t', 2);
-        html.AppendLine("$(document).ready(function () {");
-        html.Append('\t', 3);
-        html.AppendLine($"window.parent.$(\"#div_{Name}\").html(\"{fieldHtml}\");");
-        html.AppendLine("\t\t});");
-        html.AppendLine("\t</script> ");
-
-
-        return html.ToString();
+        return script.ToString();
     }
 
     private string GetOpenUploadFormAction()
     {
         var parms = new OpenFormParms();
         parms.PageState = PageState;
-        parms.Enable = Enable & !ReadOnly;
+        parms.Enable = Enabled & !ReadOnly;
 
         if (PageState != PageState.Insert)
             parms.PkValues = GetPkValues('|');
@@ -204,7 +146,7 @@ public class JJTextFile : JJBaseControl
         if (title == null)
             title = "Manage Files";
         else
-            title.Replace('\'', '`').Replace('\"', ' ');
+            title = title.Replace('\'', '`').Replace('\"', ' ');
 
         title = Translate.Key(title);
         return $"jjview.openUploadForm('{Name}','{title}','{value}');";
@@ -222,7 +164,7 @@ public class JJTextFile : JJBaseControl
             throw new Exception(Translate.Key("Invalid parameters when opening file upload"));
 
         PageState = parms.PageState;
-        Enable = parms.Enable;
+        Enabled = parms.Enable;
 
         if (!string.IsNullOrEmpty(parms.PkValues))
         {
@@ -270,7 +212,7 @@ public class JJTextFile : JJBaseControl
         if (HasPk())
             form.FolderPath = GetFolderPath();
 
-        if (!Enable)
+        if (!Enabled)
             form.Disable();
 
         return form;
@@ -311,18 +253,18 @@ public class JJTextFile : JJBaseControl
             throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", ElementField.Name);
 
         //Replace {app.path}
-        
+
         string baseDirectory = FileIO.GetApplicationPath();
-        
+
         path = path.Replace("{app.path}", baseDirectory);
-        
+
         path = Path.Combine(path, pkval);
 
         string separator = Path.DirectorySeparatorChar.ToString();
 
         if (!path.EndsWith(separator))
             path += separator;
-        
+
         return path;
     }
 
@@ -382,7 +324,7 @@ public class JJTextFile : JJBaseControl
     private string GetPresentationText(JJFormUpload formUpload)
     {
         var files = formUpload.GetFiles().FindAll(x => !x.Deleted);
-        
+
         return files.Count switch
         {
             0 => string.Empty,
@@ -391,65 +333,57 @@ public class JJTextFile : JJBaseControl
         };
     }
 
-    internal string GetHtmlForGrid()
+    internal HtmlBuilder GetButtonGroupHtml()
     {
         if (string.IsNullOrEmpty(Text))
-            return string.Empty;
+            return new HtmlBuilder(string.Empty);
 
-        var html = new StringBuilder();
         string[] files = Text.Split(',');
         if (files.Length == 1)
         {
-            string filename = files[0];
-            html.Append($"<a href=\"{GetDownloadLink(filename)}\">");
-            html.Append(new JJIcon(IconType.CloudDownload).GetHtml());
-            html.Append($"&nbsp;{filename}");
-            html.AppendLine("</a>");
+            var btn = GetLinkButton(files[0]);
+            return btn.GetHtmlBuilder();
         }
-        else
-        {
-            html.AppendLine("\t\t\t\t\t\t<div class=\"btn-group\">");
-            html.AppendLine($"\t\t\t\t\t\t\t<button type=\"button\" class=\"btn-link dropdown-toggle\" {BootstrapHelper.DataToggle}=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">");
-            html.Append(files.Length);
-            html.Append("&nbsp;");
-            html.Append(Translate.Key("Files"));
-            html.Append(" &nbsp;");
-            html.Append("<span class=\"caret\" ");
-            html.Append($"{BootstrapHelper.DataToggle}=\"tooltip\" ");
-            html.Append($"title=\"{Translate.Key("Download")}\">");
-            html.AppendLine("</span>");
-            html.AppendLine("\t\t\t\t\t\t\t</button>");
-            html.AppendLine("\t\t\t\t\t\t\t<ul class=\"dropdown-menu dropdown-menu-right\">");
-            foreach (var filename in files)
-            {
-                html.AppendLine("\t\t\t\t\t\t\t\t<li>");
-                html.Append("\t\t\t\t\t\t\t\t\t");
-                html.Append($"<a href=\"{GetDownloadLink(filename)}\">");
-                html.Append(new JJIcon(IconType.CloudDownload).GetHtml());
-                html.Append($"&nbsp;{filename}");
-                html.AppendLine("</a>");
-                html.AppendLine("\t\t\t\t\t\t\t\t</li>");
 
-            }
-            html.AppendLine("\t\t\t\t\t\t\t</ul>");
-            html.AppendLine("\t\t\t\t\t\t</div>");
+        var btnGroup = new JJLinkButtonGroup
+        {
+            CaretText = $"{files.Length}&nbsp;{Translate.Key("Files")}"
+        };
+
+        foreach (var filename in files)
+        {
+            btnGroup.Actions.Add(GetLinkButton(filename));
         }
-        return html.ToString();
+
+        return btnGroup.GetHtmlBuilder();
+
     }
 
-    public string GetDownloadLink(string fileName, bool isExternalLink = false)
+    private JJLinkButton GetLinkButton(string filename)
+    {
+        var btn = new JJLinkButton();
+        btn.IconClass = IconHelper.GetClassName(IconType.CloudDownload);
+        btn.Text = filename;
+        btn.UrlAction = GetDownloadLink(filename);
+        btn.IsGroup = true;
+
+        return btn;
+    }
+
+    //AbsoluteUri needs to be via parameter here, because a external thread on exportation don't have access to Context.
+    public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = CurrentContext.Request.AbsoluteUri;
-        if (url.Contains("?"))
+        string url = absoluteUri ?? HttpContext.Current.Request.Url.AbsoluteUri;
+        if (url.Contains('?'))
             url += "&";
         else
             url += "?";
 
         if (isExternalLink)
-            url += JJDownloadFile.PARAM_DIRECTDOWNLOAD;
+            url += JJDownloadFile.DirectDownloadParameter;
         else
-            url += JJDownloadFile.PARAM_DOWNLOAD;
+            url += JJDownloadFile.DownloadParameter;
 
         url += "=";
         url += Cript.Cript64(filePath);
@@ -476,18 +410,18 @@ public class JJTextFile : JJBaseControl
         return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
 
-    public static string ResponseRoute(JJDataPanel view)
+    public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
-        
+
         if (uploadFormRoute == null) return null;
-        
+
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
 
         if (field == null) return null;
-        
+
         var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
-        return upload.GetHtml();
+        return upload.GetHtmlBuilder();
 
     }
 

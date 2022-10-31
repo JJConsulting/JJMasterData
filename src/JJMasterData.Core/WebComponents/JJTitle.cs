@@ -1,26 +1,25 @@
-﻿using System;
-using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJTitle : JJBaseView
 {
-    /// <summary>
-    /// Descrição do título
-    /// </summary>
     public string Title { get; set; }
-
-    /// <summary>
-    /// Descrição do sub-título
-    /// </summary>
     public string SubTitle { get; set; }
-
-    /// <summary>
-    /// Tamanho da fonte do titulo (default(H1)
-    /// </summary>
     public HeadingSize Size { get; set; }
+
+    private HtmlTag Tag => Size switch
+    {
+        HeadingSize.H1 => HtmlTag.H1,
+        HeadingSize.H2 => HtmlTag.H2,
+        HeadingSize.H3 => HtmlTag.H3,
+        HeadingSize.H4 => HtmlTag.H4,
+        HeadingSize.H5 => HtmlTag.H5,
+        HeadingSize.H6 => HtmlTag.H6,
+        _ => throw new ArgumentOutOfRangeException()
+    };
 
     public JJTitle(string title, string subtitle)
     {
@@ -39,33 +38,46 @@ public class JJTitle : JJBaseView
         Size = HeadingSize.H1;
     }
 
-
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        StringBuilder html = new StringBuilder();
-        html.Append($"<div class=\"{(BootstrapHelper.Version == 3 ? "page-header" : "pb-2 mt-4 mb-2 border-bottom")} ");
-        html.Append(CssClass);
-        html.Append("\"");
-        if (!string.IsNullOrEmpty(Name))
-        {
-            html.Append(" id=\"");
-            html.Append(Name);
-            html.Append("\"");
-        }
-        html.AppendLine(">");
-        html.Append("<h");
-        html.Append((int)Size);
-        html.Append(">");
-        html.Append(Translate.Key(Title));
-        html.Append(" <small>");
-        html.Append(Translate.Key(SubTitle));
-        html.Append("</small>");
-        html.Append("</h");
-        html.Append((int)Size);
-        html.AppendLine(">");
-        html.AppendLine("</div>");
+        var builder = new HtmlBuilder();
+                
+        return new HtmlBuilder(HtmlTag.Div)
+            .WithNameAndId(Name)
+            .WithAttributes(Attributes)
+            .WithCssClass(CssClass)
+            .WithCssClass(BootstrapHelper.PageHeader)
+            .AppendElement(Tag, e =>
+            {
+                e.AppendText(Title);
+                e.AppendElement(HtmlTag.Small, e =>
+                {
+                    e.AppendText(" " + SubTitle);
+                });
+            });
+    }
 
-        return html.ToString();
+
+    internal HtmlBuilder GetHtmlBlockquote()
+    {
+        var row = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("row")
+            .AppendElement(HtmlTag.Blockquote, block =>
+            {
+                block.WithCssClass("blockquote mb-1");
+                block.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p =>
+                {
+                    p.AppendText(Title);
+                });
+                block.AppendElementIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
+                {
+                    p.WithCssClass("blockquote-footer");
+                    p.WithCssClassIf(string.IsNullOrEmpty(Title), "mt-1");
+                    p.AppendText(SubTitle);
+                });
+            });
+
+        return row;
     }
 
 }

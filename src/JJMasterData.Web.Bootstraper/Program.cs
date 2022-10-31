@@ -11,7 +11,7 @@ if (app.Environment.IsProduction())
     app.UseHsts();
 
 app.UseExceptionHandler("/Error");
-app.UseStatusCodePagesWithReExecute("/Error","?statusCode={0}");
+app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 
 app.UseHttpsRedirection();
 app.UseRouting();

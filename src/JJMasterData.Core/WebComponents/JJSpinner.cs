@@ -1,49 +1,34 @@
-﻿using System.Collections;
-using System.Text;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJSpinner : JJBaseView
 {
-    protected override string RenderHtml()
+    public JJSpinner()
     {
         CssClass += "spinner-grow spinner-grow-sm text-info";
-        
+
         if (BootstrapHelper.Version == 3)
             CssClass += " jj-blink";
+    }
 
-        var html = new StringBuilder();
-        html.Append("<span role=\"status\" ");
-        html.AppendFormat("class=\"{0}\" ", CssClass);
-        if (!string.IsNullOrEmpty(Name))
-            html.AppendFormat("id=\"{0}\" ", Name);
+    internal override HtmlBuilder RenderHtml()
+    {
+        var html = new HtmlBuilder(HtmlTag.Span)
+            .WithNameAndId(Name)
+            .WithCssClass(CssClass)
+            .WithAttributes(Attributes)
+            .WithAttribute("role", "status")
+            .AppendElementIf(BootstrapHelper.Version == 3,()=> new JJIcon(IconType.Circle).RenderHtml())
+            .AppendElementIf(BootstrapHelper.Version != 3, HtmlTag.Span, s =>
+            {
+                s.WithCssClass("visually-hidden");
+                s.AppendText(Translate.Key("Background Process Loading..."));
 
-        foreach (DictionaryEntry attr in Attributes)
-        {
-            html.Append(" ");
-            html.Append(attr.Key);
-            
-            if (attr.Value == null) continue;
-            
-            html.Append("=\"");
-            html.Append(attr.Value);
-            html.Append("\"");
-        }
+            });
 
-        html.AppendLine(">");
-        if (BootstrapHelper.Version == 3)
-        {
-            var icon = new JJIcon(IconType.Circle);
-            html.AppendLine(icon.GetHtml());
-        }
-        else
-        {
-            html.AppendLine("<span class=\"visually-hidden\">Background Process Loading...</span>");
-        }
-                
-        html.AppendLine("</span>");
-
-        return html.ToString();
+        return html;
     }
 }

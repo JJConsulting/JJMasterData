@@ -22,6 +22,10 @@
 - name: Components
   href: components/intro.md
   items:
+  - name: JJAlert
+    href: components/alert.md
+  - name: JJSearchBox
+    href: components/searchbox.md
   - name: JJDataFile
     href: components/data_file.md
   - name: JJFormView

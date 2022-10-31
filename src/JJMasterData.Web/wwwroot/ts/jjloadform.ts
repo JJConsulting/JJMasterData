@@ -4,7 +4,9 @@
         prefixSelector = "";
     }
     
-    $(prefixSelector + ".selectpicker").selectpicker("render");
+    $(prefixSelector + ".selectpicker").selectpicker({
+        iconBase: 'fa'
+    });
     
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     
@@ -12,23 +14,21 @@
         enableTime: true,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
+        altInput: false,
+        time_24hr: true,
+        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
         locale: localeCode
     });
 
-
     $(prefixSelector + ".jjform-date").flatpickr({
         enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        dateFormat: localeCode === "pt" ? "d-m-Y" : "m-d-Y",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
@@ -40,8 +40,9 @@
         wrap: true,
         noCalendar: true,
         allowInput: true,
-        altInput: true,
+        altInput: false,
         dateFormat: "H:i",
+        time_24hr: true,
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
@@ -69,7 +70,8 @@
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();
-    
+    JJTabNav.setup();
+
     JJSlider.observeSliders();
     JJSlider.observeInputs();
 
