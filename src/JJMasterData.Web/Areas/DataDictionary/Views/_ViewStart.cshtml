@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Commons.Settings
+@inject ISettings Settings
 @{
-    Layout = "_Layout";
+    Layout = string.IsNullOrEmpty(Settings.LayoutPath) ? "_Layout" : Settings.LayoutPath;
 }

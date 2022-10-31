@@ -41,14 +41,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Commons.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.SourceControl", "src\Plugins\JJMasterData.SourceControl\JJMasterData.SourceControl.csproj", "{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.Bootstraper", "src\JJMasterData.Web.Bootstraper\JJMasterData.Web.Bootstraper.csproj", "{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Api.Test", "test\JJMasterData.Api.Test\JJMasterData.Api.Test.csproj", "{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-4493-BAAA-277D13A85DB8}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.Example", "example\JJMasterData.Example\JJMasterData.Web.Example.csproj", "{B91EDC1F-1413-4516-B938-57C2E0316DF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -228,18 +228,6 @@ Global
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}.Release|x64.Build.0 = Release|Any CPU
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}.Release|x86.ActiveCfg = Release|Any CPU
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}.Release|x86.Build.0 = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|x64.Build.0 = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Debug|x86.Build.0 = Debug|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|x64.ActiveCfg = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|x64.Build.0 = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|x86.ActiveCfg = Release|Any CPU
-		{B8FB6C3A-8B0B-4EE6-82E7-FE4345CF3EC4}.Release|x86.Build.0 = Release|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -252,6 +240,18 @@ Global
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x64.Build.0 = Release|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x86.ActiveCfg = Release|Any CPU
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6}.Release|x86.Build.0 = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|x64.Build.0 = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{B91EDC1F-1413-4516-B938-57C2E0316DF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

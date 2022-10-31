@@ -107,7 +107,7 @@ public class ElementController : DataDictionaryController
         ViewBag.ClassSourceCode = _elementService.GetClassSourceCode(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
 
-        return View("ClassSourceCode", "_Layout.Popup");
+        return View("ClassSourceCode", "_MasterDataLayout.Popup");
     }
 
     public IActionResult Scripts(string dictionaryName, bool isDefault = false)
@@ -124,7 +124,7 @@ public class ElementController : DataDictionaryController
             ViewBag.IsDefault = false;
         }
 
-        return View("Scripts", "_Layout.Popup");
+        return View("Scripts", "_MasterDataLayout.Popup");
     }
 
     public IActionResult About()

@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.WebComponents;
+﻿using JJMasterData.Core.Html;
+using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace JJMasterData.Core.Test.WebComponents
     public class JJTextBoxTest
     {
         [Fact]
-        public void TestSerialization()
+        public void RenderTest()
         {
             var text = new JJTextBox();
             text.Name = "id1";
@@ -20,27 +21,25 @@ namespace JJMasterData.Core.Test.WebComponents
             text.PlaceHolder = "00";
             text.SetAttr("pan", "pan");
 
-            string html = text.GetHtml();
-            const string expected = "<input id=\"id1\" name=\"id1\" type=\"text\" class=\"form-control class1 class2\" value =\"11982941815\" data-bs-toggle=\"tooltip\" title=\"teste\" pan=\"pan\" placeholder=\"00\"/>";
-            Assert.Equal(expected, html);
+            var expected = new StringBuilder();
+            expected.AppendLine().Append(' ', 2);
+            expected.Append("<input ");
+            expected.Append("id=\"id1\" ");
+            expected.Append("name=\"id1\" ");
+            expected.Append("pan=\"pan\" ");
+            expected.Append("placeholder=\"00\" ");
+            expected.Append("type=\"text\" ");
+            expected.Append("class=\"form-control class1 class2\" ");
+            expected.Append("title=\"teste\" ");
+            expected.Append("data-bs-toggle=\"tooltip\" ");
+            expected.Append("value=\"1188880000\" ");
+            expected.Append("/>");
+
+            var html = text.GetHtmlBuilder();
+
+            Assert.Equal(expected.ToString(), html.ToString(true));
         }
 
-
-        [Fact]
-        public void TestWithActions()
-        {
-            var text = new JJTextBox();
-            text.Name = "id1";
-            text.ToolTip = "teste";
-            text.Text = "1188880000";
-            text.CssClass = "class1 class2";
-            text.PlaceHolder = "00";
-            text.SetAttr("pan", "pan");
-
-            string html = text.GetHtml();
-            const string expected = "<input id=\"id1\" name=\"id1\" type=\"text\" class=\"form-control class1 class2\" value =\"11982941815\" data-bs-toggle=\"tooltip\" title=\"teste\" pan=\"pan\" placeholder=\"00\"/>";
-            Assert.Equal(expected, html);
-        }
 
     }
 }

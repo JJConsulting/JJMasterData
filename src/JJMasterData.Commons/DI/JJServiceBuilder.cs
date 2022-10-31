@@ -27,9 +27,9 @@ public class JJServiceBuilder
 
     private void DeleteServiceIfExists<T>()
     {
-        var service = Services.First(s => s.ImplementationType == typeof(T));
-
-        Services.Remove(service);
+        var service = Services.ToList().Find(s => s.ServiceType == typeof(T));
+        if (service != null)
+            Services.Remove(service);
     }
 
     public JJServiceBuilder WithSettings<T>() where T : ISettings
@@ -54,7 +54,7 @@ public class JJServiceBuilder
     {
         DeleteServiceIfExists<ISettings>();
 
-        var settings = new JJMasterDataSettings();
+        ISettings settings = new JJMasterDataSettings();
 
         configure(settings);
 

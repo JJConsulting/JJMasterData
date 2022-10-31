@@ -82,13 +82,13 @@ public sealed class JJMasterDataSettings : ISettings
     public string? JJMasterDataUrl { get; set; }
 
     /// <summary>
-    /// Default value: ~/Views/Shared/_Layout.cshtml <br></br>
+    /// Default value: ~/Views/Shared/_MasterDataLayout.cshtml <br></br>
     /// Web.Config: JJMasterData.LayoutUrl
     /// </summary>
     public string? LayoutPath { get; set; }
         
     /// <summary>
-    /// Default value: ~/Views/Shared/_Layout.Popup.cshtml <br></br>
+    /// Default value: ~/Views/Shared/_MasterDataLayout.Popup.cshtml <br></br>
     /// Web.Config: JJMasterData.LayoutPopupUrl
     /// </summary>
     public string? PopUpLayoutPath { get; set; }

@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\JJMasterData.Web.Bootstraper\JJMasterData.Web.Bootstraper.csproj" />
     <ProjectReference Include="..\..\src\JJMasterData.Web\JJMasterData.Web.csproj" />
   </ItemGroup>
 
