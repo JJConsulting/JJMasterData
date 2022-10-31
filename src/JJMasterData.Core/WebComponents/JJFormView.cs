@@ -320,7 +320,6 @@ public class JJFormView : JJGridView
 
     private HtmlBuilder GetHtmlGrid()
     {
-        //TODO: Use GetHtmlBuilder
         return base.RenderHtml();
     }
 

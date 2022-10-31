@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -38,7 +37,7 @@ public class JJTextFile : JJBaseControl
 
     public FormElement FormElement { get; set; }
 
-    internal static JJTextFile GetInstance(FormElement formElement, 
+    internal static JJTextFile GetInstance(FormElement formElement,
         FormElementField field, ExpressionOptions expOptions, object value, string panelName)
     {
         if (field == null)
@@ -65,7 +64,6 @@ public class JJTextFile : JJBaseControl
 
         return text;
     }
-
 
     internal override HtmlBuilder RenderHtml()
     {
@@ -255,18 +253,18 @@ public class JJTextFile : JJBaseControl
             throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", ElementField.Name);
 
         //Replace {app.path}
-        
+
         string baseDirectory = FileIO.GetApplicationPath();
-        
+
         path = path.Replace("{app.path}", baseDirectory);
-        
+
         path = Path.Combine(path, pkval);
 
         string separator = Path.DirectorySeparatorChar.ToString();
 
         if (!path.EndsWith(separator))
             path += separator;
-        
+
         return path;
     }
 
@@ -326,7 +324,7 @@ public class JJTextFile : JJBaseControl
     private string GetPresentationText(JJFormUpload formUpload)
     {
         var files = formUpload.GetFiles().FindAll(x => !x.Deleted);
-        
+
         return files.Count switch
         {
             0 => string.Empty,
@@ -358,7 +356,7 @@ public class JJTextFile : JJBaseControl
         }
 
         return btnGroup.GetHtmlBuilder();
-        
+
     }
 
     private JJLinkButton GetLinkButton(string filename)
@@ -371,7 +369,7 @@ public class JJTextFile : JJBaseControl
 
         return btn;
     }
-    
+
     //AbsoluteUri needs to be via parameter here, because a external thread on exportation don't have access to Context.
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
@@ -415,13 +413,13 @@ public class JJTextFile : JJBaseControl
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
-        
+
         if (uploadFormRoute == null) return null;
-        
+
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
 
         if (field == null) return null;
-        
+
         var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return upload.GetHtmlBuilder();
 

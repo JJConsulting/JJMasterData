@@ -221,7 +221,7 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_renameAction != null) 
+            if (_renameAction != null)
                 return _renameAction;
 
             string promptStr = Translate.Key("Enter the new name for the file:");
@@ -293,7 +293,7 @@ public class JJFormUpload : JJBaseView
         script.AppendLine("   window.parent.$('#popup-modal').find('.close').click(function(){$('#video').trigger('pause')})");
         script.AppendLine("   $('#video').css('max-height',window.innerHeight);");
         script.AppendLine("	}); ");
-        
+
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendElement(HtmlTag.Center, c =>
         {
@@ -417,19 +417,30 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlForm()
     {
         var html = new HtmlBuilder()
-            .AppendHiddenInput($"uploadaction_{Name}")
-            .AppendHiddenInput($"filename_{Name}");
+           .AppendHiddenInput($"uploadaction_{Name}")
+           .AppendHiddenInput($"filename_{Name}");
 
-        if (!ShowAddFile) return html;
+        if (!ShowAddFile) 
+            return html;
 
+        html.AppendElement(new JJCollapsePanel
+        {
+            Title = "New File",
+            ExpandedByDefault = CollapseAriaExpanded,
+            HtmlBuilderContent = GetHtmlFormPanel()
+        });
+        
+        return html;
+    }
+
+    private HtmlBuilder GetHtmlFormPanel()
+    {
         var panelContent = new HtmlBuilder();
         if (!Upload.AllowedTypes.Equals("*"))
         {
-            panelContent.AppendElement(HtmlTag.Label, label =>
+            panelContent.AppendElement(new JJLabel
             {
-                label.AppendText(Translate.Key("File Type:"));
-                label.AppendText("&nbsp;");
-                label.AppendText(Upload.AllowedTypes);
+                Text = $"{Translate.Key("File Type:")}&nbsp;<b>{Upload.AllowedTypes}</b>"
             });
         }
 
@@ -437,13 +448,7 @@ public class JJFormUpload : JJBaseView
             Upload.AddLabel = Translate.Key("Update");
 
         panelContent.AppendElement(Upload);
-
-        var panel = new JJCollapsePanel();
-        panel.Title = "New File";
-        panel.ExpandedByDefault = CollapseAriaExpanded;
-        panel.HtmlBuilderContent = panelContent;
-
-        return panel.GetHtmlBuilder();
+        return panelContent;
     }
 
     private HtmlBuilder GetHtmlGridView()
@@ -814,7 +819,7 @@ public class JJFormUpload : JJBaseView
         }
 
     }
-    
+
     public List<FormUploadFile> GetFiles()
     {
         List<FormUploadFile> files = null;
