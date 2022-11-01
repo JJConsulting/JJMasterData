@@ -12,6 +12,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
@@ -40,6 +41,8 @@ public class JJFormUpload : JJBaseView
     private ScriptAction _deleteAction;
     private ScriptAction _renameAction;
     private JJGridView _gridView;
+    private JJUploadFile _upload;
+    private FormFileService _service;
 
     /// <summary>
     /// Evento disparado ao incluir um novo arquivo
@@ -86,27 +89,6 @@ public class JJFormUpload : JJBaseView
     public event EventHandler<FormRenameFileEventArgs> OnRenameFile;
 
     /// <summary>
-    /// Arquivos armazenados na sessão, caso o caminho não seja especificado
-    /// </summary>
-    private List<FormUploadFile> MemoryFiles
-    {
-        get => JJSession.GetSessionValue<List<FormUploadFile>>(MemoryFilesSessionName);
-        set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
-    }
-
-    /// <summary>
-    /// Nome da variavél de sessão
-    /// </summary>
-    private string MemoryFilesSessionName => $"{Name}_jjfiles";
-
-    /// <summary>
-    /// Sempre aplica as alterações dos arquivos em disco, 
-    /// se for falso mantem na memoria
-    /// Default: true
-    /// </summary>
-    public bool AutoSave { get; set; }
-
-    /// <summary>
     /// Exibe o painel para realizar upload de arquivos.
     /// Default: true
     /// </summary>
@@ -119,18 +101,45 @@ public class JJFormUpload : JJBaseView
     protected bool CollapseAriaExpanded { get; set; }
 
     /// <summary>
-    /// Caminho Completo do Diretório.<para></para>
-    /// (Opcional) Se o caminho não for informado, todos os arquivos serão armazenado na sessão.
+    /// Titulo do formulário.
+    /// Default: Upload de Arquivos
     /// </summary>
-    /// <remarks>
-    /// Exemplo: c:\temp\files\
-    /// </remarks>
-    public string FolderPath { get; set; }
+    public string Title { get; set; }
+
+
+    /// <summary>
+    /// Sub-Titulo do formulário
+    /// </summary>
+    public string SubTitle { get; set; }
+
+    public bool ViewGallery { get; set; }
+
+    public FormFileService Service
+    {
+        get
+        {
+            if (_service == null)
+            {
+                _service = new FormFileService();
+                _service.MemoryFilesSessionName = $"{Name}_jjfiles";
+            }
+            return _service;
+        }
+    }
 
     /// <summary>
     /// Objeto responsável por realizar upload dos arquivos
     /// </summary>
-    public JJUploadFile Upload { get; set; }
+    public JJUploadFile Upload
+    {
+        get
+        {
+            if (_upload == null)
+                _upload = new JJUploadFile();
+
+            return _upload;
+        }
+    }
 
     /// <summary>
     /// Componente GridView
@@ -139,7 +148,8 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_gridView != null) return _gridView;
+            if (_gridView != null)
+                return _gridView;
 
             _gridView = new JJGridView
             {
@@ -162,32 +172,23 @@ public class JJFormUpload : JJBaseView
     }
 
     /// <summary>
-    /// Titulo do formulário.
-    /// Default: Upload de Arquivos
-    /// </summary>
-    public string Title { get; set; }
-
-    /// <summary>
-    /// Sub-Titulo do formulário
-    /// </summary>
-    public string SubTitle { get; set; }
-
-    /// <summary>
     /// Ação da grid responsável por realizar o upload do arquivo
     /// </summary>
     public ScriptAction DownloadAction
     {
         get
         {
-            return _downloadAction ??= new ScriptAction
-            {
-                Icon = IconType.CloudDownload,
-                ToolTip = "Download File",
-                Name = "DOWNLOADFILE",
-                OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
-            };
+            if (_downloadAction == null)
+                _downloadAction = new ScriptAction
+                {
+                    Icon = IconType.CloudDownload,
+                    ToolTip = "Download File",
+                    Name = "DOWNLOADFILE",
+                    OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
+                };
+
+            return _downloadAction;
         }
-        set => _downloadAction = value;
     }
 
     /// <summary>
@@ -197,10 +198,10 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_deleteAction != null) return _deleteAction;
+            if (_deleteAction != null)
+                return _deleteAction;
 
             string promptStr = Translate.Key("Would you like to delete this record?");
-
             _deleteAction = new ScriptAction
             {
                 Icon = IconType.Trash,
@@ -208,10 +209,8 @@ public class JJFormUpload : JJBaseView
                 OnClientClick = "jjview.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
                 Name = "DELFILE"
             };
-
             return _deleteAction;
         }
-        set => _deleteAction = value;
     }
 
     /// <summary>
@@ -232,24 +231,18 @@ public class JJFormUpload : JJBaseView
                 OnClientClick = "jjview.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
                 Name = "RENAMEFILE"
             };
-
             _renameAction.SetVisible(false);
-
             return _renameAction;
         }
         set => _renameAction = value;
     }
 
-    public bool ViewGallery { get; set; }
 
     public JJFormUpload()
     {
-        Upload = new JJUploadFile();
-        Title = "File Upload";
         ShowAddFile = true;
         Name = "jjuploadform1";
         CollapseAriaExpanded = true;
-        AutoSave = true;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -282,7 +275,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = Cript.Descript64(previewVideo);
-        var video = GetFile(fileName);
+        var video = Service.GetFile(fileName);
 
         string srcVideo = "data:video/mp4;base64," +
                           Convert.ToBase64String(video.FileStream.ToArray(), 0, video.FileStream.ToArray().Length);
@@ -313,7 +306,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
         string fileName = Cript.Descript64(previewImage);
-        var file = GetFile(fileName);
+        var file = Service.GetFile(fileName);
 
         if (file == null)
             return null;
@@ -325,7 +318,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            var filePath = Path.Combine(FolderPath, fileName);
+            var filePath = Path.Combine(Service.FolderPath, fileName);
             var appPath = HttpContext.Current!.Request.ApplicationPath;
 
             if (!appPath.EndsWith("/"))
@@ -373,7 +366,7 @@ public class JJFormUpload : JJBaseView
                         throw new Exception(args.ErrorMessage);
                 }
 
-                DeleteFile(fileName);
+                Service.DeleteFile(fileName);
             }
             else if ("DOWNLOADFILE".Equals(uploadAction))
             {
@@ -386,7 +379,7 @@ public class JJFormUpload : JJBaseView
                         throw new Exception(args.ErrorMessage);
                 }
 
-                DownloadFile(Path.Combine(FolderPath, fileName));
+                DownloadFile(Path.Combine(Service.FolderPath, fileName));
             }
             else if ("RENAMEFILE".Equals(uploadAction))
             {
@@ -403,7 +396,7 @@ public class JJFormUpload : JJBaseView
                         throw new Exception(args.ErrorMessage);
                 }
 
-                RenameFile(currentName, newName);
+                Service.RenameFile(currentName, newName);
             }
         }
         catch (Exception ex)
@@ -420,7 +413,7 @@ public class JJFormUpload : JJBaseView
            .AppendHiddenInput($"uploadaction_{Name}")
            .AppendHiddenInput($"filename_{Name}");
 
-        if (!ShowAddFile) 
+        if (!ShowAddFile)
             return html;
 
         html.AppendElement(new JJCollapsePanel
@@ -429,7 +422,7 @@ public class JJFormUpload : JJBaseView
             ExpandedByDefault = CollapseAriaExpanded,
             HtmlBuilderContent = GetHtmlFormPanel()
         });
-        
+
         return html;
     }
 
@@ -444,7 +437,7 @@ public class JJFormUpload : JJBaseView
             });
         }
 
-        if (!Upload.Multiple && CountFiles() > 0)
+        if (!Upload.Multiple && Service.CountFiles() > 0)
             Upload.AddLabel = Translate.Key("Update");
 
         panelContent.AppendElement(Upload);
@@ -475,8 +468,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlGallery()
     {
-        var files = GetFiles();
-
+        var files = Service.GetFiles();
         if (files.Count <= 0) return null;
 
         foreach (var ac in GridView.GridActions)
@@ -599,11 +591,11 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
-        var file = GetFile(fileName);
+        var file = Service.GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-        string filePath = Path.Combine(FolderPath, fileName);
+        string filePath = Path.Combine(Service.FolderPath, fileName);
 
         if (file.IsInMemory)
         {
@@ -661,7 +653,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private Hashtable ConvertToHashtable(FormUploadFile file)
+    private Hashtable ConvertToHashtable(FileDetail file)
     {
         Hashtable hash = new();
         hash.Add(FileName, file.FileName);
@@ -742,41 +734,6 @@ public class JJFormUpload : JJBaseView
         return modal;
     }
 
-    private void SavePhysicalFile(string folderPath, string fileName, MemoryStream ms)
-    {
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
-
-        string fileFullName = folderPath + fileName;
-
-        var fileStream = File.Create(fileFullName);
-        ms.Seek(0, SeekOrigin.Begin);
-        ms.CopyTo(fileStream);
-        fileStream.Close();
-    }
-
-    private List<FormUploadFile> GetPhysicalFiles()
-    {
-        var formfiles = new List<FormUploadFile>();
-        if (string.IsNullOrEmpty(FolderPath))
-            return formfiles;
-
-        var oDir = new DirectoryInfo(FolderPath);
-        if (oDir.Exists)
-        {
-            FileInfo[] files = oDir.GetFiles();
-            foreach (FileInfo oFile in files)
-            {
-                var formfile = new FormUploadFile();
-                formfile.FileName = oFile.Name;
-                formfile.SizeBytes = oFile.Length;
-                formfile.LastWriteTime = oFile.LastWriteTime;
-                formfiles.Add(formfile);
-            }
-        }
-        return formfiles;
-    }
-
     private void UploadOnPostFile(object sender, FormUploadFileEventArgs e)
     {
         if (OnCreateFile != null)
@@ -793,22 +750,22 @@ public class JJFormUpload : JJBaseView
 
         try
         {
-            if (!Upload.Multiple && CountFiles() > 0)
+            if (!Upload.Multiple && Service.CountFiles() > 0)
             {
-                foreach (var file in GetFiles())
+                foreach (var file in Service.GetFiles())
                 {
-                    DeleteFile(file.FileName);
+                    Service.DeleteFile(file.FileName);
                 }
             }
 
 #if NETFRAMEWORK
             var stream = new MemoryStream();
             e.File.FileData.InputStream.CopyTo(stream);
-            CreateFile(e.File.FileData.FileName, stream);
+            Service.CreateFile(e.File.FileData.FileName, stream);
 #else
             using var stream = new MemoryStream();
             e.File.FileData.CopyTo(stream);
-            CreateFile(e.File.FileData.FileName, stream);
+            Service.CreateFile(e.File.FileData.FileName, stream);
 #endif
 
 
@@ -820,15 +777,6 @@ public class JJFormUpload : JJBaseView
 
     }
 
-    public List<FormUploadFile> GetFiles()
-    {
-        List<FormUploadFile> files = null;
-
-        if (!AutoSave || string.IsNullOrEmpty(FolderPath))
-            files = MemoryFiles;
-
-        return files ?? GetPhysicalFiles();
-    }
 
     /// <summary>
     /// Recovers the list of files in a DataTable object.
@@ -839,7 +787,7 @@ public class JJFormUpload : JJBaseView
     /// </returns>
     public DataTable GetDataTableFiles()
     {
-        var files = GetFiles();
+        var files = Service.GetFiles();
         var dt = new DataTable();
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
@@ -859,112 +807,11 @@ public class JJFormUpload : JJBaseView
         return dt;
     }
 
-    public void CreateFile(string fileName, MemoryStream memoryStream)
-    {
-        if (fileName?.LastIndexOf("\\") > 0)
-            fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
-
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
-        {
-            SavePhysicalFile(FolderPath, fileName, memoryStream);
-        }
-        else
-        {
-            var files = GetFiles();
-            var currentFile = files.Find(x => x.FileName.Equals(fileName));
-            if (currentFile == null)
-            {
-                var file = new FormUploadFile
-                {
-                    FileName = fileName,
-                    FileStream = memoryStream,
-                    LastWriteTime = DateTime.Now,
-                    SizeBytes = memoryStream.Length
-                };
-                files.Add(file);
-            }
-            else
-            {
-                currentFile.Deleted = false;
-                currentFile.FileStream = memoryStream;
-                currentFile.LastWriteTime = DateTime.Now;
-                currentFile.SizeBytes = memoryStream.Length;
-            }
-
-            MemoryFiles = files;
-
-        }
-    }
-
-    public void DeleteFile(string fileName)
-    {
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
-        {
-            File.Delete(FolderPath + fileName);
-        }
-        else
-        {
-            var files = GetFiles();
-            var file = files.Find(x => x.FileName.Equals(fileName));
-            if (file != null)
-            {
-                if (!file.IsInMemory)
-                    file.Deleted = true;
-                else
-                    files.Remove(file);
-            }
-
-            MemoryFiles = files;
-        }
-    }
-
     public void DownloadFile(string fileName)
     {
         var download = new JJDownloadFile(fileName);
 
         download.ResponseDirectDownload();
-    }
-
-    public void RenameFile(string currentName, string newName)
-    {
-        if (string.IsNullOrEmpty(currentName))
-            throw new ArgumentNullException(nameof(currentName));
-
-        if (string.IsNullOrWhiteSpace(newName))
-            throw new Exception(Translate.Key("Required file name"));
-
-        if (!Validate.ValidFileName(newName))
-            throw new Exception(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
-
-        if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new Exception(Translate.Key("The file extension must remain the same"));
-
-        var files = GetFiles();
-        if (files.Exists(x => x.FileName.Equals(newName)))
-            throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
-
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
-        {
-            File.Move(FolderPath + currentName, FolderPath + newName);
-        }
-        else
-        {
-            var file = files.Find(x => x.FileName.Equals(currentName));
-            if (file == null)
-                throw new Exception(Translate.Key("file {0} not found!", currentName));
-
-            file.FileName = newName;
-            if (file.FileStream == null & string.IsNullOrEmpty(file.OriginName))
-                file.OriginName = currentName;
-
-            MemoryFiles = files;
-        }
-    }
-
-    public FormUploadFile GetFile(string fileName)
-    {
-        var files = GetFiles();
-        return files.Find(x => x.FileName.Equals(fileName));
     }
 
     /// <summary>
@@ -980,63 +827,6 @@ public class JJFormUpload : JJBaseView
         DownloadAction.SetVisible(true);
     }
 
-    /// <summary>
-    /// Save the files from the memory to the disk.
-    /// </summary>
-    public void SaveMemoryFiles(string folderPath)
-    {
-        if (string.IsNullOrEmpty(folderPath))
-        {
-            throw new ArgumentNullException(nameof(folderPath));
-        }
-
-        if (MemoryFiles == null)
-            return;
-
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
-
-        foreach (var file in MemoryFiles)
-        {
-            if (file.Deleted)
-            {
-                string filename = string.IsNullOrEmpty(file.OriginName) ? file.FileName : file.OriginName;
-                File.Delete(folderPath + filename);
-            }
-            else if (!string.IsNullOrEmpty(file.OriginName))
-            {
-                File.Move(folderPath + file.OriginName, folderPath + file.FileName);
-            }
-            else if (file.FileStream != null && file.IsInMemory)
-            {
-                SavePhysicalFile(folderPath, file.FileName, file.FileStream);
-            }
-        }
-
-        FolderPath = folderPath;
-        MemoryFiles = null;
-    }
-
-    public void ClearMemoryFiles()
-    {
-        MemoryFiles = null;
-    }
-
-    public void DeleteAll()
-    {
-        if (!string.IsNullOrEmpty(FolderPath))
-        {
-            if (Directory.Exists(FolderPath))
-                Directory.Delete(FolderPath, true);
-        }
-
-        MemoryFiles = null;
-    }
-
-    public int CountFiles()
-    {
-        var listFiles = GetFiles();
-        return listFiles.Count(x => !x.Deleted);
-    }
+   
 
 }

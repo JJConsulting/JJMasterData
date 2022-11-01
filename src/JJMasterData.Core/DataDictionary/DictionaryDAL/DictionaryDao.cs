@@ -20,7 +20,6 @@ public class DictionaryDao
 {
     private IDataAccess _dataAccess;
     private Factory _factory;
-    private DicTranslate _dicTranslate;
 
     public Factory Factory
     {
@@ -39,20 +38,7 @@ public class DictionaryDao
         }
     }
 
-    private DicTranslate DicTranslate
-    {
-        get
-        {
-            if (_dicTranslate == null)
-            {
-                _dicTranslate = new DicTranslate();
-            }
-
-            return _dicTranslate;
-        }
-    }
-
-
+   
     public DictionaryDao()
     {
         _dataAccess = JJService.DataAccess;

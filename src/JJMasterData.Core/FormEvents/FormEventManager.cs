@@ -14,7 +14,6 @@ public static class FormEventManager
     public static IFormEvent GetFormEvent(string name)
     {
         var formEventType = GetFormEventTypes(Assemblies).FirstOrDefault(t => t.Name.StartsWith(name));
-
         IFormEvent formEvent = null;
 
         if (formEventType != null)
@@ -30,12 +29,11 @@ public static class FormEventManager
     {
         var handlers = new List<string>();
 
-        if (assemblyFormEvent == null) return handlers;
+        if (assemblyFormEvent == null) 
+            return handlers;
         
         var methods = assemblyFormEvent.GetType().GetTypeInfo().DeclaredMethods.ToList();
-
         handlers.AddRange(methods.Select(method => method.Name));
-
         return handlers;
     }
 
@@ -45,10 +43,8 @@ public static class FormEventManager
             return new List<TypeInfo>();
 
         var assembliesTypes = GetTypesFromAssemblies(assemblies);
-
         return assembliesTypes;
     }
-
 
     private static IEnumerable<TypeInfo> GetTypesFromAssemblies(Assembly[] assemblies)
     {

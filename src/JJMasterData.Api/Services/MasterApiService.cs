@@ -65,8 +65,8 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
-
-        var manager = new FormService(elementName);
+        var formElement = dictionary.GetFormElement();
+        var manager = new FormService(formElement);
         var result = manager.GetDataTable(filters, orderby, regporpag, pag);
 
         if (result == null || result.Total.Equals(0))
@@ -105,8 +105,8 @@ public class MasterApiService
         }
 
         var filters = ParseFilter(dictionary, paramValues);
-
-        var dataDictionaryManager = new FormService(elementName);
+        var formElement = dictionary.GetFormElement();
+        var dataDictionaryManager = new FormService(formElement);
         
         var result = dataDictionaryManager.GetHashtable(filters);
 
@@ -342,7 +342,7 @@ public class MasterApiService
 
             bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
 
-            var dictionaryManager = new FormService(dictionary.Table.Name,
+            var dictionaryManager = new FormService(formManager.FormElement,
                 logActionIsVisible ? _auditLogService : null);
 
             var result = dictionaryManager.Update(this, newvalues, () =>

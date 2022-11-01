@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
@@ -21,7 +22,7 @@ public class FormService
     #region Properties
 
     public FormElement FormElement { get; }
-    private readonly DictionaryDao _dictionaryDao;
+    private readonly Factory _formRepository;
     private readonly AuditLogService _auditLogService;
 
     #endregion
@@ -37,23 +38,12 @@ public class FormService
 
     #endregion
 
-    #region Constructors
-
-    public FormService(string elementName, AuditLogService auditLogService = null,
-        bool enableFormEvents = true)
-    {
-        _dictionaryDao = new DictionaryDao();
-        FormElement = _dictionaryDao.GetDictionary(elementName).GetFormElement();
-        _auditLogService = auditLogService;
-
-        if (enableFormEvents)
-            AddFormEvent(FormEventManager.GetFormEvent(FormElement.Name));
-    }
+    #region Constructor
 
     public FormService(FormElement formElement, AuditLogService auditLogService = null,
         bool enableFormEvents = true)
     {
-        _dictionaryDao = new DictionaryDao();
+        _formRepository = new Factory();
         FormElement = formElement;
         _auditLogService = auditLogService;
 
@@ -72,8 +62,7 @@ public class FormService
     public DataDictionaryResult<Hashtable> GetHashtable(Hashtable filters)
     {
         var errors = new Hashtable();
-        var hashtable = 
-            RunDatabaseCommand(() => _dictionaryDao.Factory.GetFields(FormElement, filters), ref errors);
+        var hashtable = RunDatabaseCommand(() => _formRepository.GetFields(FormElement, filters), ref errors);
 
         return new()
         {
@@ -97,7 +86,7 @@ public class FormService
         int total = 0;
         
         var dataTable = 
-            RunDatabaseCommand(() => _dictionaryDao.Factory.GetDataTable(
+            RunDatabaseCommand(() => _formRepository.GetDataTable(
                 FormElement,
                 filters,
                 orderBy,
@@ -140,7 +129,7 @@ public class FormService
 
         if (errors?.Count > 0) return new(errors);
 
-        RunDatabaseCommand(() => _dictionaryDao.Factory.Update(FormElement, values), ref errors);
+        RunDatabaseCommand(() => _formRepository.Update(FormElement, values), ref errors);
 
         if (sender is JJFormView jjFormView)
             SaveFiles(jjFormView, values);
@@ -180,9 +169,10 @@ public class FormService
         var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
         OnBeforeInsert?.Invoke(sender, beforeActionArgs);
 
-        if (errors?.Count > 0) return new(errors);
+        if (errors?.Count > 0) 
+            return new FormLetter(errors);
 
-        RunDatabaseCommand(() => _dictionaryDao.Factory.Insert(FormElement, values), ref errors);
+        RunDatabaseCommand(() => _formRepository.Insert(FormElement, values), ref errors);
 
         if (sender is JJFormView jjFormView)
             SaveFiles(jjFormView, values);
@@ -222,7 +212,7 @@ public class FormService
 
         if (errors.Count > 0) return new(errors);
 
-        int total = RunDatabaseCommand(() => _dictionaryDao.Factory.Delete(FormElement, primaryKeys), ref errors);
+        int total = RunDatabaseCommand(() => _formRepository.Delete(FormElement, primaryKeys), ref errors);
 
         DeleteFiles(primaryKeys);
 

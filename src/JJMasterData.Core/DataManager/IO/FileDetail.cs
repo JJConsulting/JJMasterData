@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace JJMasterData.Core.WebComponents;
+namespace JJMasterData.Core.DataManager.IO;
 
-public class FormUploadFile
+public class FileDetail
 {
     public string FileName { get; set; }
 
