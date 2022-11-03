@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
-#if NETFRAMEWORK
-using System.Web.Configuration;
-#endif
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// TODO: Breaking change suggestion: JJUploadField, JJUploadFile sounds like a action in English.
 public class JJUploadFile : JJBaseView
 {
-    public delegate string OnPostFileAction(JJFormFile file);
+    public delegate string OnPostFileAction(FormFileContent file);
 
     /// <summary>
     /// Evento disparado ao renderizar o conteúdo HTML.
@@ -163,7 +160,7 @@ public class JJUploadFile : JJBaseView
 
 #if NETFRAMEWORK
         maxRequestLength = 4194304; //4mb
-        if (ConfigurationManager.GetSection("system.web/httpRuntime") is HttpRuntimeSection section)
+        if (System.Configuration.ConfigurationManager.GetSection("system.web/httpRuntime") is System.Web.Configuration.HttpRuntimeSection section)
             maxRequestLength = section.MaxRequestLength * 1024;
 #else
 
@@ -179,7 +176,31 @@ public class JJUploadFile : JJBaseView
     /// <summary>
     /// Recovers the file after the POST
     /// </summary>
-    private JJFormFile GetFile() => new(CurrentContext.Request.GetFile("file"));
+    private FormFileContent GetFile()
+    {
+        var fileData = CurrentContext.Request.GetFile("file");
+        var stream = new MemoryStream();
+        string filename;
+
+#if NETFRAMEWORK
+        fileData.InputStream.CopyTo(stream);
+        filename = fileData.FileName;
+#else
+        fileData.CopyTo(stream);
+        filename = fileData.FileName;
+#endif
+
+        var content = new FormFileContent
+        {
+            FileName = filename,
+            FileStream = stream,
+            LastWriteTime = DateTime.Now,
+            SizeBytes = stream.Length
+        };
+
+        return content;
+    }  
+
     private void UploadFile()
     {
         string data;
@@ -189,7 +210,7 @@ public class JJUploadFile : JJBaseView
             
             var file = GetFile();
             
-            ValidateSystemFiles(file.FileData.FileName);
+            ValidateSystemFiles(file.FileName);
 
             if (OnPostFile != null)
             {

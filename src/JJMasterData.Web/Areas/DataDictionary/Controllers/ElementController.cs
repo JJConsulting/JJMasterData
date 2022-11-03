@@ -83,7 +83,7 @@ public class ElementController : DataDictionaryController
 
     private void OnPostFile(object sender, FormUploadFileEventArgs e)
     {
-        _elementService.Import(e.File.FileData.OpenReadStream());
+        _elementService.Import(e.File.FileStream);
         if (ModelState.IsValid)
         {
             e.SuccessMessage = Translate.Key("Dictionary imported successfully!");

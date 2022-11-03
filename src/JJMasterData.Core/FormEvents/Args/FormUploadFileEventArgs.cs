@@ -1,5 +1,5 @@
-﻿using System;
-using JJMasterData.Core.WebComponents;
+﻿using JJMasterData.Core.DataManager;
+using System;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
@@ -8,7 +8,7 @@ public class FormUploadFileEventArgs : EventArgs
     /// <summary>
     /// Arquivo recebido
     /// </summary>
-    public JJFormFile File { get; set; }
+    public FormFileContent File { get; set; }
 
     /// <summary>
     /// Mensagem de erro referente a validação do evento (opcional)
@@ -20,7 +20,7 @@ public class FormUploadFileEventArgs : EventArgs
     /// </summary>
     public string SuccessMessage { get; set; }
 
-    public FormUploadFileEventArgs(JJFormFile file)
+    public FormUploadFileEventArgs(FormFileContent file)
     {
         File = file;
     }

@@ -18,11 +18,11 @@ public class JJDataImp : JJBaseProcess
 {
     #region "Events"
 
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
 
-    public EventHandler<FormAfterActionEventArgs> OnAfterImport;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterImport;
 
-    public EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
 
     #endregion
 
@@ -287,13 +287,7 @@ public class JJDataImp : JJBaseProcess
     private void Upload_OnPostFile(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
-
-        Stream stream;
-#if NETFRAMEWORK
-        stream = e.File.FileData.InputStream;
-#else
-        stream = e.File.FileData.OpenReadStream();
-#endif
+        Stream stream = e.File.FileStream;
         using (StreamReader reader = new StreamReader(stream))
         {
             while (!reader.EndOfStream)

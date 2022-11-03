@@ -314,7 +314,7 @@ public class JJTextFile : JJBaseControl
             if (fileNames != string.Empty)
                 fileNames += ",";
 
-            fileNames += file.FileName;
+            fileNames += file.Content.FileName;
         }
 
         return fileNames;
@@ -328,7 +328,7 @@ public class JJTextFile : JJBaseControl
         return files.Count switch
         {
             0 => string.Empty,
-            1 => files[0].FileName,
+            1 => files[0].Content.FileName,
             _ => Translate.Key("{0} Selected Files", files.Count)
         };
     }

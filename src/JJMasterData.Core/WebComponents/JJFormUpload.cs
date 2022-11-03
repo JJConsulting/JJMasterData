@@ -1,4 +1,12 @@
-﻿using System;
+﻿using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Html;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -7,23 +15,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataManager.IO;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Representa um form responsável por gerenciar arquivos de um diretório
+/// Form responsible for managing files in a directory
 /// </summary>
 /// <example>
-/// Exemplo de como utilizar JJFormUpload
+/// Example 
 /// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx)]
 /// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx.cs)]
 /// O Resultado html ficará parecido com esse:
@@ -44,92 +43,54 @@ public class JJFormUpload : JJBaseView
     private JJUploadFile _upload;
     private FormFileService _service;
 
-    /// <summary>
-    /// Evento disparado ao incluir um novo arquivo
-    /// </summary> 
-    /// <remarks>
-    /// O evento sempre é disparado antes de incluir o arquivo.
-    /// Para realizar validações, basta retornar a mensagem de erro no retorno da função. 
-    /// Se a função retornar diferente de nulo o conteúdo será exibido como erro
-    /// e o evendo será cancelado.
-    /// </remarks>
     public event EventHandler<FormUploadFileEventArgs> OnCreateFile;
-
-    /// <summary>
-    /// Evento disparado ao excluir um  arquivo
-    /// </summary> 
-    /// <remarks>
-    /// O evento sempre é disparado antes de excluir o arquivo.
-    /// Para realizar validações, basta retornar a mensagem de erro no retorno da função. 
-    /// Se a função retornar diferente de nulo o conteúdo será exibido como erro
-    /// e o evendo será cancelado.
-    /// </remarks>
     public event EventHandler<FormDeleteFileEventArgs> OnDeleteFile;
-
-    /// <summary>
-    /// Evento disparado ao baixar o arquivo
-    /// </summary> 
-    /// <remarks>
-    /// O evento sempre é disparado antes de baixar o arquivo.
-    /// Para realizar validações, basta retornar a mensagem de erro no retorno da função. 
-    /// Se a função retornar diferente de nulo o conteúdo será exibido como erro
-    /// e o evendo será cancelado.
-    /// </remarks>
     public event EventHandler<FormDownloadFileEventArgs> OnDownloadFile;
-
-    /// <summary>
-    /// Evento disparado ao renomear um arquivo
-    /// </summary> 
-    /// <remarks>
-    /// O evento sempre é disparado antes de renomear o arquivo.
-    /// Para realizar validações, basta retornar a mensagem de erro no retorno da função. 
-    /// Se a função retornar diferente de nulo o conteúdo será exibido como erro
-    /// e o evendo será cancelado.
-    /// </remarks>
     public event EventHandler<FormRenameFileEventArgs> OnRenameFile;
-
+    
     /// <summary>
-    /// Exibe o painel para realizar upload de arquivos.
-    /// Default: true
+    /// Render upload colapse panel 
+    /// (default is true)
     /// </summary>
     public bool ShowAddFile { get; set; }
 
     /// <summary>
-    /// Expandir ou recolher painel de upload de arquivos.
-    /// Default: true (painel aberto)
+    /// Colapse panel uplod is expanded 
+    /// (default is true)
     /// </summary>
-    protected bool CollapseAriaExpanded { get; set; }
+    public bool ExpandedByDefault { get; set; }
 
     /// <summary>
-    /// Titulo do formulário.
-    /// Default: Upload de Arquivos
+    /// Form Tile
     /// </summary>
     public string Title { get; set; }
 
-
     /// <summary>
-    /// Sub-Titulo do formulário
+    /// Form Sub-Tile
     /// </summary>
     public string SubTitle { get; set; }
 
+    /// <summary>
+    /// Show images as gallery
+    /// </summary>
     public bool ViewGallery { get; set; }
 
-    public FormFileService Service
-    {
-        get
-        {
-            if (_service == null)
-            {
-                _service = new FormFileService();
-                _service.MemoryFilesSessionName = $"{Name}_jjfiles";
-            }
-            return _service;
-        }
-    }
+    /// <summary>
+    /// Always apply changes to disk files,
+    /// if false, keep it in memory
+    /// (default is true)
+    /// </summary>
+    public bool AutoSave { get; set; }
 
     /// <summary>
-    /// Objeto responsável por realizar upload dos arquivos
+    /// Full Directory Path.
+    /// (Optional) If the path is not given, all files will be stored in the session.
     /// </summary>
+    /// <remarks>
+    /// Example: c:\temp\files\
+    /// </remarks>
+    public string FolderPath { get; set; }
+
     public JJUploadFile Upload
     {
         get
@@ -140,10 +101,7 @@ public class JJFormUpload : JJBaseView
             return _upload;
         }
     }
-
-    /// <summary>
-    /// Componente GridView
-    /// </summary>
+    
     public JJGridView GridView
     {
         get
@@ -170,10 +128,7 @@ public class JJFormUpload : JJBaseView
             return _gridView;
         }
     }
-
-    /// <summary>
-    /// Ação da grid responsável por realizar o upload do arquivo
-    /// </summary>
+    
     public ScriptAction DownloadAction
     {
         get
@@ -190,10 +145,7 @@ public class JJFormUpload : JJBaseView
             return _downloadAction;
         }
     }
-
-    /// <summary>
-    /// Ação da grid responsável por realizar a exclusão do arquivo
-    /// </summary>
+    
     public ScriptAction DeleteAction
     {
         get
@@ -212,10 +164,7 @@ public class JJFormUpload : JJBaseView
             return _deleteAction;
         }
     }
-
-    /// <summary>
-    /// Ação da grid responsável por renomear um arquivo
-    /// </summary>
+    
     public ScriptAction RenameAction
     {
         get
@@ -237,12 +186,31 @@ public class JJFormUpload : JJBaseView
         set => _renameAction = value;
     }
 
+    private FormFileService Service
+    {
+        get
+        {
+            if (_service == null)
+            {
+                _service = new FormFileService
+                {
+                    MemoryFilesSessionName = $"{Name}_jjfiles",
+                    OnCreateFile = OnCreateFile,
+                    OnDeleteFile = OnDeleteFile,
+                    OnRenameFile = OnRenameFile
+                };
+            }
+            _service.AutoSave = AutoSave;
+            _service.FolderPath = FolderPath;
+            return _service;
+        }
+    }
 
     public JJFormUpload()
     {
         ShowAddFile = true;
         Name = "jjuploadform1";
-        CollapseAriaExpanded = true;
+        ExpandedByDefault = true;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -275,7 +243,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = Cript.Descript64(previewVideo);
-        var video = Service.GetFile(fileName);
+        var video = Service.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
                           Convert.ToBase64String(video.FileStream.ToArray(), 0, video.FileStream.ToArray().Length);
@@ -314,7 +282,8 @@ public class JJFormUpload : JJBaseView
         string src;
         if (file.IsInMemory)
         {
-            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
+            string base64 = Convert.ToBase64String(file.Content.FileStream.ToArray());
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
@@ -356,48 +325,11 @@ public class JJFormUpload : JJBaseView
         try
         {
             if ("DELFILE".Equals(uploadAction))
-            {
-                if (OnDeleteFile != null)
-                {
-                    var args = new FormDeleteFileEventArgs(fileName);
-                    OnDeleteFile.Invoke(this, args);
-
-                    if (!string.IsNullOrEmpty(args.ErrorMessage))
-                        throw new Exception(args.ErrorMessage);
-                }
-
-                Service.DeleteFile(fileName);
-            }
+                DeleteFile(fileName);
             else if ("DOWNLOADFILE".Equals(uploadAction))
-            {
-                if (OnDownloadFile != null)
-                {
-                    var args = new FormDownloadFileEventArgs(fileName, null);
-                    OnDownloadFile.Invoke(this, args);
-
-                    if (!string.IsNullOrEmpty(args.ErrorMessage))
-                        throw new Exception(args.ErrorMessage);
-                }
-
                 DownloadFile(Path.Combine(Service.FolderPath, fileName));
-            }
             else if ("RENAMEFILE".Equals(uploadAction))
-            {
-                string[] names = fileName.Split(';');
-                string currentName = names[0];
-                string newName = names[1];
-
-                if (OnRenameFile != null)
-                {
-                    var args = new FormRenameFileEventArgs(currentName, newName);
-                    OnRenameFile.Invoke(this, args);
-
-                    if (!string.IsNullOrEmpty(args.ErrorMessage))
-                        throw new Exception(args.ErrorMessage);
-                }
-
-                Service.RenameFile(currentName, newName);
-            }
+                RenameFile(fileName);
         }
         catch (Exception ex)
         {
@@ -419,7 +351,7 @@ public class JJFormUpload : JJBaseView
         html.AppendElement(new JJCollapsePanel
         {
             Title = "New File",
-            ExpandedByDefault = CollapseAriaExpanded,
+            ExpandedByDefault = ExpandedByDefault,
             HtmlBuilderContent = GetHtmlFormPanel()
         });
 
@@ -479,8 +411,9 @@ public class JJFormUpload : JJBaseView
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        foreach (var file in files)
+        foreach (var fileInfo in files)
         {
+            var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
             col.AppendElement(HtmlTag.Ul, ul =>
@@ -599,7 +532,8 @@ public class JJFormUpload : JJBaseView
 
         if (file.IsInMemory)
         {
-            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
+            string base64 = Convert.ToBase64String(file.Content.FileStream.ToArray());
+            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
@@ -653,9 +587,9 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private Hashtable ConvertToHashtable(FileDetail file)
+    private Hashtable ConvertToHashtable(FormFileContent file)
     {
-        Hashtable hash = new();
+        var hash = new Hashtable();
         hash.Add(FileName, file.FileName);
         hash.Add(LastWriteTime, file.LastWriteTime);
         hash.Add(Size, file.SizeBytes);
@@ -736,47 +670,60 @@ public class JJFormUpload : JJBaseView
 
     private void UploadOnPostFile(object sender, FormUploadFileEventArgs e)
     {
-        if (OnCreateFile != null)
-        {
-            var args = new FormUploadFileEventArgs(e.File);
-            OnCreateFile.Invoke(this, args);
-            string errorMessage = args.ErrorMessage;
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                e.ErrorMessage = errorMessage;
-            }
-        }
-
         try
         {
-            if (!Upload.Multiple && Service.CountFiles() > 0)
-            {
-                foreach (var file in Service.GetFiles())
-                {
-                    Service.DeleteFile(file.FileName);
-                }
-            }
-
-#if NETFRAMEWORK
-            var stream = new MemoryStream();
-            e.File.FileData.InputStream.CopyTo(stream);
-            Service.CreateFile(e.File.FileData.FileName, stream);
-#else
-            using var stream = new MemoryStream();
-            e.File.FileData.CopyTo(stream);
-            Service.CreateFile(e.File.FileData.FileName, stream);
-#endif
-
-
+            CreateFile(e.File);
         }
         catch (Exception ex)
         {
             e.ErrorMessage = ex.Message;
         }
-
     }
 
+    
+    private void RenameFile(string fileName)
+    {
+        string[] names = fileName.Split(';');
+        string currentName = names[0];
+        string newName = names[1];
+        RenameFile(currentName, newName);
+    }
+
+    public void CreateFile(FormFileContent file) =>
+        Service.CreateFile(file, !Upload.Multiple);
+
+    public void RenameFile(string currentName, string newName) => 
+        Service.RenameFile(currentName, newName);
+    
+    public void DeleteFile(string fileName) =>
+        Service.DeleteFile(fileName);
+
+    internal void DeleteAll() => 
+        Service.DeleteAll();
+
+    public List<FormFileInfo> GetFiles() => 
+        Service.GetFiles();
+
+    public void ClearMemoryFiles() => 
+        Service.MemoryFiles = null;
+
+    public void SaveMemoryFiles(string folderPath) =>
+        Service.SaveMemoryFiles(folderPath);
+
+    public void DownloadFile(string fileName)
+    {
+        if (OnDownloadFile != null)
+        {
+            var args = new FormDownloadFileEventArgs(fileName, null);
+            OnDownloadFile.Invoke(this, args);
+
+            if (!string.IsNullOrEmpty(args.ErrorMessage))
+                throw new Exception(args.ErrorMessage);
+        }
+
+        var download = new JJDownloadFile(fileName);
+        download.ResponseDirectDownload();
+    }
 
     /// <summary>
     /// Recovers the list of files in a DataTable object.
@@ -794,8 +741,9 @@ public class JJFormUpload : JJBaseView
         dt.Columns.Add(LastWriteTime, typeof(string));
         dt.Columns.Add(FileNameJs, typeof(string));
 
-        foreach (var mFiles in files.Where(mFiles => !mFiles.Deleted))
+        foreach (var fileInfo in files.Where(mFiles => !mFiles.Deleted))
         {
+            var mFiles = fileInfo.Content;
             var dataRow = dt.NewRow();
             dataRow["Name"] = mFiles.FileName;
             dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
@@ -805,13 +753,6 @@ public class JJFormUpload : JJBaseView
         }
 
         return dt;
-    }
-
-    public void DownloadFile(string fileName)
-    {
-        var download = new JJDownloadFile(fileName);
-
-        download.ResponseDirectDownload();
     }
 
     /// <summary>
@@ -826,7 +767,5 @@ public class JJFormUpload : JJBaseView
         }
         DownloadAction.SetVisible(true);
     }
-
-   
 
 }
