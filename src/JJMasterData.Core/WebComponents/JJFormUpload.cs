@@ -208,8 +208,8 @@ public class JJFormUpload : JJBaseView
 
     public JJFormUpload()
     {
-        ShowAddFile = true;
         Name = "jjuploadform1";
+        ShowAddFile = true;
         ExpandedByDefault = true;
     }
 
@@ -668,6 +668,29 @@ public class JJFormUpload : JJBaseView
         return modal;
     }
 
+    private DataTable GetDataTableFiles()
+    {
+        var files = Service.GetFiles();
+        var dt = new DataTable();
+        dt.Columns.Add(FileName, typeof(string));
+        dt.Columns.Add(Size, typeof(string));
+        dt.Columns.Add(LastWriteTime, typeof(string));
+        dt.Columns.Add(FileNameJs, typeof(string));
+
+        foreach (var fileInfo in files.Where(mFiles => !mFiles.Deleted))
+        {
+            var mFiles = fileInfo.Content;
+            var dataRow = dt.NewRow();
+            dataRow["Name"] = mFiles.FileName;
+            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
+            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
+            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
+            dt.Rows.Add(dataRow);
+        }
+
+        return dt;
+    }
+
     private void UploadOnPostFile(object sender, FormUploadFileEventArgs e)
     {
         try
@@ -680,7 +703,6 @@ public class JJFormUpload : JJBaseView
         }
     }
 
-    
     private void RenameFile(string fileName)
     {
         string[] names = fileName.Split(';');
@@ -689,12 +711,12 @@ public class JJFormUpload : JJBaseView
         RenameFile(currentName, newName);
     }
 
+    public void RenameFile(string currentName, string newName) =>
+      Service.RenameFile(currentName, newName);
+
     public void CreateFile(FormFileContent file) =>
         Service.CreateFile(file, !Upload.Multiple);
 
-    public void RenameFile(string currentName, string newName) => 
-        Service.RenameFile(currentName, newName);
-    
     public void DeleteFile(string fileName) =>
         Service.DeleteFile(fileName);
 
@@ -723,36 +745,6 @@ public class JJFormUpload : JJBaseView
 
         var download = new JJDownloadFile(fileName);
         download.ResponseDirectDownload();
-    }
-
-    /// <summary>
-    /// Recovers the list of files in a DataTable object.
-    /// </summary>
-    /// <returns>
-    /// A data table with the following columns:<para></para>
-    /// Name, Size, LastWriteTime
-    /// </returns>
-    public DataTable GetDataTableFiles()
-    {
-        var files = Service.GetFiles();
-        var dt = new DataTable();
-        dt.Columns.Add(FileName, typeof(string));
-        dt.Columns.Add(Size, typeof(string));
-        dt.Columns.Add(LastWriteTime, typeof(string));
-        dt.Columns.Add(FileNameJs, typeof(string));
-
-        foreach (var fileInfo in files.Where(mFiles => !mFiles.Deleted))
-        {
-            var mFiles = fileInfo.Content;
-            var dataRow = dt.NewRow();
-            dataRow["Name"] = mFiles.FileName;
-            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
-            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
-            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
-            dt.Rows.Add(dataRow);
-        }
-
-        return dt;
     }
 
     /// <summary>
