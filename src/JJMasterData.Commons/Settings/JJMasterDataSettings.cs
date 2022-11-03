@@ -31,80 +31,154 @@ namespace JJMasterData.Commons.Settings;
 /// </summary>
 public sealed class JJMasterDataSettings : ISettings
 {
+    private string? _connectionString;
+    private string? _connectionProvider;
+    private int? _bootstrapVersion;
+    private string? _tableName;
+    private string? _resourcesTableName;
+    private string? _auditLogTableName;
+    private string? _prefixGetProc;
+    private string? _prefixSetProc;
+    private string? _jjMasterDataUrl;
+    private string? _layoutPath;
+    private string? _popUpLayoutPath;
+    private string[]? _externalAssembliesPath;
+    private string? _exportationFolderPath;
+    private string? _secretKey;
+
     /// <summary>
     /// Default value is the Connection String with the name "ConnectionString"
     /// </summary>
-    public string? ConnectionString { get; set; }
+    public string? ConnectionString
+    {
+        get => _connectionString ??= GetConnectionString("ConnectionString");
+        set => _connectionString = value;
+    }
+
     /// <summary> 
     /// Default value: "System.Data.SqlClient"
     /// </summary>
-    public string? ConnectionProvider { get; set; } 
+    public string? ConnectionProvider
+    {
+        get => _connectionProvider ??= GetConnectionProvider("ConnectionString");
+        set => _connectionProvider = value;
+    }
 
     /// <summary>
     /// Default value: 5 <br></br>
     /// Web.Config key: JJMasterData.BootstrapTheme
     /// </summary>
-    public int BootstrapVersion { get; set; }
+    public int BootstrapVersion
+    {
+        get => _bootstrapVersion ??= int.Parse(GetOption(nameof(BootstrapVersion)) ?? "5");
+        set => _bootstrapVersion = value;
+    }
 
     /// <summary>
     /// Default value: JJMasterData <br></br>
     /// Web.Config key: JJMasterData.TableName
     /// </summary>
-    public string TableName { get; set; }
+    public string TableName
+    {
+        get => _tableName ??= GetOption(nameof(TableName)) ?? "JJMasterData";
+        set => _tableName = value;
+    }
 
     /// <summary>
     /// Default value: JJMasterData <br></br>
     /// Web.Config key: JJMasterData.TableResources
     /// </summary>
-    public string ResourcesTableName { get; set; }
+    public string ResourcesTableName
+    {
+        get => _resourcesTableName ??= GetOption(nameof(ResourcesTableName)) ?? "JJMasterDataResources";
+        set => _resourcesTableName = value;
+    }
+
     /// <summary>
     /// Default value: JJMasterData <br></br>
     /// Web.Config key: JJMasterData.AuditLog
     /// </summary>
-    public string? AuditLogTableName { get; set; }
+    public string? AuditLogTableName
+    {
+        get => _auditLogTableName = GetOption(nameof(AuditLogTableName));
+        set => _auditLogTableName = value;
+    }
 
     /// <summary>
     /// Default value: {table_name}Get <br></br>
     /// Web.Config key: JJMasterData.PrefixProcGet
     /// </summary>
-    public string? PrefixGetProc { get; set; }
+    public string? PrefixGetProc
+    {
+        get => _prefixGetProc ??= GetOption(nameof(PrefixGetProc));
+        set => _prefixGetProc = value;
+    }
 
     /// <summary>
     /// Default value: {table_name}Set <br></br>
     /// Web.Config key: JJMasterData.PrefixProcSet
     /// </summary>
-    public string? PrefixSetProc { get; set; }
+    public string? PrefixSetProc
+    {
+        get => _prefixSetProc ??= GetOption(nameof(PrefixSetProc));
+        set => _prefixSetProc = value;
+    }
 
     /// <summary>
     /// Default value: null <br></br>
     /// Web.Config: JJMasterData.URL
     /// </summary>
-    public string? JJMasterDataUrl { get; set; }
+    public string? JJMasterDataUrl
+    {
+        get => _jjMasterDataUrl ??= GetOption(nameof(JJMasterDataUrl));
+        set => _jjMasterDataUrl = value;
+    }
 
     /// <summary>
     /// Default value: ~/Views/Shared/_MasterDataLayout.cshtml <br></br>
     /// Web.Config: JJMasterData.LayoutUrl
     /// </summary>
-    public string? LayoutPath { get; set; }
-        
+    public string? LayoutPath
+    {
+        get => _layoutPath ??= GetOption(nameof(LayoutPath));
+        set => _layoutPath = value;
+    }
+
     /// <summary>
     /// Default value: ~/Views/Shared/_MasterDataLayout.Popup.cshtml <br></br>
     /// Web.Config: JJMasterData.LayoutPopupUrl
     /// </summary>
-    public string? PopUpLayoutPath { get; set; }
+    public string? PopUpLayoutPath
+    {
+        get => _popUpLayoutPath ??= GetOption(nameof(PopUpLayoutPath));
+        set => _popUpLayoutPath = value;
+    }
 
     /// <summary>
     /// Default value: null <br></br>
     /// Web.Config: JJMasterData.ExternalAssemblies
     /// </summary>
-    public string[]? ExternalAssembliesPath { get; set; }
-    public string? ExportationFolderPath { get; set; }
-    
+    public string[]? ExternalAssembliesPath
+    {
+        get => _externalAssembliesPath ??= GetOption(nameof(ExternalAssembliesPath))?.Split(';');
+        set => _externalAssembliesPath = value;
+    }
+
+    public string? ExportationFolderPath
+    {
+        get => _exportationFolderPath ??= GetOption(nameof(ExportationFolderPath)) ?? @$"{FileIO.GetApplicationPath()}\App_Data\JJExportFiles\";
+        set => _exportationFolderPath = value;
+    }
+
     /// <summary>
     /// Default value: "ChangeMe" <br></br>
     /// Web.Config: JJMasterData.SecretKey
     /// </summary>
-    public string SecretKey { get; set; }
+    public string SecretKey
+    {
+        get => _secretKey ??= GetOption(nameof(SecretKey)) ?? "ChangeMe";
+        set => _secretKey = value;
+    }
 
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
@@ -112,32 +186,9 @@ public sealed class JJMasterDataSettings : ISettings
     {
         get
         {
-            var configuration = JJService.Provider?.GetService(typeof(IConfiguration)) ?? new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", true)
-                .Build();
-
+            var configuration = JJService.Provider?.GetService(typeof(IConfiguration))!;
             return (IConfiguration)configuration;
         }
-    }
-
-    public JJMasterDataSettings()
-    {
-        ConnectionString = GetConnectionString("ConnectionString");
-        ConnectionProvider = GetConnectionProvider("ConnectionString");
-
-        BootstrapVersion = int.Parse(GetOption(nameof(BootstrapVersion)) ?? "5");
-        TableName = GetOption(nameof(TableName)) ?? "JJMasterData";
-        ResourcesTableName = GetOption(nameof(ResourcesTableName)) ?? "JJMasterDataResources";
-        AuditLogTableName = GetOption(nameof(AuditLogTableName));
-        PrefixGetProc = GetOption(nameof(PrefixGetProc));
-        PrefixSetProc = GetOption(nameof(PrefixSetProc));
-        JJMasterDataUrl = GetOption(nameof(JJMasterDataUrl));
-        ExternalAssembliesPath = GetOption(nameof(ExternalAssembliesPath))?.Split(';');
-        LayoutPath = GetOption(nameof(LayoutPath));
-        PopUpLayoutPath = GetOption(nameof(PopUpLayoutPath));
-        ExportationFolderPath = GetOption(nameof(ExportationFolderPath)) ?? @$"{FileIO.GetApplicationPath()}\App_Data\JJExportFiles\";
-        SecretKey = GetOption(nameof(SecretKey)) ?? "ChangeMe";
     }
 
     private string? GetOption(string option)
@@ -180,7 +231,7 @@ public sealed class JJMasterDataSettings : ISettings
     {
         if (IsNetFramework)
             return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
-        return Configuration.GetJJMasterData("ConnectionProvider") ?? DataAccess.MSSQL;
+        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ?? DataAccess.MSSQL;
     }
 
     internal static string GetProcNameGet(Element element)

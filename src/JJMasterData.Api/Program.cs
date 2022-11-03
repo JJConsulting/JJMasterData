@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
+var sharedSettings = Path.Combine(root, "appsettings.json");
+builder.Configuration.AddJsonFile(sharedSettings).AddJsonFile("appsettings.json");
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {

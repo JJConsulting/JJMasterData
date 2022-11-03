@@ -3,7 +3,7 @@
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace JJMasterData.Example.Pages;
+namespace JJMasterData.Web.Example.Pages;
 
 public class TitleExample : PageModel
 {

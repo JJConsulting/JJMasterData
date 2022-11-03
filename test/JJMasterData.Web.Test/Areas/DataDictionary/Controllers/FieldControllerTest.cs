@@ -1,17 +1,18 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Web.Example;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
 
 [CollectionDefinition("FieldController", DisableParallelization = true)]
 [Order(1)]
-public class FieldControllerTest : IClassFixture<JJMasterDataWebAppFactory<Program>>
+public class FieldControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory<Program>>
 {
     private readonly HttpClient _client;
 
-    public FieldControllerTest(JJMasterDataWebAppFactory<Program> factory)
+    public FieldControllerTest(JJMasterDataWebExampleAppFactory<Program> factory)
     {
         factory.EnsureServer();
         _client = factory.CreateClient();

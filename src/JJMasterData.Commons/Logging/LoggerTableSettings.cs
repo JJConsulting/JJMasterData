@@ -8,24 +8,42 @@ namespace JJMasterData.Commons.Logging;
 
 public class LoggerTableSettings
 {
+    private string _name;
+    private string _contentColumnName;
+    private string _dateColumnName;
+    private string _levelColumnName;
+    private string _sourceColumnName;
     private const string SectionName = "Table";
 
-    public string Name { get; set; }
-    public string ContentColumnName { get; set; }
-    public string DateColumnName { get; set; }
-    public string LevelColumnName { get; set; }
-    public string SourceColumnName { get; set; }
-
-
-    public LoggerTableSettings()
+    public string Name
     {
-        Name = GetValue(nameof(Name));
-        DateColumnName =GetValue(nameof(DateColumnName)); 
-        LevelColumnName = GetValue(nameof(LevelColumnName)); 
-        SourceColumnName = GetValue(nameof(SourceColumnName)); 
-        ContentColumnName = GetValue(nameof(ContentColumnName)); 
+        get => _name ??= GetValue(nameof(Name));
+        set => _name = value;
     }
 
+    public string ContentColumnName
+    {
+        get => _contentColumnName ??= GetValue(nameof(ContentColumnName));
+        set => _contentColumnName = value;
+    }
+
+    public string DateColumnName
+    {
+        get => _dateColumnName ??=GetValue(nameof(DateColumnName));
+        set => _dateColumnName = value;
+    }
+
+    public string LevelColumnName
+    {
+        get => _levelColumnName ??= GetValue(nameof(LevelColumnName));
+        set => _levelColumnName = value;
+    }
+
+    public string SourceColumnName
+    {
+        get => _sourceColumnName ??=  GetValue(nameof(SourceColumnName));
+        set => _sourceColumnName = value;
+    }
     private string GetValue(string key)
     {
         IConfiguration configuration;

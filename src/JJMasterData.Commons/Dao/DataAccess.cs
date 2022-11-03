@@ -152,6 +152,11 @@ public class DataAccess : IDataAccess
         ConnectionProvider = connectionProviderName;            
     }
 
+    public IDataAccess WithParameters(string connectionStringName)
+    {
+        return new DataAccess(connectionStringName);
+    }
+    
     public IDataAccess WithParameters(string connectionString, string connectionProvider)
     {
         return new DataAccess(connectionString, connectionProvider);

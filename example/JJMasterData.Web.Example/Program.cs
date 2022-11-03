@@ -1,31 +1,40 @@
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace JJMasterData.Web.Example;
 
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
-builder.Services.AddJJMasterDataWeb()
-    .WithFormEvents()
-    .WithSettings(s =>
+public class Program
+{
+    public static void Main(string[] args)
     {
-        s.LayoutPath = "_Layout";
-    });
+        var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+        var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
+        var sharedSettings = Path.Combine(root, "appsettings.json");
 
-if (app.Environment.IsProduction())
-    app.UseHsts();
+        builder.Configuration.AddJsonFile(sharedSettings);
+        builder.Services.AddRazorPages();
+        builder.Services.AddControllersWithViews();
 
-app.UseExceptionHandler("/Error");
-app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.MapRazorPages();
-app.UseJJMasterDataWeb();
-app.UseAuthorization();
-app.Run();
+        builder.Services.AddJJMasterDataWeb().WithFormEvents()
+            .WithSettings(s =>
+            {
+                s.LayoutPath = "_Layout";
+            });
 
-public partial class Program { }
+        var app = builder.Build();
+
+        if (app.Environment.IsProduction())
+            app.UseHsts();
+
+        app.UseExceptionHandler("/Error");
+        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.MapRazorPages();
+        app.UseJJMasterDataWeb();
+        app.UseAuthorization();
+        app.Run();
+    }
+}

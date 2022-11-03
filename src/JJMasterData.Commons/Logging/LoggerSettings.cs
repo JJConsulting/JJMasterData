@@ -10,37 +10,65 @@ namespace JJMasterData.Commons.Logging;
 
 public class LoggerSettings
 {
-    [EnumDataType(typeof(LoggerOption))]
-    public LoggerOption WriteInTrace { get; set; }
+    private LoggerOption? _writeInTrace;
+    private LoggerOption? _writeInConsole;
+    private LoggerOption? _writeInEventViewer;
+    private LoggerOption? _writeInDatabase;
+    private LoggerOption? _writeInFile;
+    private string? _fileName;
+    private LoggerTableSettings? _table;
 
     [EnumDataType(typeof(LoggerOption))]
-    public LoggerOption WriteInConsole { get; set; } 
+    public LoggerOption WriteInTrace
+    {
+        get => _writeInTrace ??= GetLoggerOption(nameof(WriteInTrace));
+        set => _writeInTrace = value;
+    }
 
     [EnumDataType(typeof(LoggerOption))]
-    public LoggerOption WriteInEventViewer { get; set; } 
+    public LoggerOption WriteInConsole
+    {
+        get => _writeInConsole ??= GetLoggerOption(nameof(WriteInConsole));
+        set => _writeInConsole = value;
+    }
 
     [EnumDataType(typeof(LoggerOption))]
-    public LoggerOption WriteInDatabase { get; set; }
+    public LoggerOption WriteInEventViewer
+    {
+        get => _writeInEventViewer ??= GetLoggerOption(nameof(WriteInEventViewer));
+        set => _writeInEventViewer = value;
+    }
 
     [EnumDataType(typeof(LoggerOption))]
-    public LoggerOption WriteInFile { get; set; } 
+    public LoggerOption WriteInDatabase
+    {
+        get => _writeInDatabase ??= GetLoggerOption(nameof(WriteInDatabase));
+        set => _writeInDatabase = value;
+    }
 
-    public string FileName { get; set; }
-    public LoggerTableSettings? Table { get; set; }
-    public string ConnectionStringName { get; set; } = JJService.Settings.ConnectionString;
-    public string ConnectionProvider { get; set; } = JJService.Settings.ConnectionProvider;
+    [EnumDataType(typeof(LoggerOption))]
+    public LoggerOption WriteInFile
+    {
+        get => _writeInFile ??= GetLoggerOption(nameof(WriteInFile));
+        set => _writeInFile = value;
+    }
 
+    public string FileName
+    {
+        get => _fileName ??=  GetOption(nameof(FileName));
+        set => _fileName = value;
+    }
 
+    public LoggerTableSettings? Table
+    {
+        get => _table ??= new LoggerTableSettings();
+        set => _table = value;
+    }
+
+    public string? ConnectionStringName { get; set; }
+    
     public LoggerSettings()
     {
-        WriteInTrace = GetLoggerOption(nameof(WriteInTrace));
-        WriteInConsole = GetLoggerOption(nameof(WriteInConsole));
-        WriteInEventViewer = GetLoggerOption(nameof(WriteInEventViewer));
-        WriteInDatabase = GetLoggerOption(nameof(WriteInDatabase));
-        WriteInFile = GetLoggerOption(nameof(WriteInFile));
-        FileName = GetOption(nameof(FileName));
-
-        Table = new LoggerTableSettings();
     }
 
     private string GetNetFrameworkLegacyKey(string key)

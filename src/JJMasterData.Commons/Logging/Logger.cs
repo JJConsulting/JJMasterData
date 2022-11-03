@@ -27,7 +27,7 @@ public class Logger : ILogger
         {
             if (_dataAccess != null) return _dataAccess;
             _dataAccess =
-                JJService.DataAccess.WithParameters(Settings.ConnectionStringName, Settings.ConnectionProvider);
+                Settings.ConnectionStringName == null ? JJService.DataAccess : JJService.DataAccess.WithParameters(Settings.ConnectionStringName);
             _dataAccess.GenerateLog = false;
             _dataAccess.TimeOut = 30;
             return _dataAccess;

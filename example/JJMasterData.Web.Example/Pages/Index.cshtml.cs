@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace JJMasterData.Example.Pages;
+namespace JJMasterData.Web.Example.Pages;
 
 public class IndexModel : PageModel
 {
