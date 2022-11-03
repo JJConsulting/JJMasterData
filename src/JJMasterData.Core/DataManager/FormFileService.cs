@@ -11,9 +11,9 @@ namespace JJMasterData.Core.DataManager;
 
 internal class FormFileService
 {
-    public EventHandler<FormUploadFileEventArgs> OnCreateFile;
-    public EventHandler<FormDeleteFileEventArgs> OnDeleteFile;
-    public EventHandler<FormRenameFileEventArgs> OnRenameFile;
+    public EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
+    public EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
+    public EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
 
     /// <summary>
     /// Nome da variavél de sessão
@@ -75,11 +75,10 @@ internal class FormFileService
         if (files.Exists(x => x.Content.FileName.Equals(newName)))
             throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
 
-
-        if (OnRenameFile != null)
+        if (OnBeforeRenameFile != null)
         {
             var args = new FormRenameFileEventArgs(currentName, newName);
-            OnRenameFile.Invoke(this, args);
+            OnBeforeRenameFile.Invoke(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new Exception(args.ErrorMessage);
@@ -117,10 +116,10 @@ internal class FormFileService
         string fileName = fileContent.FileName;
         MemoryStream memoryStream = fileContent.FileStream;
 
-        if (OnCreateFile != null)
+        if (OnBeforeCreateFile != null)
         {
             var evt = new FormUploadFileEventArgs(fileContent);
-            OnCreateFile.Invoke(this, evt);
+            OnBeforeCreateFile.Invoke(this, evt);
             string errorMessage = evt.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
@@ -161,10 +160,10 @@ internal class FormFileService
 
     public void DeleteFile(string fileName)
     {
-        if (OnDeleteFile != null)
+        if (OnBeforeDeleteFile != null)
         {
             var args = new FormDeleteFileEventArgs(fileName);
-            OnDeleteFile.Invoke(this, args);
+            OnBeforeDeleteFile.Invoke(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new Exception(args.ErrorMessage);

@@ -43,10 +43,10 @@ public class JJFormUpload : JJBaseView
     private JJUploadFile _upload;
     private FormFileService _service;
 
-    public event EventHandler<FormUploadFileEventArgs> OnCreateFile;
-    public event EventHandler<FormDeleteFileEventArgs> OnDeleteFile;
-    public event EventHandler<FormDownloadFileEventArgs> OnDownloadFile;
-    public event EventHandler<FormRenameFileEventArgs> OnRenameFile;
+    public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
+    public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
+    public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
+    public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
     
     /// <summary>
     /// Render upload colapse panel 
@@ -195,9 +195,9 @@ public class JJFormUpload : JJBaseView
                 _service = new FormFileService
                 {
                     MemoryFilesSessionName = $"{Name}_jjfiles",
-                    OnCreateFile = OnCreateFile,
-                    OnDeleteFile = OnDeleteFile,
-                    OnRenameFile = OnRenameFile
+                    OnBeforeCreateFile = OnBeforeCreateFile,
+                    OnBeforeDeleteFile = OnBeforeDeleteFile,
+                    OnBeforeRenameFile = OnBeforeRenameFile
                 };
             }
             _service.AutoSave = AutoSave;
@@ -734,10 +734,10 @@ public class JJFormUpload : JJBaseView
 
     public void DownloadFile(string fileName)
     {
-        if (OnDownloadFile != null)
+        if (OnBeforeDownloadFile != null)
         {
             var args = new FormDownloadFileEventArgs(fileName, null);
-            OnDownloadFile.Invoke(this, args);
+            OnBeforeDownloadFile.Invoke(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
                 throw new Exception(args.ErrorMessage);
