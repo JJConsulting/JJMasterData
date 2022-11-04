@@ -7,9 +7,9 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.AuditLog;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Args;
 
@@ -106,9 +106,9 @@ public class MasterApiService
 
         var filters = ParseFilter(dictionary, paramValues);
         var formElement = dictionary.GetFormElement();
-        var dataDictionaryManager = new FormService(formElement);
+        var formService = new FormService(formElement);
         
-        var result = dataDictionaryManager.GetHashtable(filters);
+        var result = formService.GetHashtable(filters);
 
         if (result.Result == null || result.Total == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -189,7 +189,7 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var parsedValues = formManager.ParseOriginalName(values);
+            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Insert, true);
 
             var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
@@ -207,7 +207,7 @@ public class MasterApiService
             {
                 ret.Status = (int)HttpStatusCode.Created;
                 ret.Message = Translate.Key("Record added successfully");
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
+                ret.Data = DataHelper.GetDiff(parsedValues, newvalues, api);
             }
             else
             {
@@ -230,11 +230,9 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var parsedValues = formManager.ParseOriginalName(values);
+            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Update, true);
             
-            formManager.GetPkValues(newvalues);
-
             var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
 
             bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
@@ -250,7 +248,7 @@ public class MasterApiService
             {
                 ret.Status = (int)HttpStatusCode.OK;
                 ret.Message = Translate.Key("Record updated successfully");
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
+                ret.Data = DataHelper.GetDiff(parsedValues, newvalues, api);
             }
             else
             {
@@ -274,7 +272,7 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var parsedValues = formManager.ParseOriginalName(values);
+            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Import, true);
             var erros = formManager.ValidateFields(newvalues, PageState.Import, false);
 
@@ -296,7 +294,7 @@ public class MasterApiService
                     formEvent?.OnAfterUpdate(this, new FormAfterActionEventArgs(newvalues));
                 }
 
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
+                ret.Data = DataHelper.GetDiff(parsedValues, newvalues, api);
             }
             else
             {
@@ -319,10 +317,10 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var parsedValues = formManager.ParseOriginalName(values);
+            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
 
             //Validates if the Pk were filled
-            var pkValues = formManager.GetPkValues(parsedValues);
+            var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
 
             var currentValues = Factory.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
@@ -354,7 +352,7 @@ public class MasterApiService
                 ret.Status = (int)HttpStatusCode.OK;
                 ret.Message = Translate.Key("Record updated successfully");
 
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
+                ret.Data = DataHelper.GetDiff(parsedValues, newvalues, api);
             }
             else
             {
@@ -411,7 +409,7 @@ public class MasterApiService
         
         var formElement = dictionary.GetFormElement();
 
-        var dataDictionaryManager = new FormService(formElement, logActionIsVisible ? _auditLogService : null);
+        var formService = new FormService(formElement, logActionIsVisible ? _auditLogService : null);
 
         if (!dictionary.Api.EnableDel)
             throw new UnauthorizedAccessException();
@@ -427,7 +425,7 @@ public class MasterApiService
             filters.Add(pks[i].Name, ids[i]);
         }
 
-        var result = dataDictionaryManager.Delete(this, filters);
+        var result = formService.Delete(this, filters);
 
         if (result.Total == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));

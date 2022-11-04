@@ -78,7 +78,7 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-    private FormService _dataDictionaryManager;
+    private FormService _formService;
 
     internal JJDataImp DataImp
     {
@@ -454,7 +454,7 @@ public class JJGridView : JJBaseView
     public HeadingSize TitleSize { get; set; }
 
     private FormService DataDictionaryManager =>
-        _dataDictionaryManager ??= new FormService(FormElement);
+        _formService ??= new FormService(FormElement);
 
     internal Hashtable DefaultValues
     {
