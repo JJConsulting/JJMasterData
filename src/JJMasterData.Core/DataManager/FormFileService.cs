@@ -18,7 +18,7 @@ internal class FormFileService
     /// <summary>
     /// Nome da variavél de sessão
     /// </summary>
-    public string MemoryFilesSessionName { get; set; }
+    public string MemoryFilesSessionName { get; private set; }
 
     /// <summary>
     /// Sempre aplica as alterações dos arquivos em disco, 
@@ -42,8 +42,9 @@ internal class FormFileService
         set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
     }
 
-    public FormFileService()
+    public FormFileService(string formName)
     {
+        MemoryFilesSessionName = $"{formName}_files";
         AutoSave = true;
     }
 
@@ -209,9 +210,7 @@ internal class FormFileService
     public void SaveMemoryFiles(string folderPath)
     {
         if (string.IsNullOrEmpty(folderPath))
-        {
             throw new ArgumentNullException(nameof(folderPath));
-        }
 
         if (MemoryFiles == null)
             return;

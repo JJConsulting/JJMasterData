@@ -198,7 +198,7 @@ public class JJTextFile : JJBaseControl
     {
         var form = new JJFormUpload();
         var dataFile = ElementField.DataFile;
-        form.Name = ElementField.Name + "_formupload";
+        form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
         form.AutoSave = false;
         form.GridView.ShowToolbar = false;

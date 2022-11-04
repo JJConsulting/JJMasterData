@@ -45,8 +45,8 @@ public class JJFormUpload : JJBaseView
 
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
-    public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
+    public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
     
     /// <summary>
     /// Render upload colapse panel 
@@ -192,9 +192,8 @@ public class JJFormUpload : JJBaseView
         {
             if (_service == null)
             {
-                _service = new FormFileService
+                _service = new FormFileService(Name)
                 {
-                    MemoryFilesSessionName = $"{Name}_jjfiles",
                     OnBeforeCreateFile = OnBeforeCreateFile,
                     OnBeforeDeleteFile = OnBeforeDeleteFile,
                     OnBeforeRenameFile = OnBeforeRenameFile

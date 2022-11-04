@@ -1,7 +1,7 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.AuditLog;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
@@ -24,7 +24,7 @@ public class JJFormLog : JJBaseView
         {
             if (_auditLog != null) return _auditLog;
 
-            _auditLog = new(AuditLogSource.Form)
+            _auditLog = new AuditLogService(AuditLogSource.Form)
             {
                 DataAccess = DataAccess,
                 Factory = Factory

@@ -7,8 +7,8 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.AuditLog;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
@@ -21,31 +21,43 @@ public class FormService
 {
     #region Properties
 
-    public FormElement FormElement { get; }
-    private readonly Factory _formRepository;
-    private readonly AuditLogService _auditLogService;
+    public FormElement FormElement { get; private set; }
+    public Factory FormRepository { get; private set; }
+    public AuditLogService AuditLog { get; set; }
+    
 
     #endregion
 
     #region Events
 
-    private event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
-    private event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    private event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
-    private event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    private event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
-    private event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+    public EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
+    public EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    public EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
+    public EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    public EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
+    public EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
 
     #endregion
 
     #region Constructor
 
+
+    internal FormService(JJFormView formView)
+    {
+        FormElement = formView.FormElement;
+        FormRepository = formView.Factory;
+
+        if (formView.LogAction.IsVisible)
+            AuditLog = formView.LogHistory.Service;
+
+    }
+
     public FormService(FormElement formElement, AuditLogService auditLogService = null,
         bool enableFormEvents = true)
     {
-        _formRepository = new Factory();
+        FormRepository = new Factory();
         FormElement = formElement;
-        _auditLogService = auditLogService;
+        AuditLog = auditLogService;
 
         if (enableFormEvents)
             AddFormEvent(FormEventManager.GetFormEvent(FormElement.Name));
@@ -62,7 +74,7 @@ public class FormService
     public DataDictionaryResult<Hashtable> GetHashtable(Hashtable filters)
     {
         var errors = new Hashtable();
-        var hashtable = RunDatabaseCommand(() => _formRepository.GetFields(FormElement, filters), ref errors);
+        var hashtable = RunDatabaseCommand(() => FormRepository.GetFields(FormElement, filters), ref errors);
 
         return new()
         {
@@ -86,7 +98,7 @@ public class FormService
         int total = 0;
         
         var dataTable = 
-            RunDatabaseCommand(() => _formRepository.GetDataTable(
+            RunDatabaseCommand(() => FormRepository.GetDataTable(
                 FormElement,
                 filters,
                 orderBy,
@@ -129,12 +141,12 @@ public class FormService
 
         if (errors?.Count > 0) return new(errors);
 
-        RunDatabaseCommand(() => _formRepository.Update(FormElement, values), ref errors);
+        RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
 
         if (sender is JJFormView jjFormView)
             SaveFiles(jjFormView, values);
 
-        _auditLogService?.AddLog(FormElement, values, CommandType.Update);
+        AuditLog?.AddLog(FormElement, values, CommandType.Update);
 
         var afterEventArgs = new FormAfterActionEventArgs(values);
         OnAfterUpdate?.Invoke(sender, afterEventArgs);
@@ -158,12 +170,6 @@ public class FormService
     {
         var errors = new Hashtable();
 
-        if (sender is JJFormView formView)
-        {
-            OnAfterInsert += formView.InvokeOnAfterInsert;
-            OnBeforeInsert += formView.InvokeOnBeforeInsert;
-        }
-
         errors = validationFunc?.Invoke();
 
         var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
@@ -172,12 +178,12 @@ public class FormService
         if (errors?.Count > 0) 
             return new FormLetter(errors);
 
-        RunDatabaseCommand(() => _formRepository.Insert(FormElement, values), ref errors);
+        RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
 
         if (sender is JJFormView jjFormView)
             SaveFiles(jjFormView, values);
 
-        _auditLogService?.AddLog(FormElement, values, CommandType.Insert);
+        AuditLog?.AddLog(FormElement, values, CommandType.Insert);
 
         var afterEventArgs = new FormAfterActionEventArgs(values);
         OnAfterInsert?.Invoke(sender, afterEventArgs);
@@ -212,7 +218,7 @@ public class FormService
 
         if (errors.Count > 0) return new(errors);
 
-        int total = RunDatabaseCommand(() => _formRepository.Delete(FormElement, primaryKeys), ref errors);
+        int total = RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
 
         DeleteFiles(primaryKeys);
 
@@ -220,7 +226,7 @@ public class FormService
 
         OnAfterDelete?.Invoke(sender, afterEventArgs);
 
-        _auditLogService?.AddLog(FormElement, primaryKeys, CommandType.Delete);
+        AuditLog?.AddLog(FormElement, primaryKeys, CommandType.Delete);
 
         var result = new FormLetter
         {

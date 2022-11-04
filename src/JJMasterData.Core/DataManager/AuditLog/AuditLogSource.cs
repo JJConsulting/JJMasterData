@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary.AuditLog;
+﻿namespace JJMasterData.Core.DataManager.AuditLog;
 
 public enum AuditLogSource
 {

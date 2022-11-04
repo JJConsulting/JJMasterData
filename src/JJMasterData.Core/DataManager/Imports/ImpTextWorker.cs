@@ -12,7 +12,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.AuditLog;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.DataManager.Imports;

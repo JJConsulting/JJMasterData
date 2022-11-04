@@ -6,9 +6,10 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Settings;
+using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.AuditLog;
+namespace JJMasterData.Core.DataManager.AuditLog;
 
 public class AuditLogService
 {
@@ -55,9 +56,9 @@ public class AuditLogService
 
     public AuditLogService(AuditLogSource source) : this(new AuditLogData(source))
     {
-        
+
     }
-        
+
     public void AddLog(Element element, Hashtable formValues, CommandType action)
     {
         var values = new Hashtable

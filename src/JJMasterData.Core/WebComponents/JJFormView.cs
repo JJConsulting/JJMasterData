@@ -71,8 +71,8 @@ public class JJFormView : JJGridView
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
-    private FormService _dataDictionaryManager;
-    private JJFormLog LogHistory =>
+    private FormService _service;
+    internal JJFormLog LogHistory =>
         _logHistory ??= new JJFormLog(FormElement)
         {
             DataAccess = DataAccess,
@@ -144,9 +144,26 @@ public class JJFormView : JJGridView
         }
     }
 
-    private FormService DataDictionaryManager =>
-        _dataDictionaryManager ??= new FormService(FormElement,
-            LogAction.IsVisible ? LogHistory.Service : null);
+    private FormService Service 
+    { 
+        get
+        {
+            if (_service == null)
+            {
+                _service = new FormService(this);
+                _service.OnBeforeDelete = OnBeforeDelete;
+                _service.OnAfterDelete = OnAfterDelete;
+                _service.OnBeforeInsert = OnBeforeInsert;
+                _service.OnAfterInsert = OnAfterInsert;
+                _service.OnBeforeUpdate = OnBeforeUpdate;
+                _service.OnAfterUpdate = OnAfterUpdate;
+            }
+                
+
+            return _service;
+        } 
+    }
+        
 
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
        => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
@@ -899,7 +916,7 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
     {
-        var result = DataDictionaryManager.Insert(this, values,
+        var result = Service.Insert(this, values,
             () => validateFields ? ValidateFields(values, PageState.Insert) : null);
 
         UrlRedirect = result.UrlRedirect;
@@ -913,7 +930,7 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable UpdateFormValues(Hashtable values)
     {
-        var result = DataDictionaryManager.Update(this, values,
+        var result = Service.Update(this, values,
             () => ValidateFields(values, PageState.Update));
 
         UrlRedirect = result.UrlRedirect;
@@ -927,7 +944,7 @@ public class JJFormView : JJGridView
 
         var values = formManager.ApplyDefaultValues(filter, PageState.Delete);
 
-        var result = DataDictionaryManager.Delete(this, values);
+        var result = Service.Delete(this, values);
 
         UrlRedirect = result.UrlRedirect;
 

@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Core.Http;
 
-namespace JJMasterData.Core.DataDictionary.AuditLog;
+namespace JJMasterData.Core.DataManager.AuditLog;
 
 public class AuditLogData
 {
@@ -8,7 +8,7 @@ public class AuditLogData
     public string UserId { get; set; }
     public string BrowserInfo { get; set; }
     public AuditLogSource Source { get; set; }
-        
+
     public AuditLogData(AuditLogSource source)
     {
         var context = JJHttpContext.GetInstance();
