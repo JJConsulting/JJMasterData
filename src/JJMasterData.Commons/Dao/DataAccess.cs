@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 
@@ -69,14 +70,14 @@ public class DataAccess : IDataAccess
         
     /// <summary>
     /// Keeps the database connection open, 
-    /// allowing to execute a sequence of commands; 
+    /// Allowing to execute a sequence of commands; 
     /// </summary>
     /// <example>
     /// This example shows how the KeepConnAlive method should be used
     /// <code>
     /// class TestClass  
     /// { 
-    ///     private void DoTest()
+    ///     private void Test()
     ///     {
     ///         var dao = new DataAccess())
     ///         try
@@ -98,7 +99,7 @@ public class DataAccess : IDataAccess
     /// </code> 
     /// </example>
     /// <remarks>
-    /// default value is false;
+    /// Default value is false;
     /// Always run the Dispose() method;
     /// </remarks>
     public bool KeepConnAlive
@@ -111,41 +112,18 @@ public class DataAccess : IDataAccess
                 CloseConnection();
         }
     }
-
-    /// <summary>
-    /// Initializes the class based on the connection string called "ConnectionString" configured in JJMasterDataSettings.
-    /// </summary>
-    /// 
-
+    
     public DataAccess()
     {
         ConnectionString = JJService.Settings.ConnectionString;
         ConnectionProvider = JJService.Settings.ConnectionProvider;
     }
-
-    /// <summary>
-    /// Initializes the class based on the name of the connection string
-    /// </summary>
-    /// <param name="connectionStringName">Connection String name configured in app.config</param>
+    
     public DataAccess(string connectionStringName)
     {
         ConnectionString = JJService.Settings.GetConnectionString(connectionStringName);
         ConnectionProvider = JJService.Settings.GetConnectionProvider(connectionStringName);
     }
-
-    /// <summary>
-    /// Initializes the class based on the given connection string
-    /// </summary>
-    /// <param name="connectionString">Connection String</param>
-    /// <param name="connectionProviderName">
-    /// Providers:
-    /// <para>System.Data.SqlClient</para>
-    /// <para>System.Data.OracleClient</para>
-    /// <para>POSTGRE SQL</para>
-    /// <para>MYSQL</para>
-    /// <para>Informix</para>
-    /// <para>Sybase</para>
-    /// </param>
     public DataAccess(string connectionString, string connectionProviderName)
     {
         ConnectionString = connectionString;
@@ -258,8 +236,6 @@ public class DataAccess : IDataAccess
     ///<summary>
     ///Returns DataTable object populated by a query with parameters
     ///</summary>
-    ///<param name="sql">Query</param>
-    ///<param name="parameters">Parameters</param>
     ///<returns>Returns DataTable object populated by a query with parameters</returns>
     ///<remarks>Lucio Pelinson 14-04-2012</remarks>
     public DataTable GetDataTable(string sql, List<DataAccessParameter> parameters = null)
@@ -267,12 +243,8 @@ public class DataAccess : IDataAccess
         return GetDataTable(new DataAccessCommand(sql, parameters ?? new List<DataAccessParameter>()));
     }
 
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<param name="dataAccessCommand">Custom DataAccess Command</param>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>Lucio Pelinson 14-04-2012</remarks>
+
+    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public DataTable GetDataTable(DataAccessCommand dataAccessCommand)
     {
         DbCommand cmd = GetFactory().CreateCommand();
@@ -282,24 +254,24 @@ public class DataAccess : IDataAccess
         {
             if (dataAccessCommand.Parameters != null)
             {
-                foreach (DataAccessParameter parm in dataAccessCommand.Parameters)
+                foreach (var parm in dataAccessCommand.Parameters)
                 {
-                    DbParameter oPar = GetFactory().CreateParameter();
-                    oPar.DbType = parm.Type;
-                    oPar.Value = parm.Value ?? DBNull.Value;
-                    oPar.ParameterName = parm.Name;
-                    oPar.Direction = parm.Direction;
-                    cmd.Parameters.Add(oPar);
+                    var dbParameter = GetFactory().CreateParameter();
+                    dbParameter!.DbType = parm.Type;
+                    dbParameter.Value = parm.Value ?? DBNull.Value;
+                    dbParameter.ParameterName = parm.Name;
+                    dbParameter.Direction = parm.Direction;
+                    cmd!.Parameters.Add(dbParameter);
                 }
             }
 
-            cmd.CommandType = dataAccessCommand.CmdType;
-            cmd.CommandText = ParseSql(dataAccessCommand.Sql);
+            cmd!.CommandType = dataAccessCommand.CmdType;
+            cmd.CommandText = dataAccessCommand.Sql;
             cmd.Connection = GetConnection();
             cmd.CommandTimeout = TimeOut;
 
             da = GetFactory().CreateDataAdapter();
-            da.SelectCommand = cmd;
+            da!.SelectCommand = cmd;
 
             da.Fill(dt);
 
@@ -330,25 +302,14 @@ public class DataAccess : IDataAccess
     }
     
     
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<param name="sql">Query</param>
-    ///<param name="parameters">Parameters</param>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>Gustavo Barros 28-07-2022</remarks>
+    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public async Task<DataTable> GetDataTableAsync(string sql, List<DataAccessParameter> parameters = null)
     {
         parameters ??= new List<DataAccessParameter>();
         return await GetDataTableAsync(new DataAccessCommand(sql, parameters));
     }
     
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<param name="dataAccessCommand">Custom DataAccess Command</param>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>Gustavo Barros 28-07-2022</remarks>
+    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand)
     {
         var cmd = GetFactory().CreateCommand();
@@ -362,7 +323,7 @@ public class DataAccess : IDataAccess
                 foreach (DataAccessParameter parm in dataAccessCommand.Parameters)
                 {
                     DbParameter dbParameter = GetFactory().CreateParameter();
-                    dbParameter.DbType = parm.Type;
+                    dbParameter!.DbType = parm.Type;
                     dbParameter.Value = parm.Value ?? DBNull.Value;
                     dbParameter.ParameterName = parm.Name;
                     dbParameter.Direction = parm.Direction;
@@ -370,21 +331,21 @@ public class DataAccess : IDataAccess
                 }
             }
             
-            cmd.CommandType = dataAccessCommand.CmdType;
-            cmd.CommandText = ParseSql(dataAccessCommand.Sql);
+            cmd!.CommandType = dataAccessCommand.CmdType;
+            cmd.CommandText = dataAccessCommand.Sql;
             cmd.Connection = await GetConnectionAsync();
             cmd.CommandTimeout = TimeOut;
                 
             da = GetFactory().CreateDataAdapter();
-            da.SelectCommand = cmd;
+            da!.SelectCommand = cmd;
             da.Fill(dt);
 
             if (dataAccessCommand.Parameters != null)
             {
-                foreach (DataAccessParameter p in dataAccessCommand.Parameters)
+                foreach (var param in dataAccessCommand.Parameters)
                 {
-                    if (p.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        p.Value = cmd.Parameters[p.Name].Value;
+                    if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        param.Value = cmd.Parameters[param.Name].Value;
                 }
             }
         }
@@ -405,21 +366,12 @@ public class DataAccess : IDataAccess
         return dt;
     }
 
-    ///<summary>
-    ///Returns DataTable object populated by a query using an open connection
-    ///</summary>
-    ///<param name="sqlConn">SqlConnection object with connection open</param>
-    ///<param name="sql">Query</param>
-    ///<returns>DataTable object</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
         DataTable dt = new DataTable();
         DbCommand sqlCmd = null;
         DbDataAdapter da = null;
-        sql = ParseSql(sql);
         try
         {
             sqlCmd = GetFactory().CreateCommand();
@@ -452,45 +404,40 @@ public class DataAccess : IDataAccess
     /// <summary>
     /// Returns a single sql command value with parameters
     /// </summary>
-    /// <param name="sql">Query with parameters</param>
-    /// <param name="parameters">Parameters</param>
     /// <returns></returns>
     public object GetResult(string sql, List<DataAccessParameter> parameters = null)
     {
         return GetResult(new DataAccessCommand(sql, parameters ?? new List<DataAccessParameter>()));
     }
 
-    /// <summary>
-    /// Returns a single sql command value with parameters
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public object GetResult(DataAccessCommand cmd)
     {
-        object oRet = null;
+        object scalarResult = null;
         DbCommand dbCommand = null;
         try
         {
             dbCommand = GetFactory().CreateCommand();
-            foreach (DataAccessParameter parm in cmd.Parameters)
+            foreach (var parm in cmd.Parameters)
             {
-                DbParameter oPar = GetFactory().CreateParameter();
-                oPar.DbType = parm.Type;
-                oPar.Value = parm.Value ?? DBNull.Value;
-                oPar.ParameterName = parm.Name;
-                oPar.Direction = parm.Direction;
-                dbCommand.Parameters.Add(oPar);
+                var dbParameter = GetFactory().CreateParameter();
+                dbParameter!.DbType = parm.Type;
+                dbParameter.Value = parm.Value ?? DBNull.Value;
+                dbParameter.ParameterName = parm.Name;
+                dbParameter.Direction = parm.Direction;
+                dbCommand!.Parameters.Add(dbParameter);
             }
                 
-            dbCommand.CommandType = cmd.CmdType;
+            dbCommand!.CommandType = cmd.CmdType;
             dbCommand.CommandText = cmd.Sql;
             dbCommand.Connection = GetConnection();
             dbCommand.CommandTimeout = TimeOut;
-            oRet = dbCommand.ExecuteScalar();
+            scalarResult = dbCommand.ExecuteScalar();
 
-            foreach (DataAccessParameter p in cmd.Parameters)
+            foreach (var param in cmd.Parameters)
             {
-                if (p.Direction == ParameterDirection.Output || p.Direction == ParameterDirection.InputOutput)
-                    p.Value = dbCommand.Parameters[p.Name].Value;
+                if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                    param.Value = dbCommand.Parameters[param.Name].Value;
             }
         }
         catch (Exception ex)
@@ -500,30 +447,21 @@ public class DataAccess : IDataAccess
         }
         finally
         {
-            if (dbCommand != null)
-                dbCommand.Dispose();
+            dbCommand?.Dispose();
 
             CloseConnection();
         }
-        return oRet;
+        return scalarResult;
     }
 
     
-    /// <summary>
-    /// Returns a single sql command value with parameters
-    /// </summary>
-    /// <param name="sql">Query with parameters</param>
-    /// <param name="parameters">Parameters</param>
-    /// <returns></returns>
+    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public async Task<object> GetResultAsync(string sql, List<DataAccessParameter> parameters = null)
     {
         return await GetResultAsync(new DataAccessCommand(sql, parameters ?? new List<DataAccessParameter>()));
     }
 
-    /// <summary>
-    /// Returns a single sql command value with parameters
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public async Task<object> GetResultAsync(DataAccessCommand cmd)
     {
         object oRet = null;
@@ -568,12 +506,7 @@ public class DataAccess : IDataAccess
         return oRet;
     }
     
-    /// <summary>
-    /// Returns a single sql command value with parameters
-    /// </summary>
-    /// <param name="cmd">Command</param>
-    /// <param name="sqlConn">Connection Object</param>
-    /// <returns></returns>
+    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         object oRet;
@@ -616,31 +549,30 @@ public class DataAccess : IDataAccess
         return oRet;
     }
 
-    ///<summary>
-    ///Commands to be run on the database (With Transaction)
-    ///</summary>
-    ///<param name="cmd">Command to be executed</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <summary>
+    /// Runs one or more commands on the database with transactions.
+    /// </summary>
+    /// <returns>Returns the number of affected records.</returns>
+    /// <remarks>
+    /// Autor: Lucio Pelinson 14-04-2012
+    /// </remarks>
     public int SetCommand(DataAccessCommand cmd)
     {
         int nRet = 0;
-        DbCommand sqlCmd = null;
+        DbCommand dbCmd = null;
         try
         {
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd.CommandType = cmd.CmdType;
-            sqlCmd.CommandText = ParseSql(cmd.Sql);
-            sqlCmd.Connection = GetConnection();
-            sqlCmd.CommandTimeout = TimeOut;
+            dbCmd = GetFactory().CreateCommand();
+            dbCmd.CommandType = cmd.CmdType;
+            dbCmd.CommandText = cmd.Sql;
+            dbCmd.Connection = GetConnection();
+            dbCmd.CommandTimeout = TimeOut;
 
             foreach (DataAccessParameter parm in cmd.Parameters)
             {
-                DbParameter oPar = GetFactory().CreateParameter();
+                var oPar = GetFactory().CreateParameter();
                 oPar.DbType = parm.Type;
-                oPar.Value = parm.Value == null ? DBNull.Value : parm.Value;
+                oPar.Value = parm.Value ?? DBNull.Value;
                 oPar.ParameterName = parm.Name;
                 oPar.Direction = parm.Direction;
 
@@ -648,15 +580,15 @@ public class DataAccess : IDataAccess
                     oPar.Size = parm.Size;
 
                 oPar.IsNullable = true;
-                sqlCmd.Parameters.Add(oPar);
+                dbCmd.Parameters.Add(oPar);
             }
 
-            nRet += sqlCmd.ExecuteNonQuery();
+            nRet += dbCmd.ExecuteNonQuery();
 
             foreach (DataAccessParameter p in cmd.Parameters)
             {
                 if (p.Direction == ParameterDirection.Output || p.Direction == ParameterDirection.InputOutput)
-                    p.Value = sqlCmd.Parameters[p.Name].Value;
+                    p.Value = dbCmd.Parameters[p.Name].Value;
             }
 
         }
@@ -667,8 +599,8 @@ public class DataAccess : IDataAccess
         }
         finally
         {
-            if (sqlCmd != null)
-                sqlCmd.Dispose();
+            if (dbCmd != null)
+                dbCmd.Dispose();
 
             CloseConnection();
         }
@@ -676,14 +608,7 @@ public class DataAccess : IDataAccess
         return nRet;
     }
 
-    ///<summary>
-    ///Commands to be run on the database (With Transaction)
-    ///</summary>
-    ///<param name="cmd">Command to be executed</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(DataAccessCommand cmd)
     {
         int nRet = 0;
@@ -692,7 +617,7 @@ public class DataAccess : IDataAccess
         {
             sqlCmd = GetFactory().CreateCommand();
             sqlCmd.CommandType = cmd.CmdType;
-            sqlCmd.CommandText = ParseSql(cmd.Sql);
+            sqlCmd.CommandText = cmd.Sql;
             sqlCmd.Connection = await GetConnectionAsync();
             sqlCmd.CommandTimeout = TimeOut;
 
@@ -735,14 +660,7 @@ public class DataAccess : IDataAccess
         return nRet;
     }
 
-    ///<summary>
-    ///List of commands to run on the database (With Transaction)
-    ///</summary>
-    ///<param name="commands">List of commands</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(List<DataAccessCommand> commands)
     {
         int nRet = 0;
@@ -754,25 +672,25 @@ public class DataAccess : IDataAccess
             foreach (DataAccessCommand cmd in commands)
             {
                 sqlCmd = GetFactory().CreateCommand();
-                sqlCmd.CommandType = cmd.CmdType;
-                sqlCmd.CommandText = ParseSql(cmd.Sql);
+                sqlCmd!.CommandType = cmd.CmdType;
+                sqlCmd.CommandText = cmd.Sql;
                 sqlCmd.Connection = GetConnection();
                 sqlCmd.CommandTimeout = TimeOut;
                 sqlCmd.Transaction = sqlTras;
 
                 foreach (DataAccessParameter parm in cmd.Parameters)
                 {
-                    DbParameter oPar = GetFactory().CreateParameter();
-                    oPar.DbType = parm.Type;
-                    oPar.Value = parm.Value == null ? DBNull.Value : parm.Value;
-                    oPar.ParameterName = parm.Name;
+                    var dbParameter = GetFactory().CreateParameter();
+                    dbParameter!.DbType = parm.Type;
+                    dbParameter.Value = parm.Value ?? DBNull.Value;
+                    dbParameter.ParameterName = parm.Name;
 
-                    oPar.Direction = parm.Direction;
+                    dbParameter.Direction = parm.Direction;
                     if (parm.Size > 0)
-                        oPar.Size = parm.Size;
+                        dbParameter.Size = parm.Size;
 
-                    oPar.IsNullable = true;
-                    sqlCmd.Parameters.Add(oPar);
+                    dbParameter.IsNullable = true;
+                    sqlCmd.Parameters.Add(dbParameter);
                 }
 
                 nRet += sqlCmd.ExecuteNonQuery();
@@ -802,14 +720,7 @@ public class DataAccess : IDataAccess
     }
 
     
-        ///<summary>
-    ///List of commands to run on the database (With Transaction)
-    ///</summary>
-    ///<param name="commands">List of commands</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(List<DataAccessCommand> commands)
     {
         int nRet = 0;
@@ -823,7 +734,7 @@ public class DataAccess : IDataAccess
             {
                 sqlCmd = GetFactory().CreateCommand();
                 sqlCmd.CommandType = cmd.CmdType;
-                sqlCmd.CommandText = ParseSql(cmd.Sql);
+                sqlCmd.CommandText = cmd.Sql;
                 sqlCmd.Connection = GetConnection();
                 sqlCmd.CommandTimeout = TimeOut;
                 sqlCmd.Transaction = dbTransaction;
@@ -868,15 +779,7 @@ public class DataAccess : IDataAccess
         return nRet;
     }
         
-    ///<summary>
-    ///Commands to be run on the database 
-    ///</summary>
-    ///<param name="sql">Command</param>
-    ///<param name="parameters">Parameters</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(string sql, List<DataAccessParameter> parameters = null)
     {
         parameters ??= new List<DataAccessParameter>();
@@ -886,7 +789,7 @@ public class DataAccess : IDataAccess
         {
             sqlCmd = GetFactory().CreateCommand();
             sqlCmd.CommandType = CommandType.Text;
-            sqlCmd.CommandText = ParseSql(sql).Replace("\n",string.Empty);
+            sqlCmd.CommandText = sql.Replace("\n",string.Empty);
             sqlCmd.Connection = GetConnection();
             sqlCmd.CommandTimeout = TimeOut;
 
@@ -925,15 +828,7 @@ public class DataAccess : IDataAccess
     }
     
 
-    ///<summary>
-    ///Commands to be run on the database 
-    ///</summary>
-    ///<param name="sql">Command</param>
-    ///<param name="parameters">Parameters</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(string sql, List<DataAccessParameter> parameters = null)
     {
         parameters ??= new List<DataAccessParameter>();
@@ -943,7 +838,7 @@ public class DataAccess : IDataAccess
         {
             sqlCmd = GetFactory().CreateCommand();
             sqlCmd.CommandType = CommandType.Text;
-            sqlCmd.CommandText = ParseSql(sql).Replace("\n",string.Empty);
+            sqlCmd.CommandText = sql.Replace("\n",string.Empty);
             sqlCmd.Connection = await GetConnectionAsync();
             sqlCmd.CommandTimeout = TimeOut;
 
@@ -981,14 +876,7 @@ public class DataAccess : IDataAccess
         return nRet;
     }
     
-    ///<summary>
-    ///Array with sql commands to be executed in the database (With Transaction)
-    ///</summary>
-    ///<param name="sqlList">List of sql commands</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(ArrayList sqlList)
     {
         List<DataAccessCommand> aCmd = new List<DataAccessCommand>();
@@ -1000,14 +888,7 @@ public class DataAccess : IDataAccess
         return nRet;
     }
     
-    ///<summary>
-    ///Array with sql commands to be executed in the database (With Transaction)
-    ///</summary>
-    ///<param name="sqlList">List of sql commands</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(ArrayList sqlList)
     {
         var commands = (from string sql in sqlList select new DataAccessCommand(sql)).ToList();
@@ -1015,15 +896,8 @@ public class DataAccess : IDataAccess
         return nRet;
     }
 
-    
-    ///<summary>
-    ///Execute a command passing the transaction
-    ///</summary>
-    ///<param name="cmd">Comando</param>
-    ///<returns>Returns the number of affected records</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 08-05-2013
-    ///</remarks>
+
+    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         int nRet = 0;
@@ -1031,7 +905,7 @@ public class DataAccess : IDataAccess
         try
         {
             sqlCmd = GetFactory().CreateCommand();
-            sqlCmd.CommandText = ParseSql(cmd.Sql);
+            sqlCmd!.CommandText = cmd.Sql;
             sqlCmd.Connection = sqlConn;
             sqlCmd.CommandType = cmd.CmdType;
             sqlCmd.CommandTimeout = TimeOut;
@@ -1040,8 +914,8 @@ public class DataAccess : IDataAccess
             foreach (DataAccessParameter parm in cmd.Parameters)
             {
                 DbParameter oPar = GetFactory().CreateParameter();
-                oPar.DbType = parm.Type;
-                oPar.Value = parm.Value == null ? DBNull.Value : parm.Value;
+                oPar!.DbType = parm.Type;
+                oPar.Value = parm.Value ?? DBNull.Value;
                 oPar.ParameterName = parm.Name;
 
                 oPar.Direction = parm.Direction;
@@ -1067,9 +941,8 @@ public class DataAccess : IDataAccess
     }
     
     /// <summary>
-    /// Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)] 
+    /// Retrieves the first record of the sql statement in a Hashtable object.  [key(database field), value(value stored in database)] 
     /// </summary>
-    /// <param name="sql">Query</param>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
@@ -1079,30 +952,10 @@ public class DataAccess : IDataAccess
     /// </remarks>
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
         
-    /// <summary>
-    /// Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)] 
-    /// </summary>
-    /// <param name="sql">Query</param>
-    /// <returns>
-    /// Return a Hashtable Object. 
-    /// If no record is found it returns null.
-    /// </returns>
-    /// <remarks>
-    /// Autor: Lucio Pelinson 17-04-2012
-    /// </remarks>
+    /// <inheritdoc cref="GetFields(string)"/>
     public Task<Hashtable> GetFieldsAsync(string sql) => GetFieldsAsync(new DataAccessCommand(sql));
     
-    /// <summary>
-    /// Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)]
-    /// </summary>
-    /// <param name="cmd">Command to be executed</param>
-    /// <returns>
-    /// Return a Hashtable Object. 
-    /// If no record is found it returns null.
-    /// </returns>
-    /// <remarks>
-    /// Autor: Lucio Pelinson 17-04-2012
-    /// </remarks>
+    /// <inheritdoc cref="GetFields(string)"/>
     public Hashtable GetFields(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
@@ -1110,17 +963,17 @@ public class DataAccess : IDataAccess
         try
         {
             dbCmd = GetFactory().CreateCommand();
-            foreach (DataAccessParameter parm in cmd.Parameters)
+            foreach (var param in cmd.Parameters)
             {
-                DbParameter oPar = GetFactory().CreateParameter();
-                oPar.DbType = parm.Type;
-                oPar.Value = parm.Value == null ? DBNull.Value : parm.Value;
-                oPar.ParameterName = parm.Name;
-                oPar.Direction = parm.Direction;
-                dbCmd.Parameters.Add(oPar);
+                DbParameter dbParameter = GetFactory().CreateParameter();
+                dbParameter!.DbType = param.Type;
+                dbParameter.Value = param.Value ?? DBNull.Value;
+                dbParameter.ParameterName = param.Name;
+                dbParameter.Direction = param.Direction;
+                dbCmd!.Parameters.Add(dbParameter);
             }
 
-            dbCmd.CommandType = cmd.CmdType;
+            dbCmd!.CommandType = cmd.CmdType;
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = GetConnection();
             dbCmd.CommandTimeout = TimeOut;
@@ -1169,17 +1022,7 @@ public class DataAccess : IDataAccess
         return retCollection;
     }
     
-        /// <summary>
-    /// Retrieves the first record of the sql statement in a Collection object.  [key(database field), value(value stored in database)]
-    /// </summary>
-    /// <param name="cmd">Command to be executed</param>
-    /// <returns>
-    /// Return a Hashtable Object. 
-    /// If no record is found it returns null.
-    /// </returns>
-    /// <remarks>
-    /// Autor: Lucio Pelinson 17-04-2012
-    /// </remarks>
+    /// <inheritdoc cref="GetFields(string)"/>
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
     {
         Hashtable hashtable = null;
@@ -1204,7 +1047,7 @@ public class DataAccess : IDataAccess
 
             DbDataReader dr = await dbCmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
-            while (dr.Read())
+            while (await dr.ReadAsync())
             {
                 hashtable = new Hashtable();
                 int nQtd = 0;
@@ -1223,7 +1066,7 @@ public class DataAccess : IDataAccess
             if (!dr.IsClosed)
                 dr.Close();
 
-            foreach (DataAccessParameter p in cmd.Parameters)
+            foreach (var p in cmd.Parameters)
             {
                 if (p.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                     p.Value = dbCmd.Parameters[p.Name].Value;
@@ -1233,7 +1076,7 @@ public class DataAccess : IDataAccess
         catch (Exception ex)
         {
             BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw; 
         }
         finally
         {
@@ -1245,95 +1088,74 @@ public class DataAccess : IDataAccess
         return hashtable;
     }
 
-    ///<summary>
-    ///Convert query to current provider using third-party library
-    ///</summary>
-    ///<param name="sql">Select to be converted</param>
-    ///<returns>string sql</returns>
-    ///<remarks>
-    ///Autor: Lucio Pelinson 14-04-2012
-    ///</remarks>
-    private string ParseSql(string sql)
+    private DbCommand GetTableExistsDbCommand(string table)
     {
-        return sql;
-    }
+        string sql = @"SELECT 
+            HAS_PERMS_BY_NAME
+            (
+                N'dbo.@Table', 
+                N'OBJECT', 
+                N'SELECT'
+            )";
 
-    /// <summary>
-    /// Verifica se tem acesso de leitura a uma tabela existe no banco
-    /// </summary>
-    /// <param name="table">Nome da tabela</param>
-    /// <returns>True se a tabela exisitir</returns>
-    /// ///<remarks>
-    ///Autor: Lucio Pelinson 16-09-2014
-    ///</remarks>
-    public bool TableExists(string table)
-    {
-        bool bRet = false;
-        DbCommand sqlCmd = null;
-        try
-        {
-            string sql = "SELECT COUNT(*) FROM " + table + " WHERE 1=2";
+        var factory = GetFactory();
 
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd.CommandType = CommandType.Text;
-            sqlCmd.CommandText = ParseSql(sql);
-            sqlCmd.Connection = GetConnection();
-            sqlCmd.CommandTimeout = TimeOut;
-            sqlCmd.ExecuteNonQuery();
-            bRet = true;
-        }
-        catch (Exception)
-        {
-            bRet = false;
-        }
-        finally
-        {
-            if (sqlCmd != null)
-                sqlCmd.Dispose();
+        var sqlCmd = factory.CreateCommand();
+        sqlCmd!.CommandType = CommandType.Text;
 
-            CloseConnection();
-        }
+        var tableParameter = factory.CreateParameter();
+        tableParameter!.ParameterName = "@Table";
+        tableParameter.Value = table;
+        sqlCmd.Parameters.Add(table);
 
-        return bRet;
+        sqlCmd.CommandText =sql;
+        sqlCmd.Connection = GetConnection();
+        sqlCmd.CommandTimeout = TimeOut;
+        return sqlCmd;
     }
     
-    /// <summary>
-    /// Verifica se tem acesso de leitura a uma tabela existe no banco
-    /// </summary>
-    /// <param name="table">Nome da tabela</param>
-    /// <returns>True se a tabela exisitir</returns>
-    /// ///<remarks>
-    ///Autor: Lucio Pelinson 16-09-2014
-    ///</remarks>
-    public async Task<bool> TableExistsAsync(string table)
+    public bool TableExists(string table)
     {
-        bool bRet = false;
         DbCommand sqlCmd = null;
         try
         {
-            string sql = "SELECT COUNT(*) FROM " + table + " WHERE 1=2";
-
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd.CommandType = CommandType.Text;
-            sqlCmd.CommandText = ParseSql(sql);
-            sqlCmd.Connection = await GetConnectionAsync();
-            sqlCmd.CommandTimeout = TimeOut;
-            await sqlCmd.ExecuteNonQueryAsync();
-            bRet = true;
+            sqlCmd = GetTableExistsDbCommand(table);
+            sqlCmd.ExecuteNonQuery();
         }
         catch (Exception)
         {
-            bRet = false;
+            return false;
         }
         finally
         {
-            if (sqlCmd != null)
-                sqlCmd.Dispose();
+            sqlCmd?.Dispose();
 
             CloseConnection();
         }
 
-        return bRet;
+        return true;
+    }
+
+    public async Task<bool> TableExistsAsync(string table)
+    {
+        DbCommand dbCommand = null;
+        try
+        {
+            dbCommand = GetTableExistsDbCommand(table);
+            await dbCommand.ExecuteNonQueryAsync();
+        }
+        catch (DbException)
+        {
+            return false;
+        }
+        finally
+        {
+            dbCommand?.Dispose();
+
+            CloseConnection();
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -1380,10 +1202,9 @@ public class DataAccess : IDataAccess
     }
 
     /// <summary>
-    /// Executa um script de banco de dados
+    /// Executes a database script.
     /// </summary>
-    /// <param name="script">Script do banco de dados</param>
-    /// <returns>Retorna True caso seja executado com sucesso</returns>
+    /// <returns>Retorns true if the execution is successful.</returns>
     /// <remarks>Lucio Pelinson 18-02-2013</remarks> 
     public bool ExecuteBatch(string script)
     {
@@ -1395,7 +1216,7 @@ public class DataAccess : IDataAccess
             
         if (script.Trim().Length > 0)
         {
-            ArrayList aSql = new ArrayList();
+            var aSql = new ArrayList();
             string sqlBatch = string.Empty;
             script += "\n" + markpar;   // make sure last batch is executed. 
 
@@ -1420,12 +1241,7 @@ public class DataAccess : IDataAccess
         return true;
     }
     
-    /// <summary>
-    /// Executa um script de banco de dados
-    /// </summary>
-    /// <param name="script">Script do banco de dados</param>
-    /// <returns>Retorna True caso seja executado com sucesso</returns>
-    /// <remarks>Lucio Pelinson 18-02-2013</remarks> 
+    /// <inheritdoc cref="ExecuteBatch"/>
     public async Task<bool> ExecuteBatchAsync(string script)
     {
         string markpar = "GO";
@@ -1459,39 +1275,54 @@ public class DataAccess : IDataAccess
 
         return await Task.FromResult(true);
     }
-
+    private static DataAccessCommand GetValueExistsCommand(string tableName, string columnName, object value)
+    {
+        var command = new DataAccessCommand
+        {
+            Sql = "SELECT COUNT(*) AS QTD from @TableName WHERE @ColumnName = @Value",
+            Parameters =
+            {
+                new DataAccessParameter()
+                {
+                    Name = "@TableName",
+                    Value = tableName,
+                    Type = DbType.String
+                },
+                new DataAccessParameter()
+                {
+                    Name = "@ColumnName",
+                    Value = columnName,
+                    Type = DbType.String
+                },
+                new DataAccessParameter()
+                {
+                    Name = "@Value",
+                    Value = value,
+                    Type = value is string ? DbType.String : DbType.Int64
+                }
+            }
+        };
+        return command;
+    }
+    
     /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
+    /// Verify if a value exists in the database.
     /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="columnName">Nome da Coluna </param>
-    /// <param name="value">Filtro da Coluna</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    /// <returns>Returns true if the value exists.</returns>
     public bool ValueExists(string tableName, string columnName, string value)
     {
-        string query = "select count(*) as qtd from " + tableName + " where " + columnName + " = '" + value + "'";
-        return ((int)GetResult(query)) > 0;
+        var command = GetValueExistsCommand(tableName, columnName, value);
+        return (int)GetResult(command) > 0;
     }
-
-    /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
-    /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="columnName">Nome da Coluna </param>
-    /// <param name="value">Filtro da Coluna</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    
+    /// <inheritdoc cref="ValueExists(string,string,string)"/>
     public bool ValueExists(string tableName, string columnName, int value)
     {
-        string query = "select count(*) as qtd from " + tableName + " where " + columnName + " = " + value;
-        return ((int)GetResult(query)) > 0;
+        var command = GetValueExistsCommand(tableName, columnName, value);
+        return (int)GetResult(command) > 0;
     }
 
-    /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
-    /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="filters">Filtros</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    /// <inheritdoc cref="ValueExists(string,string,string)"/>
     public bool ValueExists(string tableName, params DataAccessParameter[] filters)
     {
         StringBuilder sql = new StringBuilder();
@@ -1532,41 +1363,24 @@ public class DataAccess : IDataAccess
     }
 
     
-        /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
-    /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="columnName">Nome da Coluna </param>
-    /// <param name="value">Filtro da Coluna</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    /// <inheritdoc cref="ValueExists(string,string,string)"/>
     public async Task<bool> ValueExistsAsync(string tableName, string columnName, string value)
     {
-        string query = "select count(*) as qtd from " + tableName + " where " + columnName + " = '" + value + "'";
-        return ((int) await GetResultAsync(query)) > 0;
+        var command = GetValueExistsCommand(tableName, columnName, value);
+        return ((int) await GetResultAsync(command)) > 0;
     }
 
-    /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
-    /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="columnName">Nome da Coluna </param>
-    /// <param name="value">Filtro da Coluna</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    /// <inheritdoc cref="ValueExists(string,string,string)"/>
     public async Task<bool> ValueExistsAsync(string tableName, string columnName, int value)
     {
-        string query = "select count(*) as qtd from " + tableName + " where " + columnName + " = " + value;
-        return ((int) await GetResultAsync(query)) > 0;
+        var command = GetValueExistsCommand(tableName, columnName, value);
+        return ((int) await GetResultAsync(command)) > 0;
     }
 
-    /// <summary>
-    /// Verifica se um valor existe de acordo com a tabela e condições
-    /// </summary>
-    /// <param name="tableName">Nome da Tabela</param>
-    /// <param name="filters">Filtros</param>
-    /// <returns>Verdadeiro caso o valor exista na tabela</returns>
+    /// <inheritdoc cref="ValueExists(string,string,string)"/>
     public async Task<bool> ValueExistsAsync(string tableName, params DataAccessParameter[] filters)
     {
-        StringBuilder sql = new StringBuilder();
+        var sql = new StringBuilder();
         sql.Append("select count(*) as qtd from ");
         sql.Append(tableName);
 
@@ -1610,6 +1424,7 @@ public class DataAccess : IDataAccess
     /// <param name="columnName">Nome da coluna</param>
     /// <param name="value">Filtro da Coluna</param>
     /// <returns></returns>
+    [Obsolete("Will be removed at before Saturn merging at main. Pointless SQL.")]
     public object GetValue(string tableName, string columnName, string value)
     {
         string query = "select " + columnName + " from " + tableName + " where " + columnName + " = '" + value + "'";
@@ -1623,6 +1438,7 @@ public class DataAccess : IDataAccess
     /// <param name="columnName">Nome da coluna</param>
     /// <param name="value">Filtro da Coluna</param>
     /// <returns></returns>
+    [Obsolete("Will be removed at before Saturn merging at main. Pointless SQL.")]
     public object GetValue(string tableName, string columnName, int value)
     {
         string query = "select " + columnName + " from " + tableName + " where " + columnName + " = " + value;
@@ -1636,6 +1452,7 @@ public class DataAccess : IDataAccess
     /// <param name="columnName">Nome da coluna</param>
     /// <param name="value">Filtro da Coluna</param>
     /// <returns></returns>
+    [Obsolete("Will be removed at before Saturn merging at main. Pointless SQL.")]
     public async Task<object> GetValueAsync(string tableName, string columnName, string value)
     {
         string query = "select " + columnName + " from " + tableName + " where " + columnName + " = '" + value + "'";
@@ -1649,7 +1466,8 @@ public class DataAccess : IDataAccess
     /// <param name="columnName">Nome da coluna</param>
     /// <param name="value">Filtro da Coluna</param>
     /// <returns></returns>
-    public async Task<object>  GetValueAsync(string tableName, string columnName, int value)
+    [Obsolete("Will be removed at before Saturn merging at main. Pointless SQL.")]
+    public async Task<object> GetValueAsync(string tableName, string columnName, int value)
     {
         string query = "select " + columnName + " from " + tableName + " where " + columnName + " = " + value;
         return await GetResultAsync(query);
@@ -1657,11 +1475,7 @@ public class DataAccess : IDataAccess
 
     private void BuildErrorLog(string sql, List<DataAccessParameter> parms, Exception ex)
     {
-        if (ex is SqlException exSql)
-        {
-            if (exSql.Number >= 50000)
-                return;
-        }
+        if (ex is SqlException { Number: >= 50000 }) return;
 
         var error = new StringBuilder();
         try
@@ -1707,7 +1521,6 @@ public class DataAccess : IDataAccess
         if (GenerateLog)
             Log.AddError(value, "JJMasterData.Commons");
     }
-
 
     private string TranslateKey(string key)
     {
