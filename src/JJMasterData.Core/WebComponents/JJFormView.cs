@@ -150,7 +150,13 @@ public class JJFormView : JJGridView
         {
             if (_service == null)
             {
-                _service = new FormService(this);
+                _service = new FormService(FormElement);
+                _service.FormRepository = Factory;
+                _service.AuditLog = LogAction.IsVisible ? LogHistory.Service : null;
+                _service.UserValues = UserValues;
+                _service.DataAccess = DataAccess;
+                _service.EnableErrorLink = true;
+                _service.Sender = this;
                 _service.OnBeforeDelete = OnBeforeDelete;
                 _service.OnAfterDelete = OnAfterDelete;
                 _service.OnBeforeInsert = OnBeforeInsert;

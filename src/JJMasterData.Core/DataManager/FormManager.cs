@@ -152,7 +152,7 @@ public class FormManager
         return filters;
     }
 
-    public Hashtable MergeWithDefaultValues(Hashtable formValues, PageState state)
+    public Hashtable MergeWithDefaultValues(Hashtable formValues, PageState pageState)
     {
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         if (formValues != null)
@@ -161,7 +161,7 @@ public class FormManager
                 values.Add(v.Key, v.Value);
         }
 
-        ApplyDefaultValues(ref values, state, false);
+        ApplyDefaultValues(ref values, pageState, false);
         return values;
     }
 

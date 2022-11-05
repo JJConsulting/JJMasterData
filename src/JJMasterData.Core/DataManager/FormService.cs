@@ -3,7 +3,9 @@ using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
@@ -21,10 +23,47 @@ public class FormService
 {
     #region Properties
 
+    private Hashtable _userValues;
+    private IDataAccess _dataAccess;
+    private Factory _factory;
+    private FormManager _formManager;
+
+
+    /// <inheritdoc cref="JJBaseView.UserValues"/>
+    public Hashtable UserValues
+    {
+        get => _userValues ??= new Hashtable();
+        set =>_userValues = value;
+    }
+
+    /// <inheritdoc cref="Commons.Dao.DataAccess"/>
+    public IDataAccess DataAccess
+    {
+        get => _dataAccess ??= JJService.DataAccess;
+        set => _dataAccess = value;
+    }
+
+    /// <inheritdoc cref="Factory"/>
+    public Factory FormRepository
+    {
+        get => _factory ??= new Factory(DataAccess);
+        set => _factory = value;
+    }
+
+    /// <inheritdoc cref="Factory"/>
+    public FormManager FormManager
+    {
+        get => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
+        set => _formManager = value;
+    }
+
     public FormElement FormElement { get; private set; }
-    public Factory FormRepository { get; private set; }
+
     public AuditLogService AuditLog { get; set; }
     
+    public bool EnableErrorLink { get; set; }
+
+    public object Sender { get; set; }
 
     #endregion
 
@@ -42,20 +81,9 @@ public class FormService
     #region Constructor
 
 
-    internal FormService(JJFormView formView)
-    {
-        FormElement = formView.FormElement;
-        FormRepository = formView.Factory;
-
-        if (formView.LogAction.IsVisible)
-            AuditLog = formView.LogHistory.Service;
-
-    }
-
     public FormService(FormElement formElement, AuditLogService auditLogService = null,
         bool enableFormEvents = true)
     {
-        FormRepository = new Factory();
         FormElement = formElement;
         AuditLog = auditLogService;
 
@@ -127,12 +155,6 @@ public class FormService
         var errors = new Hashtable();
 
 
-        if (sender is JJFormView formView)
-        {
-            OnAfterUpdate += formView.InvokeOnAfterUpdate;
-            OnBeforeUpdate += formView.InvokeOnBeforeUpdate;
-        }
-
         errors = validationFunc?.Invoke();
 
         var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
@@ -159,6 +181,52 @@ public class FormService
 
         return result;
     }
+
+
+    public FormLetter Update(Hashtable formValues)
+    {
+        var values = FormManager.MergeWithExpressionValues(formValues, PageState.Update, true);
+        var errors = FormManager.ValidateFields(values, PageState.Update, EnableErrorLink);
+
+        if (OnBeforeUpdate != null)
+        {
+            var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
+            OnBeforeUpdate?.Invoke(Sender, beforeActionArgs);
+        }
+
+        if (errors.Count > 0) 
+            return new FormLetter(errors);
+
+        RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
+
+        if (errors.Count > 0)
+            return new FormLetter(errors);
+
+        if (Sender is JJFormView jjFormView)
+            SaveFiles(jjFormView, values); //TODO:
+
+        AuditLog?.AddLog(FormElement, values, CommandType.Update);
+
+        FormLetter result;
+        if (OnAfterUpdate != null)
+        {
+            var afterEventArgs = new FormAfterActionEventArgs(values);
+            OnAfterUpdate?.Invoke(Sender, afterEventArgs);
+
+            result = new FormLetter
+            {
+                Errors = errors,
+                UrlRedirect = afterEventArgs.UrlRedirect
+            };
+        }
+        else
+        {
+            result = new FormLetter();
+        }
+
+        return result;
+    }
+
 
     /// <summary>
     /// Insert records in the database using the provided values.
