@@ -1,8 +1,10 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,9 +44,9 @@ internal class FormFileService
         set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
     }
 
-    public FormFileService(string formName)
+    public FormFileService(string memoryFilesSessionName)
     {
-        MemoryFilesSessionName = $"{formName}_files";
+        MemoryFilesSessionName = $"{memoryFilesSessionName}_files";
         AutoSave = true;
     }
 
@@ -279,6 +281,37 @@ internal class FormFileService
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);
         fileStream.Close();
+    }
+
+
+    internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys)
+    {
+        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        if (uploadFields.Count == 0)
+            return;
+
+        var pathBuilder = new FormFilePathBuilder(FormElement);
+        foreach (var field in uploadFields)
+        {
+            string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
+            var fileService = new FormFileService(field.Name + "_formupload");
+            fileService.SaveMemoryFiles(folderPath);
+        }
+    }
+
+    internal static void DeleteFiles(FormElement FormElement, Hashtable primaryKeys)
+    {
+        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        if (uploadFields.Count == 0)
+            return;
+
+        var pathBuilder = new FormFilePathBuilder(FormElement);
+        foreach (var field in uploadFields)
+        {
+            string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
+            var fileService = new FormFileService(field.Name + "_formupload");
+            fileService.DeleteAll();
+        }
     }
 
 }

@@ -16,8 +16,8 @@ namespace JJMasterData.Core.WebComponents;
 public class JJTextFile : JJBaseControl
 {
     private const string UploadFormParameterName = "jjuploadform_";
-
     private Hashtable _formValues;
+    private FormFilePathBuilder _pathBuiler;
 
     public Hashtable FormValues
     {
@@ -36,6 +36,17 @@ public class JJTextFile : JJBaseControl
     public FormElementField ElementField { get; set; }
 
     public FormElement FormElement { get; set; }
+
+    internal FormFilePathBuilder PathBuilder
+    {
+        get
+        {
+            if (_pathBuiler == null)
+                _pathBuiler = new FormFilePathBuilder(FormElement);
+
+            return _pathBuiler;
+        }
+   }
 
     internal static JJTextFile GetInstance(FormElement formElement,
         FormElementField field, ExpressionOptions expOptions, object value, string panelName)
@@ -137,7 +148,7 @@ public class JJTextFile : JJBaseControl
         parms.Enable = Enabled & !ReadOnly;
 
         if (PageState != PageState.Insert)
-            parms.PkValues = GetPkValues('|');
+            parms.PkValues = PathBuilder.GetPkValues(FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
         string value = Cript.Cript64(json);
@@ -240,60 +251,7 @@ public class JJTextFile : JJBaseControl
 
     public string GetFolderPath()
     {
-        if (ElementField.DataFile == null)
-            throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", ElementField.Name);
-
-        //Pks separadas por underline
-        string pkval = GetPkValues('_');
-
-        //Caminho confugurado no dicionario
-        string path = ElementField.DataFile.FolderPath;
-
-        if (string.IsNullOrEmpty(path))
-            throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", ElementField.Name);
-
-        //Replace {app.path}
-
-        string baseDirectory = FileIO.GetApplicationPath();
-
-        path = path.Replace("{app.path}", baseDirectory);
-
-        path = Path.Combine(path, pkval);
-
-        string separator = Path.DirectorySeparatorChar.ToString();
-
-        if (!path.EndsWith(separator))
-            path += separator;
-
-        return path;
-    }
-
-    private string GetPkValues(char separator)
-    {
-        string name = string.Empty;
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
-        if (pkFields.Count == 0)
-            throw new Exception(Translate.Key("Error rendering upload! Primary key not defined in {0}",
-                FormElement.Name));
-
-        foreach (var pkField in pkFields)
-        {
-            if (name.Length > 0)
-                name += separator.ToString();
-
-            if (!FormValues.ContainsKey(pkField.Name))
-                throw new Exception(Translate.Key("Error rendering upload! Primary key value {0} not found at {1}",
-                    pkField.Name, FormElement.Name));
-
-            string value = FormValues[pkField.Name].ToString();
-            if (!Validate.ValidFileName(value))
-                throw new Exception(Translate.Key("Error rendering upload! Primary key value {0} contains invalid characters.",
-                    pkField.Name));
-
-            name += value;
-        }
-
-        return name;
+        return PathBuilder.GetFolderPath(ElementField, FormValues);
     }
 
     private string GetPanelName()

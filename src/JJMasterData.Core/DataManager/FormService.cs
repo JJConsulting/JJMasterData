@@ -1,20 +1,18 @@
-using System;
-using System.Collections;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using System;
+using System.Collections;
+using System.Data;
+using System.Data.SqlClient;
 using CommandType = JJMasterData.Commons.Dao.Entity.CommandType;
 
 namespace JJMasterData.Core.DataManager;
@@ -165,8 +163,8 @@ public class FormService
 
         RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
 
-        if (sender is JJFormView jjFormView)
-            SaveFiles(jjFormView, values);
+        if (Sender is JJFormView jjFormView)
+            FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         AuditLog?.AddLog(FormElement, values, CommandType.Update);
 
@@ -191,7 +189,7 @@ public class FormService
         if (OnBeforeUpdate != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeUpdate?.Invoke(Sender, beforeActionArgs);
+            OnBeforeUpdate.Invoke(Sender, beforeActionArgs);
         }
 
         if (errors.Count > 0)
@@ -203,7 +201,7 @@ public class FormService
             return new FormLetter(errors);
 
         if (Sender is JJFormView jjFormView)
-            SaveFiles(jjFormView, values); //TODO:
+            FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         AuditLog?.AddLog(FormElement, values, CommandType.Update);
 
@@ -212,7 +210,7 @@ public class FormService
         if (OnAfterUpdate != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterUpdate?.Invoke(Sender, afterEventArgs);
+            OnAfterUpdate.Invoke(Sender, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
         
@@ -240,8 +238,8 @@ public class FormService
 
         RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
 
-        if (sender is JJFormView jjFormView)
-            SaveFiles(jjFormView, values);
+        if (Sender is JJFormView jjFormView)
+            FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         AuditLog?.AddLog(FormElement, values, CommandType.Insert);
 
@@ -280,8 +278,9 @@ public class FormService
 
         int total = RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
 
-        DeleteFiles(primaryKeys);
-
+        if (sender is JJFormView)
+            FormFileService.DeleteFiles(FormElement, primaryKeys);
+            
         var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
 
         OnAfterDelete?.Invoke(sender, afterEventArgs);
@@ -365,43 +364,6 @@ public class FormService
         }
     }
 
-    private void SaveFiles(JJFormView formView, Hashtable values)
-    {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
-        if (uploadFields.Count == 0)
-            return;
-
-        var fieldManager = new FieldManager(formView, FormElement);
-        foreach (var field in uploadFields)
-        {
-            string value = string.Empty;
-            if (values.ContainsKey(field.Name))
-                value = values[field.Name].ToString();
-
-            var upload = (JJTextFile)fieldManager.GetField(field, PageState.Insert, values, value);
-            upload.SaveMemoryFiles();
-        }
-    }
-
-    private void DeleteFiles(Hashtable primaryKeys)
-    {
-        var uploadFields = FormElement.Fields.ToList()
-            .FindAll(x => x.Component == FormComponent.File);
-
-        if (uploadFields.Count == 0)
-            return;
-
-        var fieldManager = new FieldManager(FormElement);
-        foreach (var field in uploadFields)
-        {
-            string value = string.Empty;
-            if (primaryKeys.ContainsKey(field.Name))
-                value = primaryKeys[field.Name].ToString();
-
-            var jjTextFile = (JJTextFile)fieldManager.GetField(field, PageState.Delete, primaryKeys, value);
-            jjTextFile.DeleteAll();
-        }
-    }
 
     #endregion
 }
