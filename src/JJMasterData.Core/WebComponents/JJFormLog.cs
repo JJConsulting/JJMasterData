@@ -20,15 +20,17 @@ public class JJFormLog : JJBaseView
 
     public AuditLogService Service
     {
-        get
+        get 
         {
-            if (_auditLog != null) return _auditLog;
-
-            _auditLog = new AuditLogService(AuditLogSource.Form)
+            if (_auditLog == null)
             {
-                DataAccess = DataAccess,
-                Factory = Factory
-            };
+                _auditLog = new AuditLogService(AuditLogSource.Form)
+                {
+                    DataAccess = DataAccess,
+                    Factory = Factory
+                };
+            }
+
             return _auditLog;
         }
     }
@@ -44,10 +46,12 @@ public class JJFormLog : JJBaseView
         {
             if (_dataPainel == null)
             {
-                _dataPainel = new JJDataPanel(FormElement);
-                _dataPainel.Name = "jjpainellog_" + Name;
-                _dataPainel.DataAccess = DataAccess;
-                _dataPainel.UserValues = UserValues;
+                _dataPainel = new JJDataPanel(FormElement)
+                {
+                    Name = "jjpainellog_" + Name,
+                    DataAccess = DataAccess,
+                    UserValues = UserValues
+                };
             }
 
             return _dataPainel;

@@ -3,7 +3,6 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
@@ -26,7 +25,6 @@ public class FormService
     private IDataAccess _dataAccess;
     private Factory _factory;
     private FormManager _formManager;
-
 
     /// <inheritdoc cref="JJBaseView.UserValues"/>
     public Hashtable UserValues
@@ -56,12 +54,9 @@ public class FormService
         set => _formManager = value;
     }
 
+    public AuditLogService AuditLog { get; private set; }
     public FormElement FormElement { get; private set; }
-
-    public AuditLogService AuditLog { get; set; }
-
     public bool EnableErrorLink { get; set; }
-
     public object Sender { get; set; }
 
     #endregion
@@ -81,14 +76,9 @@ public class FormService
     #region Constructor
 
 
-    public FormService(FormElement formElement, AuditLogService auditLogService = null,
-        bool enableFormEvents = true)
+    public FormService(FormElement formElement)
     {
         FormElement = formElement;
-        AuditLog = auditLogService;
-
-        if (enableFormEvents)
-            AddFormEvent(FormEventManager.GetFormEvent(FormElement.Name));
     }
 
     #endregion
@@ -144,46 +134,11 @@ public class FormService
         };
     }
 
+
     /// <summary>
     /// Update records in the database using the provided values.
     /// </summary>
-    /// <param name="sender">Object that called this method. Used for events.</param>
-    /// <param name="values">Values to be inserted.</param>
-    /// <param name="validationFunc">Function to validate the fields.</param>
-    [Obsolete]
-    public FormLetter Update(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
-    {
-        var errors = new Hashtable();
-
-
-        errors = validationFunc?.Invoke();
-
-        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-
-        OnBeforeUpdate?.Invoke(sender, beforeActionArgs);
-
-        if (errors?.Count > 0) return new(errors);
-
-        RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
-
-        if (Sender is JJFormView jjFormView)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
-
-        AuditLog?.AddLog(FormElement, values, CommandType.Update);
-
-        var afterEventArgs = new FormAfterActionEventArgs(values);
-        OnAfterUpdate?.Invoke(sender, afterEventArgs);
-
-        var result = new FormLetter
-        {
-            Errors = errors,
-            UrlRedirect = afterEventArgs.UrlRedirect
-        };
-
-        return result;
-    }
-
-
+    /// <param name="formValues">Values to be inserted.</param>
     public FormLetter Update(Hashtable formValues)
     {
         var values = FormManager.MergeWithExpressionValues(formValues, PageState.Update, true);
@@ -223,41 +178,7 @@ public class FormService
     /// <summary>
     /// Insert records in the database using the provided values.
     /// </summary>
-    /// <param name="sender">Object that called this method. Used for events.</param>
-    /// <param name="values">Values to be inserted.</param>
-    /// <param name="validationFunc">Function to validate the fields.</param>
-    [Obsolete]
-    public FormLetter Insert(object sender, Hashtable values, Func<Hashtable> validationFunc = null)
-    {
-        var errors = new Hashtable();
-
-        errors = validationFunc?.Invoke();
-
-        var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-        OnBeforeInsert?.Invoke(sender, beforeActionArgs);
-
-        if (errors?.Count > 0)
-            return new FormLetter(errors);
-
-        RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
-
-        if (Sender is JJFormView jjFormView)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
-
-        AuditLog?.AddLog(FormElement, values, CommandType.Insert);
-
-        var afterEventArgs = new FormAfterActionEventArgs(values);
-        OnAfterInsert?.Invoke(sender, afterEventArgs);
-
-        var result = new FormLetter
-        {
-            Errors = errors,
-            UrlRedirect = afterEventArgs.UrlRedirect
-        };
-
-        return result;
-    }
-
+    /// <param name="formValues">Values to be inserted.</param>
     public FormLetter Insert(Hashtable formValues)
     {
         var values = FormManager.MergeWithExpressionValues(formValues, PageState.Insert, true);
@@ -293,10 +214,9 @@ public class FormService
         return result;
     }
 
-
     public DataDictionaryResult<CommandType> InsertOrReplace(Hashtable formValues)
     {
-        var ret = new DataDictionaryResult<CommandType>();
+        var result = new DataDictionaryResult<CommandType>();
 
         if (formValues == null || formValues.Count == 0)
             throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
@@ -312,107 +232,37 @@ public class FormService
 
         if (errors.Count > 0)
         {
-            ret.Errors = errors;
-            return ret;
+            result.Errors = errors;
+            return result;
         }
 
-        ret.Result = RunDatabaseCommand(() => FormRepository.SetValues(FormElement, values), ref errors);
+        result.Result = RunDatabaseCommand(() => FormRepository.SetValues(FormElement, values), ref errors);
 
         if (errors.Count > 0)
         {
-            ret.Errors = errors;
-            return ret;
+            result.Errors = errors;
+            return result;
         }
 
-        AuditLog?.AddLog(FormElement, values, ret.Result);
+        AuditLog?.AddLog(FormElement, values, result.Result);
 
-        if (OnAfterInsert != null && ret.Result == CommandType.Insert)
+        if (OnAfterInsert != null && result.Result == CommandType.Insert)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterInsert.Invoke(Sender, afterEventArgs);
-            ret.UrlRedirect = afterEventArgs.UrlRedirect;
+            result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        if (OnAfterUpdate != null && ret.Result == CommandType.Update)
+        if (OnAfterUpdate != null && result.Result == CommandType.Update)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterUpdate.Invoke(Sender, afterEventArgs);
-            ret.UrlRedirect = afterEventArgs.UrlRedirect;
+            result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        return ret;
-    }
-
-
-    /// <summary>
-    /// Delete records in the database using the primaryKeys filter.
-    /// </summary>
-    /// <param name="sender">Object that called this method. Used for events.</param>
-    /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
-    [Obsolete]
-    public FormLetter Delete(object sender, Hashtable primaryKeys)
-    {
-        var errors = new Hashtable();
-
-        if (sender is JJFormView formView)
+        if (OnAfterDelete != null && result.Result == CommandType.Delete)
         {
-            OnAfterDelete += formView.InvokeOnAfterDelete;
-            OnBeforeDelete += formView.InvokeOnBeforeDelete;
-        }
-
-        var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
-
-        OnBeforeDelete?.Invoke(sender, beforeActionArgs);
-
-        if (errors.Count > 0) return new(errors);
-
-        int total = RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
-
-        if (sender is JJFormView)
-            FormFileService.DeleteFiles(FormElement, primaryKeys);
-
-        var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
-
-        OnAfterDelete?.Invoke(sender, afterEventArgs);
-
-        AuditLog?.AddLog(FormElement, primaryKeys, CommandType.Delete);
-
-        var result = new FormLetter
-        {
-            Errors = errors,
-            Total = total,
-            UrlRedirect = afterEventArgs.UrlRedirect
-        };
-
-        return result;
-    }
-
-    public FormLetter Delete(Hashtable primaryKeys)
-    {
-        var errors = new Hashtable();
-        if (OnBeforeDelete != null)
-        {
-            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
-            OnBeforeDelete?.Invoke(Sender, beforeActionArgs);
-        }
-
-        if (errors.Count > 0)
-            return new(errors);
-
-        RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
-
-        if (errors.Count > 0)
-            return new(errors);
-
-        if (Sender is JJFormView)
-            FormFileService.DeleteFiles(FormElement, primaryKeys);
-
-        AuditLog?.AddLog(FormElement, primaryKeys, CommandType.Delete);
-
-        var result = new FormLetter(errors);
-        if (OnAfterDelete != null)
-        {
-            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
+            var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterDelete.Invoke(Sender, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
@@ -420,6 +270,46 @@ public class FormService
         return result;
     }
 
+
+
+    /// <summary>
+    /// Delete records in the database using the primaryKeys filter.
+    /// </summary>
+    /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
+    public FormLetter Delete(Hashtable primaryKeys)
+    {
+        var errors = new Hashtable();
+        var values = FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
+
+        if (OnBeforeDelete != null)
+        {
+            var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
+            OnBeforeDelete?.Invoke(Sender, beforeActionArgs);
+        }
+
+        if (errors.Count > 0)
+            return new(errors);
+
+        RunDatabaseCommand(() => FormRepository.Delete(FormElement, values), ref errors);
+
+        if (errors.Count > 0)
+            return new(errors);
+
+        if (Sender is JJFormView)
+            FormFileService.DeleteFiles(FormElement, values);
+
+        AuditLog?.AddLog(FormElement, values, CommandType.Delete);
+
+        var result = new FormLetter(errors);
+        if (OnAfterDelete != null)
+        {
+            var afterEventArgs = new FormAfterActionEventArgs(values);
+            OnAfterDelete.Invoke(Sender, afterEventArgs);
+            result.UrlRedirect = afterEventArgs.UrlRedirect;
+        }
+
+        return result;
+    }
 
     private static void RunDatabaseCommand(Action action, ref Hashtable errors)
     {
@@ -429,7 +319,7 @@ public class FormService
         }
         catch (SqlException ex)
         {
-            HandleException(ex, ref errors);
+            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
         }
     }
 
@@ -441,27 +331,30 @@ public class FormService
         }
         catch (SqlException ex)
         {
-            HandleException(ex, ref errors);
+            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
         }
 
         return default;
     }
 
-    private static void HandleException(SqlException ex, ref Hashtable errors)
+    public void EnableHistoryLog(AuditLogData auditLogData)
     {
-        if (ex.Number == 547 | ex.Number == 2627 | ex.Number == 2601 | ex.Number == 170 | ex.Number == 50000)
-        {
-            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
-        }
-        else
-        {
-            Log.AddError(ex.Message);
-            throw ex;
-        }
+        AuditLog = new AuditLogService(auditLogData);
     }
 
-    private void AddFormEvent(IFormEvent formEvent)
+    public void EnableHistoryLog(AuditLogService auditLogService)
     {
+        AuditLog = auditLogService;
+    }
+
+    public void DisableHistoryLog()
+    {
+        AuditLog = null;
+    }
+
+    public void AddFormEvent()
+    {
+        IFormEvent formEvent = FormEventManager.GetFormEvent(FormElement.Name);
         foreach (var method in FormEventManager.GetFormEventMethods(formEvent))
         {
             switch (method)
@@ -483,6 +376,9 @@ public class FormService
                     break;
                 case "OnAfterDelete":
                     OnAfterDelete += formEvent.OnAfterDelete;
+                    break;
+                case "OnBeforeImport":
+                    OnBeforeImport += formEvent.OnBeforeImport;
                     break;
             }
         }

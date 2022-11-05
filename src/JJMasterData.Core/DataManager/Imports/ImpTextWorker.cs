@@ -57,26 +57,22 @@ public class ImpTextWorker : IBackgroundTaskWorker
         }
     }
 
-    internal AuditLogData SystemInfo { get; private set; }
-
     internal FieldManager FieldManager { get; private set; }
 
-    internal FormManager FormManager { get; private set; }
+    internal FormService FormService { get; private set; }
 
     public string PostedText { get; private set; }
 
     public char SplitChar { get; private set; }
 
 
-    public ImpTextWorker(AuditLogData systemInfo,
-                         FieldManager fieldManager,
-                         FormManager formManager,
+    public ImpTextWorker(FieldManager fieldManager,
+                         FormService formservice,
                          string postedText,
                          char splitChar)
     {
-        SystemInfo = systemInfo;
         FieldManager = fieldManager;
-        FormManager = formManager;
+        FormService = formservice;
         PostedText = postedText;
         SplitChar = splitChar;
         Culture = Thread.CurrentThread.CurrentUICulture;
@@ -144,8 +140,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         Thread.CurrentThread.CurrentCulture = Culture;
 
 
-        var logHistory = new AuditLogService(SystemInfo);
-
+        var formManager = FormService.FormManager;
         //recuperando campos a serem importados
         var listField = GetListImportedField();
 
@@ -154,15 +149,15 @@ public class ImpTextWorker : IBackgroundTaskWorker
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = Translate.Key("Importing {0} records...", currentProcess.TotalRecords.ToString("N0"));
         //recupera default values
-        var defaultValues = FormManager.GetDefaultValues(null, PageState.Import);
+        var defaultValues = formManager.GetDefaultValues(null, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
             string cmd;
-            cmd = FormManager.Expression.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
-            FormManager.DataAccess.SetCommand(cmd);
+            cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
+            formManager.DataAccess.SetCommand(cmd);
         }
 
         token.ThrowIfCancellationRequested();
@@ -215,7 +210,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             }
 
             Hashtable values = GetHashWithNameAndValue(listField, cols);
-            SetFormValues(values, logHistory, currentProcess);
+            SetFormValues(values, currentProcess);
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
         }
@@ -225,13 +220,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
             string cmd;
-            cmd = FormManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
-            FormManager.DataAccess.SetCommand(cmd);
+            cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
+            formManager.DataAccess.SetCommand(cmd);
         }
 
         if (OnAfterProcess != null)
             OnAfterProcess.Invoke(this, new FormAfterActionEventArgs());
-
     }
 
     /// <summary>
@@ -283,25 +277,16 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private void SetFormValues(Hashtable values, AuditLogService logHistory, DataImpReporter currentProcess)
+    private void SetFormValues(Hashtable values, DataImpReporter currentProcess)
     {
         try
         {
-            //Realiza os gatilhos
-            var newvalues = FormManager.MergeWithExpressionValues(values, PageState.Import, true);
 
-            //Realiza as validações de formulário
-            var erros = FormManager.ValidateFields(newvalues, PageState.Import, false);
+            var ret = FormService.InsertOrReplace(values);
 
-            if (OnBeforeImport != null)
-                OnBeforeImport.Invoke(this, new FormBeforeActionEventArgs(newvalues, erros));
-
-            if (erros.Count == 0)
+            if (ret.IsValid)
             {
-                //Atualiza no banco
-                CommandType ret = FormManager.Factory.SetValues(FormElement, newvalues, false);
-
-                switch (ret)
+                switch (ret.Result)
                 {
                     case CommandType.Insert:
                         currentProcess.Insert++;
@@ -316,18 +301,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
                         currentProcess.Ignore++;
                         break;
                 }
-
-                if (EnableHistoryLog)
-                    logHistory.AddLog(FormElement, newvalues, ret);
-
-                if (OnAfterImport != null)
-                    OnAfterImport.Invoke(this, new FormAfterActionEventArgs(newvalues));
             }
             else
             {
                 currentProcess.Error++;
                 var sErr = new StringBuilder();
-                foreach (DictionaryEntry err in erros)
+                foreach (DictionaryEntry err in ret.Errors)
                 {
                     if (sErr.Length > 0)
                         sErr.AppendLine("");

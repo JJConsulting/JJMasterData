@@ -3,6 +3,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.FormEvents.Args;
@@ -18,10 +19,9 @@ public class JJDataImp : JJBaseProcess
 {
     #region "Events"
 
+  
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
-
     public event EventHandler<FormAfterActionEventArgs> OnAfterImport;
-
     public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
 
     #endregion
@@ -298,7 +298,6 @@ public class JJDataImp : JJBaseProcess
 
         if (!BackgroundTask.IsRunning(ProcessKey))
         {
-            string pasteValue = CurrentContext.Request.Form("pasteValue");
             var worker = CreateImpTextWorker(sb.ToString(), ';');
             BackgroundTask.Run(ProcessKey, worker);
         }
@@ -306,8 +305,25 @@ public class JJDataImp : JJBaseProcess
 
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
-        var auditLogData = new AuditLogData(AuditLogSource.Upload);
-        var worker = new ImpTextWorker(auditLogData, FieldManager, FormManager, postedText, splitChar)
+        var formService = new FormService(FormElement)
+        {
+            FormManager = FormManager,
+            UserValues = UserValues,
+            DataAccess = DataAccess,
+            FormRepository = Factory,
+            EnableErrorLink = false,
+            Sender = this,
+            
+        };
+
+        if (EnableHistoryLog)
+        {
+            var auditLogData = new AuditLogData(AuditLogSource.Upload);
+            auditLogData.UserId = UserId;
+            formService.EnableHistoryLog(auditLogData);
+        }
+
+        var worker = new ImpTextWorker(FieldManager, formService, postedText, splitChar)
         {
             UserId = UserId,
             OnBeforeImport = OnBeforeImport,

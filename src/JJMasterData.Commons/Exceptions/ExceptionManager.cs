@@ -51,24 +51,32 @@ public class ExceptionManager
 
     public static string GetMessage(SqlException ex)
     {
-#if DEBUG
-        Translate.Key("Debug");
-        return ex.Message;
-#else
         string message;
         if (ex.Number == 547)
+        {
             message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
+        }
         else if (ex.Number == 2627 || ex.Number == 2601)
+        {
             message = Translate.Key("Record already registered.");
+        }
         else if (ex.Number == 170)
+        {
             message = Translate.Key("Invalid character.");
+        }
         else if (ex.Number >= 50000)
+        {
             message = ex.Message;
+        }
         else
+        {
             message = Translate.Key("Unexpected error.");
+            Log.AddError(ex.ToString());
+        }
+            
 
         return message;
-#endif
+
     }
 
     public static string GetMessage(Exception ex)

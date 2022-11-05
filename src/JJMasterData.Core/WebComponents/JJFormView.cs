@@ -150,19 +150,23 @@ public class JJFormView : JJGridView
         {
             if (_service == null)
             {
-                _service = new FormService(FormElement);
-                _service.FormRepository = Factory;
-                _service.AuditLog = LogAction.IsVisible ? LogHistory.Service : null;
-                _service.UserValues = UserValues;
-                _service.DataAccess = DataAccess;
-                _service.EnableErrorLink = true;
-                _service.Sender = this;
-                _service.OnBeforeDelete = OnBeforeDelete;
-                _service.OnAfterDelete = OnAfterDelete;
-                _service.OnBeforeInsert = OnBeforeInsert;
-                _service.OnAfterInsert = OnAfterInsert;
-                _service.OnBeforeUpdate = OnBeforeUpdate;
-                _service.OnAfterUpdate = OnAfterUpdate;
+                _service = new FormService(FormElement)
+                {
+                    UserValues = UserValues,
+                    DataAccess = DataAccess,
+                    FormRepository = Factory,
+                    EnableErrorLink = true,
+                    Sender = this,
+                    OnBeforeDelete = OnBeforeDelete,
+                    OnAfterDelete = OnAfterDelete,
+                    OnBeforeInsert = OnBeforeInsert,
+                    OnAfterInsert = OnAfterInsert,
+                    OnBeforeUpdate = OnBeforeUpdate,
+                    OnAfterUpdate = OnAfterUpdate
+                };
+
+                if (LogAction.IsVisible)
+                    _service.EnableHistoryLog(LogHistory.Service);
             }
                 
 
@@ -922,11 +926,8 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
     {
-        var result = Service.Insert(this, values,
-            () => validateFields ? ValidateFields(values, PageState.Insert) : null);
-
+        var result = Service.Insert(values);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
 
@@ -936,24 +937,15 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable UpdateFormValues(Hashtable values)
     {
-        var result = Service.Update(this, values,
-            () => ValidateFields(values, PageState.Update));
-
+        var result = Service.Update(values);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
     
     public Hashtable DeleteFormValues(Hashtable filter)
     {
-        var formManager = new FormManager(FormElement, UserValues, DataAccess);
-
-        var values = formManager.MergeWithDefaultValues(filter, PageState.Delete);
-
-        var result = Service.Delete(this, values);
-
+        var result = Service.Delete(filter);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
     
