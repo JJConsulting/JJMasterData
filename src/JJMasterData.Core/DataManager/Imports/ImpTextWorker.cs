@@ -288,7 +288,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         try
         {
             //Realiza os gatilhos
-            var newvalues = FormManager.GetTriggerValues(values, PageState.Import, true);
+            var newvalues = FormManager.MergeWithExpressionValues(values, PageState.Import, true);
 
             //Realiza as validações de formulário
             var erros = FormManager.ValidateFields(newvalues, PageState.Import, false);

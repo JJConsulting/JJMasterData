@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
@@ -18,10 +17,7 @@ public class FormManager
     private Factory _factory;
     private IDataAccess _dataAccess;
 
-    /// <summary>
-    /// Valores espeçificos do usuário.
-    /// Utilizado para substituir os valores em tempo de execução nos métodos que suportam expression.
-    /// </summary>
+    /// <inheritdoc cref="WebComponents.JJBaseView.UserValues"/>
     public Hashtable UserValues
     {
         get => _userValues ??= new Hashtable();
@@ -32,33 +28,26 @@ public class FormManager
         }
     }
 
-    /// <summary>
-    /// Objeto responsável por fazer toda a comunicação com o banco de dados
-    /// </summary>
+    /// <inheritdoc cref="Commons.Dao.DataAccess"/>
     public IDataAccess DataAccess
     {
         get => _dataAccess ??= JJService.DataAccess;
         set => _dataAccess = value;
     }
 
-    /// <summary>
-    /// Objeto responsável por parsear expressoões
-    /// </summary>
-    public ExpressionManager Expression => _expression ??= new(UserValues, DataAccess);
-
-    /// <summary>
-    /// Configurações pré-definidas do formulário
-    /// </summary>
-    public FormElement FormElement { get; set; }
-
-    /// <summary>
-    /// Objeto responsável por traduzir o elemento base em comandos para o banco de dados
-    /// </summary>
+    /// <inheritdoc cref="Commons.Dao.Entity.Factory"/>
     public Factory Factory
     {
         get => _factory ??= new Factory(DataAccess);
         set => _factory = value;
     }
+
+    /// <inheritdoc cref="ExpressionManager"/>
+    public ExpressionManager Expression => _expression ??= new(UserValues, DataAccess);
+
+    /// <inheritdoc cref="FormElement"/>
+    public FormElement FormElement { get; set; }
+
 
     public FormManager(FormElement formElement)
     {
@@ -73,34 +62,35 @@ public class FormManager
 
 
     /// <summary>
-    /// Valida os campos do formulário e 
-    /// retorna uma lista com erros encontrados
+    /// Validates form fields and returns a list of errors found
     /// </summary>
-    /// <param name="values">Dados do Formulário digitado pelo usuário</param>
-    /// <param name="pageState">Estado atual da pagina</param>
-    /// <param name="enableErrorLink">Inclui link em html nos campos de errro</param>
+    /// <param name="formValues">Form values</param>
+    /// <param name="pageState">Context</param>
+    /// <param name="enableErrorLink">Add html link in error fields</param>
     /// <returns>
-    /// Chave = Nome do Campo
-    /// Valor = Mensagem de erro
+    /// Key = Field name
+    /// Value = Error message
     /// </returns>
-    public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
+    public Hashtable ValidateFields(Hashtable formValues, PageState pageState, bool enableErrorLink)
     {
-        if (values == null)
-            throw new ArgumentNullException(nameof(values));
+        if (formValues == null)
+            throw new ArgumentNullException(nameof(formValues));
 
         var errors = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 
         foreach (var field in FormElement.Fields)
         {
-            bool isVisible = Expression.GetBoolValue(field.VisibleExpression, field.Name, pageState, values);
-            bool isEnable = Expression.GetBoolValue(field.EnableExpression, field.Name, pageState, values);
-            
-            if (!isVisible || !isEnable) continue;
-            
+            bool isVisible = Expression.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
+            if (!isVisible)
+                continue;
+
+            bool isEnable = Expression.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
+            if (!isEnable)
+                continue;
+
             string value;
-                
-            if (values.Contains(field.Name) && values[field.Name] != null)
-                value = values[field.Name].ToString();
+            if (formValues.Contains(field.Name) && formValues[field.Name] != null)
+                value = formValues[field.Name].ToString();
             else
                 value = "";
 
@@ -112,95 +102,38 @@ public class FormManager
     }
 
     /// <summary>
-    /// Recupera os dados do Form, aplicando o valor padrão e as triggers
+    /// Apply default and triggers expression values
     /// </summary> 
-    /// <param name="values">Dados do Formulário digitado pelo usuário</param>
-    /// <param name="pageState">Estado atual da pagina</param>
-    /// <param name="applyDefaultValues">Altera o valor padrão do campo se o mesmo for vazio</param>
+    /// <param name="formValues">Form values</param>
+    /// <param name="pageState">Context</param>
+    /// <param name="replaceNullValues">Change the field's default value even if it is empty</param>
     /// <returns>
-    /// Retorna um novo hashtable com os valores atualizados
+    /// Returns a new hashtable with the updated values
     /// </returns>
-    public Hashtable GetTriggerValues(Hashtable values, PageState pageState, bool applyDefaultValues)
+    public Hashtable MergeWithExpressionValues(Hashtable formValues, PageState pageState, bool replaceNullValues)
     {
-        if (values == null)
-            throw new ArgumentNullException(nameof(values));
+        if (formValues == null)
+            throw new ArgumentNullException(nameof(formValues));
 
-        Hashtable newvalues = new Hashtable();
+        var newvalues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in FormElement.Fields)
         {
-            if (values.Contains(f.Name))
+            if (formValues.Contains(f.Name))
             {
-                object val = values[f.Name];
-                if (val != null)
-                {
-                    if (f.Component == FormComponent.Cnpj ||
-                        f.Component == FormComponent.Cnpj ||
-                        f.Component == FormComponent.CnpjCpf)
-                    {
-                        val = StringManager.ClearCpfCnpjChars(val.ToString());
-                    }
-                    else if (f.Component == FormComponent.Tel)
-                    {
-                        val = StringManager.ClearTelChars(val.ToString());
-                    }
-                    else if (f.Component == FormComponent.Cep)
-                    {
-                        val = val.ToString().Replace("-", "");
-                    }
-                }
-
-                if (newvalues.Contains(f.Name))
-                    newvalues[f.Name] = val;
-                else
-                    newvalues.Add(f.Name, val);
+                object val = DataHelper.ClearSpecialChars(f, formValues[f.Name]);
+                newvalues.Add(f.Name, val);
             }
         }
 
-        //Aplica o valor padrão do campos
-        var defaultValues = GetDefaultValues(values, pageState);
-        if (defaultValues != null)
-        {
-            foreach (DictionaryEntry d in defaultValues)
-            {
-                if (!newvalues.Contains(d.Key))
-                {
-                    newvalues.Add(d.Key, d.Value);
-                }
-                else
-                {
-                    if ((newvalues[d.Key] == null || string.IsNullOrEmpty(newvalues[d.Key].ToString()))
-                        && applyDefaultValues)
-                    {
-                        newvalues[d.Key] = d.Value;
-                    }
-                }
-            }
-        }
-
-
-        //Aplica expressão de gatilho nos campos
-        var listFields = FormElement.Fields
-            .ToList()
-            .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
-        foreach (var e in listFields)
-        {
-            string val = Expression.GetTriggerValue(e, pageState, newvalues);
-            if (val != null)
-            {
-                if (newvalues.Contains(e.Name))
-                    newvalues[e.Name] = val;
-                else
-                    newvalues.Add(e.Name, val);
-            }
-        }
-
+        ApplyDefaultValues(ref newvalues, pageState, replaceNullValues);
+        ApplyTriggerValues(ref newvalues, pageState);
 
         return newvalues;
     }
 
     public Hashtable GetDefaultValues(Hashtable formValues, PageState state)
     {
-        Hashtable filters = new Hashtable();
+        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         if (FormElement != null)
         {
             var list = FormElement.Fields
@@ -219,32 +152,61 @@ public class FormManager
         return filters;
     }
 
-    public Hashtable ApplyDefaultValues(Hashtable formValues, PageState state)
+    public Hashtable MergeWithDefaultValues(Hashtable formValues, PageState state)
     {
-        Hashtable values = new Hashtable();
+        var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         if (formValues != null)
         {
             foreach (DictionaryEntry v in formValues)
                 values.Add(v.Key, v.Value);
         }
 
+        ApplyDefaultValues(ref values, state, false);
+        return values;
+    }
+
+    private void ApplyDefaultValues(ref Hashtable formValues, PageState pageState, bool replaceNullValues)
+    {
         if (FormElement != null)
+            return;
+
+        var defaultValues = GetDefaultValues(formValues, pageState);
+        if (defaultValues == null)
+            return;
+
+        foreach (DictionaryEntry d in defaultValues)
         {
-            var list = FormElement.Fields
-                .ToList()
-                .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
-            foreach (var e in list)
+            if (!formValues.Contains(d.Key))
             {
-                string val = Expression.GetDefaultValue(e, state, values);
-                if (!string.IsNullOrEmpty(val))
+                formValues.Add(d.Key, d.Value);
+            }
+            else
+            {
+                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key].ToString()))
+                    && replaceNullValues)
                 {
-                    if (!values.Contains(e.Name))
-                        values.Add(e.Name, val);
+                    formValues[d.Key] = d.Value;
                 }
             }
         }
+    }
 
-        return values;
+    private void ApplyTriggerValues(ref Hashtable formValues, PageState pageState)
+    {
+        var listFields = FormElement.Fields
+            .ToList()
+            .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
+        foreach (var e in listFields)
+        {
+            string val = Expression.GetTriggerValue(e, pageState, formValues);
+            if (val != null)
+            {
+                if (formValues.Contains(e.Name))
+                    formValues[e.Name] = val;
+                else
+                    formValues.Add(e.Name, val);
+            }
+        }
     }
 
     public List<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
@@ -262,7 +224,6 @@ public class FormManager
                 var exp = new ExpressionManager(UserValues, DataAccess);
                 sql = exp.ParseExpression(sql, pageState, false, formValues);
             }
-
 
             DataTable dt = DataAccess.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)

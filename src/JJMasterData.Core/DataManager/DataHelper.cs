@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using System;
@@ -90,5 +91,29 @@ namespace JJMasterData.Core.DataManager
             return newValues.Count > 0 ? newValues : null;
         }
 
+
+
+        public static object ClearSpecialChars(FormElementField f, object val)
+        {
+            if (val != null)
+            {
+                if (f.Component == FormComponent.Cnpj ||
+                    f.Component == FormComponent.Cnpj ||
+                    f.Component == FormComponent.CnpjCpf)
+                {
+                    val = StringManager.ClearCpfCnpjChars(val.ToString());
+                }
+                else if (f.Component == FormComponent.Tel)
+                {
+                    val = StringManager.ClearTelChars(val.ToString());
+                }
+                else if (f.Component == FormComponent.Cep)
+                {
+                    val = val.ToString().Replace("-", "");
+                }
+            }
+
+            return val;
+        }
     }
 }

@@ -190,7 +190,7 @@ public class MasterApiService
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Insert, true);
+            var newvalues = formManager.MergeWithExpressionValues(parsedValues, PageState.Insert, true);
 
             var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
 
@@ -231,7 +231,7 @@ public class MasterApiService
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Update, true);
+            var newvalues = formManager.MergeWithExpressionValues(parsedValues, PageState.Update, true);
             
             var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
 
@@ -273,7 +273,7 @@ public class MasterApiService
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Import, true);
+            var newvalues = formManager.MergeWithExpressionValues(parsedValues, PageState.Import, true);
             var erros = formManager.ValidateFields(newvalues, PageState.Import, false);
 
             var formEvent = FormEventManager.GetFormEvent(formManager.FormElement.Name);
@@ -334,7 +334,7 @@ public class MasterApiService
                     currentValues.Add(entry.Key, entry.Value);
             }
 
-            var newvalues = formManager.GetTriggerValues(currentValues, PageState.Update, true);
+            var newvalues = formManager.MergeWithExpressionValues(currentValues, PageState.Update, true);
             
             var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
 
@@ -467,7 +467,7 @@ public class MasterApiService
         formManager.UserValues = userValues;
         formManager.Factory = Factory;
 
-        var newvalues = formManager.GetTriggerValues(values, pageState, false);
+        var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
         {

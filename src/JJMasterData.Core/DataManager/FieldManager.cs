@@ -343,7 +343,7 @@ public class FieldManager
         }
 
         var formManager = new FormManager(formElement, UserValues, DataAccess);
-        return formManager.GetTriggerValues(newvalues, state, !IsPostBack);
+        return formManager.MergeWithExpressionValues(newvalues, state, !IsPostBack);
     }
 
     public bool IsRange(FormElementField f, PageState pageState)

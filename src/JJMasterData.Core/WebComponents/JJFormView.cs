@@ -533,7 +533,7 @@ public class JJFormView : JJGridView
         var html = new HtmlBuilder(HtmlTag.Div);
         var selValues = Factory.GetFields(InsertAction.ElementNameToSelect, map.PKFieldValues);
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
-        var values = formManager.GetTriggerValues(selValues, PageState.Insert, true);
+        var values = formManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
         if (erros.Count > 0)
@@ -942,7 +942,7 @@ public class JJFormView : JJGridView
     {
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
 
-        var values = formManager.ApplyDefaultValues(filter, PageState.Delete);
+        var values = formManager.MergeWithDefaultValues(filter, PageState.Delete);
 
         var result = Service.Delete(this, values);
 
