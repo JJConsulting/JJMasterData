@@ -33,7 +33,7 @@ public class FormService
     public Hashtable UserValues
     {
         get => _userValues ??= new Hashtable();
-        set =>_userValues = value;
+        set => _userValues = value;
     }
 
     /// <inheritdoc cref="Commons.Dao.DataAccess"/>
@@ -60,7 +60,7 @@ public class FormService
     public FormElement FormElement { get; private set; }
 
     public AuditLogService AuditLog { get; set; }
-    
+
     public bool EnableErrorLink { get; set; }
 
     public object Sender { get; set; }
@@ -95,7 +95,7 @@ public class FormService
 
     #region Methods
 
-    
+
     /// <summary>
     /// Get a specific record in the database.
     /// </summary>
@@ -111,7 +111,7 @@ public class FormService
             Total = 1
         };
     }
-    
+
     /// <summary>
     /// Get records in the database.
     /// </summary>
@@ -119,13 +119,13 @@ public class FormService
         Hashtable filters,
         string orderBy = null,
         int regPerPage = int.MaxValue,
-        int pag = 1 )
+        int pag = 1)
     {
         var errors = new Hashtable();
 
         int total = 0;
-        
-        var dataTable = 
+
+        var dataTable =
             RunDatabaseCommand(() => FormRepository.GetDataTable(
                 FormElement,
                 filters,
@@ -133,7 +133,7 @@ public class FormService
                 regPerPage,
                 pag,
                 ref total
-                
+
             ), ref errors);
 
         return new()
@@ -194,7 +194,7 @@ public class FormService
             OnBeforeUpdate?.Invoke(Sender, beforeActionArgs);
         }
 
-        if (errors.Count > 0) 
+        if (errors.Count > 0)
             return new FormLetter(errors);
 
         RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
@@ -207,23 +207,15 @@ public class FormService
 
         AuditLog?.AddLog(FormElement, values, CommandType.Update);
 
-        FormLetter result;
+        var result = new FormLetter(errors);
+
         if (OnAfterUpdate != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterUpdate?.Invoke(Sender, afterEventArgs);
-
-            result = new FormLetter
-            {
-                Errors = errors,
-                UrlRedirect = afterEventArgs.UrlRedirect
-            };
+            result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
-        else
-        {
-            result = new FormLetter();
-        }
-
+        
         return result;
     }
 
@@ -243,7 +235,7 @@ public class FormService
         var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
         OnBeforeInsert?.Invoke(sender, beforeActionArgs);
 
-        if (errors?.Count > 0) 
+        if (errors?.Count > 0)
             return new FormLetter(errors);
 
         RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
