@@ -27,10 +27,7 @@ public class JJDataPanel : JJBaseView
     #region "Properties"
 
     private FieldManager _fieldManager;
-    private FormService _formService;
     private UIForm _uiFormSettings;
-
-    private FormService FormService => _formService ??= new FormService(FormElement);
 
     /// <summary>
     /// Useful functions for manipulating fields on the form
@@ -247,7 +244,7 @@ public class JJDataPanel : JJBaseView
                 {
                     filters.Add(pkFields[i].Name, pkvalues[i]);
                 }
-                tempvalues = FormService.GetHashtable(filters).Result;
+                tempvalues = Factory.GetFields(FormElement, filters);
             }
         }
 
@@ -276,7 +273,7 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public void LoadValuesFromPK(Hashtable pks)
     {
-        Values = FormService.GetHashtable(pks).Result;
+        Values = Factory.GetFields(FormElement, pks);
     }
 
     /// <summary>

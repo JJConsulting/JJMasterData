@@ -7,25 +7,23 @@ namespace JJMasterData.Core.DataManager;
 public class FormLetter
 {
     Hashtable? _errors;
+    Hashtable? _values;
 
     public Hashtable Errors 
     {
-        get
-        {
-            if (_errors == null)
-                _errors = new Hashtable();
+        get => _errors ??= new Hashtable();
+        set => _errors = value;
+    }
 
-            return _errors;
-        }
-        set
-        {
-            _errors = value;
-        } 
+    public Hashtable Values
+    {
+        get => _values ??= new Hashtable();
+        set => _values = value;
     }
 
     public bool IsValid => _errors == null || _errors.Count == 0;
 
-    public int Total { get; set; }
+    public int NumberOfRowsAffected { get; set; }
 
     public string? UrlRedirect { get; set; }
     

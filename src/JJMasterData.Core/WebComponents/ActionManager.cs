@@ -344,7 +344,7 @@ internal class ActionManager
                 if (map.PKFieldValues != null && (map.PKFieldValues != null ||
                                                   map.PKFieldValues.Count > 0))
                 {
-                    formValues = new FormService(FormElement).GetHashtable(map.PKFieldValues).Result;
+                    formValues = gridView.Factory.GetFields(FormElement, map.PKFieldValues);
                 }
                 else
                 {
@@ -392,7 +392,7 @@ internal class ActionManager
                 if (map.PKFieldValues != null && (map.PKFieldValues != null ||
                                                   map.PKFieldValues.Count > 0))
                 {
-                    formValues = new FormService(FormElement).GetHashtable(map.PKFieldValues).Result;
+                    formValues = gridView.Factory.GetFields(FormElement, map.PKFieldValues);
                 }
                 else
                 {

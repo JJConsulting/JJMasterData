@@ -453,9 +453,6 @@ public class JJGridView : JJBaseView
 
     public HeadingSize TitleSize { get; set; }
 
-    private FormService DataDictionaryManager =>
-        _formService ??= new FormService(FormElement);
-
     internal Hashtable DefaultValues
     {
         get
@@ -1202,9 +1199,7 @@ public class JJGridView : JJBaseView
         }
         else
         {
-            var result = DataDictionaryManager.GetDataTable(filters, orderBy, recordsPerPage, currentPage);
-            dt = result.Result;
-            total = result.Total;
+            dt = Factory.GetDataTable(FormElement, filters, orderBy, recordsPerPage, currentPage, ref total);
         }
 
         return dt;

@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
@@ -113,7 +114,7 @@ public class FormManager
     public Hashtable MergeWithExpressionValues(Hashtable formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
-            throw new ArgumentNullException(nameof(formValues));
+            throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
 
         var newvalues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in FormElement.Fields)

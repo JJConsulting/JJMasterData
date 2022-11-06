@@ -35,8 +35,8 @@ public class ExceptionManager
                 err.ValidationList.Add("DB", errMsg);
                 break;
             }
-            case KeyNotFoundException or null:
-                err.Message = ex?.Message ?? "Page not found.";
+            case KeyNotFoundException exNotFound:
+                err.Message = exNotFound.Message ?? "Page not found.";
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:

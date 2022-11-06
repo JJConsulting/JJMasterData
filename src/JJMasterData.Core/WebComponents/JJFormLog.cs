@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
@@ -24,7 +25,8 @@ public class JJFormLog : JJBaseView
         {
             if (_auditLog == null)
             {
-                _auditLog = new AuditLogService(AuditLogSource.Form)
+                var context = new DataContext(DataContextSource.Form, UserId);
+                _auditLog = new AuditLogService(context)
                 {
                     DataAccess = DataAccess,
                     Factory = Factory
@@ -330,12 +332,12 @@ public class JJFormLog : JJBaseView
                 action = Translate.Key("Deleted");
             }
 
-            if (row["origin"].Equals((int)AuditLogSource.Api))
-                origem = AuditLogSource.Api.ToString();
-            else if (row["origin"].Equals((int)AuditLogSource.Form))
-                origem = AuditLogSource.Form.ToString();
-            else if (row["origin"].Equals((int)AuditLogSource.Api))
-                origem = AuditLogSource.Upload.ToString();
+            if (row["origin"].Equals((int)DataContextSource.Api))
+                origem = DataContextSource.Api.ToString();
+            else if (row["origin"].Equals((int)DataContextSource.Form))
+                origem = DataContextSource.Form.ToString();
+            else if (row["origin"].Equals((int)DataContextSource.Api))
+                origem = DataContextSource.Upload.ToString();
 
             string logId = row["id"].ToString();
             string message = Translate.Key("{0} from {1} by user:{2}", action, origem, row["userId"].ToString());

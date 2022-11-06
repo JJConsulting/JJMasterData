@@ -273,11 +273,13 @@ internal class DataImpHelp
 
     private JJLinkButton GetBackButton()
     {
-        var btnBack = new JJLinkButton();
-        btnBack.IconClass = "fa fa-arrow-left";
-        btnBack.Text = "Back";
-        btnBack.ShowAsButton = true;
-        btnBack.OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();";
+        var btnBack = new JJLinkButton
+        {
+            IconClass = "fa fa-arrow-left",
+            Text = "Back",
+            ShowAsButton = true,
+            OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();"
+        };
 
         return btnBack;
     }

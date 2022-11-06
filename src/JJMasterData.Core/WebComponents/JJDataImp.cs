@@ -4,7 +4,6 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
@@ -305,23 +304,16 @@ public class JJDataImp : JJBaseProcess
 
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
-        var formService = new FormService(FormElement)
+        var dataContext = new DataContext(DataContextSource.Upload, UserId);
+        var formService = new FormService(FormElement, dataContext)
         {
             FormManager = FormManager,
             UserValues = UserValues,
             DataAccess = DataAccess,
             FormRepository = Factory,
             EnableErrorLink = false,
-            Sender = this,
-            
+            EnableHistoryLog = EnableHistoryLog
         };
-
-        if (EnableHistoryLog)
-        {
-            var auditLogData = new AuditLogData(AuditLogSource.Upload);
-            auditLogData.UserId = UserId;
-            formService.EnableHistoryLog(auditLogData);
-        }
 
         var worker = new ImpTextWorker(FieldManager, formService, postedText, splitChar)
         {

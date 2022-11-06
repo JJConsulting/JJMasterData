@@ -149,14 +149,15 @@ public class JJFormView : JJGridView
         get
         {
             if (_service == null)
-            {
-                _service = new FormService(FormElement)
+            { 
+                var dataContext = new DataContext(DataContextSource.Form, UserId);
+                _service = new FormService(FormElement, dataContext)
                 {
                     UserValues = UserValues,
                     DataAccess = DataAccess,
                     FormRepository = Factory,
                     EnableErrorLink = true,
-                    Sender = this,
+                    EnableHistoryLog = LogAction.IsVisible,
                     OnBeforeDelete = OnBeforeDelete,
                     OnAfterDelete = OnAfterDelete,
                     OnBeforeInsert = OnBeforeInsert,
@@ -164,12 +165,8 @@ public class JJFormView : JJGridView
                     OnBeforeUpdate = OnBeforeUpdate,
                     OnAfterUpdate = OnAfterUpdate
                 };
-
-                if (LogAction.IsVisible)
-                    _service.EnableHistoryLog(LogHistory.Service);
             }
                 
-
             return _service;
         } 
     }
