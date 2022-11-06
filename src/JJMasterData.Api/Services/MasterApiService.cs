@@ -14,14 +14,12 @@ namespace JJMasterData.Api.Services;
 
 public class MasterApiService
 {
-    private DictionaryDao DictionaryDao { get; }
-
-    private Factory Factory => DictionaryDao.Factory;
-
     private readonly HttpContext? _httpContext;
-
     private readonly AccountService _accountService;
 
+    private DictionaryDao DictionaryDao { get; }
+    private Factory Factory => DictionaryDao.Factory;
+    
     public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService)
     {
         _httpContext = httpContextAccessor?.HttpContext;
@@ -341,7 +339,6 @@ public class MasterApiService
         return CreateErrorResponseLetter(formResult.Errors, dictionary.Api);
     }
 
-
     /// <summary>
     /// Disparado ao realizar o gatilho no formulário
     /// </summary>
@@ -350,8 +347,8 @@ public class MasterApiService
     /// <param name="pageState">Tipo de operação</param>
     /// <param name="objname">Nome do campo que disparou o gatilho</param>
     /// <returns></returns>
-    public Dictionary<string, FormValues> PostTrigger(string elementName, Hashtable paramValues, PageState pageState,
-        string objname = "")
+    public Dictionary<string, FormValues> PostTrigger(
+        string elementName, Hashtable paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -502,7 +499,6 @@ public class MasterApiService
 
         return DictionaryDao.GetDictionary(elementName);
     }
-
 
     private ResponseLetter CreateErrorResponseLetter(Hashtable erros, DicApiSettings api)
     {

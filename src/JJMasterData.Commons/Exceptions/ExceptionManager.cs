@@ -6,7 +6,6 @@ using System.Net;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
-//not remove
 
 namespace JJMasterData.Commons.Exceptions;
 
@@ -73,26 +72,16 @@ public class ExceptionManager
             message = Translate.Key("Unexpected error.");
             Log.AddError(ex.ToString());
         }
-            
 
         return message;
-
     }
 
     public static string GetMessage(Exception ex)
     {
-        string message;
         if (ex is SqlException exSql)
-        {
-            message = GetMessage(exSql);
-        }
-        else
-        {
-            message = ex.Message;
-        }
-
-        return message;
+            return  GetMessage(exSql);
+        
+        return ex.Message;
     }
-
 
 }

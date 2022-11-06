@@ -101,12 +101,12 @@ public class MasterApiController : ControllerBase
             throw new ArgumentNullException(nameof(listRet), "Response not found");
 
         if (listRet.Count == 1)
-            return new ObjectResult(listRet) { StatusCode = listRet.First().Status } ;
+            return new ObjectResult(listRet) { StatusCode = listRet.First().Status };
 
         int qtdTot = listRet.Count;
         int qtdInsert = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.Created);
         if (qtdTot == qtdInsert)
-            return Created(nameof(GetResponseMessage),listRet);
+            return Created(nameof(GetResponseMessage), listRet);
 
         int qtdUpdate = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.OK);
         if (qtdTot == qtdUpdate)
@@ -118,5 +118,4 @@ public class MasterApiController : ControllerBase
 
         return new ObjectResult(listRet) { StatusCode = (int)HttpStatusCode.MultiStatus };
     }
-
 }

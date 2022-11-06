@@ -2,7 +2,6 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
@@ -11,9 +10,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
-using System.Data;
 using System.Data.SqlClient;
-using CommandType = JJMasterData.Commons.Dao.Entity.CommandType;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -82,7 +79,6 @@ public class FormService
 
     #region Constructor
 
-
     public FormService(FormElement formElement, DataContext dataContext)
     {
         FormElement = formElement;
@@ -94,7 +90,7 @@ public class FormService
     #region Methods
 
     /// <summary>
-    /// Update records in the database using the provided values.
+    /// Update records applying expressions and default values.
     /// </summary>
     /// <param name="formValues">Values to be inserted.</param>
     public FormLetter Update(Hashtable formValues)
@@ -135,9 +131,8 @@ public class FormService
         return result;
     }
 
-
     /// <summary>
-    /// Insert records in the database using the provided values.
+    /// Insert records applying expressions and default values.
     /// </summary>
     /// <param name="formValues">Values to be inserted.</param>
     public FormLetter Insert(Hashtable formValues)
@@ -177,6 +172,10 @@ public class FormService
         return result;
     }
 
+    /// <summary>
+    /// Insert or update if exists, applying expressions and default values.
+    /// </summary>
+    /// <param name="formValues">Values to be inserted.</param>
     public DataDictionaryResult<CommandType> InsertOrReplace(Hashtable formValues)
     {
         var values = FormManager.MergeWithExpressionValues(formValues, PageState.Import, true);
@@ -225,7 +224,6 @@ public class FormService
 
         return result;
     }
-
 
     /// <summary>
     /// Delete records in the database using the primaryKeys filter.
@@ -326,7 +324,6 @@ public class FormService
             }
         }
     }
-
 
     #endregion
 }

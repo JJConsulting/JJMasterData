@@ -12,8 +12,7 @@ public class TokenPrincipal : ClaimsPrincipal
     {
         return !string.IsNullOrEmpty(role) && role.Contains("api");
     }
-        
-
+    
     public TokenPrincipal(TokenIdentity? identity)
     {
         Identity = identity;
