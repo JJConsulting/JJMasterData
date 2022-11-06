@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace JJMasterData.Api.Models;
+namespace JJMasterData.Api.Handlers;
 
 public class CultureHandler : DelegatingHandler
 {
