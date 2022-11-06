@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 using System;
@@ -22,7 +23,7 @@ public abstract class JJBaseView
     private Hashtable _userValues;
     private Hashtable _attributes;
     private string _userId;
-    
+
     internal bool IsPostBack => CurrentContext.Request.HttpMethod.Equals("POST");
 
     /// <summary>
@@ -52,9 +53,9 @@ public abstract class JJBaseView
         get => _userValues ??= new Hashtable();
         set => _userValues = value;
     }
-    
+
     internal JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-    
+
     public bool Visible { get; set; } = true;
 
     /// <summary>
@@ -70,7 +71,7 @@ public abstract class JJBaseView
         get => _attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
     }
-    
+
     public string CssClass { get; set; }
 
 
@@ -85,22 +86,8 @@ public abstract class JJBaseView
     {
         get
         {
-            if (_userId != null) return _userId;
-
-            const string userid = "USERID";
-
-            if (UserValues.Contains(userid))
-            {
-                //Valor customizado pelo usuário
-                _userId = UserValues[userid].ToString();
-            }
-            else if (CurrentContext.HasContext() &&
-                     CurrentContext.Session != null &&
-                     CurrentContext.Session[userid] != null)
-            {
-                //Valor da Sessão
-                _userId = CurrentContext.Session[userid];
-            }
+            if (_userId == null)
+                _userId = DataHelper.GetCurrentUserId(UserValues);
 
             return _userId;
         }

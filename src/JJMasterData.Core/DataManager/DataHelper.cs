@@ -4,6 +4,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.Http;
 using System;
 using System.Collections;
 using System.Linq;
@@ -12,6 +13,25 @@ namespace JJMasterData.Core.DataManager
 {
     public static class DataHelper
     {
+        public static string GetCurrentUserId(Hashtable userValues)
+        {
+            if (userValues != null && userValues.Contains("USERID"))
+            {
+                return userValues["USERID"].ToString();
+            }
+
+            var currentContext = JJHttpContext.GetInstance();
+            if (currentContext.HasContext() &&
+                currentContext.Session != null &&
+                currentContext.Session["USERID"] != null)
+            {
+                return currentContext.Session["USERID"];
+            }
+            
+            return null;
+        }
+
+
         /// <summary>
         /// Retorna uma lista apenas com as chaves primarias da tabela,
         /// se não existir o valor da PK uma exceção será lançada
