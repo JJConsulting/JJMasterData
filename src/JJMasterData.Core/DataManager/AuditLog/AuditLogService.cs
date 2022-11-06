@@ -28,7 +28,7 @@ public class AuditLogService
     private IDataAccess _dataAccess;
     private Factory _factory;
 
-    public AuditLogData Data { get; set; }
+    public DataContext Data { get; set; }
 
 
     /// <summary>
@@ -49,14 +49,9 @@ public class AuditLogService
         set => _factory = value;
     }
 
-    public AuditLogService(AuditLogData data)
+    public AuditLogService(DataContext data)
     {
         Data = data;
-    }
-
-    public AuditLogService(AuditLogSource source) : this(new AuditLogData(source))
-    {
-
     }
 
     public void AddLog(Element element, Hashtable formValues, CommandType action)
@@ -152,9 +147,9 @@ public class AuditLogService
         var origin = form.Fields[DIC_ORIGIN];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem.ReplaceTextOnGrid = true;
-        foreach (int i in Enum.GetValues(typeof(AuditLogSource)))
+        foreach (int i in Enum.GetValues(typeof(DataContextSource)))
         {
-            var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(AuditLogSource), i));
+            var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i));
             origin.DataItem.Items.Add(item);
         }
 
