@@ -328,12 +328,15 @@ var jjdictionary = (function () {
             });
         },
         refreshAction: function (isPopup = false) {
-            if (!isPopup)
-                popup.hide();
-            else
-                window.parent.popup.hide();
             messageWait.show();
-            document.forms[0].submit();
+            if (isPopup) {
+                window.parent.popup.hide();
+                window.parent.document.forms[0].submit();
+            }
+            else {
+                popup.hide();
+                document.forms[0].submit();
+            }
         },
         postAction: function (url) {
             messageWait.show();
