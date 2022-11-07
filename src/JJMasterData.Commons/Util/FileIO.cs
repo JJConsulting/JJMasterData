@@ -73,7 +73,7 @@ public class FileIO
         ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
         ///</returns>
         ///<remarks>
-        ///Autor: Lucio Pelinson 21-05-2012
+        ///Author: Lucio Pelinson 21-05-2012
         ///</remarks>
         public static DataTable GetDataTableFiles(string fullPath)
         {
@@ -89,7 +89,7 @@ public class FileIO
         ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
         ///</returns>
         ///<remarks>
-        ///Autor: Lucio Pelinson 30-05-2017
+        ///Author: Lucio Pelinson 30-05-2017
         ///</remarks>
         public static DataTable GetDataTableFiles(string fullPath, string searchPattern)
         {

@@ -9,16 +9,18 @@ namespace JJMasterData.Commons.Dao;
 public class DataAccessParameter
 {
     /// <summary>
-    /// Nome do parametro. 
-    /// Exemplo MSSQL: @foo, ORACLE p_foo, etc.
+    /// Name of the parameter.
+    /// Example
+    /// MSSQL: @Foo
+    /// ORACLE: p_foo
     /// </summary>
     [DataMember(Name = "name")]
     public string Name { get; set; }
 
 
     /// <summary>
-    /// Valor do parametro.
-    /// Para enviar null utilize DBNull.Value
+    /// Value of the parameter.
+    /// To send null, use DBNull.Value
     /// </summary>
     [DataMember(Name = "value")]
     public object Value { get; set; }
@@ -30,15 +32,11 @@ public class DataAccessParameter
     public DbType Type { get; set; }
 
     /// <summary>
-    /// Tamanho do Campo. Para numero é opcional
+    /// Field size. For numbers is optional.
     /// </summary>
     [DataMember(Name = "size")]
     public int Size { get; set; }
-
-    /// <summary>
-    /// Direção do parametro.
-    /// Default = Input
-    /// </summary>
+    
     [DataMember(Name = "direction")]
     public ParameterDirection Direction { get; set; }
 

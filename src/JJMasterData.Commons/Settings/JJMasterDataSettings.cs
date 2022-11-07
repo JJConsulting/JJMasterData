@@ -231,7 +231,7 @@ public sealed class JJMasterDataSettings : ISettings
     {
         if (IsNetFramework)
             return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
-        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ?? DataAccess.MSSQL;
+        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ?? DataAccessProvider.MSSQL;
     }
 
     internal static string GetProcNameGet(Element element)

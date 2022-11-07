@@ -7,6 +7,15 @@ namespace JJMasterData.Commons.Dao;
 
 public static class DataAccessProvider
 {
+    public const string Oracle = "System.Data.OracleClient";
+    public const string MSSQL = "System.Data.SqlClient";
+    public const string SQLite = "System.Data.SQLite";
+    public const string IBMDB2 = "IBMDADB2";
+    public const string Postgre = "POSTGRE SQL";
+    public const string MySQL = "MYSQL";
+    public const string Informix = "Informix";
+    public const string Sybase = "Sybase";
+    
     public enum DataAccessProviderTypes
     {
         SqlServer,

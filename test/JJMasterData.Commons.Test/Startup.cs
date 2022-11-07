@@ -1,7 +1,9 @@
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Test;
 
@@ -20,9 +22,8 @@ public class Startup
             .ConfigureHostConfiguration(_ => { })
             .ConfigureAppConfiguration(ConfigureJsonFile)
             .ConfigureServices(ConfigureServices);
-
     }
-
+    
     private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
     {
         services.BuildServiceProvider().UseJJMasterData();
