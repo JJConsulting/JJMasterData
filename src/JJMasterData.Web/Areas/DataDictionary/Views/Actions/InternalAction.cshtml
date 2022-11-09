@@ -55,7 +55,7 @@
     <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
 
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
         <li id="navInternalRedirect" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInternalredirect">@Translate.Key("Internal Redirect")</a></li>
         <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
     </ul>
