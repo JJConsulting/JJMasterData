@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Args;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
 public class ImpTextWorker : IBackgroundTaskWorker
 {
-
     #region "Events"
 
     public  EventHandler<FormAfterActionEventArgs> OnAfterProcess;
@@ -237,7 +235,6 @@ public class ImpTextWorker : IBackgroundTaskWorker
         return values;
     }
 
-
     /// <summary>
     /// Lista de campos a serem importados
     /// </summary>
@@ -255,7 +252,6 @@ public class ImpTextWorker : IBackgroundTaskWorker
         }
         return list;
     }
-
 
     /// <summary>
     /// Atualiza os valores no banco de dados. 
@@ -315,5 +311,4 @@ public class ImpTextWorker : IBackgroundTaskWorker
             currentProcess.AddError(ExceptionManager.GetMessage(ex));
         }
     }
-
 }

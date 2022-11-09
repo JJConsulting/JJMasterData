@@ -193,33 +193,32 @@ public class FormService
     public FormLetter Delete(Hashtable primaryKeys)
     {
         var errors = new Hashtable();
-        var values = FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
         {
-            var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
+            var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
             OnBeforeDelete?.Invoke(DataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => FormRepository.Delete(FormElement, values), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(FormElement, values);
+            FormFileService.DeleteFiles(FormElement, primaryKeys);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandType.Delete);
+            AuditLog.AddLog(FormElement, primaryKeys, CommandType.Delete);
 
         if (OnAfterDelete != null)
         {
-            var afterEventArgs = new FormAfterActionEventArgs(values);
+            var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
             OnAfterDelete.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }

@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.Http;
 using System;
 using System.Collections;
@@ -31,7 +30,6 @@ namespace JJMasterData.Core.DataManager
             return null;
         }
 
-
         /// <summary>
         /// Retorna uma lista apenas com as chaves primarias da tabela,
         /// se não existir o valor da PK uma exceção será lançada
@@ -39,19 +37,19 @@ namespace JJMasterData.Core.DataManager
         /// <remarks>
         /// Se não existir o valor da PK uma DataDictionaryException será lançada
         /// </remarks>
-        public static Hashtable GetPkValues(FormElement formElement, IDictionary values)
+        public static Hashtable GetPkValues(Element element, IDictionary values)
         {
-            if (formElement == null)
+            if (element == null)
                 throw new ArgumentNullException(nameof(FormElement));
 
             if (values == null)
                 throw new ArgumentNullException(nameof(values));
 
             var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-            var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+            var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
 
             if (elementPks == null || elementPks.Count == 0)
-                throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", formElement.Name));
+                throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
 
             foreach (ElementField field in elementPks)
             {
@@ -64,8 +62,7 @@ namespace JJMasterData.Core.DataManager
             return primaryKeys;
         }
 
-
-        public static Hashtable GetPkValues(FormElement formElement, string parsedValues, char separator)
+        public static Hashtable GetPkValues(Element element, string parsedValues, char separator)
         {
             var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 
@@ -73,7 +70,7 @@ namespace JJMasterData.Core.DataManager
             if (values == null || values.Length == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+            var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
             if (values.Length != elementPks.Count)
                 throw new DataDictionaryException(Translate.Key("Invalid primary key"));
 
@@ -116,7 +113,6 @@ namespace JJMasterData.Core.DataManager
             return ParsePkValues(formElement, formValues, separator);
         }
 
-
         /// <summary>
         /// Preserva o nome original do campo conforme cadastrado no dicionário 
         /// e valida se o campo existe
@@ -136,7 +132,6 @@ namespace JJMasterData.Core.DataManager
 
             return filters;
         }
-
 
         public static void CopyIntoHash(ref Hashtable newvalues, Hashtable valuesToBeCopied, bool replaceIfExistKey)
         {

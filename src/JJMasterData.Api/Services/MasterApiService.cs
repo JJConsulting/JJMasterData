@@ -31,8 +31,6 @@ public class MasterApiService
         _dataAccess = dataAccess;
     }
 
-    
-
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -78,27 +76,13 @@ public class MasterApiService
 
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
         var dictionary = DictionaryDao.GetDictionary(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
         var element = dictionary.Table;
-        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
-        var ids = id.Split(',');
-
-        if (ids.Length != pks.Count)
-            throw new DataDictionaryException(Translate.Key("Invalid primary key"));
-
-        var paramValues = new Hashtable();
-        for (int i = 0; i < pks.Count; i++)
-        {
-            paramValues.Add(pks[i].Name, ids[i]);
-        }
-
-        var filters = ParseFilter(dictionary, paramValues);
+        var primaryKeys = DataHelper.GetPkValues(element, id, ',');
+        var filters = ParseFilter(dictionary, primaryKeys);
         var fields = Factory.GetFields(element, filters);
 
         if (fields == null || fields.Count == 0)
@@ -287,14 +271,7 @@ public class MasterApiService
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
-            foreach (DictionaryEntry entry in parsedValues)
-            {
-                if (currentValues.ContainsKey(entry.Key))
-                    currentValues[entry.Key] = entry.Value;
-                else
-                    currentValues.Add(entry.Key, entry.Value);
-            }
-
+            DataHelper.CopyIntoHash(ref currentValues, parsedValues, true);
             ret = Update(formService, currentValues, api);
         }
         catch (Exception ex)
@@ -335,13 +312,8 @@ public class MasterApiService
     }
 
     /// <summary>
-    /// Disparado ao realizar o gatilho no formulário
+    /// Fired when triggering the form
     /// </summary>
-    /// <param name="elementName">Nome do Dicionário</param>
-    /// <param name="paramValues">Valores do campos no formulário</param>
-    /// <param name="pageState">Tipo de operação</param>
-    /// <param name="objname">Nome do campo que disparou o gatilho</param>
-    /// <returns></returns>
     public Dictionary<string, FormValues> PostTrigger(
         string elementName, Hashtable paramValues, PageState pageState, string objname = "")
     {
@@ -390,7 +362,7 @@ public class MasterApiService
     }
 
     /// <summary>
-    /// Preserva o nome original do campo e valida se o campo existe
+    /// Preserves the original field name and validates if the field exists
     /// </summary>
     private Hashtable ParseFilter(DicParser dic, Hashtable paramValues)
     {
@@ -400,6 +372,7 @@ public class MasterApiService
 
         foreach (DictionaryEntry entry in paramValues)
         {
+            //if field not exists, generate a exception
             var field = dic.Table.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString()))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()));
@@ -408,10 +381,6 @@ public class MasterApiService
         return filters;
     }
 
-    /// <summary>
-    /// Retorna o filtro com usuário logado
-    /// </summary>
-    /// <returns></returns>
     private Hashtable GetDefaultFilter(DicParser dic, bool loadQueryString = false)
     {
         if (_httpContext == null)

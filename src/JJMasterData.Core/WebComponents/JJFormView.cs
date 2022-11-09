@@ -140,12 +140,12 @@ public class JJFormView : JJGridView
                 {
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible,
-                    OnBeforeDelete = OnBeforeDelete,
-                    OnAfterDelete = OnAfterDelete,
                     OnBeforeInsert = OnBeforeInsert,
-                    OnAfterInsert = OnAfterInsert,
                     OnBeforeUpdate = OnBeforeUpdate,
-                    OnAfterUpdate = OnAfterUpdate
+                    OnBeforeDelete = OnBeforeDelete,
+                    OnAfterInsert = OnAfterInsert,
+                    OnAfterUpdate = OnAfterUpdate,
+                    OnAfterDelete = OnAfterDelete
                 };
             }
                 
