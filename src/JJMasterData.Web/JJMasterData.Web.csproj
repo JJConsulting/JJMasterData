@@ -18,6 +18,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Mars Version</Product>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
