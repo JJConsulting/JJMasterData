@@ -1,13 +1,10 @@
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
 using System.Data.SqlClient;
@@ -21,19 +18,19 @@ public class FormService
     private AuditLogService _auditLog;
 
     private Factory FormRepository => FormManager.Factory;
+
     private FormElement FormElement => FormManager.FormElement;
 
-    /// <inheritdoc cref="Factory"/>
     public FormManager FormManager { get; private set; }
-    
+
+    public DataContext DataContext { get; private set; }
+
     public AuditLogService AuditLog
     {
         get => _auditLog ??= new AuditLogService(DataContext);
         internal set => _auditLog = value;
     }
 
-    public DataContext DataContext { get; private set; }
-    
     public bool EnableErrorLink { get; set; }
 
     public bool EnableHistoryLog { get; set; }
@@ -143,16 +140,15 @@ public class FormService
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
     /// <param name="formValues">Values to be inserted.</param>
-    public FormLetter<CommandType> InsertOrReplace(Hashtable formValues)
+    public FormLetter<CommandType> InsertOrReplace(Hashtable values)
     {
-        var values = FormManager.MergeWithExpressionValues(formValues, PageState.Import, true);
         var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
         var result = new FormLetter<CommandType>(errors);
 
-        if (OnBeforeInsert != null)
+        if (OnBeforeImport != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeInsert.Invoke(DataContext, beforeActionArgs);
+            OnBeforeImport.Invoke(DataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)

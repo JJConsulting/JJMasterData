@@ -18,9 +18,11 @@ public class JJDataImp : JJBaseProcess
 {
     #region "Events"
 
-  
+    internal EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    internal EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    internal EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterImport;
     public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
 
     #endregion
@@ -308,14 +310,16 @@ public class JJDataImp : JJBaseProcess
         var formService = new FormService(FormManager, dataContext)
         {
             EnableErrorLink = false,
-            EnableHistoryLog = EnableHistoryLog
+            EnableHistoryLog = EnableHistoryLog,
+            OnBeforeImport = OnBeforeImport,
+            OnAfterDelete = OnAfterDelete,
+            OnAfterInsert = OnAfterInsert,
+            OnAfterUpdate = OnAfterUpdate
         };
 
         var worker = new ImpTextWorker(FieldManager, formService, postedText, splitChar)
         {
             UserId = UserId,
-            OnBeforeImport = OnBeforeImport,
-            OnAfterImport = OnAfterImport,
             OnAfterProcess = OnAfterProcess,
             ProcessOptions = ProcessOptions
         };

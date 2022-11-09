@@ -79,7 +79,6 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-    private FormService _formService;
 
     internal JJDataImp DataImp
     {

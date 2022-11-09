@@ -29,39 +29,12 @@ public class JJFormView : JJGridView
 {
     #region "Events"
 
-    /// <summary>
-    /// Evento disparado antes de inserir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
-
-    /// <summary>
-    /// Evento disparado antes de atualizar o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
-
-    /// <summary>
-    /// Evento disparado antes de excluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
-
-    /// <summary>
-    /// Evento disparado após incluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-
-    /// <summary>
-    /// Evento disparado após alterar o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
-
-    /// <summary>
-    /// Evento disparado após excluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-
-    /// <summary>
-    /// Evento disparado após instanciar o elemento do dicionário de dados.
-    /// </summary>
     public event FormViewHandler OnInstanceCreated;
 
     #endregion
@@ -72,7 +45,8 @@ public class JJFormView : JJGridView
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
     private FormService _service;
-    internal JJFormLog LogHistory =>
+
+    internal JJFormLog FormLog =>
         _logHistory ??= new JJFormLog(FormElement)
         {
             DataAccess = DataAccess,
@@ -87,8 +61,19 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    public new JJDataImp DataImp => base.DataImp;
+    public new JJDataImp DataImp 
+    {
+        get
+        {
+            var dataimp = base.DataImp;
+            dataimp.OnAfterDelete = OnAfterDelete;
+            dataimp.OnAfterInsert = OnAfterDelete;
+            dataimp.OnAfterUpdate = OnAfterDelete;
 
+            return dataimp;
+        }
+    }
+        
     /// <summary>
     /// Configuração do painel com os campos do formulário
     /// </summary>
@@ -111,7 +96,6 @@ public class JJFormView : JJGridView
             return _dataPanel;
         }
     }
-
 
     /// <summary>
     /// Estado atual da pagina
@@ -712,16 +696,16 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var html = LogHistory.GetDetailLog(actionMap.PKFieldValues);
+            var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
             html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
 
-        LogHistory.GridView.AddToolBarAction(goBackAction);
-        LogHistory.DataPainel = DataPanel;
+        FormLog.GridView.AddToolBarAction(goBackAction);
+        FormLog.DataPainel = DataPanel;
         pageState = PageState.Log;
-        return LogHistory.GetHtmlBuilder();
+        return FormLog.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlDataImp(ref PageState pageState)
@@ -940,7 +924,8 @@ public class JJFormView : JJGridView
     
     public Hashtable DeleteFormValues(Hashtable filter)
     {
-        var result = Service.Delete(filter);
+        var values = Service.FormManager.MergeWithExpressionValues(filter, PageState.Delete, true);
+        var result = Service.Delete(values);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

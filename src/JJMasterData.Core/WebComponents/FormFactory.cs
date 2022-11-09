@@ -56,9 +56,6 @@ internal static class FormFactory
                 case "OnBeforeImport":
                     form.DataImp.OnBeforeImport += assemblyFormEvent.OnBeforeImport;
                     break;
-                case "OnAfterImport":
-                    form.DataImp.OnAfterImport += assemblyFormEvent.OnAfterImport;
-                    break;
                 case "OnInstanceCreated":
                     form.OnInstanceCreated += assemblyFormEvent.OnInstanceCreated;
                     break;

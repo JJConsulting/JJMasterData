@@ -22,21 +22,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     #region "Events"
 
-    /// <summary>
-    /// Evento disparado antes de inserir pu atualizar o registro no banco de dados.
-    /// </summary>
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
-
-    /// <summary>
-    /// Evento disparado após incluir ou atualizar o registro no banco de dados.
-    /// </summary>
-    public EventHandler<FormAfterActionEventArgs> OnAfterImport;
-
-    /// <summary>
-    /// Evento disparado após processar todo arquivo
-    /// </summary>
-    public EventHandler<FormAfterActionEventArgs> OnAfterProcess;
-
+    public  EventHandler<FormAfterActionEventArgs> OnAfterProcess;
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
@@ -138,7 +124,6 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
-
 
         var formManager = FormService.FormManager;
         //recuperando campos a serem importados
