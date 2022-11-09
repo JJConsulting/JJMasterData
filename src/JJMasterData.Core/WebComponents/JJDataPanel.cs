@@ -185,20 +185,7 @@ public class JJDataPanel : JJBaseView
 
     private string GetPkInputHidden()
     {
-        var sHtml = new StringBuilder();
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
-        string pkval = "";
-        foreach (var pkField in pkFields)
-        {
-            if (!Values.ContainsKey(pkField.Name))
-                throw new Exception(Translate.Key("Primary key {0} value not found", pkField.Name));
-
-            if (pkval.Length > 0)
-                pkval += "|";
-
-            pkval += Values[pkField.Name].ToString();
-        }
-
+        string pkval = DataHelper.ParsePkValues(FormElement, Values, '|');
         return Cript.Cript64(pkval);
     }
 
@@ -233,39 +220,21 @@ public class JJDataPanel : JJBaseView
 
         if (CurrentContext.HasContext())
         {
-            string t = CurrentContext.Request.QueryString("t");
-            if (!string.IsNullOrEmpty(CurrentContext.Request["jjform_pkval_" + Name]))
+            string criptPkval = CurrentContext.Request["jjform_pkval_" + Name];
+            if (!string.IsNullOrEmpty(criptPkval))
             {
-                var filters = new Hashtable();
-                string pkval = Cript.Descript64(CurrentContext.Request["jjform_pkval_" + Name]);
-                var pkvalues = pkval.Split('|');
-                var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
-                for (int i = 0; i < pkvalues.Length; i++)
-                {
-                    filters.Add(pkFields[i].Name, pkvalues[i]);
-                }
+                string parsedPkval = Cript.Descript64(criptPkval);
+                var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
                 tempvalues = Factory.GetFields(FormElement, filters);
             }
         }
+        if (tempvalues == null)
+            tempvalues = new Hashtable();
 
-        tempvalues ??= new Hashtable();
+        DataHelper.CopyIntoHash(ref tempvalues, Values, true);
 
-        if (Values != null && FormElement.Fields.Any(f => Values.Contains(f.Name)))
-        {
-            foreach (var f in FormElement.Fields)
-            {
-                if (Values.Contains(f.Name))
-                {
-                    if (tempvalues.Contains(f.Name))
-                        tempvalues[f.Name] = Values[f.Name];
-                    else
-                        tempvalues.Add(f.Name, Values[f.Name]);
-                }
-            }
-        }
-
-        Hashtable newvalues = FieldManager.GetFormValues("", FormElement, PageState, tempvalues, AutoReloadFormFields);
-        return newvalues;
+        var formValues = new FormValues(FieldManager);
+        return formValues.GetFormValues(PageState, tempvalues, AutoReloadFormFields);
     }
 
     /// <summary>

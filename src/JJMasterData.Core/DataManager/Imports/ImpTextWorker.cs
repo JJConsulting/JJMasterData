@@ -277,11 +277,11 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private void SetFormValues(Hashtable values, DataImpReporter currentProcess)
+    private void SetFormValues(Hashtable fileValues, DataImpReporter currentProcess)
     {
         try
         {
-
+            var values = FormService.FormManager.MergeWithExpressionValues(fileValues, PageState.Import, true);
             var ret = FormService.InsertOrReplace(values);
 
             if (ret.IsValid)

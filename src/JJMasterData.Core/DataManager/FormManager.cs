@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
@@ -121,7 +122,7 @@ public class FormManager
         {
             if (formValues.Contains(f.Name))
             {
-                object val = DataHelper.ClearSpecialChars(f, formValues[f.Name]);
+                object val = ClearSpecialChars(f, formValues[f.Name]);
                 newvalues.Add(f.Name, val);
             }
         }
@@ -210,6 +211,28 @@ public class FormManager
         }
     }
 
+    private object ClearSpecialChars(FormElementField f, object val)
+    {
+        if (val != null)
+        {
+            if (f.Component == FormComponent.Cnpj ||
+                f.Component == FormComponent.Cnpj ||
+                f.Component == FormComponent.CnpjCpf)
+            {
+                val = StringManager.ClearCpfCnpjChars(val.ToString());
+            }
+            else if (f.Component == FormComponent.Tel)
+            {
+                val = StringManager.ClearTelChars(val.ToString());
+            }
+            else if (f.Component == FormComponent.Cep)
+            {
+                val = val.ToString().Replace("-", "");
+            }
+        }
+
+        return val;
+    }
     public List<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)

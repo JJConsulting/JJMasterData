@@ -39,7 +39,7 @@ internal class DataPanelControl
         Values = dataPanel.Values;
         Name = dataPanel.Name;
     }
-    
+
     public DataPanelControl(JJGridView gridView)
     {
         UISettings = new UIForm
@@ -83,7 +83,7 @@ internal class DataPanelControl
             //value
             object value = null;
             if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(Values[f.Name], f);
+                value = FieldManager.FormatVal(f, Values[f.Name]);
 
             if (linegroup != f.LineGroup)
             {
@@ -99,7 +99,7 @@ internal class DataPanelControl
             row.AppendElement(htmlField);
 
             string fieldClass;
-            if (IsRange(f))
+            if (FieldManager.IsRange(f, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -116,11 +116,11 @@ internal class DataPanelControl
             }
             htmlField.WithCssClass(fieldClass);
 
-            if (IsRange(f))
+            if (FieldManager.IsRange(f, PageState))
 
 
-            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                htmlField.WithCssClass("has-error");
+                if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+                    htmlField.WithCssClass("has-error");
 
             if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
@@ -192,7 +192,7 @@ internal class DataPanelControl
             //Value
             object value = null;
             if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(Values[f.Name], f);
+                value = FieldManager.FormatVal(f, Values[f.Name]);
 
             var label = new JJLabel(f)
             {
@@ -229,11 +229,11 @@ internal class DataPanelControl
             {
                 colCount++;
             }
-            
+
             row.WithCssClass(fldClass)
              .AppendElement(label);
 
-            if (IsRange(f))
+            if (FieldManager.IsRange(f, PageState))
             {
                 row.AppendElement(GetControlField(f, value));
             }
@@ -256,7 +256,7 @@ internal class DataPanelControl
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(FieldManager.ParseVal(Values, f));
+            .AppendText(FieldManager.ParseVal(f, Values));
 
         return html;
     }
@@ -313,11 +313,6 @@ internal class DataPanelControl
         }
 
         return $"JJDataPanel.doReload('{Name}','{f.Name}');";
-    }
-
-    private bool IsRange(FormElementField f)
-    {
-        return PageState == PageState.Filter & f.Filter.Type == FilterMode.Range;
     }
 
 }

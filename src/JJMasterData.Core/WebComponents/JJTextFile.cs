@@ -148,7 +148,7 @@ public class JJTextFile : JJBaseControl
         parms.Enable = Enabled & !ReadOnly;
 
         if (PageState != PageState.Insert)
-            parms.PkValues = PathBuilder.GetPkValues(FormValues, '|');
+            parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
         string value = Cript.Cript64(json);

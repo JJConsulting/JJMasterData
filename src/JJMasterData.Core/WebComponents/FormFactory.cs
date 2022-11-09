@@ -33,8 +33,6 @@ internal static class FormFactory
         {
             AddFormEvent(form, assemblyFormEvent);
         }
-
-        form.InvokeOnInstanceCreated(form);
     }
 
     internal static void SetFormptions(JJFormView form, UIOptions options)

@@ -1,12 +1,12 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.Http;
 using System;
 using System.Collections;
+using System.Data;
 using System.Linq;
 
 namespace JJMasterData.Core.DataManager
@@ -27,7 +27,7 @@ namespace JJMasterData.Core.DataManager
             {
                 return currentContext.Session["USERID"];
             }
-            
+
             return null;
         }
 
@@ -39,8 +39,14 @@ namespace JJMasterData.Core.DataManager
         /// <remarks>
         /// Se não existir o valor da PK uma DataDictionaryException será lançada
         /// </remarks>
-        public static Hashtable GetPkValues(FormElement formElement, Hashtable values)
+        public static Hashtable GetPkValues(FormElement formElement, IDictionary values)
         {
+            if (formElement == null)
+                throw new ArgumentNullException(nameof(FormElement));
+
+            if (values == null)
+                throw new ArgumentNullException(nameof(values));
+
             var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
             var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
 
@@ -49,13 +55,65 @@ namespace JJMasterData.Core.DataManager
 
             foreach (ElementField field in elementPks)
             {
-                if (!values.ContainsKey(field.Name))
+                if (!values.Contains(field.Name))
                     throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));
 
                 primaryKeys.Add(field.Name, values[field.Name]);
             }
 
             return primaryKeys;
+        }
+
+
+        public static Hashtable GetPkValues(FormElement formElement, string parsedValues, char separator)
+        {
+            var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+
+            var values = parsedValues.Split(separator);
+            if (values == null || values.Length == 0)
+                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
+
+            var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+            if (values.Length != elementPks.Count)
+                throw new DataDictionaryException(Translate.Key("Invalid primary key"));
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                primaryKeys.Add(elementPks[i].Name, values[i]);
+            }
+
+            return primaryKeys;
+        }
+
+        /// <summary>
+        /// Concat primary keys with separator caracteres
+        /// </summary>
+        public static string ParsePkValues(FormElement formElement, IDictionary formValues, char separator)
+        {
+            var pkFields = GetPkValues(formElement, formValues);
+            string name = string.Empty;
+
+            foreach (DictionaryEntry fieldKeyPar in pkFields)
+            {
+                if (name.Length > 0)
+                    name += separator.ToString();
+
+                string value = fieldKeyPar.Value.ToString();
+                if (value.Contains(separator))
+                    throw new Exception(Translate.Key("Primary key value {0} contains invalid characters.", value));
+
+                name += value;
+            }
+            return name;
+        }
+
+        public static string ParsePkValues(FormElement formElement, DataRow row, char separator)
+        {
+            var formValues = row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(col => col.ColumnName, col => row[col.ColumnName]);
+
+            return ParsePkValues(formElement, formValues, separator);
         }
 
 
@@ -79,61 +137,25 @@ namespace JJMasterData.Core.DataManager
             return filters;
         }
 
-        /// <summary>
-        /// Compara os valores dos campos recebidos com os enviados para banco,
-        /// retornando os registros diferentes
-        /// </summary>
-        /// <remarks>
-        /// Isso acontece devido as triggers ou os valores 
-        /// retornados nos metodos de set (id autoNum) por exemplo
-        /// </remarks>
-        public static Hashtable GetDiff(Hashtable original, Hashtable result, DicApiSettings api)
-        {
-            var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-            foreach (DictionaryEntry entry in result)
-            {
-                if (entry.Value == null)
-                    continue;
 
-                string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
-                if (original.ContainsKey(entry.Key))
+        public static void CopyIntoHash(ref Hashtable newvalues, Hashtable valuesToBeCopied, bool replaceIfExistKey)
+        {
+            if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
+                return;
+
+            foreach (DictionaryEntry entry in valuesToBeCopied)
+            {
+                if (newvalues.ContainsKey(entry.Key))
                 {
-                    if (original[entry.Key] == null && entry.Value != null ||
-                        !original[entry.Key].Equals(entry.Value))
-                        newValues.Add(fieldName, entry.Value);
+                    if (replaceIfExistKey)
+                        newvalues[entry.Key] = entry.Value;
                 }
                 else
                 {
-                    newValues.Add(fieldName, entry.Value);
+                    newvalues.Add(entry.Key, entry.Value);
                 }
             }
-
-            return newValues.Count > 0 ? newValues : null;
         }
 
-
-
-        public static object ClearSpecialChars(FormElementField f, object val)
-        {
-            if (val != null)
-            {
-                if (f.Component == FormComponent.Cnpj ||
-                    f.Component == FormComponent.Cnpj ||
-                    f.Component == FormComponent.CnpjCpf)
-                {
-                    val = StringManager.ClearCpfCnpjChars(val.ToString());
-                }
-                else if (f.Component == FormComponent.Tel)
-                {
-                    val = StringManager.ClearTelChars(val.ToString());
-                }
-                else if (f.Component == FormComponent.Cep)
-                {
-                    val = val.ToString().Replace("-", "");
-                }
-            }
-
-            return val;
-        }
     }
 }

@@ -7,18 +7,11 @@ namespace JJMasterData.Core.DataManager;
 public class FormLetter
 {
     Hashtable? _errors;
-    Hashtable? _values;
 
     public Hashtable Errors 
     {
         get => _errors ??= new Hashtable();
         set => _errors = value;
-    }
-
-    public Hashtable Values
-    {
-        get => _values ??= new Hashtable();
-        set => _values = value;
     }
 
     public bool IsValid => _errors == null || _errors.Count == 0;
@@ -38,7 +31,9 @@ public class FormLetter
     }
 }
 
-public class DataDictionaryResult<T> : FormLetter
+public class FormLetter<T> : FormLetter
 {
     public T? Result { get; set; }
+    public FormLetter(Hashtable errors) : base(errors) { }
+
 }

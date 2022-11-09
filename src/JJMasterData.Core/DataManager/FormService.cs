@@ -18,49 +18,24 @@ public class FormService
 {
     #region Properties
 
-    private Hashtable _userValues;
-    private IDataAccess _dataAccess;
-    private Factory _factory;
-    private FormManager _formManager;
     private AuditLogService _auditLog;
 
-    /// <inheritdoc cref="JJBaseView.UserValues"/>
-    public Hashtable UserValues
-    {
-        get => _userValues ??= new Hashtable();
-        set => _userValues = value;
-    }
-
-    /// <inheritdoc cref="Commons.Dao.DataAccess"/>
-    public IDataAccess DataAccess
-    {
-        get => _dataAccess ??= JJService.DataAccess;
-        set => _dataAccess = value;
-    }
+    private Factory FormRepository => FormManager.Factory;
+    private FormElement FormElement => FormManager.FormElement;
 
     /// <inheritdoc cref="Factory"/>
-    public Factory FormRepository
-    {
-        get => _factory ??= new Factory(DataAccess);
-        set => _factory = value;
-    }
-
-    /// <inheritdoc cref="Factory"/>
-    public FormManager FormManager
-    {
-        get => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
-        set => _formManager = value;
-    }
-
+    public FormManager FormManager { get; private set; }
+    
     public AuditLogService AuditLog
     {
         get => _auditLog ??= new AuditLogService(DataContext);
         internal set => _auditLog = value;
     }
 
-    public DataContext DataContext { get; internal set; }
-    public FormElement FormElement { get; private set; }
+    public DataContext DataContext { get; private set; }
+    
     public bool EnableErrorLink { get; set; }
+
     public bool EnableHistoryLog { get; set; }
 
     #endregion
@@ -79,9 +54,9 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormElement formElement, DataContext dataContext)
+    public FormService(FormManager formManager, DataContext dataContext)
     {
-        FormElement = formElement;
+        FormManager = formManager;
         DataContext = dataContext;
     }
 
@@ -92,10 +67,9 @@ public class FormService
     /// <summary>
     /// Update records applying expressions and default values.
     /// </summary>
-    /// <param name="formValues">Values to be inserted.</param>
-    public FormLetter Update(Hashtable formValues)
+    /// <param name="values">Values to be inserted.</param>
+    public FormLetter Update(Hashtable values)
     {
-        var values = FormManager.MergeWithExpressionValues(formValues, PageState.Update, true);
         var errors = FormManager.ValidateFields(values, PageState.Update, EnableErrorLink);
         var result = new FormLetter(errors);
 
@@ -109,7 +83,6 @@ public class FormService
             return result;
 
         int rowsAffected = RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
-        result.Values = values;
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -131,13 +104,8 @@ public class FormService
         return result;
     }
 
-    /// <summary>
-    /// Insert records applying expressions and default values.
-    /// </summary>
-    /// <param name="formValues">Values to be inserted.</param>
-    public FormLetter Insert(Hashtable formValues)
+    public FormLetter Insert(Hashtable values)
     {
-        var values = FormManager.MergeWithExpressionValues(formValues, PageState.Insert, true);
         var errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
         var result = new FormLetter(errors);
 
@@ -151,7 +119,6 @@ public class FormService
             return result;
 
         RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
-        result.Values = values;
 
         if (errors.Count > 0)
             return result;
@@ -176,12 +143,11 @@ public class FormService
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
     /// <param name="formValues">Values to be inserted.</param>
-    public DataDictionaryResult<CommandType> InsertOrReplace(Hashtable formValues)
+    public FormLetter<CommandType> InsertOrReplace(Hashtable formValues)
     {
         var values = FormManager.MergeWithExpressionValues(formValues, PageState.Import, true);
         var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
-        var result = new DataDictionaryResult<CommandType>();
-        result.Errors = errors;
+        var result = new FormLetter<CommandType>(errors);
 
         if (OnBeforeInsert != null)
         {
@@ -193,7 +159,6 @@ public class FormService
             return result;
 
         result.Result = RunDatabaseCommand(() => FormRepository.SetValues(FormElement, values), ref errors);
-        result.Values = values;
 
         if (errors.Count > 0)
             return result;
@@ -245,7 +210,6 @@ public class FormService
             return result;
 
         int rowsAffected = RunDatabaseCommand(() => FormRepository.Delete(FormElement, values), ref errors);
-        result.Values = values;
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)

@@ -151,11 +151,9 @@ public class JJFormView : JJGridView
             if (_service == null)
             { 
                 var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormElement, dataContext)
+                var formManager = new FormManager(FormElement, UserValues, DataAccess);
+                _service = new FormService(formManager, dataContext)
                 {
-                    UserValues = UserValues,
-                    DataAccess = DataAccess,
-                    FormRepository = Factory,
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible,
                     OnBeforeDelete = OnBeforeDelete,
@@ -170,7 +168,6 @@ public class JJFormView : JJGridView
             return _service;
         } 
     }
-        
 
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
        => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
@@ -203,6 +200,8 @@ public class JJFormView : JJGridView
     public JJFormView(string elementName) : this()
     {
         FormFactory.SetFormViewParams(this, elementName);
+
+        OnInstanceCreated?.Invoke(this);
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -951,15 +950,10 @@ public class JJFormView : JJGridView
         var painel = DataPanel;
         var values = painel.GetFormValues();
 
-        if (RelationValues == null) return values;
+        if (RelationValues == null) 
+            return values;
 
-        foreach (DictionaryEntry val in RelationValues)
-        {
-            if (values.ContainsKey(val.Key))
-                values[val.Key] = val.Value;
-            else
-                values.Add(val.Key, val.Value);
-        }
+        DataHelper.CopyIntoHash(ref values, RelationValues, true);
 
         return values;
     }
@@ -988,21 +982,6 @@ public class JJFormView : JJGridView
     {
         FormFactory.SetFormptions(this, options);
     }
-
-    internal void InvokeOnBeforeUpdate(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeUpdate?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterUpdate(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterUpdate?.Invoke(sender, eventArgs);
-    internal void InvokeOnBeforeInsert(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeInsert?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterInsert(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterInsert?.Invoke(sender, eventArgs);
-    internal void InvokeOnBeforeDelete(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeDelete?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterDelete(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterDelete?.Invoke(sender, eventArgs);
-    internal void InvokeOnInstanceCreated(JJFormView sender) =>
-        OnInstanceCreated?.Invoke(sender);
 
     private JJLinkButton GetButtonOk()
     {

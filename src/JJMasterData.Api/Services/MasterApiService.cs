@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Api.Models;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
@@ -16,16 +17,21 @@ public class MasterApiService
 {
     private readonly HttpContext? _httpContext;
     private readonly AccountService _accountService;
+    private readonly IDataAccess _dataAccess;
+    private DictionaryDao? _dictionaryDao;
 
-    private DictionaryDao DictionaryDao { get; }
+    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao(_dataAccess);
+
     private Factory Factory => DictionaryDao.Factory;
     
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService)
+    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IDataAccess dataAccess)
     {
         _httpContext = httpContextAccessor?.HttpContext;
-        DictionaryDao = new DictionaryDao();
         _accountService = accountService;
+        _dataAccess = dataAccess;
     }
+
+    
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
     {
@@ -175,11 +181,12 @@ public class MasterApiService
         return listRet;
     }
 
-    private ResponseLetter Insert(FormService formService, Hashtable values, DicApiSettings api)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, DicApiSettings api)
     {
         ResponseLetter ret;
         try
         {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Insert, true);
             var formResult = formService.Insert(values);
             if (formResult.IsValid)
             {
@@ -187,7 +194,7 @@ public class MasterApiService
                 {
                     Status = (int)HttpStatusCode.Created,
                     Message = Translate.Key("Record added successfully"),
-                    Data = DataHelper.GetDiff(values, formResult.Values, api)
+                    Data = GetDiff(apiValues, values, api)
                 };
             }
             else
@@ -202,11 +209,12 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Update(FormService formService, Hashtable values, DicApiSettings api)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, DicApiSettings api)
     {
         ResponseLetter ret;
         try
         {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Update, true);
             var formResult = formService.Update(values);
             if (formResult.IsValid)
             {
@@ -216,7 +224,7 @@ public class MasterApiService
                 ret = new ResponseLetter();
                 ret.Status = (int)HttpStatusCode.OK;
                 ret.Message = Translate.Key("Record updated successfully");
-                ret.Data = DataHelper.GetDiff(values, formResult.Values, api);
+                ret.Data = GetDiff(apiValues, values, api);
             }
             else
             {
@@ -230,11 +238,12 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable values, DicApiSettings api)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, DicApiSettings api)
     {
         ResponseLetter ret;
         try
         {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Import, true);
             var formResult = formService.InsertOrReplace(values);
             if (formResult.IsValid)
             {
@@ -249,7 +258,7 @@ public class MasterApiService
                     ret.Status = (int)HttpStatusCode.OK;
                     ret.Message = Translate.Key("Record updated successfully");
                 }
-                ret.Data = DataHelper.GetDiff(values, formResult.Values, api);
+                ret.Data = GetDiff(apiValues, values, api);
             }
             else
             {
@@ -300,29 +309,15 @@ public class MasterApiService
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
 
-        var ids = id.Split(',');
-        if (ids == null || ids.Length == 0)
-            throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(id));
-
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableDel)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
         var formElement = dictionary.GetFormElement();
-        var listRet = new List<ResponseLetter>();
-        var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
-
-        if (ids.Length != pks.Count)
-            throw new DataDictionaryException(Translate.Key("Invalid primary key"));
-
-        var filters = new Hashtable();
-        for (int i = 0; i < pks.Count; i++)
-        {
-            filters.Add(pks[i].Name, ids[i]);
-        }
-
-        var formResult = formService.Delete(filters);
+        var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
+        var values = formService.FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
+        var formResult = formService.Delete(values);
 
         if (formResult.IsValid)
         {
@@ -378,7 +373,7 @@ public class MasterApiService
             formValues.Visible = formManager.Expression.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues);
 
             if (newvalues != null && newvalues.Contains(f.Name))
-                formValues.Value = newvalues[f.Name];
+                formValues.Value = newvalues![f.Name]!;
 
             if (!f.Name.ToLower().Equals(objname.ToLower()))
             {
@@ -473,20 +468,22 @@ public class MasterApiService
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
-
         var formElement = dictionary.GetFormElement();
         var dataContext = new DataContext(DataContextSource.Api, userId);
-        var userValues = GetDefaultFilter(dictionary);
 
-        if (!userValues.ContainsKey("USERID"))
-            userValues.Add("USERID", GetUserId());
-
-        var service = new FormService(formElement, dataContext)
+        var userValues = new Hashtable
         {
-            FormRepository = Factory,
-            UserValues = userValues,
+            { "USERID", GetUserId() }
+        };
+        var formManager = new FormManager(formElement, userValues, _dataAccess)
+        {
+            Factory = Factory
+        };
+        var service = new FormService(formManager, dataContext)
+        {
             EnableHistoryLog = logActionIsVisible
         };
+
         service.AddFormEvent();
 
         return service;
@@ -520,4 +517,37 @@ public class MasterApiService
 
         return letter;
     }
+
+    /// <summary>
+    /// Compara os valores dos campos recebidos com os enviados para banco,
+    /// retornando os registros diferentes
+    /// </summary>
+    /// <remarks>
+    /// Isso acontece devido as triggers ou os valores 
+    /// retornados nos metodos de set (id autoNum) por exemplo
+    /// </remarks>
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, DicApiSettings api)
+    {
+        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        foreach (DictionaryEntry entry in result)
+        {
+            if (entry.Value == null)
+                continue;
+
+            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            if (original.ContainsKey(entry.Key))
+            {
+                if (original[entry.Key] == null && entry.Value != null ||
+                    !original![entry.Key]!.Equals(entry.Value))
+                    newValues.Add(fieldName, entry.Value);
+            }
+            else
+            {   
+                newValues.Add(fieldName, entry.Value);
+            }
+        }
+
+        return newValues.Count > 0 ? newValues : null;
+    }
+
 }
