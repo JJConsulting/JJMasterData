@@ -4,6 +4,7 @@ using System.Net;
 using JJMasterData.Api.Controllers;
 using JJMasterData.Api.Models;
 using JJMasterData.Api.Services;
+using JJMasterData.Commons.Dao;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ public class MasterApiControllerTest
             }
         };
 
-        _controller = new MasterApiController(new MasterApiService(accessor, new AccountService()));
+        _controller = new MasterApiController(new MasterApiService(accessor, new AccountService(), new DataAccess() ));
     }
     
     [Order(4)]

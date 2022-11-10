@@ -20,7 +20,7 @@ internal partial class ResponseEndFilter : IActionFilter
     private readonly ILogger<ResponseEndFilter> _logger;
 
     [LoggerMessage(0, LogLevel.Trace, "Clearing MVC result since HttpResponse.End() was called")]
-    private partial void LogClearingResult();
+    partial void LogClearingResult();
 
     public ResponseEndFilter(ILogger<ResponseEndFilter> logger)
     {
