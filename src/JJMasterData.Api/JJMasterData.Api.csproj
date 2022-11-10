@@ -9,6 +9,7 @@
     <FileVersion>3.0.1</FileVersion>
     <IsPackable>true</IsPackable>
     <PackageVersion>3.0.0</PackageVersion>
+    <LangVersion>11</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
