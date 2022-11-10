@@ -48,7 +48,7 @@ public abstract class JJBaseControl : JJBaseView
     {
         get
         {
-            if (_text == null && IsPostBack)
+            if (_text == null && CurrentContext.IsPostBack)
             {
                 _text = CurrentContext.Request[Name];
             }
