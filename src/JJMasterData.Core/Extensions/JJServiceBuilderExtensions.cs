@@ -18,14 +18,6 @@ public static class JJServiceBuilderExtensions
             Assembly.GetCallingAssembly()
         };
 
-        string[] externalAssemblies = JJService.Settings.ExternalAssembliesPath;
-
-        if (externalAssemblies == null) return builder.WithFormEvents(assemblies.ToArray());
-
-        assemblies.AddRange(from assemblyPath in externalAssemblies 
-            where !string.IsNullOrEmpty(assemblyPath) 
-            select Assembly.LoadFrom(assemblyPath));
-
         return builder.WithFormEvents(assemblies.ToArray());
     }
 

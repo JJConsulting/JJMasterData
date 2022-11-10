@@ -17,7 +17,8 @@ public interface IDataAccess
     public bool TranslateErrorMessage { get; set; }
     
     public bool GenerateLog { get; set; }
-    IDataAccess WithParameters(string settingsConnectionStringName, string settingsConnectionProvider);
+    IDataAccess WithParameters(string settingsConnectionStringName);
+    IDataAccess WithParameters(string settingsConnectionString, string settingsConnectionProvider);
     DbProviderFactory GetFactory();
     DbConnection GetConnection();
     Task<DbConnection> GetConnectionAsync();

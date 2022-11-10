@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using JJMasterData.Web.Example;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-
 namespace JJMasterData.Web.Test;
 
-public class JJMasterDataWebAppFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
+public class JJMasterDataWebExampleAppFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
 {
     private IHost? _host;
-    
     protected override IHost CreateHost(IHostBuilder builder)
     {
-
         var testHost = builder.Build();
 
         builder.ConfigureWebHost(webHostBuilder => webHostBuilder.UseKestrel());

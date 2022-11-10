@@ -2,6 +2,8 @@
     Layout = "_MasterDataLayout.Popup";
 }
 
+@model InternalRedirectViewModel
+
 @using (Html.BeginForm())
 {
     if (ViewBag.Success == true)
@@ -11,9 +13,9 @@
         </script>
     }
 
-    @Html.Raw(ViewBag.HtmlPage)
+    @Html.Raw(Model?.HtmlContent)
 
-    if (ViewBag.ShowToolBar == true)
+    if (Model?.ShowToolBar ?? false)
     {
         <div id="divToolbar">
             <button type="submit" class="btn btn-primary"
