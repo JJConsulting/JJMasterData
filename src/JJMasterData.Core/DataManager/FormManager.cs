@@ -50,9 +50,11 @@ public class FormManager
     /// <inheritdoc cref="FormElement"/>
     public FormElement FormElement { get; set; }
 
-
     public FormManager(FormElement formElement)
     {
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+
         FormElement = formElement;
     }
 
@@ -61,7 +63,6 @@ public class FormManager
         UserValues = userValues;
         DataAccess = dataAccess;
     }
-
 
     /// <summary>
     /// Validates form fields and returns a list of errors found
@@ -136,18 +137,16 @@ public class FormManager
     public Hashtable GetDefaultValues(Hashtable formValues, PageState state)
     {
         var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        if (FormElement != null)
+        var list = FormElement.Fields
+            .ToList()
+            .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
+
+        foreach (var e in list)
         {
-            var list = FormElement.Fields
-                .ToList()
-                .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
-            foreach (var e in list)
+            string val = Expression.GetDefaultValue(e, state, formValues);
+            if (!string.IsNullOrEmpty(val))
             {
-                string val = Expression.GetDefaultValue(e, state, formValues);
-                if (!string.IsNullOrEmpty(val))
-                {
-                    filters.Add(e.Name, val);
-                }
+                filters.Add(e.Name, val);
             }
         }
 
@@ -169,9 +168,6 @@ public class FormManager
 
     private void ApplyDefaultValues(ref Hashtable formValues, PageState pageState, bool replaceNullValues)
     {
-        if (FormElement != null)
-            return;
-
         var defaultValues = GetDefaultValues(formValues, pageState);
         if (defaultValues == null)
             return;
@@ -233,6 +229,7 @@ public class FormManager
 
         return val;
     }
+
     public List<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)

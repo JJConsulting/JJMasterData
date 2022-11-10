@@ -275,14 +275,13 @@ internal class FormFileService
         if (!Directory.Exists(FolderPath))
             Directory.CreateDirectory(FolderPath);
 
-        string fileFullName = FolderPath + file.FileName;
+        string fileFullName = Path.Combine(FolderPath, file.FileName);
         var ms = file.FileStream;
         var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);
         fileStream.Close();
     }
-
 
     internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys)
     {
