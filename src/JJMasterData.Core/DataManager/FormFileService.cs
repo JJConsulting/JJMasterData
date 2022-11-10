@@ -174,7 +174,7 @@ internal class FormFileService
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
         {
-            File.Delete(FolderPath + fileName);
+            File.Delete(Path.Combine(FolderPath, fileName));
         }
         else
         {
