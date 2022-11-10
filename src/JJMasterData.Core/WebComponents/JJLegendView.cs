@@ -18,16 +18,6 @@ public class JJLegendView : JJBaseView
 
     #region "Constructors"
 
-    public JJLegendView(string elementName)
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
-
-        var dicParser = GetDictionary(elementName);
-        FormElement = dicParser.GetFormElement();
-        DoConstructor();
-    }
-
     public JJLegendView(FormElement formElement)
     {
         FormElement = formElement;

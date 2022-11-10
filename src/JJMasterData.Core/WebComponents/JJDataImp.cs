@@ -95,11 +95,9 @@ public class JJDataImp : JJBaseProcess
         Name = "jjdataimp1";
     }
 
-    public JJDataImp(string elementName) : this()
+    public JJDataImp(string elementName) 
     {
-        var dicParser = GetDictionary(elementName);
-        FormElement = dicParser.GetFormElement();
-        ProcessOptions = dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions;
+        WebComponentFactory.SetDataImpParams(this, elementName);
     }
 
     public JJDataImp(FormElement formElement) : this()

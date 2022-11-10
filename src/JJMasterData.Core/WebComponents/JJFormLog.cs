@@ -68,17 +68,6 @@ public class JJFormLog : JJBaseView
         Name = "loghistory";
     }
 
-    public JJFormLog(string elementName) : this()
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
-
-        Name = "jjlog" + elementName.ToLower();
-
-        var dicParser = GetDictionary(elementName);
-        FormElement = dicParser.GetFormElement();
-    }
-
     public JJFormLog(FormElement formElement) : this()
     {
         if (formElement == null)

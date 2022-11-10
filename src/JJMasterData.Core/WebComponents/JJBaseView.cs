@@ -127,7 +127,6 @@ public abstract class JJBaseView
         return Visible ? RenderHtml()?.ToString(true) : string.Empty;
     }
 
-    protected DicParser GetDictionary(string elementName) => new DictionaryDao(DataAccess).GetDictionary(elementName);
 
     public string GetAttr(string key)
     {

@@ -69,10 +69,24 @@ internal class GridTableBody
         }
 
         string onClickScript = GetOnClickScript(values, defaultAction);
+        
+        if (GridView.EnableMultSelect)
+        {
+            var checkBox = GetMultiSelect(row, index, values);
+            var td = new HtmlBuilder(HtmlTag.Td);
+            td.WithCssClass("jjselect");
+            td.AppendElement(checkBox);
+            html.AppendElement(td);
 
-        html.AppendElementIf(GridView.EnableMultSelect, () => GetMultiSelectRow(row, index, values, ref onClickScript));
+            if (!GridView.EnableEditMode && onClickScript == string.Empty)
+            {
+                onClickScript =
+                    $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
+            }
+        }
 
         html.AppendRange(GetVisibleFieldsHtmlList(row, index, values, onClickScript));
+        html.AppendRange(GetActionsHtmlList(values));
 
         return html;
     }
@@ -128,7 +142,6 @@ internal class GridTableBody
             htmlList.Add(td);
         }
 
-        htmlList.AddRange(GetActionsHtmlList(values));
         return htmlList;
     }
 
@@ -168,7 +181,7 @@ internal class GridTableBody
         return div;
     }
 
-    public IEnumerable<HtmlBuilder> GetActionsHtmlList(Hashtable values)
+    public IList<HtmlBuilder> GetActionsHtmlList(Hashtable values)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
@@ -303,10 +316,9 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private HtmlBuilder GetMultiSelectRow(DataRow row, int index, Hashtable values, ref string onClickScript)
+    private JJCheckBox GetMultiSelect(DataRow row, int index, Hashtable values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
-
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
@@ -326,25 +338,16 @@ internal class GridTableBody
             };
             OnRenderSelectedCell.Invoke(GridView, args);
             if (args.CheckBox != null)
-                td.AppendElement(checkBox);
-        }
-        else
-        {
-            td.AppendElement(checkBox);
+                return checkBox;
         }
 
-        if (onClickScript == string.Empty)
-        {
-            onClickScript =
-                $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
-        }
-
-        return td;
+        return checkBox;  
     }
 
     private string GetOnClickScript(Hashtable values, BasicAction defaultAction)
     {
-        if (GridView.EnableEditMode || defaultAction == null) return string.Empty;
+        if (GridView.EnableEditMode || defaultAction == null) 
+            return string.Empty;
 
         var linkDefaultAction = GridView.ActionManager.GetLinkGrid(defaultAction, values);
 
