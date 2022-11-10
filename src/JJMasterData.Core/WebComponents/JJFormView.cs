@@ -475,8 +475,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-
-        var dicParser = GetDictionary(action.ElementNameToSelect);
+        var dicParser = new DictionaryDao(DataAccess).GetDictionary(action.ElementNameToSelect);
         var formsel = new JJFormView(dicParser.GetFormElement(), DataAccess)
         {
             Name = action.ElementNameToSelect

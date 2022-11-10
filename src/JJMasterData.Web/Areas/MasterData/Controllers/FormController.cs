@@ -13,7 +13,6 @@ public class FormController : MasterDataController
     public IActionResult Render(string dictionaryName)
     {
         var form = GetFormView(dictionaryName);
-
         return View(form);
     }
     
@@ -28,12 +27,12 @@ public class FormController : MasterDataController
     {
         var userId = HttpContext.GetUserId();
         var form = new JJFormView(dictionaryName);
+
         if (userId != null)
         {
             form.SetCurrentFilter("USERID", userId);
             form.SetUserValues("USERID", userId);
         }
-        
         return form;
     }
 }
