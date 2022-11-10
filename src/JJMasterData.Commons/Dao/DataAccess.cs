@@ -238,7 +238,7 @@ public class DataAccess : IDataAccess
     ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        DbCommand dbCommand = GetFactory().CreateCommand();
+        DbCommand dbCommand = null;
         DbDataAdapter da = null;
         DataTable dt = new DataTable();
         try
@@ -287,9 +287,9 @@ public class DataAccess : IDataAccess
     ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
-        var dbCommand = GetFactory().CreateCommand();
-
+        DbCommand dbCommand = null;
         DbDataAdapter da = null;
+        
         var dt = new DataTable();
         try
         {
