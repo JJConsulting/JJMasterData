@@ -100,6 +100,64 @@ public class FieldService : BaseService
                 AddError(nameof(field.Name), Translate.Key("Name of field already exists"));
         }
 
+        ValidateExpressions(field);
+
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
+        {
+            if (field.Size <= 0)
+                AddError(nameof(field.Size), Translate.Key("Invalid [Size] field"));
+        }
+        else
+        {
+            if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
+            {
+                AddError(nameof(field.Filter.Type),
+                    Translate.Key("MULTVALUES filters are only allowed for text type fields"));
+            }
+        }
+
+        if (field.AutoNum && field.DataType != FieldType.Int)
+            AddError(nameof(field.AutoNum), Translate.Key("Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
+
+        if (field.DataType is not FieldType.Varchar or FieldType.NVarchar or FieldType.NText)
+        {
+            if (field.Filter.Type is FilterMode.Contain)
+            {
+                AddError(nameof(field.Filter.Type), Translate.Key("Only fields of type VarChar or Text can be of type Contains."));
+            }
+        }
+
+        if (field.Component is FormComponent.Number or FormComponent.Currency)
+        {
+            if (field.NumberOfDecimalPlaces <= 0) return IsValid;
+            
+            if (field.DataType != FieldType.Float)
+            {
+                AddError(nameof(field.DataType),
+                    Translate.Key("The field [NumberOfDecimalPlaces] cannot be defined with the type ") +
+                    field.DataType);
+            }
+
+            if (field.IsPk)
+                AddError(nameof(field.DataType),
+                    Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
+        }
+        else if (field.Component == FormComponent.Lookup |
+                 field.Component == FormComponent.ComboBox |
+                 field.Component == FormComponent.Search)
+        {
+            ValidateDataItem(field.DataItem);
+        }
+        else if (field.Component == FormComponent.File)
+        {
+            ValidateDataFile(field.DataBehavior, field.DataFile);
+        }
+
+        return IsValid;
+    }
+
+    private void ValidateExpressions(FormElementField field)
+    {
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
             AddError(nameof(field.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
         else if (!ValidateExpression(field.VisibleExpression, "val:", "exp:"))
@@ -121,56 +179,6 @@ public class FieldService : BaseService
             if (!ValidateExpression(field.TriggerExpression, "val:", "exp:", "sql:", "protheus:"))
                 AddError(nameof(field.TriggerExpression), Translate.Key("Invalid [TriggerExpression] field"));
         }
-
-        if (field.DataType == FieldType.Varchar ||
-            field.DataType == FieldType.NVarchar)
-        {
-            if (field.Size <= 0)
-                AddError(nameof(field.Size), Translate.Key("Invalid [Size] field"));
-        }
-        else
-        {
-            if (field.Filter.Type == FilterMode.MultValuesContain ||
-                field.Filter.Type == FilterMode.MultValuesEqual)
-            {
-                AddError(nameof(field.Filter.Type),
-                    Translate.Key("MULTVALUES filters are only allowed for text type fields"));
-            }
-        }
-
-        if (field.AutoNum && field.DataType != FieldType.Int)
-            AddError(nameof(field.AutoNum), Translate.Key("Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
-        
-
-        if (field.Component == FormComponent.Number ||
-            field.Component == FormComponent.Currency)
-        {
-            if (field.NumberOfDecimalPlaces > 0)
-            {
-                if (field.DataType != FieldType.Float)
-                {
-                    AddError(nameof(field.DataType),
-                        Translate.Key("The field[NumberOfDecimalPlaces] cannot be defined with the type ") +
-                        field.DataType);
-                }
-
-                if (field.IsPk)
-                    AddError(nameof(field.DataType),
-                        Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
-            }
-        }
-        else if (field.Component == FormComponent.Lookup |
-                 field.Component == FormComponent.ComboBox |
-                 field.Component == FormComponent.Search)
-        {
-            ValidateDataItem(field.DataItem);
-        }
-        else if (field.Component == FormComponent.File)
-        {
-            ValidateDataFile(field.DataBehavior, field.DataFile);
-        }
-
-        return IsValid;
     }
 
     private bool ValidateDataItem(FormElementDataItem data)
