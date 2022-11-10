@@ -24,8 +24,6 @@ public abstract class JJBaseView
     private Hashtable _attributes;
     private string _userId;
 
-    internal bool IsPostBack => CurrentContext.Request.HttpMethod.Equals("POST");
-
     /// <summary>
     /// Object responsible for all database communcations.
     /// </summary>

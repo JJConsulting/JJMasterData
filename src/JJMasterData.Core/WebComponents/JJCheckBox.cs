@@ -18,7 +18,7 @@ public class JJCheckBox : JJBaseControl
     {
         get
         {
-            if (_isChecked == null && IsPostBack)
+            if (_isChecked == null && CurrentContext.IsPostBack)
                 _isChecked = Value.Equals(CurrentContext.Request[Name]);
 
             return _isChecked ?? false;

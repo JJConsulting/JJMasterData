@@ -21,6 +21,8 @@ internal class GridFilter
     private Hashtable _currentFilter;
     private JJGridView GridView { get; set; }
 
+    private JJHttpContext CurrentContext => GridView.CurrentContext;
+
     public GridFilter(JJGridView grid)
     {
         GridView = grid;
@@ -36,7 +38,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string sAction = GridView.CurrentContext.Request.Form("current_filteraction_" + GridView.Name);
+        string sAction = CurrentContext.Request.Form("current_filteraction_" + GridView.Name);
         if (FILTERACTION.Equals(sAction))
         {
             var formFilters = GetFilterFormValues();
@@ -57,7 +59,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        if (sesssionFilter != null && (GridView.IsPostBack || IsAjaxPost()))
+        if (sesssionFilter != null && (CurrentContext.IsPostBack || IsAjaxPost()))
         {
             _currentFilter = sesssionFilter;
             return _currentFilter;
@@ -69,7 +71,7 @@ internal class GridFilter
 
     private bool IsAjaxPost()
     {
-        return !string.IsNullOrEmpty(GridView.CurrentContext.Request.QueryString("t"));
+        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("t"));
     }
     
     public void ApplyCurrentFilter(Hashtable values)
@@ -125,9 +127,9 @@ internal class GridFilter
 
     private HtmlBuilder GetHtmlFilterDefault()
     {
-        string requestType = GridView.CurrentContext.Request.QueryString("t");
-        string objName = GridView.CurrentContext.Request.QueryString("objname");
-        string panelName = GridView.CurrentContext.Request.QueryString("pnlname");
+        string requestType = CurrentContext.Request.QueryString("t");
+        string objName = CurrentContext.Request.QueryString("objname");
+        string panelName = CurrentContext.Request.QueryString("pnlname");
 
         if ("jjsearchbox".Equals(requestType))
         {
@@ -225,7 +227,7 @@ internal class GridFilter
 
         if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
         {
-            GridView.CurrentContext.Response.SendResponse(html.ToString());
+            CurrentContext.Response.SendResponse(html.ToString());
             return null;
         }
 
@@ -264,7 +266,7 @@ internal class GridFilter
             PlaceHolder = Translate.Key("Filter"),
             CssClass = "jj-icon-search",
             Name = searchId,
-            Text = GridView.CurrentContext.Request.Form(searchId)
+            Text = CurrentContext.Request.Form(searchId)
         };
         
         var html = new HtmlBuilder();
@@ -307,7 +309,7 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = GridView.CurrentContext.Request.Form(name + "_from");
+                string sfrom = CurrentContext.Request.Form(name + "_from");
                 if (values == null && sfrom != null)
                     values = new Hashtable();
 
@@ -316,7 +318,7 @@ internal class GridFilter
                     values.Add(f.Name + "_from", sfrom);
                 }
 
-                string sto = GridView.CurrentContext.Request.Form(name + "_to");
+                string sto = CurrentContext.Request.Form(name + "_to");
                 if (!string.IsNullOrEmpty(sto))
                 {
                     if (f.DataType == FieldType.DateTime && f.Component == FormComponent.Date)
@@ -331,9 +333,9 @@ internal class GridFilter
             }
             else
             {
-                string value = GridView.CurrentContext.Request.Form(name);
+                string value = CurrentContext.Request.Form(name);
 
-                if (values == null && GridView.CurrentContext.Request.Form(name) != null)
+                if (values == null && CurrentContext.Request.Form(name) != null)
                     values = new Hashtable();
 
                 switch (f.Component)
@@ -386,7 +388,7 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = GridView.CurrentContext.Request.QueryString(name + "_from");
+                string sfrom = CurrentContext.Request.QueryString(name + "_from");
                 if (values == null && sfrom != null)
                     values = new Hashtable();
 
@@ -395,7 +397,7 @@ internal class GridFilter
                     values.Add(f.Name + "_from", sfrom);
                 }
 
-                string sto = GridView.CurrentContext.Request.QueryString(name + "_to");
+                string sto = CurrentContext.Request.QueryString(name + "_to");
                 if (!string.IsNullOrEmpty(sto))
                 {
                     values.Add(f.Name + "_to", sto);
@@ -403,7 +405,7 @@ internal class GridFilter
             }
             else
             {
-                string val = GridView.CurrentContext.Request.QueryString(name);
+                string val = CurrentContext.Request.QueryString(name);
                 if (!string.IsNullOrEmpty(val))
                 {
                     if (values == null)

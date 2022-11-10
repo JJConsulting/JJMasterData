@@ -38,7 +38,7 @@ public class JJComboBox : JJBaseControl
     {
         get
         {
-            if (_selectedValue == null && IsPostBack)
+            if (_selectedValue == null && CurrentContext.IsPostBack)
             {
                 _selectedValue = CurrentContext.Request[Name];
             }

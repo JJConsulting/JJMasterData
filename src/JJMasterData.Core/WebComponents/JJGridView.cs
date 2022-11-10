@@ -210,7 +210,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentOrder != null) return _currentOrder;
-            if (!IsPostBack)
+            if (!CurrentContext.IsPostBack)
             {
                 if (MaintainValuesOnLoad)
                 {
@@ -253,7 +253,7 @@ public class JJGridView : JJBaseView
                 return _currentPage;
             }
 
-            if (IsPostBack)
+            if (CurrentContext.IsPostBack)
             {
                 int currentPage = 1;
                 string tablePageId = "current_tablepage_" + Name;
@@ -367,7 +367,7 @@ public class JJGridView : JJBaseView
             if (_currentExportConfig != null) return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (IsPostBack)
+            if (CurrentContext.IsPostBack)
             {
                 _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
             }
