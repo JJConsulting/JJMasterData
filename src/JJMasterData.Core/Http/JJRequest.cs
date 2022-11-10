@@ -1,8 +1,10 @@
 ﻿#if NETFRAMEWORK
 using System.Web;
 #endif
+
 #if NETCOREAPP || NETSTANDARD
 using System;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 #endif
 namespace JJMasterData.Core.Http;
@@ -80,22 +82,7 @@ public class JJRequest
 #if NETFRAMEWORK
     public string AbsoluteUri => SystemWebCurrent.Request.Url.AbsoluteUri;
 #else
-    public string AbsoluteUri
-    {
-        get
-        {
-            var request = AspNetCoreCurrent.Request;
-            var uriBuilder = new UriBuilder
-            {
-                Scheme = request.Scheme,
-                Host = request.Host.Host,
-                Port = request.Host.Port ?? 3000,
-                Path = request.Path.ToString(),
-                Query = request.QueryString.ToString()
-            };
-            return uriBuilder.Uri.ToString();
-        }
-    }
+    public string AbsoluteUri => AspNetCoreCurrent.Request.GetDisplayUrl();
 #endif
 
 
