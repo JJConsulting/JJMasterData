@@ -117,7 +117,7 @@
             </summary>
             <returns>Connection string</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="P:JJMasterData.Commons.Dao.DataAccess.StrProvider">
@@ -127,7 +127,7 @@
             </summary>
             <returns>Provider Name</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="P:JJMasterData.Commons.Dao.DataAccess.TimeOut">
@@ -238,7 +238,7 @@
             <param name="sql">Query</param>
             <returns>DataTable object</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(System.String)">
@@ -248,7 +248,7 @@
             <param name="sql">Query</param>
             <returns>Object</returns>
             <remarks>
-            Autor: Lucio Pelinson 08-05-2012
+            Author: Lucio Pelinson 08-05-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.GetResult(System.String,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})">
@@ -280,7 +280,7 @@
             <param name="cmd">Command to be executed</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommandAsync(JJMasterData.Commons.Dao.DataAccessCommand)">
@@ -290,7 +290,7 @@
             <param name="cmd">Command to be executed</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessCommand})">
@@ -300,7 +300,7 @@
             <param name="commands">List of commands</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(JJMasterData.Commons.Dao.DataAccessCommand,System.Data.Common.DbConnection@,System.Data.Common.DbTransaction@)">
@@ -310,7 +310,7 @@
             <param name="cmd">Comando</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 08-05-2013
+            Author: Lucio Pelinson 08-05-2013
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.String,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})">
@@ -321,7 +321,7 @@
             <param name="parameters">Parameters</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.String)">
@@ -331,7 +331,7 @@
             <param name="sql">SQL Command</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.SetCommand(System.Collections.ArrayList)">
@@ -341,7 +341,7 @@
             <param name="sqlList">List of sql commands</param>
             <returns>Returns the number of affected records</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.GetFields(System.String)">
@@ -354,7 +354,7 @@
             If no record is found it returns null.
             </returns>
             <remarks>
-            Autor: Lucio Pelinson 17-04-2012
+            Author: Lucio Pelinson 17-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.GetFields(JJMasterData.Commons.Dao.DataAccessCommand)">
@@ -367,7 +367,7 @@
             If no record is found it returns null.
             </returns>
             <remarks>
-            Autor: Lucio Pelinson 17-04-2012
+            Author: Lucio Pelinson 17-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.ParseSQL(System.String)">
@@ -377,7 +377,7 @@
             <param name="sSql">Select to be converted</param>
             <returns>string sql</returns>
             <remarks>
-            Autor: Lucio Pelinson 14-04-2012
+            Author: Lucio Pelinson 14-04-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.HasTable(System.String)">
@@ -387,7 +387,7 @@
              <param name="table">Nome da tabela</param>
              <returns>True se a tabela exisitir</returns>
              ///<remarks>
-            Autor: Lucio Pelinson 16-09-2014
+            Author: Lucio Pelinson 16-09-2014
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.TryConnection(System.String@)">
@@ -396,7 +396,7 @@
              </summary>
              <returns>True = Conexão ok </returns>
              ///<remarks>
-            Autor: Lucio Pelinson 28-04-2014
+            Author: Lucio Pelinson 28-04-2014
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Dao.DataAccess.ExecuteBatch(System.String)">
@@ -1662,7 +1662,7 @@
             DataTable contendo nome e tamanho dos arquivos localizados no diretório
             </returns>
             <remarks>
-            Autor: Lucio Pelinson 21-05-2012
+            Author: Lucio Pelinson 21-05-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Util.FileIO.GetDataTableFiles(System.String,System.String)">
@@ -1675,7 +1675,7 @@
             DataTable contendo nome e tamanho dos arquivos localizados no diretório
             </returns>
             <remarks>
-            Autor: Lucio Pelinson 30-05-2017
+            Author: Lucio Pelinson 30-05-2017
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Util.Format.FormatTimeSpan(System.TimeSpan)">
@@ -1692,7 +1692,7 @@
             <param name="value">Bytes</param>
             <returns>Tamanho formatado para ser exibido</returns> 
             <remarks>
-            Autor: Lucio Pelinson 21-05-2012
+            Author: Lucio Pelinson 21-05-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Util.Format.FormatCnpj(System.String)">
@@ -1774,7 +1774,7 @@
             Limpa o texto evitando eject-sql
             </summary>
             <remarks>
-            Autor: Lucio Pelinson 21-05-2012
+            Author: Lucio Pelinson 21-05-2012
             </remarks>
         </member>
         <member name="M:JJMasterData.Commons.Util.StringManager.NoAccents(System.String)">

@@ -941,7 +941,7 @@
     <value>将日志写入数据库时出错。</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="Error raise in DataAccess" xml:space="preserve">
+  <data name="Error raised in DataAccess" xml:space="preserve">
     <value>数据访问引发错误。</value>
     <comment>JJMasterData.Commons</comment>
   </data>

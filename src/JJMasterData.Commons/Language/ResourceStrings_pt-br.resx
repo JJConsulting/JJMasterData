@@ -941,7 +941,7 @@
     <value>Erro ao tentar gravar log no banco de dados.</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="Error raise in DataAccess" xml:space="preserve">
+  <data name="Error raised in DataAccess" xml:space="preserve">
     <value>Erro disparado na classe DataAccess</value>
     <comment>JJMasterData.Commons</comment>
   </data>

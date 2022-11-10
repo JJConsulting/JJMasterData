@@ -25,6 +25,16 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\JJMasterData.Commons\JJMasterData.Commons.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dao\Seed" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dao\Seed\DataAccessTest.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
 
 </Project>

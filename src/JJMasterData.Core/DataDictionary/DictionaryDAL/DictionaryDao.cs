@@ -714,7 +714,7 @@ public class DictionaryDao
         Element element = null;
         try
         {
-            if (DataAccess.MSSQL.Equals(_dataAccess.ConnectionProvider))
+            if (DataAccessProvider.MSSQL.Equals(_dataAccess.ConnectionProvider))
                 element = ((MSSQLProvider)Factory.Provider).GetElementFromTable(tableName, ref _dataAccess);
         }
         catch (Exception)

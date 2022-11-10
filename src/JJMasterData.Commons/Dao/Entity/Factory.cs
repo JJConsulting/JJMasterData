@@ -29,9 +29,9 @@ public class Factory
 
             _provider = _dataAccess.ConnectionProvider switch
             {
-                DataAccess.MSSQL => new MSSQLProvider(),
-                DataAccess.Oracle => new OracleProvider(),
-                DataAccess.SQLite => new ProviderSQLite(),
+                DataAccessProvider.MSSQL => new MSSQLProvider(),
+                DataAccessProvider.Oracle => new OracleProvider(),
+                DataAccessProvider.SQLite => new ProviderSQLite(),
                 _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
                                                          _dataAccess.ConnectionProvider + "]")
             };
