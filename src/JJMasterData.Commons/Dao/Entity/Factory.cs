@@ -97,33 +97,32 @@ public class Factory
     }
 
     /// <summary>
-    /// Update a record in the database
+    /// Update a record in the database .
     /// </summary>
     /// <param name="elementName">Dictionary name</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
-    public void Update(string elementName, Hashtable values)
+    /// <param name="values">
+    /// List of values ​​to be stored in the database
+    /// [key(database field name), value(value to be stored in the database)]
+    /// </param>
+    /// <returns>Return the number of the rows affected</returns>
+    public int Update(string elementName, Hashtable values)
     {
         var element = GetElement(elementName);
-        Update(element, values);
+        return Update(element, values);
     }
 
     /// <summary>
-    /// Update a record in the database
+    /// Update a record in the database 
+    /// [key(database field name), value(value to be stored in the database)].
     /// </summary>
     /// <param name="element">Base element with a basic table structure</param>
     /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
-    public void Update(Element element, Hashtable values)
+    /// <returns>Return the number of the rows affected</returns>
+    public int Update(Element element, Hashtable values)
     {
         var cmd = Provider.GetUpdateScript(element, values);
-        _dataAccess.SetCommand(cmd);
+        int numberRowsAffected = _dataAccess.SetCommand(cmd);
+        return numberRowsAffected;
     }
 
     /// <summary>
@@ -225,13 +224,12 @@ public class Factory
     /// </summary>
     /// <param name="element">Base element with the basic structure of the table</param>
     /// <param name="filters">List of filters to be used</param>
-    /// <returns>Returns the count of deleted records</returns>
+    /// <returns>Return the number of the rows affected</returns>
     public int Delete(Element element, Hashtable filters)
     {
         var cmd = Provider.GetDeleteScript(element, filters);
-        int ret = _dataAccess.SetCommand(cmd);
-
-        return ret;
+        int numberRowsAffected = _dataAccess.SetCommand(cmd);
+        return numberRowsAffected;
     }
 
     /// <summary>

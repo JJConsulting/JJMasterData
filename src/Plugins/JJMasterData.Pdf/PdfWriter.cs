@@ -157,7 +157,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             else
             {
-                value = FieldManager.ParseVal(values, field);
+                value = FieldManager.ParseVal(field, values);
             }
         }
 

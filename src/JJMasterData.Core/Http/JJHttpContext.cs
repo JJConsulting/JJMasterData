@@ -16,6 +16,8 @@ namespace JJMasterData.Core.Http;
 public class JJHttpContext
 {
     private static JJHttpContext _instance;
+
+
     private JJHttpContext()
     {
     }
@@ -50,13 +52,16 @@ public class JJHttpContext
     private JJResponse _response;
     private JJRequest _request;
     private JJSession _session;
-    
+
+    public bool IsPostBack => HasContext() && Request.HttpMethod.Equals("POST");
+
     public JJSession Session => _session ??=new();
 
     public JJRequest Request => _request ??= new();
 
     public JJResponse Response => _response ??= new();
 
+    
     /// <summary>
     /// Verify if context is valid.
     /// </summary>

@@ -3365,4 +3365,8 @@
   <data name="LICENSE" xml:space="preserve">
     <value>LICENÇA</value>
   </data>
+  <data name="Primary key value {0} contains invalid characters." xml:space="preserve">
+    <value>Chave primária {0} contém caracter inválido</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
 </root>

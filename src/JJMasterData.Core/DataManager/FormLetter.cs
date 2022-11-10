@@ -10,22 +10,13 @@ public class FormLetter
 
     public Hashtable Errors 
     {
-        get
-        {
-            if (_errors == null)
-                _errors = new Hashtable();
-
-            return _errors;
-        }
-        set
-        {
-            _errors = value;
-        } 
+        get => _errors ??= new Hashtable();
+        set => _errors = value;
     }
 
     public bool IsValid => _errors == null || _errors.Count == 0;
 
-    public int Total { get; set; }
+    public int NumberOfRowsAffected { get; set; }
 
     public string? UrlRedirect { get; set; }
     
@@ -40,7 +31,9 @@ public class FormLetter
     }
 }
 
-public class DataDictionaryResult<T> : FormLetter
+public class FormLetter<T> : FormLetter
 {
     public T? Result { get; set; }
+    public FormLetter(Hashtable errors) : base(errors) { }
+
 }

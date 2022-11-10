@@ -97,21 +97,25 @@ public class MasterApiController : ControllerBase
 
     private ActionResult<ResponseLetter> GetResponseMessage(List<ResponseLetter> listRet)
     {
-        if (listRet?.Count == 1)
-            return new ObjectResult(listRet) { StatusCode = listRet.First().Status } ;
+        if (listRet == null || listRet.Count == 0)
+            throw new ArgumentNullException(nameof(listRet), "Response not found");
+
+        if (listRet.Count == 1)
+            return new ObjectResult(listRet) { StatusCode = listRet.First().Status };
 
         int qtdTot = listRet.Count;
         int qtdInsert = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.Created);
         if (qtdTot == qtdInsert)
-            return Created(nameof(GetResponseMessage),listRet);
+            return Created(nameof(GetResponseMessage), listRet);
 
         int qtdUpdate = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.OK);
         if (qtdTot == qtdUpdate)
             return Ok(listRet);
 
         int qtdError = qtdTot - qtdInsert - qtdUpdate;
-        
-        return qtdTot == qtdError ? BadRequest(listRet) : new ObjectResult(listRet) { StatusCode = 207};
-    }
+        if (qtdTot == qtdError)
+            return BadRequest(listRet);
 
+        return new ObjectResult(listRet) { StatusCode = (int)HttpStatusCode.MultiStatus };
+    }
 }

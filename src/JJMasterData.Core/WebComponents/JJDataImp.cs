@@ -3,7 +3,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.AuditLog;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
@@ -18,11 +18,12 @@ public class JJDataImp : JJBaseProcess
 {
     #region "Events"
 
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    internal EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    internal EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    internal EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
 
-    public EventHandler<FormAfterActionEventArgs> OnAfterImport;
-
-    public EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
 
     #endregion
 
@@ -287,13 +288,7 @@ public class JJDataImp : JJBaseProcess
     private void Upload_OnPostFile(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
-
-        Stream stream;
-#if NETFRAMEWORK
-        stream = e.File.FileData.InputStream;
-#else
-        stream = e.File.FileData.OpenReadStream();
-#endif
+        Stream stream = e.File.FileStream;
         using (StreamReader reader = new StreamReader(stream))
         {
             while (!reader.EndOfStream)
@@ -304,7 +299,6 @@ public class JJDataImp : JJBaseProcess
 
         if (!BackgroundTask.IsRunning(ProcessKey))
         {
-            string pasteValue = CurrentContext.Request.Form("pasteValue");
             var worker = CreateImpTextWorker(sb.ToString(), ';');
             BackgroundTask.Run(ProcessKey, worker);
         }
@@ -312,12 +306,20 @@ public class JJDataImp : JJBaseProcess
 
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
-        var auditLogData = new AuditLogData(AuditLogSource.Upload);
-        var worker = new ImpTextWorker(auditLogData, FieldManager, FormManager, postedText, splitChar)
+        var dataContext = new DataContext(DataContextSource.Upload, UserId);
+        var formService = new FormService(FormManager, dataContext)
+        {
+            EnableErrorLink = false,
+            EnableHistoryLog = EnableHistoryLog,
+            OnBeforeImport = OnBeforeImport,
+            OnAfterDelete = OnAfterDelete,
+            OnAfterInsert = OnAfterInsert,
+            OnAfterUpdate = OnAfterUpdate
+        };
+
+        var worker = new ImpTextWorker(FieldManager, formService, postedText, splitChar)
         {
             UserId = UserId,
-            OnBeforeImport = OnBeforeImport,
-            OnAfterImport = OnAfterImport,
             OnAfterProcess = OnAfterProcess,
             ProcessOptions = ProcessOptions
         };

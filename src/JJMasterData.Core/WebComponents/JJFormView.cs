@@ -29,39 +29,12 @@ public class JJFormView : JJGridView
 {
     #region "Events"
 
-    /// <summary>
-    /// Evento disparado antes de inserir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
-
-    /// <summary>
-    /// Evento disparado antes de atualizar o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
-
-    /// <summary>
-    /// Evento disparado antes de excluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
-
-    /// <summary>
-    /// Evento disparado após incluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-
-    /// <summary>
-    /// Evento disparado após alterar o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
-
-    /// <summary>
-    /// Evento disparado após excluir o registro no banco de dados.
-    /// </summary>
     public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-
-    /// <summary>
-    /// Evento disparado após instanciar o elemento do dicionário de dados.
-    /// </summary>
     public event FormViewHandler OnInstanceCreated;
 
     #endregion
@@ -71,8 +44,9 @@ public class JJFormView : JJGridView
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
-    private FormService _dataDictionaryManager;
-    private JJFormLog LogHistory =>
+    private FormService _service;
+
+    internal JJFormLog FormLog =>
         _logHistory ??= new JJFormLog(FormElement)
         {
             DataAccess = DataAccess,
@@ -87,8 +61,19 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    public new JJDataImp DataImp => base.DataImp;
+    public new JJDataImp DataImp 
+    {
+        get
+        {
+            var dataimp = base.DataImp;
+            dataimp.OnAfterDelete = OnAfterDelete;
+            dataimp.OnAfterInsert = OnAfterDelete;
+            dataimp.OnAfterUpdate = OnAfterDelete;
 
+            return dataimp;
+        }
+    }
+        
     /// <summary>
     /// Configuração do painel com os campos do formulário
     /// </summary>
@@ -111,7 +96,6 @@ public class JJFormView : JJGridView
             return _dataPanel;
         }
     }
-
 
     /// <summary>
     /// Estado atual da pagina
@@ -144,9 +128,30 @@ public class JJFormView : JJGridView
         }
     }
 
-    private FormService DataDictionaryManager =>
-        _dataDictionaryManager ??= new FormService(FormElement,
-            LogAction.IsVisible ? LogHistory.Service : null);
+    private FormService Service 
+    { 
+        get
+        {
+            if (_service == null)
+            { 
+                var dataContext = new DataContext(DataContextSource.Form, UserId);
+                var formManager = new FormManager(FormElement, UserValues, DataAccess);
+                _service = new FormService(formManager, dataContext)
+                {
+                    EnableErrorLink = true,
+                    EnableHistoryLog = LogAction.IsVisible,
+                    OnBeforeInsert = OnBeforeInsert,
+                    OnBeforeUpdate = OnBeforeUpdate,
+                    OnBeforeDelete = OnBeforeDelete,
+                    OnAfterInsert = OnAfterInsert,
+                    OnAfterUpdate = OnAfterUpdate,
+                    OnAfterDelete = OnAfterDelete
+                };
+            }
+                
+            return _service;
+        } 
+    }
 
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
        => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
@@ -179,6 +184,8 @@ public class JJFormView : JJGridView
     public JJFormView(string elementName) : this()
     {
         FormFactory.SetFormViewParams(this, elementName);
+
+        OnInstanceCreated?.Invoke(this);
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -516,7 +523,7 @@ public class JJFormView : JJGridView
         var html = new HtmlBuilder(HtmlTag.Div);
         var selValues = Factory.GetFields(InsertAction.ElementNameToSelect, map.PKFieldValues);
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
-        var values = formManager.GetTriggerValues(selValues, PageState.Insert, true);
+        var values = formManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
         if (erros.Count > 0)
@@ -689,16 +696,16 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var html = LogHistory.GetDetailLog(actionMap.PKFieldValues);
+            var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
             html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
 
-        LogHistory.GridView.AddToolBarAction(goBackAction);
-        LogHistory.DataPainel = DataPanel;
+        FormLog.GridView.AddToolBarAction(goBackAction);
+        FormLog.DataPainel = DataPanel;
         pageState = PageState.Log;
-        return LogHistory.GetHtmlBuilder();
+        return FormLog.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlDataImp(ref PageState pageState)
@@ -899,11 +906,8 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
     {
-        var result = DataDictionaryManager.Insert(this, values,
-            () => validateFields ? ValidateFields(values, PageState.Insert) : null);
-
+        var result = Service.Insert(values);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
 
@@ -913,24 +917,16 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable UpdateFormValues(Hashtable values)
     {
-        var result = DataDictionaryManager.Update(this, values,
-            () => ValidateFields(values, PageState.Update));
-
+        var result = Service.Update(values);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
     
     public Hashtable DeleteFormValues(Hashtable filter)
     {
-        var formManager = new FormManager(FormElement, UserValues, DataAccess);
-
-        var values = formManager.ApplyDefaultValues(filter, PageState.Delete);
-
-        var result = DataDictionaryManager.Delete(this, values);
-
+        var values = Service.FormManager.MergeWithExpressionValues(filter, PageState.Delete, true);
+        var result = Service.Delete(values);
         UrlRedirect = result.UrlRedirect;
-
         return result.Errors;
     }
     
@@ -939,15 +935,10 @@ public class JJFormView : JJGridView
         var painel = DataPanel;
         var values = painel.GetFormValues();
 
-        if (RelationValues == null) return values;
+        if (RelationValues == null) 
+            return values;
 
-        foreach (DictionaryEntry val in RelationValues)
-        {
-            if (values.ContainsKey(val.Key))
-                values[val.Key] = val.Value;
-            else
-                values.Add(val.Key, val.Value);
-        }
+        DataHelper.CopyIntoHash(ref values, RelationValues, true);
 
         return values;
     }
@@ -976,21 +967,6 @@ public class JJFormView : JJGridView
     {
         FormFactory.SetFormptions(this, options);
     }
-
-    internal void InvokeOnBeforeUpdate(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeUpdate?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterUpdate(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterUpdate?.Invoke(sender, eventArgs);
-    internal void InvokeOnBeforeInsert(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeInsert?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterInsert(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterInsert?.Invoke(sender, eventArgs);
-    internal void InvokeOnBeforeDelete(object sender, FormBeforeActionEventArgs eventArgs) =>
-        OnBeforeDelete?.Invoke(sender, eventArgs);
-    internal void InvokeOnAfterDelete(object sender, FormAfterActionEventArgs eventArgs) =>
-        OnAfterDelete?.Invoke(sender, eventArgs);
-    internal void InvokeOnInstanceCreated(JJFormView sender) =>
-        OnInstanceCreated?.Invoke(sender);
 
     private JJLinkButton GetButtonOk()
     {

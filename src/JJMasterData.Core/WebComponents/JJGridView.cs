@@ -70,6 +70,7 @@ public class JJGridView : JJBaseView
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private FieldManager _fieldManager;
+    private FormValues _formValues;
     private List<FormElementField> _pkFields;
     private List<FormElementField> _visibleFields;
     private Hashtable _defaultValues;
@@ -78,7 +79,6 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-    private FormService _dataDictionaryManager;
 
     internal JJDataImp DataImp
     {
@@ -111,7 +111,7 @@ public class JJGridView : JJBaseView
                 DataAccess = DataAccess,
                 UserValues = UserValues
             };
-            _dataExp.OnRenderCell += OnRenderCell;
+            _dataExp.OnRenderCell = OnRenderCell;
             _dataExp.ProcessOptions = ExportAction.ProcessOptions;
 
             return _dataExp;
@@ -158,6 +158,7 @@ public class JJGridView : JJBaseView
 
     internal FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
 
+    internal FormValues FormValues => _formValues ??= new FormValues(FieldManager);
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -351,9 +352,9 @@ public class JJGridView : JJBaseView
                 return _table;
             
             _table = new GridTable(this);
-            _table.Body.OnRenderAction += OnRenderAction;
-            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
-            _table.Body.OnRenderCell += OnRenderCell;
+            _table.Body.OnRenderAction = OnRenderAction;
+            _table.Body.OnRenderSelectedCell = OnRenderSelectedCell;
+            _table.Body.OnRenderCell = OnRenderCell;
 
             return _table;
         }
@@ -452,9 +453,6 @@ public class JJGridView : JJBaseView
     public Hashtable RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
-
-    private FormService DataDictionaryManager =>
-        _dataDictionaryManager ??= new FormService(FormElement);
 
     internal Hashtable DefaultValues
     {
@@ -1035,33 +1033,7 @@ public class JJGridView : JJBaseView
         return name;
     }
 
-    internal string GetPkValues(DataRow row, char separator = ';')
-    {
-        string name = "";
-        foreach (var fpk in PrimaryKeyFields)
-        {
-            if (name.Length > 0)
-                name += separator.ToString();
-
-            name += row[fpk.Name].ToString();
-        }
-
-        return name;
-    }
-
-    internal string GetPkValues(IDictionary row, char separator = ';')
-    {
-        string name = "";
-        foreach (var fpk in PrimaryKeyFields)
-        {
-            if (name.Length > 0)
-                name += separator.ToString();
-
-            name += row[fpk.Name].ToString();
-        }
-
-        return name;
-    }
+    
 
     public Hashtable GetSelectedRowId()
     {
@@ -1202,9 +1174,7 @@ public class JJGridView : JJBaseView
         }
         else
         {
-            var result = DataDictionaryManager.GetDataTable(filters, orderBy, recordsPerPage, currentPage);
-            dt = result.Result;
-            total = result.Total;
+            dt = Factory.GetDataTable(FormElement, filters, orderBy, recordsPerPage, currentPage, ref total);
         }
 
         return dt;
@@ -1243,8 +1213,7 @@ public class JJGridView : JJBaseView
             }
 
             string prefixValue = GetFieldName("", values);
-            var newValues =
-                FieldManager.GetFormValues(prefixValue, FormElement, PageState.List, values, AutoReloadFormFields);
+            var newValues = FormValues.GetFormValues(PageState.List, values, AutoReloadFormFields, prefixValue);
             listValues.Add(newValues);
         }
 
@@ -1303,7 +1272,7 @@ public class JJGridView : JJBaseView
             else
                 sIds.Append(",");
 
-            string values = GetPkValues(row);
+            string values = DataHelper.ParsePkValues(FormElement, row, ';');
             sIds.Append(Cript.Cript64(values));
         }
 

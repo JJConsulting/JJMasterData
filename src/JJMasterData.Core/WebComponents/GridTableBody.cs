@@ -10,6 +10,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -84,7 +85,7 @@ internal class GridTableBody
             string value = string.Empty;
             if (values.Contains(field.Name))
             {
-                value = GridView.FieldManager.ParseVal(values, field);
+                value = GridView.FieldManager.ParseVal(field, values);
             }
 
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -107,7 +108,7 @@ internal class GridTableBody
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    OnRenderCell.Invoke(this, args);
+                    OnRenderCell.Invoke(GridView, args);
                     td.AppendText(args.HtmlResult);
                 }
                 else
@@ -156,7 +157,7 @@ internal class GridTableBody
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = baseField };
 
-            OnRenderCell.Invoke(this, args);
+            OnRenderCell.Invoke(GridView, args);
             div.AppendText(args.HtmlResult);
         }
         else
@@ -198,7 +199,7 @@ internal class GridTableBody
             if (onRender != null)
             {
                 var args = new ActionEventArgs(action, link, values);
-                onRender.Invoke(this, args);
+                onRender.Invoke(GridView, args);
                 if (args.HtmlResult != null)
                 {
                     td.AppendText(args.HtmlResult);
@@ -245,7 +246,7 @@ internal class GridTableBody
                         if (onRender != null)
                         {
                             var args = new ActionEventArgs(action, link, values);
-                            onRender.Invoke(this, args);
+                            onRender.Invoke(GridView, args);
                         }
 
                         if (link is { Visible: true })
@@ -304,7 +305,7 @@ internal class GridTableBody
 
     private HtmlBuilder GetMultiSelectRow(DataRow row, int index, Hashtable values, ref string onClickScript)
     {
-        string pkValues = GridView.GetPkValues(values);
+        string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
 
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
@@ -323,7 +324,7 @@ internal class GridTableBody
                 DataRow = row,
                 CheckBox = checkBox
             };
-            OnRenderSelectedCell.Invoke(this, args);
+            OnRenderSelectedCell.Invoke(GridView, args);
             if (args.CheckBox != null)
                 td.AppendElement(checkBox);
         }
@@ -350,7 +351,7 @@ internal class GridTableBody
         if (OnRenderAction != null)
         {
             var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
-            OnRenderAction.Invoke(this, args);
+            OnRenderAction.Invoke(GridView, args);
 
             if (args.HtmlResult != null)
             {
@@ -374,19 +375,15 @@ internal class GridTableBody
     private Hashtable GetValues(DataRow row)
     {
         var values = new Hashtable();
-
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
         }
 
-        if (!GridView.EnableEditMode) return values;
+        if (!GridView.EnableEditMode) 
+            return values;
 
-        string prefixName = GridView.GetFieldName(string.Empty, values);
-
-        values = GridView.FieldManager.GetFormValues(prefixName, GridView.FormElement, PageState.List, values,
-            GridView.AutoReloadFormFields);
-
-        return values;
+        var prefixName = GridView.GetFieldName(string.Empty, values);
+        return GridView.FormValues.GetFormValues(PageState.List, values, GridView.AutoReloadFormFields, prefixName);
     }
 }

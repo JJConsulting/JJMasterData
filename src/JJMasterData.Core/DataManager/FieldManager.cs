@@ -4,7 +4,6 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
@@ -36,11 +35,6 @@ public class FieldManager
     }
 
     /// <summary>
-    /// Informações sobre o request HTTP
-    /// </summary>
-    internal JJHttpContext CurrentContext { get; set; }
-
-    /// <summary>
     /// Object responsible for Database communications.
     /// </summary>
     public IDataAccess DataAccess { get; set; }
@@ -51,17 +45,10 @@ public class FieldManager
     public FormElement FormElement { get; set; }
 
     /// <summary>
-    /// Indica se a pagina esta sendo renderizada pela primeira vez
-    /// </summary>
-    private bool IsPostBack => CurrentContext.Request.HttpMethod.Equals("POST");
-
-    /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
     public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
 
-
-    public ExpressionOptions ExpressionOptions { get; private set; }
 
     #endregion
 
@@ -74,15 +61,14 @@ public class FieldManager
         DataAccess = JJService.DataAccess;
         UserValues = new Hashtable();
         Name = "pnl_" + formElement.Name.ToLower();
-
     }
+
     public FieldManager(JJBaseView baseView, FormElement formElement)
     {
         if (baseView == null)
             throw new ArgumentNullException(nameof(baseView));
 
         FormElement = formElement;
-        CurrentContext = baseView.CurrentContext;
         UserValues = baseView.UserValues;
         DataAccess = baseView.DataAccess;
         Name = baseView.Name;
@@ -99,71 +85,71 @@ public class FieldManager
     }
 
 
-    public bool IsVisible(FormElementField f, PageState state, Hashtable formValues)
+    public bool IsVisible(FormElementField field, PageState state, Hashtable formValues)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        return Expression.GetBoolValue(f.VisibleExpression, f.Name, state, formValues);
+        return Expression.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
     }
 
-    public bool IsEnable(FormElementField f, PageState state, Hashtable formValues)
+    public bool IsEnable(FormElementField field, PageState state, Hashtable formValues)
     {
         if (state == PageState.View)
             return false;
 
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        return Expression.GetBoolValue(f.EnableExpression, f.Name, state, formValues);
+        return Expression.GetBoolValue(field.EnableExpression, field.Name, state, formValues);
     }
 
     /// <summary>
     /// Formata os valores exibidos na Grid
     /// </summary>
-    public string ParseVal(Hashtable values, FormElementField f)
+    public string ParseVal(FormElementField field, Hashtable values)
     {
         if (values == null)
             return "";
 
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
         object value = null;
-        if (values.Contains(f.Name))
-            value = values[f.Name];
+        if (values.Contains(field.Name))
+            value = values[field.Name];
 
         if (value == null)
             return "";
 
         string sVal;
-        if (f.Component == FormComponent.ComboBox
-            && f.DataItem != null
-            && (f.DataItem.ReplaceTextOnGrid || f.DataItem.ShowImageLegend))
+        if (field.Component == FormComponent.ComboBox
+            && field.DataItem != null
+            && (field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend))
         {
-            var cbo = (JJComboBox)GetField(f, PageState.List, values, value);
+            var cbo = (JJComboBox)GetField(field, PageState.List, values, value);
             sVal = cbo.GetDescription() ?? value.ToString();
         }
-        else if (f.Component == FormComponent.Lookup
-                 && f.DataItem is { ReplaceTextOnGrid: true })
+        else if (field.Component == FormComponent.Lookup
+                 && field.DataItem is { ReplaceTextOnGrid: true })
         {
-            var lookup = (JJLookup)GetField(f, PageState.List, values, value);
+            var lookup = (JJLookup)GetField(field, PageState.List, values, value);
             sVal = lookup.GetDescription() ?? value.ToString();
         }
-        else if (f.Component == FormComponent.CheckBox)
+        else if (field.Component == FormComponent.CheckBox)
         {
             sVal = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
         }
-        else if (f.Component == FormComponent.Search
-                 && f.DataItem is { ReplaceTextOnGrid: true })
+        else if (field.Component == FormComponent.Search
+                 && field.DataItem is { ReplaceTextOnGrid: true })
         {
-            var search = (JJSearchBox)GetField(f, PageState.List, values, value);
+            var search = (JJSearchBox)GetField(field, PageState.List, values, value);
             search.AutoReloadFormFields = false;
             sVal = search.GetDescription(value.ToString()) ?? value.ToString();
         }
         else
         {
-            sVal = FormatVal(value, f);
+            sVal = FormatVal(field, value);
         }
 
         return sVal ?? "";
@@ -173,7 +159,7 @@ public class FieldManager
     /// <summary>
     /// Formata os valores exibidos no Panel
     /// </summary>
-    public string FormatVal(object value, FormElementField field)
+    public string FormatVal(FormElementField field, object value)
     {
         if (value == null)
             return "";
@@ -250,104 +236,8 @@ public class FieldManager
         return controlFactory.CreateControl(f, value);
     }
 
-    /// <summary>
-    /// Recupera os dados do Form, aplicando o valor padrão e as triggers
-    /// </summary> 
-    public Hashtable GetFormValues(string prefix, FormElement formElement, PageState state, Hashtable values, bool autoReloadFormFields)
+    public bool IsRange(FormElementField field, PageState pageState)
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        var newvalues = new Hashtable();
-        if (values != null)
-        {
-            foreach (DictionaryEntry v in values)
-            {
-                newvalues.Add(v.Key, v.Value);
-            }
-        }
-
-        if (CurrentContext != null && IsPostBack && autoReloadFormFields)
-        {
-            string t = CurrentContext.Request.QueryString("t");
-            string objname;
-            object val;
-            foreach (var f in formElement.Fields)
-            {
-                if (!IsEnable(f, state, newvalues) || !IsVisible(f, state, newvalues))
-                {
-                    if (!newvalues.Contains(f.Name))
-                    {
-                        val = Expression.GetDefaultValue(f, state, newvalues);
-                        if (val != null)
-                            newvalues.Add(f.Name, val);
-                    }
-                    continue;
-                }
-
-                objname = prefix + f.Name;
-                val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
-
-                switch (f.Component)
-                {
-                    case FormComponent.Search:
-                        {
-                            var search = (JJSearchBox)GetField(f, state, newvalues, null);
-                            search.AutoReloadFormFields = true;
-                            val = search.SelectedValue;
-                            break;
-                        }
-                    case FormComponent.Lookup:
-                        {
-                            var lookup = (JJLookup)GetField(f, state, null, newvalues);
-                            lookup.AutoReloadFormFields = true;
-                            val = lookup.SelectedValue;
-                            break;
-                        }
-                    case FormComponent.Number:
-                    case FormComponent.Currency:
-                        {
-                            //Quando o post é executado via ajax com a função serialize()
-                            //Não sei porque é alterado a virgula decimal para ponto.
-                            //WorkAround Serialize()
-                            if (val != null && "reloadpainel".Equals(t) | "tablerow".Equals(t) | "ajax".Equals(t))
-                            {
-                                string sVal = val.ToString().Replace(" ", "").Replace(".", ",");
-                                if (double.TryParse(sVal, out var nVal))
-                                    val = nVal;
-                                else
-                                    val = 0;
-                            }
-
-                            break;
-                        }
-                    case FormComponent.CheckBox:
-                        {
-                            val ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
-
-                            break;
-                        }
-                }
-
-                if (val != null)
-                {
-                    if (!newvalues.Contains(f.Name))
-                        newvalues.Add(f.Name, val);
-                    else
-                        newvalues[f.Name] = val;
-                }
-
-                if (newvalues[f.Name] == null || string.IsNullOrWhiteSpace(newvalues[f.Name].ToString()))
-                    newvalues.Remove(f.Name);
-            }
-        }
-
-        var formManager = new FormManager(formElement, UserValues, DataAccess);
-        return formManager.GetTriggerValues(newvalues, state, !IsPostBack);
-    }
-
-    public bool IsRange(FormElementField f, PageState pageState)
-    {
-        return pageState == PageState.Filter & f.Filter.Type == FilterMode.Range;
+        return pageState == PageState.Filter & field.Filter.Type == FilterMode.Range;
     }
 }

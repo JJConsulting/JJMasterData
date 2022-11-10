@@ -6,7 +6,6 @@ using System.Net;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
-//not remove
 
 namespace JJMasterData.Commons.Exceptions;
 
@@ -35,8 +34,8 @@ public class ExceptionManager
                 err.ValidationList.Add("DB", errMsg);
                 break;
             }
-            case KeyNotFoundException or null:
-                err.Message = ex?.Message ?? "Page not found.";
+            case KeyNotFoundException exNotFound:
+                err.Message = exNotFound.Message ?? "Page not found.";
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
@@ -51,40 +50,38 @@ public class ExceptionManager
 
     public static string GetMessage(SqlException ex)
     {
-#if DEBUG
-        Translate.Key("Debug");
-        return ex.Message;
-#else
         string message;
         if (ex.Number == 547)
+        {
             message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
+        }
         else if (ex.Number == 2627 || ex.Number == 2601)
+        {
             message = Translate.Key("Record already registered.");
+        }
         else if (ex.Number == 170)
+        {
             message = Translate.Key("Invalid character.");
+        }
         else if (ex.Number >= 50000)
+        {
             message = ex.Message;
+        }
         else
+        {
             message = Translate.Key("Unexpected error.");
+            Log.AddError(ex.ToString());
+        }
 
         return message;
-#endif
     }
 
     public static string GetMessage(Exception ex)
     {
-        string message;
         if (ex is SqlException exSql)
-        {
-            message = GetMessage(exSql);
-        }
-        else
-        {
-            message = ex.Message;
-        }
-
-        return message;
+            return  GetMessage(exSql);
+        
+        return ex.Message;
     }
-
 
 }

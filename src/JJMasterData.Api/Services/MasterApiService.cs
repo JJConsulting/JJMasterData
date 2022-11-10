@@ -1,37 +1,34 @@
-﻿using System.Collections;
-using System.Diagnostics;
-using System.Net;
-using JJMasterData.Api.Models;
+﻿using JJMasterData.Api.Models;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.AuditLog;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Args;
+using System.Collections;
+using System.Diagnostics;
+using System.Net;
 
 namespace JJMasterData.Api.Services;
 
 public class MasterApiService
 {
-    private DictionaryDao DictionaryDao { get; }
-    private Factory Factory => DictionaryDao.Factory;
-
     private readonly HttpContext? _httpContext;
-
     private readonly AccountService _accountService;
+    private readonly IDataAccess _dataAccess;
+    private DictionaryDao? _dictionaryDao;
 
-    private readonly AuditLogService _auditLogService;
+    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao(_dataAccess);
 
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService)
+    private Factory Factory => DictionaryDao.Factory;
+    
+    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IDataAccess dataAccess)
     {
         _httpContext = httpContextAccessor?.HttpContext;
-        DictionaryDao = new DictionaryDao();
-        _auditLogService = new AuditLogService(AuditLogSource.Api);
         _accountService = accountService;
+        _dataAccess = dataAccess;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
@@ -54,8 +51,7 @@ public class MasterApiService
         return text;
     }
 
-    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string orderby,
-        int total = 0)
+    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string orderby, int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -65,52 +61,31 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
+        var element = dictionary.Table;
+        var dt = Factory.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
 
-        var manager = new FormService(elementName);
-        var result = manager.GetDataTable(filters, orderby, regporpag, pag);
-
-        if (result == null || result.Total.Equals(0))
+        if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
-        var ret = new MasterApiListResponse
-        {
-            Tot = result.Total
-        };
-
-        ret.SetDataTableValues(dictionary, result.Result);
+        var ret = new MasterApiListResponse();
+        ret.Tot = total;
+        ret.SetDataTableValues(dictionary, dt);
 
         return ret;
     }
 
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
         var dictionary = DictionaryDao.GetDictionary(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
         var element = dictionary.Table;
-        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
-        var ids = id.Split(',');
+        var primaryKeys = DataHelper.GetPkValues(element, id, ',');
+        var filters = ParseFilter(dictionary, primaryKeys);
+        var fields = Factory.GetFields(element, filters);
 
-        if (ids.Length != pks.Count)
-            throw new DataDictionaryException(Translate.Key("Invalid primary key"));
-
-        var paramValues = new Hashtable();
-        for (int i = 0; i < pks.Count; i++)
-        {
-            paramValues.Add(pks[i].Name, ids[i]);
-        }
-
-        var filters = ParseFilter(dictionary, paramValues);
-
-        var dataDictionaryManager = new FormService(elementName);
-        
-        var result = dataDictionaryManager.GetHashtable(filters);
-
-        if (result.Result == null || result.Total == 0)
+        if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
         //We transform to dictionary to preserve the order of fields in parse
@@ -118,8 +93,8 @@ public class MasterApiService
         foreach (ElementField field in element.Fields)
         {
             string fieldName = dictionary.Api.GetFieldNameParsed(field.Name);
-            if (result.Result.ContainsKey(field.Name))
-                listRet.Add(fieldName, result.Result![field.Name]!);
+            if (fields.ContainsKey(field.Name))
+                listRet.Add(fieldName, fields![field.Name]!);
         }
 
         return listRet;
@@ -127,328 +102,220 @@ public class MasterApiService
 
     public List<ResponseLetter> SetFields(Hashtable[] listParam, string elementName, bool replace = false)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
         if (listParam == null)
             throw new ArgumentNullException(nameof(listParam));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
-        if (!dictionary.Api.EnableAdd)
+        var dictionary = GetDataDictionary(elementName);
+        if (!dictionary.Api.EnableAdd | !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
 
-        var formManager = new FormManager(dictionary.GetFormElement())
+        var formService = GetFormService(dictionary);
+        var listRet = new List<ResponseLetter>();
+        foreach (Hashtable values in listParam)
         {
-            UserValues = GetDefaultFilter(dictionary),
-            Factory = Factory
-        };
+            ResponseLetter ret = replace ?
+                InsertOrReplace(formService, values, dictionary.Api) :
+                Insert(formService, values, dictionary.Api);
 
-        return listParam.Select(values => replace 
-            ? Set(formManager, values, dictionary.Api) 
-            : Insert(formManager, values, dictionary.Api)).ToList();
+            listRet.Add(ret);
+        }
+        return listRet;
     }
 
     public List<ResponseLetter> UpdateFields(Hashtable[] listParam, string elementName)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
-        if (listParam == null)
-            throw new ArgumentNullException(nameof(listParam));
-
-        var dictionary = DictionaryDao.GetDictionary(elementName);
-
-        if (!dictionary.Api.EnableUpdate)
-            throw new UnauthorizedAccessException();
-
         if (listParam == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
-        var formManager = new FormManager(dictionary.GetFormElement())
-        {
-            UserValues = GetDefaultFilter(dictionary),
-            Factory = Factory
-        };
+        var dictionary = GetDataDictionary(elementName);
+        if (!dictionary.Api.EnableUpdate)
+            throw new UnauthorizedAccessException();
 
+        var formService = GetFormService(dictionary);
         var listRet = new List<ResponseLetter>();
         foreach (Hashtable values in listParam)
         {
-            ResponseLetter ret = Update(formManager, values, dictionary.Api);
+            var ret = Update(formService, values, dictionary.Api);
             listRet.Add(ret);
         }
 
         return listRet;
     }
 
-    private ResponseLetter Insert(FormManager formManager, Hashtable values, DicApiSettings api)
-    {
-        var ret = new ResponseLetter();
-
-        try
-        {
-            if (values == null || values.Count == 0)
-                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
-
-            var parsedValues = formManager.ParseOriginalName(values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Insert, true);
-
-            var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
-
-            bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
-
-            var dictionaryManager = new FormService(dictionary.GetFormElement(),
-                logActionIsVisible ? _auditLogService : null);
-
-            var result = dictionaryManager.Insert(this, newvalues, () =>
-                formManager.ValidateFields(newvalues, PageState.Insert, false)
-            );
-
-            if (result.IsValid)
-            {
-                ret.Status = (int)HttpStatusCode.Created;
-                ret.Message = Translate.Key("Record added successfully");
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
-            }
-            else
-            {
-                ret = CreateErrorResponseLetter(result.Errors, api);
-            }
-        }
-        catch (Exception ex)
-        {
-            ret = ExceptionManager.GetResponse(ex);
-        }
-
-        return ret;
-    }
-
-    private ResponseLetter Update(FormManager formManager, Hashtable values, DicApiSettings api)
-    {
-        var ret = new ResponseLetter();
-        try
-        {
-            if (values == null || values.Count == 0)
-                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
-
-            var parsedValues = formManager.ParseOriginalName(values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Update, true);
-            
-            formManager.GetPkValues(newvalues);
-
-            var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
-
-            bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
-
-            var dictionaryManager = new FormService(dictionary.GetFormElement(),
-                logActionIsVisible ? _auditLogService : null);
-
-            var result = dictionaryManager.Update(this, newvalues, () =>
-                formManager.ValidateFields(newvalues, PageState.Update, false)
-            );
-            
-            if (result.IsValid)
-            {
-                ret.Status = (int)HttpStatusCode.OK;
-                ret.Message = Translate.Key("Record updated successfully");
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
-            }
-            else
-            {
-                ret = CreateErrorResponseLetter(result.Errors, api);
-            }
-        }
-        catch (Exception ex)
-        {
-            ret = ExceptionManager.GetResponse(ex);
-        }
-
-        return ret;
-    }
-
-    public ResponseLetter Set(FormManager formManager, Hashtable values, DicApiSettings api)
-    {
-        var ret = new ResponseLetter();
-
-        try
-        {
-            if (values == null || values.Count == 0)
-                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
-
-            var parsedValues = formManager.ParseOriginalName(values);
-            var newvalues = formManager.GetTriggerValues(parsedValues, PageState.Import, true);
-            var erros = formManager.ValidateFields(newvalues, PageState.Import, false);
-
-            var formEvent = FormEventManager.GetFormEvent(formManager.FormElement.Name);
-
-            if (erros.Count == 0)
-            {
-                var cmd = Factory.SetValues(formManager.FormElement, newvalues);
-                if (cmd == CommandType.Insert)
-                {
-                    ret.Status = (int)HttpStatusCode.Created;
-                    ret.Message = Translate.Key("Record added successfully");
-                    formEvent?.OnAfterInsert(this, new FormAfterActionEventArgs(newvalues));
-                }
-                else
-                {
-                    ret.Status = (int)HttpStatusCode.OK;
-                    ret.Message = Translate.Key("Record updated successfully");
-                    formEvent?.OnAfterUpdate(this, new FormAfterActionEventArgs(newvalues));
-                }
-
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
-            }
-            else
-            {
-                ret = CreateErrorResponseLetter(erros, api);
-            }
-        }
-        catch (Exception ex)
-        {
-            ret = ExceptionManager.GetResponse(ex);
-        }
-
-        return ret;
-    }
-
-    private ResponseLetter Patch(FormManager formManager, Hashtable values, DicApiSettings api)
-    {
-        var ret = new ResponseLetter();
-        try
-        {
-            if (values == null || values.Count == 0)
-                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
-
-            var parsedValues = formManager.ParseOriginalName(values);
-
-            //Validates if the Pk were filled
-            var pkValues = formManager.GetPkValues(parsedValues);
-
-            var currentValues = Factory.GetFields(formManager.FormElement, pkValues);
-            if (currentValues == null)
-                throw new KeyNotFoundException(Translate.Key("No records found"));
-
-            foreach (DictionaryEntry entry in parsedValues)
-            {
-                if (currentValues.ContainsKey(entry.Key))
-                    currentValues[entry.Key] = entry.Value;
-                else
-                    currentValues.Add(entry.Key, entry.Value);
-            }
-
-            var newvalues = formManager.GetTriggerValues(currentValues, PageState.Update, true);
-            
-            var dictionary = DictionaryDao.GetDictionary(formManager.FormElement.Name);
-
-            bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
-
-            var dictionaryManager = new FormService(dictionary.Table.Name,
-                logActionIsVisible ? _auditLogService : null);
-
-            var result = dictionaryManager.Update(this, newvalues, () =>
-                formManager.ValidateFields(newvalues, PageState.Update, false)
-            );
-            
-            if (result.IsValid)
-            {
-                ret.Status = (int)HttpStatusCode.OK;
-                ret.Message = Translate.Key("Record updated successfully");
-
-                ret.Data = formManager.GetDiff(parsedValues, newvalues, api);
-            }
-            else
-            {
-                ret = CreateErrorResponseLetter(result.Errors, api);
-            }
-        }
-        catch (Exception ex)
-        {
-            ret = ExceptionManager.GetResponse(ex);
-        }
-
-        return ret;
-    }
-
     public List<ResponseLetter> UpdatePart(Hashtable[] listParam, string elementName)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
         if (listParam == null)
             throw new ArgumentNullException(nameof(listParam));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
-
+        var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
         if (listParam == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
-        var formManager = new FormManager(dictionary.GetFormElement())
+        var formService = GetFormService(dictionary);
+        var listRet = new List<ResponseLetter>();
+        foreach (Hashtable values in listParam)
         {
-            UserValues = GetDefaultFilter(dictionary),
-            Factory = Factory,
-        };
+            var ret = Patch(formService, values, dictionary.Api);
+            listRet.Add(ret);
+        }
 
-        return listParam.Select(values => Patch(formManager, values, dictionary.Api)).ToList();
+        return listRet;
+    }
+
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, DicApiSettings api)
+    {
+        ResponseLetter ret;
+        try
+        {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Insert, true);
+            var formResult = formService.Insert(values);
+            if (formResult.IsValid)
+            {
+                ret = new ResponseLetter
+                {
+                    Status = (int)HttpStatusCode.Created,
+                    Message = Translate.Key("Record added successfully"),
+                    Data = GetDiff(apiValues, values, api)
+                };
+            }
+            else
+            {
+                ret = CreateErrorResponseLetter(formResult.Errors, api);
+            }
+        }
+        catch (Exception ex)
+        {
+            ret = ExceptionManager.GetResponse(ex);
+        }
+        return ret;
+    }
+
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, DicApiSettings api)
+    {
+        ResponseLetter ret;
+        try
+        {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Update, true);
+            var formResult = formService.Update(values);
+            if (formResult.IsValid)
+            {
+                if (formResult.NumberOfRowsAffected == 0)
+                    throw new KeyNotFoundException(Translate.Key("No records found"));
+
+                ret = new ResponseLetter();
+                ret.Status = (int)HttpStatusCode.OK;
+                ret.Message = Translate.Key("Record updated successfully");
+                ret.Data = GetDiff(apiValues, values, api);
+            }
+            else
+            {
+                ret = CreateErrorResponseLetter(formResult.Errors, api);
+            }
+        }
+        catch (Exception ex)
+        {
+            ret = ExceptionManager.GetResponse(ex);
+        }
+        return ret;
+    }
+
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, DicApiSettings api)
+    {
+        ResponseLetter ret;
+        try
+        {
+            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Import, true);
+            var formResult = formService.InsertOrReplace(values);
+            if (formResult.IsValid)
+            {
+                ret = new ResponseLetter();
+                if (formResult.Result == CommandType.Insert)
+                {
+                    ret.Status = (int)HttpStatusCode.Created;
+                    ret.Message = Translate.Key("Record added successfully");
+                }
+                else
+                {
+                    ret.Status = (int)HttpStatusCode.OK;
+                    ret.Message = Translate.Key("Record updated successfully");
+                }
+                ret.Data = GetDiff(apiValues, values, api);
+            }
+            else
+            {
+                ret = CreateErrorResponseLetter(formResult.Errors, api);
+            }
+        }
+        catch (Exception ex)
+        {
+            ret = ExceptionManager.GetResponse(ex);
+        }
+        return ret;
+    }
+
+    private ResponseLetter Patch(FormService formService, Hashtable values, DicApiSettings api)
+    {
+        ResponseLetter ret;
+        try
+        {
+            if (values == null || values.Count == 0)
+                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
+
+            var formManager = formService.FormManager;
+            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
+            var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
+            var currentValues = Factory.GetFields(formManager.FormElement, pkValues);
+            if (currentValues == null)
+                throw new KeyNotFoundException(Translate.Key("No records found"));
+
+            DataHelper.CopyIntoHash(ref currentValues, parsedValues, true);
+            ret = Update(formService, currentValues, api);
+        }
+        catch (Exception ex)
+        {
+            ret = ExceptionManager.GetResponse(ex);
+        }
+        return ret;
     }
 
     public ResponseLetter Delete(string elementName, string id)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentException(nameof(elementName));
-
         if (string.IsNullOrEmpty(id))
-            throw new ArgumentException(nameof(id));
+            throw new ArgumentNullException(nameof(id));
 
-        var ids = id.Split(',');
-        if (ids == null || ids.Length == 0)
-            throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(id));
-
-        var dictionary = DictionaryDao.GetDictionary(elementName);
-        bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
-        
-        var formElement = dictionary.GetFormElement();
-
-        var dataDictionaryManager = new FormService(formElement, logActionIsVisible ? _auditLogService : null);
-
+        var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableDel)
             throw new UnauthorizedAccessException();
 
-        var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+        var formService = GetFormService(dictionary);
+        var formElement = dictionary.GetFormElement();
+        var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
+        var values = formService.FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
+        var formResult = formService.Delete(values);
 
-        if (ids.Length != pks.Count)
-            throw new DataDictionaryException(Translate.Key("Invalid primary key"));
-
-        var filters = new Hashtable();
-        for (int i = 0; i < pks.Count; i++)
+        if (formResult.IsValid)
         {
-            filters.Add(pks[i].Name, ids[i]);
+            if (formResult.NumberOfRowsAffected == 0)
+                throw new KeyNotFoundException(Translate.Key("No records found"));
+
+            return new ResponseLetter
+            {
+                Status = (int)HttpStatusCode.NoContent,
+                Message = Translate.Key("Record successfully deleted")
+            };
         }
 
-        var result = dataDictionaryManager.Delete(this, filters);
-
-        if (result.Total == 0)
-            throw new KeyNotFoundException(Translate.Key("No records found"));
-
-        return new ResponseLetter
-        {
-            Message = Translate.Key("Record successfully deleted"),
-            Status = (int)HttpStatusCode.NoContent
-        };
+        return CreateErrorResponseLetter(formResult.Errors, dictionary.Api);
     }
 
     /// <summary>
-    /// Disparado ao realizar o gatilho no formulário
+    /// Fired when triggering the form
     /// </summary>
-    /// <param name="elementName">Nome do Dicionário</param>
-    /// <param name="paramValues">Valores do campos no formulário</param>
-    /// <param name="pageState">Tipo de operação</param>
-    /// <param name="objname">Nome do campo que disparou o gatilho</param>
-    /// <returns></returns>
-    public Dictionary<string, FormValues> PostTrigger(string elementName, Hashtable paramValues, PageState pageState,
-        string objname = "")
+    public Dictionary<string, FormValues> PostTrigger(
+        string elementName, Hashtable paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -469,7 +336,7 @@ public class MasterApiService
         formManager.UserValues = userValues;
         formManager.Factory = Factory;
 
-        var newvalues = formManager.GetTriggerValues(values, pageState, false);
+        var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
         {
@@ -478,7 +345,7 @@ public class MasterApiService
             formValues.Visible = formManager.Expression.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues);
 
             if (newvalues != null && newvalues.Contains(f.Name))
-                formValues.Value = newvalues[f.Name];
+                formValues.Value = newvalues![f.Name]!;
 
             if (!f.Name.ToLower().Equals(objname.ToLower()))
             {
@@ -495,15 +362,17 @@ public class MasterApiService
     }
 
     /// <summary>
-    /// Preserva o nome original do campo e valida se o campo existe
+    /// Preserves the original field name and validates if the field exists
     /// </summary>
     private Hashtable ParseFilter(DicParser dic, Hashtable paramValues)
     {
-        if (paramValues == null)
-            return null;
         var filters = GetDefaultFilter(dic);
+        if (paramValues == null)
+            return filters;
+
         foreach (DictionaryEntry entry in paramValues)
         {
+            //if field not exists, generate a exception
             var field = dic.Table.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString()))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()));
@@ -512,14 +381,12 @@ public class MasterApiService
         return filters;
     }
 
-    /// <summary>
-    /// Retorna o filtro com usuário logado
-    /// </summary>
-    /// <returns></returns>
     private Hashtable GetDefaultFilter(DicParser dic, bool loadQueryString = false)
     {
-        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        if (_httpContext == null)
+            throw new NullReferenceException(nameof(_httpContext));
 
+        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         if (loadQueryString)
         {
             var qnvp = _httpContext.Request.Query.Keys;
@@ -533,30 +400,80 @@ public class MasterApiService
             }
         }
 
-        if (!string.IsNullOrEmpty(dic.Api.ApplyUserIdOn))
+        if (string.IsNullOrEmpty(dic.Api.ApplyUserIdOn))
+            return filters;
+
+        string userId = GetUserId();
+        if (!filters.ContainsKey(dic.Api.ApplyUserIdOn))
         {
-            var userid = _accountService.GetTokenInfo(_httpContext?.User?.Claims?.FirstOrDefault()?.Value);
-            if (!filters.ContainsKey(dic.Api.ApplyUserIdOn))
+            filters.Add(dic.Api.ApplyUserIdOn, userId);
+        }
+        else
+        {
+            if (!userId.Equals(filters![dic.Api.ApplyUserIdOn]!.ToString()))
             {
-                filters.Add(dic.Api.ApplyUserIdOn, userid.UserId);
-            }
-            else
-            {
-                if (!filters[dic.Api.ApplyUserIdOn].ToString().Equals(userid))
-                    throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}",
-                        dic.Table.Name));
+                throw new UnauthorizedAccessException(
+                    Translate.Key("Access denied to change user filter on {0}", dic.Table.Name));
             }
         }
 
         return filters;
     }
 
+    private string GetUserId()
+    {
+        var tokenInfo = _accountService.GetTokenInfo(_httpContext?.User?.Claims?.FirstOrDefault()?.Value);
+        if (tokenInfo == null)
+            throw new UnauthorizedAccessException("Invalid Token");
+
+        string userId = tokenInfo.UserId;
+        if (string.IsNullOrEmpty(userId))
+            throw new UnauthorizedAccessException("Invalid User");
+
+        return userId;
+    }
+
+    private FormService GetFormService(DicParser dictionary)
+    {
+        bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
+        string userId = GetUserId();
+        var formElement = dictionary.GetFormElement();
+        var dataContext = new DataContext(DataContextSource.Api, userId);
+
+        var userValues = new Hashtable
+        {
+            { "USERID", GetUserId() }
+        };
+        var formManager = new FormManager(formElement, userValues, _dataAccess)
+        {
+            Factory = Factory
+        };
+        var service = new FormService(formManager, dataContext)
+        {
+            EnableHistoryLog = logActionIsVisible
+        };
+
+        service.AddFormEvent();
+
+        return service;
+    }
+
+    private DicParser GetDataDictionary(string elementName)
+    {
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName));
+
+        return DictionaryDao.GetDictionary(elementName);
+    }
+
     private ResponseLetter CreateErrorResponseLetter(Hashtable erros, DicApiSettings api)
     {
-        var letter = new ResponseLetter();
-        letter.Status = 400;
-        letter.Message = Translate.Key("Invalid data");
-        letter.ValidationList = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var letter = new ResponseLetter
+        {
+            Status = 400,
+            Message = Translate.Key("Invalid data"),
+            ValidationList = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
+        };
 
         if (erros == null)
             return letter;
@@ -569,4 +486,37 @@ public class MasterApiService
 
         return letter;
     }
+
+    /// <summary>
+    /// Compara os valores dos campos recebidos com os enviados para banco,
+    /// retornando os registros diferentes
+    /// </summary>
+    /// <remarks>
+    /// Isso acontece devido as triggers ou os valores 
+    /// retornados nos metodos de set (id autoNum) por exemplo
+    /// </remarks>
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, DicApiSettings api)
+    {
+        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        foreach (DictionaryEntry entry in result)
+        {
+            if (entry.Value == null)
+                continue;
+
+            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            if (original.ContainsKey(entry.Key))
+            {
+                if (original[entry.Key] == null && entry.Value != null ||
+                    !original![entry.Key]!.Equals(entry.Value))
+                    newValues.Add(fieldName, entry.Value);
+            }
+            else
+            {   
+                newValues.Add(fieldName, entry.Value);
+            }
+        }
+
+        return newValues.Count > 0 ? newValues : null;
+    }
+
 }

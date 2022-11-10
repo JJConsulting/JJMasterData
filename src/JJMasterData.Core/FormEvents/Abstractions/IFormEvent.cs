@@ -2,6 +2,7 @@
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.FormEvents.Abstractions;
+
 public interface IFormEvent
 {
     public void OnBeforeInsert(object sender, FormBeforeActionEventArgs args);
@@ -11,7 +12,5 @@ public interface IFormEvent
     public void OnAfterInsert(object sender, FormAfterActionEventArgs args);
     public void OnAfterUpdate(object sender, FormAfterActionEventArgs args);
     public void OnAfterDelete(object sender, FormAfterActionEventArgs args);
-    public void OnAfterImport(object sender, FormAfterActionEventArgs args);
     public void OnInstanceCreated(JJFormView sender);
-    
 }
