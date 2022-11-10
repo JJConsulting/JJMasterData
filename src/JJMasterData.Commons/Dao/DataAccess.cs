@@ -625,61 +625,13 @@ public class DataAccess : IDataAccess
     /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(string sql)
     {
-        int numberOfRowsAffected = 0;
-        DbCommand sqlCmd = null;
-        try
-        {
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd!.CommandType = CommandType.Text;
-            sqlCmd.CommandText = sql.Replace("\n", string.Empty);
-            sqlCmd.Connection = GetConnection();
-            sqlCmd.CommandTimeout = TimeOut;
-
-            numberOfRowsAffected += sqlCmd.ExecuteNonQuery();
-        }
-        catch (Exception ex)
-        {
-            BuildErrorLog(sql, null, ex);
-            throw;
-        }
-        finally
-        {
-            sqlCmd?.Dispose();
-
-            CloseConnection();
-        }
-
-        return numberOfRowsAffected;
+        return SetCommand(new DataAccessCommand(sql));
     }
 
     /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(string sql)
     {
-        int nRet = 0;
-        DbCommand sqlCmd = null;
-        try
-        {
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd!.CommandType = CommandType.Text;
-            sqlCmd.CommandText = sql.Replace("\n", string.Empty);
-            sqlCmd.Connection = await GetConnectionAsync();
-            sqlCmd.CommandTimeout = TimeOut;
-
-            nRet += await sqlCmd.ExecuteNonQueryAsync();
-        }
-        catch (Exception ex)
-        {
-            BuildErrorLog(sql, null, ex);
-            throw;
-        }
-        finally
-        {
-            sqlCmd?.Dispose();
-
-            CloseConnection();
-        }
-
-        return nRet;
+        return await SetCommandAsync(new DataAccessCommand(sql));
     }
 
     /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
