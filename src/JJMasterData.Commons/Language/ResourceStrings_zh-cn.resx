@@ -2677,7 +2677,7 @@
     <value>没有要应用的记录时应用的文本</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="The field[NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
+  <data name="The field [NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
     <value>字段[NumberOfDecimalPlaces] 不能用类型定义</value>
     <comment>JJMasterDataWeb</comment>
   </data>

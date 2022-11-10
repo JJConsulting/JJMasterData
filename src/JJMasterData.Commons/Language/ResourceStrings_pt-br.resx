@@ -2677,7 +2677,7 @@
     <value>Texto aplicado quando não há registros para ser aplicado</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="The field[NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
+  <data name="The field [NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
     <value>Campo [NumberOfDecimalPlaces] não pode ser configurado com o tipo </value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3368,5 +3368,8 @@
   <data name="Primary key value {0} contains invalid characters." xml:space="preserve">
     <value>Chave primária {0} contém caracter inválido</value>
     <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Only fields of type VarChar or Text can have a filter of the type Contains." xml:space="preserve">
+    <value>Somente campos do tipo VarChar ou Texto podem ter um filtro do tipo Contains.</value>
   </data>
 </root>
