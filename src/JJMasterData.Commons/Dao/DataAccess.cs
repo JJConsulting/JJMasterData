@@ -22,9 +22,9 @@ public class DataAccess : IDataAccess
     private DbProviderFactory _factory;
     private DbConnection _connection;
     private bool _keepAlive;
-    
+
     public bool TranslateErrorMessage { get; set; } = true;
-    
+
     public bool GenerateLog { get; set; } = true;
 
     ///<summary>
@@ -245,7 +245,7 @@ public class DataAccess : IDataAccess
         {
             dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-            
+
             da = GetFactory().CreateDataAdapter();
             da!.SelectCommand = dbCommand;
 
@@ -289,7 +289,7 @@ public class DataAccess : IDataAccess
     {
         DbCommand dbCommand = null;
         DbDataAdapter da = null;
-        
+
         var dt = new DataTable();
         try
         {
@@ -384,7 +384,7 @@ public class DataAccess : IDataAccess
 
             foreach (var param in cmd.Parameters)
             {
-                if(param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                     param.Value = dbCommand.Parameters[param.Name].Value;
             }
         }
@@ -402,7 +402,7 @@ public class DataAccess : IDataAccess
 
         return scalarResult;
     }
-    
+
     public async Task<object> GetResultAsync(string sql)
     {
         return await GetResultAsync(new DataAccessCommand(sql));
@@ -415,7 +415,7 @@ public class DataAccess : IDataAccess
         DbCommand dbCommand = null;
         try
         {
-            dbCommand =  CreateDbCommand(cmd);
+            dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
             scalarResult = await dbCommand.ExecuteScalarAsync();
 
@@ -439,7 +439,7 @@ public class DataAccess : IDataAccess
 
         return scalarResult;
     }
-    
+
     /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
     public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
@@ -480,7 +480,7 @@ public class DataAccess : IDataAccess
         {
             dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-            
+
             rowsAffected += dbCommand.ExecuteNonQuery();
 
             foreach (var parameter in cmd.Parameters.Where(parameter =>
@@ -542,7 +542,7 @@ public class DataAccess : IDataAccess
     {
         int numberOfRowsAffected = 0;
         int index = 0;
-        
+
         DbCommand dbCommand = null;
         DbConnection connection = GetConnection();
         DbTransaction sqlTras = connection.BeginTransaction();
@@ -585,7 +585,7 @@ public class DataAccess : IDataAccess
     {
         int numberOfRowsAffected = 0;
         int index = 0;
-        
+
         DbCommand dbCommand = null;
         DbConnection connection = await GetConnectionAsync();
         DbTransaction sqlTras = connection.BeginTransaction();
@@ -654,7 +654,7 @@ public class DataAccess : IDataAccess
         int numberOfRowsAffected = await SetCommandAsync(commands);
         return numberOfRowsAffected;
     }
-    
+
     /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
@@ -705,7 +705,7 @@ public class DataAccess : IDataAccess
         {
             dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-            
+
             DbDataReader dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
 
             while (dr.Read())
@@ -758,7 +758,7 @@ public class DataAccess : IDataAccess
         {
             dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
-            
+
             DbDataReader dr = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
 
             while (await dr.ReadAsync())
@@ -801,7 +801,7 @@ public class DataAccess : IDataAccess
 
         return retCollection;
     }
-    
+
     private DataAccessCommand GetTableExistsCommand(string table)
     {
         const string sql = @"SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
@@ -818,10 +818,10 @@ public class DataAccess : IDataAccess
                 }
             }
         };
-        
+
         return command;
     }
-    
+
     public bool TableExists(string table)
     {
         bool result;
@@ -976,10 +976,11 @@ public class DataAccess : IDataAccess
 
         return await Task.FromResult(true);
     }
-    
+
     private void BuildErrorLog(string sql, List<DataAccessParameter> parms, Exception ex)
     {
-        if (ex is SqlException { Number: >= 50000 }) return;
+        if (ex is SqlException sqlException && sqlException.Number >= 50000 )
+            return;
 
         var error = new StringBuilder();
         try
@@ -1020,14 +1021,14 @@ public class DataAccess : IDataAccess
 
         AddLog(error.ToString());
     }
-    
+
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = GetFactory().CreateCommand();
-        
+
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
-        
+
         dbCommand.CommandType = command.CmdType;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
@@ -1038,7 +1039,7 @@ public class DataAccess : IDataAccess
 
             dbCommand.Parameters.Add(dbParameter);
         }
-            
+
         return dbCommand;
     }
 
