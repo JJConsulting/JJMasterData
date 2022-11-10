@@ -24,19 +24,19 @@ public interface IDataAccess
     Task<DbConnection> GetConnectionAsync();
     void CloseConnection();
 
-    DataTable GetDataTable(string sql, List<DataAccessParameter> parameters = null);
+    DataTable GetDataTable(string sql);
 
     DataTable GetDataTable(DataAccessCommand dataAccessCommand);
 
-    Task<DataTable> GetDataTableAsync(string sql, List<DataAccessParameter> parameters = null);
+    Task<DataTable> GetDataTableAsync(string sql);
 
     Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand);
 
-    object GetResult(string sql, List<DataAccessParameter> parameters = null);
+    object GetResult(string sql);
 
     object GetResult(DataAccessCommand cmd);
 
-    Task<object> GetResultAsync(string sql, List<DataAccessParameter> parameters = null);
+    Task<object> GetResultAsync(string sql);
 
     Task<object> GetResultAsync(DataAccessCommand cmd);
 
@@ -44,7 +44,7 @@ public interface IDataAccess
 
     int SetCommand(List<DataAccessCommand> commands);
 
-    int SetCommand(string sql, List<DataAccessParameter> parameters = null);
+    int SetCommand(string sql);
 
     int SetCommand(ArrayList sqlList);
 
@@ -52,7 +52,7 @@ public interface IDataAccess
 
     Task<int> SetCommandAsync(List<DataAccessCommand> commands);
 
-    Task<int> SetCommandAsync(string sql, List<DataAccessParameter> parameters = null);
+    Task<int> SetCommandAsync(string sql);
 
     Task<int> SetCommandAsync(ArrayList sqlList);
 
@@ -71,24 +71,4 @@ public interface IDataAccess
     bool ExecuteBatch(string script);
 
     Task<bool> ExecuteBatchAsync(string script);
-
-    bool ValueExists(string tableName, string columnName, string value);
-
-    bool ValueExists(string tableName, string columnName, int value);
-
-    bool ValueExists(string tableName, params DataAccessParameter[] filters);
-
-    Task<bool> ValueExistsAsync(string tableName, string columnName, string value);
-
-    Task<bool> ValueExistsAsync(string tableName, string columnName, int value);
-
-    Task<bool> ValueExistsAsync(string tableName, params DataAccessParameter[] filters);
-
-    object GetValue(string tableName, string columnName, string value);
-
-    object GetValue(string tableName, string columnName, int value);
-
-    Task<object> GetValueAsync(string tableName, string columnName, string value);
-
-    Task<object> GetValueAsync(string tableName, string columnName, int value);
 }

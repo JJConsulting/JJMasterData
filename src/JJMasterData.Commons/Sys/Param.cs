@@ -51,7 +51,7 @@ public class Param
 
             List<DataAccessParameter> parms = new List<DataAccessParameter>();
             parms.Add(new DataAccessParameter("@cfg_txt_key", key, DbType.String));
-            bRet = int.Parse(Dao.GetResult(sSql.ToString(), parms).ToString()) > 0;   
+            bRet = int.Parse(Dao.GetResult(new DataAccessCommand(sSql.ToString(),parms)).ToString()) > 0;   
         }
         catch (Exception ex)
         {
@@ -81,7 +81,7 @@ public class Param
 
             List<DataAccessParameter> parms = new List<DataAccessParameter>();
             parms.Add(new DataAccessParameter("@cfg_txt_key", key, DbType.String));
-            object oRet = Dao.GetResult(sSql.ToString(), parms);
+            object oRet = Dao.GetResult(new DataAccessCommand(sSql.ToString(),parms));
             if (oRet != null)
                 sRet = oRet.ToString();
         }

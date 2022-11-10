@@ -21,24 +21,6 @@ public class DataAccessTest
     }
 
     [Theory]
-    [InlineData("VarCharColumn","Example",true)]
-    [InlineData("VarCharColumn","NotExists",false)]
-    [InlineData("IntColumn",0,true)]
-    [InlineData("IntColumn",1,false)]
-    public async Task ValueExistsTest(string columnName, object value, bool exists)
-    {
-        switch (value)
-        {
-            case string str:
-                Assert.Equal(exists, await DataAccess.ValueExistsAsync(TableName, columnName, str));
-                break;
-            case int num:
-                Assert.Equal(exists, await DataAccess.ValueExistsAsync(TableName, columnName, num));
-                break;
-        }
-    }
-    
-    [Theory]
     [InlineData(TableName,true)]
     [InlineData("Foo",false)]
     public async Task TableExistsTest(string table, bool exists)

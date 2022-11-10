@@ -17,8 +17,8 @@ public static class StringManager
     public static string ClearText(string input)
     {
         string result = input.Replace("'", "`");
-        result = result.Replace("<", "[");
-        result = result.Replace(">", "]");
+        result = result.Replace('<', '[');
+        result = result.Replace('>', ']');
         result = result.Replace("--", "");
 
         return result;
