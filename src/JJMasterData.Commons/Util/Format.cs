@@ -96,7 +96,7 @@ public static class Format
     /// <param name="value">Bytes</param>
     /// <returns>Tamanho formatado para ser exibido</returns> 
     /// <remarks>
-    /// Autor: Lucio Pelinson 21-05-2012
+    /// Author: Lucio Pelinson 21-05-2012
     /// </remarks>
     public static string FormatFileSize(long value)
     {
