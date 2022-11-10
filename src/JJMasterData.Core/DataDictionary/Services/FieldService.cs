@@ -129,22 +129,25 @@ public class FieldService : BaseService
 
         if (field.Component is FormComponent.Number or FormComponent.Currency)
         {
-            if (field.NumberOfDecimalPlaces <= 0) return IsValid;
-            
-            if (field.DataType != FieldType.Float)
+            if (field.NumberOfDecimalPlaces > 0)
             {
-                AddError(nameof(field.DataType),
-                    Translate.Key("The field [NumberOfDecimalPlaces] cannot be defined with the type ") +
-                    field.DataType);
-            }
+                if (field.DataType != FieldType.Float)
+                {
+                    AddError(nameof(field.DataType),
+                        Translate.Key("The field [NumberOfDecimalPlaces] cannot be defined with the type ") +
+                        field.DataType);
+                }
 
-            if (field.IsPk)
-                AddError(nameof(field.DataType),
-                    Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
+                if (field.IsPk)
+                    AddError(nameof(field.DataType),
+                        Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
+            }
+            else
+            {
+                return IsValid;
+            }
         }
-        else if (field.Component == FormComponent.Lookup |
-                 field.Component == FormComponent.ComboBox |
-                 field.Component == FormComponent.Search)
+        else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search)
         {
             ValidateDataItem(field.DataItem);
         }
