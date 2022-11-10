@@ -85,12 +85,12 @@ public class Param
             if (oRet != null)
                 sRet = oRet.ToString();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             if (TryCreateStructure())
                 sRet = GetParam(key);
             else
-                throw ex;
+                throw;
         }
 
         return sRet; 

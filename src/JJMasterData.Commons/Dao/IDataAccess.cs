@@ -26,11 +26,11 @@ public interface IDataAccess
 
     DataTable GetDataTable(string sql);
 
-    DataTable GetDataTable(DataAccessCommand dataAccessCommand);
+    DataTable GetDataTable(DataAccessCommand cmd);
 
     Task<DataTable> GetDataTableAsync(string sql);
 
-    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand);
+    Task<DataTable> GetDataTableAsync(DataAccessCommand cmd);
 
     object GetResult(string sql);
 

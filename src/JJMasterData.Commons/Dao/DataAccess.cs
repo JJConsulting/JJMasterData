@@ -236,55 +236,40 @@ public class DataAccess : IDataAccess
 
 
     ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
-    public DataTable GetDataTable(DataAccessCommand dataAccessCommand)
+    public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        DbCommand cmd = GetFactory().CreateCommand();
+        DbCommand dbCommand = GetFactory().CreateCommand();
         DbDataAdapter da = null;
         DataTable dt = new DataTable();
         try
         {
-            if (dataAccessCommand.Parameters != null)
-            {
-                foreach (var parm in dataAccessCommand.Parameters)
-                {
-                    var dbParameter = GetFactory().CreateParameter();
-                    dbParameter!.DbType = parm.Type;
-                    dbParameter.Value = parm.Value ?? DBNull.Value;
-                    dbParameter.ParameterName = parm.Name;
-                    dbParameter.Direction = parm.Direction;
-                    cmd!.Parameters.Add(dbParameter);
-                }
-            }
-
-            cmd!.CommandType = dataAccessCommand.CmdType;
-            cmd.CommandText = dataAccessCommand.Sql;
-            cmd.Connection = GetConnection();
-            cmd.CommandTimeout = TimeOut;
-
+            dbCommand = CreateDbCommand(cmd);
+            dbCommand.Connection = GetConnection();
+            
             da = GetFactory().CreateDataAdapter();
-            da!.SelectCommand = cmd;
+            da!.SelectCommand = dbCommand;
 
             da.Fill(dt);
 
-            if (dataAccessCommand.Parameters != null)
+            if (cmd.Parameters != null)
             {
-                foreach (var parameter in dataAccessCommand.Parameters)
+                foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = cmd.Parameters[parameter.Name].Value;
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
             }
         }
         catch (Exception ex)
         {
-            BuildErrorLog(dataAccessCommand.Sql, dataAccessCommand.Parameters, ex);
+            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
         {
             da?.Dispose();
 
-            cmd?.Dispose();
+            dbCommand?.Dispose();
 
             CloseConnection();
         }
@@ -300,55 +285,40 @@ public class DataAccess : IDataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand)
+    public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
-        var cmd = GetFactory().CreateCommand();
+        var dbCommand = GetFactory().CreateCommand();
 
         DbDataAdapter da = null;
         var dt = new DataTable();
         try
         {
-            if (dataAccessCommand.Parameters != null)
-            {
-                foreach (var parm in dataAccessCommand.Parameters)
-                {
-                    var dbParameter = GetFactory().CreateParameter();
-                    dbParameter!.DbType = parm.Type;
-                    dbParameter.Value = parm.Value ?? DBNull.Value;
-                    dbParameter.ParameterName = parm.Name;
-                    dbParameter.Direction = parm.Direction;
-                    cmd?.Parameters.Add(dbParameter);
-                }
-            }
-
-            cmd!.CommandType = dataAccessCommand.CmdType;
-            cmd.CommandText = dataAccessCommand.Sql;
-            cmd.Connection = await GetConnectionAsync();
-            cmd.CommandTimeout = TimeOut;
+            dbCommand = CreateDbCommand(cmd);
+            dbCommand.Connection = await GetConnectionAsync();
 
             da = GetFactory().CreateDataAdapter();
-            da!.SelectCommand = cmd;
+            da!.SelectCommand = dbCommand;
             da.Fill(dt);
 
-            if (dataAccessCommand.Parameters != null)
+            if (cmd.Parameters != null)
             {
-                foreach (var param in dataAccessCommand.Parameters)
+                foreach (var param in cmd.Parameters)
                 {
                     if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        param.Value = cmd.Parameters[param.Name].Value;
+                        param.Value = dbCommand.Parameters[param.Name].Value;
                 }
             }
         }
         catch (Exception ex)
         {
-            BuildErrorLog(dataAccessCommand.Sql, dataAccessCommand.Parameters, ex);
+            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
         {
             da?.Dispose();
 
-            cmd?.Dispose();
+            dbCommand?.Dispose();
 
             CloseConnection();
         }
@@ -880,7 +850,6 @@ public class DataAccess : IDataAccess
         return retCollection;
     }
     
-
     private DataAccessCommand GetTableExistsCommand(string table)
     {
         const string sql = @"SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
@@ -917,7 +886,6 @@ public class DataAccess : IDataAccess
         return result;
     }
 
-
     public async Task<bool> TableExistsAsync(string table)
     {
         bool result;
@@ -932,7 +900,6 @@ public class DataAccess : IDataAccess
 
         return result;
     }
-
 
     /// <summary>
     /// Verifica se a conexão com o banco esta ok
@@ -1058,7 +1025,6 @@ public class DataAccess : IDataAccess
         return await Task.FromResult(true);
     }
     
-    
     private void BuildErrorLog(string sql, List<DataAccessParameter> parms, Exception ex)
     {
         if (ex is SqlException { Number: >= 50000 }) return;
@@ -1103,7 +1069,6 @@ public class DataAccess : IDataAccess
         AddLog(error.ToString());
     }
     
-
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = GetFactory().CreateCommand();
