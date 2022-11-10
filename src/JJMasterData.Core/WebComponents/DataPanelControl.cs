@@ -116,11 +116,8 @@ internal class DataPanelControl
             }
             htmlField.WithCssClass(fieldClass);
 
-            if (FieldManager.IsRange(f, PageState))
-
-
-                if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                    htmlField.WithCssClass("has-error");
+            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+                htmlField.WithCssClass("has-error");
 
             if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
