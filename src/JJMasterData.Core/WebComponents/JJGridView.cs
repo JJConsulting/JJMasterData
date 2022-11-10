@@ -1494,7 +1494,7 @@ public class JJGridView : JJBaseView
             }
 
             html.AppendLine("</td>");
-            if (string.IsNullOrEmpty(scriptOnClick))
+            if (string.IsNullOrEmpty(scriptOnClick) && !EnableEditMode)
             {
                 scriptOnClick = $" onclick=\"$('#{chkBase.Name}').not(':disabled').prop('checked',!$('#{chkBase.Name}').is(':checked')).change();\"";
             }
