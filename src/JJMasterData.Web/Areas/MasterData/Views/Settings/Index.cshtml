@@ -1,0 +1,8 @@
+@using JJMasterData.Web.Extensions
+@model JJDataPanel
+
+@using(Html.BeginForm()){
+    @(new JJTitle("JJMasterDataSettings", string.Empty).GetHtmlString())
+    @Model.GetHtmlString()
+    
+}

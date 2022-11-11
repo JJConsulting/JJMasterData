@@ -248,8 +248,8 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
-            OnClientClick = string.Format("jjdictionary.exportElement('{0}', '{1}', '{2}');",
-                formView.Name, Url.Action("Export"), Translate.Key("Select one or more dictionaries"))
+            OnClientClick =
+                $"jjdictionary.exportElement('{formView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
         };
         formView.AddToolBarAction(btnExport);
 
@@ -294,8 +294,23 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-
+        
         formView.AddToolBarAction(btnLog);
+        
+        var btnSettings = new UrlRedirectAction
+        {
+            Name = "btnAppSettings",
+            ToolTip = Translate.Key("Application Settings"),
+            Icon = IconType.Code,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Application Settings"),
+            UrlRedirect = Url.Action("Index", "Settings", new {Area = "MasterData", Layout = "_MasterDataLayout.Popup"}),
+            Order = 12,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.AddToolBarAction(btnSettings);
 
         formView.OnRenderAction += OnRenderAction;
 

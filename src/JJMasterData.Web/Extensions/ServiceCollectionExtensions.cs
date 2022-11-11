@@ -116,5 +116,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
+        services.AddTransient<SettingsService>();
     }
 }
