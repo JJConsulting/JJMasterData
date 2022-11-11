@@ -3,14 +3,18 @@ using System.Net;
 using JJMasterData.Api.Models;
 using JJMasterData.Api.Services;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Api.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
+[Route("masterApi/{elementName}")]
 public class MasterApiController : ControllerBase
 {
     private MasterApiService Service { get; }
@@ -22,7 +26,7 @@ public class MasterApiController : ControllerBase
 
     [HttpGet]
     [Produces(typeof(MasterApiListResponse))]
-    [Route("masterApi/{elementName}/{pag?}/{regporpag?}/{orderby?}/{tot?}")]
+    [Route("{pag?}/{regporpag?}/{orderby?}/{tot?}")]
     public ActionResult<MasterApiListResponse> GetAll(string elementName, [FromQuery]int pag = 1,
         [FromQuery]int regporpag = 1000, [FromQuery]string? orderby = null, [FromQuery]int? tot = 0)
     {
@@ -40,7 +44,7 @@ public class MasterApiController : ControllerBase
 
     [HttpGet]
     [Produces(typeof(Dictionary<string,object>))]
-    [Route("masterApi/{elementName}/{id}")]
+    [Route("{id}")]
     public ActionResult<Dictionary<string,object>> Get(string elementName, string id)
     {
         return Ok(Service.GetFields(elementName, id));
@@ -48,7 +52,7 @@ public class MasterApiController : ControllerBase
 
 
     [HttpPost]
-    [Route("masterApi/{elementName}")]
+    [Route("")]
     public ActionResult<ResponseLetter> Post([FromBody]Hashtable[] listParam, string elementName, bool replace = false)
     {
         return GetResponseMessage(Service.SetFields(listParam, elementName, replace));
@@ -56,7 +60,7 @@ public class MasterApiController : ControllerBase
 
 
     [HttpPut]
-    [Route("masterApi/{elementName}")]
+    [Route("")]
     public ActionResult<ResponseLetter> Put([FromBody]Hashtable[] listParam, string elementName)
     {
         return GetResponseMessage(Service.UpdateFields(listParam, elementName));
@@ -64,7 +68,7 @@ public class MasterApiController : ControllerBase
 
 
     [HttpPatch]
-    [Route("masterApi/{elementName}")]
+    [Route("")]
     public ActionResult<ResponseLetter> Patch([FromBody] Hashtable[] listParam, string elementName)
     {
         return GetResponseMessage(Service.UpdatePart(listParam, elementName));
@@ -72,7 +76,7 @@ public class MasterApiController : ControllerBase
 
 
     [HttpDelete]
-    [Route("masterApi/{elementName}/{id}")]
+    [Route("{id}")]
     public ActionResult<ResponseLetter> Delete(string elementName, string id)
     {
         return Ok(Service.Delete(elementName, id));
@@ -81,31 +85,46 @@ public class MasterApiController : ControllerBase
 
     [HttpPost]
     [Produces(typeof(FormValues[]))]
-    [Route("masterApi/{elementName}/trigger/{pageState?}/{objname?}")]
+    [Route("trigger/{pageState?}/{objname?}")]
     public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody]Hashtable paramValues, PageState pageState, string objname = "")
     {
         return Ok(Service.PostTrigger(elementName, paramValues, pageState, objname));
     }
 
 
-    [HttpPost]
-    [Route("masterApi/{elementName}/action/{actionName?}/{fieldName?}")]
-    public HttpResponseMessage Action(string elementName, [FromBody]Hashtable paramValues, string actionName, string fieldName = "")
+    [HttpGet]
+    [Route("{id}/file/{fieldName}/{fileName}")]
+    public FileResult File(string elementName, string id, string fieldName, string fileName)
     {
-        throw new NotImplementedException();
+        var dictionary = new DictionaryDao().GetDictionary(elementName);
+
+        var formElement = dictionary.GetFormElement();
+
+        var folderPath = formElement.Fields.First(f => f.Name == fieldName).DataFile.FolderPath;
+        
+        var path = Path.Combine(folderPath, id);
+        
+        string? file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
+
+        if (file == null)
+            throw new KeyNotFoundException(Translate.Key("File not found"));
+
+        var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
+        
+        return File(fileStream, "application/octet-stream");
     }
 
     private ActionResult<ResponseLetter> GetResponseMessage(List<ResponseLetter> listRet)
     {
-        if (listRet?.Count == 1)
+        if (listRet.Count == 1)
             return new ObjectResult(listRet) { StatusCode = listRet.First().Status } ;
 
         int qtdTot = listRet.Count;
-        int qtdInsert = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.Created);
+        int qtdInsert = listRet.Count(x => x.Status == (int)HttpStatusCode.Created);
         if (qtdTot == qtdInsert)
             return Created(nameof(GetResponseMessage),listRet);
 
-        int qtdUpdate = listRet.ToList().Count(x => x.Status == (int)HttpStatusCode.OK);
+        int qtdUpdate = listRet.Count(x => x.Status == (int)HttpStatusCode.OK);
         if (qtdTot == qtdUpdate)
             return Ok(listRet);
 
