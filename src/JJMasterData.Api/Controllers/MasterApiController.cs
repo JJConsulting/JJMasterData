@@ -107,7 +107,7 @@ public class MasterApiController : ControllerBase
         if (file == null)
             throw new KeyNotFoundException(Translate.Key("File not found"));
 
-        using var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
+        var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
         
         return File(fileStream, "application/octet-stream");
     }
