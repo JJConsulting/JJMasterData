@@ -109,7 +109,7 @@ public class MasterApiController : ControllerBase
 
         var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
         
-        return File(fileStream, "application/octet-stream");
+        return File(fileStream, "application/octet-stream", fileName);
     }
     
     [HttpPost]
