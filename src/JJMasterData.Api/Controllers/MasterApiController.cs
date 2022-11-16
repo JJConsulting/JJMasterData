@@ -6,13 +6,12 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
-using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Api.Controllers;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("masterApi/{elementName}")]
 public class MasterApiController : ControllerBase
@@ -90,11 +89,10 @@ public class MasterApiController : ControllerBase
     {
         return Ok(Service.PostTrigger(elementName, paramValues, pageState, objname));
     }
-
-
+    
     [HttpGet]
     [Route("{id}/file/{fieldName}/{fileName}")]
-    public FileResult File(string elementName, string id, string fieldName, string fileName)
+    public IActionResult GetFile(string elementName, string id, string fieldName, string fileName)
     {
         var dictionary = new DictionaryDao().GetDictionary(elementName);
 
@@ -109,9 +107,117 @@ public class MasterApiController : ControllerBase
         if (file == null)
             throw new KeyNotFoundException(Translate.Key("File not found"));
 
-        var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
         
         return File(fileStream, "application/octet-stream");
+    }
+    
+    [HttpPost]
+    [Route("{id}/file/{fieldName}")]
+    public IActionResult PostFile(string elementName, string fieldName, string id, IFormFile file)
+    {
+        var dictionary = new DictionaryDao().GetDictionary(elementName);
+    
+        var formElement = dictionary.GetFormElement();
+
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+        var folderPath = field.DataFile.FolderPath;
+
+        var path = Path.Combine(folderPath, id);
+
+        if (!field.DataFile.MultipleFile)
+        {
+            foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
+            {
+                fileInfo.Delete(); 
+            }
+        }
+
+        using var fileStream = new FileStream(Path.Combine(path, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+        file.CopyToAsync(fileStream);
+        
+        var factory = new Factory();
+
+        var hash = new Hashtable();
+
+        int i = 0;
+        foreach (var pk in formElement.Fields.Where(f => f.IsPk))
+        {
+            hash[pk.Name] = id.Split(",")[i];
+            i++;
+        }
+        
+        var values = factory.GetFields(elementName, hash);
+        
+        if (field.DataFile.MultipleFile)
+        {
+            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+        
+            if (!currentFiles.Contains(file.FileName))
+            {
+                currentFiles.Add(file.FileName);
+                values[field.Name] = string.Join(",", currentFiles);
+            }
+        }
+        else
+        {
+            values[field.Name] = file.FileName;
+        }
+        
+        factory.SetValues(formElement, values);
+        
+        return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}","File successfully created.");
+    }
+    
+    [HttpDelete]
+    [Route("{id}/file/{fieldName}/{fileName}")]
+    public IActionResult DeleteFile(string elementName, string fieldName, string id, string fileName)
+    {
+        var dictionary = new DictionaryDao().GetDictionary(elementName);
+    
+        var formElement = dictionary.GetFormElement();
+
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+        var folderPath = field.DataFile.FolderPath;
+
+        var path = Path.Combine(folderPath, Path.Combine(id, fileName));
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+        else
+            throw new KeyNotFoundException(Translate.Key("File not found"));
+        
+        var factory = new Factory();
+
+        var hash = new Hashtable();
+
+        int i = 0;
+        foreach (var pk in formElement.Fields.Where(f => f.IsPk))
+        {
+            hash[pk.Name] = id.Split(",")[i];
+            i++;
+        }
+        
+        var values = factory.GetFields(elementName, hash);
+        
+        if (field.DataFile.MultipleFile)
+        {
+            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+        
+            if (currentFiles.Contains(fileName))
+            {
+                currentFiles.Remove(fileName);
+                values[field.Name] = string.Join(",", currentFiles);
+            }
+        }
+        else
+        {
+            values[field.Name] = null;
+        }
+        
+        factory.SetValues(formElement, values);
+        
+        return Ok("File successfully deleted.");
     }
 
     private ActionResult<ResponseLetter> GetResponseMessage(List<ResponseLetter> listRet)
