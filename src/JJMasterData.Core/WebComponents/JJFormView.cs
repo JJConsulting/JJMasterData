@@ -520,7 +520,9 @@ public class JJFormView : JJGridView
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        var selValues = Factory.GetFields(InsertAction.ElementNameToSelect, map.PKFieldValues);
+        var dicDao = new DictionaryDao(DataAccess);
+        var element = dicDao.GetElement(InsertAction.ElementNameToSelect);
+        var selValues = Factory.GetFields(element, map.PKFieldValues);
         var formManager = new FormManager(FormElement, UserValues, DataAccess);
         var values = formManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);

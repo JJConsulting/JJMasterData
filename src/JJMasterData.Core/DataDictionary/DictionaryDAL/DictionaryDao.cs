@@ -74,7 +74,7 @@ public class DictionaryDao
         string orderby = "name, type";
         string currentName = "";
         int tot = 1;
-        var dt = Factory.GetDataTable(Factory.GetStructure(), filter, orderby, 10000, 1, ref tot);
+        var dt = Factory.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
         DicParser currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
@@ -121,7 +121,7 @@ public class DictionaryDao
             filter.Add("sync", (bool)sync ? "1" : "0");
 
         int tot = 1;
-        var dt = Factory.GetDataTable(Factory.GetStructure(), filter, orderby, 10000, 1, ref tot);
+        var dt = Factory.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
 
         if (dt.Rows.Count == 0)
             return null;
@@ -217,7 +217,7 @@ public class DictionaryDao
         var filter = new Hashtable();
         filter.Add("type", "F");
 
-        var dt = Factory.GetDataTable(Factory.GetStructure(), filter, null, tot, 1, ref tot);
+        var dt = Factory.GetDataTable(GetStructure(), filter, null, tot, 1, ref tot);
         foreach (DataRow row in dt.Rows)
         {
             list.Add(row["name"].ToString());
@@ -242,7 +242,7 @@ public class DictionaryDao
 
         Hashtable filter = new();
         filter.Add("name", elementName);
-        DataTable dt = Factory.GetDataTable(Factory.GetStructure(), filter);
+        DataTable dt = Factory.GetDataTable(GetStructure(), filter);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
 
@@ -372,7 +372,7 @@ public class DictionaryDao
             throw new ArgumentNullException(nameof(dictionary.Table.Name));
 
         var cmds = new List<DataAccessCommand>();
-        var element = Factory.GetStructure();
+        var element = GetStructure();
         string name = dictionary.Table.Name;
         string jsonTable = JsonConvert.SerializeObject(dictionary.Table);
 
@@ -451,7 +451,7 @@ public class DictionaryDao
         var filters = new Hashtable();
         filters.Add("name", id);
 
-        DataTable dt = Factory.GetDataTable(Factory.GetStructure(), filters);
+        DataTable dt = Factory.GetDataTable(GetStructure(), filters);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", id));
 
@@ -461,7 +461,7 @@ public class DictionaryDao
             var delFilter = new Hashtable();
             delFilter.Add("name", id);
             delFilter.Add("type", row["type"].ToString());
-            var cmd = Factory.Provider.GetDeleteScript(Factory.GetStructure(), delFilter);
+            var cmd = Factory.Provider.GetDeleteScript(GetStructure(), delFilter);
             listcmd.Add(cmd);
         }
         _dataAccess.SetCommand(listcmd);
@@ -477,7 +477,7 @@ public class DictionaryDao
 
         Hashtable filter = new Hashtable();
         filter.Add("name", elementName);
-        int count = Factory.GetCount(Factory.GetStructure(), filter);
+        int count = Factory.GetCount(GetStructure(), filter);
         return count > 0;
     }
 
@@ -486,7 +486,7 @@ public class DictionaryDao
     /// </summary>
     public void CreateStructure()
     {
-        Factory.CreateDataModel(Factory.GetStructure());
+        Factory.CreateDataModel(GetStructure());
     }
 
     /// <summary>
@@ -622,7 +622,7 @@ public class DictionaryDao
             filter.Add("sync", (bool)sync ? "1" : "0");
 
         int tot = 1000;
-        var dt = Factory.GetDataTable(Factory.GetStructure(), filter, null, 1000, 1, ref tot);
+        var dt = Factory.GetDataTable(GetStructure(), filter, null, 1000, 1, ref tot);
 
         bool isFirst = true;
         foreach (DataRow row in dt.Rows)
@@ -639,7 +639,7 @@ public class DictionaryDao
             Hashtable filterForm = new Hashtable();
             filterForm.Add("name", row["name"].ToString());
             filterForm.Add("type", "F");
-            Hashtable resultElement = Factory.GetFields(Factory.GetStructure(), filterForm);
+            Hashtable resultElement = Factory.GetFields(GetStructure(), filterForm);
             if (resultElement != null)
             {
                 sJson.Append(",\"form\":");
@@ -732,5 +732,92 @@ public class DictionaryDao
 
         return element;
     }
+
+
+    /// <summary>
+    /// Returns an element with the basic structure of the table
+    /// </summary>
+    /// <param name="elementName">Dictionary name</param>
+    /// <returns></returns>
+    public Element GetElement(string elementName)
+    {
+        if (elementName == null)
+            throw new ArgumentNullException(nameof(elementName), Translate.Key("Invalid dictionary name"));
+
+        var filter = new Hashtable();
+        filter.Add("name", elementName);
+        filter.Add("type", "T");
+
+        var resultElement = Factory.GetFields(GetStructure(), filter);
+
+        if (resultElement == null)
+            throw new ArgumentException(Translate.Key("Dictionary {0} not found", elementName));
+
+        var element = JsonConvert.DeserializeObject<Element>(resultElement["json"].ToString());
+        element.Info = resultElement["info"].ToString();
+
+        return element;
+    }
+
+
+    /// <summary>
+    /// Returns a list of base elements
+    /// </summary>
+    /// <returns></returns>
+    public List<Element> GetListElement()
+    {
+        var filter = new Hashtable();
+        filter.Add("type", "T");
+        return GetListElement(filter, null, 1000, 1);
+    }
+
+
+    /// <summary>
+    /// Returns a list of base elements
+    /// </summary>
+    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
+    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
+    /// <param name="regporpag">Number of records to be displayed per page</param>
+    /// <param name="pag">Current page</param>
+    /// <returns></returns>
+    public List<Element> GetListElement(Hashtable filters, string orderby, int regporpag, int pag)
+    {
+        var element = GetStructure();
+        var listElement = new List<Element>();
+        int tot = 1000;
+        var dt = Factory.GetDataTable(element, filters, orderby, regporpag, pag, ref tot);
+        foreach (DataRow row in dt.Rows)
+        {
+            if (row["type"].ToString().Equals("T"))
+            {
+                Element e = JsonConvert.DeserializeObject<Element>(row["json"].ToString());
+                listElement.Add(e);
+            }
+        }
+
+        return listElement;
+    }
+
+
+    public Element GetStructure()
+    {
+        var element = new Element(JJService.Settings.TableName, "Data Dictionaries");
+
+        element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields["type"].EnableOnDelete = false;
+
+        element.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
+        element.Fields.Add("namefilter", "Dictionary Name", FieldType.NVarchar, 30, false, FilterMode.Contain,
+            FieldBehavior.ViewOnly);
+        element.Fields.Add("tablename", "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add("info", "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add("owner", "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
+        element.Fields.Add("sync", "Sync", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields.Add("modified", "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
+        element.Fields.Add("json", "Object", FieldType.Text, 0, false, FilterMode.None);
+
+        return element;
+    }
+
 
 }

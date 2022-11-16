@@ -8,6 +8,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 
@@ -280,10 +281,12 @@ public class JJLookup : JJBaseControl
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(idSearch));
 
         var dao = new Factory(DataAccess);
+        var dicDao = new DictionaryDao(DataAccess);
         Hashtable fields;
         try
         {
-            fields = dao.GetFields(DataItem.ElementMap.ElementName, filters);
+            var element = dicDao.GetElement(DataItem.ElementMap.ElementName);
+            fields = dao.GetFields(element, filters);
         }
         catch
         {

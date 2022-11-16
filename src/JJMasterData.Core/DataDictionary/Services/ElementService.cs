@@ -42,7 +42,7 @@ public class ElementService : BaseService
     public List<string> GetScriptsDefault()
     {
         var factory = DicDao.Factory;
-        var element = factory.GetStructure();
+        var element = DicDao.GetStructure();
 
         var scriptsList = new List<string>
         {
@@ -81,7 +81,7 @@ public class ElementService : BaseService
     {
         var dataAccess = JJService.DataAccess;
         var factory = DicDao.Factory;
-        var element = DicDao.Factory.GetStructure();
+        var element = DicDao.GetStructure();
 
         DicDao.CreateStructure();
         dataAccess.ExecuteBatch(factory.Provider.GetReadProcedureScript(element));
@@ -196,7 +196,7 @@ public class ElementService : BaseService
 
     public JJFormView GetFormView()
     {
-        var element = DicDao.Factory.GetStructure();
+        var element = DicDao.GetStructure();
         var formElement = new FormElement(element);
 
         formElement.Title = "JJMasterData";

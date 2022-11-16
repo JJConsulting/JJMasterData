@@ -37,8 +37,7 @@ public class RelationsService : BaseService
         }
 
         FormElement formElement = DicDao.GetFormElement(childElement);
-        Element childTable = DicDao.Factory.GetElement(childElement);
-        if (childTable == null)
+        if (formElement == null)
         {
             AddError("Entity", Translate.Key("Entity {0} not found", childElement));
             return IsValid;
@@ -56,7 +55,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
 
-        if (!childTable.Fields.ContainsKey(fkColumnName))
+        if (!formElement.Fields.Contains(fkColumnName))
         {
             AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElement));
             return IsValid;
@@ -68,7 +67,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
 
-        ElementField fkColumn = childTable.Fields[fkColumnName];
+        ElementField fkColumn = formElement.Fields[fkColumnName];
         ElementField pkColumn = formElement.Fields[pkColumnName];
 
         if (fkColumn.Filter.Type == FilterMode.None && !fkColumn.IsPk)
