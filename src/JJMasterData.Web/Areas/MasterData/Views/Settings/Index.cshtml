@@ -1,8 +1,19 @@
 @using JJMasterData.Web.Extensions
-@model JJDataPanel
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.Web.Services
+@model SettingsViewModel
+@inject RazorPartialRendererService RendererService
+@{
+    Layout = "_MasterDataLayout.Popup";
+}
 
-@using(Html.BeginForm()){
-    @(new JJTitle("JJMasterDataSettings", string.Empty).GetHtmlString())
-    @Model.GetHtmlString()
-    
+@using (Html.BeginForm())
+{
+    <jj-title title="JJMasterDataSettings" subtitle=""></jj-title>
+    <jj-collapse-panel
+        title="Connection String"
+        partial-path="../Areas/MasterData/Views/Settings/_ConnectionString"
+        partial-model="Model.ConnectionString"
+        icon="fa fa-connectdevelop">
+    </jj-collapse-panel>
 }

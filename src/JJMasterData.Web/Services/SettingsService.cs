@@ -11,7 +11,7 @@ namespace JJMasterData.Web.Services;
 
 public class SettingsService
 {
-    private ISettings Settings { get; }
+    public ISettings Settings { get; }
 
     public SettingsService(ISettings settings)
     {

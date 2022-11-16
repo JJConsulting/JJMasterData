@@ -1,4 +1,5 @@
 using JJMasterData.Web.Controllers;
+using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,11 @@ public class SettingsController : DataDictionaryController
 
     public IActionResult Index()
     {
-        var dataPanel = Service.GetDataPanel();
-        return View(dataPanel);
+        var settings = new SettingsViewModel
+        {
+            ConnectionString = ConnectionString.FromString(Service.Settings.ConnectionString),
+            BootstrapVersion = Service.Settings.BootstrapVersion
+        };
+        return View(settings);
     }
 }

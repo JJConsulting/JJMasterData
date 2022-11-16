@@ -1,0 +1,26 @@
+@model ConnectionString
+
+<div class="@BootstrapHelper.FormGroup">
+    <div class="row">
+        <div class="col-sm-12">
+            <label asp-for="Server" class="@BootstrapHelper.Label"></label>
+            <input asp-for="Server" class="form-control"/>
+            <span asp-validation-for="Server" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="Username" class="@BootstrapHelper.Label"></label>
+            <input asp-for="Username" class="form-control"/>
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="Password" class="@BootstrapHelper.Label"></label>
+            <input asp-for="Password" class="form-control"/>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="col-sm-12">
+            <label asp-for="Database" class="@BootstrapHelper.Label"></label>
+            <input asp-for="Database" class="form-control"/>
+            <span asp-validation-for="Database" class="text-danger"></span>
+        </div>
+    </div>
+</div>
