@@ -19,7 +19,7 @@ public class SettingsController : DataDictionaryController
     {
         var settings = new SettingsViewModel
         {
-            ConnectionString = ConnectionString.FromString(Service.Settings.ConnectionString),
+            ConnectionString = new ConnectionString(Service.Settings.ConnectionString),
             BootstrapVersion = Service.Settings.BootstrapVersion
         };
         return View(settings);

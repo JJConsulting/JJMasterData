@@ -7,20 +7,86 @@
             <input asp-for="Server" class="form-control"/>
             <span asp-validation-for="Server" class="text-danger"></span>
         </div>
-        <div class="col-sm-6">
-            <label asp-for="Username" class="@BootstrapHelper.Label"></label>
-            <input asp-for="Username" class="form-control"/>
-            <span asp-validation-for="Username" class="text-danger"></span>
+        <div class="col-sm-12">
+            <label asp-for="IntegratedSecurity" class="@BootstrapHelper.Label"></label>
+            <select onchange="onIntegratedSecurityChange(this)" asp-for="IntegratedSecurity" class="form-control">
+                <option value="False">False</option>
+                <option value="True">True</option>
+            </select>
+            <span asp-validation-for="IntegratedSecurity" class="text-danger"></span>
         </div>
-        <div class="col-sm-6">
-            <label asp-for="Password" class="@BootstrapHelper.Label"></label>
-            <input asp-for="Password" class="form-control"/>
-            <span asp-validation-for="Password" class="text-danger"></span>
+        
+        <div id="login-data">
+            <div class="col-sm-6">
+                <label asp-for="Username" class="@BootstrapHelper.Label"></label>
+                <input asp-for="Username" class="form-control"/>
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="col-sm-6">
+                <label asp-for="Password" class="@BootstrapHelper.Label"></label>
+                <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
         </div>
+
         <div class="col-sm-12">
             <label asp-for="Database" class="@BootstrapHelper.Label"></label>
             <input asp-for="Database" class="form-control"/>
             <span asp-validation-for="Database" class="text-danger"></span>
         </div>
+        <div class="col-sm-12">
+            <label asp-for="Timeout" class="@BootstrapHelper.Label"></label>
+            <input asp-for="Timeout" class="form-control"/>
+            <span asp-validation-for="Timeout" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="TrustServerCertificate" class="@BootstrapHelper.Label"></label>
+            <select asp-for="TrustServerCertificate" class="form-control">
+                <option value="False">False</option>
+                <option value="True">True</option>
+            </select>
+            <span asp-validation-for="TrustServerCertificate" class="text-danger"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="Encrypt" class="@BootstrapHelper.Label"></label>
+            <select asp-for="Encrypt" class="form-control">
+                <option value="False">False</option>
+                <option value="True">True</option>
+            </select>
+            <span asp-validation-for="Encrypt" class="text-danger"></span>
+        </div>
+        <div class="col-sm-4">
+            <label asp-for="Pooling" class="@BootstrapHelper.Label"></label>
+            <select asp-for="Pooling" class="form-control">
+                <option value="False">False</option>
+                <option value="True">True</option>
+            </select>
+            <span asp-validation-for="Pooling" class="text-danger"></span>
+        </div>
+        <div id="pooling-data">
+              <div class="col-sm-4">
+                        <label asp-for="MinPoolSize" class="@BootstrapHelper.Label"></label>
+                        <input asp-for="MinPoolSize" class="form-control"/>
+                        <span asp-validation-for="MinPoolSize" class="text-danger"></span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label asp-for="MaxPoolSize" class="@BootstrapHelper.Label"></label>
+                        <input asp-for="MaxPoolSize" class="form-control"/>
+                        <span asp-validation-for="MaxPoolSize" class="text-danger"></span>
+                    </div>
+        </div>
     </div>
 </div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function onIntegratedSecurityChange(value) {
+            if (value === "True"){
+                document.getElementById("login-data").style.visibility="hidden";
+            }
+            else{
+                document.getElementById("login-data").style.visibility="visible";
+            }
+        }
+    </script>
+}
