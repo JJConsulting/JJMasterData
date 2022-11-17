@@ -127,22 +127,6 @@ public class ElementController : DataDictionaryController
         return View("Scripts", "_MasterDataLayout.Popup");
     }
 
-    public IActionResult About()
-    {
-        var service = new AboutService();
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        var model = new AboutViewModel
-        {
-            ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
-            ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
-            BootstrapVersion = BootstrapHelper.Version.ToString(),
-            Dependencies = service.GetJJAssemblies()
-        };
-
-        return View("About", model);
-    }
-
     [HttpPost]
     public IActionResult Add(string tableName, bool importFields)
     {
@@ -275,7 +259,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("About"),
+            UrlRedirect = Url.Action("About", "Settings", new {Area="MasterData"}),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };

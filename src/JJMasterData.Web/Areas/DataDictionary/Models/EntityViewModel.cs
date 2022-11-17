@@ -2,7 +2,7 @@
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class EntityViewModel : DataDictionaryViewModel
 {

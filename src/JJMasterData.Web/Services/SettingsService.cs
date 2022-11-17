@@ -1,11 +1,6 @@
-using System.Collections;
 using System.Reflection;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Settings;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Web.Services;
 
@@ -18,60 +13,30 @@ public class SettingsService
         Settings = settings;
     }
 
-    public JJDataPanel GetDataPanel()
+    public List<Assembly> GetJJAssemblies() => AppDomain.CurrentDomain.GetAssemblies().Where(a =>
     {
-        var formElement = GetFormElement();
+        var name = a.GetName().Name;
+        return name != null && name.Contains("JJ");
+    }).ToList();
 
-        var dataPanel = new JJDataPanel(formElement)
+    public string GetAssemblyCopyright(Assembly assembly)
+    {
+        object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+        return attributes.Length == 0 ? string.Empty : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+    }
+
+    public string GetAssemblyProduct(Assembly assembly)
+    {
+        object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+        return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
+    }
+    public async Task<(bool, string)> TryConnectionAsync(string connectionString)
+    {
+        var dataAccess = new DataAccess
         {
-            PageState = PageState.Update,
-            Name = "ISettings",
-            Values = GetValues()
+            ConnectionString = connectionString
         };
 
-        return dataPanel;
-    }
-
-    private Hashtable GetValues()
-    {
-        var hashtable = new Hashtable();
-        foreach (var field in Settings.GetType().GetRuntimeProperties())
-        {
-            hashtable[field.Name] = field.GetValue(Settings);
-        }
-
-        return hashtable;
-    }
-
-    private FormElement GetFormElement()
-    {
-        var formElement = new FormElement
-        {
-            Name = "ISettings",
-            Title = Translate.Key("JJMasterData Settings"),
-        };
-
-        foreach (var field in GetFormElementFields())
-        {
-            formElement.Fields.Add(field);
-        }
-
-        return formElement;
-    }
-
-    private IEnumerable<FormElementField> GetFormElementFields()
-    {
-        var fields = new List<FormElementField>();
-        foreach (var field in Settings.GetType().GetRuntimeProperties().Where(p=>!p.GetAccessors(true)[0].IsStatic))
-        {
-            fields.Add(new FormElementField()
-            {
-                Name = field.Name, CssClass = "col-sm-3",
-                IsPk = field.GetValue(Settings) != null,
-                DataType = field.PropertyType == typeof(string) ? FieldType.Varchar : FieldType.Int
-            });
-        }
-
-        return fields;
+        return await dataAccess.TryConnectionAsync();
     }
 }

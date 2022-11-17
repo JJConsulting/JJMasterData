@@ -1,19 +1,36 @@
-@using JJMasterData.Web.Extensions
 @using JJMasterData.Core.DataDictionary
-@using JJMasterData.Web.Services
-@model SettingsViewModel
-@inject RazorPartialRendererService RendererService
+@model JJMasterData.Web.Areas.MasterData.Models.SettingsViewModel
 @{
     Layout = "_MasterDataLayout.Popup";
 }
 
-@using (Html.BeginForm())
+
+@if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })
 {
+    <jj-alert
+        title="@Translate.Key("Success")"
+        messages="@(new List<string> {Translate.Key("Connection successfully estabilished.")})"
+        icon="@IconType.CheckCircle"
+        color="@PanelColor.Success">
+
+    </jj-alert>
+}
+else if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:false })
+{
+    <jj-alert
+        title="@Translate.Key("Error")"
+        messages="@(new List<string> {Model.ConnectionString.ConnectionResult.ErrorMessage})"
+        icon="@IconType.ExclamationTriangle"
+        color="@PanelColor.Danger">
+
+    </jj-alert>
+}
+<form>
     <jj-title title="JJMasterDataSettings" subtitle=""></jj-title>
     <jj-collapse-panel
         title="Connection String"
-        partial-path="../Areas/MasterData/Views/Settings/_ConnectionString"
-        partial-model="Model.ConnectionString"
-        icon="fa fa-connectdevelop">
+        partial="_ConnectionString"
+        model="Model"
+        icon="@IconType.Connectdevelop">
     </jj-collapse-panel>
-}
+</form>

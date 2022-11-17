@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Components.RenderTree;
@@ -13,15 +14,15 @@ public class JJCollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("title")]
     public string Title { get; set; }
     
-    [HtmlAttributeName("partial-path")]
+    [HtmlAttributeName("partial")]
     public string Partial { get; set; }
 
-    [HtmlAttributeName("partial-model")]
+    [HtmlAttributeName("model")]
     public dynamic? Model { get; set; }
     
     [HtmlAttributeName("icon")]
     
-    public string? Icon { get; set; }
+    public IconType Icon { get; set; }
 
     private RazorPartialRendererService RendererService { get; }
     
