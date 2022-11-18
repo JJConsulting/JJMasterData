@@ -4,26 +4,24 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Providers;
 using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
-class ProviderSQLite : IProvider
+internal class ProviderSQLite : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const string TAB = "\t";
+    public override string VariablePrefix => "@";
 
-    public string VariablePrefix
+    public ProviderSQLite(DataAccess dataAccess) : base(dataAccess)
     {
-        get
-        {
-            return "@";
-        }
     }
 
-    public string GetScriptCreateTable(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -236,37 +234,37 @@ class ProviderSQLite : IProvider
         return sSql.ToString();
     }
 
-    public string GetScriptWriteProcedure(Element element)
+    public override string GetScriptWriteProcedure(Element element)
     {
         return null;
     }
 
-    public string GetScriptReadProcedure(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         return null;
     }
 
-    public DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    public DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
     {
         var fields = element.Fields
             .ToList()
@@ -333,23 +331,22 @@ class ProviderSQLite : IProvider
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
+    public new DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot)
     {
         DataAccessParameter pTot = null;
         var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
+        DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
 
         if (regporpag > 0 && tot == 0)
         {
-            var obj = dataAccess.GetResult(GetScriptCount(element, filters));
+            var obj = DataAccess.GetResult(GetScriptCount(element, filters));
             if (obj != null)
                 tot = int.Parse(obj.ToString());
         }
 
         return dt;
     }
-
 
     private DataAccessCommand GetScriptInsert(Element element, Hashtable values, bool isReplace)
     {
@@ -558,17 +555,6 @@ class ProviderSQLite : IProvider
             else
             {
                 value = values[f.Name];
-                //if (f.DataType == TField.FLOAT)
-                //{
-                //    double nValue;
-                //    if (double.TryParse(values[f.Name].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out nValue))
-                //        value = nValue;
-                //}
-                //else
-                //{
-
-                //}
-
             }
         }
 
@@ -650,5 +636,8 @@ class ProviderSQLite : IProvider
         return cmd;
     }
 
-
+    public override Element GetElementFromTable(string tableName)
+    {
+        return null;
+    }
 }

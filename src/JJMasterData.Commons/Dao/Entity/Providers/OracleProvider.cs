@@ -4,26 +4,25 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
+using JJMasterData.Commons.Dao.Entity.Providers;
 using JJMasterData.Commons.Settings;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
-class OracleProvider : IProvider
+internal class OracleProvider : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const string TAB = "\t";
+    public override string VariablePrefix => "p_";
 
-    public string VariablePrefix
+    public OracleProvider(DataAccess dataAccess) : base(dataAccess)
     {
-        get
-        {
-            return "p_";
-        }
     }
 
-    public string GetScriptCreateTable(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -233,7 +232,7 @@ class OracleProvider : IProvider
         return sSql.ToString();
     }
 
-    public string GetScriptWriteProcedure(Element element)
+    public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -486,7 +485,7 @@ class OracleProvider : IProvider
         return sql.ToString();
     }
 
-    public string GetScriptReadProcedure(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -795,22 +794,22 @@ class OracleProvider : IProvider
         return sql.ToString();
     }
 
-    public DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
         return GetCommandWrite(INSERT, element, values);
     }
 
-    public DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
         return GetCommandWrite(UPDATE, element, values);
     }
 
-    public DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
         return GetCommandWrite(DELETE, element, filters);
     }
 
-    public DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
@@ -846,7 +845,7 @@ class OracleProvider : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -923,17 +922,6 @@ class OracleProvider : IProvider
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
-    {
-        DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
-        tot = 0;
-        if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
-            tot = (int)pTot.Value;
-
-        return dt;
-    }
 
     private string GetStrType(FieldType dataType)
     {
@@ -1011,4 +999,8 @@ class OracleProvider : IProvider
         return ret;
     }
 
+    public override Element GetElementFromTable(string tableName)
+    {
+        return null;
+    }
 }

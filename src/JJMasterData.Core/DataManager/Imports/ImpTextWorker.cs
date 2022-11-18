@@ -268,13 +268,13 @@ public class ImpTextWorker : IBackgroundTaskWorker
             {
                 switch (ret.Result)
                 {
-                    case CommandType.Insert:
+                    case CommandOperation.Insert:
                         currentProcess.Insert++;
                         break;
-                    case CommandType.Update:
+                    case CommandOperation.Update:
                         currentProcess.Update++;
                         break;
-                    case CommandType.Delete:
+                    case CommandOperation.Delete:
                         currentProcess.Delete++;
                         break;
                     default:

@@ -4,21 +4,26 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Providers;
+using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
-public class MSSQLProvider : IProvider
+internal class MSSQLProvider : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const char TAB = '\t';
+    public override string VariablePrefix => "@";
 
-    public string VariablePrefix => "@";
+    public MSSQLProvider(DataAccess dataAccess) : base(dataAccess)
+    {
+    }
 
-    public string GetScriptCreateTable(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -217,7 +222,7 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
            
-    public string GetScriptWriteProcedure(Element element)
+    public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -482,7 +487,7 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public string GetScriptReadProcedure(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -897,27 +902,27 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
         return GetCommandWrite(INSERT, element, values);
     }
 
-    public DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
         return GetCommandWrite(UPDATE, element, values);
     }
 
-    public DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
         return GetCommandWrite(DELETE, element, filters);
     }
 
-    public DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
 
-    public DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -1025,17 +1030,6 @@ public class MSSQLProvider : IProvider
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
-    {
-        DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
-        tot = 0;
-        if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
-            tot = (int)pTot.Value;
-
-        return dt;
-    }
 
     private object GetElementValue(ElementField f, Hashtable values)
     {
@@ -1156,11 +1150,16 @@ public class MSSQLProvider : IProvider
             return FieldType.NText;
 
         return FieldType.NVarchar;
-
     }
 
-    public Element GetElementFromTable(string tableName, ref DataAccess dataAccess)
+    public override Element GetElementFromTable(string tableName)
     {
+        if (string.IsNullOrEmpty(tableName))
+            throw new ArgumentNullException(nameof(tableName));
+
+        if (!DataAccess.TableExists(tableName))
+            throw new Exception(Translate.Key("Table {0} not found", tableName));
+
         var element = new Element
         {
             Name = tableName
@@ -1173,7 +1172,7 @@ public class MSSQLProvider : IProvider
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
 
-        var dtFields = dataAccess.GetDataTable(cmdFields);
+        var dtFields = DataAccess.GetDataTable(cmdFields);
         if (dtFields == null || dtFields.Rows.Count == 0)
             return null;
 
@@ -1200,14 +1199,14 @@ public class MSSQLProvider : IProvider
         };
         
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        var dtPks = dataAccess.GetDataTable(cmdPks);
+        var dtPks = DataAccess.GetDataTable(cmdPks);
         foreach (DataRow row in dtPks.Rows)
         {
             element.Fields[row["COLUMN_NAME"].ToString()].IsPk = true;
         }
 
-
         return element;
     }
 
+    
 }

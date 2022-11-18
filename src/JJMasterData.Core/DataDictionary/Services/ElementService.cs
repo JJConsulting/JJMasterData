@@ -32,9 +32,9 @@ public class ElementService : BaseService
         FormElement formElement = DicDao.GetFormElement(id);
         List<string> listScripts = new List<string>();
 
-        listScripts.Add(factory.GetCreateTableScript(formElement));
-        listScripts.Add(factory.GetReadProcedureScript(formElement));
-        listScripts.Add(factory.GetWriteProcedureScript(formElement));
+        listScripts.Add(factory.GetScriptCreateTable(formElement));
+        listScripts.Add(factory.GetScriptReadProcedure(formElement));
+        listScripts.Add(factory.GetScriptWriteProcedure(formElement));
 
         return listScripts;
     }
@@ -46,9 +46,9 @@ public class ElementService : BaseService
 
         var scriptsList = new List<string>
         {
-            factory.GetCreateTableScript(element),
-            factory.GetReadProcedureScript(element),
-            factory.GetWriteProcedureScript(element)
+            factory.GetScriptCreateTable(element),
+            factory.GetScriptReadProcedure(element),
+            factory.GetScriptWriteProcedure(element)
         };
 
         return scriptsList;
@@ -64,8 +64,8 @@ public class ElementService : BaseService
         {
             case "Exec":
                 var sql = new StringBuilder();
-                sql.AppendLine(factory.GetWriteProcedureScript(formElement));
-                sql.AppendLine(factory.GetReadProcedureScript(formElement));
+                sql.AppendLine(factory.GetScriptWriteProcedure(formElement));
+                sql.AppendLine(factory.GetScriptReadProcedure(formElement));
 
 
                 factory.ExecuteBatch(sql.ToString());
@@ -83,7 +83,7 @@ public class ElementService : BaseService
         var element = DicDao.GetStructure();
 
         DicDao.CreateStructure();
-        factory.ExecuteBatch(factory.GetReadProcedureScript(element));
+        factory.ExecuteBatch(factory.GetScriptReadProcedure(element));
     }
 
     #endregion

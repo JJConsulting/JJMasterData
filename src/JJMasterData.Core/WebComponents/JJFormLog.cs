@@ -11,7 +11,6 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
-using CommandType = JJMasterData.Commons.Dao.Entity.CommandType;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -304,20 +303,20 @@ public class JJFormLog : JJBaseView
             string action = "";
             string origem = "";
 
-            if (row["actionType"].Equals((int)CommandType.Update))
+            if (row["actionType"].Equals((int)CommandOperation.Update))
             {
                 icon = "fa fa-pencil fa-lg fa-fw";
                 color = "#ffbf00";
                 action = Translate.Key("Edited");
             }
-            else if (row["actionType"].Equals((int)CommandType.Insert))
+            else if (row["actionType"].Equals((int)CommandOperation.Insert))
             {
                 icon = "fa fa-plus fa-lg fa-fw";
                 color = "#387c44;";
                 action = Translate.Key("Added");
 
             }
-            else if (row["actionType"].Equals((int)CommandType.Delete))
+            else if (row["actionType"].Equals((int)CommandOperation.Delete))
             {
                 icon = "fa fa-trash fa-lg fa-fw";
                 color = "#b20000";

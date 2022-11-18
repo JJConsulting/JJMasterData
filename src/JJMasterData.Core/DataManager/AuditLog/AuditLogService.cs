@@ -36,7 +36,7 @@ public class AuditLogService
         EntityRepository = entityRepository;
     }
 
-    public void AddLog(Element element, Hashtable formValues, CommandType action)
+    public void AddLog(Element element, Hashtable formValues, CommandOperation action)
     {
         var values = new Hashtable
         {
@@ -139,9 +139,9 @@ public class AuditLogService
         action.Component = FormComponent.ComboBox;
         action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandType.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
 
         return form;
     }

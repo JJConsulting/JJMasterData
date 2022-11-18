@@ -17,6 +17,9 @@
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="Dao\Entity\Providers\" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Include="..\..\JJMasterData.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
@@ -37,5 +40,8 @@
 		<PackageReference Include="System.Data.Common" Version="4.3.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Dao\Entity\Providers\" />
 	</ItemGroup>
 </Project>

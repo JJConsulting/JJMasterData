@@ -229,7 +229,7 @@ public class MasterApiService
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
-                if (formResult.Result == CommandType.Insert)
+                if (formResult.Result == CommandOperation.Insert)
                 {
                     ret.Status = (int)HttpStatusCode.Created;
                     ret.Message = Translate.Key("Record added successfully");

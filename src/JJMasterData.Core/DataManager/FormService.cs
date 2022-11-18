@@ -89,7 +89,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandType.Update);
+            AuditLog.AddLog(FormElement, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -124,7 +124,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandType.Insert);
+            AuditLog.AddLog(FormElement, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -140,10 +140,10 @@ public class FormService
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
     /// <param name="formValues">Values to be inserted.</param>
-    public FormLetter<CommandType> InsertOrReplace(Hashtable values)
+    public FormLetter<CommandOperation> InsertOrReplace(Hashtable values)
     {
         var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
-        var result = new FormLetter<CommandType>(errors);
+        var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)
         {
@@ -162,21 +162,21 @@ public class FormService
         if (EnableHistoryLog)
             AuditLog.AddLog(FormElement, values, result.Result);
 
-        if (OnAfterInsert != null && result.Result == CommandType.Insert)
+        if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterInsert.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        if (OnAfterUpdate != null && result.Result == CommandType.Update)
+        if (OnAfterUpdate != null && result.Result == CommandOperation.Update)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterUpdate.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        if (OnAfterDelete != null && result.Result == CommandType.Delete)
+        if (OnAfterDelete != null && result.Result == CommandOperation.Delete)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterDelete.Invoke(DataContext, afterEventArgs);
@@ -214,7 +214,7 @@ public class FormService
             FormFileService.DeleteFiles(FormElement, primaryKeys);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, primaryKeys, CommandType.Delete);
+            AuditLog.AddLog(FormElement, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
