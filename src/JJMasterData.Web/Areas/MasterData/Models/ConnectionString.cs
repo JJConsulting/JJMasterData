@@ -79,6 +79,11 @@ public class ConnectionString
         {
             Timeout = int.Parse(timeout.ToString()!);
         }
+        
+        if (builder.TryGetValue("pooling", out var pooling))
+        {
+            Pooling = bool.Parse(pooling.ToString()!);
+        }
     }
     
     
@@ -113,6 +118,9 @@ public class ConnectionString
         
         if (Encrypt != null)
             builder["encrypt"] = Encrypt;
+            
+       if (Pooling != null)
+            builder["pooling"] = Pooling;
         return builder.ToString();
     }
 }
