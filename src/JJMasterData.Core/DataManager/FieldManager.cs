@@ -15,30 +15,8 @@ public class FieldManager
 {
     #region "Properties"
 
-    private ExpressionManager _expression;
-    private Hashtable _userValues;
-
     private string Name { get; set; }
-
-    /// <summary>
-    /// Valores espeçificos do usuário.
-    /// Utilizado para substituir os valores em tempo de execução nos métodos que suportam expression.
-    /// </summary>
-    internal Hashtable UserValues
-    {
-        get => _userValues ??= new Hashtable();
-        set
-        {
-            _expression = null;
-            _userValues = value;
-        }
-    }
-
-    /// <summary>
-    /// Object responsible for Database communications.
-    /// </summary>
-    public IDataAccess DataAccess { get; set; }
-
+    
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
@@ -47,31 +25,17 @@ public class FieldManager
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
-    public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
-
+    public ExpressionManager Expression { get; private set; }
 
     #endregion
 
     #region "Constructors"
 
-
-    public FieldManager(FormElement formElement)
+    public FieldManager(FormElement formElement, ExpressionManager expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        DataAccess = JJService.DataAccess;
-        UserValues = new Hashtable();
-        Name = "pnl_" + formElement.Name.ToLower();
-    }
-
-    public FieldManager(JJBaseView baseView, FormElement formElement)
-    {
-        if (baseView == null)
-            throw new ArgumentNullException(nameof(baseView));
-
-        FormElement = formElement;
-        UserValues = baseView.UserValues;
-        DataAccess = baseView.DataAccess;
-        Name = baseView.Name;
+        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+        Name = "pnl_" + formElement.Name.ToLower();   
     }
 
     #endregion
@@ -230,7 +194,7 @@ public class FieldManager
             return JJTextRange.GetInstance(f, formValues);
         }
         
-        var expOptions = new ExpressionOptions(UserValues, formValues, pageState, DataAccess);
+        var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);

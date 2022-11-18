@@ -17,7 +17,7 @@ public class FormService
 
     private AuditLogService _auditLog;
 
-    private Factory FormRepository => FormManager.Factory;
+    private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
     private FormElement FormElement => FormManager.FormElement;
 
@@ -27,7 +27,7 @@ public class FormService
 
     public AuditLogService AuditLog
     {
-        get => _auditLog ??= new AuditLogService(DataContext);
+        get => _auditLog ??= new AuditLogService(DataContext, EntityRepository);
         internal set => _auditLog = value;
     }
 
@@ -79,7 +79,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => FormRepository.Update(FormElement, values), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(FormElement, values), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -115,7 +115,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        RunDatabaseCommand(() => FormRepository.Insert(FormElement, values), ref errors);
+        RunDatabaseCommand(() => EntityRepository.Insert(FormElement, values), ref errors);
 
         if (errors.Count > 0)
             return result;
@@ -154,7 +154,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        result.Result = RunDatabaseCommand(() => FormRepository.SetValues(FormElement, values), ref errors);
+        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(FormElement, values), ref errors);
 
         if (errors.Count > 0)
             return result;
@@ -204,7 +204,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => FormRepository.Delete(FormElement, primaryKeys), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(FormElement, primaryKeys), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)

@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
 using System.Collections;
@@ -20,14 +21,14 @@ namespace JJMasterData.Core.DataManager
 
         public PageState PageState { get; set; }
 
-        public IDataAccess DataAccess { get; set; }
+        public IEntityRepository EntityRepository { get; set; }
 
-        public ExpressionOptions(Hashtable userValues, Hashtable formValues, PageState pageState, IDataAccess dataAccess)
+        public ExpressionOptions(Hashtable userValues, Hashtable formValues, PageState pageState, IEntityRepository entityRepository)
         {
             UserValues = userValues.DeepCopy();
             FormValues = formValues;
             PageState = pageState;
-            DataAccess = dataAccess;
+            EntityRepository = entityRepository;
         }
     }
 }

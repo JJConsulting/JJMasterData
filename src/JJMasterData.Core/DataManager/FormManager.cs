@@ -14,54 +14,21 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormManager
 {
-    private ExpressionManager _expression;
-    private Hashtable _userValues;
-    private Factory _factory;
-    private IDataAccess _dataAccess;
-
-    /// <inheritdoc cref="WebComponents.JJBaseView.UserValues"/>
-    public Hashtable UserValues
-    {
-        get => _userValues ??= new Hashtable();
-        set
-        {
-            _expression = null;
-            _userValues = value;
-        }
-    }
-
-    /// <inheritdoc cref="Commons.Dao.DataAccess"/>
-    public IDataAccess DataAccess
-    {
-        get => _dataAccess ??= JJService.DataAccess;
-        set => _dataAccess = value;
-    }
-
     /// <inheritdoc cref="Commons.Dao.Entity.Factory"/>
-    public Factory Factory
-    {
-        get => _factory ??= new Factory(DataAccess);
-        set => _factory = value;
-    }
+    public IEntityRepository EntityRepository => Expression.EntityRepository;
 
     /// <inheritdoc cref="ExpressionManager"/>
-    public ExpressionManager Expression => _expression ??= new(UserValues, DataAccess);
+    public ExpressionManager Expression { get; private set; }
 
     /// <inheritdoc cref="FormElement"/>
-    public FormElement FormElement { get; set; }
+    public FormElement FormElement { get; private set; }
 
-    public FormManager(FormElement formElement)
+    public FormManager(FormElement formElement, ExpressionManager expression)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
         FormElement = formElement;
-    }
-
-    public FormManager(FormElement formElement, Hashtable userValues, IDataAccess dataAccess) : this(formElement)
-    {
-        UserValues = userValues;
-        DataAccess = dataAccess;
     }
 
     /// <summary>
@@ -242,11 +209,10 @@ public class FormManager
             string sql = DataItem.Command.Sql;
             if (sql.Contains("{"))
             {
-                var exp = new ExpressionManager(UserValues, DataAccess);
-                sql = exp.ParseExpression(sql, pageState, false, formValues);
+                sql = Expression.ParseExpression(sql, pageState, false, formValues);
             }
 
-            DataTable dt = DataAccess.GetDataTable(sql);
+            DataTable dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
                 var item = new DataItemValue();

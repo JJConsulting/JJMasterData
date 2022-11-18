@@ -138,9 +138,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            string cmd;
-            cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
-            formManager.DataAccess.SetCommand(cmd);
+            string cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
+            formManager.EntityRepository.SetCommand(cmd);
         }
 
         token.ThrowIfCancellationRequested();
@@ -204,7 +203,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         {
             string cmd;
             cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
-            formManager.DataAccess.SetCommand(cmd);
+            formManager.EntityRepository.SetCommand(cmd);
         }
 
         if (OnAfterProcess != null)

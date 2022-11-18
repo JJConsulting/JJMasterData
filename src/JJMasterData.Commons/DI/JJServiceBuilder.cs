@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Settings;
@@ -20,7 +21,7 @@ public class JJServiceBuilder
     public JJServiceBuilder AddDefaultServices()
     {
         Services.AddSingleton<ISettings, JJMasterDataSettings>();
-        Services.AddScoped<IDataAccess, DataAccess>();
+        Services.AddScoped<IEntityRepository, Factory>();
         
         return this;
     }
@@ -84,12 +85,5 @@ public class JJServiceBuilder
         return this;
     }
     
-    public JJServiceBuilder WithDataAccess<T>() where T : IDataAccess
-    {
-        DeleteServiceIfExists<IDataAccess>();
-        
-        Services.AddScoped(typeof(IDataAccess),typeof(T));
-
-        return this;
-    }
+    
 }

@@ -18,38 +18,32 @@ namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
 
 public class DictionaryDao
 {
-    private IDataAccess _dataAccess;
-    private Factory _factory;
-
-    public Factory Factory
+    private IEntityRepository _entityRepository;
+    public IEntityRepository EntityRepository
     {
         get
         {
-            _factory = new Factory(_dataAccess);
-            if (_factory == null)
-            {
-                if (_dataAccess != null)
-                    _factory = new Factory(_dataAccess);
-                else
-                    _factory = new Factory();
-            }
+            if (_entityRepository == null)
+                _entityRepository = JJService.EntityRepository;
 
-            return _factory;
+            return _entityRepository;
+        }
+        private set
+        {
+            _entityRepository = value;
         }
     }
 
    
     public DictionaryDao()
     {
-        _dataAccess = JJService.DataAccess;
+        
     }
 
-    public DictionaryDao(IDataAccess dataAccess)
+    public DictionaryDao(IEntityRepository entityRepository)
     {
-        _dataAccess = dataAccess;
+        EntityRepository = entityRepository;
     }
-
-       
 
     /// <summary>
     /// Recupera uma lista de metadados armazenados no banco de dados
@@ -74,7 +68,7 @@ public class DictionaryDao
         string orderby = "name, type";
         string currentName = "";
         int tot = 1;
-        var dt = Factory.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
+        var dt = EntityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
         DicParser currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
@@ -121,7 +115,7 @@ public class DictionaryDao
             filter.Add("sync", (bool)sync ? "1" : "0");
 
         int tot = 1;
-        var dt = Factory.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
+        var dt = EntityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
 
         if (dt.Rows.Count == 0)
             return null;
@@ -217,7 +211,7 @@ public class DictionaryDao
         var filter = new Hashtable();
         filter.Add("type", "F");
 
-        var dt = Factory.GetDataTable(GetStructure(), filter, null, tot, 1, ref tot);
+        var dt = EntityRepository.GetDataTable(GetStructure(), filter, null, tot, 1, ref tot);
         foreach (DataRow row in dt.Rows)
         {
             list.Add(row["name"].ToString());
@@ -242,7 +236,7 @@ public class DictionaryDao
 
         Hashtable filter = new();
         filter.Add("name", elementName);
-        DataTable dt = Factory.GetDataTable(GetStructure(), filter);
+        DataTable dt = EntityRepository.GetDataTable(GetStructure(), filter);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
 
@@ -371,7 +365,6 @@ public class DictionaryDao
         if (string.IsNullOrEmpty(dictionary.Table.Name))
             throw new ArgumentNullException(nameof(dictionary.Table.Name));
 
-        var cmds = new List<DataAccessCommand>();
         var element = GetStructure();
         string name = dictionary.Table.Name;
         string jsonTable = JsonConvert.SerializeObject(dictionary.Table);
@@ -386,9 +379,8 @@ public class DictionaryDao
         values.Add("json", jsonTable);
         values.Add("sync", dictionary.Table.Sync ? "1" : "0");
         values.Add("modified", dNow);
-        var cmdTable = Factory.Provider.GetWriteCommand("", element, values);
-        cmds.Add(cmdTable);
-
+        EntityRepository.SetValues(element, values);
+        
         if (dictionary.Form != null)
         {
             string jsonForm = JsonConvert.SerializeObject(dictionary.Form);
@@ -401,8 +393,7 @@ public class DictionaryDao
             values.Add("json", jsonForm);
             values.Add("sync", dictionary.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
-            var cmdForm = Factory.Provider.GetWriteCommand("", element, values);
-            cmds.Add(cmdForm);
+            EntityRepository.SetValues(element, values);
         }
 
         if (dictionary.UIOptions != null)
@@ -417,8 +408,7 @@ public class DictionaryDao
             values.Add("json", jsonForm);
             values.Add("sync", dictionary.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
-            var cmdForm = Factory.Provider.GetWriteCommand("", element, values);
-            cmds.Add(cmdForm);
+            EntityRepository.SetValues(element, values);
         }
 
         if (dictionary.Api != null)
@@ -432,11 +422,8 @@ public class DictionaryDao
             values.Add("json", jsonForm);
             values.Add("sync", dictionary.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
-            var cmdForm = Factory.Provider.GetWriteCommand("", element, values);
-            cmds.Add(cmdForm);
+            EntityRepository.SetValues(element, values);
         }
-
-        _dataAccess.SetCommand(cmds);
     }
 
     /// <summary>
@@ -451,20 +438,18 @@ public class DictionaryDao
         var filters = new Hashtable();
         filters.Add("name", id);
 
-        DataTable dt = Factory.GetDataTable(GetStructure(), filters);
+        DataTable dt = EntityRepository.GetDataTable(GetStructure(), filters);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", id));
 
-        var listcmd = new List<DataAccessCommand>();
+        var element = GetStructure();
         foreach (DataRow row in dt.Rows)
         {
             var delFilter = new Hashtable();
             delFilter.Add("name", id);
             delFilter.Add("type", row["type"].ToString());
-            var cmd = Factory.Provider.GetDeleteScript(GetStructure(), delFilter);
-            listcmd.Add(cmd);
+            EntityRepository.Delete(element, delFilter);
         }
-        _dataAccess.SetCommand(listcmd);
     }
 
     /// <summary>
@@ -477,7 +462,7 @@ public class DictionaryDao
 
         Hashtable filter = new Hashtable();
         filter.Add("name", elementName);
-        int count = Factory.GetCount(GetStructure(), filter);
+        int count = EntityRepository.GetCount(GetStructure(), filter);
         return count > 0;
     }
 
@@ -486,7 +471,7 @@ public class DictionaryDao
     /// </summary>
     public void CreateStructure()
     {
-        Factory.CreateDataModel(GetStructure());
+        EntityRepository.CreateDataModel(GetStructure());
     }
 
     /// <summary>
@@ -522,7 +507,7 @@ public class DictionaryDao
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
             var info = new DicSyncInfoElement();
             info.Name = os.Name;
-            info.RecordSize = Factory.GetCount(dictionary.Table, filters);
+            info.RecordSize = EntityRepository.GetCount(dictionary.Table, filters);
             totRecords += info.RecordSize;
 
             TimeSpan tsObj = DateTime.Now - dStartObj;
@@ -622,7 +607,7 @@ public class DictionaryDao
             filter.Add("sync", (bool)sync ? "1" : "0");
 
         int tot = 1000;
-        var dt = Factory.GetDataTable(GetStructure(), filter, null, 1000, 1, ref tot);
+        var dt = EntityRepository.GetDataTable(GetStructure(), filter, null, 1000, 1, ref tot);
 
         bool isFirst = true;
         foreach (DataRow row in dt.Rows)
@@ -639,7 +624,7 @@ public class DictionaryDao
             Hashtable filterForm = new Hashtable();
             filterForm.Add("name", row["name"].ToString());
             filterForm.Add("type", "F");
-            Hashtable resultElement = Factory.GetFields(GetStructure(), filterForm);
+            Hashtable resultElement = EntityRepository.GetFields(GetStructure(), filterForm);
             if (resultElement != null)
             {
                 sJson.Append(",\"form\":");
@@ -708,24 +693,14 @@ public class DictionaryDao
         if (string.IsNullOrEmpty(tableName))
             throw new ArgumentNullException(nameof(tableName));
 
-        if (!_dataAccess.TableExists(tableName))
+        if (!EntityRepository.TableExists(tableName))
             throw new Exception(Translate.Key("Table {0} not found", tableName));
 
-        Element element = null;
-        try
-        {
-            if (DataAccessProvider.MSSQL.Equals(_dataAccess.ConnectionProvider))
-                element = ((MSSQLProvider)Factory.Provider).GetElementFromTable(tableName, ref _dataAccess);
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-
+        Element element = EntityRepository.GetElementFromTable(tableName);
         if (element == null)
         {
             string sql = "select * from " + tableName + " where 1=2";
-            var dt = _dataAccess.GetDataTable(sql);
+            var dt = EntityRepository.GetDataTable(sql);
             element = new FormElement(dt);
             element.Name = tableName;
         }
@@ -748,7 +723,7 @@ public class DictionaryDao
         filter.Add("name", elementName);
         filter.Add("type", "T");
 
-        var resultElement = Factory.GetFields(GetStructure(), filter);
+        var resultElement = EntityRepository.GetFields(GetStructure(), filter);
 
         if (resultElement == null)
             throw new ArgumentException(Translate.Key("Dictionary {0} not found", elementName));
@@ -785,7 +760,7 @@ public class DictionaryDao
         var element = GetStructure();
         var listElement = new List<Element>();
         int tot = 1000;
-        var dt = Factory.GetDataTable(element, filters, orderby, regporpag, pag, ref tot);
+        var dt = EntityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref tot);
         foreach (DataRow row in dt.Rows)
         {
             if (row["type"].ToString().Equals("T"))

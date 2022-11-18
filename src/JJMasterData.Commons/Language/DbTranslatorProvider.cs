@@ -14,30 +14,16 @@ namespace JJMasterData.Commons.Language;
 
 public class DbTranslatorProvider : ITranslator
 {
-    private IDataAccess _dataAccess;
-    internal IDataAccess DataAccess
-    {
-        get 
-        { 
-            if (_dataAccess == null)
-            {
-                _dataAccess = JJService.DataAccess;
-                _dataAccess.TranslateErrorMessage = false;
-                _dataAccess.GenerateLog = false;
-            }
-            return _dataAccess; 
-        }    
-    }
-
-    private Factory _factory;
-    internal Factory Factory
+   
+    private IEntityRepository _entityRepository;
+    internal IEntityRepository EntityRepository
     {
         get
         {
-            if (_factory == null)
-                _factory = new Factory(DataAccess);
+            if (_entityRepository == null)
+                _entityRepository = JJService.EntityRepository;
             
-            return _factory;
+            return _entityRepository;
         }
     }
 
@@ -50,12 +36,12 @@ public class DbTranslatorProvider : ITranslator
             if (string.IsNullOrEmpty(tablename))
                 return dic;
 
-            if (string.IsNullOrEmpty(DataAccess.ConnectionString))
+            if (string.IsNullOrEmpty(JJService.Settings.ConnectionString))
                 return dic;
 
             var element = GetElement(tablename);
-            if (!DataAccess.TableExists(element.TableName))
-                Factory.CreateDataModel(element);
+            if (!EntityRepository.TableExists(element.TableName))
+                EntityRepository.CreateDataModel(element);
 
             dic = GetDatabaseValues(element, culture);
             if (dic.Count > 0)
@@ -154,7 +140,7 @@ public class DbTranslatorProvider : ITranslator
     private void AddDefaultValues(Element element, List<Hashtable> listValues)
     {
         foreach (Hashtable values in listValues)
-            Factory.Insert(element, values);
+            EntityRepository.Insert(element, values);
     }
 
 
@@ -191,7 +177,7 @@ public class DbTranslatorProvider : ITranslator
         var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         var filter = new Hashtable();
         filter.Add("cultureCode", culture);
-        var dt = Factory.GetDataTable(element, filter);
+        var dt = EntityRepository.GetDataTable(element, filter);
         foreach (DataRow row in dt.Rows)
         {
             dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());

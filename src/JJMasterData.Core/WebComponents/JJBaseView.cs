@@ -18,30 +18,10 @@ public abstract class JJBaseView
 {
     #region "Properties"
 
-    private IDataAccess _dataAccess;
-    private Factory _factory;
     private Hashtable _userValues;
     private Hashtable _attributes;
     private string _userId;
-
-    /// <summary>
-    /// Object responsible for all database communcations.
-    /// </summary>
-    public IDataAccess DataAccess
-    {
-        get => _dataAccess ??= JJService.DataAccess;
-        set => _dataAccess = value;
-    }
-
-    /// <summary>
-    /// Object responsible for translating the base element into commands for the database
-    /// </summary>
-    public Factory Factory
-    {
-        get => _factory ??= new Factory(DataAccess);
-        set => _factory = value;
-    }
-
+    
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
@@ -99,10 +79,6 @@ public abstract class JJBaseView
     {
     }
 
-    public JJBaseView(IDataAccess dataAccess)
-    {
-        DataAccess = dataAccess;
-    }
 
     #endregion
 

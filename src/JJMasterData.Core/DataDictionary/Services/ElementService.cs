@@ -28,27 +28,27 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var factory = DicDao.Factory;
+        var factory = DicDao.EntityRepository;
         FormElement formElement = DicDao.GetFormElement(id);
         List<string> listScripts = new List<string>();
 
-        listScripts.Add(factory.Provider.GetCreateTableScript(formElement));
-        listScripts.Add(factory.Provider.GetReadProcedureScript(formElement));
-        listScripts.Add(factory.Provider.GetWriteProcedureScript(formElement));
+        listScripts.Add(factory.GetCreateTableScript(formElement));
+        listScripts.Add(factory.GetReadProcedureScript(formElement));
+        listScripts.Add(factory.GetWriteProcedureScript(formElement));
 
         return listScripts;
     }
 
     public List<string> GetScriptsDefault()
     {
-        var factory = DicDao.Factory;
+        var factory = DicDao.EntityRepository;
         var element = DicDao.GetStructure();
 
         var scriptsList = new List<string>
         {
-            factory.Provider.GetCreateTableScript(element),
-            factory.Provider.GetReadProcedureScript(element),
-            factory.Provider.GetWriteProcedureScript(element)
+            factory.GetCreateTableScript(element),
+            factory.GetReadProcedureScript(element),
+            factory.GetWriteProcedureScript(element)
         };
 
         return scriptsList;
@@ -57,18 +57,18 @@ public class ElementService : BaseService
 
     public void ExecScripts(string id, string scriptExec)
     {
-        var factory = DicDao.Factory;
+        var factory = DicDao.EntityRepository;
         var formElement = DicDao.GetFormElement(id);
 
         switch (scriptExec)
         {
             case "Exec":
                 var sql = new StringBuilder();
-                sql.AppendLine(factory.Provider.GetWriteProcedureScript(formElement));
-                sql.AppendLine(factory.Provider.GetReadProcedureScript(formElement));
+                sql.AppendLine(factory.GetWriteProcedureScript(formElement));
+                sql.AppendLine(factory.GetReadProcedureScript(formElement));
 
-                var dataAccess = JJService.DataAccess;
-                dataAccess.ExecuteBatch(sql.ToString());
+
+                factory.ExecuteBatch(sql.ToString());
                 break;
             case "ExecAll":
                 factory.CreateDataModel(formElement);
@@ -79,12 +79,11 @@ public class ElementService : BaseService
 
     public void ExecScriptsMasterData()
     {
-        var dataAccess = JJService.DataAccess;
-        var factory = DicDao.Factory;
+        var factory = DicDao.EntityRepository;
         var element = DicDao.GetStructure();
 
         DicDao.CreateStructure();
-        dataAccess.ExecuteBatch(factory.Provider.GetReadProcedureScript(element));
+        factory.ExecuteBatch(factory.GetReadProcedureScript(element));
     }
 
     #endregion
@@ -129,7 +128,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var dataAccess = JJService.DataAccess;
+            var dataAccess = JJService.EntityRepository;
             if (!dataAccess.TableExists(tableName))
                 AddError("Name", Translate.Key("Table not found"));
 
@@ -333,5 +332,5 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists() => JJService.DataAccess.TableExists(JJService.Settings.TableName);
+    public bool JJMasterDataTableExists() => JJService.EntityRepository.TableExists(JJService.Settings.TableName);
 }

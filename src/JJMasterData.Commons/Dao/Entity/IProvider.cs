@@ -10,7 +10,7 @@ public interface IProvider
     string GetWriteProcedureScript(Element element);
     string GetReadProcedureScript(Element element);
 
-    DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref IDataAccess dataAccess);
+    DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess);
     DataAccessCommand GetInsertScript(Element element, Hashtable values);
     DataAccessCommand GetUpdateScript(Element element, Hashtable values);
     DataAccessCommand GetDeleteScript(Element element, Hashtable filters);

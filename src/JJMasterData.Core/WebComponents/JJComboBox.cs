@@ -1,4 +1,6 @@
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -17,6 +19,17 @@ public class JJComboBox : JJBaseControl
     private List<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
+    private IEntityRepository _entityRepository;
+
+    internal IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        private set => _entityRepository = value;
+    }
+
+    internal Hashtable FormValues { get; private set; }
+
+    internal PageState PageState { get; set; }
 
     public bool EnableSearch { get; set; }
 
@@ -24,9 +37,6 @@ public class JJComboBox : JJBaseControl
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
     public bool MultiSelect { get; set; }
-
-    private Hashtable FormValues { get; set; }
-    internal PageState PageState { get; set; }
 
     public FormElementDataItem DataItem
     {
@@ -54,10 +64,6 @@ public class JJComboBox : JJBaseControl
         MultiSelect = false;
     }
 
-    public JJComboBox(IDataAccess dataAccess) : base(dataAccess)
-    {
-        Enabled = true;
-    }
 
     internal static JJComboBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value)
     {
@@ -68,8 +74,8 @@ public class JJComboBox : JJBaseControl
             DataItem = f.DataItem,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
-            DataAccess = expOptions.DataAccess,
-            UserValues = expOptions.UserValues
+            UserValues = expOptions.UserValues,
+            EntityRepository = expOptions.EntityRepository
         };
         if (value != null)
             cbo.SelectedValue = value.ToString();
@@ -222,14 +228,14 @@ public class JJComboBox : JJBaseControl
         if (DataItem.ShowImageLegend)
         {
             var div = new HtmlBuilder(HtmlTag.Div);
-            
+
             var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
             }.RenderHtml();
 
             div.AppendElement(icon);
-            
+
             if (DataItem.ReplaceTextOnGrid)
             {
                 div.AppendText("&nbsp;");
@@ -279,12 +285,12 @@ public class JJComboBox : JJBaseControl
                         UserValues.Add("search_id", null);
                 }
 
-                var exp = new ExpressionManager(UserValues, DataAccess);
+                var exp = new ExpressionManager(UserValues, EntityRepository);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 
 
-            DataTable dt = DataAccess.GetDataTable(sql);
+            DataTable dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
                 var item = new DataItemValue

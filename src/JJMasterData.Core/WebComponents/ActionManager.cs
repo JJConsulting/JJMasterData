@@ -12,55 +12,36 @@ using System.Text;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Commons.Dao.Entity;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
 {
-    private ExpressionManager _expression;
-    private Hashtable _userValues;
-
+    
     /// <summary>
     /// <see cref="FormElement"/>
     /// </summary>
-    public FormElement FormElement { get; set; }
+    public FormElement FormElement { get; private set; }
 
-    public ExpressionManager Expression => _expression ??= new ExpressionManager(UserValues, DataAccess);
-    
-    public Hashtable UserValues
-    {
-        get => _userValues ??= new Hashtable();
-        set
-        {
-            _expression = null;
-            _userValues = value;
-        }
-    }
-    
-    public IDataAccess DataAccess { get; set; }
-    
+    public ExpressionManager Expression { get; private set; }
+
     public string ComponentName { get; set; }
 
+    internal IEntityRepository EntityRepository => Expression.EntityRepository; 
 
-    public ActionManager(ExpressionOptions expOptions, FormElement formElement, string panelName)
+
+    public ActionManager(FormElement formElement, ExpressionManager expression, string panelName)
     {
-        UserValues = expOptions.UserValues;
-        DataAccess = expOptions.DataAccess;
-        ComponentName = panelName;
         FormElement = formElement;
+        Expression = expression;
+        ComponentName = panelName;   
     }
 
-    public ActionManager(JJBaseView baseView, FormElement formElement)
-    {
-        UserValues = baseView.UserValues;
-        DataAccess = baseView.DataAccess;
-        ComponentName = baseView.Name;
-        FormElement = formElement;
-    }
 
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicDao = new DictionaryDao(DataAccess);
+        var dicDao = new DictionaryDao(EntityRepository);
         var dicParser = dicDao.GetDictionary(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
@@ -344,11 +325,11 @@ internal class ActionManager
                 if (map.PKFieldValues != null && (map.PKFieldValues != null ||
                                                   map.PKFieldValues.Count > 0))
                 {
-                    formValues = gridView.Factory.GetFields(FormElement, map.PKFieldValues);
+                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PKFieldValues);
                 }
                 else
                 {
-                    var formManager = new FormManager(FormElement, UserValues, DataAccess);
+                    var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
                 scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
@@ -383,7 +364,7 @@ internal class ActionManager
                     listSql.Add(sql);
                 }
 
-                DataAccess.SetCommand(listSql);
+                EntityRepository.SetCommand(listSql);
                 gridView.ClearSelectedGridValues();
             }
             else
@@ -392,17 +373,17 @@ internal class ActionManager
                 if (map.PKFieldValues != null && (map.PKFieldValues != null ||
                                                   map.PKFieldValues.Count > 0))
                 {
-                    formValues = gridView.Factory.GetFields(FormElement, map.PKFieldValues);
+                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PKFieldValues);
                 }
                 else
                 {
-                    var formManager = new FormManager(gridView.FormElement, UserValues, DataAccess);
+                    var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
 
                 string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
                 listSql.Add(sql);
-                DataAccess.SetCommand(listSql);
+                EntityRepository.SetCommand(listSql);
             }
         }
         catch (Exception ex)

@@ -17,7 +17,7 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Dao;
 
-public class DataAccess : IDataAccess
+public class DataAccess 
 {
     private DbProviderFactory _factory;
     private DbConnection _connection;
@@ -120,15 +120,6 @@ public class DataAccess : IDataAccess
         ConnectionProvider = connectionProviderName;
     }
 
-    public IDataAccess WithParameters(string connectionStringName)
-    {
-        return new DataAccess(connectionStringName);
-    }
-
-    public IDataAccess WithParameters(string connectionString, string connectionProvider)
-    {
-        return new DataAccess(connectionString, connectionProvider);
-    }
 
     public DbProviderFactory GetFactory()
     {
@@ -822,12 +813,12 @@ public class DataAccess : IDataAccess
         return command;
     }
 
-    public bool TableExists(string table)
+    public bool TableExists(string tableName)
     {
         bool result;
         try
         {
-            var ret = GetResult(GetTableExistsCommand(table));
+            var ret = GetResult(GetTableExistsCommand(tableName));
             result = (int)ret == 1;
         }
         finally
@@ -838,12 +829,12 @@ public class DataAccess : IDataAccess
         return result;
     }
 
-    public async Task<bool> TableExistsAsync(string table)
+    public async Task<bool> TableExistsAsync(string tableName)
     {
         bool result;
         try
         {
-            result = (int)await GetResultAsync(GetTableExistsCommand(table)) == 1;
+            result = (int)await GetResultAsync(GetTableExistsCommand(tableName)) == 1;
         }
         finally
         {

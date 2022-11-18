@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -28,11 +30,27 @@ public class JJDataPanel : JJBaseView
 
     private FieldManager _fieldManager;
     private UIForm _uiFormSettings;
+    private IEntityRepository _entityRepository;
 
-    /// <summary>
-    /// Useful functions for manipulating fields on the form
-    /// </summary>
-    public FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
+    public IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        set => _entityRepository = value;
+    }
+
+    internal FieldManager FieldManager
+    {
+        get
+        {
+            if (_fieldManager == null)
+            {
+                var expression = new ExpressionManager(UserValues, EntityRepository);
+                _fieldManager = new FieldManager(FormElement, expression);
+            }
+            return _fieldManager;
+        }
+    }
+
 
     /// <summary>
     /// Layout form settings
@@ -225,7 +243,8 @@ public class JJDataPanel : JJBaseView
             {
                 string parsedPkval = Cript.Descript64(criptPkval);
                 var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
-                tempvalues = Factory.GetFields(FormElement, filters);
+                var entityRepository = FieldManager.Expression.EntityRepository;
+                tempvalues = entityRepository.GetFields(FormElement, filters);
             }
         }
         if (tempvalues == null)
@@ -242,7 +261,8 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public void LoadValuesFromPK(Hashtable pks)
     {
-        Values = Factory.GetFields(FormElement, pks);
+        var entityRepository = FieldManager.Expression.EntityRepository;
+        Values = entityRepository.GetFields(FormElement, pks);
     }
 
     /// <summary>
@@ -265,7 +285,7 @@ public class JJDataPanel : JJBaseView
     /// </returns>
     public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
     {
-        var formManager = new FormManager(FormElement, UserValues, DataAccess);
+        var formManager = new FormManager(FormElement, FieldManager.Expression);
         return formManager.ValidateFields(values, pageState, enableErrorLink);
     }
 

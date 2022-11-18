@@ -1,5 +1,6 @@
 ﻿using System;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Settings;
@@ -13,12 +14,12 @@ public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
-    public static IDataAccess DataAccess
+    public static IEntityRepository EntityRepository
     {
         get
         {
             using var scope = Provider?.CreateScope();
-            return scope?.ServiceProvider.GetService<IDataAccess>() ?? new DataAccess();
+            return scope?.ServiceProvider.GetService<IEntityRepository>() ?? new Factory();
         }
     }
     public static ISettings Settings => Provider?.GetService<ISettings>() ?? new JJMasterDataSettings();

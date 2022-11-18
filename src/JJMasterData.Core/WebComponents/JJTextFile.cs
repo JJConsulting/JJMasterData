@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -18,7 +20,7 @@ public class JJTextFile : JJBaseControl
     private const string UploadFormParameterName = "jjuploadform_";
     private Hashtable _formValues;
     private FormFilePathBuilder _pathBuiler;
-
+    
     public Hashtable FormValues
     {
         get => _formValues ??= new Hashtable();
@@ -46,7 +48,7 @@ public class JJTextFile : JJBaseControl
 
             return _pathBuiler;
         }
-   }
+    }
 
     internal static JJTextFile GetInstance(FormElement formElement,
         FormElementField field, ExpressionOptions expOptions, object value, string panelName)
@@ -67,7 +69,6 @@ public class JJTextFile : JJBaseControl
         };
 
         text.Attributes.Add("pnlname", panelName);
-        text.DataAccess = expOptions.DataAccess;
         text.UserValues = expOptions.UserValues;
         text.FormElement = formElement;
 

@@ -918,7 +918,7 @@ class OracleProvider : IProvider
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref IDataAccess dataAccess)
+    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
     {
         DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);

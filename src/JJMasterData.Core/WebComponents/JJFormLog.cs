@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataManager;
@@ -18,7 +20,7 @@ public class JJFormLog : JJBaseView
     private AuditLogService _auditLog;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
-
+   
     public AuditLogService Service
     {
         get 
@@ -26,11 +28,7 @@ public class JJFormLog : JJBaseView
             if (_auditLog == null)
             {
                 var context = new DataContext(DataContextSource.Form, UserId);
-                _auditLog = new AuditLogService(context)
-                {
-                    DataAccess = DataAccess,
-                    Factory = Factory
-                };
+                _auditLog = new AuditLogService(context, EntityRepository);
             }
 
             return _auditLog;
@@ -51,8 +49,7 @@ public class JJFormLog : JJBaseView
                 _dataPainel = new JJDataPanel(FormElement)
                 {
                     Name = "jjpainellog_" + Name,
-                    DataAccess = DataAccess,
-                    UserValues = UserValues
+                    EntityRepository = EntityRepository,
                 };
             }
 
@@ -61,19 +58,25 @@ public class JJFormLog : JJBaseView
         set { _dataPainel = value; }
     }
 
-    public FormElement FormElement { get; set; }
+    public FormElement FormElement { get; private set; }
+
+    internal IEntityRepository EntityRepository { get; private set; }
 
     private JJFormLog()
     {
         Name = "loghistory";
     }
 
-    public JJFormLog(FormElement formElement) : this()
+    public JJFormLog(FormElement formElement, IEntityRepository entityRepository) : this()
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
+        if (entityRepository == null)
+            throw new ArgumentNullException(nameof(entityRepository));
+
         FormElement = formElement;
+        EntityRepository = entityRepository;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -115,7 +118,7 @@ public class JJFormLog : JJBaseView
         int tot = 1;
 
         string viewId = "";
-        DataTable dt = Factory.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
+        DataTable dt = EntityRepository.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
 
         if (dt.Rows.Count > 0)
             viewId = dt.Rows[0].ItemArray[0].ToString();
@@ -152,7 +155,7 @@ public class JJFormLog : JJBaseView
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_ID, logId);
 
-        var values = Factory.GetFields(Service.GetElement(), filter);
+        var values = EntityRepository.GetFields(Service.GetElement(), filter);
         string json = values[AuditLogService.DIC_JSON].ToString();
         string recordsKey = values[AuditLogService.DIC_KEY].ToString();
         Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
@@ -221,7 +224,7 @@ public class JJFormLog : JJBaseView
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_ID, logId);
 
-        var values = Factory.GetFields(Service.GetElement(), filter);
+        var values = EntityRepository.GetFields(Service.GetElement(), filter);
         string json = values[AuditLogService.DIC_JSON].ToString();
 
         Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
@@ -291,7 +294,7 @@ public class JJFormLog : JJBaseView
         string orderby = AuditLogService.DIC_MODIFIED + " DESC";
         int tot = 1;
 
-        DataTable dt = Factory.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
+        DataTable dt = EntityRepository.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
 
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (DataRow row in dt.Rows)

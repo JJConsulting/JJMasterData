@@ -17,18 +17,15 @@ public class MasterApiService
 {
     private readonly HttpContext? _httpContext;
     private readonly AccountService _accountService;
-    private readonly IDataAccess _dataAccess;
+    private IEntityRepository _entityRepository;
     private DictionaryDao? _dictionaryDao;
-
-    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao(_dataAccess);
-
-    private Factory Factory => DictionaryDao.Factory;
+    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao();
     
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IDataAccess dataAccess)
+    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IEntityRepository entityRepository)
     {
         _httpContext = httpContextAccessor?.HttpContext;
         _accountService = accountService;
-        _dataAccess = dataAccess;
+        _entityRepository = entityRepository;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
@@ -44,7 +41,7 @@ public class MasterApiService
         var element = dictionary.Table;
 
         var showLogInfo = Debugger.IsAttached;
-        string text = Factory.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo);
+        string text = _entityRepository.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -62,7 +59,7 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary.Table;
-        var dt = Factory.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
+        var dt = _entityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
 
         if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -83,7 +80,7 @@ public class MasterApiService
         var element = dictionary.Table;
         var primaryKeys = DataHelper.GetPkValues(element, id, ',');
         var filters = ParseFilter(dictionary, primaryKeys);
-        var fields = Factory.GetFields(element, filters);
+        var fields = _entityRepository.GetFields(element, filters);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -267,7 +264,7 @@ public class MasterApiService
             var formManager = formService.FormManager;
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
-            var currentValues = Factory.GetFields(formManager.FormElement, pkValues);
+            var currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -332,10 +329,8 @@ public class MasterApiService
             { "objname", objname }
         };
 
-        var formManager = new FormManager(dictionary.GetFormElement());
-        formManager.UserValues = userValues;
-        formManager.Factory = Factory;
-
+        var expManager = new ExpressionManager(userValues, _entityRepository);
+        var formManager = new FormManager(dictionary.GetFormElement(), expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
@@ -437,24 +432,20 @@ public class MasterApiService
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
-        var formElement = dictionary.GetFormElement();
-        var dataContext = new DataContext(DataContextSource.Api, userId);
-
         var userValues = new Hashtable
         {
             { "USERID", GetUserId() }
         };
-        var formManager = new FormManager(formElement, userValues, _dataAccess)
-        {
-            Factory = Factory
-        };
+        var formElement = dictionary.GetFormElement();
+        var dataContext = new DataContext(DataContextSource.Api, userId);
+        var expManager = new ExpressionManager(userValues, _entityRepository);
+        var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible
         };
 
         service.AddFormEvent();
-
         return service;
     }
 

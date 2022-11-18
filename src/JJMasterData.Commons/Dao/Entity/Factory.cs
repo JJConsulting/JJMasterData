@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
@@ -15,25 +16,35 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
-public class Factory
+public class Factory : IEntityRepository
 {
-    private IDataAccess _dataAccess;
-
+    private DataAccess _dataAccess;
     private IProvider _provider;
 
-    public IProvider Provider
+    internal DataAccess DataAccess
+    {
+        get
+        {
+            if (_dataAccess == null)
+                _dataAccess = new DataAccess();
+
+            return _dataAccess;
+        }
+    }
+
+    internal IProvider Provider
     {
         get
         {
             if (_provider != null) return _provider;
 
-            _provider = _dataAccess.ConnectionProvider switch
+            _provider = DataAccess.ConnectionProvider switch
             {
                 DataAccessProvider.MSSQL => new MSSQLProvider(),
                 DataAccessProvider.Oracle => new OracleProvider(),
                 DataAccessProvider.SQLite => new ProviderSQLite(),
                 _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
-                                                         _dataAccess.ConnectionProvider + "]")
+                                                         DataAccess.ConnectionProvider + "]")
             };
 
             return _provider;
@@ -42,15 +53,10 @@ public class Factory
 
     public Factory()
     {
-        _dataAccess = JJService.DataAccess;
+        
     }
 
-    public Factory(IDataAccess dataAccess)
-    {
-        _dataAccess = dataAccess ?? throw new ArgumentNullException(nameof(dataAccess));
-    }
 
-    
     /// <summary>
     /// Add a record to the database.
     /// Retorno o id no campo values como referencia
@@ -65,7 +71,7 @@ public class Factory
     public void Insert(Element element, Hashtable values)
     {
         var command = Provider.GetInsertScript(element, values);
-        var newFields = _dataAccess.GetFields(command);
+        var newFields = DataAccess.GetFields(command);
 
         if (newFields == null)
             return;
@@ -93,7 +99,7 @@ public class Factory
     public int Update(Element element, Hashtable values)
     {
         var cmd = Provider.GetUpdateScript(element, values);
-        int numberRowsAffected = _dataAccess.SetCommand(cmd);
+        int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
 
@@ -113,7 +119,7 @@ public class Factory
     {
         var commandType = CommandType.None;
         var command = Provider.GetWriteCommand("", element, values);
-        var newFields = _dataAccess.GetFields(command);
+        var newFields = DataAccess.GetFields(command);
 
         var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
 
@@ -170,7 +176,7 @@ public class Factory
     {
         var ret = CommandType.None;
         var command = Provider.GetWriteCommand("", element, values);
-        _dataAccess.SetCommand(command);
+        DataAccess.SetCommand(command);
 
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
         if (oret.Value != DBNull.Value)
@@ -200,7 +206,7 @@ public class Factory
     public int Delete(Element element, Hashtable filters)
     {
         var cmd = Provider.GetDeleteScript(element, filters);
-        int numberRowsAffected = _dataAccess.SetCommand(cmd);
+        int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
 
@@ -218,10 +224,10 @@ public class Factory
         DataAccessParameter pTot =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(element, filters, "", 1, 1, ref pTot);
-        return _dataAccess.GetFields(cmd);
+        return DataAccess.GetFields(cmd);
     }
 
-    
+
 
     /// <summary>
     /// Returns records from the database based on the filter.    
@@ -245,8 +251,9 @@ public class Factory
         if (!ValidateOrderByClause(element, orderby))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
+        var da = DataAccess;
         return Provider.GetDataTable(element,
-            filters, orderby, regperpage, pag, ref tot, ref _dataAccess);
+            filters, orderby, regperpage, pag, ref tot, ref da);
     }
 
 
@@ -265,6 +272,39 @@ public class Factory
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
     }
 
+    ///<summary>
+    ///Returns DataTable object populated by a query with parameters
+    ///</summary>
+    ///<returns>Returns DataTable object populated by a query with parameters</returns>
+    public DataTable GetDataTable(string sql)
+    {
+        return DataAccess.GetDataTable(sql);
+    }
+
+    public object GetResult(string sql)
+    {
+        return DataAccess.GetResult(sql);
+    }
+
+    public void SetCommand(string sql)
+    {
+        DataAccess.SetCommand(sql);
+    }
+
+    public int SetCommand(ArrayList sqlList)
+    {
+        return DataAccess.SetCommand(sqlList);
+    }
+
+    public bool TableExists(string tableName)
+    {
+        return DataAccess.TableExists(tableName);
+    }
+
+    public bool ExecuteBatch(string script)
+    {
+        return DataAccess.ExecuteBatch(script);
+    }
 
     /// <summary>
     /// Returns the number of records in the database
@@ -287,27 +327,46 @@ public class Factory
     /// <param name="element">Element with table data</param>
     public void CreateDataModel(Element element)
     {
-        string script = GetScriptCreateDataModel(element);
-        _dataAccess.ExecuteBatch(script);
-    }
-
-    /// <summary>
-    /// Returns the script to create an element's tables and procedures
-    /// </summary>
-    /// <param name="element"></param>
-    /// <returns>Script to be run on the database</returns>
-    public string GetScriptCreateDataModel(Element element)
-    {
-        StringBuilder sSql = new StringBuilder();
+        var scriptSql = new StringBuilder();
         //create table
-        sSql.AppendLine(Provider.GetCreateTableScript(element));
+        scriptSql.AppendLine(GetCreateTableScript(element));
         //procedure set
-        sSql.AppendLine(Provider.GetWriteProcedureScript(element));
+        scriptSql.AppendLine(GetWriteProcedureScript(element));
         //procedure get
-        sSql.AppendLine(Provider.GetReadProcedureScript(element));
-
-        return sSql.ToString();
+        scriptSql.AppendLine(GetReadProcedureScript(element));
+        ExecuteBatch(scriptSql.ToString());
     }
+
+
+    public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);
+
+    public string GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
+
+    public string GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
+
+    public Element GetElementFromTable(string tableName)
+    {
+        if (string.IsNullOrEmpty(tableName))
+            throw new ArgumentNullException(nameof(tableName));
+
+        if (!DataAccess.TableExists(tableName))
+            throw new Exception(Translate.Key("Table {0} not found", tableName));
+
+        Element element = null;
+        try
+        {
+            var da = DataAccess;
+            if (Provider is MSSQLProvider sqlProvider)
+                element = sqlProvider.GetElementFromTable(tableName, ref da);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        return element;
+    }
+
 
     /// <summary>
     /// Returns database records based on filter.  
@@ -354,7 +413,7 @@ public class Factory
             if (conn == null)
                 throw new Exception("Error on create connection object");
 
-            conn.ConnectionString = _dataAccess.ConnectionString;
+            conn.ConnectionString = DataAccess.ConnectionString;
             conn.Open();
 
             DbCommand dbCmd = providerFactory.CreateCommand();
@@ -376,13 +435,13 @@ public class Factory
             dbCmd.CommandType = cmd.CmdType;
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
-            dbCmd.CommandTimeout = _dataAccess.TimeOut;
+            dbCmd.CommandTimeout = DataAccess.TimeOut;
             DbDataReader dr = dbCmd.ExecuteReader();
 
             int col = 0;
             int qtd = 0;
             var columns = new Dictionary<string, int>();
-           
+
             if (dr.HasRows)
             {
                 for (int i = 0; i < dr.FieldCount; i++)
@@ -537,5 +596,5 @@ public class Factory
         return true;
     }
 
-  
+
 }

@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks.Progress;
@@ -103,11 +104,6 @@ public class JJDataImp : JJBaseProcess
     public JJDataImp(FormElement formElement) : this()
     {
         FormElement = formElement;
-    }
-
-    public JJDataImp(FormElement formElement, IDataAccess dataAccess) : this(formElement)
-    {
-        DataAccess = dataAccess;
     }
 
     #endregion

@@ -25,33 +25,15 @@ public class AuditLogService
     public const string DIC_JSON = "json";
 
     private static bool _hasAuditLogTable;
-    private IDataAccess _dataAccess;
-    private Factory _factory;
 
-    public DataContext Data { get; set; }
+    public DataContext Data { get; private set; }
 
+    public IEntityRepository EntityRepository { get; private set; }
 
-    /// <summary>
-    /// Objeto responsável por fazer toda a comunicação com o banco de dados
-    /// </summary>
-    public IDataAccess DataAccess
-    {
-        get => _dataAccess ??= JJService.DataAccess;
-        set => _dataAccess = value;
-    }
-
-    /// <summary>
-    /// Objeto responsável por traduzir o elemento base em comandos para o banco de dados
-    /// </summary>
-    public Factory Factory
-    {
-        get => _factory ??= new Factory(DataAccess);
-        set => _factory = value;
-    }
-
-    public AuditLogService(DataContext data)
+    public AuditLogService(DataContext data, IEntityRepository entityRepository)
     {
         Data = data;
+        EntityRepository = entityRepository;
     }
 
     public void AddLog(Element element, Hashtable formValues, CommandType action)
@@ -71,7 +53,7 @@ public class AuditLogService
 
         var logElement = GetElement();
         CreateTableIfNotExist();
-        Factory.Insert(logElement, values);
+        EntityRepository.Insert(logElement, values);
     }
 
     public void CreateTableIfNotExist()
@@ -79,8 +61,8 @@ public class AuditLogService
         if (!_hasAuditLogTable)
         {
             var logElement = GetElement();
-            if (!DataAccess.TableExists(logElement.TableName))
-                Factory.CreateDataModel(logElement);
+            if (!EntityRepository.TableExists(logElement.TableName))
+                EntityRepository.CreateDataModel(logElement);
 
             _hasAuditLogTable = true;
         }

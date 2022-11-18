@@ -10,10 +10,6 @@ public abstract class JJBaseControl : JJBaseView
     {
     }
 
-    public JJBaseControl(IDataAccess dataAccess) : base(dataAccess)
-    {
-        
-    }
 
     /// <summary>
     /// Obtém ou define um valor que indica se o controle está habilitado.
