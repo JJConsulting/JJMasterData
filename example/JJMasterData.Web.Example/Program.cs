@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Settings;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
 
@@ -19,7 +20,10 @@ public class Program
 
         builder.Services.AddOptions<JJMasterDataOptions>();
         builder.Services.AddJJMasterDataWeb().WithFormEvents();
-        builder.Services.ConfigureWritable<JJMasterDataOptions>(builder.Configuration.GetSection("JJMasterData"), settingsPath);
+        
+        builder.Services.ConfigureOptionsWriter<JJMasterDataOptions>(builder.Configuration.GetSection("JJMasterData"), settingsPath);
+        builder.Services.ConfigureOptionsWriter<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"), settingsPath);
+        
         var app = builder.Build();
 
         if (app.Environment.IsProduction())

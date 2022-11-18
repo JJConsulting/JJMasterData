@@ -5,8 +5,6 @@
 }
 
 <form>
-    <jj-title title="JJMasterDataOptions" subtitle=""/>
-    
     @if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })
     {
         <jj-alert
@@ -30,9 +28,17 @@
         model="Model"
         icon="@IconType.Connectdevelop"/>
     
+    <jj-collapse-panel
+        title="JJMasterDataOptions"
+        partial="_JJMasterDataOptions"
+        model="Model"
+        icon="@IconType.Cog"/>
+    
     <div class="row">
         <div class="col-sm-12">
-            <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("Save", "Settings")" type="submit">@Translate.Key("Save")</button>
+            <button class="@BootstrapHelper.DefaultButton" 
+                    formaction="@Url.Action("Save", "Settings")" 
+                    type="submit">@Translate.Key("Save")</button>
         </div>
     </div>
     

@@ -1,42 +1,47 @@
+using JJMasterData.Web.Models.Abstractions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Web.Models;
 
-public interface IOptionsWriter
+public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 {
-    public void UpdateOptions(Action<JObject> callback, bool reload = true);
-}
-
-public class OptionsWriter : IOptionsWriter 
-{
-    private readonly IHostingEnvironment _environment;
-    private readonly IConfigurationRoot _configuration;
+    private readonly IOptionsMonitor<T> _options;
+    private readonly string _section;
     private readonly string _file;
 
     public OptionsWriter(
-        IHostingEnvironment environment, 
-        IConfigurationRoot configuration, 
+        IOptionsMonitor<T> options,
+        string section,
         string file)
     {
-        _environment = environment;
-        _configuration = configuration;
+        _options = options;
+        _section = section;
         _file = file;
     }
 
-    public void UpdateOptions(Action<JObject> callback, bool reload = true)
-    {
-        
-        JObject? config = JsonConvert
-            .DeserializeObject<JObject>(File.ReadAllText(_file));
-        
-        callback(config);
-        
-        File.WriteAllText(_file, JsonConvert.SerializeObject(config, Formatting.Indented));
+    public T Value => _options.CurrentValue;
+    public T Get(string name) => _options.Get(name);
 
-        _configuration.Reload();
+    public async Task UpdateAsync(Action<T> applyChanges)
+    {
+
+        var jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(_file));
+        T? sectionObject;
+        
+        if (jObject.TryGetValue(_section, out JToken section))
+        {
+            sectionObject = JsonConvert.DeserializeObject<T>(section.ToString());
+        }
+        else
+            sectionObject = Value ?? new T();
+
+        applyChanges(sectionObject);
+
+        jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+        await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(jObject, Formatting.Indented));
     }
 }

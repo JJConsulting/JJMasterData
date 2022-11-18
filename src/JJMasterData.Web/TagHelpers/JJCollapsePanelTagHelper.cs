@@ -35,6 +35,7 @@ public class JJCollapsePanelTagHelper : TagHelper
     {
         var panel = new JJCollapsePanel
         {
+            Name = Title.ToLower().Replace(" ", "_"),
             Title = Title,
             HtmlContent = await RendererService.ToStringAsync(Partial,Model),
             TitleIcon = new JJIcon(Icon)

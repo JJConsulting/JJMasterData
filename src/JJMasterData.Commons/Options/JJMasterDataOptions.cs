@@ -128,7 +128,6 @@ public sealed class JJMasterDataOptions
         prefix = string.IsNullOrEmpty(prefix) ? $"{tablename}Set" : prefix.Replace("{tablename}", tablename);
         return prefix;
     }
-    
 
     public static string GetDefaultProcNameGet(string tablename)
     {

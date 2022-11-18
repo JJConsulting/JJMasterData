@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Authorization;
 using JJMasterData.Web.Hosting;
 using JJMasterData.Web.Models;
+using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddJJMasterDataServices();
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
+        
         return services.AddJJMasterData();
     }
 
@@ -121,20 +123,16 @@ public static class ServiceCollectionExtensions
         services.AddTransient<SettingsService>();
     }
     
-    // public static void ConfigureWritable<T>(
-    //     this IServiceCollection services, 
-    //     IConfigurationRoot configuration, 
-    //     string sectionName, 
-    //     string file) where T : class, new()
-    // {
-    //     services.Configure<T>(configuration.GetSection(sectionName));
-    //
-    //     services.AddTransient<IWritableOptions<T>>(provider =>
-    //     {
-    //         var environment = provider.GetService<IHostingEnvironment>();
-    //         var options = provider.GetService<IOptionsMonitor<T>>();
-    //         IOptionsWriter writer = new OptionsWriter(environment, configuration, file);
-    //         return new WritableOptions<T>(sectionName, writer, options);
-    //     });
-    // }
+    public static void ConfigureOptionsWriter<T>(
+        this IServiceCollection services,
+        IConfigurationSection section,
+        string file = "appsettings.json") where T : class, new()
+    {
+        services.Configure<T>(section);
+        services.AddTransient<IOptionsWriter<T>>(provider =>
+        {
+            var options = provider.GetService<IOptionsMonitor<T>>();
+            return new OptionsWriter<T>(options, section.Key, file);
+        });
+    }
 }

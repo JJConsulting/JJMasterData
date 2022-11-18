@@ -48,7 +48,7 @@ public class SettingsController : MasterDataController
     {
         if (ModelState.IsValid)
         {
-            
+            await Service.SaveOptions(model);
         }
         
         return View(nameof(Index), model);

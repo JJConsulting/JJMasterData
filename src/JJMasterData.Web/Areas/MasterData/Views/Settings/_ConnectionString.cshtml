@@ -29,11 +29,16 @@
             </div>
         </div>
 
-        <div class="col-sm-12">
+        <div class="col-sm-6">
             <label asp-for="ConnectionString.Database" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <input asp-for="ConnectionString.Database" class="form-control"/>
             <span asp-validation-for="ConnectionString.Database" class="text-danger"></span>
         </div>
+                <div class="col-sm-6">
+                    <label asp-for="ConnectionString.ApplicationName" class="@BootstrapHelper.Label"></label>
+                    <input asp-for="ConnectionString.ApplicationName" class="form-control"/>
+                    <span asp-validation-for="ConnectionString.ApplicationName" class="text-danger"></span>
+                </div>
         <div class="col-sm-12">
             <label asp-for="ConnectionString.Timeout" class="@BootstrapHelper.Label"></label>
             <input asp-for="ConnectionString.Timeout" class="form-control"/>

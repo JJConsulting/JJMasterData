@@ -1,29 +1,23 @@
 using System.Reflection;
-using System.Text.Json;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Settings;
-using JJMasterData.Web.Models;
-using Microsoft.Extensions.Configuration;
+using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Models.Abstractions;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Services;
 
 public class SettingsService
 {
+    private IOptionsWriter<ConnectionStrings> ConnectionStringsOptionsWriter { get; }
+    private IOptionsWriter<JJMasterDataOptions> JJMasterDataOptionsWriter { get; }
     public JJMasterDataOptions Options { get; }
-
-    public SettingsService(IWritableOptions<JJMasterDataOptions> s,IOptions<JJMasterDataOptions> o, IConfiguration c)
+    
+    public SettingsService(IOptionsWriter<JJMasterDataOptions> masterDataOptionsWriter,IOptionsSnapshot<JJMasterDataOptions> options, IOptionsWriter<ConnectionStrings> connectionStringsOptionsWriter)
     {
-        s.Update(sett =>
-        {
-            sett.BootstrapVersion = 3;
-        });
-        
-        Options = o.Value;
-
-        var a = JsonConvert.SerializeObject(c);
-        var b = a;
+        JJMasterDataOptionsWriter = masterDataOptionsWriter;
+        ConnectionStringsOptionsWriter = connectionStringsOptionsWriter;
+        Options = options.Value;
     }
 
     public List<Assembly> GetJJAssemblies() => AppDomain.CurrentDomain.GetAssemblies().Where(a =>
@@ -51,5 +45,18 @@ public class SettingsService
         };
 
         return await dataAccess.TryConnectionAsync();
+    }
+
+    public async Task SaveOptions(SettingsViewModel model)
+    {
+        await ConnectionStringsOptionsWriter.UpdateAsync(options =>
+        {
+            options.ConnectionString = model.ConnectionString.ToString();
+        });
+        await JJMasterDataOptionsWriter.UpdateAsync(options =>
+        {
+            options.BootstrapVersion = model.BootstrapVersion;
+        });
+        
     }
 }
