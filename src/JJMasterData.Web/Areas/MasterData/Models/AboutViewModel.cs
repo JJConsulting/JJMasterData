@@ -9,6 +9,5 @@ public class AboutViewModel
     public string? BootstrapVersion { get; set; }
     public string? ExecutingAssemblyProduct { get; set; }
     public string? ExecutingAssemblyVersion { get; set; }
-    
     public string? ExecutingAssemblyCopyright { get; set; }
 }

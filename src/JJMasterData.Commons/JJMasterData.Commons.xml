@@ -102,7 +102,7 @@
         </member>
         <member name="T:JJMasterData.Commons.CustomSettings">
             <summary>
-            Web Config Settings
+            Web Config Options
             </summary>
         </member>
         <member name="P:JJMasterData.Commons.Dao.DataAccess.GenerateLog">
@@ -1577,7 +1577,7 @@
             Gerencia os logs do sistema
             </summary>
         </member>
-        <member name="P:JJMasterData.Commons.SystemLog.Logger.Settings">
+        <member name="P:JJMasterData.Commons.SystemLog.Logger.Options">
             <summary>
             Parametros do log do sistema. Valor padrão app.config
             </summary>

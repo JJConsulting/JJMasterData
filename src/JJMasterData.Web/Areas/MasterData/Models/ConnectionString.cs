@@ -7,7 +7,7 @@ public class ConnectionString
 {
     [Required] public string Server { get; init; }
 
-    public bool IntegratedSecurity { get; set; } = true;
+    public bool IntegratedSecurity { get; set; }
 
     [Required] public string Username { get; init; }
     [Required] public string Password { get; init; }
@@ -25,7 +25,7 @@ public class ConnectionString
     public int? MinPoolSize { get; set; }
     public int? MaxPoolSize { get; set; }
     
-    public ConnectionResult ConnectionResult { get; set; }
+    public ConnectionResult? ConnectionResult { get; set; }
 
     public ConnectionString()
     {

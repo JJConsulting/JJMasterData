@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Web.Models;
 
-public class JJMasterDataOptions
+public class JJMasterDataRoutingOptions
 {
     public IEnumerable<Attribute>? RouteAttributes { get; set; }
 }

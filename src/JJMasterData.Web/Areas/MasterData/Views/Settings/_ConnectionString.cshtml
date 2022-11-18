@@ -3,34 +3,34 @@
 <div class="@BootstrapHelper.FormGroup">
     <div class="row">
         <div class="col-sm-12">
-            <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label>
+            <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <input asp-for="ConnectionString.Server" class="form-control"/>
             <span asp-validation-for="ConnectionString.Server" class="text-danger"></span>
         </div>
         <div class="col-sm-12">
-            <label asp-for="ConnectionString.IntegratedSecurity" class="@BootstrapHelper.Label"></label>
+            <label asp-for="ConnectionString.IntegratedSecurity" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <select onchange="onIntegratedSecurityChange(this.value)" asp-for="ConnectionString.IntegratedSecurity" class="form-control">
                 <option value="False">False</option>
                 <option value="True">True</option>
             </select>
             <span asp-validation-for="ConnectionString.IntegratedSecurity" class="text-danger"></span>
         </div>
-        
+
         <div class="row" id="login-data" style="display: @(Model.ConnectionString.IntegratedSecurity ? "none" : "flex")">
             <div class="col-sm-6">
-                <label asp-for="ConnectionString.Username" class="@BootstrapHelper.Label"></label>
+                <label asp-for="ConnectionString.Username" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
                 <input asp-for="ConnectionString.Username" class="form-control"/>
                 <span asp-validation-for="ConnectionString.Username" class="text-danger"></span>
             </div>
             <div class="col-sm-6">
-                <label asp-for="ConnectionString.Password" class="@BootstrapHelper.Label"></label>
+                <label asp-for="ConnectionString.Password" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
                 <input asp-for="ConnectionString.Password" class="form-control"/>
                 <span asp-validation-for="ConnectionString.Password" class="text-danger"></span>
             </div>
         </div>
 
         <div class="col-sm-12">
-            <label asp-for="ConnectionString.Database" class="@BootstrapHelper.Label"></label>
+            <label asp-for="ConnectionString.Database" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <input asp-for="ConnectionString.Database" class="form-control"/>
             <span asp-validation-for="ConnectionString.Database" class="text-danger"></span>
         </div>
@@ -79,7 +79,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("Test")" type="submit">@Translate.Key("Test")</button>
+        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("TestConnection", "Settings")" type="submit">@Translate.Key("Test")</button>
     </div>
 </div>
 

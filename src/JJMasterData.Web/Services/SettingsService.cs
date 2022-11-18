@@ -1,16 +1,29 @@
 using System.Reflection;
+using System.Text.Json;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Settings;
+using JJMasterData.Web.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Services;
 
 public class SettingsService
 {
-    public ISettings Settings { get; }
+    public JJMasterDataOptions Options { get; }
 
-    public SettingsService(ISettings settings)
+    public SettingsService(IWritableOptions<JJMasterDataOptions> s,IOptions<JJMasterDataOptions> o, IConfiguration c)
     {
-        Settings = settings;
+        s.Update(sett =>
+        {
+            sett.BootstrapVersion = 3;
+        });
+        
+        Options = o.Value;
+
+        var a = JsonConvert.SerializeObject(c);
+        var b = a;
     }
 
     public List<Assembly> GetJJAssemblies() => AppDomain.CurrentDomain.GetAssemblies().Where(a =>

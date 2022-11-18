@@ -16,6 +16,7 @@ public class JJTitleTagHelper : TagHelper
     {
         var title = new JJTitle(Title, SubTitle);
         
+        output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(title.GetHtml());
         
         return Task.CompletedTask;

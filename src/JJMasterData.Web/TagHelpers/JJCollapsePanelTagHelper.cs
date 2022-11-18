@@ -39,7 +39,8 @@ public class JJCollapsePanelTagHelper : TagHelper
             HtmlContent = await RendererService.ToStringAsync(Partial,Model),
             TitleIcon = new JJIcon(Icon)
         };
-        
+        output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(panel.GetHtml());
+        
     }
 }

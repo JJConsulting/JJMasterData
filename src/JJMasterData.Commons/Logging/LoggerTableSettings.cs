@@ -49,7 +49,7 @@ public class LoggerTableSettings
         IConfiguration configuration;
         try
         {
-            configuration = JJMasterDataSettings.Configuration;
+            configuration = JJMasterDataOptions.Configuration;
         }
         catch (FileLoadException)
         {
@@ -61,7 +61,7 @@ public class LoggerTableSettings
         var tableSettings = configuration?.GetJJMasterDataLogger().GetSection(SectionName);
 
         string tableName;
-        if (JJMasterDataSettings.IsNetFramework)
+        if (JJMasterDataOptions.IsNetFramework)
             tableName = ConfigurationManager.AppSettings["LOG_TABLENAME"];
         else
             tableName = tableSettings[nameof(Name)];

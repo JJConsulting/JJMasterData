@@ -245,7 +245,7 @@ class OracleProvider : IProvider
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
 
         sql.AppendLine("-- PROC SET");
             
@@ -502,7 +502,7 @@ class OracleProvider : IProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         StringBuilder sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
 
         sql.AppendLine("-- PROC GET");
             
@@ -814,7 +814,7 @@ class OracleProvider : IProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameSet(element);
+        cmd.Sql = JJMasterDataOptions.GetProcNameSet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
 
@@ -845,7 +845,7 @@ class OracleProvider : IProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameGet(element);
+        cmd.Sql = JJMasterDataOptions.GetProcNameGet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderby));
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", regperpage));

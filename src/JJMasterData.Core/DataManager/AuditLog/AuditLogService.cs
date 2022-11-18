@@ -118,8 +118,8 @@ public class AuditLogService
         string tableName = ConfigurationHelper.GetMasterDataAuditLog();
         var element = new Element(tableName, "Log")
         {
-            CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tableName),
-            CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tableName)
+            CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName),
+            CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName)
         };
         element.Fields.AddPK(DIC_ID, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DIC_NAME, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);

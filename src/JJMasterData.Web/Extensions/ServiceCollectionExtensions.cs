@@ -12,7 +12,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using ResponseEndFilter = JJMasterData.Web.Filters.ResponseEndFilter;
 
 namespace JJMasterData.Web.Extensions;
@@ -22,7 +25,6 @@ public static class ServiceCollectionExtensions
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
         services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
-
         services.AddHttpContextAccessor();
         services.AddSession();
 
@@ -118,4 +120,21 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ThemeService>();
         services.AddTransient<SettingsService>();
     }
+    
+    // public static void ConfigureWritable<T>(
+    //     this IServiceCollection services, 
+    //     IConfigurationRoot configuration, 
+    //     string sectionName, 
+    //     string file) where T : class, new()
+    // {
+    //     services.Configure<T>(configuration.GetSection(sectionName));
+    //
+    //     services.AddTransient<IWritableOptions<T>>(provider =>
+    //     {
+    //         var environment = provider.GetService<IHostingEnvironment>();
+    //         var options = provider.GetService<IOptionsMonitor<T>>();
+    //         IOptionsWriter writer = new OptionsWriter(environment, configuration, file);
+    //         return new WritableOptions<T>(sectionName, writer, options);
+    //     });
+    // }
 }

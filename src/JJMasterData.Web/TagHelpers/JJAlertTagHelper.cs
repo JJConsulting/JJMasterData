@@ -18,17 +18,16 @@ public class JJAlertTagHelper : TagHelper
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
-    
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var title = new JJAlert()
+        var title = new JJAlert
         {
             Color = Color,
             Icon = Icon,
             Title = Title,
             Messages = Messages
         };
-        
+        output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(title.GetHtml());
         
         return Task.CompletedTask;

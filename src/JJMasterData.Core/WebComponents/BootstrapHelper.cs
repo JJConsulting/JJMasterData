@@ -13,9 +13,9 @@ namespace JJMasterData.Core.WebComponents;
 public static class BootstrapHelper
 {
     #region Settings
-    private static ISettings Settings => JJService.Settings;
+    private static JJMasterDataOptions Options => JJService.Options;
 
-    public static int Version => Settings.BootstrapVersion;
+    public static int Version => Options.BootstrapVersion;
     #endregion
 
     #region Button

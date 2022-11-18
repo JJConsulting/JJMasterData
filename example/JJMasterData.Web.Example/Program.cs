@@ -1,5 +1,7 @@
+using JJMasterData.Commons.Settings;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Models;
 
 namespace JJMasterData.Web.Example;
 
@@ -10,18 +12,14 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
-        var sharedSettings = Path.Combine(root, "appsettings.json");
-
-        builder.Configuration.AddJsonFile(sharedSettings);
+        var settingsPath = Path.Combine(root, "appsettings.json");
+        builder.Configuration.AddJsonFile(settingsPath,false,true);
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddJJMasterDataWeb().WithFormEvents()
-            .WithSettings(s =>
-            {
-                s.LayoutPath = "_Layout";
-            });
-
+        builder.Services.AddOptions<JJMasterDataOptions>();
+        builder.Services.AddJJMasterDataWeb().WithFormEvents();
+        builder.Services.ConfigureWritable<JJMasterDataOptions>(builder.Configuration.GetSection("JJMasterData"), settingsPath);
         var app = builder.Build();
 
         if (app.Environment.IsProduction())

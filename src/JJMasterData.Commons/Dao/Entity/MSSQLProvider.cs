@@ -228,7 +228,7 @@ public class MSSQLProvider : IProvider
         StringBuilder sql = new StringBuilder();
 
         bool updateScript = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
         
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -495,7 +495,7 @@ public class MSSQLProvider : IProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
 
         //Se exisitir apaga
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -916,7 +916,7 @@ public class MSSQLProvider : IProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameGet(element);
+        cmd.Sql = JJMasterDataOptions.GetProcNameGet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@orderby", orderby));
         cmd.Parameters.Add(new DataAccessParameter("@regporpag", regperpage));
@@ -989,7 +989,7 @@ public class MSSQLProvider : IProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameSet(element);
+        cmd.Sql = JJMasterDataOptions.GetProcNameSet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 

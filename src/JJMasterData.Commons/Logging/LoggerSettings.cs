@@ -88,7 +88,7 @@ public class LoggerSettings
 
     private string GetOption(string option)
     {
-        if (JJMasterDataSettings.IsNetFramework)
+        if (JJMasterDataOptions.IsNetFramework)
         {
             string key = GetNetFrameworkLegacyKey(option);
 
@@ -97,7 +97,7 @@ public class LoggerSettings
             return value;
         }
 
-        var configuration = JJMasterDataSettings.Configuration;
+        var configuration = JJMasterDataOptions.Configuration;
 
         return configuration.GetJJMasterDataLogger(option);
             

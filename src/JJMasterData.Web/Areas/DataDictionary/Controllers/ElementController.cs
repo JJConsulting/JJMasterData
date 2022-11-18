@@ -284,11 +284,11 @@ public class ElementController : DataDictionaryController
         var btnSettings = new UrlRedirectAction
         {
             Name = "btnAppSettings",
-            ToolTip = Translate.Key("Application Settings"),
+            ToolTip = Translate.Key("Application Options"),
             Icon = IconType.Code,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = Translate.Key("Application Settings"),
+            TitlePopUp = Translate.Key("Application Options"),
             UrlRedirect = Url.Action("Index", "Settings", new {Area = "MasterData", Layout = "_MasterDataLayout.Popup"}),
             Order = 12,
             CssClass = BootstrapHelper.PullRight

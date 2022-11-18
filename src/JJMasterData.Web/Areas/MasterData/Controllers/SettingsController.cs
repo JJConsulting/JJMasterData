@@ -38,21 +38,33 @@ public class SettingsController : MasterDataController
     {
         var settings = new SettingsViewModel
         {
-            ConnectionString = new ConnectionString(Service.Settings.ConnectionString),
-            BootstrapVersion = Service.Settings.BootstrapVersion
+            ConnectionString = new ConnectionString(Service.Options.GetConnectionString("ConnectionString")),
+            BootstrapVersion = Service.Options.BootstrapVersion
         };
         return View(settings);
     }
-
-    [HttpPost]
-    public async Task<IActionResult> Test(SettingsViewModel model)
+    
+    public async Task<IActionResult> Save(SettingsViewModel model)
     {
-        string connectionString = model.ConnectionString.ToString();
-
-        var result = await Service.TryConnectionAsync(connectionString);
+        if (ModelState.IsValid)
+        {
+            
+        }
         
-        model.ConnectionString.ConnectionResult = new ConnectionResult(result.Item1,result.Item2);
+        return View(nameof(Index), model);
+    }
+    
+    public async Task<IActionResult> TestConnection(SettingsViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            string connectionString = model.ConnectionString.ToString();
 
+            var result = await Service.TryConnectionAsync(connectionString);
+        
+            model.ConnectionString.ConnectionResult = new ConnectionResult(result.Item1,result.Item2);
+        }
+        
         return View(nameof(Index), model);
     }
 }

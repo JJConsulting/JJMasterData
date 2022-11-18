@@ -100,14 +100,14 @@ public class DataAccess : IDataAccess
 
     public DataAccess()
     {
-        ConnectionString = JJService.Settings.ConnectionString;
-        ConnectionProvider = JJService.Settings.ConnectionProvider;
+        ConnectionString = JJService.Options.GetConnectionString("ConnectionString");
+        ConnectionProvider = JJService.Options.GetConnectionProvider("ConnectionProvider");
     }
 
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJService.Settings.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJService.Settings.GetConnectionProvider(connectionStringName);
+        ConnectionString = JJService.Options.GetConnectionString(connectionStringName);
+        ConnectionProvider = JJService.Options.GetConnectionProvider(connectionStringName);
     }
 
     /// <summary>

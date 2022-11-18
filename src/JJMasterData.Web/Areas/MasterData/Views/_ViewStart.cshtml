@@ -1,5 +1,6 @@
 ﻿@using JJMasterData.Commons.Settings
-@inject ISettings Settings
+@using Microsoft.Extensions.Options
+@inject IOptions<JJMasterDataOptions> Settings
 @{
-    Layout = string.IsNullOrEmpty(Settings.LayoutPath) ? "_MasterDataLayout" : Settings.LayoutPath;
+    Layout = string.IsNullOrEmpty(Settings.Value.LayoutPath) ? "_MasterDataLayout" : Settings.Value.LayoutPath;
 }

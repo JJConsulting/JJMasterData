@@ -109,7 +109,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = JJService.Settings.ExportationFolderPath;
+            string folderPath = JJService.Options.ExportationFolderPath;
             folderPath += FormElement.Name;
             folderPath += "\\";
 
