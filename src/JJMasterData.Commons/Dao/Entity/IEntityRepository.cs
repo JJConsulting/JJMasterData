@@ -141,17 +141,17 @@ public interface IEntityRepository
     public void CreateDataModel(Element element);
 
     /// <summary>
-    /// Build a script to create table
+    /// Build a struture script to create table
     /// </summary>
     public string GetScriptCreateTable(Element element);
 
     /// <summary>
-    /// Build a script to procedure of get
+    /// Build a struture script to procedure of get
     /// </summary>
     public string GetScriptReadProcedure(Element element);
 
     /// <summary>
-    /// Build a script to procedure of set
+    /// Build a struture script to procedure of set
     /// </summary>
     public string GetScriptWriteProcedure(Element element);
 

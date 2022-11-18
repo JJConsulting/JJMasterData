@@ -28,7 +28,11 @@ public class FormManager
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
+        if (expression == null)
+            throw new ArgumentNullException(nameof(expression));
+
         FormElement = formElement;
+        Expression = expression;
     }
 
     /// <summary>
