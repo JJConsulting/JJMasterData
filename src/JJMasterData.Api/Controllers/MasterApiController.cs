@@ -125,6 +125,9 @@ public class MasterApiController : ControllerBase
 
         var path = Path.Combine(folderPath, id);
 
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+        
         if (!field.DataFile.MultipleFile)
         {
             foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
