@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Commons.Dao.Entity;
 
@@ -22,7 +23,7 @@ class ProviderSQLite : IProvider
         }
     }
 
-    public string GetCreateTableScript(Element element)
+    public string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -77,7 +78,7 @@ class ProviderSQLite : IProvider
             if (f.AutoNum && f.IsPk)
                 sSql.Append(" PRIMARY KEY AUTOINCREMENT ");
         }
-        
+
         isFirst = true;
         foreach (var f in fields.ToList().FindAll(x => x.IsPk && !x.AutoNum))
         {
@@ -109,7 +110,7 @@ class ProviderSQLite : IProvider
 
         //sSql.AppendLine(DoSqlCreateRelation(element));
         sSql.AppendLine("");
-        
+
         int nIndex = 1;
         if (element.Indexes.Count > 0)
         {
@@ -235,32 +236,37 @@ class ProviderSQLite : IProvider
         return sSql.ToString();
     }
 
-    public string GetWriteProcedureScript(Element element)
+    public string GetScriptWriteProcedure(Element element)
     {
         return null;
     }
 
-    public string GetReadProcedureScript(Element element)
+    public string GetScriptReadProcedure(Element element)
     {
         return null;
     }
 
-    public DataAccessCommand GetInsertScript(Element element, Hashtable values)
+    public DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
-        return GetWriteCommand(INSERT, element, values);
+        return GetScriptInsert(element, values, false);
     }
 
-    public DataAccessCommand GetUpdateScript(Element element, Hashtable values)
+    public DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
-        return GetWriteCommand(UPDATE, element, values);
+        return GetScriptUpdate(element, values);
     }
 
-    public DataAccessCommand GetDeleteScript(Element element, Hashtable filters)
+    public DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
-        return GetWriteCommand(DELETE, element, filters);
+        return GetScriptDelete(element, filters);
     }
 
-    public DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
+    public DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    {
+        return GetScriptInsert(element, values, true);
+    }
+
+    public DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
     {
         var fields = element.Fields
             .ToList()
@@ -327,32 +333,10 @@ class ProviderSQLite : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values)
-    {
-        DataAccessCommand cmd;
-        switch (action)
-        {
-            case INSERT:
-                cmd = GetScriptInsert(element, values, false);
-                break;
-            case UPDATE:
-                cmd = GetScriptUpdate(element, values);
-                break;
-            case DELETE:
-                cmd = GetScriptDelete(element, values);
-                break;
-            default:
-                cmd = GetScriptInsert(element, values, true);//REPLACE
-                break;
-        }
-
-        return cmd;
-    }
-
     public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
     {
         DataAccessParameter pTot = null;
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
+        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
         DataTable dt = dataAccess.GetDataTable(cmd);
         tot = 0;
 
@@ -568,7 +552,7 @@ class ProviderSQLite : IProvider
                  f.DataType == FieldType.Int) &&
                 values[f.Name].ToString().Trim().Length == 0)
             {
-                
+
                 value = DBNull.Value;
             }
             else
@@ -582,9 +566,9 @@ class ProviderSQLite : IProvider
                 //}
                 //else
                 //{
-                    
+
                 //}
-                
+
             }
         }
 

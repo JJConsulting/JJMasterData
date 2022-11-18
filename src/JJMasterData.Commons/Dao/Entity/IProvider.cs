@@ -6,15 +6,15 @@ namespace JJMasterData.Commons.Dao.Entity;
 public interface IProvider
 {
     string VariablePrefix { get; }
-    string GetCreateTableScript(Element element);
-    string GetWriteProcedureScript(Element element);
-    string GetReadProcedureScript(Element element);
+    string GetScriptCreateTable(Element element);
+    string GetScriptWriteProcedure(Element element);
+    string GetScriptReadProcedure(Element element);
 
     DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess);
-    DataAccessCommand GetInsertScript(Element element, Hashtable values);
-    DataAccessCommand GetUpdateScript(Element element, Hashtable values);
-    DataAccessCommand GetDeleteScript(Element element, Hashtable filters);
-    DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot);
-    DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values);
+    DataAccessCommand GetCommandInsert(Element element, Hashtable values);
+    DataAccessCommand GetCommandUpdate(Element element, Hashtable values);
+    DataAccessCommand GetCommandDelete(Element element, Hashtable filters);
+    DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot);
+    DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values);
        
 }

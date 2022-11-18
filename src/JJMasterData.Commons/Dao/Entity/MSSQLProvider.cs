@@ -18,7 +18,7 @@ public class MSSQLProvider : IProvider
 
     public string VariablePrefix => "@";
 
-    public string GetCreateTableScript(Element element)
+    public string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -217,7 +217,7 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
            
-    public string GetWriteProcedureScript(Element element)
+    public string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -482,7 +482,7 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public string GetReadProcedureScript(Element element)
+    public string GetScriptReadProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -897,22 +897,27 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public DataAccessCommand GetInsertScript(Element element, Hashtable values)
+    public DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
-        return GetWriteCommand(INSERT, element, values);
+        return GetCommandWrite(INSERT, element, values);
     }
 
-    public DataAccessCommand GetUpdateScript(Element element, Hashtable values)
+    public DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
-        return GetWriteCommand(UPDATE, element, values);
+        return GetCommandWrite(UPDATE, element, values);
     }
 
-    public DataAccessCommand GetDeleteScript(Element element, Hashtable filters)
+    public DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
-        return GetWriteCommand(DELETE, element, filters);
+        return GetCommandWrite(DELETE, element, filters);
     }
 
-    public DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    {
+        return GetCommandWrite(string.Empty, element, values);
+    }
+
+    public DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -985,7 +990,8 @@ public class MSSQLProvider : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values)
+
+    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -1022,7 +1028,7 @@ public class MSSQLProvider : IProvider
     public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref DataAccess dataAccess)
     {
         DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
+        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
         DataTable dt = dataAccess.GetDataTable(cmd);
         tot = 0;
         if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)

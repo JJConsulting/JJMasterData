@@ -456,10 +456,10 @@ public class DataAccess
         return scalarResult;
     }
 
+
     /// <summary>
-    /// Runs one or more commands on the database with transactions.
+    /// Execute the command in the database and return the number of affected records.
     /// </summary>
-    /// <returns>Returns the number of affected records.</returns>
     /// <remarks>
     /// Author: Lucio Pelinson 14-04-2012
     /// </remarks>
@@ -528,7 +528,13 @@ public class DataAccess
         return rowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <summary>
+    /// Runs one or more commands on the database with transactions.
+    /// </summary>
+    /// <returns>Returns the number of affected records.</returns>
+    /// <remarks>
+    /// Author: Lucio Pelinson 14-04-2012
+    /// </remarks>
     public int SetCommand(List<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
@@ -813,6 +819,9 @@ public class DataAccess
         return command;
     }
 
+    /// <summary>
+    /// Check if table exists in the database
+    /// </summary>
     public bool TableExists(string tableName)
     {
         bool result;

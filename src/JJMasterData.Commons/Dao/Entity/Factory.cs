@@ -57,20 +57,10 @@ public class Factory : IEntityRepository
     }
 
 
-    /// <summary>
-    /// Add a record to the database.
-    /// Retorno o id no campo values como referencia
-    /// Return the id in the values ​​field as a reference
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
+    ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
     public void Insert(Element element, Hashtable values)
     {
-        var command = Provider.GetInsertScript(element, values);
+        var command = Provider.GetCommandInsert(element, values);
         var newFields = DataAccess.GetFields(command);
 
         if (newFields == null)
@@ -89,36 +79,19 @@ public class Factory : IEntityRepository
     }
 
 
-    /// <summary>
-    /// Update a record in the database 
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </summary>
-    /// <param name="element">Base element with a basic table structure</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <returns>Return the number of the rows affected</returns>
+    ///<inheritdoc cref="IEntityRepository.Update(Element, Hashtable)"/>
     public int Update(Element element, Hashtable values)
     {
-        var cmd = Provider.GetUpdateScript(element, values);
+        var cmd = Provider.GetCommandUpdate(element, values);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
 
-    /// <summary>
-    /// Set a record in the database.
-    /// If it exists then update it, otherwise add.
-    /// Include PK in Hashtable in case of indentity
-    /// </summary>
-    /// <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable)"/>
     public CommandType SetValues(Element element, Hashtable values)
     {
         var commandType = CommandType.None;
-        var command = Provider.GetWriteCommand("", element, values);
+        var command = Provider.GetCommandInsertOrReplace(element, values);
         var newFields = DataAccess.GetFields(command);
 
         var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
@@ -152,19 +125,7 @@ public class Factory : IEntityRepository
     }
 
 
-    /// <summary>
-    /// Set a record in the database.
-    /// If it exists then update it, otherwise add.
-    /// </summary>
-    /// <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <param name="ignoreResults">By default the values ​​returned in the set procedures are returned by reference in the hashtable values ​​object, 
-    /// if this ignoreResults parameter is true this action is ignored, improving performance</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable, bool)"/>
     public CommandType SetValues(Element element, Hashtable values, bool ignoreResults)
     {
         if (ignoreResults)
@@ -175,7 +136,7 @@ public class Factory : IEntityRepository
     private CommandType SetValuesNoResult(Element element, Hashtable values)
     {
         var ret = CommandType.None;
-        var command = Provider.GetWriteCommand("", element, values);
+        var command = Provider.GetCommandInsertOrReplace(element, values);
         DataAccess.SetCommand(command);
 
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
@@ -196,52 +157,27 @@ public class Factory : IEntityRepository
         return ret;
     }
 
-    /// <summary>
-    /// Delete records based on filter.  
-    /// [key(database field), valor(value stored in database)].
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="filters">List of filters to be used</param>
-    /// <returns>Return the number of the rows affected</returns>
+
+    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
     public int Delete(Element element, Hashtable filters)
     {
-        var cmd = Provider.GetDeleteScript(element, filters);
+        var cmd = Provider.GetCommandDelete(element, filters);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
 
-    /// <summary>
-    /// Returns first record based on filter.  
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <returns>
-    /// Return a Hashtable Object. 
-    /// If no record is found then returns null.
-    /// </returns>
+
+    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
     public Hashtable GetFields(Element element, Hashtable filters)
     {
         DataAccessParameter pTot =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(element, filters, "", 1, 1, ref pTot);
+        var cmd = Provider.GetCommandRead(element, filters, "", 1, 1, ref pTot);
         return DataAccess.GetFields(cmd);
     }
 
 
-
-    /// <summary>
-    /// Returns records from the database based on the filter.    
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
-    /// <param name="regperpage">Number of records to be displayed per page</param>
-    /// <param name="pag">Current page</param>
-    /// <param name="tot">If the value is zero, it returns as a reference the number of records based on the filter.</param>
-    /// <returns>
-    /// Returns a DataTable with the records found.
-    /// If no record is found it returns null.
-    /// </returns>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable, string, int, int, ref int)"/>
     public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regperpage, int pag,
         ref int tot)
     {
@@ -257,63 +193,51 @@ public class Factory : IEntityRepository
     }
 
 
-    /// <summary>
-    /// Returns records from the database based on the filter.  
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <returns>
-    /// Returns a DataTable with the records found. 
-    /// If no record is found it returns null.
-    /// </returns>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
     public DataTable GetDataTable(Element element, Hashtable filters)
     {
         int tot = 1;
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
     }
 
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
+
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(string)"/>
     public DataTable GetDataTable(string sql)
     {
         return DataAccess.GetDataTable(sql);
     }
 
+    ///<inheritdoc cref="IEntityRepository.GetResult(string)"/>
     public object GetResult(string sql)
     {
         return DataAccess.GetResult(sql);
     }
 
+    ///<inheritdoc cref="IEntityRepository.SetCommand(string)"/>
     public void SetCommand(string sql)
     {
         DataAccess.SetCommand(sql);
     }
 
+    ///<inheritdoc cref="IEntityRepository.SetCommand(ArrayList)"/>
     public int SetCommand(ArrayList sqlList)
     {
         return DataAccess.SetCommand(sqlList);
     }
 
+    ///<inheritdoc cref="IEntityRepository.TableExists(string)"/>
     public bool TableExists(string tableName)
     {
         return DataAccess.TableExists(tableName);
     }
 
+    ///<inheritdoc cref="IEntityRepository.ExecuteBatch(string)"/>
     public bool ExecuteBatch(string script)
     {
         return DataAccess.ExecuteBatch(script);
     }
 
-    /// <summary>
-    /// Returns the number of records in the database
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <returns>
-    /// Returns an integer.
-    /// </returns>
+    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
     public int GetCount(Element element, Hashtable filters)
     {
         int tot = 0;
@@ -321,28 +245,22 @@ public class Factory : IEntityRepository
         return tot;
     }
 
-    /// <summary>
-    /// Create an element's tables and procedures
-    /// </summary>
-    /// <param name="element">Element with table data</param>
+    ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
     public void CreateDataModel(Element element)
     {
         var scriptSql = new StringBuilder();
-        //create table
         scriptSql.AppendLine(GetCreateTableScript(element));
-        //procedure set
         scriptSql.AppendLine(GetWriteProcedureScript(element));
-        //procedure get
         scriptSql.AppendLine(GetReadProcedureScript(element));
         ExecuteBatch(scriptSql.ToString());
     }
 
 
-    public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);
+    public string GetCreateTableScript(Element element) => Provider.GetScriptCreateTable(element);
 
-    public string GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
+    public string GetWriteProcedureScript(Element element) => Provider.GetScriptWriteProcedure(element);
 
-    public string GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
+    public string GetReadProcedureScript(Element element) => Provider.GetScriptReadProcedure(element);
 
     public Element GetElementFromTable(string tableName)
     {
@@ -368,27 +286,7 @@ public class Factory : IEntityRepository
     }
 
 
-    /// <summary>
-    /// Returns database records based on filter.  
-    /// </summary>
-    /// <param name="element">Elemento base com uma estrutura básica da tabela.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
-    /// <param name="regporpag">Number of records to be displayed per page</param>
-    /// <param name="pag">Current page</param>
-    /// <param name="showLogInfo">Records detailed log of each operation</param>
-    /// <param name="delimiter">Field delimiter in text file (default is pipe)</param>
-    /// <returns>
-    /// Returns a string with one record per line separated by the delimiter.<para/>
-    /// If no record is found it returns null. <para/>
-    /// *Warning: <para/>
-    /// - Some special characters will be replaced:<para/>
-    ///   enter =  #182;<para/>
-    ///   {delimiter} = #124;<para/>
-    /// - Submitted formats:<para/>
-    ///   Numbers = en-US<para/>
-    ///   Date = yyyy-MM-dd HH:mm:ss
-    /// </returns>
+    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
     public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag,
         bool showLogInfo, string delimiter = "|")
     {
@@ -407,7 +305,7 @@ public class Factory : IEntityRepository
         {
             var pTot = new DataAccessParameter(Provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
                 ParameterDirection.InputOutput);
-            var cmd = Provider.GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
+            var cmd = Provider.GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
             if (conn == null)
