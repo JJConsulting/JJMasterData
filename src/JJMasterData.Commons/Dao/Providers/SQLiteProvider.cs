@@ -1,13 +1,12 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Dao.Entity.Providers;
-using Newtonsoft.Json.Linq;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao.Providers;
 
 internal class ProviderSQLite : BaseProvider
 {
@@ -312,7 +311,7 @@ internal class ProviderSQLite : BaseProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -390,7 +389,7 @@ internal class ProviderSQLite : BaseProvider
         sSql.Append(")");
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -461,7 +460,7 @@ internal class ProviderSQLite : BaseProvider
 
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -517,7 +516,7 @@ internal class ProviderSQLite : BaseProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -617,7 +616,7 @@ internal class ProviderSQLite : BaseProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 

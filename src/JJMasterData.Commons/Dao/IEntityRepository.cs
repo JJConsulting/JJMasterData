@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Data;
+using JJMasterData.Commons.Dao.Entity;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao;
 
 public interface IEntityRepository
 {

@@ -8,7 +8,7 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal static class DataDictionarySchema
 {
-    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, DicApiSettings api, string modelName, bool ignoreIdentity = false)
+    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, ApiSettings api, string modelName, bool ignoreIdentity = false)
     {
         var modelSchema = new OpenApiSchema
         {

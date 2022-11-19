@@ -1,12 +1,13 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Language;
+using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
 
-namespace JJMasterData.Commons.Dao.Entity.Providers;
+namespace JJMasterData.Commons.Dao.Providers;
 
 internal abstract class BaseProvider
 {
@@ -175,7 +176,7 @@ internal abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderby))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
-        var plainTextWriter = new PlainTextWriter(this);
+        var plainTextWriter = new PlainTextReader(this);
         plainTextWriter.ShowLogInfo = showLogInfo;
         plainTextWriter.Delimiter = delimiter;
 

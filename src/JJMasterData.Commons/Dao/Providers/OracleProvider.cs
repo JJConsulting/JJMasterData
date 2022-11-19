@@ -1,14 +1,13 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Settings;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
-using JJMasterData.Commons.Dao.Entity.Providers;
-using JJMasterData.Commons.Settings;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao.Providers;
 
 internal class OracleProvider : BaseProvider
 {
@@ -64,7 +63,7 @@ internal class OracleProvider : BaseProvider
 
             if (f.IsRequired)
                 sSql.Append(" NOT NULL");
-                
+
             if (f.IsPk)
             {
                 if (sKeys.Length > 0)
@@ -93,7 +92,7 @@ internal class OracleProvider : BaseProvider
         sSql.AppendLine("");
         sSql.AppendLine(GetRelationScript(element));
         sSql.AppendLine("");
-            
+
         int nIndex = 1;
         if (element.Indexes.Count > 0)
         {
@@ -142,7 +141,7 @@ internal class OracleProvider : BaseProvider
             sSql.AppendLine("/");
         }
         sSql.AppendLine("");
-            
+
         return sSql.ToString();
     }
 
@@ -247,7 +246,7 @@ internal class OracleProvider : BaseProvider
         string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
 
         sql.AppendLine("-- PROC SET");
-            
+
         //Criando proc
         sql.Append("CREATE OR REPLACE PROCEDURE ");
         sql.Append(procedureFinalName);
@@ -400,7 +399,7 @@ internal class OracleProvider : BaseProvider
                     sql.Append(f.Name);
                 }
             }
-                
+
             isFirst = true;
             foreach (var f in fields)
             {
@@ -447,7 +446,7 @@ internal class OracleProvider : BaseProvider
         sql.Append(TAB).Append(TAB);
         sql.Append("DELETE FROM ");
         sql.Append(element.TableName);
-            
+
         isFirst = true;
         foreach (var f in fields)
         {
@@ -504,7 +503,7 @@ internal class OracleProvider : BaseProvider
         string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
 
         sql.AppendLine("-- PROC GET");
-            
+
         //Criando proc
         sql.Append("CREATE OR REPLACE PROCEDURE ");
         sql.Append(procedureFinalName);
@@ -570,7 +569,7 @@ internal class OracleProvider : BaseProvider
         {
             sql.Append(TAB);
 
-                
+
             sql.Append("v_sqlcolumn := v_sqlcolumn || '");
 
             if (f.DataBehavior == FieldBehavior.ViewOnly)
@@ -787,7 +786,7 @@ internal class OracleProvider : BaseProvider
         sql.AppendLine("");
         sql.Append(TAB);
         sql.AppendLine("--DBMS_OUTPUT.PUT_LINE(v_query);");
-            
+
         sql.AppendLine("");
         sql.AppendLine("END;");
 
@@ -817,7 +816,7 @@ internal class OracleProvider : BaseProvider
     private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
+        cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = JJMasterDataSettings.GetProcNameSet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
@@ -848,7 +847,7 @@ internal class OracleProvider : BaseProvider
     public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
+        cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = JJMasterDataSettings.GetProcNameGet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderby));
@@ -915,10 +914,10 @@ internal class OracleProvider : BaseProvider
         pCur.Name = VariablePrefix + "cur_OUT";
         pCur.Direction = ParameterDirection.Output;
         pCur.Type = DbType.Object;
-            
+
         cmd.Parameters.Add(pCur);
 
-            
+
         return cmd;
     }
 

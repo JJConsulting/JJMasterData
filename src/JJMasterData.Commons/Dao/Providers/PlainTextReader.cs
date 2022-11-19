@@ -1,6 +1,7 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -8,18 +9,17 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
-using System.Net.NetworkInformation;
 
-namespace JJMasterData.Commons.Dao.Entity.Providers;
+namespace JJMasterData.Commons.Dao.Providers;
 
-internal class PlainTextWriter
+internal class PlainTextReader
 {
     private BaseProvider _provider;
     public bool ShowLogInfo { get; set; }
     public string Delimiter { get; set; }
-    
 
-    public PlainTextWriter(BaseProvider provider)
+
+    public PlainTextReader(BaseProvider provider)
     {
         _provider = provider;
         Delimiter = "|";
@@ -34,7 +34,7 @@ internal class PlainTextWriter
         var dataAccess = _provider.DataAccess;
         string currentField = null;
         DbConnection conn = null;
-        
+
         try
         {
             var pTot = new DataAccessParameter(_provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
@@ -117,7 +117,7 @@ internal class PlainTextWriter
                                     sRet.Append(dr.GetInt32(ordinal));
                                     break;
                                 case FieldType.Float:
-                                    sRet.Append(Double.Parse(dr.GetValue(ordinal).ToString()).ToString("G", culture));
+                                    sRet.Append(double.Parse(dr.GetValue(ordinal).ToString()).ToString("G", culture));
                                     break;
                                 default:
                                     sRet.Append(dr.GetValue(ordinal).ToString().TrimEnd());

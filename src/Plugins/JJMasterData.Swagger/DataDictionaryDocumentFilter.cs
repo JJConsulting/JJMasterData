@@ -20,7 +20,7 @@ namespace JJMasterData.Swagger
             foreach (DicParser dic in dictionaries)
             {
                 FormElement f = dic.GetFormElement();
-                DicApiSettings api = dic.Api;
+                ApiSettings api = dic.Api;
                 string key;
 
                 //Get All
@@ -71,7 +71,7 @@ namespace JJMasterData.Swagger
             swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
         }
 
-        private PathItem GetPatchPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetPatchPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -133,7 +133,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPostPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetPostPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -204,7 +204,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPutPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetPutPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -267,7 +267,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDelPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetDelPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -324,7 +324,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDetailPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetDetailPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -381,7 +381,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetAllPathItem(FormElement f, DicApiSettings api)
+        private PathItem GetAllPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "");
             var oPathItem = new PathItem();
@@ -586,7 +586,7 @@ namespace JJMasterData.Swagger
             return modelSchema;
         }
 
-        private Schema GetDictionarySchema(FormElement f, DicApiSettings api, string modelName, bool ignoreIdentity = false)
+        private Schema GetDictionarySchema(FormElement f, ApiSettings api, string modelName, bool ignoreIdentity = false)
         {
             var modelSchema = new Schema();
             modelSchema.title = modelName;

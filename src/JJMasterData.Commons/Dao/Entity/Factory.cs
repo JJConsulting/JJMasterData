@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
-using JJMasterData.Commons.Dao.Entity.Providers;
+using JJMasterData.Commons.Dao.Providers;
 using JJMasterData.Commons.Language;
 
 namespace JJMasterData.Commons.Dao.Entity;

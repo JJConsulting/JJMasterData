@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
@@ -13,6 +7,12 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Action;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
 
@@ -97,7 +97,7 @@ public class DictionaryDao
             }
             else if (row["type"].ToString().Equals("A"))
             {
-                currentParser.Api = JsonConvert.DeserializeObject<DicApiSettings>(json);
+                currentParser.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
             }
         }
 
@@ -174,10 +174,10 @@ public class DictionaryDao
     private string GetElementJson(string jsTable, string jsForm, string jsUI, string jsApi)
     {
         var sJson = new StringBuilder();
-        DicApiSettings apiSettings = null;
+        ApiSettings apiSettings = null;
         if (jsApi != null)
         {
-            apiSettings = JsonConvert.DeserializeObject<DicApiSettings>(jsApi);
+            apiSettings = JsonConvert.DeserializeObject<ApiSettings>(jsApi);
         }
 
         sJson.AppendLine("{");
@@ -258,7 +258,7 @@ public class DictionaryDao
             }
             else if (row["type"].ToString().Equals("A"))
             {
-                ret.Api = JsonConvert.DeserializeObject<DicApiSettings>(json);
+                ret.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
             }
         }
 
@@ -287,7 +287,7 @@ public class DictionaryDao
         //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
         if (dicParser.Api == null)
         {
-            dicParser.Api = new DicApiSettings();
+            dicParser.Api = new ApiSettings();
             if (dicParser.Table.Sync)
             {
                 dicParser.Api.EnableGetAll = true;

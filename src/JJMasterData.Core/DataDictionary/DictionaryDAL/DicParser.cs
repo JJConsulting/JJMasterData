@@ -16,7 +16,7 @@ public class DicParser
     public UIOptions UIOptions { get; set; }
 
     [DataMember(Name = "api")]
-    public DicApiSettings Api { get; set; }
+    public ApiSettings Api { get; set; }
 
     public FormElement GetFormElement()
     {

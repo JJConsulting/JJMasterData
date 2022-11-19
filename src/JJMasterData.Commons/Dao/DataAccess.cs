@@ -1,5 +1,9 @@
 ﻿#nullable disable
 
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,11 +13,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Dao;
 

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
@@ -15,6 +7,12 @@ using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -29,9 +27,8 @@ public class ElementService : BaseService
     public List<string> GetScriptsDictionary(string id)
     {
         var factory = DicDao.EntityRepository;
-        FormElement formElement = DicDao.GetFormElement(id);
-        List<string> listScripts = new List<string>();
-
+        var formElement = DicDao.GetFormElement(id);
+        var listScripts = new List<string>();
         listScripts.Add(factory.GetScriptCreateTable(formElement));
         listScripts.Add(factory.GetScriptReadProcedure(formElement));
         listScripts.Add(factory.GetScriptWriteProcedure(formElement));
@@ -81,8 +78,7 @@ public class ElementService : BaseService
     {
         var factory = DicDao.EntityRepository;
         var element = DicDao.GetStructure();
-
-        DicDao.CreateStructure();
+        factory.CreateDataModel(element);
         factory.ExecuteBatch(factory.GetScriptReadProcedure(element));
     }
 

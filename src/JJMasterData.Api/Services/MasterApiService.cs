@@ -162,7 +162,7 @@ public class MasterApiService
         return listRet;
     }
 
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -190,7 +190,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -219,7 +219,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -253,7 +253,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Patch(FormService formService, Hashtable values, DicApiSettings api)
+    private ResponseLetter Patch(FormService formService, Hashtable values, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -457,7 +457,7 @@ public class MasterApiService
         return DictionaryDao.GetDictionary(elementName);
     }
 
-    private ResponseLetter CreateErrorResponseLetter(Hashtable erros, DicApiSettings api)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable erros, ApiSettings api)
     {
         var letter = new ResponseLetter
         {
@@ -486,7 +486,7 @@ public class MasterApiService
     /// Isso acontece devido as triggers ou os valores 
     /// retornados nos metodos de set (id autoNum) por exemplo
     /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, DicApiSettings api)
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)

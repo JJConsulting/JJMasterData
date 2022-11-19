@@ -13,10 +13,10 @@ internal class DataDictionaryOperationFactory
 {
 
     internal FormElement FormElement { get; set; }
-    internal DicApiSettings Settings { get; set; }
+    internal ApiSettings Settings { get; set; }
     internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
 
-    internal DataDictionaryOperationFactory(FormElement formElement, DicApiSettings settings)
+    internal DataDictionaryOperationFactory(FormElement formElement, ApiSettings settings)
     {
         FormElement = formElement;
         Settings = settings;
