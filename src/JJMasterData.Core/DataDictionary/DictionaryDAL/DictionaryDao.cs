@@ -636,7 +636,7 @@ public class DictionaryDao
 
         return sJson.ToString();
     }
-        
+
     /// <summary>
     /// Recupera um objeto com dados do formulário
     /// </summary>
@@ -645,6 +645,7 @@ public class DictionaryDao
     /// Retorna um FormElement com os principais dados do formulário.
     /// Herda de Element
     /// </returns>
+    [Obsolete]
     public FormElement GetFormElement(string elementName)
     {
         var dao = new DictionaryDao();
@@ -660,6 +661,7 @@ public class DictionaryDao
     /// Persiste as configurações do formulário no banco de dados
     /// </summary>
     /// <param name="formElement">Elemento base com a estrutura do formulário.</param>
+    [Obsolete]
     public void SetFormElement(FormElement formElement)
     {
         if (formElement == null)
@@ -688,6 +690,7 @@ public class DictionaryDao
     /// Constroi uma nova instancia do objeto Element a partir da estrutura de uma tabela
     /// </summary>
     /// <param name="tableName">Nome da tabela</param>
+    [Obsolete]
     public Element GetElementFromTable(string tableName)
     {
         if (string.IsNullOrEmpty(tableName))
@@ -714,6 +717,7 @@ public class DictionaryDao
     /// </summary>
     /// <param name="elementName">Dictionary name</param>
     /// <returns></returns>
+    [Obsolete]
     public Element GetElement(string elementName)
     {
         if (elementName == null)
@@ -739,6 +743,7 @@ public class DictionaryDao
     /// Returns a list of base elements
     /// </summary>
     /// <returns></returns>
+    [Obsolete]
     public List<Element> GetListElement()
     {
         var filter = new Hashtable();
@@ -755,6 +760,7 @@ public class DictionaryDao
     /// <param name="regporpag">Number of records to be displayed per page</param>
     /// <param name="pag">Current page</param>
     /// <returns></returns>
+    [Obsolete]
     public List<Element> GetListElement(Hashtable filters, string orderby, int regporpag, int pag)
     {
         var element = GetStructure();

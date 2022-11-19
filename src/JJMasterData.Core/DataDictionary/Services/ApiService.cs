@@ -20,7 +20,6 @@ public class ApiService : BaseService
 
     public bool ValidateApi(DicParser dicParser)
     {
-
         bool hasApiGetEnabled;
 
         if (dicParser.Api.EnableGetDetail & dicParser.Api.EnableGetAll)
