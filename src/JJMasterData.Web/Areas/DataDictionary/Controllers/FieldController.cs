@@ -67,13 +67,8 @@ public class FieldController : DataDictionaryController
 
     public IActionResult Delete(string dictionaryName, string fieldName)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
-        var nextField = string.Empty;
-        if (!formElement.Fields.Contains(fieldName))
-            return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
-        nextField = _fieldService.GetNextFieldName(formElement, fieldName);
-        _fieldService.DeleteField(formElement, fieldName);
-
+        _fieldService.DeleteField(dictionaryName, fieldName);
+        var nextField = _fieldService.GetNextFieldName(dictionaryName, fieldName);
         return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
     }
 
@@ -112,21 +107,12 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult Copy(string dictionaryName, FormElementField? field)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var dictionary = _fieldService.DicDao.GetDictionary(dictionaryName);
+        _fieldService.CopyField(dictionary, field);
+        if (!ModelState.IsValid)
+            ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
 
-        var newField = field.DeepCopy();
-        
-        if (formElement.Fields.Contains(newField.Name))
-        {
-            var summary = new JJValidationSummary(Translate.Key("Name of field already exists"));
-            ViewBag.Error = summary.GetHtml();
-        }
-        else
-        {
-            formElement.Fields.Add(newField);
-            _fieldService.DicDao.SetFormElement(formElement);
-        }
-
+        var formElement = dictionary.GetFormElement();
         PopulateViewBag(formElement, field);
         return View("Index", field);
     }

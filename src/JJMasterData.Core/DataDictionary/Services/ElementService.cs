@@ -26,12 +26,15 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
+        var dictionary = DicDao.GetDictionary(id);
+        var element = dictionary.Table;
         var factory = DicDao.EntityRepository;
-        var formElement = DicDao.GetFormElement(id);
-        var listScripts = new List<string>();
-        listScripts.Add(factory.GetScriptCreateTable(formElement));
-        listScripts.Add(factory.GetScriptReadProcedure(formElement));
-        listScripts.Add(factory.GetScriptWriteProcedure(formElement));
+        var listScripts = new List<string>
+        {
+            factory.GetScriptCreateTable(element),
+            factory.GetScriptReadProcedure(element),
+            factory.GetScriptWriteProcedure(element)
+        };
 
         return listScripts;
     }
@@ -63,15 +66,12 @@ public class ElementService : BaseService
                 var sql = new StringBuilder();
                 sql.AppendLine(factory.GetScriptWriteProcedure(formElement));
                 sql.AppendLine(factory.GetScriptReadProcedure(formElement));
-
-
                 factory.ExecuteBatch(sql.ToString());
                 break;
             case "ExecAll":
                 factory.CreateDataModel(formElement);
                 break;
         }
-
     }
 
     public void ExecScriptsMasterData()

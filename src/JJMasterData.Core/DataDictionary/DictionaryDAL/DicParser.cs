@@ -1,5 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Language;
 
 namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
 
@@ -59,6 +62,23 @@ public class DicParser
         }
 
         return fe;
+    }
+
+    public void SetFormElement(FormElement formElement)
+    {
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+
+        if (string.IsNullOrEmpty(formElement.Name))
+            throw new ArgumentException(Translate.Key("Invalid dictionary name"));
+
+        for (int i = 0; i < formElement.Fields.Count; i++)
+        {
+            formElement.Fields[i].Order = i + 1;
+        }
+
+        Table = formElement.DeepCopy();
+        Form = new DicFormParser(formElement);
     }
 
 }
