@@ -43,7 +43,7 @@ public class Logger : ILogger
 
     public Logger()
     {
-        Options = new LoggerOptions();
+        Options = JJService.Options.Logger;
     }
 
     public Logger(string categoryName) : this()
