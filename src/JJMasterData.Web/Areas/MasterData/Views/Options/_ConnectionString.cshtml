@@ -1,4 +1,4 @@
-@model JJMasterData.Web.Areas.MasterData.Models.SettingsViewModel
+@model JJMasterData.Web.Areas.MasterData.Models.OptionsViewModel
 
 <div class="@BootstrapHelper.FormGroup">
     <div class="row">
@@ -84,7 +84,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("TestConnection", "Settings")" type="submit">@Translate.Key("Test")</button>
+        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("TestConnection", "Options")" type="submit"><span class="fa fa-chain"></span>&nbsp;@Translate.Key("Test Connection")</button>
     </div>
 </div>
 

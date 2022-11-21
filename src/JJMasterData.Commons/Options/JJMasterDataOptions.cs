@@ -1,13 +1,16 @@
-﻿#nullable  enable
+﻿#nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
-namespace JJMasterData.Commons.Settings;
+namespace JJMasterData.Commons.Options;
 
 /// <summary>
 /// JJMasterData key/value configurations.
@@ -26,22 +29,23 @@ public sealed class JJMasterDataOptions
     /// <summary>
     /// Default value: 5 <br></br>
     /// </summary>
-    public int BootstrapVersion { get; set; }
+    [Range(3, 5)]
+    public int BootstrapVersion { get; set; } = 5;
 
     /// <summary>
     /// Default value: JJMasterData <br></br>
     /// </summary>
-    public string TableName{ get; set; }
+    public string TableName { get; set; } = "JJMasterData";
 
     /// <summary>
-    /// Default value: JJMasterData <br></br>
+    /// Default value: JJMasterDataResources <br></br>
     /// </summary>
-    public string ResourcesTableName{ get; set; }
+    public string ResourcesTableName { get; set; } = "JJMasterDataResources";
 
     /// <summary>
-    /// Default value: JJMasterData <br></br>
+    /// Default value: JJMasterDataAuditLog <br></br>
     /// </summary>
-    public string? AuditLogTableName{ get; set; }
+    public string AuditLogTableName { get; set; } = "JJMasterDataAuditLog";
 
     /// <summary>
     /// Default value: {table_name}Get <br></br>
@@ -59,26 +63,28 @@ public sealed class JJMasterDataOptions
     public string? JJMasterDataUrl{ get; set; }
 
     /// <summary>
-    /// Default value: ~/Views/Shared/_MasterDataLayout.cshtml <br></br>
+    /// Default value: _MasterDataLayout <br></br>
     /// </summary>
-    public string? LayoutPath{ get; set; }
+    public string? LayoutPath { get; set; } = "_MasterDataLayout";
 
     /// <summary>
-    /// Default value: ~/Views/Shared/_MasterDataLayout.Popup.cshtml <br></br>
+    /// Default value:_MasterDataLayout.Popup <br></br>
     /// </summary>
-    public string? PopUpLayoutPath{ get; set; }
+    public string? PopUpLayoutPath{ get; set; }= "_MasterDataLayout.Popup";
 
     /// <summary>
     /// Default value: null <br></br>
     /// </summary>
     public string[]? ExternalAssembliesPath{ get; set; }
 
-    public string? ExportationFolderPath{ get; set; }
+    public string ExportationFolderPath { get; set; } = @$"{FileIO.GetApplicationPath()}\App_Data\JJExportFiles\";
 
     /// <summary>
     /// Default value: "ChangeMe" <br></br>
     /// </summary>
-    public string SecretKey{ get; set; }
+    public string SecretKey { get; set; } = "ChangeMe";
+
+    public LoggerOptions Logger { get; set; } = new();
 
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 

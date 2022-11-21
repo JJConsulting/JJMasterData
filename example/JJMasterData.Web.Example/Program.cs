@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -15,6 +15,7 @@ public class Program
         var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
         var settingsPath = Path.Combine(root, "appsettings.json");
         builder.Configuration.AddJsonFile(settingsPath,false,true);
+
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 

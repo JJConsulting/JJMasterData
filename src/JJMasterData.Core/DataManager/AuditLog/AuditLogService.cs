@@ -5,7 +5,7 @@ using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 

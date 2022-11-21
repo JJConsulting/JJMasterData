@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Util;
 

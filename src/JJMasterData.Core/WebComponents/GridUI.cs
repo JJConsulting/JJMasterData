@@ -18,7 +18,7 @@ public class GridUI
     private const string TableIsHeaderFixed = "table_headerfixed";
 
     /// <summary>
-    /// Settings cookie name.
+    /// Options cookie name.
     /// </summary>
     internal const string CookieName = "jjmasterdata_gridui";
 

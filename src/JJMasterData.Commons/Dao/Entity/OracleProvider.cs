@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Dao.Entity;
 

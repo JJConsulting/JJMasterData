@@ -10,6 +10,7 @@ using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Reflection;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -26,10 +27,17 @@ public class ElementController : DataDictionaryController
 
     public ActionResult Index()
     {
-        if (_elementService.JJMasterDataTableExists())
+        try
         {
-            var model = GetEntityFormView();
-            return View(model);
+            if (_elementService.JJMasterDataTableExists())
+            {
+                var model = GetEntityFormView();
+                return View(model);
+            }
+        }
+        catch(DataAccessException)
+        {
+            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
         }
 
         return View("Create");
@@ -259,7 +267,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("About", "Settings", new {Area="MasterData"}),
+            UrlRedirect = Url.Action("Index", "About", new {Area="MasterData"}),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -289,12 +297,27 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Application Options"),
-            UrlRedirect = Url.Action("Index", "Settings", new {Area = "MasterData", Layout = "_MasterDataLayout.Popup"}),
+            UrlRedirect = Url.Action("Index", "Options", new {Area = "MasterData"}),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
         };
-
+        
         formView.AddToolBarAction(btnSettings);
+        
+        var btnResources = new UrlRedirectAction
+        {
+            Name = "btnResources",
+            ToolTip = Translate.Key("Resources"),
+            Icon = IconType.Globe,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Resources"),
+            UrlRedirect = Url.Action("Index", "Resources", new {Area = "MasterData"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.AddToolBarAction(btnResources);
 
         formView.OnRenderAction += OnRenderAction;
 

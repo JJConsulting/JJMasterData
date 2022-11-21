@@ -2,7 +2,7 @@
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

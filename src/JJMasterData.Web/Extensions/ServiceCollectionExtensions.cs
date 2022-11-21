@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OptionsService = JJMasterData.Web.Services.OptionsService;
 using ResponseEndFilter = JJMasterData.Web.Filters.ResponseEndFilter;
 
 namespace JJMasterData.Web.Extensions;
@@ -114,13 +115,14 @@ public static class ServiceCollectionExtensions
         services.AddTransient<EntityService>();
         services.AddTransient<FieldService>();
         services.AddTransient<IndexesService>();
-        services.AddTransient<OptionsService>();
+        services.AddTransient<Core.DataDictionary.Services.OptionsService>();
         services.AddTransient<PanelService>();
         services.AddTransient<RelationsService>();
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
-        services.AddTransient<SettingsService>();
+        services.AddTransient<OptionsService>();
+        services.AddTransient<AboutService>();
     }
     
     public static void ConfigureOptionsWriter<T>(

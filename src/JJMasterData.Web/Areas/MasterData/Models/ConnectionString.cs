@@ -17,13 +17,13 @@ public class ConnectionString
 
     public int? Timeout { get; init; }
 
-    public bool? TrustServerCertificate { get; set; }
+    public bool? TrustServerCertificate { get; init; }
 
-    public bool? Encrypt { get; set; }
+    public bool? Encrypt { get; init; }
 
-    public bool? Pooling { get; set; }
-    public int? MinPoolSize { get; set; }
-    public int? MaxPoolSize { get; set; }
+    public bool? Pooling { get; init; }
+    public int? MinPoolSize { get; init; }
+    public int? MaxPoolSize { get; init; }
     
     public ConnectionResult? ConnectionResult { get; set; }
 
@@ -84,6 +84,16 @@ public class ConnectionString
         {
             Pooling = bool.Parse(pooling.ToString()!);
         }
+        
+        if (builder.TryGetValue("min pool size", out var minPoolSize))
+        {
+            MinPoolSize = int.Parse(minPoolSize.ToString()!);
+        }
+        
+        if (builder.TryGetValue("max pool size", out var maxPoolSize))
+        {
+            MaxPoolSize = int.Parse(maxPoolSize.ToString()!);
+        }
     }
     
     
@@ -119,8 +129,15 @@ public class ConnectionString
         if (Encrypt != null)
             builder["encrypt"] = Encrypt;
             
-       if (Pooling != null)
+        if (Pooling != null)
             builder["pooling"] = Pooling;
+        
+        if (MinPoolSize != null)
+            builder["min pool size"] = MinPoolSize;
+        
+        if (MaxPoolSize != null)
+            builder["max pool size"] = MaxPoolSize;
+        
         return builder.ToString();
     }
 }

@@ -1636,7 +1636,7 @@
             <param name="type">Tipo do log</param>
             <remarks>Lucio Pelinson 2014-05-12</remarks>
         </member>
-        <member name="P:JJMasterData.Commons.SystemLog.LoggerSettings.EnableTraceLog">
+        <member name="P:JJMasterData.Commons.SystemLog.LoggerOptions.EnableTraceLog">
             <summary>
             Habilita o log no trace
             </summary>

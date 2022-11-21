@@ -9,7 +9,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;

@@ -8,7 +8,7 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Language;
 
