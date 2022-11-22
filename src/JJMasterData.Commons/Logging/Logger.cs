@@ -295,7 +295,7 @@ public class Logger : ILogger
         catch (Exception ex)
         {
             var error = new StringBuilder();
-            error.AppendLine(Translate.Key("Error while logging to the database."));
+            error.AppendLine("Error while logging to the database.");
             error.AppendLine(ex.Message);
             WriteInConsole(error.ToString(), source, LoggerLevel.Error);
         }

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "JJMasterData.Commons": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:61959;http://localhost:61961"
+    }
+  }
+}
