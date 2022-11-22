@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -10,7 +9,7 @@ public class ApiService : BaseService
     {
     }
 
-    public bool EditApi(DicParser dicParser)
+    public bool EditApi(Dictionary dicParser)
     {
         if (ValidateApi(dicParser))
             DicDao.SetDictionary(dicParser);
@@ -18,7 +17,7 @@ public class ApiService : BaseService
         return IsValid;
     }
 
-    public bool ValidateApi(DicParser dicParser)
+    public bool ValidateApi(Dictionary dicParser)
     {
         bool hasApiGetEnabled;
 

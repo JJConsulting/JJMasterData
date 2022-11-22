@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
@@ -48,7 +48,7 @@ public class ApiController : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(DicParser dic)
+    private ApiViewModel PopulateViewModel(Dictionary dic)
     {
         var model = new ApiViewModel
         {

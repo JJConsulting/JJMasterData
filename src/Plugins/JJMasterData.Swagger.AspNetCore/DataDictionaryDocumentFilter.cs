@@ -16,7 +16,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
         var dao = new DictionaryDao();
         var dictionaries = dao.GetListDictionary(true);
 
-        foreach (DicParser dic in dictionaries)
+        foreach (Dictionary dic in dictionaries)
         {
             FormElement formElement = dic.GetFormElement();
 

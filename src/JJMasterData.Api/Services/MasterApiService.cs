@@ -5,7 +5,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using System.Collections;
 using System.Diagnostics;
@@ -359,7 +359,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(DicParser dic, Hashtable paramValues)
+    private Hashtable ParseFilter(Dictionary dic, Hashtable paramValues)
     {
         var filters = GetDefaultFilter(dic);
         if (paramValues == null)
@@ -376,7 +376,7 @@ public class MasterApiService
         return filters;
     }
 
-    private Hashtable GetDefaultFilter(DicParser dic, bool loadQueryString = false)
+    private Hashtable GetDefaultFilter(Dictionary dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -428,7 +428,7 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(DicParser dictionary)
+    private FormService GetFormService(Dictionary dictionary)
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
@@ -449,7 +449,7 @@ public class MasterApiService
         return service;
     }
 
-    private DicParser GetDataDictionary(string elementName)
+    private Dictionary GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

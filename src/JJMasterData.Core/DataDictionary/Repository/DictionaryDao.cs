@@ -1,11 +1,11 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -14,9 +14,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DictionaryDao
+public class DictionaryDao : IDictionaryRepository
 {
     private IEntityRepository _entityRepository;
     public IEntityRepository EntityRepository
@@ -34,10 +34,9 @@ public class DictionaryDao
         }
     }
 
-   
     public DictionaryDao()
     {
-        
+
     }
 
     public DictionaryDao(IEntityRepository entityRepository)
@@ -45,21 +44,10 @@ public class DictionaryDao
         EntityRepository = entityRepository;
     }
 
-    /// <summary>
-    /// Recupera uma lista de metadados armazenados no banco de dados
-    /// </summary>
-    /// <param name="sync">
-    /// true=Somente itens que serão sincronizados. 
-    /// false=Somente itens sem sincronismo
-    /// null=Todos
-    /// </param>
-    /// <remarks>
-    /// Metodo normalmente utilizado para sincronismo do dicionários entre sistemas.
-    /// Permitindo remondar a herança original no sistema legado.
-    /// </remarks>
-    public List<DicParser> GetListDictionary(bool? sync)
+    ///<inheritdoc cref="IDictionaryRepository.GetListDictionary(bool?)"/>
+    public List<Dictionary> GetListDictionary(bool? sync)
     {
-        var list = new List<DicParser>();
+        var list = new List<Dictionary>();
 
         var filter = new Hashtable();
         if (sync.HasValue)
@@ -69,7 +57,7 @@ public class DictionaryDao
         string currentName = "";
         int tot = 1;
         var dt = EntityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
-        DicParser currentParser = null;
+        Dictionary currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
             string name = row["name"].ToString();
@@ -78,7 +66,7 @@ public class DictionaryDao
                 ApplyCompatibility(currentParser, name);
 
                 currentName = name;
-                list.Add(new DicParser());
+                list.Add(new Dictionary());
                 currentParser = list[list.Count - 1];
             }
 
@@ -89,7 +77,7 @@ public class DictionaryDao
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                currentParser.Form = JsonConvert.DeserializeObject<DicFormParser>(json);
+                currentParser.Form = JsonConvert.DeserializeObject<DictionaryForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -105,7 +93,6 @@ public class DictionaryDao
 
         return list;
     }
-
 
     public string GetListDictionaryJson(bool? sync = null)
     {
@@ -204,6 +191,7 @@ public class DictionaryDao
         return sJson.ToString();
     }
 
+    ///<inheritdoc cref="IDictionaryRepository.GetListDictionaryName"/>
     public string[] GetListDictionaryName()
     {
         var list = new List<string>();
@@ -220,16 +208,8 @@ public class DictionaryDao
         return list.ToArray();
     }
 
-    /// <summary>
-    /// Retorna metadados armazenados no banco de dados
-    /// </summary>
-    /// <param name="elementName"></param>
-    /// <returns>
-    /// Retorna Objeto armazenado no banco. 
-    /// Responsável por montar o Element, FormElement 
-    /// e outras configurações de layout
-    /// </returns>
-    public DicParser GetDictionary(string elementName)
+    ///<inheritdoc cref="IDictionaryRepository.GetDictionary(string)"/>
+    public Dictionary GetDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary invalid"));
@@ -240,7 +220,7 @@ public class DictionaryDao
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
 
-        DicParser ret = new();
+        Dictionary ret = new();
         foreach (DataRow row in dt.Rows)
         {
             string json = row["json"].ToString();
@@ -250,7 +230,7 @@ public class DictionaryDao
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                ret.Form = JsonConvert.DeserializeObject<DicFormParser>(json);
+                ret.Form = JsonConvert.DeserializeObject<DictionaryForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -267,94 +247,8 @@ public class DictionaryDao
         return ret;
     }
 
-    private void ApplyCompatibility(DicParser dicParser, string elementName)
-    {
-        if (dicParser == null)
-            return;
-
-        if (dicParser.Table == null)
-            throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
-
-        //Mantendo compatibilidate versão Nairobi
-        dicParser.UIOptions ??= new UIOptions();
-
-        dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
-
-        dicParser.UIOptions.GridActions ??= new GridActions();
-        //Fim compatibilidate Nairobi
-
-
-        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
-        if (dicParser.Api == null)
-        {
-            dicParser.Api = new ApiSettings();
-            if (dicParser.Table.Sync)
-            {
-                dicParser.Api.EnableGetAll = true;
-                dicParser.Api.EnableGetDetail = true;
-                dicParser.Api.EnableAdd = true;
-                dicParser.Api.EnableUpdate = true;
-                dicParser.Api.EnableUpdatePart = true;
-                dicParser.Api.EnableDel = true;
-            }
-        }
-
-        if (string.IsNullOrEmpty(dicParser.Table.TableName))
-        {
-            dicParser.Table.TableName = dicParser.Table.Name;
-        }
-        //Fim compatibilidate Denver
-
-        //Tokio
-        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
-
-        //Professor
-        if (dicParser.Form != null)
-        {
-            foreach (var field in dicParser.Form.FormFields)
-            {
-                if (field.DataItem is not { DataItemType: DataItemType.Manual })
-                    continue;
-
-                if (field.DataItem.Command != null && !string.IsNullOrEmpty(field.DataItem.Command.Sql))
-                    field.DataItem.DataItemType = DataItemType.SqlCommand;
-                else if (field.DataItem.ElementMap != null && !string.IsNullOrEmpty(field.DataItem.ElementMap.ElementName))
-                    field.DataItem.DataItemType = DataItemType.Dictionary;
-            }
-        }
-
-        //Arturito
-        foreach (var action in dicParser.UIOptions.GridActions.GetAll()
-                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
-        {
-            action.IsCustomAction = true;
-        }
-
-        foreach (var action in dicParser.UIOptions.ToolBarActions
-                     .GetAll()
-                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
-        {
-            action.IsCustomAction = true;
-        }
-
-        //Alpha Centauri
-
-        dicParser.UIOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
-
-        dicParser.UIOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
-
-        //Sirius
-
-        dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
-
-        dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
-    }
-
-
-    /// <summary>
-    /// Persiste o dicionário no banco de dados
-    /// </summary>
-    public void SetDictionary(DicParser dictionary)
+    ///<inheritdoc cref="IDictionaryRepository.SetDictionary(Dictionary)"/>
+    public void SetDictionary(Dictionary dictionary)
     {
         if (dictionary == null)
             throw new ArgumentNullException(nameof(dictionary));
@@ -380,7 +274,7 @@ public class DictionaryDao
         values.Add("sync", dictionary.Table.Sync ? "1" : "0");
         values.Add("modified", dNow);
         EntityRepository.SetValues(element, values);
-        
+
         if (dictionary.Form != null)
         {
             string jsonForm = JsonConvert.SerializeObject(dictionary.Form);
@@ -426,10 +320,7 @@ public class DictionaryDao
         }
     }
 
-    /// <summary>
-    /// Exclui o elemento no banco de dados
-    /// </summary>
-    /// <param name="id">Nome do dicionário</param>
+    ///<inheritdoc cref="IDictionaryRepository.DelDictionary(string)"/>
     public void DelDictionary(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -452,9 +343,7 @@ public class DictionaryDao
         }
     }
 
-    /// <summary>
-    /// Verifica se o dicionário existe
-    /// </summary>
+    ///<inheritdoc cref="IDictionaryRepository.HasDictionary(string)"/>
     public bool HasDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -466,10 +355,8 @@ public class DictionaryDao
         return count > 0;
     }
 
-    /// <summary>
-    /// Cria Estrutura do dicionário de dados
-    /// </summary>
-    public void CreateStructure()
+    ///<inheritdoc cref="IDictionaryRepository.ExecInitialSetup"/>
+    public void ExecInitialSetup()
     {
         EntityRepository.CreateDataModel(GetStructure());
     }
@@ -544,8 +431,7 @@ public class DictionaryDao
         return syncInfo;
     }
 
-
-    private Hashtable GetSyncInfoFilter(string userId, DicParser dictionary, Hashtable osFilters)
+    private Hashtable GetSyncInfoFilter(string userId, Dictionary dictionary, Hashtable osFilters)
     {
         var filters = new Hashtable();
         var fields = dictionary.Table.Fields;
@@ -637,149 +523,6 @@ public class DictionaryDao
         return sJson.ToString();
     }
 
-    /// <summary>
-    /// Recupera um objeto com dados do formulário
-    /// </summary>
-    /// <param name="elementName">Nome do dicionário</param>
-    /// <returns>
-    /// Retorna um FormElement com os principais dados do formulário.
-    /// Herda de Element
-    /// </returns>
-    [Obsolete]
-    public FormElement GetFormElement(string elementName)
-    {
-        var dao = new DictionaryDao();
-        var dic = dao.GetDictionary(elementName);
-
-        if (dic == null || dic.Form == null)
-            throw new ArgumentException(Translate.Key("Dictionary {0} not found", elementName), "elementName");
-
-        return dic.GetFormElement();
-    }
-
-    /// <summary>
-    /// Persiste as configurações do formulário no banco de dados
-    /// </summary>
-    /// <param name="formElement">Elemento base com a estrutura do formulário.</param>
-    [Obsolete]
-    public void SetFormElement(FormElement formElement)
-    {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        if (string.IsNullOrEmpty(formElement.Name))
-            throw new ArgumentException(Translate.Key("Invalid dictionary name"));
-
-
-        for (int i = 0; i < formElement.Fields.Count; i++)
-        {
-            formElement.Fields[i].Order = i + 1;
-        }
-
-        var dic = new DicParser
-        {
-            Table = formElement.DeepCopy(),
-            Form = new DicFormParser(formElement)
-        };
-
-        SetDictionary(dic);
-    }
-
-
-    /// <summary>
-    /// Constroi uma nova instancia do objeto Element a partir da estrutura de uma tabela
-    /// </summary>
-    /// <param name="tableName">Nome da tabela</param>
-    [Obsolete]
-    public Element GetElementFromTable(string tableName)
-    {
-        if (string.IsNullOrEmpty(tableName))
-            throw new ArgumentNullException(nameof(tableName));
-
-        if (!EntityRepository.TableExists(tableName))
-            throw new Exception(Translate.Key("Table {0} not found", tableName));
-
-        Element element = EntityRepository.GetElementFromTable(tableName);
-        if (element == null)
-        {
-            string sql = "select * from " + tableName + " where 1=2";
-            var dt = EntityRepository.GetDataTable(sql);
-            element = new FormElement(dt);
-            element.Name = tableName;
-        }
-
-        return element;
-    }
-
-
-    /// <summary>
-    /// Returns an element with the basic structure of the table
-    /// </summary>
-    /// <param name="elementName">Dictionary name</param>
-    /// <returns></returns>
-    [Obsolete]
-    public Element GetElement(string elementName)
-    {
-        if (elementName == null)
-            throw new ArgumentNullException(nameof(elementName), Translate.Key("Invalid dictionary name"));
-
-        var filter = new Hashtable();
-        filter.Add("name", elementName);
-        filter.Add("type", "T");
-
-        var resultElement = EntityRepository.GetFields(GetStructure(), filter);
-
-        if (resultElement == null)
-            throw new ArgumentException(Translate.Key("Dictionary {0} not found", elementName));
-
-        var element = JsonConvert.DeserializeObject<Element>(resultElement["json"].ToString());
-        element.Info = resultElement["info"].ToString();
-
-        return element;
-    }
-
-
-    /// <summary>
-    /// Returns a list of base elements
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete]
-    public List<Element> GetListElement()
-    {
-        var filter = new Hashtable();
-        filter.Add("type", "T");
-        return GetListElement(filter, null, 1000, 1);
-    }
-
-
-    /// <summary>
-    /// Returns a list of base elements
-    /// </summary>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
-    /// <param name="regporpag">Number of records to be displayed per page</param>
-    /// <param name="pag">Current page</param>
-    /// <returns></returns>
-    [Obsolete]
-    public List<Element> GetListElement(Hashtable filters, string orderby, int regporpag, int pag)
-    {
-        var element = GetStructure();
-        var listElement = new List<Element>();
-        int tot = 1000;
-        var dt = EntityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref tot);
-        foreach (DataRow row in dt.Rows)
-        {
-            if (row["type"].ToString().Equals("T"))
-            {
-                Element e = JsonConvert.DeserializeObject<Element>(row["json"].ToString());
-                listElement.Add(e);
-            }
-        }
-
-        return listElement;
-    }
-
-
     public Element GetStructure()
     {
         var element = new Element(JJService.Settings.TableName, "Data Dictionaries");
@@ -800,5 +543,87 @@ public class DictionaryDao
         return element;
     }
 
+    private void ApplyCompatibility(Dictionary dicParser, string elementName)
+    {
+        if (dicParser == null)
+            return;
+
+        if (dicParser.Table == null)
+            throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
+
+        //Mantendo compatibilidate versão Nairobi
+        dicParser.UIOptions ??= new UIOptions();
+
+        dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
+
+        dicParser.UIOptions.GridActions ??= new GridActions();
+        //Fim compatibilidate Nairobi
+
+
+        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
+        if (dicParser.Api == null)
+        {
+            dicParser.Api = new ApiSettings();
+            if (dicParser.Table.Sync)
+            {
+                dicParser.Api.EnableGetAll = true;
+                dicParser.Api.EnableGetDetail = true;
+                dicParser.Api.EnableAdd = true;
+                dicParser.Api.EnableUpdate = true;
+                dicParser.Api.EnableUpdatePart = true;
+                dicParser.Api.EnableDel = true;
+            }
+        }
+
+        if (string.IsNullOrEmpty(dicParser.Table.TableName))
+        {
+            dicParser.Table.TableName = dicParser.Table.Name;
+        }
+        //Fim compatibilidate Denver
+
+        //Tokio
+        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
+
+        //Professor
+        if (dicParser.Form != null)
+        {
+            foreach (var field in dicParser.Form.FormFields)
+            {
+                if (field.DataItem is not { DataItemType: DataItemType.Manual })
+                    continue;
+
+                if (field.DataItem.Command != null && !string.IsNullOrEmpty(field.DataItem.Command.Sql))
+                    field.DataItem.DataItemType = DataItemType.SqlCommand;
+                else if (field.DataItem.ElementMap != null && !string.IsNullOrEmpty(field.DataItem.ElementMap.ElementName))
+                    field.DataItem.DataItemType = DataItemType.Dictionary;
+            }
+        }
+
+        //Arturito
+        foreach (var action in dicParser.UIOptions.GridActions.GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        foreach (var action in dicParser.UIOptions.ToolBarActions
+                     .GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        //Alpha Centauri
+
+        dicParser.UIOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+
+        dicParser.UIOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
+
+        //Sirius
+
+        dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+
+        dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+    }
 
 }

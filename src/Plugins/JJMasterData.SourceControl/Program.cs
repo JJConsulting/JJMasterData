@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -15,13 +16,13 @@ DateTime start = DateTime.Now;
 var dicDao = new DictionaryDao();
 
 var databaseDictionaries = dicDao.GetListDictionary(false);
-var folderDictionaries = new List<DicParser>();
+var folderDictionaries = new List<Dictionary>();
 
 foreach (string file in Directory.EnumerateFiles(path, "*.json"))
 {
     var json = new StreamReader(file).ReadToEnd();
 
-    var dicParser = JsonConvert.DeserializeObject<DicParser>(json);
+    var dicParser = JsonConvert.DeserializeObject<Dictionary>(json);
 
     if(dicParser != null)
     {

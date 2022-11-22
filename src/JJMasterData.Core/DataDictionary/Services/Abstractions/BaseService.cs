@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataDictionary.Services.Abstractions;

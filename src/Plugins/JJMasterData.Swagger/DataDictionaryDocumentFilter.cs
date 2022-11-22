@@ -17,7 +17,7 @@ namespace JJMasterData.Swagger
             var dao = new DictionaryDao();
             var dictionaries = dao.GetListDictionary(null);
 
-            foreach (DicParser dic in dictionaries)
+            foreach (Dictionary dic in dictionaries)
             {
                 FormElement f = dic.GetFormElement();
                 ApiSettings api = dic.Api;

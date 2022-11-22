@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DicFormParser
+public class DictionaryForm
 {
     [DataMember(Name = "formfields")]
-    public List<DicFormFieldParser> FormFields { get; set; }
+    public List<DictionaryFormField> FormFields { get; set; }
 
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -19,20 +19,20 @@ public class DicFormParser
     public List<FormElementPanel> Panels { get; set; }
 
 
-    public DicFormParser() 
+    public DictionaryForm()
     {
         Panels = new List<FormElementPanel>();
-        FormFields = new List<DicFormFieldParser>();
+        FormFields = new List<DictionaryFormField>();
     }
 
-    public DicFormParser(FormElement e) : this()
+    public DictionaryForm(FormElement e) : this()
     {
         Title = e.Title;
         SubTitle = e.SubTitle;
         Panels = e.Panels;
         foreach (var f in e.Fields)
         {
-            FormFields.Add(new DicFormFieldParser(f));
+            FormFields.Add(new DictionaryFormField(f));
         }
     }
 }

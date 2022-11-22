@@ -4,7 +4,6 @@ using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -392,7 +391,7 @@ public class FieldService : BaseService
         return dicFields;
     }
 
-    public bool CopyField(DicParser dictionary, FormElementField field)
+    public bool CopyField(Dictionary dictionary, FormElementField field)
     {
         var formElement = dictionary.GetFormElement();
         var newField = field.DeepCopy();

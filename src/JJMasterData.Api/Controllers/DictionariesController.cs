@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using JJMasterData.Api.Services;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ public class DictionariesController : ControllerBase
     /// <response code="403">Token Expired</response>
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
-    [Produces(typeof(DicParser[]))]
+    [Produces(typeof(Dictionary[]))]
     [Route("api/dictionaries/")]
-    public ActionResult<DicParser[]> GetAll()
+    public ActionResult<Dictionary[]> GetAll()
     {
         var dicList = new DictionaryDao().GetListDictionary(true);
         if (dicList == null)
@@ -48,7 +49,7 @@ public class DictionariesController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
     [Route("api/dictionaries/{id}")]
-    public DicParser Get(string id)
+    public Dictionary Get(string id)
     {
         return new DictionaryDao().GetDictionary(id);
     }

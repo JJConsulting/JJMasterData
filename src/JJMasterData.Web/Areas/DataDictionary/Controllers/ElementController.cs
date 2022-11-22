@@ -18,7 +18,7 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    public ElementController(ElementService elementService,ThemeService themeService)
+    public ElementController(ElementService elementService, ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
@@ -66,7 +66,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-           
+
         var upload = new JJUploadFile
         {
             Name = "dicImport",
@@ -110,19 +110,11 @@ public class ElementController : DataDictionaryController
         return View("ClassSourceCode", "_MasterDataLayout.Popup");
     }
 
-    public IActionResult Scripts(string dictionaryName, bool isDefault = false)
+    public IActionResult Scripts(string dictionaryName)
     {
-        if (isDefault)
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDefault();
-            ViewBag.IsDefault = true;
-        }
-        else
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
-            ViewBag.DictionaryName = dictionaryName;
-            ViewBag.IsDefault = false;
-        }
+        ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
+        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.IsDefault = false;
 
         return View("Scripts", "_MasterDataLayout.Popup");
     }
@@ -134,7 +126,7 @@ public class ElementController : DataDictionaryController
         var model = new AboutViewModel
         {
             ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
+            ExecutingAssemblyVersion = executingAssembly.GetName().Version?.ToString(),
             ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
             BootstrapVersion = BootstrapHelper.Version.ToString(),
             Dependencies = service.GetJJAssemblies()
@@ -181,7 +173,7 @@ public class ElementController : DataDictionaryController
         catch (Exception ex)
         {
             var error = new { success = false, message = ex.Message };
-            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error};
+            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
     }
 
@@ -281,7 +273,7 @@ public class ElementController : DataDictionaryController
         };
 
         formView.AddToolBarAction(btnAbout);
-        
+
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
@@ -290,7 +282,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Log"),
-            UrlRedirect = Url.Action("Index", "Log", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Log", new { Area = "MasterData" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -316,9 +308,8 @@ public class ElementController : DataDictionaryController
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-        
+
         return formView;
     }
-
 
 }

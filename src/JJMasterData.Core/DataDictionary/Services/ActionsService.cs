@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;
 
@@ -22,7 +21,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void DeleteAction(ref DicParser dicParser, string originalName, ActionOrigin context, string fieldName = null)
+    private void DeleteAction(ref Dictionary dicParser, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (originalName == null)
             return;
@@ -98,7 +97,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private bool ValidateActionName(DicParser dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
+    private bool ValidateActionName(Dictionary dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -134,7 +133,7 @@ public class ActionsService : BaseService
         return IsValid;
     }
 
-    private bool ValidateAction(DicParser dicParser, BasicAction action)
+    private bool ValidateAction(Dictionary dicParser, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));

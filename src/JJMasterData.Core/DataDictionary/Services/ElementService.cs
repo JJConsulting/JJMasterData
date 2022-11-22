@@ -40,21 +40,6 @@ public class ElementService : BaseService
         return listScripts;
     }
 
-    public List<string> GetScriptsDefault()
-    {
-        var factory = DicDao.EntityRepository;
-        var element = DicDao.GetStructure();
-
-        var scriptsList = new List<string>
-        {
-            factory.GetScriptCreateTable(element),
-            factory.GetScriptReadProcedure(element),
-            factory.GetScriptWriteProcedure(element)
-        };
-
-        return scriptsList;
-    }
-
 
     public void ExecScripts(string id, string scriptExec)
     {
@@ -78,10 +63,7 @@ public class ElementService : BaseService
 
     public void ExecScriptsMasterData()
     {
-        var factory = DicDao.EntityRepository;
-        var element = DicDao.GetStructure();
-        factory.CreateDataModel(element);
-        factory.ExecuteBatch(factory.GetScriptReadProcedure(element));
+        DicDao.ExecInitialSetup();
     }
 
     #endregion
@@ -109,10 +91,10 @@ public class ElementService : BaseService
         formElement.CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tableName);
         formElement.CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tableName);
 
-        var dictionary = new DicParser
+        var dictionary = new Dictionary
         {
             Table = formElement.DeepCopy(),
-            Form = new DicFormParser(formElement)
+            Form = new DictionaryForm(formElement)
         };
 
         DicDao.SetDictionary(dictionary);
@@ -191,10 +173,8 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
 
-
         return IsValid;
     }
-
 
 
     public JJFormView GetFormView()
@@ -328,7 +308,7 @@ public class ElementService : BaseService
     public bool Import(Stream file)
     {
         string json = new StreamReader(file).ReadToEnd();
-        var dicParser = JsonConvert.DeserializeObject<DicParser>(json);
+        var dicParser = JsonConvert.DeserializeObject<Dictionary>(json);
         DicDao.SetDictionary(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");

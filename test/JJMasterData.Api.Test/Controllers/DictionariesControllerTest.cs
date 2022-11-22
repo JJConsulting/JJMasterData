@@ -1,6 +1,6 @@
 using JJMasterData.Api.Controllers;
 using JJMasterData.Api.Services;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Api.Test.Controllers;
@@ -20,7 +20,7 @@ public class DictionariesControllerTest
     {
         var dictionaries = _controller.GetAll().Value;
 
-        Assert.IsType<DicParser[]>(dictionaries);
+        Assert.IsType<Dictionary[]>(dictionaries);
     }
     
     [Theory]
@@ -29,7 +29,7 @@ public class DictionariesControllerTest
     {
         var dictionary = _controller.Get(id);
 
-        Assert.IsType<DicParser>(dictionary);
+        Assert.IsType<Dictionary>(dictionary);
         Assert.Equal(id,dictionary.Table.Name);
     }
 }

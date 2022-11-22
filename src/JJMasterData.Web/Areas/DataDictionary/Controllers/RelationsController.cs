@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -171,7 +170,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            DicParser dicParser = _relationsService.DicDao.GetDictionary(childElement);
+            Dictionary dicParser = _relationsService.DicDao.GetDictionary(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {

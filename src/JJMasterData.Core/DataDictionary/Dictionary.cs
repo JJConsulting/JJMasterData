@@ -4,16 +4,16 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Core.DataDictionary;
 
 [DataContract(Name = "elementInfo")]
-public class DicParser
+public class Dictionary
 {
     [DataMember(Name = "table")]
     public Element Table { get; set; }
 
     [DataMember(Name = "form")]
-    public DicFormParser Form { get; set; }
+    public DictionaryForm Form { get; set; }
 
     [DataMember(Name = "uioptions")]
     public UIOptions UIOptions { get; set; }
@@ -78,7 +78,7 @@ public class DicParser
         }
 
         Table = formElement.DeepCopy();
-        Form = new DicFormParser(formElement);
+        Form = new DictionaryForm(formElement);
     }
 
 }
