@@ -19,7 +19,7 @@ public class ApiController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dic = _apiService.DicDao.GetDictionary(dictionaryName);
+        var dic = _apiService.DictionaryRepository.GetDictionary(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -27,7 +27,7 @@ public class ApiController : DataDictionaryController
 
     public ActionResult Edit(string dictionaryName)
     {
-        var dic = _apiService.DicDao.GetDictionary(dictionaryName);
+        var dic = _apiService.DictionaryRepository.GetDictionary(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -36,7 +36,7 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public ActionResult Edit(ApiViewModel apiViewModel)
     {
-        var dic = _apiService.DicDao.GetDictionary( apiViewModel.DictionaryName);
+        var dic = _apiService.DictionaryRepository.GetDictionary( apiViewModel.DictionaryName);
         dic.Api = apiViewModel.ApiSettings;
         dic.Table.Sync = apiViewModel.IsSync;
         dic.Table.SyncMode = apiViewModel.Mode;

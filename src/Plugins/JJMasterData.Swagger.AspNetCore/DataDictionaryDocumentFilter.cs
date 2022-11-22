@@ -1,20 +1,24 @@
-﻿using System.Reflection;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
 public class DataDictionaryDocumentFilter : IDocumentFilter
 {
+    private readonly IDictionaryRepository _dictionaryRepository;
+
+    public DataDictionaryDocumentFilter(IDictionaryRepository dictionaryRepository)
+    {
+        _dictionaryRepository = dictionaryRepository;
+    }
+
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
-
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-
-        var dao = new DictionaryDao();
-        var dictionaries = dao.GetListDictionary(true);
+        var dictionaries = _dictionaryRepository.GetListDictionary(true);
 
         foreach (Dictionary dic in dictionaries)
         {
@@ -22,7 +26,6 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
             DataDictionaryPathItem defaultPathItem = new($"/MasterApi/{formElement.Name}");
             DataDictionaryPathItem detailPathItem = new($"/MasterApi/{formElement.Name}/{{id}}");
-
             DataDictionaryOperationFactory factory = new(formElement, dic.Api);
 
             if (dic.Api.EnableGetAll)

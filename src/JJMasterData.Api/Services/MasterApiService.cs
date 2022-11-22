@@ -18,14 +18,17 @@ public class MasterApiService
     private readonly HttpContext? _httpContext;
     private readonly AccountService _accountService;
     private IEntityRepository _entityRepository;
-    private DictionaryDao? _dictionaryDao;
-    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao();
+    private IDictionaryRepository _dictionaryRepository;
     
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IEntityRepository entityRepository)
+    public MasterApiService(IHttpContextAccessor httpContextAccessor, 
+                            AccountService accountService, 
+                            IEntityRepository entityRepository, 
+                            IDictionaryRepository dictionaryRepository)
     {
         _httpContext = httpContextAccessor?.HttpContext;
         _accountService = accountService;
         _entityRepository = entityRepository;
+        _dictionaryRepository = dictionaryRepository;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
@@ -33,7 +36,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetDictionary(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -53,7 +56,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetDictionary(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -73,7 +76,7 @@ public class MasterApiService
 
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetDictionary(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -317,7 +320,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetDictionary(elementName);
 
         if (!dictionary.Api.EnableAdd & !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -454,7 +457,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return DictionaryDao.GetDictionary(elementName);
+        return _dictionaryRepository.GetDictionary(elementName);
     }
 
     private ResponseLetter CreateErrorResponseLetter(Hashtable erros, ApiSettings api)

@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 
@@ -7,13 +8,14 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationsService : BaseService
 {
-    public RelationsService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public RelationsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public void Save(ElementRelation elementRelation, string sIndex, string dictionaryName)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var relations = dictionary.Table.Relations;
 
         if (!string.IsNullOrEmpty(sIndex))
@@ -26,7 +28,7 @@ public class RelationsService : BaseService
             relations.Add(elementRelation);
         }
 
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
     }
 
     public bool ValidateRelation(string childElement, string pkColumnName, string fkColumnName)
@@ -37,7 +39,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
         
-        if (!DicDao.HasDictionary(childElement))
+        if (!DictionaryRepository.HasDictionary(childElement))
         {
             AddError("Entity", Translate.Key("Entity {0} not found", childElement));
             return IsValid;
@@ -55,7 +57,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
 
-        var dictionary = DicDao.GetDictionary(childElement);
+        var dictionary = DictionaryRepository.GetDictionary(childElement);
         var element = dictionary.Table;
         if (!element.Fields.ContainsKey(fkColumnName))
         {
@@ -135,16 +137,16 @@ public class RelationsService : BaseService
 
     public void Delete(string dictionaryName, string index)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         ElementRelation elementRelation = dictionary.Table.Relations[int.Parse(index)];
         dictionary.Table.Relations.Remove(elementRelation);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
     }
 
 
     public void MoveDown(string dictionaryName, string index)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var relations = dictionary.Table.Relations;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
@@ -153,14 +155,14 @@ public class RelationsService : BaseService
             relations[indexToMoveDown + 1] = relations[indexToMoveDown];
             relations[indexToMoveDown] = elementRelation;
 
-            DicDao.SetDictionary(dictionary);
+            DictionaryRepository.SetDictionary(dictionary);
         }
     }
 
 
     public void MoveUp(string dictionaryName, string index)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var relations = dictionary.Table.Relations;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
@@ -168,7 +170,7 @@ public class RelationsService : BaseService
             ElementRelation elementRelation = relations[indexToMoveUp - 1];
             relations[indexToMoveUp - 1] = relations[indexToMoveUp];
             relations[indexToMoveUp] = elementRelation;
-            DicDao.SetDictionary(dictionary);
+            DictionaryRepository.SetDictionary(dictionary);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
@@ -9,7 +10,8 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ResourcesService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 

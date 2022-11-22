@@ -26,7 +26,7 @@ public class JJServiceBuilder
         return this;
     }
 
-    private void DeleteServiceIfExists<T>()
+    public void DeleteServiceIfExists<T>()
     {
         var service = Services.ToList().Find(s => s.ServiceType == typeof(T));
         if (service != null)
@@ -36,7 +36,6 @@ public class JJServiceBuilder
     public JJServiceBuilder WithSettings<T>() where T : ISettings
     {
         DeleteServiceIfExists<T>();
-
         Services.AddSingleton(typeof(T));
 
         return this;

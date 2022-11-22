@@ -1,4 +1,6 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿#nullable enable
+
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.WebComponents;
@@ -19,28 +21,28 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dicParcer = _actionsService.DicDao.GetDictionary(dictionaryName);
+        var dicParcer = _actionsService.DictionaryRepository.GetDictionary(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
         ViewBag.ToolBarActions = dicParcer.UIOptions.ToolBarActions.GetAll();
         ViewBag.GridActions = dicParcer.UIOptions.GridActions.GetAll();
 
-        if ((string)Request.Query["selected_tab"] == null)
+        if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
 
         return View();
     }
 
-    public ActionResult Edit(string dictionaryName, string actionName, ActionOrigin context, string? fieldName)
+    public ActionResult Edit(string dictionaryName, string actionName, ActionOrigin context, string fieldName)
     {
         if (dictionaryName is null)
         {
             throw new ArgumentNullException(nameof(dictionaryName));
         }
 
-        var dicParcer = _actionsService.DicDao.GetDictionary(dictionaryName);
+        var dicParcer = _actionsService.DictionaryRepository.GetDictionary(dictionaryName);
 
-        BasicAction action = null;
+        BasicAction? action = null;
         switch (context)
         {
             case ActionOrigin.Grid:
@@ -61,7 +63,7 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Add(string dictionaryName, string actionType, ActionOrigin context, string? fieldName)
     {
-        BasicAction action = null;
+        BasicAction? action = null;
         if (typeof(ScriptAction).Name.Equals(actionType))
             action = new ScriptAction();
         else if (typeof(UrlRedirectAction).Name.Equals(actionType))
@@ -347,12 +349,12 @@ public class ActionsController : DataDictionaryController
 
     private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionOrigin context, string? fieldName = null)
     {
-        if ((string)Request.Query["selected_tab"] != null)
+        if ((string?)Request.Query["selected_tab"] != null)
             ViewBag.Tab = Request.Query["selected_tab"];
         else if (TempData["selected_tab"] != null)
             ViewBag.Tab = TempData["selected_tab"];
 
-        if ((string)Request.Query["originalName"] != null)
+        if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Query["originalName"];
         else if (TempData["originalName"] != null)
             ViewBag.OriginalName = TempData["originalName"];

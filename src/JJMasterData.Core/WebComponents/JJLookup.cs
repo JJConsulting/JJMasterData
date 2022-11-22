@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -287,8 +288,7 @@ public class JJLookup : JJBaseControl
 
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(idSearch));
 
-
-        var dicDao = new DictionaryDao();
+        var dicDao = DictionaryRepositoryFactory.GetInstance();
         Hashtable fields;
         try
         {

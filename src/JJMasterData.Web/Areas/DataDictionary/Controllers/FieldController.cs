@@ -1,4 +1,6 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿#nullable enable
+
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
@@ -102,7 +104,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult Copy(string dictionaryName, FormElementField? field)
     {
-        var dictionary = _fieldService.DicDao.GetDictionary(dictionaryName);
+        var dictionary = _fieldService.DictionaryRepository.GetDictionary(dictionaryName);
         _fieldService.CopyField(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
@@ -203,7 +205,7 @@ public class FieldController : DataDictionaryController
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;
 
-        if ((string)Request.Query["originalName"] != null)
+        if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Form["originalName"].ToString();
         else if (TempData["originalName"] != null)
             ViewBag.OriginalName = TempData["originalName"]!;

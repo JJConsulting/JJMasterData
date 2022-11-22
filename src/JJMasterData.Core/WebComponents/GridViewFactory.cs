@@ -1,6 +1,8 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace JJMasterData.Core.WebComponents
@@ -19,7 +21,7 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
 
-            var dicDao = new DictionaryDao();
+            var dicDao = DictionaryRepositoryFactory.GetInstance();
             var dicParser = dicDao.GetDictionary(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = dicParser.GetFormElement();

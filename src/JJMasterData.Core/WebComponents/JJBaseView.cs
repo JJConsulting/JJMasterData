@@ -1,8 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
-using JJMasterData.Core.DataManager;
+﻿using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 using System;

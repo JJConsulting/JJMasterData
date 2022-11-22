@@ -1,11 +1,8 @@
-﻿using JJMasterData.Commons.Extensions;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -26,7 +23,7 @@ public class PanelController : DataDictionaryController
         if (panelId == null)
         {
             if (TempData.ContainsKey("panel"))
-                panel = TempData.Get<FormElementPanel>("panel");
+                panel = TempData.Get<FormElementPanel>("panel")!;
             else if (formElement.Panels.Count > 0)
                 panel = formElement.Panels[0];
             else
@@ -133,7 +130,7 @@ public class PanelController : DataDictionaryController
     protected List<FormElementField> GetAvailableFields(FormElement formElement, FormElementPanel panel)
     {
         var list = new List<FormElementField>();
-        if ((string)Request.Query["enabled_fields"] == null)
+        if ((string?)Request.Query["enabled_fields"] == null)
         {
             list = formElement.Fields.ToList().FindAll(x => x.PanelId == 0);
         }

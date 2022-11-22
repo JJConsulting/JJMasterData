@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,14 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService : BaseService
 {
-    public PanelService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public PanelService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public bool SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var formElement = dictionary.GetFormElement();
 
         if (!ValidatePanel(panel))
@@ -54,7 +56,7 @@ public class PanelService : BaseService
         }
 
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return IsValid;
     }
@@ -76,7 +78,7 @@ public class PanelService : BaseService
 
     public bool DeleteField(string dictionaryName, int panelId)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
 
         for (int i = 0; i < dictionary.Form.Panels.Count; i++)
         {
@@ -90,14 +92,14 @@ public class PanelService : BaseService
                 f.PanelId = 0;
         }
 
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return IsValid;
     }
 
     public bool SortPanels(string elementName, string[] orderFields)
     {
-        var dictionary = DicDao.GetDictionary(elementName);
+        var dictionary = DictionaryRepository.GetDictionary(elementName);
         var formElement = dictionary.GetFormElement();
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
@@ -112,18 +114,18 @@ public class PanelService : BaseService
         }
 
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return true;
     }
 
     public FormElementPanel CopyPanel(string dictionaryName, FormElementPanel panel)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + dictionary.Form.Panels.Max(x => x.PanelId);
         dictionary.Form.Panels.Add(newPanel);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return newPanel;
     }

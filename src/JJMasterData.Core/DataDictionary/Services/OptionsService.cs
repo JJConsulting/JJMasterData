@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class OptionsService : BaseService
 {
-    public OptionsService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public OptionsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
@@ -18,7 +20,7 @@ public class OptionsService : BaseService
 
         if (uIOptions.Grid.EnableMultSelect)
         {
-            var dicParser = DicDao.GetDictionary(dictionaryName);
+            var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
             var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -36,11 +38,11 @@ public class OptionsService : BaseService
         {
             if (ValidateOptions(uIOptions, dictionaryName))
             {
-                var dicParser = DicDao.GetDictionary(dictionaryName);
+                var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
                 dicParser.UIOptions.Form = uIOptions.Form;
                 dicParser.UIOptions.Grid = uIOptions.Grid;
 
-                DicDao.SetDictionary(dicParser);
+                DictionaryRepository.SetDictionary(dicParser);
             }
         }
         catch (Exception ex)

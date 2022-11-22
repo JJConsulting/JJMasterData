@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Api.Models;
 
 [Serializable]
 [DataContract]

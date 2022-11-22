@@ -4,19 +4,21 @@ using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    public FieldService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public FieldService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
     {
-        var dictionary = DicDao.GetDictionary(elementName);
+        var dictionary = DictionaryRepository.GetDictionary(elementName);
         var formElement = dictionary.GetFormElement();
 
         RemoveUnusedProperties(ref field);
@@ -47,7 +49,7 @@ public class FieldService : BaseService
 
         formElement.Fields[field.Name] = field;
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return IsValid;
     }
@@ -281,7 +283,7 @@ public class FieldService : BaseService
 
     public bool SortFields(string elementName, string[] orderFields)
     {
-        var dictionary = DicDao.GetDictionary(elementName);
+        var dictionary = DictionaryRepository.GetDictionary(elementName);
         var formElement = dictionary.GetFormElement();
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
@@ -290,7 +292,7 @@ public class FieldService : BaseService
             formElement.Fields[i] = newList[i];
         }
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
         return true;
     }
 
@@ -318,7 +320,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = DicDao.GetDictionary(elementMap.ElementName);
+            var dataEntry = DictionaryRepository.GetDictionary(elementMap.ElementName);
             var fieldKey = dataEntry.Table.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -339,7 +341,7 @@ public class FieldService : BaseService
 
     public bool DeleteField(string dictionaryName, string fieldName)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         if (!dictionary.Table.Fields.ContainsKey(fieldName))
             return false;
 
@@ -347,14 +349,14 @@ public class FieldService : BaseService
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return IsValid;
     }
 
     public string GetNextFieldName(string dictionaryName, string fieldName)
     {
-        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
         var element = dictionary.Table;
         string nextField = null;
         if (element.Fields.ContainsKey(fieldName))
@@ -379,7 +381,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = DicDao.GetDictionary(map.ElementName);
+        var dataEntry = DictionaryRepository.GetDictionary(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 
@@ -404,7 +406,7 @@ public class FieldService : BaseService
 
         formElement.Fields.Add(newField);
         dictionary.SetFormElement(formElement);
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
         return IsValid;
     }
 

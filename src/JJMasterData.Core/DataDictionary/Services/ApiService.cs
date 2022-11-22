@@ -1,18 +1,20 @@
 ﻿using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    public ApiService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ApiService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public bool EditApi(Dictionary dicParser)
     {
         if (ValidateApi(dicParser))
-            DicDao.SetDictionary(dicParser);
+            DictionaryRepository.SetDictionary(dicParser);
 
         return IsValid;
     }

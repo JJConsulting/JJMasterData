@@ -2,8 +2,10 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Authorization;
 using JJMasterData.Web.Hosting;
 using JJMasterData.Web.Models;
@@ -32,7 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddJJMasterDataServices();
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
-        return services.AddJJMasterData();
+        return services.AddJJMasterDataCore();
     }
 
     private static void AddSystemWebAdapters(IServiceCollection services)
@@ -103,6 +105,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
+        services.AddTransient<IDictionaryRepository, DictionaryDao>();
 
         services.AddTransient<ActionsService>();
         services.AddTransient<ApiService>();

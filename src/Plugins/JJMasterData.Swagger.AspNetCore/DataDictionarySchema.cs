@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 

@@ -170,7 +170,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            Dictionary dicParser = _relationsService.DicDao.GetDictionary(childElement);
+            Dictionary dicParser = _relationsService.DictionaryRepository.GetDictionary(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {
@@ -187,7 +187,7 @@ public class RelationsController : DataDictionaryController
     public void PopulatePkTable()
     {
         var listItem = new List<SelectListItem>();
-        string[] list = _relationsService.DicDao.GetListDictionaryName();
+        string[] list = _relationsService.DictionaryRepository.GetListDictionaryName();
 
         foreach (string name in list)
         {

@@ -1,8 +1,10 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace JJMasterData.Core.WebComponents;
@@ -22,7 +24,7 @@ internal static class FormFactory
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
 
         form.Name = "jjview" + elementName.ToLower();
-        var dicDao = new DictionaryDao();
+        var dicDao = DictionaryRepositoryFactory.GetInstance();
         var dicParser = dicDao.GetDictionary(elementName);
 
         form.FormElement = dicParser.GetFormElement();

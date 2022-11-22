@@ -13,11 +13,11 @@ namespace JJMasterData.Api.Controllers;
 [ApiController]
 public class MasterApiController : ControllerBase
 {
-    private MasterApiService Service { get; }
+    private readonly MasterApiService _service;
 
     public MasterApiController(MasterApiService service)
     {
-        Service = service;
+        _service = service;
     }
 
     [HttpGet]
@@ -28,12 +28,12 @@ public class MasterApiController : ControllerBase
     {
         if (Request?.Headers?.Accept.ToString().Contains("text/csv") ?? false)
         {
-            string text = Service.GetListFieldAsText(elementName, pag, regporpag, orderby);
+            string text = _service.GetListFieldAsText(elementName, pag, regporpag, orderby);
 
             return Content(text, "text/csv");
         }
 
-        var response = Service.GetListFields(elementName, pag, regporpag, orderby, tot.Value);
+        var response = _service.GetListFields(elementName, pag, regporpag, orderby, tot.Value);
         return Ok(response);
     }
 
@@ -43,7 +43,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}/{id}")]
     public ActionResult<Dictionary<string,object>> Get(string elementName, string id)
     {
-        return Ok(Service.GetFields(elementName, id));
+        return Ok(_service.GetFields(elementName, id));
     }
 
 
@@ -51,7 +51,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}")]
     public ActionResult<ResponseLetter> Post([FromBody]Hashtable[] listParam, string elementName, bool replace = false)
     {
-        return GetResponseMessage(Service.SetFields(listParam, elementName, replace));
+        return GetResponseMessage(_service.SetFields(listParam, elementName, replace));
     }
 
 
@@ -59,7 +59,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}")]
     public ActionResult<ResponseLetter> Put([FromBody]Hashtable[] listParam, string elementName)
     {
-        return GetResponseMessage(Service.UpdateFields(listParam, elementName));
+        return GetResponseMessage(_service.UpdateFields(listParam, elementName));
     }
 
 
@@ -67,7 +67,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}")]
     public ActionResult<ResponseLetter> Patch([FromBody] Hashtable[] listParam, string elementName)
     {
-        return GetResponseMessage(Service.UpdatePart(listParam, elementName));
+        return GetResponseMessage(_service.UpdatePart(listParam, elementName));
     }
 
 
@@ -75,7 +75,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}/{id}")]
     public ActionResult<ResponseLetter> Delete(string elementName, string id)
     {
-        return Ok(Service.Delete(elementName, id));
+        return Ok(_service.Delete(elementName, id));
     }
 
 
@@ -84,7 +84,7 @@ public class MasterApiController : ControllerBase
     [Route("masterApi/{elementName}/trigger/{pageState?}/{objname?}")]
     public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody]Hashtable paramValues, PageState pageState, string objname = "")
     {
-        return Ok(Service.PostTrigger(elementName, paramValues, pageState, objname));
+        return Ok(_service.PostTrigger(elementName, paramValues, pageState, objname));
     }
 
 

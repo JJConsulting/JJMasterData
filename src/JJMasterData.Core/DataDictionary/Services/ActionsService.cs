@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;
 
@@ -8,15 +9,16 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
-    public ActionsService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ActionsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository) 
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public bool DeleteAction(string elementName, string actionName, ActionOrigin context, string fieldName = null)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetDictionary(elementName);
         DeleteAction(ref dicParser, actionName, context, fieldName);
-        DicDao.SetDictionary(dicParser);
+        DictionaryRepository.SetDictionary(dicParser);
 
         return true;
     }
@@ -49,7 +51,7 @@ public class ActionsService : BaseService
 
     public bool SaveAction(string elementName, BasicAction action, ActionOrigin context, string originalName, string fieldName = null)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetDictionary(elementName);
         ValidateActionName(dicParser, action.Name, originalName, context, fieldName);
         ValidateAction(dicParser, action);
 
@@ -92,7 +94,7 @@ public class ActionsService : BaseService
                 break;
         }
 
-        DicDao.SetDictionary(dicParser);
+        DictionaryRepository.SetDictionary(dicParser);
 
         return true;
     }
@@ -184,7 +186,7 @@ public class ActionsService : BaseService
 
     public bool SortActions(string elementName, string[] listAction, ActionOrigin actionContext, string fieldName)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetDictionary(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -205,14 +207,14 @@ public class ActionsService : BaseService
             }
             action.Order = i + 1;
         }
-        DicDao.SetDictionary(dicParser);
+        DictionaryRepository.SetDictionary(dicParser);
 
         return true;
     }
 
     public bool EnableDisable(string elementName, string actionName, ActionOrigin actionContext, bool visible)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetDictionary(elementName);
         BasicAction action = null;
         if (actionContext == ActionOrigin.Grid)
         {
@@ -224,7 +226,7 @@ public class ActionsService : BaseService
         }
 
         action.SetVisible(visible);
-        DicDao.SetDictionary(dicParser);
+        DictionaryRepository.SetDictionary(dicParser);
 
         return true;
     }
@@ -237,7 +239,7 @@ public class ActionsService : BaseService
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var dataEntry = DicDao.GetDictionary(elementName);
+        var dataEntry = DictionaryRepository.GetDictionary(elementName);
         if (dataEntry == null)
             return dicFields;
 

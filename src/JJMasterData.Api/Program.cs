@@ -56,8 +56,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddJJMasterData().WithFormEvents();
+builder.Services.AddJJMasterDataCore();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddTransient<MasterApiService>();

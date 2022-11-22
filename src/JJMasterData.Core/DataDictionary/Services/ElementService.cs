@@ -1,10 +1,11 @@
-﻿using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;
 using Newtonsoft.Json;
@@ -19,22 +20,26 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
-    public ElementService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    private readonly IEntityRepository _entityRepository;
+    public ElementService(IValidationDictionary validationDictionary, 
+                          IEntityRepository entityRepository, 
+                          IDictionaryRepository dictionaryRepository) 
+        : base(validationDictionary, dictionaryRepository)
     {
+        _entityRepository = entityRepository;
     }
 
     #region Exec Scripts GET/SET/TABLE
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var dictionary = DicDao.GetDictionary(id);
+        var dictionary = DictionaryRepository.GetDictionary(id);
         var element = dictionary.Table;
-        var factory = DicDao.EntityRepository;
         var listScripts = new List<string>
         {
-            factory.GetScriptCreateTable(element),
-            factory.GetScriptReadProcedure(element),
-            factory.GetScriptWriteProcedure(element)
+            _entityRepository.GetScriptCreateTable(element),
+            _entityRepository.GetScriptReadProcedure(element),
+            _entityRepository.GetScriptWriteProcedure(element)
         };
 
         return listScripts;
@@ -43,27 +48,26 @@ public class ElementService : BaseService
 
     public void ExecScripts(string id, string scriptExec)
     {
-        var factory = DicDao.EntityRepository;
-        var dictionary = DicDao.GetDictionary(id);
+        var dictionary = DictionaryRepository.GetDictionary(id);
         var element = dictionary.Table;
 
         switch (scriptExec)
         {
             case "Exec":
                 var sql = new StringBuilder();
-                sql.AppendLine(factory.GetScriptWriteProcedure(element));
-                sql.AppendLine(factory.GetScriptReadProcedure(element));
-                factory.ExecuteBatch(sql.ToString());
+                sql.AppendLine(_entityRepository.GetScriptWriteProcedure(element));
+                sql.AppendLine(_entityRepository.GetScriptReadProcedure(element));
+                _entityRepository.ExecuteBatch(sql.ToString());
                 break;
             case "ExecAll":
-                factory.CreateDataModel(element);
+                _entityRepository.CreateDataModel(element);
                 break;
         }
     }
 
     public void ExecScriptsMasterData()
     {
-        DicDao.ExecInitialSetup();
+        DictionaryRepository.ExecInitialSetup();
     }
 
     #endregion
@@ -78,7 +82,7 @@ public class ElementService : BaseService
         FormElement formElement;
         if (importFields)
         {
-            var element = DicDao.EntityRepository.GetElementFromTable(tableName);
+            var element = _entityRepository.GetElementFromTable(tableName);
             formElement = new FormElement(element);
         }
         else
@@ -97,7 +101,7 @@ public class ElementService : BaseService
             Form = new DictionaryForm(formElement)
         };
 
-        DicDao.SetDictionary(dictionary);
+        DictionaryRepository.SetDictionary(dictionary);
 
         return formElement;
     }
@@ -106,7 +110,7 @@ public class ElementService : BaseService
     {
         if (ValidateName(tableName))
         {
-            if (DicDao.HasDictionary(tableName))
+            if (DictionaryRepository.HasDictionary(tableName))
             {
                 AddError("Name", Translate.Key("There is already a dictionary with the name ") + tableName);
             }
@@ -149,9 +153,9 @@ public class ElementService : BaseService
     {
         if (ValidateEntity(newName))
         {
-            var dicParser = DicDao.GetDictionary(originName);
+            var dicParser = DictionaryRepository.GetDictionary(originName);
             dicParser.Table.Name = newName;
-            DicDao.SetDictionary(dicParser);
+            DictionaryRepository.SetDictionary(dicParser);
 
         }
 
@@ -168,7 +172,7 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("Mandatory dictionary name field"));
         }
 
-        if (DicDao.HasDictionary(name))
+        if (DictionaryRepository.HasDictionary(name))
         {
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
@@ -179,7 +183,7 @@ public class ElementService : BaseService
 
     public JJFormView GetFormView()
     {
-        var element = DicDao.GetStructure();
+        var element = DictionaryDao.GetStructure();
         var formElement = new FormElement(element);
 
         formElement.Title = "JJMasterData";
@@ -225,7 +229,16 @@ public class ElementService : BaseService
         if (!formView.CurrentFilter.ContainsKey("type"))
             formView.CurrentFilter.Add("type", "F");
 
+        formView.OnDataLoad += FormView_OnDataLoad;
+
         return formView;
+    }
+
+    private void FormView_OnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    {
+        int tot = e.Tot;
+        e.DataSource = DictionaryRepository.GetDataTable(e.Filters, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+        e.Tot = tot;
     }
 
 
@@ -236,8 +249,7 @@ public class ElementService : BaseService
     {
         string prop = "public @PropType @PropName { get; set; } ";
 
-        var dicDao = new DictionaryDao();
-        var dicParser = dicDao.GetDictionary(dicName);
+        var dicParser = DictionaryRepository.GetDictionary(dicName);
         var propsBuilder = new StringBuilder();
 
         foreach (var item in dicParser.Table.Fields.ToList())
@@ -294,7 +306,7 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var dicParser = DicDao.GetDictionary(dictionaryName);
+                var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
                 string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
@@ -309,7 +321,7 @@ public class ElementService : BaseService
     {
         string json = new StreamReader(file).ReadToEnd();
         var dicParser = JsonConvert.DeserializeObject<Dictionary>(json);
-        DicDao.SetDictionary(dicParser);
+        DictionaryRepository.SetDictionary(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");
 

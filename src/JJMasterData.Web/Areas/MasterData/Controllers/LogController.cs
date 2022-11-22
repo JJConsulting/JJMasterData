@@ -50,6 +50,9 @@ public class LogController : Controller
 
     private JJGridView GetLoggingGridView(Logger logger)
     {
+        if (logger == null)
+            throw new ArgumentNullException(nameof(logger));
+
         var f = new FormElement(logger.GetElement())
         {
             Title = Translate.Key("Application Log"),
