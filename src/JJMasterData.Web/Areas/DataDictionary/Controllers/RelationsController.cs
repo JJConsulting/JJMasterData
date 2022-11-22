@@ -14,7 +14,7 @@ public class RelationsController : DataDictionaryController
 {
     private readonly RelationsService _relationsService;
 
-    public RelationsController(RelationsService relationsService) 
+    public RelationsController(RelationsService relationsService)
     {
         _relationsService = relationsService;
     }
@@ -123,49 +123,22 @@ public class RelationsController : DataDictionaryController
     [HttpPost]
     public ActionResult Delete(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        ElementRelation elementRelation = formElement.Relations[int.Parse(index)];
-        formElement.Relations.Remove(elementRelation);
-        _relationsService.DicDao.SetFormElement(formElement);
-
+        _relationsService.Delete(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveDown = int.Parse(index);
-        if (indexToMoveDown >= 0 && indexToMoveDown < formElement.Relations.Count - 1)
-        {
-            ElementRelation elementRelation = formElement.Relations[indexToMoveDown + 1];
-            formElement.Relations[indexToMoveDown + 1] = formElement.Relations[indexToMoveDown];
-            formElement.Relations[indexToMoveDown] = elementRelation;
-            _relationsService.DicDao.SetFormElement(formElement);
-        }
-
+        _relationsService.MoveDown(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
-
     }
 
     [HttpPost]
     public ActionResult MoveUp(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveUp = int.Parse(index);
-        if (indexToMoveUp > 0)
-        {
-            ElementRelation elementRelation = formElement.Relations[indexToMoveUp - 1];
-            formElement.Relations[indexToMoveUp - 1] = formElement.Relations[indexToMoveUp];
-            formElement.Relations[indexToMoveUp] = elementRelation;
-            _relationsService.DicDao.SetFormElement(formElement);
-        }
-
+        _relationsService.MoveUp(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
-
     }
 
     private void PopulateViewBag(string dictionaryName)

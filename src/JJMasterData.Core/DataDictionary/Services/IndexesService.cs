@@ -12,7 +12,8 @@ public class IndexesService : BaseService
 
     public bool Save(string id, string index, ElementIndex elementIndex)
     {
-        var formElement = DicDao.GetFormElement(id);
+        var dictionary = DicDao.GetDictionary(id);
+        var formElement = dictionary.GetFormElement();
         
         if (!string.IsNullOrEmpty(index))
         {
@@ -25,7 +26,8 @@ public class IndexesService : BaseService
 
         if (Validate(elementIndex))
         {
-            DicDao.SetFormElement(formElement);
+            dictionary.SetFormElement(formElement);
+            DicDao.SetDictionary(dictionary);
         }
 
         return IsValid;
@@ -39,4 +41,41 @@ public class IndexesService : BaseService
 
         return IsValid;
     }
+
+    public void Delete(string dictionaryName, string index)
+    {
+        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var elementIndex = dictionary.Table.Indexes[int.Parse(index)];
+        dictionary.Table.Indexes.Remove(elementIndex);
+        DicDao.SetDictionary(dictionary);
+    }
+
+    public void MoveDown(string dictionaryName, string index)
+    {
+        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var indexes = dictionary.Table.Indexes;
+        int indexToMoveDown = int.Parse(index);
+        if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
+        {
+            ElementIndex elementIndex = indexes[indexToMoveDown + 1];
+            indexes[indexToMoveDown + 1] = indexes[indexToMoveDown];
+            indexes[indexToMoveDown] = elementIndex;
+            DicDao.SetDictionary(dictionary);
+        }
+    }
+
+    public void MoveUp(string dictionaryName, string index)
+    {
+        var dictionary = DicDao.GetDictionary(dictionaryName);
+        var indexes = dictionary.Table.Indexes;
+        int indexToMoveUp = int.Parse(index);
+        if (indexToMoveUp > 0)
+        {
+            ElementIndex elementIndex = indexes[indexToMoveUp - 1];
+            indexes[indexToMoveUp - 1] = indexes[indexToMoveUp];
+            indexes[indexToMoveUp] = elementIndex;
+            DicDao.SetDictionary(dictionary);
+        }
+    }
+
 }

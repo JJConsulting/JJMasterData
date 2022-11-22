@@ -1,9 +1,11 @@
 ﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -59,19 +61,15 @@ public class PanelController : DataDictionaryController
 
     public IActionResult Delete(string dictionaryName, int panelId)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
-        _panelService.DeleteField(formElement, panelId);
-
+        _panelService.DeleteField(dictionaryName, panelId);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
-    public IActionResult Save(string dictionaryName, FormElementPanel panel, [FromForm] string? selectedFields)
+    public IActionResult Save(string dictionaryName, FormElementPanel panel, [FromForm] string selectedFields)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
-        var selectedFormElementFields = GetFormFields(formElement, panel, selectedFields);
-
-        _panelService.SavePanel(formElement, panel, selectedFormElementFields);
+        string[] splittedFields = selectedFields.Split(',');
+        _panelService.SavePanel(dictionaryName, panel, splittedFields);
         if (ModelState.IsValid)
         {
             return RedirectToAction("Index", new { dictionaryName, panelId = panel.PanelId });
@@ -99,11 +97,7 @@ public class PanelController : DataDictionaryController
     [HttpPost]
     public IActionResult Copy(string dictionaryName, FormElementPanel panel)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
-        var newPanel = panel.DeepCopy();
-        newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
-        formElement.Panels.Add(newPanel);
-        _panelService.DicDao.SetFormElement(formElement);
+        var newPanel = _panelService.CopyPanel(dictionaryName, panel);
         return RedirectToIndex(dictionaryName, newPanel);
     }
 
@@ -116,7 +110,7 @@ public class PanelController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementPanel panel, string? selectedFields = null)
+    private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
     {
         if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
             ViewBag.Tab = Request.Form["selected_tab"];
@@ -131,7 +125,9 @@ public class PanelController : DataDictionaryController
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
         ViewBag.AvailableFields = GetAvailableFields(formElement, panel);
-        ViewBag.SelectedFields = GetFormFields(formElement, panel, selectedFields);
+        ViewBag.SelectedFields = (panel.PanelId > 0) ?
+            formElement.Fields.ToList().FindAll(x => x.PanelId == panel.PanelId) :
+            new List<FormElementField>();
     }
 
     protected List<FormElementField> GetAvailableFields(FormElement formElement, FormElementPanel panel)
@@ -154,27 +150,4 @@ public class PanelController : DataDictionaryController
         return list;
     }
 
-    protected List<FormElementField> GetFormFields(FormElement formElement, FormElementPanel panel,
-        string? selectedFields)
-    {
-        var list = new List<FormElementField>();
-        if (selectedFields == null)
-        {
-            if (panel.PanelId > 0)
-            {
-                list = formElement.Fields.ToList().FindAll(x => x.PanelId == panel.PanelId);
-            }
-        }
-        else
-        {
-            string[] splittedFields = selectedFields.Split(',');
-            foreach (string fieldName in splittedFields)
-            {
-                if (formElement.Fields.Contains(fieldName))
-                    list.Add(formElement.Fields[fieldName]);
-            }
-        }
-
-        return list;
-    }
 }

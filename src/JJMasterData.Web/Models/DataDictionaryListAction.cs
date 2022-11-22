@@ -5,12 +5,12 @@ namespace JJMasterData.Web.Models;
 
 public class DataDictionaryListAction
 {
-    public string DictionaryName { get; set; }
+    public string? DictionaryName { get; set; }
 
     public ActionOrigin Context { get; set; }
 
-    public string FieldName { get; set; }
+    public string? FieldName { get; set; }
 
-    public List<BasicAction> ListAction { get; set; }
+    public List<BasicAction>? ListAction { get; set; }
 
 }

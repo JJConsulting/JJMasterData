@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Settings;
 using JJMasterData.Commons.Util;
@@ -58,18 +59,19 @@ public class ElementService : BaseService
     public void ExecScripts(string id, string scriptExec)
     {
         var factory = DicDao.EntityRepository;
-        var formElement = DicDao.GetFormElement(id);
+        var dictionary = DicDao.GetDictionary(id);
+        var element = dictionary.Table;
 
         switch (scriptExec)
         {
             case "Exec":
                 var sql = new StringBuilder();
-                sql.AppendLine(factory.GetScriptWriteProcedure(formElement));
-                sql.AppendLine(factory.GetScriptReadProcedure(formElement));
+                sql.AppendLine(factory.GetScriptWriteProcedure(element));
+                sql.AppendLine(factory.GetScriptReadProcedure(element));
                 factory.ExecuteBatch(sql.ToString());
                 break;
             case "ExecAll":
-                factory.CreateDataModel(formElement);
+                factory.CreateDataModel(element);
                 break;
         }
     }
@@ -94,7 +96,7 @@ public class ElementService : BaseService
         FormElement formElement;
         if (importFields)
         {
-            var element = DicDao.GetElementFromTable(tableName);
+            var element = DicDao.EntityRepository.GetElementFromTable(tableName);
             formElement = new FormElement(element);
         }
         else
@@ -107,7 +109,13 @@ public class ElementService : BaseService
         formElement.CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tableName);
         formElement.CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tableName);
 
-        DicDao.SetFormElement(formElement);
+        var dictionary = new DicParser
+        {
+            Table = formElement.DeepCopy(),
+            Form = new DicFormParser(formElement)
+        };
+
+        DicDao.SetDictionary(dictionary);
 
         return formElement;
     }

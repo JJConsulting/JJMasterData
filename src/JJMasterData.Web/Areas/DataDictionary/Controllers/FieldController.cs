@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -76,9 +73,7 @@ public class FieldController : DataDictionaryController
     public IActionResult Save(string dictionaryName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
-        
         _fieldService.SaveField(dictionaryName, field, originalName);
-
         if (ModelState.IsValid)
         {
             return RedirectToIndex(dictionaryName, field);

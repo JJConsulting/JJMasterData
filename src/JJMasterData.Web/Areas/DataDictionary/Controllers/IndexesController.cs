@@ -79,29 +79,14 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public ActionResult Delete(string dictionaryName, string index)
     {
-        var formElement = _indexesService.DicDao.GetFormElement(dictionaryName);
-        var elementIndex = formElement.Indexes[int.Parse(index)];
-        
-        formElement.Indexes.Remove(elementIndex);
-        _indexesService.DicDao.SetFormElement(formElement);
-
+        _indexesService.Delete(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)
     {
-        FormElement formElement = _indexesService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveDown = int.Parse(index);
-        if (indexToMoveDown >= 0 && indexToMoveDown < formElement.Relations.Count - 1)
-        {
-            ElementIndex elementIndex = formElement.Indexes[indexToMoveDown + 1];
-            formElement.Indexes[indexToMoveDown + 1] = formElement.Indexes[indexToMoveDown];
-            formElement.Indexes[indexToMoveDown] = elementIndex;
-            _indexesService.DicDao.SetFormElement(formElement);
-        }
-
+        _indexesService.MoveDown(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
 
     }
@@ -109,17 +94,7 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public ActionResult MoveUp(string dictionaryName, string index)
     {
-        FormElement formElement = _indexesService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveUp = int.Parse(index);
-        if (indexToMoveUp > 0)
-        {
-            ElementIndex elementIndex = formElement.Indexes[indexToMoveUp - 1];
-            formElement.Indexes[indexToMoveUp - 1] = formElement.Indexes[indexToMoveUp];
-            formElement.Indexes[indexToMoveUp] = elementIndex;
-            _indexesService.DicDao.SetFormElement(formElement);
-        }
-
+        _indexesService.MoveUp(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
 
     }

@@ -514,10 +514,10 @@ public class JJFormView : JJGridView
         string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
-
         var html = new HtmlBuilder(HtmlTag.Div);
         var dicDao = new DictionaryDao(EntityRepository);
-        var element = dicDao.GetElement(InsertAction.ElementNameToSelect);
+        var dictionary = dicDao.GetDictionary(InsertAction.ElementNameToSelect);
+        var element = dictionary.Table;
         var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
         var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
