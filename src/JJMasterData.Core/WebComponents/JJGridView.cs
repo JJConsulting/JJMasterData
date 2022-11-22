@@ -696,6 +696,9 @@ public class JJGridView : JJBaseView
                 return lookup.GetHtml();
             }
         }
+        
+        if (JJDownloadFile.IsDownloadRoute(this))
+            return JJDownloadFile.ResponseRoute(this);
 
         if (ShowTitle)
             html.Append(GetHtmlTitle());
