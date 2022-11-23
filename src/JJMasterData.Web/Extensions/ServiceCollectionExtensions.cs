@@ -26,30 +26,7 @@ namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, ConfigurationManager configurationManager, string settingsPath = "appsettings.json")
-    {
-        services.AddOptions<JJMasterDataOptions>();
-        services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
-        services.AddHttpContextAccessor();
-        services.AddSession();
-
-        services.ConfigureOptionsWriter<JJMasterDataOptions>(configurationManager.GetSection("JJMasterData"),
-            settingsPath);
-        services.ConfigureOptionsWriter<ConnectionStrings>(
-            configurationManager.GetSection("ConnectionStrings"), settingsPath);
-        
-        AddSystemWebAdapters(services);
-
-        services.AddDistributedMemoryCache();
-        services.AddJJMasterDataServices();
-        
-        services.AddUrlRequestCultureProvider();
-        services.AddAnonymousAuthorization();
-        
-        return services.AddJJMasterData();
-    }
-
-    private static void AddSystemWebAdapters(IServiceCollection services)
+    internal static void AddSystemWebAdaptersServices(this IServiceCollection services)
     {
         services.AddSystemWebAdapters();
         services.AddTransient<ResponseEndFilter>();
@@ -62,7 +39,7 @@ public static class ServiceCollectionExtensions
             });
     }
 
-    private static void AddAnonymousAuthorization(this IServiceCollection services)
+    internal static void AddAnonymousAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
@@ -72,7 +49,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
+    internal static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
     {
 
         if (supportedCultures == null || supportedCultures.Length == 0)
@@ -113,7 +90,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static void AddJJMasterDataServices(this IServiceCollection services)
+    internal static void AddJJMasterDataServices(this IServiceCollection services)
     {
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();

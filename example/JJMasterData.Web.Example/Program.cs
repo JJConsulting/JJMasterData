@@ -13,12 +13,13 @@ public class Program
 
         var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
         var settingsPath = Path.Combine(root, "appsettings.json");
+        
         builder.Configuration.AddJsonFile(settingsPath, false, true);
 
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddJJMasterDataWeb(builder.Configuration, settingsPath).WithFormEvents();
+        builder.AddJJMasterDataWeb(settingsPath).WithFormEvents();
 
         var app = builder.Build();
 
