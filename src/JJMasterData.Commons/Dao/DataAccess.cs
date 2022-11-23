@@ -1037,12 +1037,6 @@ public class DataAccess
             error.AppendLine(ex.InnerException.Message);
         }
 
-        if (!string.IsNullOrEmpty(ex.StackTrace))
-        {
-            error.Append("StackTrace :");
-            error.AppendLine(ex.StackTrace);
-        }
-
         error.Append(TranslateKey("Executed Query"));
         error.AppendLine(": ");
         error.AppendLine(sql);
@@ -1060,7 +1054,12 @@ public class DataAccess
                 error.AppendLine("]");
             }
         }
-
+        
+        if (!string.IsNullOrEmpty(ex.StackTrace))
+        {
+            error.Append("StackTrace :");
+            error.AppendLine(ex.StackTrace);
+        }
 
         AddLog(error.ToString());
     }
