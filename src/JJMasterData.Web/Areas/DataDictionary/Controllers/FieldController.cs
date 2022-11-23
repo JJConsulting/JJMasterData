@@ -178,8 +178,13 @@ public class FieldController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementField? field)
+    private void PopulateViewBag(FormElement formElement, FormElementField field)
     {
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+        if (field == null)
+            throw new ArgumentNullException(nameof(field));
+        
         field.DataItem ??= new FormElementDataItem();
 
         field.DataItem.ElementMap ??= new DataElementMap();
