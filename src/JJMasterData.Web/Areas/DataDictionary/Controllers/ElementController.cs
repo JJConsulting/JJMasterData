@@ -1,9 +1,11 @@
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
@@ -18,18 +20,28 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    public ElementController(ElementService elementService, ThemeService themeService)
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElementController(ElementService elementService,ThemeService themeService, IServiceProvider serviceProvider)
     {
         _themeService = themeService;
         _elementService = elementService;
+        _serviceProvider = serviceProvider;
     }
 
     public ActionResult Index()
     {
-        if (_elementService.JJMasterDataTableExists())
+        try
         {
-            var model = GetEntityFormView();
-            return View(model);
+            if (_elementService.JJMasterDataTableExists())
+            {
+                var model = GetEntityFormView();
+                return View(model);
+            }
+        }
+        catch(DataAccessException)
+        {
+            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
         }
 
         return View("Create");
@@ -126,7 +138,7 @@ public class ElementController : DataDictionaryController
         var model = new AboutViewModel
         {
             ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion = executingAssembly.GetName().Version?.ToString(),
+            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
             ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
             BootstrapVersion = BootstrapHelper.Version.ToString(),
             Dependencies = service.GetJJAssemblies()
@@ -240,8 +252,8 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
-            OnClientClick = string.Format("jjdictionary.exportElement('{0}', '{1}', '{2}');",
-                formView.Name, Url.Action("Export"), Translate.Key("Select one or more dictionaries"))
+            OnClientClick =
+                $"jjdictionary.exportElement('{formView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
         };
         formView.AddToolBarAction(btnExport);
 
@@ -267,7 +279,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("About"),
+            UrlRedirect = Url.Action("Index", "About", new {Area="MasterData"}),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -286,8 +298,38 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-
+        
         formView.AddToolBarAction(btnLog);
+        
+        var btnSettings = new UrlRedirectAction
+        {
+            Name = "btnAppSettings",
+            ToolTip = Translate.Key("Application Options"),
+            Icon = IconType.Code,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Application Options"),
+            UrlRedirect = Url.Action("Index", "Options", new {Area = "MasterData"}),
+            Order = 12,
+            CssClass = BootstrapHelper.PullRight
+        };
+        
+        formView.AddToolBarAction(btnSettings);
+        
+        var btnResources = new UrlRedirectAction
+        {
+            Name = "btnResources",
+            ToolTip = Translate.Key("Resources"),
+            Icon = IconType.Globe,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Resources"),
+            UrlRedirect = Url.Action("Index", "Resources", new {Area = "MasterData"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.AddToolBarAction(btnResources);
 
         formView.OnRenderAction += OnRenderAction;
 

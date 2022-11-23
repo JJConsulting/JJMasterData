@@ -358,7 +358,7 @@ internal class DataExpSettings
     {
         var list = new List<FileInfo>();
 
-        var oDir = new DirectoryInfo(JJService.Settings.ExportationFolderPath);
+        var oDir = new DirectoryInfo(JJService.Options.ExportationFolderPath);
 
         if (oDir.Exists)
             list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));

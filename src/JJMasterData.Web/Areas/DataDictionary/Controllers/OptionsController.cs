@@ -8,9 +8,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 [Area("DataDictionary")]
 public class OptionsController : DataDictionaryController
 {
-    private readonly OptionsService _optionsService;
+    private readonly OptionsService? _optionsService;
 
-    public OptionsController(OptionsService optionsService)
+    public OptionsController(OptionsService? optionsService)
     {
         _optionsService = optionsService;
     }
@@ -28,9 +28,9 @@ public class OptionsController : DataDictionaryController
     [HttpPost]
     public ActionResult Edit(UIOptions uIOptions, string dictionaryName)
     {
-
         if (_optionsService.EditOptions(uIOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
+
         var jjValidationSummary = _optionsService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
         ViewBag.DictionaryName = dictionaryName;

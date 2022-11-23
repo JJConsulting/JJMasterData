@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Util;
 
@@ -59,7 +59,7 @@ public class FileIO
         /// <returns></returns>
         public static string GetApplicationPath()
         {
-            if(JJMasterDataSettings.IsNetFramework)
+            if(JJMasterDataOptions.IsNetFramework)
                 return AppDomain.CurrentDomain.BaseDirectory;
             return Environment.CurrentDirectory;
         }

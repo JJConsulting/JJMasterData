@@ -810,7 +810,7 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var chieldGrid = new JJFormView(childElement)
+                var childGrid = new JJFormView(childElement)
                 {
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
@@ -820,20 +820,20 @@ public class JJFormView : JJGridView
                     },
                     Name = "jjgridview_" + childElement.Name
                 };
-                chieldGrid.Filter.ApplyCurrentFilter(filter);
+                childGrid.Filter.ApplyCurrentFilter(filter);
 
                 if (dic.UIOptions != null)
                 {
-                    chieldGrid.SetOptions(dic.UIOptions);
+                    childGrid.SetOptions(dic.UIOptions);
                 }
 
-                chieldGrid.ShowTitle = false;
+                childGrid.ShowTitle = false;
 
                 var collapse = new JJCollapsePanel
                 {
-                    Name = "collapse_" + chieldGrid.Name,
+                    Name = "collapse_" + childGrid.Name,
                     Title = childElement.Title,
-                    HtmlContent = chieldGrid.GetHtml()
+                    HtmlContent = childGrid.GetHtml()
                 };
 
                 html.AppendElement(collapse);

@@ -1,7 +1,7 @@
 ﻿using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.WebComponents;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class DataDictionaryListAction
 {

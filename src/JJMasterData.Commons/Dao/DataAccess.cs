@@ -99,14 +99,14 @@ public class DataAccess
 
     public DataAccess()
     {
-        ConnectionString = JJService.Settings.ConnectionString;
-        ConnectionProvider = JJService.Settings.ConnectionProvider;
+        ConnectionString = JJService.Options.GetConnectionString();
+        ConnectionProvider = JJService.Options.GetConnectionProvider();
     }
 
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJService.Settings.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJService.Settings.GetConnectionProvider(connectionStringName);
+        ConnectionString = JJService.Options.GetConnectionString(connectionStringName);
+        ConnectionProvider = JJService.Options.GetConnectionProvider(connectionStringName);
     }
 
     /// <summary>
@@ -853,22 +853,22 @@ public class DataAccess
     }
 
     /// <summary>
-    /// Verifica se a conexão com o banco esta ok
+    /// Verify the database connection
     /// </summary>
-    /// <returns>True = Conexão ok </returns>
-    /// ///<remarks>
-    ///Author: Lucio Pelinson 28-04-2014
+    /// <returns>True if the connection is successful.</returns>
+    /// <remarks>
+    /// Author: Lucio Pelinson 28-04-2014
     ///</remarks>
-    public bool TryConnection(out string errorResult)
+    public bool TryConnection(out string errorMessage)
     {
         bool result;
-        DbConnection sqlConn = null;
-        errorResult = null;
+        DbConnection connection = null;
+        errorMessage = null;
         try
         {
-            sqlConn = GetFactory().CreateConnection();
-            sqlConn!.ConnectionString = ConnectionString;
-            sqlConn.Open();
+            connection = GetFactory().CreateConnection();
+            connection!.ConnectionString = ConnectionString;
+            connection.Open();
             result = true;
         }
         catch (Exception ex)
@@ -878,23 +878,62 @@ public class DataAccess
             if (ex.InnerException is { Message: { } })
                 error.Append(ex.InnerException.Message);
 
-            errorResult = error.ToString();
+            errorMessage = error.ToString();
             result = false;
         }
         finally
         {
-            if (sqlConn != null)
+            if (connection != null)
             {
-                if (sqlConn.State == ConnectionState.Open)
+                if (connection.State == ConnectionState.Open)
                 {
-                    sqlConn.Close();
+                    connection.Close();
                 }
 
-                sqlConn.Dispose();
+                connection.Dispose();
             }
         }
 
         return result;
+    }
+    
+    /// <inheritdoc cref="TryConnection(out string)"/>
+    public async Task<(bool, string)> TryConnectionAsync()
+    {
+        bool result;
+        DbConnection connection = null;
+        String errorMessage = null;
+        try
+        {
+            connection = GetFactory().CreateConnection();
+            connection!.ConnectionString = ConnectionString;
+            await connection.OpenAsync();
+            result = true;
+        }
+        catch (Exception ex)
+        {
+            result = false;
+            var error = new StringBuilder();
+            error.AppendLine(ex.Message);
+            if (ex.InnerException is { Message: { } })
+                error.Append(ex.InnerException.Message);
+
+            errorMessage = error.ToString();
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+
+                connection.Dispose();
+            }
+        }
+
+        return (result, errorMessage);
     }
 
     /// <summary>

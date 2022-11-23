@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
+using System.Reflection;
 
 namespace JJMasterData.Web.Services;
 
@@ -22,5 +21,4 @@ public class AboutService
         object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
         return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
     }
-
 }

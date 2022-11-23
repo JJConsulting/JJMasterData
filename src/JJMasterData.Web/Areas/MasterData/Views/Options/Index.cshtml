@@ -1,0 +1,68 @@
+@using JJMasterData.Core.DataDictionary
+@model JJMasterData.Web.Areas.MasterData.Models.OptionsViewModel
+@{
+    Layout = "_MasterDataLayout.Popup";
+}
+
+<form>
+    
+    <input asp-for="IsFullscreen" hidden="hidden"/>
+    
+    @if (Model.IsFullscreen)
+    {
+        <jj-title title="Application Settings"/>
+    }
+    
+    @if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })
+    {
+        <jj-alert
+            title="@Translate.Key("Success")"
+            messages="@(new List<string> { Translate.Key("Connection successfully estabilished.") })"
+            icon="@IconType.CheckCircle"
+            color="@PanelColor.Success"/>
+    }
+    else if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:false })
+    {
+        <jj-alert
+            title="@Translate.Key("Error")"
+            messages="@(new List<string> { Model.ConnectionString.ConnectionResult.ErrorMessage })"
+            icon="@IconType.ExclamationTriangle"
+            color="@PanelColor.Danger"/>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    
+    <jj-collapse-panel
+        title="Connection String"
+        partial="_ConnectionString"
+        model="Model"
+        icon="@IconType.Connectdevelop"/>
+
+    <jj-collapse-panel
+        title="Logger"
+        partial="_LoggerOptions"
+        model="Model"
+        icon="@IconType.File"/>
+
+    <jj-collapse-panel
+        title="JJMasterDataOptions"
+        partial="_JJMasterDataOptions"
+        model="Model"
+        icon="@IconType.Cog"/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="@BootstrapHelper.DefaultButton"
+                    formaction="@Url.Action("Save", "Options")"
+                    type="submit">@Translate.Key("Save")</button>
+        </div>
+    </div>
+</form>
+@if(ViewBag.Success == true)
+{
+    <script lang="js" type="text/javascript">
+        window.parent.popup.hide();
+        window.parent.location.reload();
+    </script>
+}
+

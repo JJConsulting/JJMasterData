@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;

@@ -4,4 +4,4 @@ using Microsoft.AspNetCore.Mvc;
 namespace JJMasterData.Web.Controllers;
 
 [Authorize(Policy = "MasterData")]
-public class MasterDataController : Controller { }
+public abstract class MasterDataController : Controller { }

@@ -20,7 +20,7 @@ public class ResourcesController : MasterDataController
 
     public ActionResult Index()
     {
-        string tablename = JJService.Settings.ResourcesTableName;
+        string tablename = JJService.Options.ResourcesTableName;
         
         if (string.IsNullOrEmpty(tablename))
         {

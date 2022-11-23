@@ -24,13 +24,13 @@ public class Logger : ILogger
 
     public IEntityRepository EntityRepository => _entityRepository ??= JJService.EntityRepository;
 
-    public LoggerSettings Settings { get; set; }
+    public LoggerOptions Options { get; set; }
 
     private string CategoryName;
 
     public Logger()
     {
-        Settings = new LoggerSettings();
+        Options = JJService.Options.Logger;
     }
 
     public Logger(string categoryName) : this()
@@ -42,19 +42,9 @@ public class Logger : ILogger
     /// Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
     /// </summary>
     /// <param name="value">Descrição do erro</param>
-    /// <remarks>Lucio Pelinson 2014-05-12</remarks>
-    public void AddError(string value)
-    {
-        AddError(value, null);
-    }
-
-    /// <summary>
-    /// Adicionar um log de erro, o sistema gravará o erro conforme as parametrizações da aplicação
-    /// </summary>
-    /// <param name="value">Descrição do erro</param>
     /// <param name="source">Origem ou Categoria</param>
     /// <remarks>Lucio Pelinson 2014-05-12</remarks>
-    public void AddError(string value, string source)
+    public void AddError(string value, string source = null)
     {
         Add(value, source, LoggerLevel.Error);
     }
@@ -63,30 +53,11 @@ public class Logger : ILogger
     /// Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
     /// </summary>
     /// <param name="value">Descrição do log</param>
-    public void AddInfo(string value)
-    {
-        AddInfo(value, null);
-    }
-
-    /// <summary>
-    /// Adicionar um log de informação, o sistema gravará o log conforme as parametrizações da aplicação
-    /// </summary>
-    /// <param name="value">Descrição do log</param>
     /// <param name="source">Origem ou Categoria</param>
     /// <remarks>Lucio Pelinson 2014-05-12</remarks>
-    public void AddInfo(string value, string source)
+    public void AddInfo(string value, string source = null)
     {
         Add(value, source, LoggerLevel.Information);
-    }
-
-    /// <summary>
-    /// Adicionar um log de aviso, o sistema gravará o log conforme as parametrizações da aplicação
-    /// </summary>
-    /// <param name="value">Descrição</param>
-    /// <remarks>Lucio Pelinson 2014-05-12</remarks>
-    public void AddWarning(string value)
-    {
-        AddWarning(value, null);
     }
 
     /// <summary>
@@ -95,7 +66,7 @@ public class Logger : ILogger
     /// <param name="value">Descrição do aviso</param>
     /// <param name="source">Origem ou Categoria</param>
     /// <remarks>Lucio Pelinson 2014-05-12</remarks>
-    public void AddWarning(string value, string source)
+    public void AddWarning(string value, string source = null)
     {
         Add(value, source, LoggerLevel.Warning);
     }
@@ -110,19 +81,19 @@ public class Logger : ILogger
     public void Add(string value, string source, LoggerLevel level)
     {
 
-        if (EnableOption(Settings.WriteInTrace, level))
+        if (EnableOption(Options.WriteInTrace, level))
             WriteInTrace(value, source, level);
 
-        if (EnableOption(Settings.WriteInConsole, level))
+        if (EnableOption(Options.WriteInConsole, level))
             WriteInConsole(value, source, level);
 
-        if (EnableOption(Settings.WriteInFile, level))
-            WriteInFile(value, source, level, Settings.FileName);
+        if (EnableOption(Options.WriteInFile, level))
+            WriteInFile(value, source, level, Options.FileName);
 
-        if (EnableOption(Settings.WriteInEventViewer, level))
+        if (EnableOption(Options.WriteInEventViewer, level))
             WriteInEventViewer(value, source, level);
 
-        if (EnableOption(Settings.WriteInDatabase, level))
+        if (EnableOption(Options.WriteInDatabase, level))
             WriteInDatabase(value, source, level);
 
     }
@@ -253,7 +224,7 @@ public class Logger : ILogger
     {
         try
         {
-            if (string.IsNullOrEmpty(Settings.ConnectionStringName))
+            if (string.IsNullOrEmpty(Options.ConnectionStringName))
                 return;
 
             var element = GetElement();
@@ -273,10 +244,10 @@ public class Logger : ILogger
 
             EntityRepository.Insert(element, new Hashtable
             {
-                { Settings.Table.DateColumnName, DateTime.Now },
-                { Settings.Table.LevelColumnName, type.ToString().Substring(0, 1) },
-                { Settings.Table.SourceColumnName, source },
-                { Settings.Table.ContentColumnName, value }
+                { Options.Table.DateColumnName, DateTime.Now },
+                { Options.Table.LevelColumnName, type.ToString().Substring(0, 1) },
+                { Options.Table.SourceColumnName, source },
+                { Options.Table.ContentColumnName, value }
             });
         }
         catch (Exception ex)
@@ -296,13 +267,13 @@ public class Logger : ILogger
         _element = new Element
         {
             Name = "Logging",
-            TableName = Settings.Table.Name,
+            TableName = Options.Table.Name,
             Info = Translate.Key("System Log"),
         };
 
         var eventDate = new ElementField
         {
-            Name = Settings.Table.DateColumnName,
+            Name = Options.Table.DateColumnName,
             Label = Translate.Key("Date"),
             IsPk = true,
             DataType = FieldType.DateTime
@@ -312,7 +283,7 @@ public class Logger : ILogger
 
         var type = new ElementField
         {
-            Name = Settings.Table.LevelColumnName,
+            Name = Options.Table.LevelColumnName,
             Label = Translate.Key("Type"),
             DataType = FieldType.Varchar,
             Size = 1
@@ -322,7 +293,7 @@ public class Logger : ILogger
 
         var source = new ElementField
         {
-            Name = Settings.Table.SourceColumnName,
+            Name = Options.Table.SourceColumnName,
             Label = Translate.Key("Source"),
             DataType = FieldType.Varchar,
             Size = 50
@@ -332,7 +303,7 @@ public class Logger : ILogger
 
         var msg = new ElementField
         {
-            Name = Settings.Table.ContentColumnName,
+            Name = Options.Table.ContentColumnName,
             Label = Translate.Key("Message"),
             DataType = FieldType.Varchar,
             Size = 700
@@ -346,7 +317,7 @@ public class Logger : ILogger
 
     public void ClearLog()
     {
-        string sql = $"TRUNCATE TABLE {Settings.Table.Name}";
+        string sql = $"TRUNCATE TABLE {Options.Table.Name}";
         EntityRepository.SetCommand(sql);
     }
 
@@ -355,7 +326,9 @@ public class Logger : ILogger
         if (_checkTableLog)
             return true;
 
-        if (!JJService.EntityRepository.TableExists(Settings.Table.Name)) return false;
+        if (!JJService.EntityRepository.TableExists(Options.Table.Name)) 
+            return false;
+
         _checkTableLog = true;
         return true;
 

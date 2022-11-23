@@ -8,7 +8,7 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Language;
 
@@ -32,11 +32,11 @@ public class DbTranslatorProvider : ITranslator
         var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         try
         {
-            string tablename = JJService.Settings.ResourcesTableName;
+            string tablename = JJService.Options.ResourcesTableName;
             if (string.IsNullOrEmpty(tablename))
                 return dic;
 
-            if (string.IsNullOrEmpty(JJService.Settings.ConnectionString))
+            if (string.IsNullOrEmpty(JJService.Options.GetConnectionString()))
                 return dic;
 
             var element = GetElement(tablename);
@@ -65,7 +65,7 @@ public class DbTranslatorProvider : ITranslator
 
     public Element GetElement()
     {
-        return GetElement(JJService.Settings.ResourcesTableName);
+        return GetElement(JJService.Options.ResourcesTableName);
     }
 
     private Element GetElement(string tablename)
@@ -74,8 +74,8 @@ public class DbTranslatorProvider : ITranslator
         {
             Name = tablename,
             TableName = tablename,
-            CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tablename),
-            CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tablename),
+            CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tablename),
+            CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tablename),
             Info = "Resources"
         };
 

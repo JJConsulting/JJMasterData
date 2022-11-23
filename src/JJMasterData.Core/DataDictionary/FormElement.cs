@@ -69,12 +69,14 @@ public class FormElement : Element
         Fields = new FormElementList(base.Fields, _formFields);
         foreach (DataColumn col in schema.Columns)
         {
-            var f = new ElementField();
-            f.Name = col.Caption;
-            f.Label = col.Caption.Replace("::ASC", "").Replace("::DESC", "");
-            f.Size = col.MaxLength;
-            f.IsRequired = !col.AllowDBNull;
-            f.IsPk = col.Unique;
+            var field = new ElementField
+            {
+                Name = col.Caption,
+                Label = col.Caption.Replace("::ASC", "").Replace("::DESC", ""),
+                Size = col.MaxLength,
+                IsRequired = !col.AllowDBNull,
+                IsPk = col.Unique
+            };
 
             var type = col.DataType;
             if (type == typeof(int) ||
@@ -86,27 +88,27 @@ public class FormElement : Element
                 type == typeof(ulong) ||
                 type == typeof(float))
             {
-                f.DataType = FieldType.Int;
+                field.DataType = FieldType.Int;
             }
             else if (type == typeof(decimal) ||
                      type == typeof(double))
             {
-                f.DataType = FieldType.Float;
+                field.DataType = FieldType.Float;
             }
             else if (type == typeof(DateTime))
             {
-                f.DataType = FieldType.Date;
+                field.DataType = FieldType.Date;
             }
             else if (type == typeof(TimeSpan))
             {
-                f.DataType = FieldType.DateTime;
+                field.DataType = FieldType.DateTime;
             }
             else
             {
-                f.DataType = FieldType.NVarchar;
+                field.DataType = FieldType.NVarchar;
             }
 
-            AddField(f);
+            AddField(field);
         }
     }
 
@@ -115,31 +117,10 @@ public class FormElement : Element
         base.Fields.Add(field);
         _formFields.Add(new FormElementField(field));
     }
-        
+
     public FormElementPanel GetPanelById(int id)
     {
         return Panels.Find(x => x.PanelId == id);
-    }
-    
-    [Obsolete("Please use DeepCopy extension method.")]
-    public Element DeepCopyElement()
-    {
-        var element = new Element();
-        element.Name = Name;
-        element.TableName = TableName;
-        element.Info = Info;
-        element.Indexes = Indexes;
-        element.Relations = Relations;
-        element.CustomProcNameGet = CustomProcNameGet;
-        element.CustomProcNameSet = CustomProcNameSet;
-        element.SyncMode = SyncMode;
-        element.Sync = Sync;
-
-        element.Fields = new ElementList();
-        foreach (var f in Fields)
-            element.Fields.Add(f.DeepCopyField());
-
-        return element;
     }
 
 }

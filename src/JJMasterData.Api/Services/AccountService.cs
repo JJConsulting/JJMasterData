@@ -179,7 +179,7 @@ public class AccountService
 
     public string BuildToken(string userId)
     {
-        string token = string.Format("{0}|{1}|{2}", userId, ApiVersion, DateTime.Now.ToString("yyyyMMddHHmmss"));
+        string token = $"{userId}|{ApiVersion}|{DateTime.Now.ToString("yyyyMMddHHmmss")}";
         token = Cript.EnigmaEncryptRP(token);
         return Cript.Cript64(token);
     }

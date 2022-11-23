@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -243,7 +243,7 @@ internal class OracleProvider : BaseProvider
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataSettings.GetProcNameSet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -500,7 +500,7 @@ internal class OracleProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         StringBuilder sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataSettings.GetProcNameGet(element);
+        string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -816,8 +816,8 @@ internal class OracleProvider : BaseProvider
     private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameSet(element);
+        cmd.CmdType = System.Data.CommandType.StoredProcedure;
+        cmd.Sql = JJMasterDataOptions.GetProcNameSet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
 
@@ -847,8 +847,8 @@ internal class OracleProvider : BaseProvider
     public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataSettings.GetProcNameGet(element);
+        cmd.CmdType = System.Data.CommandType.StoredProcedure;
+        cmd.Sql = JJMasterDataOptions.GetProcNameGet(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderby));
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", regperpage));

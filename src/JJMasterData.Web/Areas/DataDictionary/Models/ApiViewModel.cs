@@ -1,7 +1,7 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class ApiViewModel : DataDictionaryViewModel
 {

@@ -250,7 +250,7 @@ public class DictionaryDao : IDictionaryRepository
 
     internal static Element GetStructure()
     {
-        var element = new Element(JJService.Settings.TableName, "Data Dictionaries");
+        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
         element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields["type"].EnableOnDelete = false;
         element.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
