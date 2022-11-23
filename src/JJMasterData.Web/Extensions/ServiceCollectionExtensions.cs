@@ -1,15 +1,8 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Authorization;
-using JJMasterData.Web.Hosting;
+using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
@@ -19,38 +12,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OptionsService = JJMasterData.Web.Services.OptionsService;
-using ResponseEndFilter = JJMasterData.Web.Filters.ResponseEndFilter;
+using System.Globalization;
+using System.Text.RegularExpressions;
+
 
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, ConfigurationManager configurationManager, string settingsPath = "appsettings.json")
-    {
-        services.AddOptions<JJMasterDataOptions>();
-        services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
-        services.AddHttpContextAccessor();
-        services.AddSession();
-
-        services.ConfigureOptionsWriter<JJMasterDataOptions>(configurationManager.GetSection("JJMasterData"),
-            settingsPath);
-        services.ConfigureOptionsWriter<ConnectionStrings>(
-            configurationManager.GetSection("ConnectionStrings"), settingsPath);
-        
-        AddSystemWebAdapters(services);
-
-        services.AddDistributedMemoryCache();
-        services.AddJJMasterDataServices();
-        
-        services.AddUrlRequestCultureProvider();
-        services.AddAnonymousAuthorization();
-        return services.AddJJMasterDataCore();
-    }
-
-    private static void AddSystemWebAdapters(IServiceCollection services)
+    internal static void AddSystemWebAdaptersServices(this IServiceCollection services)
     {
         services.AddSystemWebAdapters();
         services.AddTransient<ResponseEndFilter>();
@@ -63,7 +34,7 @@ public static class ServiceCollectionExtensions
             });
     }
 
-    private static void AddAnonymousAuthorization(this IServiceCollection services)
+    internal static void AddAnonymousAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
@@ -73,7 +44,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
+    internal static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
     {
 
         if (supportedCultures == null || supportedCultures.Length == 0)
@@ -114,11 +85,10 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static void AddJJMasterDataServices(this IServiceCollection services)
+    internal static void AddJJMasterDataServices(this IServiceCollection services)
     {
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
-        services.AddTransient<IDictionaryRepository, DictionaryDao>();
 
         services.AddTransient<ActionsService>();
         services.AddTransient<ApiService>();
@@ -132,8 +102,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
-        services.AddTransient<OptionsService>();
-        services.AddTransient<OptionsService>();
+        //TODO:services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }
     

@@ -2,14 +2,19 @@
 
 <div class="@BootstrapHelper.FormGroup">
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-10">
             <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <input asp-for="ConnectionString.Server" class="form-control"/>
             <span asp-validation-for="ConnectionString.Server" class="text-danger"></span>
         </div>
+        <div class="col-sm-2">
+            <label asp-for="ConnectionString.Timeout" class="@BootstrapHelper.Label"></label>
+            <input asp-for="ConnectionString.Timeout" class="form-control"/>
+            <span asp-validation-for="ConnectionString.Timeout" class="text-danger"></span>
+        </div>
         <div class="col-sm-12">
             <label asp-for="ConnectionString.IntegratedSecurity" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select onchange="onIntegratedSecurityChange(this.value)" asp-for="ConnectionString.IntegratedSecurity" class="form-control">
+            <select onchange="onIntegratedSecurityChange(this.value)" asp-for="ConnectionString.IntegratedSecurity" class="form-control form-select">
                 <option value="False">False</option>
                 <option value="True">True</option>
             </select>
@@ -34,19 +39,14 @@
             <input asp-for="ConnectionString.Database" class="form-control"/>
             <span asp-validation-for="ConnectionString.Database" class="text-danger"></span>
         </div>
-                <div class="col-sm-6">
-                    <label asp-for="ConnectionString.ApplicationName" class="@BootstrapHelper.Label"></label>
-                    <input asp-for="ConnectionString.ApplicationName" class="form-control"/>
-                    <span asp-validation-for="ConnectionString.ApplicationName" class="text-danger"></span>
-                </div>
-        <div class="col-sm-12">
-            <label asp-for="ConnectionString.Timeout" class="@BootstrapHelper.Label"></label>
-            <input asp-for="ConnectionString.Timeout" class="form-control"/>
-            <span asp-validation-for="ConnectionString.Timeout" class="text-danger"></span>
+        <div class="col-sm-6">
+            <label asp-for="ConnectionString.ApplicationName" class="@BootstrapHelper.Label"></label>
+            <input asp-for="ConnectionString.ApplicationName" class="form-control"/>
+            <span asp-validation-for="ConnectionString.ApplicationName" class="text-danger"></span>
         </div>
         <div class="col-sm-6">
             <label asp-for="ConnectionString.TrustServerCertificate" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.TrustServerCertificate" class="form-control">
+            <select asp-for="ConnectionString.TrustServerCertificate" class="form-control form-select">
                 <option value="False">False</option>
                 <option value="True">True</option>
             </select>
@@ -54,7 +54,7 @@
         </div>
         <div class="col-sm-6">
             <label asp-for="ConnectionString.Encrypt" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.Encrypt" class="form-control">
+            <select asp-for="ConnectionString.Encrypt" class="form-control form-select">
                 <option value="False">False</option>
                 <option value="True">True</option>
             </select>
@@ -62,7 +62,7 @@
         </div>
         <div class="col-sm-4">
             <label asp-for="ConnectionString.Pooling" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.Pooling" class="form-control">
+            <select asp-for="ConnectionString.Pooling" class="form-control form-select">
                 <option value="False">False</option>
                 <option value="True">True</option>
             </select>

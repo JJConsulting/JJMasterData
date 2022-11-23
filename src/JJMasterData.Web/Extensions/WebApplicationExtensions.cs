@@ -15,7 +15,6 @@ public static class WebApplicationExtensions
         
         app.UseAuthorization();
         app.UseRequestLocalization();
-        
         app.UseSession();
         
         app.UseStaticFiles();

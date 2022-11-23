@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 [Area("DataDictionary")]
-public class OptionsController : DataDictionaryController
+public class UIOptionsController : DataDictionaryController
 {
     private readonly OptionsService? _optionsService;
 
-    public OptionsController(OptionsService? optionsService)
+    public UIOptionsController(OptionsService? optionsService)
     {
         _optionsService = optionsService;
     }
