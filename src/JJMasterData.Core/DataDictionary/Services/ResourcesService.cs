@@ -19,7 +19,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = new DbTranslatorProvider().GetElement();
+        var element = DbTranslatorProvider.GetElement();
         
         var formElement = new FormElement(element)
         {

@@ -6,8 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>11</LangVersion>
     </PropertyGroup>
-  
-    <PropertyGroup Condition=" '$(RunConfiguration)' == 'JJMasterData.Example' " />
+
     <ItemGroup>
       <Folder Include="wwwroot\" />
 

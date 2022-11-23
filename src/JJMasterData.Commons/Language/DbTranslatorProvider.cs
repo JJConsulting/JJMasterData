@@ -14,17 +14,11 @@ namespace JJMasterData.Commons.Language;
 
 public class DbTranslatorProvider : ITranslator
 {
-   
-    private IEntityRepository _entityRepository;
-    internal IEntityRepository EntityRepository
+    internal IEntityRepository EntityRepository { get; }
+
+    public DbTranslatorProvider(IEntityRepository entityRepository)
     {
-        get
-        {
-            if (_entityRepository == null)
-                _entityRepository = JJService.EntityRepository;
-            
-            return _entityRepository;
-        }
+        EntityRepository = entityRepository;
     }
 
     public Dictionary<string, string> GetDictionaryStrings(string culture)
@@ -63,12 +57,12 @@ public class DbTranslatorProvider : ITranslator
         return dic;
     }
 
-    public Element GetElement()
+    public static Element GetElement()
     {
         return GetElement(JJService.Options.ResourcesTableName);
     }
 
-    private Element GetElement(string tablename)
+    private static Element GetElement(string tablename)
     {
         var element = new Element
         {

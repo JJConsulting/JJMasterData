@@ -4,6 +4,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -18,18 +19,19 @@ public class JJServiceBuilder
     public JJServiceBuilder AddDefaultServices()
     {
         Services.AddScoped<IEntityRepository, Factory>();
+        Services.AddTransient<ITranslator, DbTranslatorProvider>();
         return this;
     }
 
-    public JJServiceBuilder WithBackgroundTask<T>() where T : IBackgroundTask
+    public JJServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
     {
-        Services.AddSingleton(typeof(T));
+        Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
 
-    public JJServiceBuilder WithTranslator<T>() where T : ITranslator
+    public JJServiceBuilder WithTranslator<T>() where T : class, ITranslator
     {
-        Services.AddSingleton(typeof(T));
+        Services.Replace(ServiceDescriptor.Transient<ITranslator, T>());
         return this;
     }
 

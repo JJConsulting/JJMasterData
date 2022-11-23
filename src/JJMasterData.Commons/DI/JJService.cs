@@ -19,20 +19,20 @@ public static class JJService
     {
         get
         {
-            using var scope = Provider?.CreateScope();
-            return scope?.ServiceProvider.GetService<IEntityRepository>() ?? new Factory();
+            using var scope = Provider.CreateScope();
+            return scope.ServiceProvider.GetService<IEntityRepository>();
         }
     }
     public static JJMasterDataOptions Options
     {
         get
         {
-            using var scope = Provider?.CreateScope();
-            return scope?.ServiceProvider?.GetService<IOptionsSnapshot<JJMasterDataOptions>>().Value;
+            using var scope = Provider.CreateScope();
+            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataOptions>>()!.Value;
         }
     }
 
-    public static IBackgroundTask BackgroundTask => Provider?.GetService<IBackgroundTask>() ?? Tasks.BackgroundTask.GetInstance();
-    public static ITranslator Translator => Provider?.GetService<ITranslator>() ?? new DbTranslatorProvider();
-    public static ILogger Logger => Provider?.GetService<ILogger>() ?? new Logger();
+    public static IBackgroundTask BackgroundTask => Provider.GetService<IBackgroundTask>();
+    public static ITranslator Translator => Provider.GetService<ITranslator>();
+    public static ILogger Logger => Provider.GetService<ILogger>() ?? new Logger();
 }

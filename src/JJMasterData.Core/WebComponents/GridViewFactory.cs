@@ -21,11 +21,11 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
 
-            var dicDao = DictionaryRepositoryFactory.GetInstance();
-            var dicParser = dicDao.GetMetadata(elementName);
+            var dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+            var metadata = dictionaryRepository.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
-            grid.FormElement = dicParser.GetFormElement();
-            SetGridOptions(grid, dicParser.UIOptions.Grid);
+            grid.FormElement = metadata.GetFormElement();
+            SetGridOptions(grid, metadata.UIOptions.Grid);
         }
 
         internal static void SetGridOptions(JJGridView grid, UIGrid options)
