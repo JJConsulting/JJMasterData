@@ -9,8 +9,9 @@ public class ConnectionString
 
     public bool IntegratedSecurity { get; init; }
 
-    [Required] public string? Username { get; init; }
-    [Required] public string? Password { get; init; }
+    public string? Username { get; init; }
+    public string? Password { get; init; }
+
     [Required] public string? Database { get; init; }
 
     public string? ApplicationName { get; init; }
@@ -32,11 +33,11 @@ public class ConnectionString
         
     }
     
-    public ConnectionString(string @string)
+    public ConnectionString(string? connectionString)
     {
         var builder = new DbConnectionStringBuilder
         {
-            ConnectionString = @string
+            ConnectionString = connectionString
         };
         if (builder.TryGetValue("data source", out var dataSource))
         {

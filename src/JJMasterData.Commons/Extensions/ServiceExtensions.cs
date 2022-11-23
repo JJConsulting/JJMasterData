@@ -11,7 +11,7 @@ namespace JJMasterData.Commons.Extensions;
 
 public static class ServiceExtensions
 {
-    public static JJServiceBuilder AddJJMasterData(this IServiceCollection services)
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
         var builder = new JJServiceBuilder(services);
         builder.AddDefaultServices();

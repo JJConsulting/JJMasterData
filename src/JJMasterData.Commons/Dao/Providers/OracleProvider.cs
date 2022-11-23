@@ -1,29 +1,27 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Options;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Options;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao.Providers;
 
-class OracleProvider : IProvider
+internal class OracleProvider : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const string TAB = "\t";
+    public override string VariablePrefix => "p_";
 
-    public string VariablePrefix
+    public OracleProvider(DataAccess dataAccess) : base(dataAccess)
     {
-        get
-        {
-            return "p_";
-        }
     }
 
-    public string GetCreateTableScript(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -65,7 +63,7 @@ class OracleProvider : IProvider
 
             if (f.IsRequired)
                 sSql.Append(" NOT NULL");
-                
+
             if (f.IsPk)
             {
                 if (sKeys.Length > 0)
@@ -94,7 +92,7 @@ class OracleProvider : IProvider
         sSql.AppendLine("");
         sSql.AppendLine(GetRelationScript(element));
         sSql.AppendLine("");
-            
+
         int nIndex = 1;
         if (element.Indexes.Count > 0)
         {
@@ -143,7 +141,7 @@ class OracleProvider : IProvider
             sSql.AppendLine("/");
         }
         sSql.AppendLine("");
-            
+
         return sSql.ToString();
     }
 
@@ -233,7 +231,7 @@ class OracleProvider : IProvider
         return sSql.ToString();
     }
 
-    public string GetWriteProcedureScript(Element element)
+    public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -248,7 +246,7 @@ class OracleProvider : IProvider
         string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
 
         sql.AppendLine("-- PROC SET");
-            
+
         //Criando proc
         sql.Append("CREATE OR REPLACE PROCEDURE ");
         sql.Append(procedureFinalName);
@@ -401,7 +399,7 @@ class OracleProvider : IProvider
                     sql.Append(f.Name);
                 }
             }
-                
+
             isFirst = true;
             foreach (var f in fields)
             {
@@ -448,7 +446,7 @@ class OracleProvider : IProvider
         sql.Append(TAB).Append(TAB);
         sql.Append("DELETE FROM ");
         sql.Append(element.TableName);
-            
+
         isFirst = true;
         foreach (var f in fields)
         {
@@ -486,7 +484,7 @@ class OracleProvider : IProvider
         return sql.ToString();
     }
 
-    public string GetReadProcedureScript(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -505,7 +503,7 @@ class OracleProvider : IProvider
         string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
 
         sql.AppendLine("-- PROC GET");
-            
+
         //Criando proc
         sql.Append("CREATE OR REPLACE PROCEDURE ");
         sql.Append(procedureFinalName);
@@ -571,7 +569,7 @@ class OracleProvider : IProvider
         {
             sql.Append(TAB);
 
-                
+
             sql.Append("v_sqlcolumn := v_sqlcolumn || '");
 
             if (f.DataBehavior == FieldBehavior.ViewOnly)
@@ -788,29 +786,34 @@ class OracleProvider : IProvider
         sql.AppendLine("");
         sql.Append(TAB);
         sql.AppendLine("--DBMS_OUTPUT.PUT_LINE(v_query);");
-            
+
         sql.AppendLine("");
         sql.AppendLine("END;");
 
         return sql.ToString();
     }
 
-    public DataAccessCommand GetInsertScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
-        return GetWriteCommand(INSERT, element, values);
+        return GetCommandWrite(INSERT, element, values);
     }
 
-    public DataAccessCommand GetUpdateScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
-        return GetWriteCommand(UPDATE, element, values);
+        return GetCommandWrite(UPDATE, element, values);
     }
 
-    public DataAccessCommand GetDeleteScript(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
-        return GetWriteCommand(DELETE, element, filters);
+        return GetCommandWrite(DELETE, element, filters);
     }
 
-    public DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    {
+        return GetCommandWrite(string.Empty, element, values);
+    }
+
+    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -841,7 +844,7 @@ class OracleProvider : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -911,24 +914,13 @@ class OracleProvider : IProvider
         pCur.Name = VariablePrefix + "cur_OUT";
         pCur.Direction = ParameterDirection.Output;
         pCur.Type = DbType.Object;
-            
+
         cmd.Parameters.Add(pCur);
 
-            
+
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref IDataAccess dataAccess)
-    {
-        DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
-        tot = 0;
-        if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
-            tot = (int)pTot.Value;
-
-        return dt;
-    }
 
     private string GetStrType(FieldType dataType)
     {
@@ -1006,4 +998,8 @@ class OracleProvider : IProvider
         return ret;
     }
 
+    public override Element GetElementFromTable(string tableName)
+    {
+        return null;
+    }
 }

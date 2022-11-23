@@ -12,14 +12,16 @@ public class TokenAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 {
     public const string Name = "TokenAuthenticationScheme";
 
-    public IServiceProvider ServiceProvider { get; set; }
-    private AccountService AccountService { get; set; }
+    private readonly AccountService _accountService;
 
-    public TokenAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IServiceProvider serviceProvider)
+    public TokenAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, 
+                                      ILoggerFactory logger, 
+                                      UrlEncoder encoder, 
+                                      ISystemClock clock,
+                                      AccountService accountService)
         : base(options, logger, encoder, clock)
     {
-        ServiceProvider = serviceProvider;
-        AccountService = serviceProvider.GetService<AccountService>()!;
+        _accountService = accountService;
     }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -28,7 +30,7 @@ public class TokenAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         if (TryRetrieveToken(Request, out string? token))
         {
-            var tokenInfo = AccountService.GetTokenInfo(token);
+            var tokenInfo = _accountService.GetTokenInfo(token);
 
             if (tokenInfo != null)
             {

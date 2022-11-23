@@ -19,9 +19,9 @@ public class LookupController : MasterDataController
         if (string.IsNullOrEmpty(p))
             throw new ArgumentNullException();
 
-        string elementName = null;
-        string fieldKey = null;
-        string objid = null;
+        string? elementName = null;
+        string? fieldKey = null;
+        string? objid = null;
         bool enableAction = false;
 
         var filters = new Hashtable();
@@ -35,7 +35,7 @@ public class LookupController : MasterDataController
             else if ("objid".Equals(key.ToLower()))
                 objid = parms.Get(key);
             else if ("enableaction".Equals(key.ToLower()))
-                enableAction = parms.Get(key).Equals("1");
+                enableAction = parms.Get(key)!.Equals("1");
             else
                 filters.Add(key, parms.Get(key));
         }

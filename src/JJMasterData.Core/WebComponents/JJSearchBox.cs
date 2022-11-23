@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -41,10 +42,26 @@ public class JJSearchBox : JJBaseControl
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
 
+    private IEntityRepository _entityRepository;
     private List<DataItemValue> _values;
-    private string _selectedValue;
     private FormElementDataItem _dataItem;
+    private string _selectedValue;
     private string _text;
+
+    internal Hashtable FormValues { get; private set; }
+
+    internal PageState PageState { get; set; }
+
+    internal string Id
+    {
+        get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
+    } 
+
+    internal IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        private set => _entityRepository = value;
+    }
 
     public new string Text
     {
@@ -167,11 +184,6 @@ public class JJSearchBox : JJBaseControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    internal PageState PageState { get; set; }
-
-    private Hashtable FormValues { get; set; }
-
-    private string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
     #endregion
 
@@ -189,9 +201,9 @@ public class JJSearchBox : JJBaseControl
         PageState = PageState.List;
     }
 
-    public JJSearchBox(IDataAccess dataAccess) : this()
+    public JJSearchBox(IEntityRepository entityRepository) : this()
     {
-        DataAccess = dataAccess;
+        EntityRepository = entityRepository;
     }
 
     internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
@@ -205,7 +217,7 @@ public class JJSearchBox : JJBaseControl
             AutoReloadFormFields = false,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
-            DataAccess = expOptions.DataAccess,
+            EntityRepository = expOptions.EntityRepository,
             UserValues = expOptions.UserValues
         };
         search.Attributes.Add("pnlname", panelName);
@@ -353,12 +365,12 @@ public class JJSearchBox : JJBaseControl
                         UserValues.Add("search_text", StringManager.ClearText(searchText));
                 }
 
-                var exp = new ExpressionManager(UserValues, DataAccess);
+                var exp = new ExpressionManager(UserValues, EntityRepository);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 
 
-            DataTable dt = DataAccess.GetDataTable(sql);
+            DataTable dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
                 var item = new DataItemValue();
@@ -414,7 +426,3 @@ public class JJSearchBox : JJBaseControl
         public string Name { get; set; } = Name;
     }
 }
-
-
-
-

@@ -105,7 +105,7 @@ public class InternalRedirectController : MasterDataController
         {
             if (errors.Count == 0)
             {
-                panel.Factory.SetValues(formElement, values);
+                panel.EntityRepository.SetValues(formElement, values);
             }
         }
         catch (SqlException ex)

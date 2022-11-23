@@ -1,10 +1,9 @@
-﻿using System.Globalization;
-using System.Text;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
+using System.Text;
 using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
 namespace JJMasterData.Swagger.AspNetCore;
@@ -13,10 +12,10 @@ internal class DataDictionaryOperationFactory
 {
 
     internal FormElement FormElement { get; set; }
-    internal DicApiSettings Settings { get; set; }
+    internal ApiSettings Settings { get; set; }
     internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
 
-    internal DataDictionaryOperationFactory(FormElement formElement, DicApiSettings settings)
+    internal DataDictionaryOperationFactory(FormElement formElement, ApiSettings settings)
     {
         FormElement = formElement;
         Settings = settings;

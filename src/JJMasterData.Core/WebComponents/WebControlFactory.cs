@@ -1,9 +1,11 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using System;
+using System.Collections;
 using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;
@@ -19,7 +21,10 @@ internal class WebControlFactory
         get
         {
             if (_actionManager == null)
-                _actionManager = new ActionManager(ExpressionOptions, FormElement, PanelName);
+            {
+                var expManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
+                _actionManager = new ActionManager(FormElement, expManager, PanelName);
+            }
 
             return _actionManager;
         }
@@ -40,7 +45,7 @@ internal class WebControlFactory
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
         PanelName = dataPanel.Name;
-        ExpressionOptions = new ExpressionOptions(dataPanel.UserValues, dataPanel.Values, dataPanel.PageState, dataPanel.DataAccess);
+        ExpressionOptions = new ExpressionOptions(dataPanel.UserValues, dataPanel.Values, dataPanel.PageState, dataPanel.EntityRepository);
     }
 
     public WebControlFactory(FormElement formElement, ExpressionOptions expressionOptions, string panelName)

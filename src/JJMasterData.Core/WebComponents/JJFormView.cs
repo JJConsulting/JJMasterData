@@ -1,10 +1,9 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.FormEvents.Handlers;
@@ -45,13 +44,11 @@ public class JJFormView : JJGridView
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
     private FormService _service;
+    
 
     internal JJFormLog FormLog =>
-        _logHistory ??= new JJFormLog(FormElement)
-        {
-            DataAccess = DataAccess,
-            Factory = Factory
-        };
+        _logHistory ??= new JJFormLog(FormElement, EntityRepository);
+        
 
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
@@ -86,7 +83,7 @@ public class JJFormView : JJGridView
                 _dataPanel = new JJDataPanel(FormElement)
                 {
                     Name = "jjpainel_" + Name,
-                    DataAccess = DataAccess,
+                    EntityRepository = EntityRepository,
                     UserValues = UserValues,
                     RenderPanelGroup = true
                 };
@@ -128,6 +125,7 @@ public class JJFormView : JJGridView
         }
     }
 
+
     private FormService Service 
     { 
         get
@@ -135,8 +133,7 @@ public class JJFormView : JJGridView
             if (_service == null)
             { 
                 var dataContext = new DataContext(DataContextSource.Form, UserId);
-                var formManager = new FormManager(FormElement, UserValues, DataAccess);
-                _service = new FormService(formManager, dataContext)
+                _service = new FormService(FormManager, dataContext)
                 {
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible,
@@ -193,10 +190,6 @@ public class JJFormView : JJGridView
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
     }
 
-    public JJFormView(FormElement formElement, IDataAccess dataAccess) : this(formElement)
-    {
-        DataAccess = dataAccess;
-    }
 
     #endregion
 
@@ -237,7 +230,7 @@ public class JJFormView : JJGridView
             Hashtable filter = GetSelectedRowId();
             Hashtable values = null;
             if (filter is { Count: > 0 })
-                values = Factory.GetFields(FormElement, filter);
+                values = EntityRepository.GetFields(FormElement, filter);
 
             string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
             CurrentContext.Response.SendResponse(htmlPanel);
@@ -375,7 +368,7 @@ public class JJFormView : JJGridView
             {
                 autoReloadFields = false;
                 var acMap = CurrentActionMap;
-                values = Factory.GetFields(FormElement, acMap.PKFieldValues);
+                values = EntityRepository.GetFields(FormElement, acMap.PKFieldValues);
             }
 
             pageState = PageState.Update;
@@ -475,9 +468,11 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = new DictionaryDao(DataAccess).GetDictionary(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(), DataAccess)
+        var dicParser = new DictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
+        var formsel = new JJFormView(dicParser.GetFormElement())
         {
+            EntityRepository = EntityRepository,
+            UserValues = UserValues,
             Name = action.ElementNameToSelect
         };
         formsel.SetOptions(dicParser.UIOptions);
@@ -518,11 +513,12 @@ public class JJFormView : JJGridView
         string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
-
         var html = new HtmlBuilder(HtmlTag.Div);
-        var selValues = Factory.GetFields(InsertAction.ElementNameToSelect, map.PKFieldValues);
-        var formManager = new FormManager(FormElement, UserValues, DataAccess);
-        var values = formManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
+        var dicDao = new DictionaryDao(EntityRepository);
+        var dictionary = dicDao.GetMetadata(InsertAction.ElementNameToSelect);
+        var element = dictionary.Table;
+        var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
+        var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
         if (erros.Count > 0)
@@ -559,7 +555,7 @@ public class JJFormView : JJGridView
 
         pageState = PageState.View;
         var filter = acMap.PKFieldValues;
-        var values = Factory.GetFields(FormElement, filter);
+        var values = EntityRepository.GetFields(FormElement, filter);
         return GetHtmlDataPainel(values, null, PageState.View, false);
     }
 
@@ -781,10 +777,10 @@ public class JJFormView : JJGridView
         }
 
 
-        var dicDao = new DictionaryDao(DataAccess);
+        var dicDao = new DictionaryDao(EntityRepository);
         foreach (var relation in relations)
         {
-            var dic = dicDao.GetDictionary(relation.ChildElement);
+            var dic = dicDao.GetMetadata(relation.ChildElement);
             var childElement = dic.GetFormElement();
 
             var filter = new Hashtable();
@@ -795,10 +791,10 @@ public class JJFormView : JJGridView
 
             if (relation.ViewType == RelationType.View)
             {
-                var childvalues = Factory.GetFields(childElement, filter);
+                var childvalues = EntityRepository.GetFields(childElement, filter);
                 var chieldView = new JJDataPanel(childElement)
                 {
-                    DataAccess = DataAccess,
+                    EntityRepository = EntityRepository,
                     PageState = PageState.View,
                     UserValues = UserValues,
                     Values = childvalues,
@@ -816,7 +812,7 @@ public class JJFormView : JJGridView
             {
                 var childGrid = new JJFormView(childElement)
                 {
-                    DataAccess = DataAccess,
+                    EntityRepository = EntityRepository,
                     UserValues = UserValues,
                     FilterAction =
                     {

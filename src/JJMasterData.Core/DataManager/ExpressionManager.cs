@@ -5,6 +5,7 @@ using System.Data;
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Protheus;
@@ -18,21 +19,31 @@ public class ExpressionManager
 {
     #region "Properties"
 
-    
+    private JJHttpContext _currentContext;
+    private IEntityRepository _entityRepository;
+
+    internal JJHttpContext CurrentContext
+    {
+        get => _currentContext ??= JJHttpContext.GetInstance();
+        set => _currentContext = value;
+    } 
+
+    internal IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        set => _entityRepository = value;
+    }
+
     public Hashtable UserValues { get; set; }
-
-    private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-
-    private IDataAccess DataAccess { get; set; }
 
     #endregion
 
     #region "Constructors"
 
-    public ExpressionManager(Hashtable userValues, IDataAccess dataAccess)
+    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository)
     {
         UserValues = userValues;
-        DataAccess = dataAccess;
+        EntityRepository = entityRepository;
     }
 
     #endregion
@@ -151,7 +162,7 @@ public class ExpressionManager
         else if (expression.StartsWith("sql:"))
         {
             string exp = ParseExpression(expression, state, false, formValues);
-            object obj = DataAccess.GetResult(exp);
+            object obj = EntityRepository.GetResult(exp);
             result = ParseBool(obj);
         }
         else
@@ -214,7 +225,7 @@ public class ExpressionManager
             else if (expression.StartsWith("sql:"))
             {
                 string exp = ParseExpression(expression, state, false, formValues);
-                object obj = DataAccess.GetResult(exp);
+                object obj = EntityRepository.GetResult(exp);
                 if (obj != null)
                     retVal = obj.ToString();
             }

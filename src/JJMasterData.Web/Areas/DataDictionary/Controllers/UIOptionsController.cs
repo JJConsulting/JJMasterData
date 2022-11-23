@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 [Area("DataDictionary")]
-public class OptionsController : DataDictionaryController
+public class UIOptionsController : DataDictionaryController
 {
-    private readonly OptionsService? _optionsService;
+    private readonly UIOptionsService? _optionsService;
 
-    public OptionsController(OptionsService? optionsService)
+    public UIOptionsController(UIOptionsService? optionsService)
     {
         _optionsService = optionsService;
     }
@@ -28,9 +28,9 @@ public class OptionsController : DataDictionaryController
     [HttpPost]
     public ActionResult Edit(UIOptions uIOptions, string dictionaryName)
     {
-
         if (_optionsService.EditOptions(uIOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
+
         var jjValidationSummary = _optionsService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
         ViewBag.DictionaryName = dictionaryName;
@@ -41,7 +41,7 @@ public class OptionsController : DataDictionaryController
 
     private UIOptions Populate(string dictionaryName)
     {
-        var dicParser = _optionsService.DicDao.GetDictionary(dictionaryName);
+        var dicParser = _optionsService.DictionaryRepository.GetMetadata(dictionaryName);
         var uIOptions = dicParser.UIOptions;
         ViewBag.MenuId = "Options";
         ViewBag.DictionaryName = dictionaryName;

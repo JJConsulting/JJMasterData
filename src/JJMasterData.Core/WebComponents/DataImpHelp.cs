@@ -244,7 +244,9 @@ internal class DataImpHelp
     private string GetHtmlComboHelp(FormElementField f)
     {
         var defaultValues = DataImp.FormManager.GetDefaultValues(null, PageState.Import);
-        var expOptions = new ExpressionOptions(DataImp.UserValues, defaultValues, PageState.Import, DataImp.DataAccess);
+        var userValues = DataImp.ExpressionManager.UserValues;
+        var entityrepository = DataImp.ExpressionManager.EntityRepository;
+        var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
         var cbo = JJComboBox.GetInstance(f, expOptions, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)

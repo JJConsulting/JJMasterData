@@ -1,13 +1,7 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Authorization;
-using JJMasterData.Web.Hosting;
+using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
@@ -17,10 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OptionsService = JJMasterData.Web.Services.OptionsService;
-using ResponseEndFilter = JJMasterData.Web.Filters.ResponseEndFilter;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace JJMasterData.Web.Extensions;
 
@@ -101,13 +94,12 @@ public static class ServiceCollectionExtensions
         services.AddTransient<EntityService>();
         services.AddTransient<FieldService>();
         services.AddTransient<IndexesService>();
-        services.AddTransient<Core.DataDictionary.Services.OptionsService>();
+        services.AddTransient<UIOptionsService>();
         services.AddTransient<PanelService>();
         services.AddTransient<RelationsService>();
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
-        services.AddTransient<OptionsService>();
         services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }

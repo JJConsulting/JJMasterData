@@ -1,8 +1,15 @@
+@using JJMasterData.Commons.Dao
 @model JJMasterData.Web.Areas.MasterData.Models.OptionsViewModel
 
 <div class="@BootstrapHelper.FormGroup">
     <div class="row">
-        <div class="col-sm-10">
+        <div class="col-sm-3">
+            <label asp-for="ConnectionProvider" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-items="@Html.GetEnumSelectList<DataAccessProviderType>()" asp-for="ConnectionProvider" class="form-control form-select">
+            </select>
+            <span asp-validation-for="ConnectionProvider" class="text-danger"></span>
+        </div>
+        <div class="col-sm-7">
             <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
             <input asp-for="ConnectionString.Server" class="form-control"/>
             <span asp-validation-for="ConnectionString.Server" class="text-danger"></span>

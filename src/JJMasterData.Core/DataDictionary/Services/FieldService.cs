@@ -1,20 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    public FieldService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public FieldService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
     {
-        var formElement = DicDao.GetFormElement(elementName);
+        var dictionary = DictionaryRepository.GetMetadata(elementName);
+        var formElement = dictionary.GetFormElement();
 
         RemoveUnusedProperties(ref field);
 
@@ -23,7 +28,6 @@ public class FieldService : BaseService
             field.DataFile.MaxFileSize *= 1000000;
             field.DataFile.FolderPath = field.DataFile.FolderPath.Trim();
         }
-            
 
         if (!ValidateFields(formElement, field, originalName))
         {
@@ -44,7 +48,8 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
@@ -195,17 +200,17 @@ public class FieldService : BaseService
         switch (data.DataItemType)
         {
             case DataItemType.SqlCommand:
-            {
-                if (string.IsNullOrEmpty(data.Command.Sql))
-                    AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
-
-                if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
                 {
-                    AddError("Command.Sql","{search_id} is required at queries using ReplaceTextOnGrid. " +
-                                           "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
+                    if (string.IsNullOrEmpty(data.Command.Sql))
+                        AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
+
+                    if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
+                    {
+                        AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
+                                               "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
+                    }
+                    break;
                 }
-                break;
-            }
             case DataItemType.Manual:
                 ValidateManualItens(data.Items);
                 break;
@@ -278,16 +283,16 @@ public class FieldService : BaseService
 
     public bool SortFields(string elementName, string[] orderFields)
     {
-        var formElement = DicDao.GetFormElement(elementName);
-        
+        var dictionary = DictionaryRepository.GetMetadata(elementName);
+        var formElement = dictionary.GetFormElement();
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
         {
             formElement.Fields[i] = newList[i];
         }
-
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DictionaryRepository.InsertOrReplace(dictionary);
         return true;
     }
 
@@ -315,7 +320,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = DicDao.GetDictionary(elementMap.ElementName);
+            var dataEntry = DictionaryRepository.GetMetadata(elementMap.ElementName);
             var fieldKey = dataEntry.Table.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -334,24 +339,33 @@ public class FieldService : BaseService
         return false;
     }
 
-    public bool DeleteField(FormElement formElement, string fieldName)
+    public bool DeleteField(string dictionaryName, string fieldName)
     {
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        if (!dictionary.Table.Fields.ContainsKey(fieldName))
+            return false;
+
+        var formElement = dictionary.GetFormElement();
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
 
-    public string GetNextFieldName(FormElement formElement, string fieldName)
+    public string GetNextFieldName(string dictionaryName, string fieldName)
     {
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var element = dictionary.Table;
         string nextField = null;
-        if (formElement.Fields.Contains(fieldName))
+        if (element.Fields.ContainsKey(fieldName))
         {
-            int iIndex = formElement.Fields.IndexOf(fieldName);
-            if (iIndex >= 0 && iIndex < formElement.Fields.Count - 1)
+            var currentField = element.Fields[fieldName];
+            int iIndex = element.Fields.IndexOf(currentField);
+            if (iIndex >= 0 && iIndex < element.Fields.Count - 1)
             {
-                nextField = formElement.Fields[iIndex + 1].Name;
+                nextField = element.Fields[iIndex + 1].Name;
             }
         }
 
@@ -367,7 +381,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = DicDao.GetDictionary(map.ElementName);
+        var dataEntry = DictionaryRepository.GetMetadata(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 
@@ -378,4 +392,22 @@ public class FieldService : BaseService
 
         return dicFields;
     }
+
+    public bool CopyField(Metadata metadata, FormElementField field)
+    {
+        var formElement = metadata.GetFormElement();
+        var newField = field.DeepCopy();
+
+        if (formElement.Fields.Contains(newField.Name))
+        {
+            AddError(newField.Name, Translate.Key("Name of field already exists"));
+            return IsValid;
+        }
+
+        formElement.Fields.Add(newField);
+        metadata.SetFormElement(formElement);
+        DictionaryRepository.InsertOrReplace(metadata);
+        return IsValid;
+    }
+
 }

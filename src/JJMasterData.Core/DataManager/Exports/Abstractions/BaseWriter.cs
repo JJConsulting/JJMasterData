@@ -60,8 +60,12 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            if (_fieldManager != null) return _fieldManager;
-            _fieldManager = new FieldManager(FormElement);
+            if (_fieldManager == null)
+            {
+                var expressionManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
+                _fieldManager = new FieldManager(FormElement, expressionManager);
+            }
+                
 
             return _fieldManager;
         }

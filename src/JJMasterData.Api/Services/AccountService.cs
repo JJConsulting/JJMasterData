@@ -1,22 +1,24 @@
-﻿using System.Data;
-using System.Globalization;
-using System.Reflection;
-using JJMasterData.Api.Models;
+﻿using JJMasterData.Api.Models;
 using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
+using System.Data;
+using System.Globalization;
+using System.Reflection;
 
 namespace JJMasterData.Api.Services;
 
 public class AccountService
 {
     private string? ApiVersion { get; }
+    private DataAccess DataAccess { get; }
+
     public AccountService()
     {
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        DataAccess = new DataAccess();
     }
     public UserAccessInfo Login(string username, string password, string appId)
     {
@@ -33,8 +35,7 @@ public class AccountService
             cmd.Parameters.Add(new DataAccessParameter("@password", Cript.EnigmaEncryptRP(password)));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
-            var dao = JJService.DataAccess;
-            var col = dao.GetFields(cmd);
+            var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"].ToString());
@@ -83,8 +84,7 @@ public class AccountService
             cmd.Parameters.Add(new DataAccessParameter("@pwdNew", Cript.EnigmaEncryptRP(pwdNew)));
             cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm", Cript.EnigmaEncryptRP(pwdConfirm)));
 
-            var dao = JJService.DataAccess;
-            var col = dao.GetFields(cmd);
+            var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"].ToString());
@@ -131,9 +131,7 @@ public class AccountService
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
-            var dao = JJService.DataAccess;
-            var col = dao.GetFields(cmd);
-
+            var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"].ToString());
@@ -220,7 +218,7 @@ public class AccountService
     private static string? GetParam(string param, object userId)
     {
         string? value = null;
-        var dao = JJService.DataAccess;
+        var dao = new DataAccess();
         var cmd = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,

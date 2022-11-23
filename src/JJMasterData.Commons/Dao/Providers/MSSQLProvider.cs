@@ -1,24 +1,29 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Options;
+using JJMasterData.Commons.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Options;
-using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao.Providers;
 
-public class MSSQLProvider : IProvider
+internal class MSSQLProvider : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const char TAB = '\t';
+    public override string VariablePrefix => "@";
 
-    public string VariablePrefix => "@";
+    public MSSQLProvider(DataAccess dataAccess) : base(dataAccess)
+    {
+    }
 
-    public string GetCreateTableScript(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -148,7 +153,7 @@ public class MSSQLProvider : IProvider
                 else
                 {
                     bool hasContraint = true;
-                    
+
                     int counter = 1;
                     while (hasContraint)
                     {
@@ -216,8 +221,8 @@ public class MSSQLProvider : IProvider
 
         return sql.ToString();
     }
-           
-    public string GetWriteProcedureScript(Element element)
+
+    public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -230,7 +235,7 @@ public class MSSQLProvider : IProvider
         bool updateScript = HasUpdateFields(element);
         string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
-        
+
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
 
         sql.Append("CREATE PROCEDURE [");
@@ -271,7 +276,7 @@ public class MSSQLProvider : IProvider
         sql.AppendLine("BEGIN ");
         sql.Append(TAB).Append(TAB);
         sql.AppendLine("SET @TYPEACTION = '" + INSERT + "' ");
-        
+
         bool isFirst = true;
         if (pks.Count > 0)
         {
@@ -286,7 +291,7 @@ public class MSSQLProvider : IProvider
             sql.Append("FROM ");
             sql.Append(element.TableName);
             sql.AppendLine(" WITH (NOLOCK) ");
-            
+
             foreach (var f in pks)
             {
                 if (isFirst)
@@ -329,9 +334,9 @@ public class MSSQLProvider : IProvider
         sql.Append("INSERT INTO [");
         sql.Append(element.TableName);
         sql.AppendLine("] (");
-        
+
         isFirst = true;
-        
+
         foreach (var f in fields.Where(f => !f.AutoNum))
         {
             if (isFirst)
@@ -345,7 +350,7 @@ public class MSSQLProvider : IProvider
         sql.AppendLine(")");
         sql.Append(TAB).Append(TAB);
         sql.AppendLine("VALUES (");
-        
+
         isFirst = true;
         foreach (var f in fields.Where(f => !f.AutoNum))
         {
@@ -386,7 +391,7 @@ public class MSSQLProvider : IProvider
             sql.Append("UPDATE [");
             sql.Append(element.TableName);
             sql.AppendLine("] SET ");
-            
+
             isFirst = true;
             foreach (var f in fields.Where(f => !f.IsPk))
             {
@@ -401,7 +406,7 @@ public class MSSQLProvider : IProvider
                 sql.Append(f.Name);
             }
             sql.AppendLine("");
-            
+
             isFirst = true;
             foreach (var f in fields.Where(f => f.IsPk))
             {
@@ -450,7 +455,7 @@ public class MSSQLProvider : IProvider
         sql.Append("DELETE FROM [");
         sql.Append(element.TableName);
         sql.AppendLine("] ");
-        
+
         isFirst = true;
         foreach (var f in fields.Where(f => f.IsPk && f.EnableOnDelete))
         {
@@ -482,7 +487,7 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public string GetReadProcedureScript(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -583,7 +588,7 @@ public class MSSQLProvider : IProvider
         sql.AppendLine("DECLARE @query       NVARCHAR(MAX)");
         sql.Append(TAB);
 
-        if (fields.Exists(x => x.Filter.Type == FilterMode.MultValuesContain || 
+        if (fields.Exists(x => x.Filter.Type == FilterMode.MultValuesContain ||
                                x.Filter.Type == FilterMode.MultValuesEqual))
         {
             sql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
@@ -615,7 +620,7 @@ public class MSSQLProvider : IProvider
             else
             {
                 sql.Append(f.Name);
-                
+
                 sql.AppendLine(index != fields.Count ? ", " : "");
             }
 
@@ -655,42 +660,42 @@ public class MSSQLProvider : IProvider
             switch (f.Filter.Type)
             {
                 case FilterMode.Range:
-                {
-                    sql.AppendLine("");
-
-                    if (f.DataType is FieldType.Date or FieldType.DateTime)
                     {
-                        sql.Append(TAB);
-                        sql.Append("IF @");
-                        sql.Append(f.Name);
-                        sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(TAB).Append(TAB);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND CONVERT(DATE, ");
-                        sql.Append(f.Name);
-                        sql.Append(") BETWEEN ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                        sql.Append(f.Name);
-                        sql.Append("_from, 112) + CHAR(39) + ' AND ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                        sql.Append(f.Name);
-                        sql.AppendLine("_to, 112) + CHAR(39)");
-                    }
-                    else
-                    {
-                        sql.Append(TAB);
-                        sql.Append("IF @");
-                        sql.Append(f.Name);
-                        sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(TAB).Append(TAB);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                        sql.Append(f.Name);
-                        sql.Append(" BETWEEN ' + CHAR(39) + @");
-                        sql.Append(f.Name);
-                        sql.Append("_from + CHAR(39) + ' AND ' + CHAR(39) + @");
-                        sql.Append(f.Name);
-                        sql.AppendLine(" + CHAR(39)");
-                    }
+                        sql.AppendLine("");
 
-                    break;
-                }
+                        if (f.DataType is FieldType.Date or FieldType.DateTime)
+                        {
+                            sql.Append(TAB);
+                            sql.Append("IF @");
+                            sql.Append(f.Name);
+                            sql.AppendLine("_from IS NOT NULL");
+                            sql.Append(TAB).Append(TAB);
+                            sql.Append("SET @sqlcond = @sqlcond + ' AND CONVERT(DATE, ");
+                            sql.Append(f.Name);
+                            sql.Append(") BETWEEN ' + CHAR(39) + CONVERT(VARCHAR(10), @");
+                            sql.Append(f.Name);
+                            sql.Append("_from, 112) + CHAR(39) + ' AND ' + CHAR(39) + CONVERT(VARCHAR(10), @");
+                            sql.Append(f.Name);
+                            sql.AppendLine("_to, 112) + CHAR(39)");
+                        }
+                        else
+                        {
+                            sql.Append(TAB);
+                            sql.Append("IF @");
+                            sql.Append(f.Name);
+                            sql.AppendLine("_from IS NOT NULL");
+                            sql.Append(TAB).Append(TAB);
+                            sql.Append("SET @sqlcond = @sqlcond + ' AND ");
+                            sql.Append(f.Name);
+                            sql.Append(" BETWEEN ' + CHAR(39) + @");
+                            sql.Append(f.Name);
+                            sql.Append("_from + CHAR(39) + ' AND ' + CHAR(39) + @");
+                            sql.Append(f.Name);
+                            sql.AppendLine(" + CHAR(39)");
+                        }
+
+                        break;
+                    }
                 case FilterMode.Contain:
                     sql.AppendLine("");
                     sql.Append(TAB);
@@ -772,46 +777,46 @@ public class MSSQLProvider : IProvider
                     sql.AppendLine("END");
                     break;
                 default:
-                {
-                    if (f.Filter.Type == FilterMode.Equal || f.IsPk)
                     {
-                        sql.AppendLine("");
-                        sql.Append(TAB);
-                        sql.Append("IF @");
-                        sql.Append(f.Name);
-                        sql.AppendLine(" IS NOT NULL");
-                        sql.Append(TAB).Append(TAB);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                        sql.Append(f.Name);
+                        if (f.Filter.Type == FilterMode.Equal || f.IsPk)
+                        {
+                            sql.AppendLine("");
+                            sql.Append(TAB);
+                            sql.Append("IF @");
+                            sql.Append(f.Name);
+                            sql.AppendLine(" IS NOT NULL");
+                            sql.Append(TAB).Append(TAB);
+                            sql.Append("SET @sqlcond = @sqlcond + ' AND ");
+                            sql.Append(f.Name);
 
-                        if (f.DataType == FieldType.Int || f.DataType == FieldType.Float)
-                        {
-                            sql.Append(" = ' + CONVERT(VARCHAR, @");
-                            sql.Append(f.Name);
-                            sql.AppendLine(")");
-                        }
-                        else if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
-                        {
-                            sql.Append(" = ' + CHAR(39) + CAST(@");
-                            sql.Append(f.Name);
-                            sql.AppendLine(" AS VARCHAR) +  CHAR(39)");
-                        }
-                        else
-                        {
-                            sql.Append(" = ' + CHAR(39) + @");
-                            sql.Append(f.Name);
-                            sql.AppendLine(" +  CHAR(39)");
+                            if (f.DataType == FieldType.Int || f.DataType == FieldType.Float)
+                            {
+                                sql.Append(" = ' + CONVERT(VARCHAR, @");
+                                sql.Append(f.Name);
+                                sql.AppendLine(")");
+                            }
+                            else if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
+                            {
+                                sql.Append(" = ' + CHAR(39) + CAST(@");
+                                sql.Append(f.Name);
+                                sql.AppendLine(" AS VARCHAR) +  CHAR(39)");
+                            }
+                            else
+                            {
+                                sql.Append(" = ' + CHAR(39) + @");
+                                sql.Append(f.Name);
+                                sql.AppendLine(" +  CHAR(39)");
+                            }
+
                         }
 
+                        break;
                     }
-
-                    break;
-                }
             }
 
             if (f.Filter.Type == FilterMode.None && !f.IsPk) continue;
             if (f.DataBehavior != FieldBehavior.ViewOnly) continue;
-            
+
             sql.Append(TAB);
             sql.AppendLine("*/");
         }
@@ -897,22 +902,27 @@ public class MSSQLProvider : IProvider
         return sql.ToString();
     }
 
-    public DataAccessCommand GetInsertScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
-        return GetWriteCommand(INSERT, element, values);
+        return GetCommandWrite(INSERT, element, values);
     }
 
-    public DataAccessCommand GetUpdateScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
-        return GetWriteCommand(UPDATE, element, values);
+        return GetCommandWrite(UPDATE, element, values);
     }
 
-    public DataAccessCommand GetDeleteScript(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
-        return GetWriteCommand(DELETE, element, filters);
+        return GetCommandWrite(DELETE, element, filters);
     }
 
-    public DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    {
+        return GetCommandWrite(string.Empty, element, values);
+    }
+
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -967,7 +977,7 @@ public class MSSQLProvider : IProvider
                     value = StringManager.ClearText(value.ToString());
 
                 var dbType = GetDbType(field.DataType);
-                
+
                 var parameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
@@ -985,7 +995,8 @@ public class MSSQLProvider : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values)
+
+    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = System.Data.CommandType.StoredProcedure;
@@ -1019,17 +1030,6 @@ public class MSSQLProvider : IProvider
         return cmd;
     }
 
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref IDataAccess dataAccess)
-    {
-        DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
-        tot = 0;
-        if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
-            tot = (int)pTot.Value;
-
-        return dt;
-    }
 
     private object GetElementValue(ElementField f, Hashtable values)
     {
@@ -1150,11 +1150,16 @@ public class MSSQLProvider : IProvider
             return FieldType.NText;
 
         return FieldType.NVarchar;
-
     }
 
-    public Element GetElementFromTable(string tableName, ref IDataAccess dataAccess)
+    public override Element GetElementFromTable(string tableName)
     {
+        if (string.IsNullOrEmpty(tableName))
+            throw new ArgumentNullException(nameof(tableName));
+
+        if (!DataAccess.TableExists(tableName))
+            throw new Exception(Translate.Key("Table {0} not found", tableName));
+
         var element = new Element
         {
             Name = tableName
@@ -1162,12 +1167,12 @@ public class MSSQLProvider : IProvider
 
         var cmdFields = new DataAccessCommand
         {
-            CmdType = System.Data.CommandType.StoredProcedure,
+            CmdType = CommandType.StoredProcedure,
             Sql = "sp_columns"
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
 
-        var dtFields = dataAccess.GetDataTable(cmdFields);
+        var dtFields = DataAccess.GetDataTable(cmdFields);
         if (dtFields == null || dtFields.Rows.Count == 0)
             return null;
 
@@ -1182,26 +1187,26 @@ public class MSSQLProvider : IProvider
                 IsRequired = row["NULLABLE"].ToString().Equals("0"),
                 DataType = GetDataType(row["TYPE_NAME"].ToString())
             };
-            
+
             element.Fields.Add(field);
         }
-        
+
         //Primary Keys
         var cmdPks = new DataAccessCommand
         {
-            CmdType = System.Data.CommandType.StoredProcedure,
+            CmdType = CommandType.StoredProcedure,
             Sql = "sp_pkeys"
         };
-        
+
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        var dtPks = dataAccess.GetDataTable(cmdPks);
+        var dtPks = DataAccess.GetDataTable(cmdPks);
         foreach (DataRow row in dtPks.Rows)
         {
             element.Fields[row["COLUMN_NAME"].ToString()].IsPk = true;
         }
 
-
         return element;
     }
+
 
 }

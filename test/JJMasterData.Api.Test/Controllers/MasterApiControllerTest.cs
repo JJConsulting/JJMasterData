@@ -5,6 +5,8 @@ using JJMasterData.Api.Controllers;
 using JJMasterData.Api.Models;
 using JJMasterData.Api.Services;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +35,11 @@ public class MasterApiControllerTest
             }
         };
 
-        _controller = new MasterApiController(new MasterApiService(accessor, new AccountService(), new DataAccess() ));
+        IEntityRepository entityRepository = JJService.EntityRepository; 
+        IDictionaryRepository dictionaryRepository = new DictionaryDao(entityRepository);
+        var accountService = new AccountService();
+        var masterApiService = new MasterApiService(accessor, accountService, entityRepository, dictionaryRepository);
+        _controller = new MasterApiController(masterApiService);
     }
     
     [Order(4)]

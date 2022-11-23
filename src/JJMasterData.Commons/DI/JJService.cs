@@ -1,5 +1,6 @@
 ﻿using System;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Options;
@@ -14,24 +15,24 @@ public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
-    public static IDataAccess DataAccess
+    public static IEntityRepository EntityRepository
     {
         get
         {
-            using var scope = Provider?.CreateScope();
-            return scope?.ServiceProvider.GetService<IDataAccess>() ?? new DataAccess();
+            using var scope = Provider.CreateScope();
+            return scope.ServiceProvider.GetService<IEntityRepository>();
         }
     }
     public static JJMasterDataOptions Options
     {
         get
         {
-            using var scope = Provider?.CreateScope();
-            return scope?.ServiceProvider?.GetService<IOptionsSnapshot<JJMasterDataOptions>>().Value;
+            using var scope = Provider.CreateScope();
+            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataOptions>>()!.Value;
         }
     }
 
-    public static IBackgroundTask BackgroundTask => Provider?.GetService<IBackgroundTask>() ?? Tasks.BackgroundTask.GetInstance();
-    public static ITranslator Translator => Provider?.GetService<ITranslator>() ?? new DbTranslatorProvider();
-    public static ILogger Logger => Provider?.GetService<ILogger>() ?? new Logger();
+    public static IBackgroundTask BackgroundTask => Provider.GetService<IBackgroundTask>();
+    public static ITranslator Translator => Provider.GetService<ITranslator>();
+    public static ILogger Logger => Provider.GetService<ILogger>() ?? new Logger();
 }

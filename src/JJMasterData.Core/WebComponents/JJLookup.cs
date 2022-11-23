@@ -1,15 +1,18 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Html;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -21,14 +24,28 @@ public class JJLookup : JJBaseControl
     private string _selectedValue;
     private string _text;
     private FormElementDataItem _dataItem;
-    private Hashtable FormValues { get; set; }
+    private ExpressionManager _expressionManager;
+    private IEntityRepository _entityRepository;
+
+    internal IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        private set => _entityRepository = value;
+    }
+
+    internal ExpressionManager ExpressionManager
+    {
+        get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
+        private set => _expressionManager = value;
+    }
+
+    internal Hashtable FormValues { get; private set; }
 
     internal PageState PageState { get; set; }
 
     public bool AutoReloadFormFields { get; set; }
 
     public bool OnlyNumbers { get; set; }
-
 
     public PopupSize PopSize
     {
@@ -97,11 +114,6 @@ public class JJLookup : JJBaseControl
         PopTitle = "Search";
     }
 
-    public JJLookup(IDataAccess dataAccess) : this()
-    {
-        DataAccess = dataAccess;
-    }
-
     internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
         var search = new JJLookup();
@@ -114,8 +126,8 @@ public class JJLookup : JJBaseControl
         search.Attributes.Add("pnlname", panelName);
         search.FormValues = expOptions.FormValues;
         search.PageState = expOptions.PageState;
-        search.DataAccess = expOptions.DataAccess;
         search.UserValues = expOptions.UserValues;
+        search.EntityRepository = expOptions.EntityRepository;
 
         if (f.DataType == FieldType.Int)
         {
@@ -210,10 +222,9 @@ public class JJLookup : JJBaseControl
         //Filters
         if (DataItem.ElementMap.Filters is { Count: > 0 })
         {
-            var exp = new ExpressionManager(UserValues, DataAccess);
             foreach (DictionaryEntry filter in elementMap.Filters)
             {
-                string filterParsed = exp.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
+                string filterParsed = ExpressionManager.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
                 @params.Append('&');
                 @params.Append(filter.Key);
                 @params.Append('=');
@@ -222,7 +233,6 @@ public class JJLookup : JJBaseControl
         }
 
         string url = $"{ConfigurationHelper.GetUrlMasterData()}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
-
         string json = "{ \"url\": \"" + url + "\" }";
         CurrentContext.Response.SendResponse(json, "application/json");
     }
@@ -269,21 +279,22 @@ public class JJLookup : JJBaseControl
 
         if (DataItem.ElementMap.Filters.Count > 0)
         {
-            var exp = new ExpressionManager(UserValues, DataAccess);
             foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
             {
-                string filterParsed = exp.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
+                string filterParsed = ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
                 filters.Add(filter.Key, StringManager.ClearText(filterParsed));
             }
         }
 
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(idSearch));
 
-        var dao = new Factory(DataAccess);
+        var dicDao = DictionaryRepositoryFactory.GetInstance();
         Hashtable fields;
         try
         {
-            fields = dao.GetFields(DataItem.ElementMap.ElementName, filters);
+            var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
+            var entityRepository = ExpressionManager.EntityRepository;
+            fields = entityRepository.GetFields(dictionary.Table, filters);
         }
         catch
         {

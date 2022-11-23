@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Api.Models;
 
@@ -19,22 +19,22 @@ public class MasterApiListResponse
     /// Tabela com os dados da pesquisa
     /// </summary>
     [DataMember(Name = "fields")]
-    public Dictionary<string, object>[] Fields { get; set; }
+    public Dictionary<string, object?>[]? Fields { get; set; }
 
 
-    public void SetDataTableValues(DicParser dic, DataTable dt)
+    public void SetDataTableValues(Metadata metadata, DataTable? dataTable)
     {
-        if (dt == null)
+        if (dataTable == null)
             return;
         
-        var list = new List<Dictionary<string, object>>();
-        foreach(DataRow row in dt.Rows)
+        var list = new List<Dictionary<string, object?>>();
+        foreach(DataRow row in dataTable.Rows)
         {
-            var cols = new Dictionary<string, object>();
-            foreach(ElementField field in dic.Table.Fields)
+            var cols = new Dictionary<string, object?>();
+            foreach(var field in metadata.Table.Fields)
             {
-                string fieldName = dic.Api.GetFieldNameParsed(field.Name);
-                object val = row[field.Name];
+                string fieldName = metadata.Api.GetFieldNameParsed(field.Name);
+                object? val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);
                 else

@@ -1,19 +1,17 @@
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Reflection;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Options;
-using JJMasterData.Web.Models.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -80,7 +78,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-           
+
         var upload = new JJUploadFile
         {
             Name = "dicImport",
@@ -124,19 +122,11 @@ public class ElementController : DataDictionaryController
         return View("ClassSourceCode", "_MasterDataLayout.Popup");
     }
 
-    public IActionResult Scripts(string dictionaryName, bool isDefault = false)
+    public IActionResult Scripts(string dictionaryName)
     {
-        if (isDefault)
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDefault();
-            ViewBag.IsDefault = true;
-        }
-        else
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
-            ViewBag.DictionaryName = dictionaryName;
-            ViewBag.IsDefault = false;
-        }
+        ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
+        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.IsDefault = false;
 
         return View("Scripts", "_MasterDataLayout.Popup");
     }
@@ -179,7 +169,7 @@ public class ElementController : DataDictionaryController
         catch (Exception ex)
         {
             var error = new { success = false, message = ex.Message };
-            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error};
+            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
     }
 
@@ -279,7 +269,7 @@ public class ElementController : DataDictionaryController
         };
 
         formView.AddToolBarAction(btnAbout);
-        
+
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
@@ -288,7 +278,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Log"),
-            UrlRedirect = Url.Action("Index", "Log", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Log", new { Area = "MasterData" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -344,9 +334,8 @@ public class ElementController : DataDictionaryController
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-        
+
         return formView;
     }
-
 
 }

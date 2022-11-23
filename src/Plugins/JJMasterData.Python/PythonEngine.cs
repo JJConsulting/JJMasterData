@@ -78,7 +78,7 @@ public class PythonEngine : IPythonEngine
             var compiled = source.Compile();
             compiled.Execute();
 
-            compiled.DefaultScope.SetVariable("DataAccess", JJService.DataAccess);
+            compiled.DefaultScope.SetVariable("DataAccess", JJService.EntityRepository);
 
             var formEventPythonType = compiled.DefaultScope.GetVariable(name);
 

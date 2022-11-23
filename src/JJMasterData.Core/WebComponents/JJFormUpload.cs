@@ -112,7 +112,6 @@ public class JJFormUpload : JJBaseView
             _gridView = new JJGridView
             {
                 Name = Name + "_gridview",
-                DataAccess = DataAccess,
                 UserValues = UserValues,
                 ShowPagging = false,
                 ShowTitle = false

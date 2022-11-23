@@ -45,9 +45,9 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         };
 
         var dataAccess = new DataAccess();
-        var provider = new MSSQLProvider();
+        var provider = new Factory();
         
-        string script = provider.GetCreateTableScript(element);
+        string script = provider.GetScriptCreateTable(element);
 
         if (dataAccess.TableExists(element.TableName))
             dataAccess.SetCommand($"DROP TABLE {element.TableName}");

@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
+﻿#nullable enable
+
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -67,13 +66,8 @@ public class FieldController : DataDictionaryController
 
     public IActionResult Delete(string dictionaryName, string fieldName)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
-        var nextField = string.Empty;
-        if (!formElement.Fields.Contains(fieldName))
-            return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
-        nextField = _fieldService.GetNextFieldName(formElement, fieldName);
-        _fieldService.DeleteField(formElement, fieldName);
-
+        _fieldService.DeleteField(dictionaryName, fieldName);
+        var nextField = _fieldService.GetNextFieldName(dictionaryName, fieldName);
         return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
     }
 
@@ -81,9 +75,7 @@ public class FieldController : DataDictionaryController
     public IActionResult Save(string dictionaryName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
-        
         _fieldService.SaveField(dictionaryName, field, originalName);
-
         if (ModelState.IsValid)
         {
             return RedirectToIndex(dictionaryName, field);
@@ -112,21 +104,12 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult Copy(string dictionaryName, FormElementField? field)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var dictionary = _fieldService.DictionaryRepository.GetMetadata(dictionaryName);
+        _fieldService.CopyField(dictionary, field);
+        if (!ModelState.IsValid)
+            ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
 
-        var newField = field.DeepCopy();
-        
-        if (formElement.Fields.Contains(newField.Name))
-        {
-            var summary = new JJValidationSummary(Translate.Key("Name of field already exists"));
-            ViewBag.Error = summary.GetHtml();
-        }
-        else
-        {
-            formElement.Fields.Add(newField);
-            _fieldService.DicDao.SetFormElement(formElement);
-        }
-
+        var formElement = dictionary.GetFormElement();
         PopulateViewBag(formElement, field);
         return View("Index", field);
     }
@@ -195,8 +178,13 @@ public class FieldController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementField? field)
+    private void PopulateViewBag(FormElement formElement, FormElementField field)
     {
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+        if (field == null)
+            throw new ArgumentNullException(nameof(field));
+        
         field.DataItem ??= new FormElementDataItem();
 
         field.DataItem.ElementMap ??= new DataElementMap();
@@ -222,7 +210,7 @@ public class FieldController : DataDictionaryController
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;
 
-        if ((string)Request.Query["originalName"] != null)
+        if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Form["originalName"].ToString();
         else if (TempData["originalName"] != null)
             ViewBag.OriginalName = TempData["originalName"]!;

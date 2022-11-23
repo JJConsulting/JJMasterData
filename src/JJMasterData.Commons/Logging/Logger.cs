@@ -20,22 +20,9 @@ public class Logger : ILogger
 {
     private bool _checkTableLog;
     private Element _element;
-    private IDataAccess _dataAccess;
-    public IDataAccess DataAccess
-    {
-        get
-        {
-            if (_dataAccess != null) return _dataAccess;
-            _dataAccess =
-                Options.ConnectionStringName == null ? JJService.DataAccess : JJService.DataAccess.WithParameters(Options.ConnectionStringName);
-            _dataAccess.GenerateLog = false;
-            _dataAccess.TimeOut = 30;
-            return _dataAccess;
-        }
-    }
+    private IEntityRepository _entityRepository;
 
-    private Factory _factory;
-    public Factory Factory => _factory ??= new Factory(DataAccess);
+    public IEntityRepository EntityRepository => _entityRepository ??= JJService.EntityRepository;
 
     public LoggerOptions Options { get; set; }
 
@@ -242,7 +229,7 @@ public class Logger : ILogger
 
             var element = GetElement();
             if (!LogTableExists())
-                Factory.CreateDataModel(element);
+                EntityRepository.CreateDataModel(element);
 
             if (value.Length > 699)
             {
@@ -255,7 +242,7 @@ public class Logger : ILogger
             else if (source.Length > 49)
                 source = source.Substring(0, 49);
 
-            Factory.Insert(element, new Hashtable
+            EntityRepository.Insert(element, new Hashtable
             {
                 { Options.Table.DateColumnName, DateTime.Now },
                 { Options.Table.LevelColumnName, type.ToString().Substring(0, 1) },
@@ -330,9 +317,8 @@ public class Logger : ILogger
 
     public void ClearLog()
     {
-        string sql = string.Format("TRUNCATE TABLE {0}", Options.Table.Name);
-        var dataAccess = JJService.DataAccess;
-        dataAccess.SetCommand(sql);
+        string sql = $"TRUNCATE TABLE {Options.Table.Name}";
+        EntityRepository.SetCommand(sql);
     }
 
     public bool LogTableExists()
@@ -340,7 +326,9 @@ public class Logger : ILogger
         if (_checkTableLog)
             return true;
 
-        if (!JJService.DataAccess.TableExists(Options.Table.Name)) return false;
+        if (!JJService.EntityRepository.TableExists(Options.Table.Name)) 
+            return false;
+
         _checkTableLog = true;
         return true;
 

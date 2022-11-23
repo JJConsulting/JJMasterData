@@ -96,8 +96,8 @@ internal class FormValues
             var requestedValues = _formValues.RequestFormValues(state, prefix);
             DataHelper.CopyIntoHash(ref newvalues, requestedValues, true);
         }
-
-        _formManager ??= new FormManager(FormElement, FieldManager.UserValues, FieldManager.DataAccess);
+        
+        _formManager ??= new FormManager(FormElement, FieldManager.Expression);
         return _formManager.MergeWithExpressionValues(newvalues, state, !CurrentContext.IsPostBack);
     }
 

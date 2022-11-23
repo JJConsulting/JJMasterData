@@ -1,4 +1,6 @@
-﻿using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace JJMasterData.Core.WebComponents
@@ -32,8 +34,8 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName));
 
-            var dicDao = new DictionaryDao();
-            var dicParser = dicDao.GetDictionary(elementName);
+            var dicDao = DictionaryRepositoryFactory.GetInstance();
+            var dicParser = dicDao.GetMetadata(elementName);
             dataPanel.FormElement = dicParser.GetFormElement();
             dataPanel.ProcessOptions = dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions;
         }

@@ -21,17 +21,6 @@ public class JJLegendView : JJBaseView
     public JJLegendView(FormElement formElement)
     {
         FormElement = formElement;
-        DoConstructor();
-    }
-
-    public JJLegendView(FormElement formElement, IDataAccess dataAccess) : base(dataAccess)
-    {
-        FormElement = formElement;
-        DoConstructor();
-    }
-
-    private void DoConstructor()
-    {
         Name = "iconLegend";
         ShowAsModal = false;
     }
@@ -55,7 +44,7 @@ public class JJLegendView : JJBaseView
 
         if (field != null)
         {
-            var cbo = new JJComboBox(DataAccess)
+            var cbo = new JJComboBox()
             {
                 Name = field.Name,
                 DataItem = field.DataItem

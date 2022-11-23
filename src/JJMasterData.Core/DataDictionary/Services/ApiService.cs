@@ -1,26 +1,26 @@
 ﻿using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    public ApiService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ApiService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
-    public bool EditApi(DicParser dicParser)
+    public bool EditApi(Metadata dicParser)
     {
         if (ValidateApi(dicParser))
-            DicDao.SetDictionary(dicParser);
+            DictionaryRepository.InsertOrReplace(dicParser);
 
         return IsValid;
     }
 
-    public bool ValidateApi(DicParser dicParser)
+    public bool ValidateApi(Metadata dicParser)
     {
-
         bool hasApiGetEnabled;
 
         if (dicParser.Api.EnableGetDetail & dicParser.Api.EnableGetAll)

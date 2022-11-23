@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
@@ -70,6 +71,7 @@ public class JJGridView : JJBaseView
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private FieldManager _fieldManager;
+    private FormManager _formManager;
     private FormValues _formValues;
     private List<FormElementField> _pkFields;
     private List<FormElementField> _visibleFields;
@@ -79,6 +81,35 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
+    private IEntityRepository _entityRepository;
+    
+    internal IEntityRepository EntityRepository
+    {
+        get
+        {
+            if (_entityRepository == null)
+                _entityRepository = JJService.EntityRepository;
+
+            return _entityRepository;
+        }
+        set
+        {
+            _entityRepository = value;
+        }
+    }
+
+    internal FormManager FormManager
+    {
+        get
+        {
+            if (_formManager == null)
+            {
+                var expManager = new ExpressionManager(UserValues, EntityRepository);
+                _formManager = new FormManager(FormElement, expManager);
+            }
+            return _formManager;
+        }
+    }
 
     internal JJDataImp DataImp
     {
@@ -86,8 +117,9 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement, DataAccess)
+            _dataImp = new JJDataImp(FormElement)
             {
+                EntityRepository = EntityRepository,
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
                 Name = Name + "_dataimp"
@@ -108,7 +140,7 @@ public class JJGridView : JJBaseView
                 ExportOptions = CurrentExportConfig,
                 ShowBorder = CurrentUI.ShowBorder,
                 ShowRowStriped = CurrentUI.ShowRowStriped,
-                DataAccess = DataAccess,
+                EntityRepository = EntityRepository,
                 UserValues = UserValues
             };
             _dataExp.OnRenderCell = OnRenderCell;
@@ -154,9 +186,29 @@ public class JJGridView : JJBaseView
         }
     }
 
-    internal ActionManager ActionManager => _actionManager ??= new ActionManager(this, FormElement);
+    internal ActionManager ActionManager
+    {
+        get
+        {
+            if (_actionManager == null)
+                _actionManager = new ActionManager(FormElement, FieldManager.Expression, Name);
 
-    internal FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
+            return _actionManager;
+        }
+    }
+
+    internal FieldManager FieldManager
+    {
+        get
+        {
+            if (_fieldManager == null)
+            {
+                var exp = new ExpressionManager(UserValues, EntityRepository);
+                _fieldManager = new FieldManager(FormElement, exp);
+            }
+            return _fieldManager;
+        }
+    }
 
     internal FormValues FormValues => _formValues ??= new FormValues(FieldManager);
 
@@ -458,11 +510,8 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_defaultValues != null) return _defaultValues;
-
-            //Default field values.
-            var formManager = new FormManager(FormElement, UserValues, DataAccess);
-            _defaultValues = formManager.GetDefaultValues(null, PageState.List);
+            if (_defaultValues == null)
+                _defaultValues = FormManager.GetDefaultValues(null, PageState.List);
 
             return _defaultValues;
         }
@@ -568,10 +617,6 @@ public class JJGridView : JJBaseView
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
     }
 
-    public JJGridView(FormElement formElement, IDataAccess dataAccess) : this(formElement)
-    {
-        DataAccess = dataAccess;
-    }
 
     #endregion
 
@@ -1006,7 +1051,7 @@ public class JJGridView : JJBaseView
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(FormElement, DataAccess)
+        var legend = new JJLegendView(FormElement)
         {
             ShowAsModal = true,
             Name = "iconlegend_modal_" + Name
@@ -1174,7 +1219,7 @@ public class JJGridView : JJBaseView
         }
         else
         {
-            dt = Factory.GetDataTable(FormElement, filters, orderBy, recordsPerPage, currentPage, ref total);
+            dt = EntityRepository.GetDataTable(FormElement, filters, orderBy, recordsPerPage, currentPage, ref total);
         }
 
         return dt;

@@ -5,7 +5,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using System.Collections;
 using System.Diagnostics;
@@ -17,18 +17,18 @@ public class MasterApiService
 {
     private readonly HttpContext? _httpContext;
     private readonly AccountService _accountService;
-    private readonly IDataAccess _dataAccess;
-    private DictionaryDao? _dictionaryDao;
-
-    private DictionaryDao DictionaryDao => _dictionaryDao ??= new DictionaryDao(_dataAccess);
-
-    private Factory Factory => DictionaryDao.Factory;
+    private IEntityRepository _entityRepository;
+    private IDictionaryRepository _dictionaryRepository;
     
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, AccountService accountService, IDataAccess dataAccess)
+    public MasterApiService(IHttpContextAccessor httpContextAccessor, 
+                            AccountService accountService, 
+                            IEntityRepository entityRepository, 
+                            IDictionaryRepository dictionaryRepository)
     {
         _httpContext = httpContextAccessor?.HttpContext;
         _accountService = accountService;
-        _dataAccess = dataAccess;
+        _entityRepository = entityRepository;
+        _dictionaryRepository = dictionaryRepository;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
@@ -36,7 +36,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -44,7 +44,7 @@ public class MasterApiService
         var element = dictionary.Table;
 
         var showLogInfo = Debugger.IsAttached;
-        string text = Factory.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo);
+        string text = _entityRepository.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -56,13 +56,13 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary.Table;
-        var dt = Factory.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
+        var dt = _entityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
 
         if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -76,14 +76,14 @@ public class MasterApiService
 
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
         var element = dictionary.Table;
         var primaryKeys = DataHelper.GetPkValues(element, id, ',');
         var filters = ParseFilter(dictionary, primaryKeys);
-        var fields = Factory.GetFields(element, filters);
+        var fields = _entityRepository.GetFields(element, filters);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -165,7 +165,7 @@ public class MasterApiService
         return listRet;
     }
 
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -193,7 +193,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -222,7 +222,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, DicApiSettings api)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -232,7 +232,7 @@ public class MasterApiService
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
-                if (formResult.Result == CommandType.Insert)
+                if (formResult.Result == CommandOperation.Insert)
                 {
                     ret.Status = (int)HttpStatusCode.Created;
                     ret.Message = Translate.Key("Record added successfully");
@@ -256,7 +256,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Patch(FormService formService, Hashtable values, DicApiSettings api)
+    private ResponseLetter Patch(FormService formService, Hashtable values, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -267,7 +267,7 @@ public class MasterApiService
             var formManager = formService.FormManager;
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
-            var currentValues = Factory.GetFields(formManager.FormElement, pkValues);
+            var currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -315,12 +315,12 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public Dictionary<string, FormValues> PostTrigger(
-        string elementName, Hashtable paramValues, PageState pageState, string objname = "")
+        string elementName, Hashtable? paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = DictionaryDao.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
 
         if (!dictionary.Api.EnableAdd & !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -332,10 +332,8 @@ public class MasterApiService
             { "objname", objname }
         };
 
-        var formManager = new FormManager(dictionary.GetFormElement());
-        formManager.UserValues = userValues;
-        formManager.Factory = Factory;
-
+        var expManager = new ExpressionManager(userValues, _entityRepository);
+        var formManager = new FormManager(dictionary.GetFormElement(), expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
@@ -364,16 +362,16 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(DicParser dic, Hashtable paramValues)
+    private Hashtable ParseFilter(Metadata metadata, Hashtable? paramValues)
     {
-        var filters = GetDefaultFilter(dic);
+        var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
             return filters;
 
         foreach (DictionaryEntry entry in paramValues)
         {
             //if field not exists, generate a exception
-            var field = dic.Table.Fields[entry.Key.ToString()];
+            var field = metadata.Table.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString()))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()));
         }
@@ -381,7 +379,7 @@ public class MasterApiService
         return filters;
     }
 
-    private Hashtable GetDefaultFilter(DicParser dic, bool loadQueryString = false)
+    private Hashtable GetDefaultFilter(Metadata dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -433,40 +431,36 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(DicParser dictionary)
+    private FormService GetFormService(Metadata dictionary)
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
-        var formElement = dictionary.GetFormElement();
-        var dataContext = new DataContext(DataContextSource.Api, userId);
-
         var userValues = new Hashtable
         {
             { "USERID", GetUserId() }
         };
-        var formManager = new FormManager(formElement, userValues, _dataAccess)
-        {
-            Factory = Factory
-        };
+        var formElement = dictionary.GetFormElement();
+        var dataContext = new DataContext(DataContextSource.Api, userId);
+        var expManager = new ExpressionManager(userValues, _entityRepository);
+        var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible
         };
 
         service.AddFormEvent();
-
         return service;
     }
 
-    private DicParser GetDataDictionary(string elementName)
+    private Metadata GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return DictionaryDao.GetDictionary(elementName);
+        return _dictionaryRepository.GetMetadata(elementName);
     }
 
-    private ResponseLetter CreateErrorResponseLetter(Hashtable erros, DicApiSettings api)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable erros, ApiSettings api)
     {
         var letter = new ResponseLetter
         {
@@ -495,7 +489,7 @@ public class MasterApiService
     /// Isso acontece devido as triggers ou os valores 
     /// retornados nos metodos de set (id autoNum) por exemplo
     /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, DicApiSettings api)
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)

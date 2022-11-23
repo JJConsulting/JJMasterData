@@ -1,0 +1,350 @@
+﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Action;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+
+namespace JJMasterData.Core.DataDictionary.Repository;
+
+public class DictionaryDao : IDictionaryRepository
+{
+    private readonly IEntityRepository _entityRepository;
+
+    public DictionaryDao(IEntityRepository entityRepository)
+    {
+        _entityRepository = entityRepository;
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
+    public List<Metadata> GetMetadataList(bool? sync)
+    {
+        var list = new List<Metadata>();
+
+        var filter = new Hashtable();
+        if (sync.HasValue)
+            filter.Add("sync", (bool)sync ? "1" : "0");
+
+        string orderby = "name, type";
+        string currentName = "";
+        int tot = 1;
+        var dt = _entityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
+        Metadata currentParser = null;
+        foreach (DataRow row in dt.Rows)
+        {
+            string name = row["name"].ToString();
+            if (!currentName.Equals(name))
+            {
+                ApplyCompatibility(currentParser, name);
+
+                currentName = name;
+                list.Add(new Metadata());
+                currentParser = list[list.Count - 1];
+            }
+
+            string json = row["json"].ToString();
+            if (row["type"].ToString().Equals("T"))
+            {
+                currentParser.Table = JsonConvert.DeserializeObject<Element>(json);
+            }
+            else if (row["type"].ToString().Equals("F"))
+            {
+                currentParser.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+            }
+            else if (row["type"].ToString().Equals("L"))
+            {
+                currentParser.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+            }
+            else if (row["type"].ToString().Equals("A"))
+            {
+                currentParser.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+            }
+        }
+
+        ApplyCompatibility(currentParser, currentName);
+
+        return list;
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
+    public string[] GetNameList()
+    {
+        var list = new List<string>();
+        int tot = 10000;
+        var filter = new Hashtable();
+        filter.Add("type", "F");
+
+        var dt = _entityRepository.GetDataTable(GetStructure(), filter, null, tot, 1, ref tot);
+        foreach (DataRow row in dt.Rows)
+        {
+            list.Add(row["name"].ToString());
+        }
+
+        return list.ToArray();
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
+    public Metadata GetMetadata(string elementName)
+    {
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary invalid"));
+
+        var filter = new Hashtable();
+        filter.Add("name", elementName);
+        DataTable dt = _entityRepository.GetDataTable(GetStructure(), filter);
+        if (dt.Rows.Count == 0)
+            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
+
+        var metadata = new Metadata();
+        foreach (DataRow row in dt.Rows)
+        {
+            string json = row["json"].ToString();
+            if (row["type"].ToString().Equals("T"))
+            {
+                metadata.Table = JsonConvert.DeserializeObject<Element>(json);
+            }
+            else if (row["type"].ToString().Equals("F"))
+            {
+                metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+            }
+            else if (row["type"].ToString().Equals("L"))
+            {
+                metadata.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+            }
+            else if (row["type"].ToString().Equals("A"))
+            {
+                metadata.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+            }
+        }
+
+        ApplyCompatibility(metadata, elementName);
+
+        return metadata;
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
+    public void InsertOrReplace(Metadata metadata)
+    {
+        if (metadata == null)
+            throw new ArgumentNullException(nameof(metadata));
+
+        if (metadata.Table == null)
+            throw new ArgumentNullException(nameof(metadata.Table));
+
+        if (string.IsNullOrEmpty(metadata.Table.Name))
+            throw new ArgumentNullException(nameof(metadata.Table.Name));
+
+        var element = GetStructure();
+        string name = metadata.Table.Name;
+        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
+
+        DateTime dNow = DateTime.Now;
+
+        var values = new Hashtable();
+        values.Add("name", name);
+        values.Add("tablename", metadata.Table.TableName);
+        values.Add("info", metadata.Table.Info);
+        values.Add("type", "T");
+        values.Add("json", jsonTable);
+        values.Add("sync", metadata.Table.Sync ? "1" : "0");
+        values.Add("modified", dNow);
+        _entityRepository.SetValues(element, values);
+
+        if (metadata.Form != null)
+        {
+            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
+            values.Clear();
+            values.Add("name", name);
+            values.Add("tablename", metadata.Table.TableName);
+            values.Add("info", "");
+            values.Add("type", "F");
+            values.Add("owner", name);
+            values.Add("json", jsonForm);
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
+            values.Add("modified", dNow);
+            _entityRepository.SetValues(element, values);
+        }
+
+        if (metadata.UIOptions != null)
+        {
+            string jsonForm = JsonConvert.SerializeObject(metadata.UIOptions);
+            values.Clear();
+            values.Add("name", name);
+            values.Add("tablename", metadata.Table.TableName);
+            values.Add("info", "");
+            values.Add("type", "L");
+            values.Add("owner", name);
+            values.Add("json", jsonForm);
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
+            values.Add("modified", dNow);
+            _entityRepository.SetValues(element, values);
+        }
+
+        if (metadata.Api != null)
+        {
+            string jsonForm = JsonConvert.SerializeObject(metadata.Api);
+            values.Clear();
+            values.Add("name", name);
+            values.Add("info", "");
+            values.Add("type", "A");
+            values.Add("owner", name);
+            values.Add("json", jsonForm);
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
+            values.Add("modified", dNow);
+            _entityRepository.SetValues(element, values);
+        }
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
+    public void Delete(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            throw new ArgumentException();
+
+        var filters = new Hashtable();
+        filters.Add("name", id);
+
+        DataTable dt = _entityRepository.GetDataTable(GetStructure(), filters);
+        if (dt.Rows.Count == 0)
+            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", id));
+
+        var element = GetStructure();
+        foreach (DataRow row in dt.Rows)
+        {
+            var delFilter = new Hashtable();
+            delFilter.Add("name", id);
+            delFilter.Add("type", row["type"].ToString());
+            _entityRepository.Delete(element, delFilter);
+        }
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
+    public bool Exists(string elementName)
+    {
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName));
+
+        Hashtable filter = new Hashtable();
+        filter.Add("name", elementName);
+        int count = _entityRepository.GetCount(GetStructure(), filter);
+        return count > 0;
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.ExecInitialSetup"/>
+    public void ExecInitialSetup()
+    {
+        _entityRepository.CreateDataModel(GetStructure());
+    }
+
+    ///<inheritdoc cref="IDictionaryRepository.GetDataTable(Hashtable, string, int, int, ref int)"/>
+    public DataTable GetDataTable(Hashtable filters, string orderby, int regperpage, int pag, ref int tot)
+    {
+        var element = GetStructure();
+        return _entityRepository.GetDataTable(element,filters, orderby, regperpage, pag, ref tot);
+    }
+
+    internal static Element GetStructure()
+    {
+        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields["type"].EnableOnDelete = false;
+        element.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
+        element.Fields.Add("namefilter", "Dictionary Name", FieldType.NVarchar, 30, false, FilterMode.Contain, FieldBehavior.ViewOnly);
+        element.Fields.Add("tablename", "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add("info", "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add("owner", "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
+        element.Fields.Add("sync", "Sync", FieldType.Varchar, 1, false, FilterMode.Equal);
+        element.Fields.Add("modified", "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
+        element.Fields.Add("json", "Object", FieldType.Text, 0, false, FilterMode.None);
+        return element;
+    }
+
+    private void ApplyCompatibility(Metadata dicParser, string elementName)
+    {
+        if (dicParser == null)
+            return;
+
+        if (dicParser.Table == null)
+            throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
+
+        //Mantendo compatibilidate versão Nairobi
+        dicParser.UIOptions ??= new UIOptions();
+
+        dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
+
+        dicParser.UIOptions.GridActions ??= new GridActions();
+        //Fim compatibilidate Nairobi
+
+
+        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
+        if (dicParser.Api == null)
+        {
+            dicParser.Api = new ApiSettings();
+            if (dicParser.Table.Sync)
+            {
+                dicParser.Api.EnableGetAll = true;
+                dicParser.Api.EnableGetDetail = true;
+                dicParser.Api.EnableAdd = true;
+                dicParser.Api.EnableUpdate = true;
+                dicParser.Api.EnableUpdatePart = true;
+                dicParser.Api.EnableDel = true;
+            }
+        }
+
+        if (string.IsNullOrEmpty(dicParser.Table.TableName))
+        {
+            dicParser.Table.TableName = dicParser.Table.Name;
+        }
+        //Fim compatibilidate Denver
+
+        //Tokio
+        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
+
+        //Professor
+        if (dicParser.Form != null)
+        {
+            foreach (var field in dicParser.Form.FormFields)
+            {
+                if (field.DataItem is not { DataItemType: DataItemType.Manual })
+                    continue;
+
+                if (field.DataItem.Command != null && !string.IsNullOrEmpty(field.DataItem.Command.Sql))
+                    field.DataItem.DataItemType = DataItemType.SqlCommand;
+                else if (field.DataItem.ElementMap != null && !string.IsNullOrEmpty(field.DataItem.ElementMap.ElementName))
+                    field.DataItem.DataItemType = DataItemType.Dictionary;
+            }
+        }
+
+        //Arturito
+        foreach (var action in dicParser.UIOptions.GridActions.GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        foreach (var action in dicParser.UIOptions.ToolBarActions
+                     .GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        //Alpha Centauri
+
+        dicParser.UIOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+
+        dicParser.UIOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
+
+        //Sirius
+
+        dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+
+        dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+    }
+
+}

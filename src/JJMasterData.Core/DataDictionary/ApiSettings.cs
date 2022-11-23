@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DicApiSettings
+public class ApiSettings
 {
     /// <summary>
     /// Get all records. Verb GET
@@ -54,7 +54,7 @@ public class DicApiSettings
     public string ApplyUserIdOn { get; set; }
 
 
-    public DicApiSettings()
+    public ApiSettings()
     {
         FormatType = ApiJsonFormat.Lowercase;
     }

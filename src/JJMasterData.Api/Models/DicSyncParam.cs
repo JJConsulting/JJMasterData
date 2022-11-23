@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Api.Models;
 
 [Serializable]
 [DataContract]
@@ -19,5 +18,5 @@ public class DicSyncParam
     /// Array com o nome do campo e valor
     /// </summary>
     [DataMember(Name = "filters")]
-    public Hashtable Filters { get; set; }
+    public Hashtable? Filters { get; set; }
 }

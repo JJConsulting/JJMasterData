@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using JJMasterData.Api.Models;
 using JJMasterData.Api.Services;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace JJMasterData.Api.Controllers;
 
@@ -10,11 +12,17 @@ namespace JJMasterData.Api.Controllers;
 [ApiController]
 public class DictionariesController : ControllerBase
 {
+    private readonly DictionariesService _dictionariesService;
+    private readonly AccountService _accountService;
+    private readonly IDictionaryRepository _dictionaryRepository;
 
-    private AccountService AccountService { get; set; }
-    public DictionariesController(AccountService accountService)
+    public DictionariesController(AccountService accountService, 
+                                  DictionariesService dictionariesService, 
+                                  IDictionaryRepository dictionaryRepository)
     {
-        AccountService = accountService;
+        _accountService = accountService;
+        _dictionariesService = dictionariesService;
+        _dictionaryRepository = dictionaryRepository;
     }
     /// <summary>
     /// Get all dictionaries with sync enabled.
@@ -25,11 +33,11 @@ public class DictionariesController : ControllerBase
     /// <response code="403">Token Expired</response>
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
-    [Produces(typeof(DicParser[]))]
+    [Produces(typeof(Metadata[]))]
     [Route("api/dictionaries/")]
-    public ActionResult<DicParser[]> GetAll()
+    public ActionResult<Metadata[]> GetAll()
     {
-        var dicList = new DictionaryDao().GetListDictionary(true);
+        var dicList = _dictionaryRepository.GetMetadataList(true);
         if (dicList == null)
             return NotFound();
 
@@ -48,9 +56,9 @@ public class DictionariesController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
     [Route("api/dictionaries/{id}")]
-    public DicParser Get(string id)
+    public Metadata Get(string id)
     {
-        return new DictionaryDao().GetDictionary(id);
+        return _dictionaryRepository.GetMetadata(id);
     }
 
     /// <summary>
@@ -67,11 +75,11 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/count")]
     public ActionResult<DicSyncInfo> Count([FromBody]DicSyncParam[] param)
     {
-        var userid = AccountService.GetTokenInfo(HttpContext?.User?.Claims.First().Value)?.UserId;
+        var userid = _accountService.GetTokenInfo(HttpContext?.User?.Claims.First().Value)?.UserId;
 
         if (userid == null)
             return Unauthorized();
 
-        return new DictionaryDao().GetSyncInfo(userid, param, Debugger.IsAttached);
+        return _dictionariesService.GetSyncInfo(userid, param, Debugger.IsAttached);
     }
 }

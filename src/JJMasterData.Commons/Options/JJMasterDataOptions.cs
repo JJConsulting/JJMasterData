@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
@@ -97,7 +98,7 @@ public sealed class JJMasterDataOptions
         }
     }
     
-    public string? GetConnectionString(string name)
+    public string? GetConnectionString(string name = "ConnectionString")
     {
         if(IsNetFramework)
             return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
@@ -105,11 +106,11 @@ public sealed class JJMasterDataOptions
     }
             
 
-    public string? GetConnectionProvider(string name)
+    public string? GetConnectionProvider(string name = "ConnectionString")
     {
         if (IsNetFramework)
             return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
-        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ?? DataAccessProvider.MSSQL;
+        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ?? DataAccessProviderType.SqlServer.GetDescription();
     }
 
     internal static string GetProcNameGet(Element element)
@@ -118,10 +119,13 @@ public sealed class JJMasterDataOptions
             return element.CustomProcNameGet;
 
         string tablename = element.TableName;
-        string prefix = JJService.Options.PrefixGetProc;
-        prefix = string.IsNullOrEmpty(prefix) ? $"{tablename}Get" : prefix.Replace("{tablename}", tablename);
-
-        return prefix;
+        string? prefix = JJService.Options.PrefixGetProc;
+        
+        if (prefix == null)
+            return $"{tablename}Get";
+        
+        return prefix.Replace("{tablename}", tablename);
+        
     }
 
     internal static string GetProcNameSet(Element element)
@@ -130,9 +134,12 @@ public sealed class JJMasterDataOptions
             return element.CustomProcNameSet;
 
         string tablename = element.TableName;
-        string prefix = JJService.Options.PrefixSetProc;
-        prefix = string.IsNullOrEmpty(prefix) ? $"{tablename}Set" : prefix.Replace("{tablename}", tablename);
-        return prefix;
+        string? prefix = JJService.Options.PrefixSetProc;
+        
+        if (prefix == null)
+            return $"{tablename}Set";
+        
+        return prefix.Replace("{tablename}", tablename);
     }
 
     public static string GetDefaultProcNameGet(string tablename)
@@ -145,11 +152,12 @@ public sealed class JJMasterDataOptions
         else
             dicname = tablename;
 
-        string prefix = JJService.Options.PrefixGetProc;
-        
-        prefix = string.IsNullOrEmpty(prefix) ? $"{dicname}Get" : prefix.Replace("{tablename}", dicname);
+        string? prefix = JJService.Options.PrefixGetProc;
 
-        return prefix;
+        if (prefix == null) 
+            return $"{dicname}Get";
+        
+        return prefix.Replace("{tablename}", dicname);
     }
 
     public static string GetDefaultProcNameSet(string tablename)
@@ -162,9 +170,11 @@ public sealed class JJMasterDataOptions
         else
             dicname = tablename;
 
-        string prefix = JJService.Options.PrefixSetProc;
-        prefix = string.IsNullOrEmpty(prefix) ? $"{dicname}Set" : prefix.Replace("{tablename}", dicname);
-
-        return prefix;
+        string? prefix = JJService.Options.PrefixSetProc;
+        
+        if (prefix == null)
+            return $"{dicname}Set";
+        
+        return prefix.Replace("{tablename}", dicname);
     }
 }

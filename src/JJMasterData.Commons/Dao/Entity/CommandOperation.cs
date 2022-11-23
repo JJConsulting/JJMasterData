@@ -3,7 +3,7 @@
 /// <summary>
 /// Command executed on the database
 /// </summary>
-public enum CommandType
+public enum CommandOperation
 {
     None = -1,
     Insert = 0,

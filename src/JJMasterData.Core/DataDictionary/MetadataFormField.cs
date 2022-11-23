@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.DictionaryDAL;
+namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DicFormFieldParser
+public class MetadataFormField
 {
     [DataMember(Name = "name")]
     public string Name { get; set; }
@@ -47,7 +47,7 @@ public class DicFormFieldParser
 
     [DataMember(Name = "autopostback")]
     public bool AutoPostBack { get; set; }
-    
+
     [DataMember(Name = "maxvalue")]
     public float? MaxValue { get; set; }
 
@@ -69,9 +69,9 @@ public class DicFormFieldParser
     [DataMember(Name = "internalnotes")]
     public string InternalNotes { get; set; }
 
-    public DicFormFieldParser() { }
+    public MetadataFormField() { }
 
-    public DicFormFieldParser(FormElementField f)
+    public MetadataFormField(FormElementField f)
     {
         Name = f.Name;
         Component = f.Component;

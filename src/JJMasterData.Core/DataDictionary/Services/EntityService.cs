@@ -1,12 +1,14 @@
 ﻿using System;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService : BaseService
 {
-    public EntityService(IValidationDictionary validationDictionary) :base(validationDictionary)
+    public EntityService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
@@ -14,7 +16,7 @@ public class EntityService : BaseService
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
-            if (DicDao.HasDictionary(formElement.Name))
+            if (DictionaryRepository.Exists(formElement.Name))
                 AddError("Name", Translate.Key("There is already a dictionary with the name {0}",formElement.Name));
         }
 
@@ -43,7 +45,7 @@ public class EntityService : BaseService
         
         try
         {
-            var dicParser = DicDao.GetDictionary(entityName);
+            var dicParser = DictionaryRepository.GetMetadata(entityName);
 
             dicParser.Table.Name = formElement.Name;
             dicParser.Table.TableName = formElement.TableName;
@@ -55,12 +57,12 @@ public class EntityService : BaseService
 
             if (!entityName.Equals(formElement.Name))
             {
-                DicDao.DelDictionary(entityName);
-                DicDao.SetDictionary(dicParser);
+                DictionaryRepository.Delete(entityName);
+                DictionaryRepository.InsertOrReplace(dicParser);
             }
             else
             {
-                DicDao.SetDictionary(dicParser);
+                DictionaryRepository.InsertOrReplace(dicParser);
             }
 
             return formElement;

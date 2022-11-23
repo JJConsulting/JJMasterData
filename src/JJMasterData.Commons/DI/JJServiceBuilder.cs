@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -18,45 +18,27 @@ public class JJServiceBuilder
     
     public JJServiceBuilder AddDefaultServices()
     {
-        Services.AddScoped<IDataAccess, DataAccess>();
-        
+        Services.AddScoped<IEntityRepository, Factory>();
+        Services.AddTransient<ITranslator, DbTranslatorProvider>();
         return this;
     }
 
-    private void DeleteServiceIfExists<T>()
+    public JJServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
     {
-        var service = Services.ToList().Find(s => s.ServiceType == typeof(T));
-        if (service != null)
-            Services.Remove(service);
-    }
-
-    public JJServiceBuilder WithBackgroundTask<T>() where T : IBackgroundTask
-    {
-        Services.AddSingleton(typeof(T));
-
+        Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
 
-    public JJServiceBuilder WithTranslator<T>() where T : ITranslator
+    public JJServiceBuilder WithTranslator<T>() where T : class, ITranslator
     {
-        Services.AddSingleton(typeof(T));
-
+        Services.Replace(ServiceDescriptor.Transient<ITranslator, T>());
         return this;
     }
 
     public JJServiceBuilder WithJJMasterDataLogger()
     {
         Services.AddSingleton(typeof(Logger));
-
         return this;
     }
     
-    public JJServiceBuilder WithDataAccess<T>() where T : IDataAccess
-    {
-        DeleteServiceIfExists<IDataAccess>();
-        
-        Services.AddScoped(typeof(IDataAccess),typeof(T));
-
-        return this;
-    }
 }

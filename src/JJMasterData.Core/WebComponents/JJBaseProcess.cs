@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
@@ -11,10 +12,38 @@ namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseProcess : JJBaseView
 {
+    private string _keyProcess;
+    private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
     private FormManager _formManager;
-    private ProcessOptions _processOptions;
-    private string _keyProcess;
+    private ExpressionManager _expressionManager;
+    IEntityRepository _entityRepository;
+
+    internal ExpressionManager ExpressionManager
+    {
+        get
+        {
+            if (_expressionManager == null)
+                _expressionManager = new ExpressionManager(UserValues, EntityRepository);
+
+            return _expressionManager;
+        }
+    }
+
+    internal IEntityRepository EntityRepository
+    {
+        get
+        {
+            if (_entityRepository == null)
+                _entityRepository = JJService.EntityRepository;
+
+            return _entityRepository;
+        }
+        set
+        {
+            _entityRepository = value;
+        }
+    }
 
     internal string ProcessKey
     {
@@ -38,14 +67,28 @@ public abstract class JJBaseProcess : JJBaseView
     /// </summary>
     public FormElement FormElement { get; set; }
 
-   
 
-    /// <summary>
-    /// Funções úteis para manipular campos no formulário
-    /// </summary>
-    internal FieldManager FieldManager => _fieldManager ??= new FieldManager(this, FormElement);
+    internal FieldManager FieldManager
+    {
+        get
+        {
+            if (_fieldManager == null)
+                _fieldManager = new FieldManager(FormElement, ExpressionManager);
 
-    internal FormManager FormManager => _formManager ??= new FormManager(FormElement, UserValues, DataAccess);
+            return _fieldManager;
+        }
+    }
+
+    internal FormManager FormManager
+    {
+        get
+        {
+            if (_formManager == null)
+                _formManager = new FormManager(FormElement, ExpressionManager);
+
+            return _formManager;
+        }
+    }
 
     internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
 
@@ -63,7 +106,7 @@ public abstract class JJBaseProcess : JJBaseView
     private string BuildProcessKey()
     {
         var processKey = new StringBuilder();
-        
+
         switch (this)
         {
             case JJDataExp:
@@ -75,10 +118,10 @@ public abstract class JJBaseProcess : JJBaseView
         }
 
         processKey.Append(FormElement.Name);
-        
-        if (ProcessOptions.Scope != ProcessScope.User) 
+
+        if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();
-        
+
         if (string.IsNullOrEmpty(UserId))
         {
             var error = new StringBuilder();

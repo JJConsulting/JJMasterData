@@ -3,4 +3,5 @@ interface JQuery{
     bootstrapToggle : Function
     typeahead : Function
     tagsinput : Function
+    valid: Function
 }

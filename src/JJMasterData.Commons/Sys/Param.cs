@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Sys;
 
@@ -13,11 +12,11 @@ namespace JJMasterData.Commons.Sys;
 public class Param
 {
     public string TableName { get; set; }
-    private IDataAccess Dao { get; set; }
+    private DataAccess Dao { get; set; }
 
     public Param()
     {
-        Dao = JJService.DataAccess;
+        Dao = new DataAccess();
         TableName = "tb_sysparam";
     }
 
@@ -29,7 +28,7 @@ public class Param
     /// <param name="tablename">Nome da Tabela</param>
     public Param(string strConn, string strProvider, string tablename)
     {
-        Dao = JJService.DataAccess.WithParameters(strConn, strProvider);
+        Dao = new DataAccess(strConn, strProvider);
         TableName = tablename; 
     }
 

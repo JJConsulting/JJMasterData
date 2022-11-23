@@ -1,6 +1,4 @@
 using JJMasterData.Web.Models.Abstractions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,16 +9,16 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 {
     private readonly IOptionsMonitor<T> _options;
     private readonly string _section;
-    private readonly string _file;
+    public string FilePath { get; }
 
     public OptionsWriter(
         IOptionsMonitor<T> options,
         string section,
-        string file)
+        string filePath)
     {
         _options = options;
         _section = section;
-        _file = file;
+        FilePath = filePath;
     }
 
     public T Value => _options.CurrentValue;
@@ -28,7 +26,7 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 
     public async Task UpdateAsync(Action<T> applyChanges)
     {
-        var jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(_file));
+        var jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(FilePath));
 
         T? sectionObject;
         
@@ -44,6 +42,6 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
         applyChanges(sectionObject!);
 
         jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
-        await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+        await File.WriteAllTextAsync(FilePath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataDictionary.Services.Abstractions;
@@ -11,13 +11,13 @@ namespace JJMasterData.Core.DataDictionary.Services.Abstractions;
 public abstract class BaseService
 {
     private readonly IValidationDictionary _validationDictionary;
-    private DictionaryDao _dictionaryDao;
 
-    public DictionaryDao DicDao => _dictionaryDao ??= new DictionaryDao();
+    public IDictionaryRepository DictionaryRepository { get; }
 
-    protected BaseService(IValidationDictionary validationDictionary)
+    protected BaseService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
     {
         _validationDictionary = validationDictionary;
+        DictionaryRepository = dictionaryRepository;
     }
 
     protected void AddError(string field, string message)
@@ -34,7 +34,7 @@ public abstract class BaseService
 
     public FormElement GetFormElement(string dictionaryName)
     {
-        var dicParser = DicDao.GetDictionary(dictionaryName);
+        var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
         return dicParser.GetFormElement();
     }
 
@@ -101,7 +101,7 @@ public abstract class BaseService
         var dicElement = new Dictionary<string, string>();
         dicElement.Add(string.Empty, Translate.Key("--Select--"));
 
-        string[] list = DicDao.GetListDictionaryName();
+        string[] list = DictionaryRepository.GetNameList();
         foreach (string name in list)
         {
             dicElement.Add(name, name);

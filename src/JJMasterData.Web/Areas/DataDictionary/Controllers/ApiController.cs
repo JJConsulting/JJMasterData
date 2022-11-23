@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Controllers;
@@ -20,7 +20,7 @@ public class ApiController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dic = _apiService.DicDao.GetDictionary(dictionaryName);
+        var dic = _apiService.DictionaryRepository.GetMetadata(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -28,7 +28,7 @@ public class ApiController : DataDictionaryController
 
     public ActionResult Edit(string dictionaryName)
     {
-        var dic = _apiService.DicDao.GetDictionary(dictionaryName);
+        var dic = _apiService.DictionaryRepository.GetMetadata(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -37,7 +37,7 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public ActionResult Edit(ApiViewModel apiViewModel)
     {
-        var dic = _apiService.DicDao.GetDictionary( apiViewModel.DictionaryName);
+        var dic = _apiService.DictionaryRepository.GetMetadata( apiViewModel.DictionaryName);
         dic.Api = apiViewModel.ApiSettings;
         dic.Table.Sync = apiViewModel.IsSync;
         dic.Table.SyncMode = apiViewModel.Mode;
@@ -49,16 +49,16 @@ public class ApiController : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(DicParser dic)
+    private ApiViewModel PopulateViewModel(Metadata metadata)
     {
         var model = new ApiViewModel
         {
-            ApiSettings = dic.Api,
+            ApiSettings = metadata.Api,
             MenuId = "Api",
-            DictionaryName = dic.Table.Name,
-            Mode = dic.Table.SyncMode,
-            IsSync = dic.Table.Sync,
-            Fields = dic.Table.Fields.ToList().FindAll(
+            DictionaryName = metadata.Table.Name,
+            Mode = metadata.Table.SyncMode,
+            IsSync = metadata.Table.Sync,
+            Fields = metadata.Table.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &
                      x.DataType != FieldType.Date

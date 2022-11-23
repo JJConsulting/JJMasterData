@@ -1,28 +1,26 @@
-﻿using System;
+﻿using JJMasterData.Commons.Dao.Entity;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace JJMasterData.Commons.Dao.Entity;
+namespace JJMasterData.Commons.Dao.Providers;
 
-class ProviderSQLite : IProvider
+internal class ProviderSQLite : BaseProvider
 {
     private const string INSERT = "I";
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const string TAB = "\t";
+    public override string VariablePrefix => "@";
 
-    public string VariablePrefix
+    public ProviderSQLite(DataAccess dataAccess) : base(dataAccess)
     {
-        get
-        {
-            return "@";
-        }
     }
 
-    public string GetCreateTableScript(Element element)
+    public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
             throw new Exception("Invalid element");
@@ -77,7 +75,7 @@ class ProviderSQLite : IProvider
             if (f.AutoNum && f.IsPk)
                 sSql.Append(" PRIMARY KEY AUTOINCREMENT ");
         }
-        
+
         isFirst = true;
         foreach (var f in fields.ToList().FindAll(x => x.IsPk && !x.AutoNum))
         {
@@ -109,7 +107,7 @@ class ProviderSQLite : IProvider
 
         //sSql.AppendLine(DoSqlCreateRelation(element));
         sSql.AppendLine("");
-        
+
         int nIndex = 1;
         if (element.Indexes.Count > 0)
         {
@@ -235,32 +233,37 @@ class ProviderSQLite : IProvider
         return sSql.ToString();
     }
 
-    public string GetWriteProcedureScript(Element element)
+    public override string GetScriptWriteProcedure(Element element)
     {
         return null;
     }
 
-    public string GetReadProcedureScript(Element element)
+    public override string GetScriptReadProcedure(Element element)
     {
         return null;
     }
 
-    public DataAccessCommand GetInsertScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
     {
-        return GetWriteCommand(INSERT, element, values);
+        return GetScriptInsert(element, values, false);
     }
 
-    public DataAccessCommand GetUpdateScript(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
     {
-        return GetWriteCommand(UPDATE, element, values);
+        return GetScriptUpdate(element, values);
     }
 
-    public DataAccessCommand GetDeleteScript(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
     {
-        return GetWriteCommand(DELETE, element, filters);
+        return GetScriptDelete(element, filters);
     }
 
-    public DataAccessCommand GetReadCommand(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    {
+        return GetScriptInsert(element, values, true);
+    }
+
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
     {
         var fields = element.Fields
             .ToList()
@@ -308,7 +311,7 @@ class ProviderSQLite : IProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -327,45 +330,22 @@ class ProviderSQLite : IProvider
         return cmd;
     }
 
-    public DataAccessCommand GetWriteCommand(string action, Element element, Hashtable values)
-    {
-        DataAccessCommand cmd;
-        switch (action)
-        {
-            case INSERT:
-                cmd = GetScriptInsert(element, values, false);
-                break;
-            case UPDATE:
-                cmd = GetScriptUpdate(element, values);
-                break;
-            case DELETE:
-                cmd = GetScriptDelete(element, values);
-                break;
-            default:
-                cmd = GetScriptInsert(element, values, true);//REPLACE
-                break;
-        }
-
-        return cmd;
-    }
-
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot, ref IDataAccess dataAccess)
+    public new DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot)
     {
         DataAccessParameter pTot = null;
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
-        DataTable dt = dataAccess.GetDataTable(cmd);
+        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
+        DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
 
         if (regporpag > 0 && tot == 0)
         {
-            var obj = dataAccess.GetResult(GetScriptCount(element, filters));
+            var obj = DataAccess.GetResult(GetScriptCount(element, filters));
             if (obj != null)
                 tot = int.Parse(obj.ToString());
         }
 
         return dt;
     }
-
 
     private DataAccessCommand GetScriptInsert(Element element, Hashtable values, bool isReplace)
     {
@@ -409,7 +389,7 @@ class ProviderSQLite : IProvider
         sSql.Append(")");
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -480,7 +460,7 @@ class ProviderSQLite : IProvider
 
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -536,7 +516,7 @@ class ProviderSQLite : IProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -568,23 +548,12 @@ class ProviderSQLite : IProvider
                  f.DataType == FieldType.Int) &&
                 values[f.Name].ToString().Trim().Length == 0)
             {
-                
+
                 value = DBNull.Value;
             }
             else
             {
                 value = values[f.Name];
-                //if (f.DataType == TField.FLOAT)
-                //{
-                //    double nValue;
-                //    if (double.TryParse(values[f.Name].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out nValue))
-                //        value = nValue;
-                //}
-                //else
-                //{
-                    
-                //}
-                
             }
         }
 
@@ -647,7 +616,7 @@ class ProviderSQLite : IProvider
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.Text;
+        cmd.CmdType = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -666,5 +635,8 @@ class ProviderSQLite : IProvider
         return cmd;
     }
 
-
+    public override Element GetElementFromTable(string tableName)
+    {
+        return null;
+    }
 }

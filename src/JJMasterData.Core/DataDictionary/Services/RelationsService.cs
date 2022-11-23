@@ -1,31 +1,34 @@
-﻿using System.Collections.Generic;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationsService : BaseService
 {
-    public RelationsService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public RelationsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+        : base(validationDictionary, dictionaryRepository)
     {
     }
 
     public void Save(ElementRelation elementRelation, string sIndex, string dictionaryName)
     {
-        FormElement formElement = DicDao.GetFormElement(dictionaryName);
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var relations = dictionary.Table.Relations;
 
         if (!string.IsNullOrEmpty(sIndex))
         {
             int index = int.Parse(sIndex);
-            formElement.Relations[index] = elementRelation;
+            relations[index] = elementRelation;
         }
         else
         {
-            formElement.Relations.Add(elementRelation);
+            relations.Add(elementRelation);
         }
 
-        DicDao.SetFormElement(formElement);
+        DictionaryRepository.InsertOrReplace(dictionary);
     }
 
     public bool ValidateRelation(string childElement, string pkColumnName, string fkColumnName)
@@ -35,10 +38,8 @@ public class RelationsService : BaseService
             AddError("PkTableName", Translate.Key("Required PkTableName Field"));
             return IsValid;
         }
-
-        FormElement formElement = DicDao.GetFormElement(childElement);
-        Element childTable = DicDao.Factory.GetElement(childElement);
-        if (childTable == null)
+        
+        if (!DictionaryRepository.Exists(childElement))
         {
             AddError("Entity", Translate.Key("Entity {0} not found", childElement));
             return IsValid;
@@ -56,20 +57,22 @@ public class RelationsService : BaseService
             return IsValid;
         }
 
-        if (!childTable.Fields.ContainsKey(fkColumnName))
+        var dictionary = DictionaryRepository.GetMetadata(childElement);
+        var element = dictionary.Table;
+        if (!element.Fields.ContainsKey(fkColumnName))
         {
             AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElement));
             return IsValid;
         }
 
-        if (!formElement.Fields.Contains(pkColumnName))
+        if (!element.Fields.ContainsKey(pkColumnName))
         {
             AddError("", Translate.Key("Column {0} not found.", pkColumnName));
             return IsValid;
         }
 
-        ElementField fkColumn = childTable.Fields[fkColumnName];
-        ElementField pkColumn = formElement.Fields[pkColumnName];
+        ElementField fkColumn = element.Fields[fkColumnName];
+        ElementField pkColumn = element.Fields[pkColumnName];
 
         if (fkColumn.Filter.Type == FilterMode.None && !fkColumn.IsPk)
         {
@@ -81,7 +84,6 @@ public class RelationsService : BaseService
         {
             AddError("", Translate.Key("Column {0} has incompatible types with column {1}", pkColumnName, fkColumnName));
             return IsValid;
-
         }
 
         return IsValid;
@@ -89,7 +91,6 @@ public class RelationsService : BaseService
 
     public bool ValidateFields(ElementRelation elementRelation, string dictionaryName, string sIndex)
     {
-
         if (string.IsNullOrWhiteSpace(elementRelation.ChildElement))
             AddError("", Translate.Key("Mandatory <b>PKTable </b> field"));
 
@@ -131,6 +132,46 @@ public class RelationsService : BaseService
         }
 
         return IsValid;
+    }
+
+
+    public void Delete(string dictionaryName, string index)
+    {
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        ElementRelation elementRelation = dictionary.Table.Relations[int.Parse(index)];
+        dictionary.Table.Relations.Remove(elementRelation);
+        DictionaryRepository.InsertOrReplace(dictionary);
+    }
+
+
+    public void MoveDown(string dictionaryName, string index)
+    {
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var relations = dictionary.Table.Relations;
+        int indexToMoveDown = int.Parse(index);
+        if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
+        {
+            ElementRelation elementRelation = relations[indexToMoveDown + 1];
+            relations[indexToMoveDown + 1] = relations[indexToMoveDown];
+            relations[indexToMoveDown] = elementRelation;
+
+            DictionaryRepository.InsertOrReplace(dictionary);
+        }
+    }
+
+
+    public void MoveUp(string dictionaryName, string index)
+    {
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var relations = dictionary.Table.Relations;
+        int indexToMoveUp = int.Parse(index);
+        if (indexToMoveUp > 0)
+        {
+            ElementRelation elementRelation = relations[indexToMoveUp - 1];
+            relations[indexToMoveUp - 1] = relations[indexToMoveUp];
+            relations[indexToMoveUp] = elementRelation;
+            DictionaryRepository.InsertOrReplace(dictionary);
+        }
     }
 
 }
