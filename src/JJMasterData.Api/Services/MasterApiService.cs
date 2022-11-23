@@ -315,7 +315,7 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public Dictionary<string, FormValues> PostTrigger(
-        string elementName, Hashtable paramValues, PageState pageState, string objname = "")
+        string elementName, Hashtable? paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -362,16 +362,16 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(DataDictionary dic, Hashtable paramValues)
+    private Hashtable ParseFilter(Metadata metadata, Hashtable? paramValues)
     {
-        var filters = GetDefaultFilter(dic);
+        var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
             return filters;
 
         foreach (DictionaryEntry entry in paramValues)
         {
             //if field not exists, generate a exception
-            var field = dic.Table.Fields[entry.Key.ToString()];
+            var field = metadata.Table.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString()))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()));
         }
@@ -379,7 +379,7 @@ public class MasterApiService
         return filters;
     }
 
-    private Hashtable GetDefaultFilter(DataDictionary dic, bool loadQueryString = false)
+    private Hashtable GetDefaultFilter(Metadata dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -431,7 +431,7 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(DataDictionary dictionary)
+    private FormService GetFormService(Metadata dictionary)
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
@@ -452,7 +452,7 @@ public class MasterApiService
         return service;
     }
 
-    private DataDictionary GetDataDictionary(string elementName)
+    private Metadata GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

@@ -33,9 +33,9 @@ public class DictionariesController : ControllerBase
     /// <response code="403">Token Expired</response>
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
-    [Produces(typeof(DataDictionary[]))]
+    [Produces(typeof(Metadata[]))]
     [Route("api/dictionaries/")]
-    public ActionResult<DataDictionary[]> GetAll()
+    public ActionResult<Metadata[]> GetAll()
     {
         var dicList = _dictionaryRepository.GetListDictionary(true);
         if (dicList == null)
@@ -56,7 +56,7 @@ public class DictionariesController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
     [Route("api/dictionaries/{id}")]
-    public DataDictionary Get(string id)
+    public Metadata Get(string id)
     {
         return _dictionaryRepository.GetDictionary(id);
     }

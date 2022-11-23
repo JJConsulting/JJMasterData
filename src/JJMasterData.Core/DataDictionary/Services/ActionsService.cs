@@ -23,29 +23,29 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void DeleteAction(ref DataDictionary dicParser, string originalName, ActionOrigin context, string fieldName = null)
+    private void DeleteAction(ref Metadata metadata, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (originalName == null)
             return;
 
         if (context == ActionOrigin.Field)
         {
-            var field = dicParser.GetFormElement().Fields[fieldName];
-            var ac = field.Actions.Get(originalName);
-            if (ac != null)
-                field.Actions.Remove(ac);
+            var field = metadata.GetFormElement().Fields[fieldName];
+            var action = field.Actions.Get(originalName);
+            if (action != null)
+                field.Actions.Remove(action);
         }
         else if (context == ActionOrigin.Grid)
         {
-            var ac = dicParser.UIOptions.GridActions.Get(originalName);
-            if (ac != null)
-                dicParser.UIOptions.GridActions.Remove(ac);
+            var action = metadata.UIOptions.GridActions.Get(originalName);
+            if (action != null)
+                metadata.UIOptions.GridActions.Remove(action);
         }
         else if (context == ActionOrigin.Toolbar)
         {
-            var ac = dicParser.UIOptions.ToolBarActions.Get(originalName);
-            if (ac != null)
-                dicParser.UIOptions.ToolBarActions.Remove(ac);
+            var action = metadata.UIOptions.ToolBarActions.Get(originalName);
+            if (action != null)
+                metadata.UIOptions.ToolBarActions.Remove(action);
         }
     }
 
@@ -99,7 +99,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private bool ValidateActionName(DataDictionary dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
+    private bool ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -135,7 +135,7 @@ public class ActionsService : BaseService
         return IsValid;
     }
 
-    private bool ValidateAction(DataDictionary dicParser, BasicAction action)
+    private bool ValidateAction(Metadata dicParser, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));

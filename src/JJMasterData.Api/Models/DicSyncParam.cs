@@ -18,5 +18,5 @@ public class DicSyncParam
     /// Array com o nome do campo e valor
     /// </summary>
     [DataMember(Name = "filters")]
-    public Hashtable Filters { get; set; }
+    public Hashtable? Filters { get; set; }
 }

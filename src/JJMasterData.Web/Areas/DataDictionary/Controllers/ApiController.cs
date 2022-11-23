@@ -49,16 +49,16 @@ public class ApiController : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(Core.DataDictionary.DataDictionary dic)
+    private ApiViewModel PopulateViewModel(Metadata metadata)
     {
         var model = new ApiViewModel
         {
-            ApiSettings = dic.Api,
+            ApiSettings = metadata.Api,
             MenuId = "Api",
-            DictionaryName = dic.Table.Name,
-            Mode = dic.Table.SyncMode,
-            IsSync = dic.Table.Sync,
-            Fields = dic.Table.Fields.ToList().FindAll(
+            DictionaryName = metadata.Table.Name,
+            Mode = metadata.Table.SyncMode,
+            IsSync = metadata.Table.Sync,
+            Fields = metadata.Table.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &
                      x.DataType != FieldType.Date

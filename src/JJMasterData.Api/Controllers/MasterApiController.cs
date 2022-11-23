@@ -82,7 +82,7 @@ public class MasterApiController : ControllerBase
     [HttpPost]
     [Produces(typeof(FormValues[]))]
     [Route("masterApi/{elementName}/trigger/{pageState?}/{objname?}")]
-    public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody]Hashtable paramValues, PageState pageState, string objname = "")
+    public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody]Hashtable? paramValues, PageState pageState, string objname = "")
     {
         return Ok(_service.PostTrigger(elementName, paramValues, pageState, objname));
     }

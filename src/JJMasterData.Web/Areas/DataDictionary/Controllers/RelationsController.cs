@@ -170,7 +170,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            Core.DataDictionary.DataDictionary dicParser = _relationsService.DictionaryRepository.GetDictionary(childElement);
+            Metadata dicParser = _relationsService.DictionaryRepository.GetDictionary(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {

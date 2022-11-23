@@ -20,7 +20,7 @@ public interface IDictionaryRepository
     /// Responsável por montar o Element, FormElement 
     /// e outras configurações de layout
     /// </returns>
-    DataDictionary GetDictionary(string elementName);
+    Metadata GetDictionary(string elementName);
 
     /// <summary>
     /// Recupera uma lista de metadados armazenados no banco de dados
@@ -34,7 +34,7 @@ public interface IDictionaryRepository
     /// Metodo normalmente utilizado para sincronismo do dicionários entre sistemas.
     /// Permitindo remondar a herança original no sistema legado.
     /// </remarks>
-    List<DataDictionary> GetListDictionary(bool? sync);
+    List<Metadata> GetListDictionary(bool? sync);
 
     /// <summary>
     /// Recupera a lista com os nomes do dicionario
@@ -52,7 +52,7 @@ public interface IDictionaryRepository
     /// <summary>
     /// Persiste o dicionário no banco de dados
     /// </summary>
-    void SetDictionary(DataDictionary dictionary);
+    void SetDictionary(Metadata dictionary);
 
     /// <summary>
     /// Exclui o elemento no banco de dados

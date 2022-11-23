@@ -17,49 +17,49 @@ namespace JJMasterData.Swagger
             var dao = DictionaryRepositoryFactory.GetInstance();
             var dictionaries = dao.GetListDictionary(null);
 
-            foreach (DataDictionary dic in dictionaries)
+            foreach (Metadata metadata in dictionaries)
             {
-                FormElement f = dic.GetFormElement();
-                ApiSettings api = dic.Api;
+                FormElement f = metadata.GetFormElement();
+                ApiSettings api = metadata.Api;
                 string key;
 
                 //Get All
-                if (dic.Api.EnableGetAll)
+                if (metadata.Api.EnableGetAll)
                 {
                     key = "/MasterApi/" + f.Name + "/";
                     swaggerDoc.paths.Add(key, GetAllPathItem(f, api));
                 }
 
                 //Get Detail
-                if (dic.Api.EnableGetDetail)
+                if (metadata.Api.EnableGetDetail)
                 {
                     key = "/MasterApi/" + f.Name + "/{id}";
                     swaggerDoc.paths.Add(key, GetDetailPathItem(f, api));
                 }
 
                 //Add 
-                if (dic.Api.EnableAdd)
+                if (metadata.Api.EnableAdd)
                 {
                     key = "/MasterApi/" + f.Name;
                     swaggerDoc.paths.Add(key, GetPostPathItem(f, api));
                 }
 
                 //Update 
-                if (dic.Api.EnableUpdate)
+                if (metadata.Api.EnableUpdate)
                 {
                     key = "/MasterApi/" + f.Name + "/ ";
                     swaggerDoc.paths.Add(key, GetPutPathItem(f, api));
                 }
 
                 //Parcial Update
-                if (dic.Api.EnableUpdatePart)
+                if (metadata.Api.EnableUpdatePart)
                 {
                     key = "/MasterApi/" + f.Name + " ";
                     swaggerDoc.paths.Add(key, GetPatchPathItem(f, api));
                 }
 
                 //Del
-                if (dic.Api.EnableDel)
+                if (metadata.Api.EnableDel)
                 {
                     key = "/MasterApi/" + f.Name + "/{id} ";
                     swaggerDoc.paths.Add(key, GetDelPathItem(f, api));

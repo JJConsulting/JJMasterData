@@ -95,7 +95,7 @@ public class ElementService : BaseService
         formElement.CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName);
         formElement.CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName);
 
-        var dictionary = new DataDictionary
+        var dictionary = new Metadata
         {
             Table = formElement.DeepCopy(),
             Form = new DataDictionaryForm(formElement)
@@ -320,7 +320,7 @@ public class ElementService : BaseService
     public bool Import(Stream file)
     {
         string json = new StreamReader(file).ReadToEnd();
-        var dicParser = JsonConvert.DeserializeObject<DataDictionary>(json);
+        var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
         DictionaryRepository.SetDictionary(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");

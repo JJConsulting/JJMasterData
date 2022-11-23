@@ -393,9 +393,9 @@ public class FieldService : BaseService
         return dicFields;
     }
 
-    public bool CopyField(DataDictionary dictionary, FormElementField field)
+    public bool CopyField(Metadata metadata, FormElementField field)
     {
-        var formElement = dictionary.GetFormElement();
+        var formElement = metadata.GetFormElement();
         var newField = field.DeepCopy();
 
         if (formElement.Fields.Contains(newField.Name))
@@ -405,8 +405,8 @@ public class FieldService : BaseService
         }
 
         formElement.Fields.Add(newField);
-        dictionary.SetFormElement(formElement);
-        DictionaryRepository.SetDictionary(dictionary);
+        metadata.SetFormElement(formElement);
+        DictionaryRepository.SetDictionary(metadata);
         return IsValid;
     }
 

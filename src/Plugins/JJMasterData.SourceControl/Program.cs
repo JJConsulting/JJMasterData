@@ -17,13 +17,13 @@ DateTime start = DateTime.Now;
 IEntityRepository entityRepository = new Factory();
 var dicDao = new DictionaryDao(entityRepository);
 var databaseDictionaries = dicDao.GetListDictionary(false);
-var folderDictionaries = new List<DataDictionary>();
+var folderDictionaries = new List<Metadata>();
 
 foreach (string file in Directory.EnumerateFiles(path, "*.json"))
 {
     var json = new StreamReader(file).ReadToEnd();
 
-    var dicParser = JsonConvert.DeserializeObject<DataDictionary>(json);
+    var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
 
     if(dicParser != null)
     {

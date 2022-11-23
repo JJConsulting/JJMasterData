@@ -27,7 +27,7 @@ public class DictionariesControllerTest
     {
         var dictionaries = _controller.GetAll().Value;
 
-        Assert.IsType<DataDictionary[]>(dictionaries);
+        Assert.IsType<Metadata[]>(dictionaries);
     }
     
     [Theory]
@@ -36,7 +36,7 @@ public class DictionariesControllerTest
     {
         var dictionary = _controller.Get(id);
 
-        Assert.IsType<DataDictionary>(dictionary);
+        Assert.IsType<Metadata>(dictionary);
         Assert.Equal(id,dictionary.Table.Name);
     }
 }

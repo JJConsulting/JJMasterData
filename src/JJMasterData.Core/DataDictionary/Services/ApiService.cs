@@ -11,7 +11,7 @@ public class ApiService : BaseService
     {
     }
 
-    public bool EditApi(DataDictionary dicParser)
+    public bool EditApi(Metadata dicParser)
     {
         if (ValidateApi(dicParser))
             DictionaryRepository.SetDictionary(dicParser);
@@ -19,7 +19,7 @@ public class ApiService : BaseService
         return IsValid;
     }
 
-    public bool ValidateApi(DataDictionary dicParser)
+    public bool ValidateApi(Metadata dicParser)
     {
         bool hasApiGetEnabled;
 

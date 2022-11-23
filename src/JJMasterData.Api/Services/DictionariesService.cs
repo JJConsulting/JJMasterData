@@ -91,13 +91,13 @@ public class DictionariesService
         return syncInfo;
     }
 
-    private Hashtable GetSyncInfoFilter(string userId, DataDictionary dictionary, Hashtable osFilters)
+    private Hashtable GetSyncInfoFilter(string userId, Metadata metadata, Hashtable? metadataFilters)
     {
         var filters = new Hashtable();
-        var fields = dictionary.Table.Fields;
-        if (osFilters != null)
+        var fields = metadata.Table.Fields;
+        if (metadataFilters != null)
         {
-            foreach (DictionaryEntry osFilter in osFilters)
+            foreach (DictionaryEntry osFilter in metadataFilters)
             {
                 if (!fields.ContainsKey(osFilter.Key.ToString()))
                     continue;
@@ -106,7 +106,7 @@ public class DictionariesService
             }
         }
 
-        string fieldApplyUser = dictionary.Api.ApplyUserIdOn;
+        string fieldApplyUser = metadata.Api.ApplyUserIdOn;
         if (!string.IsNullOrEmpty(fieldApplyUser))
         {
             if (!filters.ContainsKey(fieldApplyUser))
@@ -116,7 +116,7 @@ public class DictionariesService
             else
             {
                 if (!filters[fieldApplyUser].ToString().Equals(userId))
-                    throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", dictionary.Table.Name));
+                    throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", metadata.Table.Name));
             }
         }
 

@@ -7,7 +7,7 @@ using JJMasterData.Commons.Language;
 namespace JJMasterData.Core.DataDictionary;
 
 [DataContract(Name = "elementInfo")]
-public class DataDictionary
+public class Metadata
 {
     [DataMember(Name = "table")]
     public Element Table { get; set; }
