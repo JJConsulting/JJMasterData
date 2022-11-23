@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-internal static class DictionaryRepositoryFactory
+public static class DictionaryRepositoryFactory
 {
     public static IDictionaryRepository GetInstance()
     {

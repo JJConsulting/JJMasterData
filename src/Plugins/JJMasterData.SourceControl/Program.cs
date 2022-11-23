@@ -1,5 +1,7 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -12,9 +14,8 @@ Console.WriteLine(AppContext.BaseDirectory);
 Console.WriteLine("Starting Process...\n");
 
 DateTime start = DateTime.Now;
-
-var dicDao = new DictionaryDao();
-
+IEntityRepository entityRepository = new Factory();
+var dicDao = new DictionaryDao(entityRepository);
 var databaseDictionaries = dicDao.GetListDictionary(false);
 var folderDictionaries = new List<DataDictionary>();
 

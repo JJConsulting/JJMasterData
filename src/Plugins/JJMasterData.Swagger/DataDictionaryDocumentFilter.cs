@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
+using Swashbuckle.Swagger;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
-using Swashbuckle.Swagger;
 
 namespace JJMasterData.Swagger
 {
@@ -14,7 +14,7 @@ namespace JJMasterData.Swagger
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            var dao = new DictionaryDao();
+            var dao = DictionaryRepositoryFactory.GetInstance();
             var dictionaries = dao.GetListDictionary(null);
 
             foreach (DataDictionary dic in dictionaries)

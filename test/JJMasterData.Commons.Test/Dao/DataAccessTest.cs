@@ -6,7 +6,7 @@ public class DataAccessTest
 {
     private const string TableName = "DataAccessTest";
 
-    private IDataAccess DataAccess { get; }
+    private DataAccess DataAccess { get; }
 
     public DataAccessTest()
     {
