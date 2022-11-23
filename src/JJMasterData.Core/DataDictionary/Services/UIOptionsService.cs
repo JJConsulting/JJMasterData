@@ -7,9 +7,9 @@ using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class OptionsService : BaseService
+public class UIOptionsService : BaseService
 {
-    public OptionsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+    public UIOptionsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
         : base(validationDictionary, dictionaryRepository)
     {
     }

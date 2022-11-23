@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -95,13 +94,13 @@ public static class ServiceCollectionExtensions
         services.AddTransient<EntityService>();
         services.AddTransient<FieldService>();
         services.AddTransient<IndexesService>();
-        services.AddTransient<Core.DataDictionary.Services.OptionsService>();
+        services.AddTransient<UIOptionsService>();
         services.AddTransient<PanelService>();
         services.AddTransient<RelationsService>();
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
-        //TODO:services.AddTransient<OptionsService>();
+        services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }
     
