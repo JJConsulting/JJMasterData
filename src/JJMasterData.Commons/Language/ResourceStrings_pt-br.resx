@@ -3387,4 +3387,7 @@
   <data name="Exception thrown in DataAccess class" xml:space="preserve">
     <value>Exception aconteceu na classe DataAccess</value>
   </data>
+  <data name="All changes will be saved in the file located at the path:" xml:space="preserve">
+    <value>Todas as alterações serão salvas no arquivo localizado no caminho:</value>
+  </data>
 </root>

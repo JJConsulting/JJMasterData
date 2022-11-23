@@ -7,25 +7,30 @@
 <form>
     <input asp-for="FilePath" hidden="hidden"/>
     <input asp-for="IsFullscreen" hidden="hidden"/>
-    
+
     @if (Model.IsFullscreen)
     {
-        <jj-title title="Application Settings" subtitle="@Model.FilePath"/>
+        <jj-title title="Application Settings"/>
     }
-    
+
+    <jj-alert icon="InfoCircle"
+              color="Info"
+              message="@Model.FilePath"
+              title="All changes will be saved in the file located at the path:"/>
+
     @if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })
     {
         <jj-alert
-            title="@Translate.Key("Success")"
-            messages="@(new List<string> { Translate.Key("Connection successfully estabilished.") })"
+            title="Success"
+            message="Connection successfully estabilished."
             icon="@IconType.CheckCircle"
             color="@PanelColor.Success"/>
     }
     else if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:false })
     {
         <jj-alert
-            title="@Translate.Key("Error")"
-            messages="@(new List<string> { Model.ConnectionString.ConnectionResult.ErrorMessage })"
+            title="Error"
+            message="@Model.ConnectionString.ConnectionResult.ErrorMessage"
             icon="@IconType.ExclamationTriangle"
             color="@PanelColor.Danger"/>
     }

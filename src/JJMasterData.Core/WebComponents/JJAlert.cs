@@ -44,11 +44,15 @@ namespace JJMasterData.Core.WebComponents
                 html.AppendElement(HtmlTag.B)
                     .AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
 
-            foreach (string message in Messages)
+            if (Messages != null)
             {
-                html.AppendElement(HtmlTag.Br);
-                html.AppendText(Translate.Key(message));
+                foreach (string message in Messages)
+                {
+                    html.AppendElement(HtmlTag.Br);
+                    html.AppendText(Translate.Key(message));
+                }
             }
+
 
             return html;
         }
