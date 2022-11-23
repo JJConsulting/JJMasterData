@@ -362,7 +362,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(Dictionary dic, Hashtable paramValues)
+    private Hashtable ParseFilter(DataDictionary dic, Hashtable paramValues)
     {
         var filters = GetDefaultFilter(dic);
         if (paramValues == null)
@@ -379,7 +379,7 @@ public class MasterApiService
         return filters;
     }
 
-    private Hashtable GetDefaultFilter(Dictionary dic, bool loadQueryString = false)
+    private Hashtable GetDefaultFilter(DataDictionary dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -431,7 +431,7 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(Dictionary dictionary)
+    private FormService GetFormService(DataDictionary dictionary)
     {
         bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
@@ -452,7 +452,7 @@ public class MasterApiService
         return service;
     }
 
-    private Dictionary GetDataDictionary(string elementName)
+    private DataDictionary GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

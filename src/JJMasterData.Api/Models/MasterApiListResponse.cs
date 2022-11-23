@@ -22,7 +22,7 @@ public class MasterApiListResponse
     public Dictionary<string, object>[] Fields { get; set; }
 
 
-    public void SetDataTableValues(Dictionary dic, DataTable dt)
+    public void SetDataTableValues(DataDictionary dic, DataTable dt)
     {
         if (dt == null)
             return;

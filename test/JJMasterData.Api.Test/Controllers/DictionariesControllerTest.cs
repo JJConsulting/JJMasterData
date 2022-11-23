@@ -20,7 +20,7 @@ public class DictionariesControllerTest
     {
         var dictionaries = _controller.GetAll().Value;
 
-        Assert.IsType<Dictionary[]>(dictionaries);
+        Assert.IsType<DataDictionary[]>(dictionaries);
     }
     
     [Theory]
@@ -29,7 +29,7 @@ public class DictionariesControllerTest
     {
         var dictionary = _controller.Get(id);
 
-        Assert.IsType<Dictionary>(dictionary);
+        Assert.IsType<DataDictionary>(dictionary);
         Assert.Equal(id,dictionary.Table.Name);
     }
 }

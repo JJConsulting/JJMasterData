@@ -91,7 +91,7 @@ public class DictionariesService
         return syncInfo;
     }
 
-    private Hashtable GetSyncInfoFilter(string userId, Dictionary dictionary, Hashtable osFilters)
+    private Hashtable GetSyncInfoFilter(string userId, DataDictionary dictionary, Hashtable osFilters)
     {
         var filters = new Hashtable();
         var fields = dictionary.Table.Fields;

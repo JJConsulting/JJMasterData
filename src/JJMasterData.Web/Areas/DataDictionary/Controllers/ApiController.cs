@@ -48,7 +48,7 @@ public class ApiController : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(Dictionary dic)
+    private ApiViewModel PopulateViewModel(Core.DataDictionary.DataDictionary dic)
     {
         var model = new ApiViewModel
         {

@@ -393,7 +393,7 @@ public class FieldService : BaseService
         return dicFields;
     }
 
-    public bool CopyField(Dictionary dictionary, FormElementField field)
+    public bool CopyField(DataDictionary dictionary, FormElementField field)
     {
         var formElement = dictionary.GetFormElement();
         var newField = field.DeepCopy();

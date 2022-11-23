@@ -16,13 +16,13 @@ DateTime start = DateTime.Now;
 var dicDao = new DictionaryDao();
 
 var databaseDictionaries = dicDao.GetListDictionary(false);
-var folderDictionaries = new List<Dictionary>();
+var folderDictionaries = new List<DataDictionary>();
 
 foreach (string file in Directory.EnumerateFiles(path, "*.json"))
 {
     var json = new StreamReader(file).ReadToEnd();
 
-    var dicParser = JsonConvert.DeserializeObject<Dictionary>(json);
+    var dicParser = JsonConvert.DeserializeObject<DataDictionary>(json);
 
     if(dicParser != null)
     {

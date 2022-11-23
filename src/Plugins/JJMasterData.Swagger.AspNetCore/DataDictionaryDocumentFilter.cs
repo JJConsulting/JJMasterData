@@ -20,7 +20,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
         var dictionaries = _dictionaryRepository.GetListDictionary(true);
 
-        foreach (Dictionary dic in dictionaries)
+        foreach (DataDictionary dic in dictionaries)
         {
             FormElement formElement = dic.GetFormElement();
 

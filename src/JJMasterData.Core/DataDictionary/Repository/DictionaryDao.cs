@@ -22,9 +22,9 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetListDictionary(bool?)"/>
-    public List<Dictionary> GetListDictionary(bool? sync)
+    public List<DataDictionary> GetListDictionary(bool? sync)
     {
-        var list = new List<Dictionary>();
+        var list = new List<DataDictionary>();
 
         var filter = new Hashtable();
         if (sync.HasValue)
@@ -34,7 +34,7 @@ public class DictionaryDao : IDictionaryRepository
         string currentName = "";
         int tot = 1;
         var dt = _entityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
-        Dictionary currentParser = null;
+        DataDictionary currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
             string name = row["name"].ToString();
@@ -43,7 +43,7 @@ public class DictionaryDao : IDictionaryRepository
                 ApplyCompatibility(currentParser, name);
 
                 currentName = name;
-                list.Add(new Dictionary());
+                list.Add(new DataDictionary());
                 currentParser = list[list.Count - 1];
             }
 
@@ -54,7 +54,7 @@ public class DictionaryDao : IDictionaryRepository
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                currentParser.Form = JsonConvert.DeserializeObject<DictionaryForm>(json);
+                currentParser.Form = JsonConvert.DeserializeObject<DataDictionaryForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -89,7 +89,7 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetDictionary(string)"/>
-    public Dictionary GetDictionary(string elementName)
+    public DataDictionary GetDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary invalid"));
@@ -100,7 +100,7 @@ public class DictionaryDao : IDictionaryRepository
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
 
-        Dictionary ret = new();
+        DataDictionary ret = new();
         foreach (DataRow row in dt.Rows)
         {
             string json = row["json"].ToString();
@@ -110,7 +110,7 @@ public class DictionaryDao : IDictionaryRepository
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                ret.Form = JsonConvert.DeserializeObject<DictionaryForm>(json);
+                ret.Form = JsonConvert.DeserializeObject<DataDictionaryForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -127,8 +127,8 @@ public class DictionaryDao : IDictionaryRepository
         return ret;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.SetDictionary(Dictionary)"/>
-    public void SetDictionary(Dictionary dictionary)
+    ///<inheritdoc cref="IDictionaryRepository.SetDictionary(DataDictionary)"/>
+    public void SetDictionary(DataDictionary dictionary)
     {
         if (dictionary == null)
             throw new ArgumentNullException(nameof(dictionary));
@@ -264,7 +264,7 @@ public class DictionaryDao : IDictionaryRepository
         return element;
     }
 
-    private void ApplyCompatibility(Dictionary dicParser, string elementName)
+    private void ApplyCompatibility(DataDictionary dicParser, string elementName)
     {
         if (dicParser == null)
             return;

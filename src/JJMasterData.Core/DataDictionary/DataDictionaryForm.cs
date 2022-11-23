@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DictionaryForm
+public class DataDictionaryForm
 {
     [DataMember(Name = "formfields")]
-    public List<DictionaryFormField> FormFields { get; set; }
+    public List<DataDictionaryFormField> FormFields { get; set; }
 
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -19,20 +19,20 @@ public class DictionaryForm
     public List<FormElementPanel> Panels { get; set; }
 
 
-    public DictionaryForm()
+    public DataDictionaryForm()
     {
         Panels = new List<FormElementPanel>();
-        FormFields = new List<DictionaryFormField>();
+        FormFields = new List<DataDictionaryFormField>();
     }
 
-    public DictionaryForm(FormElement e) : this()
+    public DataDictionaryForm(FormElement e) : this()
     {
         Title = e.Title;
         SubTitle = e.SubTitle;
         Panels = e.Panels;
         foreach (var f in e.Fields)
         {
-            FormFields.Add(new DictionaryFormField(f));
+            FormFields.Add(new DataDictionaryFormField(f));
         }
     }
 }

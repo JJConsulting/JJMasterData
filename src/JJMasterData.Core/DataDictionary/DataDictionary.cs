@@ -7,13 +7,13 @@ using JJMasterData.Commons.Language;
 namespace JJMasterData.Core.DataDictionary;
 
 [DataContract(Name = "elementInfo")]
-public class Dictionary
+public class DataDictionary
 {
     [DataMember(Name = "table")]
     public Element Table { get; set; }
 
     [DataMember(Name = "form")]
-    public DictionaryForm Form { get; set; }
+    public DataDictionaryForm Form { get; set; }
 
     [DataMember(Name = "uioptions")]
     public UIOptions UIOptions { get; set; }
@@ -78,7 +78,7 @@ public class Dictionary
         }
 
         Table = formElement.DeepCopy();
-        Form = new DictionaryForm(formElement);
+        Form = new DataDictionaryForm(formElement);
     }
 
 }
