@@ -41,7 +41,7 @@ public class ElementController : DataDictionaryController
         }
         catch(DataAccessException)
         {
-            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
+            return RedirectToAction("Index", "UIOptions", new { Area = "MasterData", isFullscreen=true });
         }
 
         return View("Create");
@@ -129,22 +129,6 @@ public class ElementController : DataDictionaryController
         ViewBag.IsDefault = false;
 
         return View("Scripts", "_MasterDataLayout.Popup");
-    }
-
-    public IActionResult About()
-    {
-        var service = new AboutService();
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        var model = new AboutViewModel
-        {
-            ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
-            ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
-            BootstrapVersion = BootstrapHelper.Version.ToString(),
-            Dependencies = service.GetJJAssemblies()
-        };
-
-        return View("About", model);
     }
 
     [HttpPost]
@@ -309,7 +293,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Application Options"),
-            UrlRedirect = Url.Action("Index", "Options", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "UIOptions", new {Area = "MasterData"}),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
         };

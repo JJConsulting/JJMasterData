@@ -33,11 +33,11 @@ public class ConnectionString
         
     }
     
-    public ConnectionString(string @string)
+    public ConnectionString(string connectionString)
     {
         var builder = new DbConnectionStringBuilder
         {
-            ConnectionString = @string
+            ConnectionString = connectionString
         };
         if (builder.TryGetValue("data source", out var dataSource))
         {

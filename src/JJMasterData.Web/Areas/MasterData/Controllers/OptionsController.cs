@@ -25,7 +25,7 @@ public class OptionsController : MasterDataController
     {
         var settings = new OptionsViewModel
         {
-            ConnectionString = new ConnectionString(Service.Options.GetConnectionString("ConnectionString")),
+            ConnectionString = new ConnectionString(Service.Options.GetConnectionString()),
             Options = Service.Options,
             IsFullscreen = isFullscreen
         };

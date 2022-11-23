@@ -1,4 +1,3 @@
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Authorization;
