@@ -41,7 +41,7 @@ internal class ActionManager
     {
         var elementRedirect = action.ElementRedirect;
         var dicDao = new DictionaryDao(EntityRepository);
-        var dicParser = dicDao.GetDictionary(action.ElementRedirect.ElementNameRedirect);
+        var dicParser = dicDao.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         string popup = "true";

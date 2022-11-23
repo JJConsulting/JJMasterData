@@ -22,7 +22,7 @@ namespace JJMasterData.Core.WebComponents
                 throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
 
             var dicDao = DictionaryRepositoryFactory.GetInstance();
-            var dicParser = dicDao.GetDictionary(elementName);
+            var dicParser = dicDao.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = dicParser.GetFormElement();
             SetGridOptions(grid, dicParser.UIOptions.Grid);

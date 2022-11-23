@@ -36,7 +36,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -56,7 +56,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -76,7 +76,7 @@ public class MasterApiService
 
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        var dictionary = _dictionaryRepository.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -320,7 +320,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetDictionary(elementName);
+        var dictionary = _dictionaryRepository.GetMetadata(elementName);
 
         if (!dictionary.Api.EnableAdd & !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -457,7 +457,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return _dictionaryRepository.GetDictionary(elementName);
+        return _dictionaryRepository.GetMetadata(elementName);
     }
 
     private ResponseLetter CreateErrorResponseLetter(Hashtable erros, ApiSettings api)

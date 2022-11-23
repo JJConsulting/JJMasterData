@@ -25,7 +25,7 @@ internal static class FormFactory
 
         form.Name = "jjview" + elementName.ToLower();
         var dicDao = DictionaryRepositoryFactory.GetInstance();
-        var dicParser = dicDao.GetDictionary(elementName);
+        var dicParser = dicDao.GetMetadata(elementName);
 
         form.FormElement = dicParser.GetFormElement();
         SetFormptions(form, dicParser.UIOptions);

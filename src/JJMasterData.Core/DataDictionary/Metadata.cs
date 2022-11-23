@@ -13,7 +13,7 @@ public class Metadata
     public Element Table { get; set; }
 
     [DataMember(Name = "form")]
-    public DataDictionaryForm Form { get; set; }
+    public MetadataForm Form { get; set; }
 
     [DataMember(Name = "uioptions")]
     public UIOptions UIOptions { get; set; }
@@ -78,7 +78,7 @@ public class Metadata
         }
 
         Table = formElement.DeepCopy();
-        Form = new DataDictionaryForm(formElement);
+        Form = new MetadataForm(formElement);
     }
 
 }

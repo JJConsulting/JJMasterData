@@ -16,9 +16,9 @@ public class ActionsService : BaseService
 
     public bool DeleteAction(string elementName, string actionName, ActionOrigin context, string fieldName = null)
     {
-        var dicParser = DictionaryRepository.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetMetadata(elementName);
         DeleteAction(ref dicParser, actionName, context, fieldName);
-        DictionaryRepository.SetDictionary(dicParser);
+        DictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
@@ -51,7 +51,7 @@ public class ActionsService : BaseService
 
     public bool SaveAction(string elementName, BasicAction action, ActionOrigin context, string originalName, string fieldName = null)
     {
-        var dicParser = DictionaryRepository.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetMetadata(elementName);
         ValidateActionName(dicParser, action.Name, originalName, context, fieldName);
         ValidateAction(dicParser, action);
 
@@ -94,7 +94,7 @@ public class ActionsService : BaseService
                 break;
         }
 
-        DictionaryRepository.SetDictionary(dicParser);
+        DictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
@@ -186,7 +186,7 @@ public class ActionsService : BaseService
 
     public bool SortActions(string elementName, string[] listAction, ActionOrigin actionContext, string fieldName)
     {
-        var dicParser = DictionaryRepository.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetMetadata(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -207,14 +207,14 @@ public class ActionsService : BaseService
             }
             action.Order = i + 1;
         }
-        DictionaryRepository.SetDictionary(dicParser);
+        DictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
 
     public bool EnableDisable(string elementName, string actionName, ActionOrigin actionContext, bool visible)
     {
-        var dicParser = DictionaryRepository.GetDictionary(elementName);
+        var dicParser = DictionaryRepository.GetMetadata(elementName);
         BasicAction action = null;
         if (actionContext == ActionOrigin.Grid)
         {
@@ -226,7 +226,7 @@ public class ActionsService : BaseService
         }
 
         action.SetVisible(visible);
-        DictionaryRepository.SetDictionary(dicParser);
+        DictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
@@ -239,7 +239,7 @@ public class ActionsService : BaseService
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var dataEntry = DictionaryRepository.GetDictionary(elementName);
+        var dataEntry = DictionaryRepository.GetMetadata(elementName);
         if (dataEntry == null)
             return dicFields;
 

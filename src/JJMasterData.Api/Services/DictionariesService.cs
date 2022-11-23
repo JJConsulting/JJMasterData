@@ -40,7 +40,7 @@ public class DictionariesService
             throw new ArgumentException(Translate.Key("DicSyncParam invalid"));
 
         var dStart = DateTime.Now;
-        var dictionaries = _dictionaryRepository.GetListDictionary(true);
+        var dictionaries = _dictionaryRepository.GetMetadataList(true);
         var syncInfo = new DicSyncInfo();
         syncInfo.ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
         int totRecords = 0;

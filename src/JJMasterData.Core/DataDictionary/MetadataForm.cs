@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DataDictionaryForm
+public class MetadataForm
 {
     [DataMember(Name = "formfields")]
-    public List<DataDictionaryFormField> FormFields { get; set; }
+    public List<MetadataFormField> FormFields { get; set; }
 
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -19,20 +19,20 @@ public class DataDictionaryForm
     public List<FormElementPanel> Panels { get; set; }
 
 
-    public DataDictionaryForm()
+    public MetadataForm()
     {
         Panels = new List<FormElementPanel>();
-        FormFields = new List<DataDictionaryFormField>();
+        FormFields = new List<MetadataFormField>();
     }
 
-    public DataDictionaryForm(FormElement e) : this()
+    public MetadataForm(FormElement e) : this()
     {
         Title = e.Title;
         SubTitle = e.SubTitle;
         Panels = e.Panels;
         foreach (var f in e.Fields)
         {
-            FormFields.Add(new DataDictionaryFormField(f));
+            FormFields.Add(new MetadataFormField(f));
         }
     }
 }

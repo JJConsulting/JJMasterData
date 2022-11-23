@@ -21,7 +21,7 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dicParcer = _actionsService.DictionaryRepository.GetDictionary(dictionaryName);
+        var dicParcer = _actionsService.DictionaryRepository.GetMetadata(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
         ViewBag.ToolBarActions = dicParcer.UIOptions.ToolBarActions.GetAll();
@@ -40,7 +40,7 @@ public class ActionsController : DataDictionaryController
             throw new ArgumentNullException(nameof(dictionaryName));
         }
 
-        var dicParcer = _actionsService.DictionaryRepository.GetDictionary(dictionaryName);
+        var dicParcer = _actionsService.DictionaryRepository.GetMetadata(dictionaryName);
 
         BasicAction? action = null;
         switch (context)

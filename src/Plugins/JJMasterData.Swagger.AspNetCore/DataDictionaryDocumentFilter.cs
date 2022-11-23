@@ -18,7 +18,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var dictionaries = _dictionaryRepository.GetListDictionary(true);
+        var dictionaries = _dictionaryRepository.GetMetadataList(true);
 
         foreach (var metadata in dictionaries)
         {

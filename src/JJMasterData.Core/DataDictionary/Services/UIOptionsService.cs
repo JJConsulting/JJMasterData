@@ -20,7 +20,7 @@ public class UIOptionsService : BaseService
 
         if (uIOptions.Grid.EnableMultSelect)
         {
-            var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
+            var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
             var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -38,11 +38,11 @@ public class UIOptionsService : BaseService
         {
             if (ValidateOptions(uIOptions, dictionaryName))
             {
-                var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
+                var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
                 dicParser.UIOptions.Form = uIOptions.Form;
                 dicParser.UIOptions.Grid = uIOptions.Grid;
 
-                DictionaryRepository.SetDictionary(dicParser);
+                DictionaryRepository.InsertOrReplace(dicParser);
             }
         }
         catch (Exception ex)

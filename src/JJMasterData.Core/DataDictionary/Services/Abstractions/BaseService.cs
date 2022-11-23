@@ -34,7 +34,7 @@ public abstract class BaseService
 
     public FormElement GetFormElement(string dictionaryName)
     {
-        var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
+        var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
         return dicParser.GetFormElement();
     }
 
@@ -101,7 +101,7 @@ public abstract class BaseService
         var dicElement = new Dictionary<string, string>();
         dicElement.Add(string.Empty, Translate.Key("--Select--"));
 
-        string[] list = DictionaryRepository.GetListDictionaryName();
+        string[] list = DictionaryRepository.GetNameList();
         foreach (string name in list)
         {
             dicElement.Add(name, name);

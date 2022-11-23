@@ -33,7 +33,7 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var dictionary = DictionaryRepository.GetDictionary(id);
+        var dictionary = DictionaryRepository.GetMetadata(id);
         var element = dictionary.Table;
         var listScripts = new List<string>
         {
@@ -48,7 +48,7 @@ public class ElementService : BaseService
 
     public void ExecScripts(string id, string scriptExec)
     {
-        var dictionary = DictionaryRepository.GetDictionary(id);
+        var dictionary = DictionaryRepository.GetMetadata(id);
         var element = dictionary.Table;
 
         switch (scriptExec)
@@ -98,10 +98,10 @@ public class ElementService : BaseService
         var dictionary = new Metadata
         {
             Table = formElement.DeepCopy(),
-            Form = new DataDictionaryForm(formElement)
+            Form = new MetadataForm(formElement)
         };
 
-        DictionaryRepository.SetDictionary(dictionary);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return formElement;
     }
@@ -110,7 +110,7 @@ public class ElementService : BaseService
     {
         if (ValidateName(tableName))
         {
-            if (DictionaryRepository.HasDictionary(tableName))
+            if (DictionaryRepository.Exists(tableName))
             {
                 AddError("Name", Translate.Key("There is already a dictionary with the name ") + tableName);
             }
@@ -153,9 +153,9 @@ public class ElementService : BaseService
     {
         if (ValidateEntity(newName))
         {
-            var dicParser = DictionaryRepository.GetDictionary(originName);
+            var dicParser = DictionaryRepository.GetMetadata(originName);
             dicParser.Table.Name = newName;
-            DictionaryRepository.SetDictionary(dicParser);
+            DictionaryRepository.InsertOrReplace(dicParser);
 
         }
 
@@ -172,7 +172,7 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("Mandatory dictionary name field"));
         }
 
-        if (DictionaryRepository.HasDictionary(name))
+        if (DictionaryRepository.Exists(name))
         {
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
@@ -249,7 +249,7 @@ public class ElementService : BaseService
     {
         string prop = "public @PropType @PropName { get; set; } ";
 
-        var dicParser = DictionaryRepository.GetDictionary(dicName);
+        var dicParser = DictionaryRepository.GetMetadata(dicName);
         var propsBuilder = new StringBuilder();
 
         foreach (var item in dicParser.Table.Fields.ToList())
@@ -306,7 +306,7 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var dicParser = DictionaryRepository.GetDictionary(dictionaryName);
+                var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
                 string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
@@ -321,7 +321,7 @@ public class ElementService : BaseService
     {
         string json = new StreamReader(file).ReadToEnd();
         var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
-        DictionaryRepository.SetDictionary(dicParser);
+        DictionaryRepository.InsertOrReplace(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");
 

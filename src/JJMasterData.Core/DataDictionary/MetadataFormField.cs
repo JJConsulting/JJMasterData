@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace JJMasterData.Core.DataDictionary;
 
 [DataContract]
-public class DataDictionaryFormField
+public class MetadataFormField
 {
     [DataMember(Name = "name")]
     public string Name { get; set; }
@@ -69,9 +69,9 @@ public class DataDictionaryFormField
     [DataMember(Name = "internalnotes")]
     public string InternalNotes { get; set; }
 
-    public DataDictionaryFormField() { }
+    public MetadataFormField() { }
 
-    public DataDictionaryFormField(FormElementField f)
+    public MetadataFormField(FormElementField f)
     {
         Name = f.Name;
         Component = f.Component;

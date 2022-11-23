@@ -37,7 +37,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/")]
     public ActionResult<Metadata[]> GetAll()
     {
-        var dicList = _dictionaryRepository.GetListDictionary(true);
+        var dicList = _dictionaryRepository.GetMetadataList(true);
         if (dicList == null)
             return NotFound();
 
@@ -58,7 +58,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/{id}")]
     public Metadata Get(string id)
     {
-        return _dictionaryRepository.GetDictionary(id);
+        return _dictionaryRepository.GetMetadata(id);
     }
 
     /// <summary>

@@ -104,7 +104,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult Copy(string dictionaryName, FormElementField? field)
     {
-        var dictionary = _fieldService.DictionaryRepository.GetDictionary(dictionaryName);
+        var dictionary = _fieldService.DictionaryRepository.GetMetadata(dictionaryName);
         _fieldService.CopyField(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();

@@ -21,7 +21,7 @@ namespace JJMasterData.Core.WebComponents
                 throw new ArgumentNullException(nameof(elementName));
 
             var dicDao = DictionaryRepositoryFactory.GetInstance();
-            var dicParser = dicDao.GetDictionary(elementName);
+            var dicParser = dicDao.GetMetadata(elementName);
             var formElement = dicParser.GetFormElement();
 
             SetDataPanelParams(dataPanel, formElement);

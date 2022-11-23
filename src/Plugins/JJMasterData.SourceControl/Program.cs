@@ -16,7 +16,7 @@ Console.WriteLine("Starting Process...\n");
 DateTime start = DateTime.Now;
 IEntityRepository entityRepository = new Factory();
 var dicDao = new DictionaryDao(entityRepository);
-var databaseDictionaries = dicDao.GetListDictionary(false);
+var databaseDictionaries = dicDao.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 
 foreach (string file in Directory.EnumerateFiles(path, "*.json"))
@@ -28,7 +28,7 @@ foreach (string file in Directory.EnumerateFiles(path, "*.json"))
     if(dicParser != null)
     {
         Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
-        dicDao.SetDictionary(dicParser);
+        dicDao.InsertOrReplace(dicParser);
 
         folderDictionaries.Add(dicParser);
     }
@@ -40,7 +40,7 @@ foreach (var dicParser in databaseDictionaries)
     if (!folderDictionaries.Exists(dic => dic.Table.Name.Equals(dicParser.Table.Name)))
     {
         Console.WriteLine($"DelDictionary: {dicParser.Table.Name}");
-        dicDao.DelDictionary(dicParser.Table.Name);
+        dicDao.Delete(dicParser.Table.Name);
 
     }
 }

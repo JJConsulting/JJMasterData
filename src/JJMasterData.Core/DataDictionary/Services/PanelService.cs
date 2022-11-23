@@ -15,7 +15,7 @@ public class PanelService : BaseService
 
     public bool SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
-        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
         var formElement = dictionary.GetFormElement();
 
         if (!ValidatePanel(panel))
@@ -56,7 +56,7 @@ public class PanelService : BaseService
         }
 
         dictionary.SetFormElement(formElement);
-        DictionaryRepository.SetDictionary(dictionary);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
@@ -78,7 +78,7 @@ public class PanelService : BaseService
 
     public bool DeleteField(string dictionaryName, int panelId)
     {
-        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
 
         for (int i = 0; i < dictionary.Form.Panels.Count; i++)
         {
@@ -92,14 +92,14 @@ public class PanelService : BaseService
                 f.PanelId = 0;
         }
 
-        DictionaryRepository.SetDictionary(dictionary);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
 
     public bool SortPanels(string elementName, string[] orderFields)
     {
-        var dictionary = DictionaryRepository.GetDictionary(elementName);
+        var dictionary = DictionaryRepository.GetMetadata(elementName);
         var formElement = dictionary.GetFormElement();
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
@@ -114,18 +114,18 @@ public class PanelService : BaseService
         }
 
         dictionary.SetFormElement(formElement);
-        DictionaryRepository.SetDictionary(dictionary);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return true;
     }
 
     public FormElementPanel CopyPanel(string dictionaryName, FormElementPanel panel)
     {
-        var dictionary = DictionaryRepository.GetDictionary(dictionaryName);
+        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + dictionary.Form.Panels.Max(x => x.PanelId);
         dictionary.Form.Panels.Add(newPanel);
-        DictionaryRepository.SetDictionary(dictionary);
+        DictionaryRepository.InsertOrReplace(dictionary);
 
         return newPanel;
     }

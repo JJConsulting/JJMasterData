@@ -292,7 +292,7 @@ public class JJLookup : JJBaseControl
         Hashtable fields;
         try
         {
-            var dictionary = dicDao.GetDictionary(DataItem.ElementMap.ElementName);
+            var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
             var entityRepository = ExpressionManager.EntityRepository;
             fields = entityRepository.GetFields(dictionary.Table, filters);
         }

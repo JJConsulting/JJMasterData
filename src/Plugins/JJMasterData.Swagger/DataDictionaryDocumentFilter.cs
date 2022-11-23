@@ -15,7 +15,7 @@ namespace JJMasterData.Swagger
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
             var dao = DictionaryRepositoryFactory.GetInstance();
-            var dictionaries = dao.GetListDictionary(null);
+            var dictionaries = dao.GetMetadataList(null);
 
             foreach (Metadata metadata in dictionaries)
             {

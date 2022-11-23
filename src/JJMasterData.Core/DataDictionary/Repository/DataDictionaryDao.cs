@@ -21,8 +21,8 @@ public class DictionaryDao : IDictionaryRepository
         _entityRepository = entityRepository;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetListDictionary(bool?)"/>
-    public List<Metadata> GetListDictionary(bool? sync)
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
+    public List<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 
@@ -54,7 +54,7 @@ public class DictionaryDao : IDictionaryRepository
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                currentParser.Form = JsonConvert.DeserializeObject<DataDictionaryForm>(json);
+                currentParser.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -71,8 +71,8 @@ public class DictionaryDao : IDictionaryRepository
         return list;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetListDictionaryName"/>
-    public string[] GetListDictionaryName()
+    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
+    public string[] GetNameList()
     {
         var list = new List<string>();
         int tot = 10000;
@@ -88,8 +88,8 @@ public class DictionaryDao : IDictionaryRepository
         return list.ToArray();
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetDictionary(string)"/>
-    public Metadata GetDictionary(string elementName)
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
+    public Metadata GetMetadata(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary invalid"));
@@ -110,7 +110,7 @@ public class DictionaryDao : IDictionaryRepository
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                metadata.Form = JsonConvert.DeserializeObject<DataDictionaryForm>(json);
+                metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
@@ -127,81 +127,81 @@ public class DictionaryDao : IDictionaryRepository
         return metadata;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.SetDictionary(Metadata)"/>
-    public void SetDictionary(Metadata dictionary)
+    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
+    public void InsertOrReplace(Metadata metadata)
     {
-        if (dictionary == null)
-            throw new ArgumentNullException(nameof(dictionary));
+        if (metadata == null)
+            throw new ArgumentNullException(nameof(metadata));
 
-        if (dictionary.Table == null)
-            throw new ArgumentNullException(nameof(dictionary.Table));
+        if (metadata.Table == null)
+            throw new ArgumentNullException(nameof(metadata.Table));
 
-        if (string.IsNullOrEmpty(dictionary.Table.Name))
-            throw new ArgumentNullException(nameof(dictionary.Table.Name));
+        if (string.IsNullOrEmpty(metadata.Table.Name))
+            throw new ArgumentNullException(nameof(metadata.Table.Name));
 
         var element = GetStructure();
-        string name = dictionary.Table.Name;
-        string jsonTable = JsonConvert.SerializeObject(dictionary.Table);
+        string name = metadata.Table.Name;
+        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
 
         DateTime dNow = DateTime.Now;
 
         var values = new Hashtable();
         values.Add("name", name);
-        values.Add("tablename", dictionary.Table.TableName);
-        values.Add("info", dictionary.Table.Info);
+        values.Add("tablename", metadata.Table.TableName);
+        values.Add("info", metadata.Table.Info);
         values.Add("type", "T");
         values.Add("json", jsonTable);
-        values.Add("sync", dictionary.Table.Sync ? "1" : "0");
+        values.Add("sync", metadata.Table.Sync ? "1" : "0");
         values.Add("modified", dNow);
         _entityRepository.SetValues(element, values);
 
-        if (dictionary.Form != null)
+        if (metadata.Form != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(dictionary.Form);
+            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
             values.Clear();
             values.Add("name", name);
-            values.Add("tablename", dictionary.Table.TableName);
+            values.Add("tablename", metadata.Table.TableName);
             values.Add("info", "");
             values.Add("type", "F");
             values.Add("owner", name);
             values.Add("json", jsonForm);
-            values.Add("sync", dictionary.Table.Sync ? "1" : "0");
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
             _entityRepository.SetValues(element, values);
         }
 
-        if (dictionary.UIOptions != null)
+        if (metadata.UIOptions != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(dictionary.UIOptions);
+            string jsonForm = JsonConvert.SerializeObject(metadata.UIOptions);
             values.Clear();
             values.Add("name", name);
-            values.Add("tablename", dictionary.Table.TableName);
+            values.Add("tablename", metadata.Table.TableName);
             values.Add("info", "");
             values.Add("type", "L");
             values.Add("owner", name);
             values.Add("json", jsonForm);
-            values.Add("sync", dictionary.Table.Sync ? "1" : "0");
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
             _entityRepository.SetValues(element, values);
         }
 
-        if (dictionary.Api != null)
+        if (metadata.Api != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(dictionary.Api);
+            string jsonForm = JsonConvert.SerializeObject(metadata.Api);
             values.Clear();
             values.Add("name", name);
             values.Add("info", "");
             values.Add("type", "A");
             values.Add("owner", name);
             values.Add("json", jsonForm);
-            values.Add("sync", dictionary.Table.Sync ? "1" : "0");
+            values.Add("sync", metadata.Table.Sync ? "1" : "0");
             values.Add("modified", dNow);
             _entityRepository.SetValues(element, values);
         }
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.DelDictionary(string)"/>
-    public void DelDictionary(string id)
+    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
+    public void Delete(string id)
     {
         if (string.IsNullOrEmpty(id))
             throw new ArgumentException();
@@ -223,8 +223,8 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.HasDictionary(string)"/>
-    public bool HasDictionary(string elementName)
+    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
+    public bool Exists(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

@@ -14,7 +14,7 @@ public class ApiService : BaseService
     public bool EditApi(Metadata dicParser)
     {
         if (ValidateApi(dicParser))
-            DictionaryRepository.SetDictionary(dicParser);
+            DictionaryRepository.InsertOrReplace(dicParser);
 
         return IsValid;
     }
