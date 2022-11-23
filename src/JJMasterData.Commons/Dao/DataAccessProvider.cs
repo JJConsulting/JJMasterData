@@ -1,100 +1,74 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Data.SqlClient;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Dao;
 
 public static class DataAccessProvider
 {
-    public const string Oracle = "System.Data.OracleClient";
-    public const string MSSQL = "System.Data.SqlClient";
-    public const string SQLite = "System.Data.SQLite";
-    public const string IBMDB2 = "IBMDADB2";
-    public const string Postgre = "POSTGRE SQL";
-    public const string MySQL = "MYSQL";
-    public const string Informix = "Informix";
-    public const string Sybase = "Sybase";
-    
-    public enum DataAccessProviderTypes
+    public static DataAccessProviderType GetDataAccessProviderTypeFromString(string description)
     {
-        SqlServer,
-        SqLite,
-        MySql,
-        PostgreSql,
-
-#if NETFULL
-    OleDb,
-    SqlServerCompact
-#endif
+        foreach(var field in typeof(DataAccessProviderType).GetFields())
+        {
+            if (Attribute.GetCustomAttribute(field,
+                    typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
+            {
+                if (attribute.Description == description)
+                    return (DataAccessProviderType)field.GetValue(null);
+            }
+            else
+            {
+                if (field.Name == description)
+                    return (DataAccessProviderType)field.GetValue(null);
+            }
+        }
+        
+        return default;
     }
-
     public static DbProviderFactory GetDbProviderFactory(string dbProviderFactoryTypename, string assemblyName)
     {
         var instance = ReflectionUtils.GetStaticProperty(dbProviderFactoryTypename, "Instance");
         if (instance == null)
         {
-            var a = ReflectionUtils.LoadAssembly(assemblyName);
-            if (a != null)
+            var assembly = ReflectionUtils.LoadAssembly(assemblyName);
+            if (assembly != null)
                 instance = ReflectionUtils.GetStaticProperty(dbProviderFactoryTypename, "Instance");
         }
 
         if (instance == null)
-            throw new InvalidOperationException(string.Format("ERROR", dbProviderFactoryTypename));
-
+            throw new DataAccessProviderException($"Error loading {dbProviderFactoryTypename} from {assemblyName}");
+        
+        
         return instance as DbProviderFactory;
     }
 
-    public static DbProviderFactory GetDbProviderFactory(DataAccessProviderTypes type)
+    public static DbProviderFactory GetDbProviderFactory(DataAccessProviderType type)
     {
         switch (type)
         {
-            case DataAccessProviderTypes.SqlServer:
+            case DataAccessProviderType.SqlServer:
                 return SqlClientFactory.Instance; // this library has a ref to SqlClient so this works
-            case DataAccessProviderTypes.SqLite:
-#if NETFULL
-        return GetDbProviderFactory("System.Data.SQLite.SQLiteFactory", "System.Data.SQLite");
-#else
-                return GetDbProviderFactory("Microsoft.Data.Sqlite.SqliteFactory", "Microsoft.Data.Sqlite");
-#endif
-            case DataAccessProviderTypes.MySql:
-                return GetDbProviderFactory("MySql.Data.MySqlClient.MySqlClientFactory", "MySql.Data");
-            case DataAccessProviderTypes.PostgreSql:
-                return GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
+            case DataAccessProviderType.Oracle:
+                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess");
+            case DataAccessProviderType.OracleNetCore:
+                return GetDbProviderFactory(type.GetDescription(), "Oracle.ManagedDataAccess.Core");
+            case DataAccessProviderType.SqLite:
+            case DataAccessProviderType.MySql:
+                return GetDbProviderFactory(type.GetDescription(), "MySql.Data");
+            case DataAccessProviderType.PostgreSql:
+                return GetDbProviderFactory(type.GetDescription(), "Npgsql");
             default:
-#if NETFULL
-    case DataAccessProviderTypes.OleDb:
-        return System.Data.OleDb.OleDbFactory.Instance;
-    case DataAccessProviderTypes.SqlServerCompact:
-        return DbProviderFactories.GetFactory("System.Data.SqlServerCe.4.0");                
-#endif
-
                 throw new NotSupportedException($"Not supported {type}");
         }
     }
     
     public static DbProviderFactory GetDbProviderFactory(string providerName)
     {
-#if NETFULL
-    return DbProviderFactories.GetFactory(providerName);
-#else
-        providerName = providerName.ToLower();
-
-        switch (providerName)
-        {
-            case "system.data.sqlclient":
-                return GetDbProviderFactory(DataAccessProviderTypes.SqlServer);
-            case "system.data.sqlite":
-            case "microsoft.data.sqlite":
-                return GetDbProviderFactory(DataAccessProviderTypes.SqLite);
-            case "mysql.data.mysqlclient":
-            case "mysql.data":
-                return GetDbProviderFactory(DataAccessProviderTypes.MySql);
-            case "npgsql":
-                return GetDbProviderFactory(DataAccessProviderTypes.PostgreSql);
-            default:
-                throw new NotSupportedException($"Not supported {providerName}");
-#endif
-        }
+        var type = GetDataAccessProviderTypeFromString(providerName);
+        return GetDbProviderFactory(type);
     }
 }

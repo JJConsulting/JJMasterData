@@ -23,6 +23,9 @@ public static class WebApplicationBuilderExtensions
         builder.Services.ConfigureOptionsWriter<ConnectionStrings>(
             builder.Configuration.GetSection("ConnectionStrings"), settingsPath);
 
+        builder.Services.ConfigureOptionsWriter<ConnectionProviders>(
+            builder.Configuration.GetSection("ConnectionProviders"), settingsPath);
+        
         builder.Services.AddSystemWebAdaptersServices();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddJJMasterDataServices();

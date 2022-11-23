@@ -3381,4 +3381,10 @@
   <data name="Connection successfully estabilished. " xml:space="preserve">
     <value>Conexão estabelecida com sucesso.</value>
   </data>
+  <data name="Inner Exception" xml:space="preserve">
+    <value>Exceção Interna</value>
+  </data>
+  <data name="Exception thrown in DataAccess class" xml:space="preserve">
+    <value>Exception aconteceu na classe DataAccess</value>
+  </data>
 </root>

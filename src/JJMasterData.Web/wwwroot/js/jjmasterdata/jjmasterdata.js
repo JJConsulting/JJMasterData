@@ -543,7 +543,7 @@ function jjloadform(event, prefixSelector) {
         ajaxStop: function () { messageWait.hide(); }
     });
     $("form").on("submit", function () {
-        if (showWaitOnPost) {
+        if ($("form").valid() && showWaitOnPost) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });

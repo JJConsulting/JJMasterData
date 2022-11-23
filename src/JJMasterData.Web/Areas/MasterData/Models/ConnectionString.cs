@@ -33,7 +33,7 @@ public class ConnectionString
         
     }
     
-    public ConnectionString(string connectionString)
+    public ConnectionString(string? connectionString)
     {
         var builder = new DbConnectionStringBuilder
         {

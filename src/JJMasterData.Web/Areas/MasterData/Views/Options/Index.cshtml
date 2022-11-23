@@ -5,12 +5,12 @@
 }
 
 <form>
-    
+    <input asp-for="FilePath" hidden="hidden"/>
     <input asp-for="IsFullscreen" hidden="hidden"/>
     
     @if (Model.IsFullscreen)
     {
-        <jj-title title="Application Settings"/>
+        <jj-title title="Application Settings" subtitle="@Model.FilePath"/>
     }
     
     @if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })

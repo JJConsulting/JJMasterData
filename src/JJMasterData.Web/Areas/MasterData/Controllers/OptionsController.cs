@@ -1,9 +1,6 @@
-using System.Reflection;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Controllers;
-using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +16,23 @@ public class OptionsController : MasterDataController
         Service = service;
     }
     
-
-
-    public IActionResult Index(bool isFullscreen=false)
+    public async Task<IActionResult> Index(bool isFullscreen=false)
     {
         var settings = new OptionsViewModel
         {
             ConnectionString = new ConnectionString(Service.Options.GetConnectionString()),
             Options = Service.Options,
-            IsFullscreen = isFullscreen
+            ConnectionProvider = DataAccessProvider.GetDataAccessProviderTypeFromString(Service.Options.GetConnectionProvider()),
+            FilePath = Service.JJMasterDataOptionsWriter.FilePath,
+            IsFullscreen = isFullscreen,
         };
+
+        if (isFullscreen)
+        {
+            settings.ConnectionString.ConnectionResult = 
+                await GetConnectionResultAsync(settings.ConnectionString.ToString());
+        }
+
         return View(settings);
     }
     
@@ -49,11 +53,15 @@ public class OptionsController : MasterDataController
     {
         if (ModelState.IsValid)
         {
-            string connectionString = model.ConnectionString.ToString();
-            var result = await Service.TryConnectionAsync(connectionString);
-            model.ConnectionString.ConnectionResult = new ConnectionResult(result.Item1,result.Item2);
+            model.ConnectionString.ConnectionResult = await GetConnectionResultAsync(model.ConnectionString.ToString());
         }
 
         return View(nameof(Index), model);
+    }
+
+    private async Task<ConnectionResult> GetConnectionResultAsync(string connectionString)
+    {
+        var result = await Service.TryConnectionAsync(connectionString);
+        return new ConnectionResult(result.Item1, result.Item2);
     }
 }

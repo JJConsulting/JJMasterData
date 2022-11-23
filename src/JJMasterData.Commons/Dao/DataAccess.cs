@@ -13,10 +13,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Commons.Dao;
 
-public class DataAccess 
+public class DataAccess
 {
     private DbProviderFactory _factory;
     private DbConnection _connection;
@@ -148,12 +149,13 @@ public class DataAccess
         {
             _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
         }
+        catch (DataAccessProviderException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            string sErr = TranslateKey("Error starting connection provider {0}. Error message: {1}", ConnectionProvider,
-                ex.Message);
-            AddLog(sErr);
-            throw new DataAccessException(sErr);
+            throw new DataAccessException(ex.Message);
         }
 
         return _factory;
@@ -252,7 +254,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -301,7 +303,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -336,7 +338,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(sql, new List<DataAccessParameter>(), ex);
+            LogException(sql, new List<DataAccessParameter>(), ex);
             throw;
         }
         finally
@@ -380,7 +382,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -409,15 +411,15 @@ public class DataAccess
             dbCommand.Connection = await GetConnectionAsync();
             scalarResult = await dbCommand.ExecuteScalarAsync();
 
-            foreach (DataAccessParameter p in cmd.Parameters)
+            foreach (var parameter in cmd.Parameters)
             {
-                if (p.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    p.Value = dbCommand.Parameters[p.Name].Value;
+                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
             }
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -444,7 +446,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -481,7 +483,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -514,7 +516,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -560,7 +562,7 @@ public class DataAccess
         {
             sqlTras.Rollback();
             var cmd = commands[index];
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -603,7 +605,7 @@ public class DataAccess
         {
             sqlTras.Rollback();
             var cmd = commands[index];
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -639,8 +641,8 @@ public class DataAccess
             aCmd.Add(new DataAccessCommand(sql));
         }
 
-        int nRet = SetCommand(aCmd);
-        return nRet;
+        int numberOfRowsAffected = SetCommand(aCmd);
+        return numberOfRowsAffected;
     }
 
     /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
@@ -666,7 +668,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -732,7 +734,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -785,7 +787,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            BuildErrorLog(cmd.Sql, cmd.Parameters, ex);
+            LogException(cmd.Sql, cmd.Parameters, ex);
             throw;
         }
         finally
@@ -896,7 +898,7 @@ public class DataAccess
 
         return result;
     }
-    
+
     /// <inheritdoc cref="TryConnection(out string)"/>
     public async Task<(bool, string)> TryConnectionAsync()
     {
@@ -944,7 +946,8 @@ public class DataAccess
     public bool ExecuteBatch(string script)
     {
         string markpar = "GO";
-        if (ConnectionProvider.Equals(DataAccessProvider.Oracle))
+        if (ConnectionProvider == DataAccessProviderType.Oracle.GetDescription() ||
+            ConnectionProvider == DataAccessProviderType.OracleNetCore.GetDescription())
         {
             markpar = "/";
         }
@@ -982,7 +985,8 @@ public class DataAccess
     public async Task<bool> ExecuteBatchAsync(string script)
     {
         string markpar = "GO";
-        if (ConnectionProvider.Equals(DataAccessProvider.Oracle))
+        if (ConnectionProvider == DataAccessProviderType.Oracle.GetDescription() ||
+            ConnectionProvider == DataAccessProviderType.OracleNetCore.GetDescription())
         {
             markpar = "/";
         }
@@ -1015,47 +1019,48 @@ public class DataAccess
         return await Task.FromResult(true);
     }
 
-    private void BuildErrorLog(string sql, List<DataAccessParameter> parms, Exception ex)
+    private void LogException(string sql, List<DataAccessParameter> parameters, Exception ex)
     {
-        if (ex is SqlException sqlException && sqlException.Number >= 50000 )
+        if (ex is SqlException { Number: >= 50000 } or DataAccessException)
             return;
 
         var error = new StringBuilder();
-        try
-        {
-            error.AppendLine(TranslateKey("Error raised in DataAccess"));
-            error.Append(TranslateKey("Error Message"));
-            error.Append(": ");
-            error.AppendLine(ex.Message);
-            if (ex.InnerException is { Message: { } })
-            {
-                error.Append(TranslateKey("Detail Message"));
-                error.Append(": ");
-                error.AppendLine(ex.InnerException.Message);
-            }
 
-            error.Append(TranslateKey("Executed Query"));
+        error.AppendLine(TranslateKey("Exception thrown in DataAccess class"));
+        error.AppendLine(": ");
+        error.Append(TranslateKey("Exception Message"));
+        error.AppendLine(ex.Message);
+        if (ex.InnerException is { Message: { } })
+        {
+            error.Append(TranslateKey("Inner Exception"));
             error.AppendLine(": ");
-            error.AppendLine(sql);
-            if (parms is { Count: > 0 })
+            error.AppendLine(ex.InnerException.Message);
+        }
+
+        if (!string.IsNullOrEmpty(ex.StackTrace))
+        {
+            error.Append("StackTrace :");
+            error.AppendLine(ex.StackTrace);
+        }
+
+        error.Append(TranslateKey("Executed Query"));
+        error.AppendLine(": ");
+        error.AppendLine(sql);
+        if (parameters is { Count: > 0 })
+        {
+            error.Append(TranslateKey("Parameters"));
+            error.AppendLine(": ");
+            foreach (var parm in parameters)
             {
-                error.Append(TranslateKey("Parameters"));
-                error.AppendLine(": ");
-                foreach (var parm in parms)
-                {
-                    error.Append(parm.Name);
-                    error.Append(" = ");
-                    error.Append(parm.Value);
-                    error.Append(" [");
-                    error.Append(parm.Type.ToString());
-                    error.AppendLine("]");
-                }
+                error.Append(parm.Name);
+                error.Append(" = ");
+                error.Append(parm.Value);
+                error.Append(" [");
+                error.Append(parm.Type.ToString());
+                error.AppendLine("]");
             }
         }
-        catch
-        {
-            error.Append(ex);
-        }
+
 
         AddLog(error.ToString());
     }

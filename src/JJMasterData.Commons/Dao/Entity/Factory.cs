@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data;
 using JJMasterData.Commons.Dao.Providers;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 
 namespace JJMasterData.Commons.Dao.Entity;
@@ -26,24 +27,21 @@ public class Factory : IEntityRepository
     {
         get
         {
-            if (_provider != null) return _provider;
+            if (_provider != null) 
+                return _provider;
 
-            _provider = DataAccess.ConnectionProvider switch
+            _provider = DataAccessProvider.GetDataAccessProviderTypeFromString(DataAccess.ConnectionProvider) switch
             {
-                DataAccessProvider.MSSQL => new MSSQLProvider(DataAccess),
-                DataAccessProvider.Oracle => new OracleProvider(DataAccess),
-                DataAccessProvider.SQLite => new ProviderSQLite(DataAccess),
+                DataAccessProviderType.SqlServer => new MSSQLProvider(DataAccess),
+                DataAccessProviderType.Oracle => new OracleProvider(DataAccess),
+                DataAccessProviderType.OracleNetCore => new OracleProvider(DataAccess),
+                DataAccessProviderType.SqLite => new ProviderSQLite(DataAccess),
                 _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
                                                          DataAccess.ConnectionProvider + "]")
             };
 
             return _provider;
         }
-    }
-
-    public Factory()
-    {
-        
     }
 
     ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
