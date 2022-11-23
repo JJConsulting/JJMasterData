@@ -1,5 +1,3 @@
-using System;
-
 namespace JJMasterData.Commons.Exceptions;
 
 public class DataAccessProviderException : DataAccessException
