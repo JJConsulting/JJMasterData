@@ -10,6 +10,7 @@ using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Reflection;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -26,10 +27,17 @@ public class ElementController : DataDictionaryController
 
     public ActionResult Index()
     {
-        if (_elementService.JJMasterDataTableExists())
+        try
         {
-            var model = GetEntityFormView();
-            return View(model);
+            if (_elementService.JJMasterDataTableExists())
+            {
+                var model = GetEntityFormView();
+                return View(model);
+            }
+        }
+        catch(DataAccessException)
+        {
+            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
         }
 
         return View("Create");
@@ -125,22 +133,6 @@ public class ElementController : DataDictionaryController
         }
 
         return View("Scripts", "_MasterDataLayout.Popup");
-    }
-
-    public IActionResult About()
-    {
-        var service = new AboutService();
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        var model = new AboutViewModel
-        {
-            ExecutingAssemblyProduct = service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
-            ExecutingAssemblyCopyright = service.GetAssemblyCopyright(executingAssembly),
-            BootstrapVersion = BootstrapHelper.Version.ToString(),
-            Dependencies = service.GetJJAssemblies()
-        };
-
-        return View("About", model);
     }
 
     [HttpPost]
@@ -248,8 +240,8 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
-            OnClientClick = string.Format("jjdictionary.exportElement('{0}', '{1}', '{2}');",
-                formView.Name, Url.Action("Export"), Translate.Key("Select one or more dictionaries"))
+            OnClientClick =
+                $"jjdictionary.exportElement('{formView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
         };
         formView.AddToolBarAction(btnExport);
 
@@ -275,7 +267,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("About"),
+            UrlRedirect = Url.Action("Index", "About", new {Area="MasterData"}),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -294,8 +286,38 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-
+        
         formView.AddToolBarAction(btnLog);
+        
+        var btnSettings = new UrlRedirectAction
+        {
+            Name = "btnAppSettings",
+            ToolTip = Translate.Key("Application Options"),
+            Icon = IconType.Code,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Application Options"),
+            UrlRedirect = Url.Action("Index", "Options", new {Area = "MasterData"}),
+            Order = 12,
+            CssClass = BootstrapHelper.PullRight
+        };
+        
+        formView.AddToolBarAction(btnSettings);
+        
+        var btnResources = new UrlRedirectAction
+        {
+            Name = "btnResources",
+            ToolTip = Translate.Key("Resources"),
+            Icon = IconType.Globe,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Resources"),
+            UrlRedirect = Url.Action("Index", "Resources", new {Area = "MasterData"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.AddToolBarAction(btnResources);
 
         formView.OnRenderAction += OnRenderAction;
 

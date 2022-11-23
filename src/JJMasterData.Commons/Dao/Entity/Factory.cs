@@ -667,7 +667,7 @@ public class Factory
 
     public Element GetStructure()
     {
-        var element = new Element(JJService.Settings.TableName, "Data Dictionaries");
+        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
 
         element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields["type"].EnableOnDelete = false;

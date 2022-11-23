@@ -7,9 +7,9 @@ namespace JJMasterData.Web.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static void UseJJMasterDataWeb(this WebApplication app, Action<JJMasterDataOptions>? configure = null)
+    public static void UseJJMasterDataWeb(this WebApplication app, Action<JJMasterDataRoutingOptions>? configure = null)
     {
-        var options = new JJMasterDataOptions();
+        var options = new JJMasterDataRoutingOptions();
 
         configure?.Invoke(options);
         

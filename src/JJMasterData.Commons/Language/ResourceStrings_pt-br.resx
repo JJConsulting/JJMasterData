@@ -3372,4 +3372,13 @@
   <data name="Only fields of type VarChar or Text can have a filter of the type Contains." xml:space="preserve">
     <value>Somente campos do tipo VarChar ou Texto podem ter um filtro do tipo Contains.</value>
   </data>
+  <data name="Application Options" xml:space="preserve">
+    <value>Configurações da Aplicação</value>
+  </data>
+  <data name="Test Connection" xml:space="preserve">
+    <value>Testar Conexão</value>
+  </data>
+  <data name="Connection successfully estabilished. " xml:space="preserve">
+    <value>Conexão estabelecida com sucesso.</value>
+  </data>
 </root>

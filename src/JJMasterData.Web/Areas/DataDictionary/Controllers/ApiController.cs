@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;

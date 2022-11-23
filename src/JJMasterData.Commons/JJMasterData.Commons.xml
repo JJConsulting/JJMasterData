@@ -102,7 +102,7 @@
         </member>
         <member name="T:JJMasterData.Commons.CustomSettings">
             <summary>
-            Web Config Settings
+            Web Config Options
             </summary>
         </member>
         <member name="P:JJMasterData.Commons.Dao.DataAccess.GenerateLog">
@@ -1577,7 +1577,7 @@
             Gerencia os logs do sistema
             </summary>
         </member>
-        <member name="P:JJMasterData.Commons.SystemLog.Logger.Settings">
+        <member name="P:JJMasterData.Commons.SystemLog.Logger.Options">
             <summary>
             Parametros do log do sistema. Valor padrão app.config
             </summary>
@@ -1636,7 +1636,7 @@
             <param name="type">Tipo do log</param>
             <remarks>Lucio Pelinson 2014-05-12</remarks>
         </member>
-        <member name="P:JJMasterData.Commons.SystemLog.LoggerSettings.EnableTraceLog">
+        <member name="P:JJMasterData.Commons.SystemLog.LoggerOptions.EnableTraceLog">
             <summary>
             Habilita o log no trace
             </summary>

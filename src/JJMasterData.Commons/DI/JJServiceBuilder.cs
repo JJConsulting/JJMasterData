@@ -3,7 +3,6 @@ using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Settings;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +18,6 @@ public class JJServiceBuilder
     
     public JJServiceBuilder AddDefaultServices()
     {
-        Services.AddSingleton<ISettings, JJMasterDataSettings>();
         Services.AddScoped<IDataAccess, DataAccess>();
         
         return this;
@@ -30,37 +28,6 @@ public class JJServiceBuilder
         var service = Services.ToList().Find(s => s.ServiceType == typeof(T));
         if (service != null)
             Services.Remove(service);
-    }
-
-    public JJServiceBuilder WithSettings<T>() where T : ISettings
-    {
-        DeleteServiceIfExists<T>();
-
-        Services.AddSingleton(typeof(T));
-
-        return this;
-    }
-
-    public JJServiceBuilder WithSettings(ISettings settings)
-    {
-        DeleteServiceIfExists<ISettings>();
-
-        Services.AddSingleton(settings);
-
-        return this;
-    }
-
-    public JJServiceBuilder WithSettings(Action<ISettings> configure)
-    {
-        DeleteServiceIfExists<ISettings>();
-
-        ISettings settings = new JJMasterDataSettings();
-
-        configure(settings);
-
-        Services.AddSingleton(settings);
-
-        return this;
     }
 
     public JJServiceBuilder WithBackgroundTask<T>() where T : IBackgroundTask

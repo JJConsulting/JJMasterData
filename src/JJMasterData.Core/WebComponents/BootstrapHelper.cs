@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -12,10 +12,10 @@ namespace JJMasterData.Core.WebComponents;
 /// </author>
 public static class BootstrapHelper
 {
-    #region Settings
-    private static ISettings Settings => JJService.Settings;
+    #region Options
+    private static JJMasterDataOptions Options => JJService.Options;
 
-    public static int Version => Settings.BootstrapVersion;
+    public static int Version => Options.BootstrapVersion;
     #endregion
 
     #region Button

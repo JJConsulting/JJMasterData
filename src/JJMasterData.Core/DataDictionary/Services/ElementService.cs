@@ -9,7 +9,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
@@ -109,8 +109,8 @@ public class ElementService : BaseService
 
         formElement.TableName = tableName;
         formElement.Name = GetDictionaryName(tableName);
-        formElement.CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tableName);
-        formElement.CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tableName);
+        formElement.CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName);
+        formElement.CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName);
 
         DicDao.SetFormElement(formElement);
 
@@ -333,5 +333,5 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists() => JJService.DataAccess.TableExists(JJService.Settings.TableName);
+    public bool JJMasterDataTableExists() => JJService.DataAccess.TableExists(JJService.Options.TableName);
 }

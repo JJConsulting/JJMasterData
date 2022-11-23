@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.Web.Areas.MasterData.Models;
 
 public class AboutViewModel
 {
@@ -9,6 +9,5 @@ public class AboutViewModel
     public string? BootstrapVersion { get; set; }
     public string? ExecutingAssemblyProduct { get; set; }
     public string? ExecutingAssemblyVersion { get; set; }
-    
     public string? ExecutingAssemblyCopyright { get; set; }
 }
