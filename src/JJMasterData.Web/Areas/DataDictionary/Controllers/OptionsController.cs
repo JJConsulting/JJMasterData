@@ -8,9 +8,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 [Area("DataDictionary")]
 public class OptionsController : DataDictionaryController
 {
-    private readonly OptionsService _optionsService;
+    private readonly OptionsService? _optionsService;
 
-    public OptionsController(OptionsService optionsService)
+    public OptionsController(OptionsService? optionsService)
     {
         _optionsService = optionsService;
     }

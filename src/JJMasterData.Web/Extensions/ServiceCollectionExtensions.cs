@@ -2,8 +2,10 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Authorization;
 using JJMasterData.Web.Hosting;
 using JJMasterData.Web.Models;
@@ -24,16 +26,23 @@ namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, ConfigurationManager configurationManager, string settingsPath = "appsettings.json")
     {
+        services.AddOptions<JJMasterDataOptions>();
         services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
         services.AddHttpContextAccessor();
         services.AddSession();
 
+        services.ConfigureOptionsWriter<JJMasterDataOptions>(configurationManager.GetSection("JJMasterData"),
+            settingsPath);
+        services.ConfigureOptionsWriter<ConnectionStrings>(
+            configurationManager.GetSection("ConnectionStrings"), settingsPath);
+        
         AddSystemWebAdapters(services);
 
         services.AddDistributedMemoryCache();
         services.AddJJMasterDataServices();
+        
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
         
@@ -122,18 +131,19 @@ public static class ServiceCollectionExtensions
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<ThemeService>();
         services.AddTransient<OptionsService>();
+        services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }
     
     public static void ConfigureOptionsWriter<T>(
         this IServiceCollection services,
         IConfigurationSection section,
-        string file = "appsettings.json") where T : class, new()
+        string file) where T : class, new()
     {
         services.Configure<T>(section);
         services.AddTransient<IOptionsWriter<T>>(provider =>
         {
-            var options = provider.GetService<IOptionsMonitor<T>>();
+            var options = provider.GetService<IOptionsMonitor<T>>()!;
             return new OptionsWriter<T>(options, section.Key, file);
         });
     }

@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Reflection;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Options;
+using JJMasterData.Web.Models.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -19,10 +22,13 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    public ElementController(ElementService elementService,ThemeService themeService)
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElementController(ElementService elementService,ThemeService themeService, IServiceProvider serviceProvider)
     {
         _themeService = themeService;
         _elementService = elementService;
+        _serviceProvider = serviceProvider;
     }
 
     public ActionResult Index()

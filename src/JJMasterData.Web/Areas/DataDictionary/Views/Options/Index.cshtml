@@ -12,7 +12,7 @@
 
 @functions
 {
-    async Task GridView()
+    void GridView()
     {
         <div class="col-sm-4">
             <div class="checkbox">
@@ -192,6 +192,8 @@
             <label class="@BootstrapHelper.Label " for="FormEnterKey" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Behavior of the Enter key on the form")">@Translate.Key("EnterKey")</label>
             <select asp-for="Form.EnterKey" disabled="disabled" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
         </div>
+
+        await Task.CompletedTask;
     }
 
 
@@ -222,7 +224,7 @@
                 <div class="accordion-body">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ await GridView();}
+                            @{ GridView();}
                         </div>
                     </div>
                 </div>
@@ -262,7 +264,7 @@ else
                 <div class="@BootstrapHelper.PanelBody">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ await GridView(); }
+                            @{ GridView(); }
                         </div>
                     </div>
                 </div>
@@ -279,7 +281,9 @@ else
                 <div class="@BootstrapHelper.PanelBody">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ await FormView(); }
+                            @{
+                                await FormView();
+                            }
                         </div>
                     </div>
                 </div>

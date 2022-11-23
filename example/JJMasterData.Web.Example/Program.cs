@@ -2,7 +2,6 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Models;
 
 namespace JJMasterData.Web.Example;
 
@@ -12,19 +11,15 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
+        var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
         var settingsPath = Path.Combine(root, "appsettings.json");
-        builder.Configuration.AddJsonFile(settingsPath,false,true);
+        builder.Configuration.AddJsonFile(settingsPath, false, true);
 
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddOptions<JJMasterDataOptions>();
-        builder.Services.AddJJMasterDataWeb().WithFormEvents();
-        
-        builder.Services.ConfigureOptionsWriter<JJMasterDataOptions>(builder.Configuration.GetSection("JJMasterData"), settingsPath);
-        builder.Services.ConfigureOptionsWriter<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"), settingsPath);
-        
+        builder.Services.AddJJMasterDataWeb(builder.Configuration, settingsPath).WithFormEvents();
+
         var app = builder.Build();
 
         if (app.Environment.IsProduction())

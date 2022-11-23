@@ -28,18 +28,20 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 
     public async Task UpdateAsync(Action<T> applyChanges)
     {
-
         var jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(_file));
+
         T? sectionObject;
         
-        if (jObject.TryGetValue(_section, out JToken section))
+        if (jObject!.TryGetValue(_section, out var section))
         {
             sectionObject = JsonConvert.DeserializeObject<T>(section.ToString());
         }
         else
-            sectionObject = Value ?? new T();
+        {
+            sectionObject = Value;
+        }
 
-        applyChanges(sectionObject);
+        applyChanges(sectionObject!);
 
         jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
         await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(jObject, Formatting.Indented));

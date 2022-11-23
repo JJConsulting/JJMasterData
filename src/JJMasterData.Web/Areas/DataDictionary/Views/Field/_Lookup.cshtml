@@ -11,7 +11,7 @@
 @functions
 {
 
-    async Task ElementMap()
+    void ElementMap()
     {
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4 required">
@@ -29,7 +29,7 @@
         </div>
     }
 
-    async Task Filters()
+    void Filters()
     {
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4">
@@ -155,7 +155,7 @@
                     <div class="accordion-body">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await ElementMap();}
+                                @{ ElementMap();}
                             </div>
                         </div>
                     </div>
@@ -174,7 +174,7 @@
                     <div class="accordion-body">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await Filters(); }
+                                @{ Filters(); }
                             </div>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                      <div class="@BootstrapHelper.PanelBody"> 
                          <div class="container-fluid"> 
                              <div class="row"> 
-                                 @{ await ElementMap(); } 
+                                 @{ ElementMap(); } 
                              </div> 
                          </div> 
                      </div> 
@@ -212,7 +212,7 @@
                     <div class="@BootstrapHelper.PanelBody">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await Filters(); }
+                                @{ Filters(); }
                             </div>
                         </div>
                     </div>
