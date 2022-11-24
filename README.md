@@ -62,6 +62,31 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 
 <br>
 
+## Building from source
+1. Install [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
+2. Install [NodeJS](https://nodejs.org/en/download/)
+
+3. Clone the repository JJMasterData
+
+4. Open through JJMasterData.sln file
+
+5. Set the JJMasterData.Web.Example as startup project
+
+6. Click with right button on top of JJMasterData.Web, open the terminal and execute the command
+```bash
+npm i
+```
+
+7. It will be necessary to direct to a Database of your choice. It is possible to use the VisualStudio’s Database. You will need to find the Database’s name in appsettings.json according to the picture below
+![image](https://user-images.githubusercontent.com/100393691/203789109-ef71f492-3f90-4739-8c41-8a92890c72dc.png)
+
+8. Execute the project
+
+9. This is the expected result <br>
+![image](https://user-images.githubusercontent.com/100393691/203789353-14c24b8d-cf2c-4717-891a-b01e58559a4c.png)
+
+
 ## Special Thanks
 
 #### Code contributors
