@@ -28,7 +28,7 @@ public class JJTextBox : JJBaseControl
             inputType = "text";
             CssClass += " jjdecimal";
         }
-
+        
         var html = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)

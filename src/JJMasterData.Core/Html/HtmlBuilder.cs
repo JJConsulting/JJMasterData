@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JJMasterData.Core.Html;
@@ -128,5 +129,20 @@ public partial class HtmlBuilder
         }
         return attrs.ToString();
     }
-
+    public string GetAttribute(string key)
+    {
+        return _attributes[key];
+    }
+    public List<HtmlBuilder> GetChildren()
+    {
+        return _children.ToList();
+    } 
+    public List<HtmlBuilder> GetChildren(HtmlTag tagName)
+    {
+        return _children.FindAll(x => x.Tag?.TagName == tagName).ToList();
+    }
+    public string GetRawText()
+    {
+        return _rawText;
+    }
 }

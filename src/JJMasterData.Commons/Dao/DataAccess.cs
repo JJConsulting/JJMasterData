@@ -155,7 +155,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            throw new DataAccessException(ex.Message);
+            throw new DataAccessException(ex);
         }
 
         return _factory;
@@ -174,8 +174,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            AddLog(ex.Message);
-            throw;
+            throw new DataAccessException(ex);
         }
 
         return _connection;
@@ -194,8 +193,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            AddLog(ex.Message);
-            throw;
+            throw new DataAccessException(ex);
         }
 
         return _connection;
