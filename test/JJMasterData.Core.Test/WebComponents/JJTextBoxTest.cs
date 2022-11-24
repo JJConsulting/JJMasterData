@@ -13,14 +13,7 @@ namespace JJMasterData.Core.Test.WebComponents
         [Fact]
         public void RenderTest()
         {
-            var text = new JJTextBox();
-            text.Name = "id1";
-            text.ToolTip = "teste";
-            text.Text = "1188880000";
-            text.CssClass = "class1 class2";
-            text.PlaceHolder = "00";
-            text.SetAttr("pan", "pan");
-
+            var text = GetTextBox();
             var expected = new StringBuilder();
             expected.AppendLine().Append(' ', 2);
             expected.Append("<input ");
@@ -36,10 +29,41 @@ namespace JJMasterData.Core.Test.WebComponents
             expected.Append("/>");
 
             var html = text.GetHtmlBuilder();
-
             Assert.Equal(expected.ToString(), html.ToString(true));
         }
 
+        [Fact]
+        public void RenderTestAttrs()
+        {
+            var text = GetTextBox();
+            var actual = text.GetHtmlBuilder();
 
+            Assert.Equal(text.Name, actual.GetAttribute("name"));
+            Assert.Equal(text.Name, actual.GetAttribute("id"));
+            Assert.Equal("pan", actual.GetAttribute("pan"));
+            Assert.Equal("00", actual.GetAttribute("placeholder"));
+            Assert.Equal("text", actual.GetAttribute("type"));
+            Assert.Equal("form-control class1 class2", actual.GetAttribute("class"));
+            Assert.Equal("teste", actual.GetAttribute("title"));
+            Assert.Equal("tooltip", actual.GetAttribute("data-bs-toggle"));
+            Assert.Equal("1188880000", actual.GetAttribute("value"));
+        }
+
+
+        private JJTextBox GetTextBox()
+        {
+            return new JJTextBox
+            {
+                Name = "id1",
+                ToolTip = "teste",
+                Text = "1188880000",
+                CssClass = "class1 class2",
+                PlaceHolder = "00",
+                Attributes =
+                {
+                    { "pan", "pan" }
+                }
+            };
+        }
     }
 }

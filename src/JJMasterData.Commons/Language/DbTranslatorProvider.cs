@@ -49,9 +49,9 @@ public class DbTranslatorProvider : ITranslator
                     dic.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
             }
         }
-        catch (Exception ex)
+        catch 
         {
-            Log.AddError(ex.ToString());
+            // ignore
         }
         
         return dic;
