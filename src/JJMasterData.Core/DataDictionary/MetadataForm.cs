@@ -18,7 +18,6 @@ public class MetadataForm
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
 
-
     public MetadataForm()
     {
         Panels = new List<FormElementPanel>();

@@ -1,4 +1,5 @@
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +25,7 @@ public class Startup
     }
     private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
     {
+        services.AddJJMasterDataCore();
         services.BuildServiceProvider().UseJJMasterData();
     }
 }
