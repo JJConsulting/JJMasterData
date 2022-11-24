@@ -143,6 +143,16 @@ public partial class HtmlBuilder
     }
     public string GetRawText()
     {
-        return _rawText;
+        var children = _children.FindAll(x => x._rawText != null).ToList();
+        var texts = new StringBuilder();
+        foreach (var child in children)
+        {
+            texts.Append(child._rawText);
+        }
+        
+        return texts.ToString();
+             
+      
+        
     }
 }
