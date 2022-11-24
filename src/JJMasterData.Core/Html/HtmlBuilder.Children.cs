@@ -41,17 +41,6 @@ namespace JJMasterData.Core.Html
             AppendElement(childElement);
             return this;
         }
-
-        /// <summary>
-        /// Conditional insert a HTML builder as a child of caller builder. 
-        /// </summary>
-        // public HtmlBuilder AppendElementIf(bool condition, HtmlBuilder htmlElement = null)
-        // {
-        //     if (condition)
-        //         AppendElement(htmlElement);
-        //
-        //     return this;
-        // }
         
         /// <summary>
         /// Conditional insert a HTML builder from a return of a function. Use this to improve performance.
