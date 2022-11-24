@@ -83,7 +83,7 @@ npm i
 
 8. Execute the project
 
-9. This is the expected result
+9. This is the expected result <br>
 ![image](https://user-images.githubusercontent.com/100393691/203789353-14c24b8d-cf2c-4717-891a-b01e58559a4c.png)
 
 
