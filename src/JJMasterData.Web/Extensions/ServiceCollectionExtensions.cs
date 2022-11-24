@@ -110,10 +110,10 @@ public static class ServiceCollectionExtensions
         string file) where T : class, new()
     {
         services.Configure<T>(section);
-        services.AddTransient<IOptionsWriter<T>>(provider =>
+        services.AddTransient<IWritableOptions<T>>(provider =>
         {
             var options = provider.GetService<IOptionsMonitor<T>>()!;
-            return new OptionsWriter<T>(options, section.Key, file);
+            return new WritableOptions<T>(options, section.Key, file);
         });
     }
 }

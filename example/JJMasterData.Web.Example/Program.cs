@@ -13,9 +13,9 @@ public class Program
 
         var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
         var settingsPath = Path.Combine(root, "appsettings.json");
-        
-        builder.Configuration.AddJsonFile(settingsPath, false, true);
 
+        builder.Configuration.AddJsonFile(settingsPath);
+        
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 

@@ -17,15 +17,17 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddSession();
 
+        settingsPath = Path.GetFullPath(settingsPath);
+        
         builder.Services.ConfigureOptionsWriter<JJMasterDataOptions>(
             builder.Configuration.GetSection("JJMasterData"), settingsPath);
-        
+
         builder.Services.ConfigureOptionsWriter<ConnectionStrings>(
             builder.Configuration.GetSection("ConnectionStrings"), settingsPath);
 
         builder.Services.ConfigureOptionsWriter<ConnectionProviders>(
             builder.Configuration.GetSection("ConnectionProviders"), settingsPath);
-        
+
         builder.Services.AddSystemWebAdaptersServices();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddJJMasterDataServices();

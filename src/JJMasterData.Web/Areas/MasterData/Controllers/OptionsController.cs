@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Dao;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Services;
@@ -18,32 +17,21 @@ public class OptionsController : MasterDataController
     
     public async Task<IActionResult> Index(bool isFullscreen=false)
     {
-        var settings = new OptionsViewModel
-        {
-            ConnectionString = new ConnectionString(Service.Options.GetConnectionString()),
-            Options = Service.Options,
-            ConnectionProvider = DataAccessProvider.GetDataAccessProviderTypeFromString(Service.Options.GetConnectionProvider()),
-            FilePath = Service.JJMasterDataOptionsWriter.FilePath,
-            IsFullscreen = isFullscreen,
-        };
+        var viewModel = await Service.GetViewModel(isFullscreen);
 
-        if (isFullscreen)
-        {
-            settings.ConnectionString.ConnectionResult = 
-                await GetConnectionResultAsync(settings.ConnectionString.ToString());
-        }
-
-        return View(settings);
+        return View(viewModel);
     }
     
+
     public async Task<IActionResult> Save(OptionsViewModel model)
     {
         if (ModelState.IsValid)
         {
             await Service.SaveOptions(model);
-            ViewBag.Success = true;
-            if (model.IsFullscreen)
-                return RedirectToAction("Index","Element", new {Area="DataDictionary"});
+        }
+        else
+        {
+            model.ValidationSummary = Service.GetValidationSummary();
         }
         
         return View(nameof(Index), model);
@@ -53,15 +41,17 @@ public class OptionsController : MasterDataController
     {
         if (ModelState.IsValid)
         {
-            model.ConnectionString.ConnectionResult = await GetConnectionResultAsync(model.ConnectionString.ToString());
+            var result = await OptionsService.GetConnectionResultAsync(model.ConnectionString!.ToString());
+            model.IsConnectionSuccessful = result.IsConnectionSuccessful;
+
+            if (!result.IsConnectionSuccessful.GetValueOrDefault())
+            {
+                ModelState.AddModelError(nameof(OptionsViewModel.ConnectionString),result.ErrorMessage!);
+            }
+
+            model.ValidationSummary = Service.GetValidationSummary();
         }
 
         return View(nameof(Index), model);
-    }
-
-    private async Task<ConnectionResult> GetConnectionResultAsync(string connectionString)
-    {
-        var result = await Service.TryConnectionAsync(connectionString);
-        return new ConnectionResult(result.Item1, result.Item2);
     }
 }
