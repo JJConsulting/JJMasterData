@@ -29,7 +29,7 @@ public class Metadata
         if (Form == null)
             return null;
 
-        FormElement fe = new FormElement(Table)
+        var fe = new FormElement(Table)
         {
             Title = Form.Title,
             SubTitle = Form.SubTitle,
