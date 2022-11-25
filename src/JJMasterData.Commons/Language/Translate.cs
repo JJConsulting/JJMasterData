@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Language;
 
 /// <summary>
-/// Class to i18n 
+/// Translates a key into a localized value.
 /// </summary>
 public static class Translate
 {
-    private static Dictionary<string, Dictionary<string, string>> _resourcesDictionary;
-
-    private static ITranslator Translator => JJService.Translator;
-
+    private static ConcurrentDictionary<string, IDictionary<string, string>> _resourcesDictionary;
+    private static ITranslatorProvider Provider { get; }
+    static Translate()
+    {
+        Provider = JJService.TranslatorProvider;
+    }
+    
     /// <summary>
     /// Translates the requested key.
     /// </summary>
@@ -25,16 +29,14 @@ public static class Translate
         if (string.IsNullOrEmpty(resourceKey))
             return resourceKey;
 
-        _resourcesDictionary ??= new Dictionary<string, Dictionary<string, string>>();
-
-        lock (_resourcesDictionary)
-        {
-            if (!_resourcesDictionary.ContainsKey(culture))
-                _resourcesDictionary.Add(culture, Translator.GetDictionaryStrings(culture));
-            
-            if (_resourcesDictionary[culture].ContainsKey(resourceKey))
-                return _resourcesDictionary[culture][resourceKey];
-        }
+        _resourcesDictionary ??= new ConcurrentDictionary<string, IDictionary<string, string>>();
+        
+        if (!_resourcesDictionary.ContainsKey(culture))
+            _resourcesDictionary.TryAdd(culture, Provider.GetLocalizedStrings(culture));
+        
+        if (_resourcesDictionary[culture].ContainsKey(resourceKey))
+            return _resourcesDictionary[culture][resourceKey];
+        
         return resourceKey;
     }
 

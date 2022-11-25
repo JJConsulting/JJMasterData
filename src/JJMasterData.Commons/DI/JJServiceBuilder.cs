@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
 {
-    public IServiceCollection Services { get; internal set; }
+    public IServiceCollection Services { get; }
 
     public JJServiceBuilder(IServiceCollection services)
     {
@@ -19,7 +19,9 @@ public class JJServiceBuilder
     public JJServiceBuilder AddDefaultServices()
     {
         Services.AddScoped<IEntityRepository, Factory>();
-        Services.AddTransient<ITranslator, DbTranslatorProvider>();
+        Services.AddLocalization();
+        Services.AddTransient<ITranslatorProvider, JJMasterDataTranslatorProvider>();
+        Services.AddTransient<IBackgroundTask, BackgroundTask>();
         return this;
     }
 
@@ -29,9 +31,9 @@ public class JJServiceBuilder
         return this;
     }
 
-    public JJServiceBuilder WithTranslator<T>() where T : class, ITranslator
+    public JJServiceBuilder WithTranslatorProvider<T>() where T : class, ITranslatorProvider
     {
-        Services.Replace(ServiceDescriptor.Transient<ITranslator, T>());
+        Services.Replace(ServiceDescriptor.Transient<ITranslatorProvider, T>());
         return this;
     }
 
