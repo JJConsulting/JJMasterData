@@ -20,7 +20,7 @@ public class JJServiceBuilder
     {
         Services.AddScoped<IEntityRepository, Factory>();
         Services.AddLocalization();
-        Services.AddTransient<ITranslatorProvider, JJMasterDataTranslatorProvider>();
+        Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddTransient<IBackgroundTask, BackgroundTask>();
         return this;
     }
@@ -31,9 +31,9 @@ public class JJServiceBuilder
         return this;
     }
 
-    public JJServiceBuilder WithTranslatorProvider<T>() where T : class, ITranslatorProvider
+    public JJServiceBuilder WithTranslatorProvider<T>() where T : class, ILocalizationProvider
     {
-        Services.Replace(ServiceDescriptor.Transient<ITranslatorProvider, T>());
+        Services.Replace(ServiceDescriptor.Transient<ILocalizationProvider, T>());
         return this;
     }
 

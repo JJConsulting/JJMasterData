@@ -19,7 +19,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataTranslatorProvider.GetElement();
+        var element = JJMasterDataLocalizationProvider.GetElement();
         
         var formElement = new FormElement(element)
         {

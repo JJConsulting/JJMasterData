@@ -11,10 +11,10 @@ namespace JJMasterData.Commons.Language;
 public static class Translate
 {
     private static ConcurrentDictionary<string, IDictionary<string, string>> _resourcesDictionary;
-    private static ITranslatorProvider Provider { get; }
+    private static ILocalizationProvider Provider { get; }
     static Translate()
     {
-        Provider = JJService.TranslatorProvider;
+        Provider = JJService.LocalizationProvider;
     }
     
     /// <summary>

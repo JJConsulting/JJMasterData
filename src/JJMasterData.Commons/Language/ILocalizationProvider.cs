@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Commons.Language;
 
-public interface ITranslatorProvider
+public interface ILocalizationProvider
 {
     /// <summary>
     /// Recovers the resources using a Dictionary 

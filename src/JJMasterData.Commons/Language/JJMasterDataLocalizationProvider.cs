@@ -11,12 +11,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Language;
 
-public class JJMasterDataTranslatorProvider : ITranslatorProvider
+public class JJMasterDataLocalizationProvider : ILocalizationProvider
 {
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IEntityRepository EntityRepository { get; }
 
-    public JJMasterDataTranslatorProvider(IEntityRepository entityRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public JJMasterDataLocalizationProvider(IEntityRepository entityRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         StringLocalizer = stringLocalizer;
