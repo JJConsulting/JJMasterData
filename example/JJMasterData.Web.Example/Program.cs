@@ -20,7 +20,7 @@ public class Program
         builder.Services.AddControllersWithViews();
 
         builder.AddJJMasterDataWeb(settingsPath).WithFormEvents();
-
+        
         var app = builder.Build();
 
         if (app.Environment.IsProduction())
