@@ -31,7 +31,7 @@ public class JJServiceBuilder
         return this;
     }
 
-    public JJServiceBuilder WithTranslatorProvider<T>() where T : class, ILocalizationProvider
+    public JJServiceBuilder WithLocalizationProvider<T>() where T : class, ILocalizationProvider
     {
         Services.Replace(ServiceDescriptor.Transient<ILocalizationProvider, T>());
         return this;
