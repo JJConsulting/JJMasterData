@@ -83,20 +83,13 @@ public class JJFormUpload : JJBaseView
     /// e o evendo será cancelado.
     /// </remarks>
     public event EventHandler<FormRenameFileEventArgs> OnRenameFile;
-
-    /// <summary>
-    /// Arquivos armazenados na sessão, caso o caminho não seja especificado
-    /// </summary>
-    private List<FormUploadFile> MemoryFiles
+    
+    private List<FormUploadFile> TempUserFiles
     {
-        get => JJSession.GetSessionValue<List<FormUploadFile>>(MemoryFilesSessionName);
-        set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
+        get => GetUserTempFiles();
+        
+        set => SetUserTempFiles(value);
     }
-
-    /// <summary>
-    /// Nome da variavél de sessão
-    /// </summary>
-    private string MemoryFilesSessionName => $"{Name}_jjfiles";
 
     /// <summary>
     /// Sempre aplica as alterações dos arquivos em disco, 
@@ -241,6 +234,8 @@ public class JJFormUpload : JJBaseView
 
     public bool ViewGallery { get; set; }
 
+    public string TempUserPath => Path.Combine(Path.GetTempPath(), Name, UserId ?? "0");
+
     public JJFormUpload()
     {
         Upload = new JJUploadFile();
@@ -267,7 +262,7 @@ public class JJFormUpload : JJBaseView
                 return null;
             
             string src;
-            if (file.IsInMemory)
+            if (false)
             {
                 src =  $"data:image/{Path.GetExtension(fileName).Replace(".","")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
             }
@@ -551,7 +546,7 @@ public class JJFormUpload : JJBaseView
                 string src;
                 string filePath = Path.Combine(FolderPath,fileName);
                 
-                if (file.IsInMemory)
+                if (false)
                 {
                     src =  $"data:image/{Path.GetExtension(fileName).Replace(".","")};base64,{Convert.ToBase64String(file.FileStream.ToArray())}";
                 }
@@ -750,7 +745,7 @@ public class JJFormUpload : JJBaseView
         List<FormUploadFile> files = null;
         
         if (!AutoSave || string.IsNullOrEmpty(FolderPath))
-            files = MemoryFiles;
+            files = TempUserFiles;
 
         return files ?? GetPhysicalFiles();
     }
@@ -816,7 +811,7 @@ public class JJFormUpload : JJBaseView
                 currentFile.SizeBytes = memoryStream.Length;
             }
 
-            MemoryFiles = files;
+            TempUserFiles = files;
 
         }
     }
@@ -833,13 +828,10 @@ public class JJFormUpload : JJBaseView
             var file = files.Find(x => x.FileName.Equals(fileName));
             if (file != null)
             {
-                if (!file.IsInMemory)
-                    file.Deleted = true;
-                else
-                    files.Remove(file);
+                files.Remove(file);
             }
 
-            MemoryFiles = files;
+            TempUserFiles = files;
         }
     }
     
@@ -882,7 +874,7 @@ public class JJFormUpload : JJBaseView
             if (file.FileStream == null & string.IsNullOrEmpty(file.OriginName))
                 file.OriginName = currentName;
 
-            MemoryFiles = files;
+            TempUserFiles = files;
         }
     }
 
@@ -915,20 +907,20 @@ public class JJFormUpload : JJBaseView
     /// <summary>
     /// Save the files from the memory to the disk.
     /// </summary>
-    public void SaveMemoryFiles(string folderPath)
+    public void SaveTempUserFiles(string folderPath)
     {
         if (string.IsNullOrEmpty(folderPath))
         {
             throw new ArgumentNullException(nameof(folderPath));
         }
 
-        if (MemoryFiles == null)
+        if (TempUserFiles == null)
             return;
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
-        foreach (var file in MemoryFiles)
+        foreach (var file in TempUserFiles)
         {
             if (file.Deleted)
             {
@@ -939,19 +931,19 @@ public class JJFormUpload : JJBaseView
             {
                 File.Move(folderPath + file.OriginName, folderPath + file.FileName);
             }
-            else if (file.FileStream != null && file.IsInMemory)
+            else
             {
-                SavePhysicalFile(folderPath, file.FileName, file.FileStream);
+                File.Move(Path.Combine(TempUserPath, file.FileName), Path.Combine(FolderPath,file.FileName));
             }
         }
 
         FolderPath = folderPath;
-        MemoryFiles = null;
+        TempUserFiles = null;
     }
     
     public void ClearMemoryFiles()
     {
-        MemoryFiles = null;
+        TempUserFiles = null;
     }
     
     public void DeleteAll()
@@ -962,7 +954,7 @@ public class JJFormUpload : JJBaseView
                 Directory.Delete(FolderPath, true);
         }
 
-        MemoryFiles = null;
+        TempUserFiles = null;
     }
     
     public int CountFiles()
@@ -976,7 +968,7 @@ public class JJFormUpload : JJBaseView
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
-        string fileFullName = folderPath + fileName;
+        string fileFullName = Path.Combine(folderPath, fileName);
 
         var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
@@ -1050,6 +1042,50 @@ public class JJFormUpload : JJBaseView
             e.ErrorMessage = ex.Message;
         }
 
+    }
+    
+    private List<FormUploadFile> GetUserTempFiles()
+    {
+        var formfiles = new List<FormUploadFile>();
+        
+        if (string.IsNullOrEmpty(TempUserPath))
+            return formfiles;
+        
+        var directoryInfo = new DirectoryInfo(TempUserPath);
+        
+        if (directoryInfo.Exists)
+        {
+            FileInfo[] files = directoryInfo.GetFiles();
+            foreach (var file in files)
+            {
+                var formfile = new FormUploadFile
+                {
+                    FileName = file.Name,
+                    SizeBytes = file.Length,
+                    LastWriteTime = file.LastWriteTime
+                };
+                formfiles.Add(formfile);
+            }
+        }
+        return formfiles;
+    }
+
+    private void SetUserTempFiles(List<FormUploadFile> files)
+    {
+        if (!Directory.Exists(TempUserPath))
+            Directory.CreateDirectory(TempUserPath);
+        
+        if (files != null)
+        {
+            foreach (var file in files)
+            {
+                SavePhysicalFile(TempUserPath, file.FileName, file.FileStream);
+            }
+        }
+        else
+        {
+            Directory.Delete(TempUserPath, true);
+        }
     }
 
 }

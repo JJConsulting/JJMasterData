@@ -238,11 +238,11 @@ public class JJTextFile : JJBaseControl
         }
     }
 
-    public void SaveMemoryFiles()
+    public void SaveTempUserFiles()
     {
         string folderPath = GetFolderPath();
         JJFormUpload formUpload = GetFormUpload();
-        formUpload.SaveMemoryFiles(folderPath);
+        formUpload.SaveTempUserFiles(folderPath);
     }
 
     public void DeleteAll()

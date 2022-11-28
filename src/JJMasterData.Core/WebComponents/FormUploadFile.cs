@@ -16,6 +16,4 @@ public class FormUploadFile
     public bool Deleted { get; set; }
 
     public string OriginName { get; set; }
-
-    public bool IsInMemory => FileStream != null && FileStream.Length > 0;
 }

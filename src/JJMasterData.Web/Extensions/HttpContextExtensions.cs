@@ -7,10 +7,6 @@ public static class HttpContextExtensions
 {
     public static string? GetUserId(this HttpContext context)
     {
-        //var identity = new ClaimsIdentity();
-        //identity.AddClaim(new Claim("USERID", "0"));
-        //context.User.AddIdentity(identity);
-
         string? userId = context.Session.GetString("USERID");
         if (userId != null) 
             return userId;

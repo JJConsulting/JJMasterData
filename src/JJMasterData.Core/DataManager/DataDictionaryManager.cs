@@ -323,7 +323,7 @@ public class DataDictionaryManager
                 value = values[field.Name].ToString();
 
             var upload = (JJTextFile)fieldManager.GetField(field, PageState.Insert, value, values);
-            upload.SaveMemoryFiles();
+            upload.SaveTempUserFiles();
         }
     }
 
