@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Areas.MasterData.Models;
@@ -40,44 +41,56 @@ public static class ServiceCollectionExtensions
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration,
-        string settingsPath = "appsettings.json")
+        string filePath = "appsettings.json")
     {
         services.ConfigureWritableOptions<JJMasterDataOptions>(
-            configuration.GetSection("JJMasterData"), settingsPath);
+            configuration.GetSection("JJMasterData"), filePath);
         services.ConfigureWritableOptions<ConnectionStrings>(
-            configuration.GetSection("ConnectionStrings"), settingsPath);
+            configuration.GetSection("ConnectionStrings"), filePath);
         services.ConfigureWritableOptions<ConnectionProviders>(
-            configuration.GetSection("ConnectionProviders"), settingsPath);
+            configuration.GetSection("ConnectionProviders"), filePath);
 
         return AddJJMasterDataWeb(services);
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
-        Action<JJOptions> configureOptions)
+        Action<JJConfigurationWrapper> configureOptions)
     {
-        var jjOptions = new JJOptions();
-        
-        configureOptions(jjOptions);
+        var wrapper = new JJConfigurationWrapper();
 
+        configureOptions(wrapper);
 
-        void MasterDataOptions(JJMasterDataOptions options)
+        void ConfigureMasterDataOptions(JJMasterDataOptions options)
         {
-            jjOptions.JJMasterDataOptions = options;
+            var wrapperOptions = wrapper.JJMasterDataOptions;
+            options.Logger = wrapperOptions.Logger;
+            options.BootstrapVersion =wrapperOptions.BootstrapVersion;
+            options.LayoutPath = wrapperOptions.LayoutPath;
+            options.SecretKey = wrapperOptions.SecretKey;
+            options.TableName = wrapperOptions.TableName;
+            options.ExportationFolderPath = wrapperOptions.ExportationFolderPath;
+            options.ExternalAssembliesPath = wrapperOptions.ExternalAssembliesPath;
+            options.PrefixGetProc = wrapperOptions.PrefixGetProc;
+            options.PrefixSetProc = wrapperOptions.PrefixSetProc;
+            options.ResourcesTableName = wrapperOptions.ResourcesTableName;
+            options.AuditLogTableName = wrapperOptions.AuditLogTableName;
+            options.PopUpLayoutPath = wrapperOptions.PopUpLayoutPath;
+            options.JJMasterDataUrl = wrapperOptions.JJMasterDataUrl;
         }
 
-        void ConnectionStrings(ConnectionStrings connectionStrings)
+        void ConfigureConnectionStrings(ConnectionStrings options)
         {
-            jjOptions.ConnectionStrings = connectionStrings;
+            options.ConnectionString = wrapper.ConnectionStrings.ConnectionString;
         }
 
-        void ConnectionProviders(ConnectionProviders connectionProviders)
+        void ConfigureConnectionProviders(ConnectionProviders options)
         {
-            jjOptions.ConnectionProviders = connectionProviders;
+            options.ConnectionString = wrapper.ConnectionProviders.ConnectionString;
         }
 
-        services.Configure((Action<JJMasterDataOptions>)MasterDataOptions);
-        services.Configure((Action<ConnectionStrings>)ConnectionStrings);
-        services.Configure((Action<ConnectionProviders>)ConnectionProviders);
+        services.Configure((Action<JJMasterDataOptions>)ConfigureMasterDataOptions);
+        services.Configure((Action<ConnectionStrings>)ConfigureConnectionStrings);
+        services.Configure((Action<ConnectionProviders>)ConfigureConnectionProviders);
 
         return AddJJMasterDataWeb(services);
     }

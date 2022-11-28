@@ -1,11 +1,5 @@
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Models.Abstractions;
-using Microsoft.Extensions.Configuration.KeyPerFile;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Example;
 
@@ -22,11 +16,14 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddJJMasterDataWeb(options =>
-        {
-            options.JJMasterDataOptions.BootstrapVersion = 4;
-        }).WithFormEvents();
-
+        builder.Services.AddJJMasterDataWeb(builder.Configuration, settingsPath).WithFormEvents();
+        
+        //You can also:
+        // builder.Services.AddJJMasterDataWeb(wrapper =>
+        // {
+        //     wrapper.JJMasterDataOptions.BootstrapVersion = 3;
+        // });
+        
         var app = builder.Build();
 
         if (app.Environment.IsProduction())

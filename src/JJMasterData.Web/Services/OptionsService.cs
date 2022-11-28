@@ -1,11 +1,12 @@
+using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Models.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Services;
 
@@ -19,7 +20,7 @@ public class OptionsService : BaseService
         IDictionaryRepository dictionaryRepository,
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
         IWritableOptions<JJMasterDataOptions>? masterDataWritableOptions = null,
-        IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null) 
+        IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
         : base(validationDictionary, dictionaryRepository)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
@@ -40,22 +41,27 @@ public class OptionsService : BaseService
 
     public async Task SaveOptions(OptionsViewModel model)
     {
-        await ConnectionStringsWritableOptions!.UpdateAsync(options =>
-        {
-            options.ConnectionString = model.ConnectionString!.ToString();
-        });
+        ValidateWritableOptions();
 
-        await JJMasterDataWritableOptions!.UpdateAsync(options =>
+        if (IsValid)
         {
-            options.BootstrapVersion = model.Options!.BootstrapVersion;
-            options.Logger = model.Options.Logger;
-        });
+            await ConnectionStringsWritableOptions!.UpdateAsync(options =>
+            {
+                options.ConnectionString = model.ConnectionString!.ToString();
+            });
+
+            await JJMasterDataWritableOptions!.UpdateAsync(options =>
+            {
+                options.BootstrapVersion = model.Options!.BootstrapVersion;
+                options.Logger = model.Options.Logger;
+            });
 
 
-        await ConnectionProvidersWritableOptions!.UpdateAsync(options =>
-        {
-            options.ConnectionString = model.ConnectionProvider.GetDescription();
-        });
+            await ConnectionProvidersWritableOptions!.UpdateAsync(options =>
+            {
+                options.ConnectionString = model.ConnectionProvider.GetDescription();
+            });
+        }
     }
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
@@ -74,18 +80,41 @@ public class OptionsService : BaseService
         };
 
         if (!viewModel.PathExists)
-            AddError(nameof(OptionsViewModel.FilePath),$"{viewModel.FilePath} does not exists.");
-        
-        if(!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
+            AddError(nameof(OptionsViewModel.FilePath),
+                Translate.Key("{0} does not exists.", viewModel.FilePath ?? "File path"));
+
+        if (!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
             AddError(nameof(OptionsViewModel.ConnectionString), connectionResult.ErrorMessage);
-        
-        //TODO: Translate this.
-        if(JJMasterDataWritableOptions == null)
-            AddError(string.Empty,"You cannot save your options because I");
-        
+
+        ValidateWritableOptions();
+
         viewModel.ValidationSummary = GetValidationSummary();
-        
+
         return viewModel;
+    }
+
+    private void ValidateWritableOptions()
+    {
+        if (ConnectionProvidersWritableOptions == null || JJMasterDataWritableOptions == null ||
+            ConnectionStringsWritableOptions == null)
+            AddError("IWritableOptions",
+                GetWritableOptionsErrorMessage());
+    }
+
+    private static string GetWritableOptionsErrorMessage()
+    {
+        var message = new StringBuilder();
+        message.AppendLine(Translate.Key(
+            "You cannot save your options because they don't use <a href=\"{0}\">IWritableOptions.</a>",
+            "https://portal.jjconsulting.com.br/jjdoc/" +
+            "lib/JJMasterData.Web.Models.Abstractions.IWritableOptions.html"));
+        message.AppendLine(Translate.Key(
+            "You can manually inject them or use the " +
+            "<a href=\"{0}\">builder.Services.AddJJMasterData(IConfiguration configuration)</a> overload.",
+            "https://portal.jjconsulting.com.br/jjdoc/" +
+            "lib/JJMasterData.Web.Extensions.ServiceCollectionExtensions.html" +
+            "#JJMasterData_Web_Extensions_ServiceCollectionExtensions_AddJJMasterDataWeb_IServiceCollection_IConfiguration"));
+        return message.ToString();
     }
 
     public static async Task<ConnectionResult> GetConnectionResultAsync(string? connectionString)
