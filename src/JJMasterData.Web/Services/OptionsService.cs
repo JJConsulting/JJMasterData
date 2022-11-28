@@ -14,21 +14,17 @@ public class OptionsService : BaseService
     private IWritableOptions<ConnectionStrings>? ConnectionStringsWritableOptions { get; }
     private IWritableOptions<ConnectionProviders>? ConnectionProvidersWritableOptions { get; }
     internal IWritableOptions<JJMasterDataOptions>? JJMasterDataWritableOptions { get; }
-    public JJMasterDataOptions Options { get; }
 
-    public OptionsService(
-        IOptionsSnapshot<JJMasterDataOptions> options,
-        IWritableOptions<ConnectionStrings> connectionStringsWritableOptions,
-        IWritableOptions<ConnectionProviders> connectionProvidersWritableOptions,
-        IWritableOptions<JJMasterDataOptions> masterDataWritableOptions,
-        IValidationDictionary validationDictionary,
-        IDictionaryRepository dictionaryRepository) 
+    public OptionsService(IValidationDictionary validationDictionary,
+        IDictionaryRepository dictionaryRepository,
+        IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
+        IWritableOptions<JJMasterDataOptions>? masterDataWritableOptions = null,
+        IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null) 
         : base(validationDictionary, dictionaryRepository)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
         ConnectionStringsWritableOptions = connectionStringsWritableOptions;
         ConnectionProvidersWritableOptions = connectionProvidersWritableOptions;
-        Options = options.Value;
     }
 
 
@@ -69,7 +65,7 @@ public class OptionsService : BaseService
         var viewModel = new OptionsViewModel
         {
             ConnectionString = new ConnectionString(connection),
-            Options = Options,
+            Options = JJMasterDataWritableOptions?.Value,
             ConnectionProvider =
                 DataAccessProvider.GetDataAccessProviderTypeFromString(JJMasterDataOptions.GetConnectionProvider()),
             FilePath = JJMasterDataWritableOptions?.FilePath,
@@ -82,6 +78,10 @@ public class OptionsService : BaseService
         
         if(!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
             AddError(nameof(OptionsViewModel.ConnectionString), connectionResult.ErrorMessage);
+        
+        //TODO: Translate this.
+        if(JJMasterDataWritableOptions == null)
+            AddError(string.Empty,"You cannot save your options because I");
         
         viewModel.ValidationSummary = GetValidationSummary();
         

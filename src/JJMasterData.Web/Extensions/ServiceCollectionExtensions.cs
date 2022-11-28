@@ -14,11 +14,74 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Options;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Hosting;
 
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
+    {
+        services.AddOptions<JJMasterDataOptions>();
+        services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
+        services.AddHttpContextAccessor();
+        services.AddSession();
+        services.AddSystemWebAdaptersServices();
+        services.AddDistributedMemoryCache();
+        services.AddJJMasterDataServices();
+        services.AddUrlRequestCultureProvider();
+        services.AddAnonymousAuthorization();
+
+        return services.AddJJMasterDataCore();
+    }
+
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration,
+        string settingsPath = "appsettings.json")
+    {
+        services.ConfigureWritableOptions<JJMasterDataOptions>(
+            configuration.GetSection("JJMasterData"), settingsPath);
+        services.ConfigureWritableOptions<ConnectionStrings>(
+            configuration.GetSection("ConnectionStrings"), settingsPath);
+        services.ConfigureWritableOptions<ConnectionProviders>(
+            configuration.GetSection("ConnectionProviders"), settingsPath);
+
+        return AddJJMasterDataWeb(services);
+    }
+
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
+        Action<JJOptions> configureOptions)
+    {
+        var jjOptions = new JJOptions();
+        
+        configureOptions(jjOptions);
+
+
+        void MasterDataOptions(JJMasterDataOptions options)
+        {
+            jjOptions.JJMasterDataOptions = options;
+        }
+
+        void ConnectionStrings(ConnectionStrings connectionStrings)
+        {
+            jjOptions.ConnectionStrings = connectionStrings;
+        }
+
+        void ConnectionProviders(ConnectionProviders connectionProviders)
+        {
+            jjOptions.ConnectionProviders = connectionProviders;
+        }
+
+        services.Configure((Action<JJMasterDataOptions>)MasterDataOptions);
+        services.Configure((Action<ConnectionStrings>)ConnectionStrings);
+        services.Configure((Action<ConnectionProviders>)ConnectionProviders);
+
+        return AddJJMasterDataWeb(services);
+    }
+
     internal static void AddSystemWebAdaptersServices(this IServiceCollection services)
     {
         services.AddSystemWebAdapters();
@@ -36,15 +99,17 @@ public static class ServiceCollectionExtensions
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("MasterData", policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
-            options.AddPolicy("DataDictionary", policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
+            options.AddPolicy("MasterData",
+                policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
+            options.AddPolicy("DataDictionary",
+                policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
             options.AddPolicy("Log", policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
         });
     }
 
-    internal static void AddUrlRequestCultureProvider(this IServiceCollection services, params CultureInfo[]? supportedCultures)
+    internal static void AddUrlRequestCultureProvider(this IServiceCollection services,
+        params CultureInfo[]? supportedCultures)
     {
-
         if (supportedCultures == null || supportedCultures.Length == 0)
         {
             supportedCultures = new[]
@@ -103,8 +168,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }
-    
-    public static void ConfigureOptionsWriter<T>(
+
+    public static void ConfigureWritableOptions<T>(
         this IServiceCollection services,
         IConfigurationSection section,
         string file) where T : class, new()

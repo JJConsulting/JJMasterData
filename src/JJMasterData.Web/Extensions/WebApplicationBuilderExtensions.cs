@@ -10,30 +10,12 @@ namespace JJMasterData.Web.Extensions;
 
 public static class WebApplicationBuilderExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataWeb(this WebApplicationBuilder builder, string settingsPath = "appsettings.json")
+    public static WebApplicationBuilder AddJJMasterDataConfiguration(
+        this WebApplicationBuilder builder,
+        string settingsPath = "appsettings.json")
     {
-        builder.Services.AddOptions<JJMasterDataOptions>();
-        builder.Services.ConfigureOptions(typeof(JJMasterDataConfigureOptions));
-        builder.Services.AddHttpContextAccessor();
-        builder.Services.AddSession();
 
-        settingsPath = Path.GetFullPath(settingsPath);
-        
-        builder.Services.ConfigureOptionsWriter<JJMasterDataOptions>(
-            builder.Configuration.GetSection("JJMasterData"), settingsPath);
 
-        builder.Services.ConfigureOptionsWriter<ConnectionStrings>(
-            builder.Configuration.GetSection("ConnectionStrings"), settingsPath);
-
-        builder.Services.ConfigureOptionsWriter<ConnectionProviders>(
-            builder.Configuration.GetSection("ConnectionProviders"), settingsPath);
-
-        builder.Services.AddSystemWebAdaptersServices();
-        builder.Services.AddDistributedMemoryCache();
-        builder.Services.AddJJMasterDataServices();
-        builder.Services.AddUrlRequestCultureProvider();
-        builder.Services.AddAnonymousAuthorization();
-
-        return builder.Services.AddJJMasterDataCore();
+        return builder;
     }
 }

@@ -36,27 +36,27 @@ public sealed class JJMasterDataOptions
     /// <summary>
     /// Default value: JJMasterData <br></br>
     /// </summary>
-    public string TableName { get; set; } = "JJMasterData";
+    public string TableName { get; set; }
 
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
-    public string ResourcesTableName { get; set; } = "JJMasterDataResources";
+    public string ResourcesTableName { get; set; }
 
     /// <summary>
     /// Default value: JJMasterDataAuditLog <br></br>
     /// </summary>
-    public string AuditLogTableName { get; set; } = "JJMasterDataAuditLog";
+    public string AuditLogTableName { get; set; }
 
     /// <summary>
-    /// Default value: {TableName}Get <br></br>
+    /// Default value: {tablename}Get <br></br>
     /// </summary>
-    public string ReadProcedurePattern{ get; set; } = "{table_name}Get";
+    public string PrefixGetProc{ get; set; } 
 
     /// <summary>
-    /// Default value: {TableName}Set <br></br>
+    /// Default value: {tablename}Set <br></br>
     /// </summary>
-    public string WriteProcedurePattern { get; set; } = "{table_name}Set";
+    public string PrefixSetProc { get; set; }
 
     /// <summary>
     /// Default value: null <br></br>
@@ -66,26 +66,26 @@ public sealed class JJMasterDataOptions
     /// <summary>
     /// Default value: _MasterDataLayout <br></br>
     /// </summary>
-    public string? LayoutPath { get; set; } = "_MasterDataLayout";
+    public string? LayoutPath { get; set; } 
 
     /// <summary>
     /// Default value:_MasterDataLayout.Popup <br></br>
     /// </summary>
-    public string? PopUpLayoutPath{ get; set; }= "_MasterDataLayout.Popup";
+    public string? PopUpLayoutPath{ get; set; }
 
     /// <summary>
     /// Default value: null <br></br>
     /// </summary>
     public string[]? ExternalAssembliesPath{ get; set; }
 
-    public string ExportationFolderPath { get; set; } = @$"{FileIO.GetApplicationPath()}\App_Data\JJExportFiles\";
+    public string ExportationFolderPath { get; set; } 
 
     /// <summary>
     /// Default value: "ChangeMe" <br></br>
     /// </summary>
-    public string SecretKey { get; set; } = "ChangeMe";
+    public string SecretKey { get; set; }
 
-    public LoggerOptions Logger { get; set; } = new();
+    public LoggerOptions Logger { get; set; } 
 
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
@@ -97,7 +97,21 @@ public sealed class JJMasterDataOptions
             return (IConfiguration)configuration;
         }
     }
-    
+    public JJMasterDataOptions()
+    {
+        TableName = "JJMasterData";
+        ResourcesTableName = "JJMasterDataResources";
+        AuditLogTableName = "JJMasterDataAuditLog";
+        PrefixGetProc = "{tablename}Get";
+        PrefixSetProc = "{tablename}Set";
+        LayoutPath = "_MasterDataLayout";
+        PopUpLayoutPath = "_MasterDataLayout.PopUp";
+        ExportationFolderPath = $"{FileIO.GetApplicationPath()}\\App_Data\\JJExportFiles\\";
+        SecretKey = "ChangeMe";
+        Logger = new LoggerOptions();
+
+    }
+
     public static string? GetConnectionString(string name = "ConnectionString")
     {
         if(IsNetFramework)
@@ -120,9 +134,9 @@ public sealed class JJMasterDataOptions
 
         string tablename = element.TableName;
         
-        string pattern = JJService.Options.ReadProcedurePattern;
+        string pattern = JJService.Options.PrefixGetProc;
 
-        return pattern.Replace("{table_name}", tablename);
+        return pattern.Replace("{tablename}", tablename);
         
     }
 
@@ -132,30 +146,30 @@ public sealed class JJMasterDataOptions
             return element.WriteProcedureName;
 
         string tablename = element.TableName;
-        string pattern = JJService.Options.WriteProcedurePattern;
+        string pattern = JJService.Options.PrefixSetProc;
         
-        return pattern.Replace("{table_name}", tablename);
+        return pattern.Replace("{tablename}", tablename);
     }
 
     public static string GetReadProcedureName(string tablename)
     {
-        var dicname = RemovedTbFromName(tablename);
+        var dicname = RemovePrefixChars(tablename);
         
-        string pattern = JJService.Options.ReadProcedurePattern;
+        string pattern = JJService.Options.PrefixGetProc;
 
-        return pattern.Replace("{table_name}", dicname);
+        return pattern.Replace("{tablename}", dicname);
     }
 
     public static string GetWriteProcedureName(string tablename)
     {
-        var dicname = RemovedTbFromName(tablename);
+        var dicname = RemovePrefixChars(tablename);
 
-        string pattern = JJService.Options.WriteProcedurePattern;
+        string pattern = JJService.Options.PrefixSetProc;
 
-        return pattern.Replace("{table_name}", dicname);
+        return pattern.Replace("{tablename}", dicname);
     }
 
-    private static string RemovedTbFromName(string tablename)
+    private static string RemovePrefixChars(string tablename)
     {
         string dicname;
         if (tablename.ToLower().StartsWith("tb_"))

@@ -8,7 +8,7 @@ namespace JJMasterData.Web.Areas.MasterData.Models;
 
 public class OptionsViewModel
 {
-    public ConnectionString ConnectionString { get; set; } = new();
+    public ConnectionString ConnectionString { get; set; } 
     public JJMasterDataOptions? Options { get; set; } 
     public bool IsFullscreen { get; set; }
     public string? FilePath { get; set; }
@@ -16,4 +16,9 @@ public class OptionsViewModel
     public bool? IsConnectionSuccessful { get; set; }
     public bool PathExists => File.Exists(FilePath);
     public JJValidationSummary? ValidationSummary { get; set; }
+
+    public OptionsViewModel()
+    {
+        ConnectionString = new ConnectionString();
+    }
 }

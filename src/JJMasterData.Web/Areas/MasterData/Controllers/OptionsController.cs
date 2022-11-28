@@ -18,18 +18,17 @@ public class OptionsController : MasterDataController
     public async Task<IActionResult> Index(bool isFullscreen=false)
     {
         var viewModel = await Service.GetViewModel(isFullscreen);
-
+        
         return View(viewModel);
     }
     
 
     public async Task<IActionResult> Save(OptionsViewModel model)
     {
-        if (ModelState.IsValid)
-        {
-            await Service.SaveOptions(model);
-        }
-        else
+
+        await Service.SaveOptions(model);
+
+        if (!ModelState.IsValid)
         {
             model.ValidationSummary = Service.GetValidationSummary();
         }

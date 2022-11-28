@@ -2,6 +2,10 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Models.Abstractions;
+using Microsoft.Extensions.Configuration.KeyPerFile;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Example;
 
@@ -10,7 +14,6 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
         var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
         var settingsPath = Path.Combine(root, "appsettings.json");
 
@@ -19,7 +22,10 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.AddJJMasterDataWeb(settingsPath).WithFormEvents();
+        builder.Services.AddJJMasterDataWeb(options =>
+        {
+            options.JJMasterDataOptions.BootstrapVersion = 4;
+        }).WithFormEvents();
 
         var app = builder.Build();
 
