@@ -56,7 +56,7 @@ public class JJTextTel : JJBaseControl
         html.Append("\" name=\"");
         html.Append(Name);
         html.Append("\" type=\"tel\" ");
-        html.Append("data-inputmask=\"'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'\" ");
+        html.Append("data-inputmask=\"'mask': '[(99) 9999[9]-9999]', 'placeholder':'', 'greedy': 'false'\" ");
         html.Append("maxlength =\"19\" ");
     
         if (!string.IsNullOrEmpty(Text))
