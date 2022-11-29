@@ -15,7 +15,7 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new ();
+    private List<FormElementField> _formFields = new();
     
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -23,11 +23,8 @@ public class FormElement : Element
     [DataMember(Name = "subTitle")]
     public string SubTitle { get; set; }
     
-    // MongoDB.Bson.BsonSerializationException: The property 'Fields' of type 'JJMasterData.Core.DataDictionary.FormElement'
-    // cannot use element name 'Fields' because it is already being used by property
-    // 'Fields' of type 'JJMasterData.Commons.Dao.Entity.Element'.
     [DataMember(Name = "fields")]
-    public new FormElementList  Fields { get; private set; }
+    public new FormElementList Fields { get; private set; }
 
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }

@@ -33,13 +33,14 @@ public static class JJService
     }
 
     public static IBackgroundTask BackgroundTask => Provider.GetService<IBackgroundTask>();
-    public static ITranslator Translator
+    public static ILocalizationProvider LocalizationProvider
     {
-        get
-        {
+        get 
+        { 
             using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<ITranslator>()!;
+            return scope.ServiceProvider.GetService<ILocalizationProvider>()!;
         }
     }
+
     public static ILogger Logger => Provider.GetService<ILogger>() ?? new Logger();
 }

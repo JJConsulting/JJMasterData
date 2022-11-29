@@ -35,7 +35,7 @@ quickly provide matching colored icons on any alert.
 
 <img alt="Importing" src="../../media/SimpleExampleIconJJAlert.png"/>
 
-**Button Close** Set whether to display the close alert button.
+**Close Button** Set whether to display the close alert button.
 
 ```csharp
     alert.Messages.Add("A simple info alert with icon and close button - check it out! - check it out!");
@@ -47,8 +47,20 @@ quickly provide matching colored icons on any alert.
 
 <img alt="Importing" src="../../media/SimpleExampleButtonCloseJJAlert.png"/>
 
+## TagHelper
+
+JJAlert also have a TagHelper
+
+```html
+    <jj-alert
+        title="Success"
+        message="Connection successfully estabilished."
+        icon="@IconType.CheckCircle"
+        color="@PanelColor.Success"/>
+```
+
 > [!TIP] 
-> JJAlert does not consider internationalization, so the end user must pay attention to the translation using the Translate.Key(string) method as shown below
+> JJAlert does consider internationalization.
 
 
 You can check all JJAlert properties in our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.WebComponents.JJAlert.html)

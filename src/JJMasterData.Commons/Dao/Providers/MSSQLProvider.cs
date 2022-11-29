@@ -233,7 +233,7 @@ internal class MSSQLProvider : BaseProvider
         StringBuilder sql = new StringBuilder();
 
         bool updateScript = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
+        string procedureFinalName = JJMasterDataOptions.GetWriteProcedureName(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -500,7 +500,7 @@ internal class MSSQLProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
+        string procedureFinalName = JJMasterDataOptions.GetReadProcedureName(element);
 
         //Se exisitir apaga
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -924,13 +924,17 @@ internal class MSSQLProvider : BaseProvider
 
     public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetProcNameGet(element);
-        cmd.Parameters = new List<DataAccessParameter>();
-        cmd.Parameters.Add(new DataAccessParameter("@orderby", orderby));
-        cmd.Parameters.Add(new DataAccessParameter("@regporpag", regperpage));
-        cmd.Parameters.Add(new DataAccessParameter("@pag", pag));
+        var command = new DataAccessCommand
+        {
+            CmdType = CommandType.StoredProcedure,
+            Sql = JJMasterDataOptions.GetReadProcedureName(element),
+            Parameters = new List<DataAccessParameter>
+            {
+                new("@orderby", orderby),
+                new("@regporpag", regperpage),
+                new("@pag", pag)
+            }
+        };
 
         foreach (var field in element.Fields)
         {
@@ -951,7 +955,7 @@ internal class MSSQLProvider : BaseProvider
                 pFrom.Size = field.Size;
                 pFrom.Name = field.Name + "_from";
                 pFrom.Value = valueFrom;
-                cmd.Parameters.Add(pFrom);
+                command.Parameters.Add(pFrom);
 
                 object valueTo = DBNull.Value;
                 if (filters != null &&
@@ -968,7 +972,7 @@ internal class MSSQLProvider : BaseProvider
                 pTo.Size = field.Size;
                 pTo.Name = field.Name + "_to";
                 pTo.Value = valueTo;
-                cmd.Parameters.Add(pTo);
+                command.Parameters.Add(pTo);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
@@ -986,21 +990,21 @@ internal class MSSQLProvider : BaseProvider
                     Name = field.Name,
                     Value = value
                 };
-                cmd.Parameters.Add(parameter);
+                command.Parameters.Add(parameter);
             }
         }
 
-        cmd.Parameters.Add(pTot);
+        command.Parameters.Add(pTot);
 
-        return cmd;
+        return command;
     }
 
 
     private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetProcNameSet(element);
+        cmd.CmdType = CommandType.StoredProcedure;
+        cmd.Sql = JJMasterDataOptions.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 

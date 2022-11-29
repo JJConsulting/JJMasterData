@@ -19,6 +19,7 @@ jobs:
         dotnet-version: 7.0.x
     - name: Setup NodeJS
       uses: actions/setup-node@v3.4.1
+      
     - name: Restore dependencies
       run: dotnet restore
     - name: Restore TypeScript dependencies

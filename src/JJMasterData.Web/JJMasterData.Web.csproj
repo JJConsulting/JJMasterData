@@ -25,16 +25,16 @@
         <EmbeddedResource Include="wwwroot\**\*" />
     </ItemGroup>
 
-    <ItemGroup>
-      <TypeScriptCompile Remove="wwwroot\ts\jjdatapanel.ts" />
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <EmbeddedResource Include="Scripts\**\*" />
     </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
@@ -43,7 +43,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
+        <_ContentIncludedByDefault Remove="package.json" />
+        <_ContentIncludedByDefault Remove="package-lock.json" />
+        <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -56,9 +58,5 @@
             <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
-    
-    <ProjectExtensions>
-        <VisualStudio><UserProperties /></VisualStudio>
-    </ProjectExtensions>
 
 </Project>

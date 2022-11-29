@@ -1,19 +1,16 @@
 ﻿#nullable disable
 
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Dao;
 
@@ -22,8 +19,6 @@ public class DataAccess
     private DbProviderFactory _factory;
     private DbConnection _connection;
     private bool _keepAlive;
-
-    public bool TranslateErrorMessage { get; set; } = true;
 
     public bool GenerateLog { get; set; } = true;
 
@@ -51,7 +46,6 @@ public class DataAccess
     /// Waiting time to execute a command on the database (seconds - default 240s)
     /// </summary>
     public int TimeOut { get; set; } = 240;
-
 
     /// <summary>
     /// Keeps the database connection open, 
@@ -100,14 +94,14 @@ public class DataAccess
 
     public DataAccess()
     {
-        ConnectionString = JJService.Options.GetConnectionString();
-        ConnectionProvider = JJService.Options.GetConnectionProvider();
+        ConnectionString = JJMasterDataOptions.GetConnectionString();
+        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider();
     }
 
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJService.Options.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJService.Options.GetConnectionProvider(connectionStringName);
+        ConnectionString = JJMasterDataOptions.GetConnectionString(connectionStringName);
+        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider(connectionStringName);
     }
 
     /// <summary>
@@ -120,7 +114,6 @@ public class DataAccess
         ConnectionProvider = connectionProviderName;
     }
 
-
     public DbProviderFactory GetFactory()
     {
         if (_factory != null) return _factory;
@@ -128,20 +121,18 @@ public class DataAccess
         if (ConnectionString == null)
         {
             var error = new StringBuilder();
-            error.AppendLine(TranslateKey("Connection string not found in configuration file."));
-            error.AppendLine(TranslateKey("Default connection name is [ConnectionString]."));
-            error.AppendLine(TranslateKey("Please check JJ001 for more information."));
+            error.AppendLine("Connection string not found in configuration file.");
+            error.AppendLine("Default connection name is [ConnectionString].");
+            error.AppendLine("Please check JJ001 for more information.");
             error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
-            AddLog(error.ToString());
             throw new DataAccessException(error.ToString());
         }
 
         if (ConnectionProvider == null)
         {
             var error = new StringBuilder();
-            error.AppendLine(TranslateKey("Connection provider not found in configuration file."));
-            error.Append(TranslateKey("Default connection name is [ConnectionString]"));
-            AddLog(error.ToString());
+            error.AppendLine("Connection provider not found in configuration file.");
+            error.Append("Default connection name is [ConnectionString]");
             throw new DataAccessException(error.ToString());
         }
 
@@ -214,18 +205,13 @@ public class DataAccess
         _connection = null;
     }
 
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>Lucio Pelinson 14-04-2012</remarks>
+    ///<returns>Returns a DataTable object populated by a query with parameters</returns>
     public DataTable GetDataTable(string sql)
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
 
-
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/> with parameters</returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -252,29 +238,25 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             da?.Dispose();
-
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
         return dt;
     }
 
-
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<inheritdoc cref="GetDataTable(string)"/>
     public async Task<DataTable> GetDataTableAsync(string sql)
     {
         return await GetDataTableAsync(new DataAccessCommand(sql));
     }
 
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -301,22 +283,22 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             da?.Dispose();
-
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
         return dt;
     }
 
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>
+    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> by ref.
+    /// </returns>
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
         DataTable dt = new DataTable();
@@ -336,23 +318,20 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(sql, new List<DataAccessParameter>(), ex);
-            throw;
+            throw GetDataAccessException(ex, sql);
         }
         finally
         {
             da?.Dispose();
-
             sqlCmd?.Dispose();
         }
 
         return dt;
     }
 
-
-    /// <summary>
+    /// <returns>
     /// Returns a single sql command value with parameters
-    /// </summary>
+    /// </returns>
     /// <remarks>
     /// To prevent SQL injection, please use the DataAccessCommand overload.
     /// </remarks>
@@ -361,7 +340,9 @@ public class DataAccess
         return GetResult(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>
+    /// Returns a object from a <see cref="DataAccessCommand"/>
+    /// </returns>
     public object GetResult(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -380,25 +361,24 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
         return scalarResult;
     }
 
+    /// <inheritdoc cref="GetResult(string)"/>
     public async Task<object> GetResultAsync(string sql)
     {
         return await GetResultAsync(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
     public async Task<object> GetResultAsync(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -417,20 +397,20 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
         return scalarResult;
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> by ref.
+    /// </returns>
     public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         object scalarResult;
@@ -444,8 +424,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
@@ -459,9 +438,6 @@ public class DataAccess
     /// <summary>
     /// Execute the command in the database and return the number of affected records.
     /// </summary>
-    /// <remarks>
-    /// Author: Lucio Pelinson 14-04-2012
-    /// </remarks>
     public int SetCommand(DataAccessCommand cmd)
     {
         int rowsAffected = 0;
@@ -481,13 +457,11 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
@@ -514,13 +488,11 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
@@ -560,15 +532,12 @@ public class DataAccess
         {
             sqlTras.Rollback();
             var cmd = commands[index];
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             sqlTras.Dispose();
-
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
@@ -603,15 +572,12 @@ public class DataAccess
         {
             sqlTras.Rollback();
             var cmd = commands[index];
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             sqlTras.Dispose();
-
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
@@ -651,7 +617,9 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> and a <see cref="DbTransaction"/> by ref.
+    /// </returns>
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         int numberOfRowsAffected = 0;
@@ -666,8 +634,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
@@ -678,15 +645,13 @@ public class DataAccess
     }
 
     /// <summary>
-    /// Retrieves the first record of the sql statement in a Hashtable object.  [key(database field), value(value stored in database)] 
+    /// Retrieves the first record of the sql statement in a Hashtable object.
+    /// [key(database field), value(value stored in database)] 
     /// </summary>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    /// <remarks>
-    /// Author: Lucio Pelinson 17-04-2012
-    /// </remarks>
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
 
     /// <inheritdoc cref="GetFields(string)"/>
@@ -713,8 +678,7 @@ public class DataAccess
                 {
                     string fieldName = dr.GetName(nQtd);
                     if (retCollection.ContainsKey(fieldName))
-                        throw new DataAccessException(
-                            TranslateKey("[{0}] field duplicated in get procedure", fieldName));
+                        throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
                     retCollection.Add(fieldName, dr.GetValue(nQtd));
                     nQtd += 1;
@@ -724,7 +688,7 @@ public class DataAccess
             if (!dr.IsClosed)
                 dr.Close();
 
-            foreach (DataAccessParameter parameter in cmd.Parameters)
+            foreach (var parameter in cmd.Parameters)
             {
                 if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                     parameter.Value = dbCommand.Parameters[parameter.Name].Value;
@@ -732,13 +696,11 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
@@ -754,9 +716,7 @@ public class DataAccess
         {
             dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
-
             DbDataReader dr = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
-
             while (await dr.ReadAsync())
             {
                 retCollection = new Hashtable();
@@ -766,8 +726,7 @@ public class DataAccess
                 {
                     string fieldName = dr.GetName(nQtd);
                     if (retCollection.ContainsKey(fieldName))
-                        throw new DataAccessException(
-                            TranslateKey("[{0}] field duplicated in get procedure", fieldName));
+                        throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
                     retCollection.Add(fieldName, dr.GetValue(nQtd));
                     nQtd += 1;
@@ -785,20 +744,18 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            LogException(cmd.Sql, cmd.Parameters, ex);
-            throw;
+            throw GetDataAccessException(ex, cmd);
         }
         finally
         {
             dbCommand?.Dispose();
-
             CloseConnection();
         }
 
         return retCollection;
     }
 
-    private DataAccessCommand GetTableExistsCommand(string table)
+    private static DataAccessCommand GetTableExistsCommand(string table)
     {
         const string sql = @"SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
 
@@ -902,7 +859,7 @@ public class DataAccess
     {
         bool result;
         DbConnection connection = null;
-        String errorMessage = null;
+        string errorMessage = null;
         try
         {
             connection = GetFactory().CreateConnection();
@@ -1013,53 +970,38 @@ public class DataAccess
         }
 
         await SetCommandAsync(arrayList);
-
         return await Task.FromResult(true);
     }
 
-    private void LogException(string sql, List<DataAccessParameter> parameters, Exception ex)
+    private static Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
     {
-        if (ex is SqlException { Number: >= 50000 } or DataAccessException)
-            return;
+        return GetDataAccessException(ex, cmd.Sql, cmd.Parameters);
+    }
 
-        var error = new StringBuilder();
+    private static Exception GetDataAccessException(Exception ex, string sql,
+        List<DataAccessParameter> parameters = null)
+    {
+        ex.Data.Add("DataAccess Query", sql);
 
-        error.AppendLine(TranslateKey("Exception thrown in DataAccess class"));
-        error.AppendLine(": ");
-        error.Append(TranslateKey("Exception Message"));
-        error.AppendLine(ex.Message);
-        if (ex.InnerException is { Message: { } })
+        if (parameters?.Count > 0)
         {
-            error.Append(TranslateKey("Inner Exception"));
-            error.AppendLine(": ");
-            error.AppendLine(ex.InnerException.Message);
-        }
-
-        error.Append(TranslateKey("Executed Query"));
-        error.AppendLine(": ");
-        error.AppendLine(sql);
-        if (parameters is { Count: > 0 })
-        {
-            error.Append(TranslateKey("Parameters"));
-            error.AppendLine(": ");
-            foreach (var parm in parameters)
+            var error = new StringBuilder();
+            foreach (var param in parameters)
             {
-                error.Append(parm.Name);
+                error.Append(param.Name);
                 error.Append(" = ");
-                error.Append(parm.Value);
+                error.Append(param.Value);
                 error.Append(" [");
-                error.Append(parm.Type.ToString());
+                error.Append(param.Type.ToString());
                 error.AppendLine("]");
             }
-        }
-        
-        if (!string.IsNullOrEmpty(ex.StackTrace))
-        {
-            error.Append("StackTrace :");
-            error.AppendLine(ex.StackTrace);
+
+            ex.Data.Add("DataAccess Parameters", error.ToString());
+
+            return ex;
         }
 
-        AddLog(error.ToString());
+        return ex;
     }
 
     private DbCommand CreateDbCommand(DataAccessCommand command)
@@ -1072,11 +1014,9 @@ public class DataAccess
         dbCommand.CommandType = command.CmdType;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
-
         foreach (var parameter in command.Parameters)
         {
             var dbParameter = CreateDbParameter(parameter);
-
             dbCommand.Parameters.Add(dbParameter);
         }
 
@@ -1094,22 +1034,7 @@ public class DataAccess
 
         if (parameter.Size > 0)
             dbParameter.Size = parameter.Size;
+
         return dbParameter;
-    }
-
-    private void AddLog(string value)
-    {
-        if (GenerateLog)
-            Log.AddError(value, "JJMasterData.Commons");
-    }
-
-    private string TranslateKey(string key)
-    {
-        return TranslateErrorMessage ? Translate.Key(key) : key;
-    }
-
-    private string TranslateKey(string formatKey, params object[] args)
-    {
-        return TranslateErrorMessage ? Translate.Key(formatKey, args) : string.Format(formatKey, args);
     }
 }

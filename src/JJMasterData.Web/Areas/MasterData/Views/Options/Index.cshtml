@@ -1,5 +1,8 @@
 @using JJMasterData.Core.DataDictionary
+@using JJMasterData.Web.Extensions
+@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Web.Areas.MasterData.Models.OptionsViewModel
+
 @{
     Layout = "_MasterDataLayout.Popup";
 }
@@ -13,12 +16,15 @@
         <jj-title title="Application Settings"/>
     }
 
-    <jj-alert icon="InfoCircle"
-              color="Info"
-              message="@Model.FilePath"
-              title="All changes will be saved in the file located at the path:"/>
-
-    @if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:true })
+    @if (Model.PathExists)
+    {
+        <jj-alert icon="InfoCircle"
+                  color="Info"
+                  message="@Model.FilePath"
+                  title="All changes will be saved in the file located at the path:"/>
+    }
+    
+    @if (Model is { IsConnectionSuccessful:true })
     {
         <jj-alert
             title="Success"
@@ -26,17 +32,12 @@
             icon="@IconType.CheckCircle"
             color="@PanelColor.Success"/>
     }
-    else if (Model.ConnectionString.ConnectionResult is { IsConnectionSuccessful:false })
+
+    @if (!ViewData.ModelState.IsValid)
     {
-        <jj-alert
-            title="Error"
-            message="@Model.ConnectionString.ConnectionResult.ErrorMessage"
-            icon="@IconType.ExclamationTriangle"
-            color="@PanelColor.Danger"/>
+        @Model.ValidationSummary?.GetHtmlString()
     }
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    
     <jj-collapse-panel
         title="Connection String"
         partial="_ConnectionString"
@@ -57,17 +58,19 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <button class="@BootstrapHelper.DefaultButton"
-                    formaction="@Url.Action("Save", "Options")"
-                    type="submit">@Translate.Key("Save")</button>
+            @if (Model.IsFullscreen)
+            {
+                <jj-link-button 
+                    url-action="/en-us/DataDictionary/" 
+                    icon="Home" 
+                    text="Home"/>
+            }
+            <jj-link-button type="LinkButtonType.Submit" 
+                            url-action="@Url.Action("Save", "Options")" 
+                            icon="Save" 
+                            text="Save"/>
         </div>
     </div>
-</form>
-@if(ViewBag.Success == true)
-{
-    <script lang="js" type="text/javascript">
-        window.parent.popup.hide();
-        window.parent.location.reload();
-    </script>
-}
 
+
+</form>

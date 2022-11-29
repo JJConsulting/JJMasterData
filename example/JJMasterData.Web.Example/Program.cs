@@ -1,4 +1,5 @@
 using JJMasterData.MongoDB.Extensions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
 namespace JJMasterData.Web.Example;
@@ -8,12 +9,11 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
+        var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
         var settingsPath = Path.Combine(root, "appsettings.json");
-        
-        builder.Configuration.AddJsonFile(settingsPath, false, true);
 
+        builder.Configuration.AddJsonFile(settingsPath, false, true);
+        
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
@@ -24,7 +24,13 @@ public class Program
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
         });
-
+        
+        //You can also:
+        // builder.Services.AddJJMasterDataWeb(wrapper =>
+        // {
+        //     wrapper.JJMasterDataOptions.BootstrapVersion = 5;
+        // });
+        
         var app = builder.Build();
 
         if (app.Environment.IsProduction())

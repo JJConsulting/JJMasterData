@@ -3,6 +3,8 @@
   items:
   - name: Getting Started
     href: getting_started.md
+  - name: TagHelpers
+    href: taghelpers.md
   - name: Configurations
     href: configurations.md
   - name: Internationalization
