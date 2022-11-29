@@ -7,7 +7,6 @@ using System.Threading;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 
@@ -174,7 +173,7 @@ public class Logger : ILogger
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("*".PadRight(37, '*'));
-            Console.Write($" {Translate.Key("Error")} ");
+            Console.Write(" Error ");
             Console.WriteLine("*".PadRight(37, '*'));
             Console.ResetColor();
         }
@@ -253,7 +252,7 @@ public class Logger : ILogger
         catch (Exception ex)
         {
             var error = new StringBuilder();
-            error.AppendLine(Translate.Key("Error while logging to the database."));
+            error.AppendLine("Error while logging to the database.");
             error.AppendLine(ex.Message);
             WriteInConsole(error.ToString(), source, LoggerLevel.Error);
         }
@@ -268,13 +267,13 @@ public class Logger : ILogger
         {
             Name = "Logging",
             TableName = Options.Table.Name,
-            Info = Translate.Key("System Log"),
+            Info = "System Log",
         };
 
         var eventDate = new ElementField
         {
             Name = Options.Table.DateColumnName,
-            Label = Translate.Key("Date"),
+            Label = "Date",
             IsPk = true,
             DataType = FieldType.DateTime
         };
@@ -284,7 +283,7 @@ public class Logger : ILogger
         var type = new ElementField
         {
             Name = Options.Table.LevelColumnName,
-            Label = Translate.Key("Type"),
+            Label = "Type",
             DataType = FieldType.Varchar,
             Size = 1
         };
@@ -294,7 +293,7 @@ public class Logger : ILogger
         var source = new ElementField
         {
             Name = Options.Table.SourceColumnName,
-            Label = Translate.Key("Source"),
+            Label = "Source",
             DataType = FieldType.Varchar,
             Size = 50
         };
@@ -304,7 +303,7 @@ public class Logger : ILogger
         var msg = new ElementField
         {
             Name = Options.Table.ContentColumnName,
-            Label = Translate.Key("Message"),
+            Label = "Message",
             DataType = FieldType.Varchar,
             Size = 700
         };
