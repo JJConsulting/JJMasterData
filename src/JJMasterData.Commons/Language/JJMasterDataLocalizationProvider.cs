@@ -109,8 +109,8 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         {
             Name = tablename,
             TableName = tablename,
-            ReadProcedureName = JJMasterDataOptions.GetReadProcedureName(tablename),
-            WriteProcedureName = JJMasterDataOptions.GetWriteProcedureName(tablename),
+            CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tablename),
+            CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tablename),
             Info = "Resources"
         };
 
