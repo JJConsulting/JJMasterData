@@ -24,7 +24,8 @@ public class ErrorController : Controller
             StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
         };
         
-        Log.AddError(model.Exception + "\n\n" + model.StackTrace);
+        if(statusCode >= 500)
+            Log.AddError(model.Exception + "\n\n" + model.StackTrace);
 
         return View(model);
     }
