@@ -15,7 +15,7 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new List<FormElementField>();
+    private List<FormElementField> _formFields = new();
     
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -43,8 +43,8 @@ public class FormElement : Element
         Info = element.Info;
         Indexes = element.Indexes;
         Relations = element.Relations;
-        CustomProcNameGet = element.CustomProcNameGet;
-        CustomProcNameSet = element.CustomProcNameSet;
+        ReadProcedureName = element.ReadProcedureName;
+        WriteProcedureName = element.WriteProcedureName;
         Sync = element.Sync;
         SyncMode = element.SyncMode;
         Title = element.Name;

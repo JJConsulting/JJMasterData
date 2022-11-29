@@ -6,13 +6,17 @@ using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Dao.Providers;
 
 internal abstract class BaseProvider
 {
     internal DataAccess DataAccess { get; private set; }
-
+    public BaseProvider(DataAccess dataAccess)
+    {
+        DataAccess = dataAccess;
+    }
     public abstract string VariablePrefix { get; }
     public abstract string GetScriptCreateTable(Element element);
     public abstract string GetScriptWriteProcedure(Element element);
@@ -24,11 +28,6 @@ internal abstract class BaseProvider
     public abstract DataAccessCommand GetCommandDelete(Element element, Hashtable filters);
     public abstract DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot);
     public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values);
-
-    public BaseProvider(DataAccess dataAccess)
-    {
-        DataAccess = dataAccess;
-    }
 
     ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
     public void Insert(Element element, Hashtable values)

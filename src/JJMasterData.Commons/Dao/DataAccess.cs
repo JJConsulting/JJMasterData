@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
@@ -14,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Dao;
 
@@ -100,14 +100,14 @@ public class DataAccess
 
     public DataAccess()
     {
-        ConnectionString = JJService.Options.GetConnectionString();
-        ConnectionProvider = JJService.Options.GetConnectionProvider();
+        ConnectionString = JJMasterDataOptions.GetConnectionString();
+        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider();
     }
 
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJService.Options.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJService.Options.GetConnectionProvider(connectionStringName);
+        ConnectionString = JJMasterDataOptions.GetConnectionString(connectionStringName);
+        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider(connectionStringName);
     }
 
     /// <summary>

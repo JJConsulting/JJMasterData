@@ -30,7 +30,7 @@ public class DbTranslatorProvider : ITranslator
             if (string.IsNullOrEmpty(tablename))
                 return dic;
 
-            if (string.IsNullOrEmpty(JJService.Options.GetConnectionString()))
+            if (string.IsNullOrEmpty(JJMasterDataOptions.GetConnectionString()))
                 return dic;
 
             var element = GetElement(tablename);
@@ -68,8 +68,8 @@ public class DbTranslatorProvider : ITranslator
         {
             Name = tablename,
             TableName = tablename,
-            CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tablename),
-            CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tablename),
+            ReadProcedureName = JJMasterDataOptions.GetReadProcedureName(tablename),
+            WriteProcedureName = JJMasterDataOptions.GetWriteProcedureName(tablename),
             Info = "Resources"
         };
 
