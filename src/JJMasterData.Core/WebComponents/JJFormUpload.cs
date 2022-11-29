@@ -22,10 +22,7 @@ namespace JJMasterData.Core.WebComponents;
 /// Form responsible for managing files in a directory
 /// </summary>
 /// <example>
-/// Example 
-/// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx)]
-/// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx.cs)]
-/// O Resultado html ficará parecido com esse:
+/// The output will look like this:
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadFile"/>

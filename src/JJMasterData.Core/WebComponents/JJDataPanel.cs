@@ -267,6 +267,7 @@ public class JJDataPanel : JJBaseView
 
     /// <summary>
     /// Validate form fields and return a list with errors
+    ///  </summary>
     /// <returns>
     /// Key = Field Name
     /// Valor = Error message

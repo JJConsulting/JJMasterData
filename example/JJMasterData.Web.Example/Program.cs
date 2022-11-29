@@ -12,8 +12,7 @@ public class Program
         var settingsPath = Path.Combine(root, "appsettings.json");
 
         builder.Configuration.AddJsonFile(settingsPath, false, true);
-        
-        builder.Services.AddRazorPages();
+        builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
         
         builder.Services.AddJJMasterDataWeb(settingsPath).WithFormEvents();
