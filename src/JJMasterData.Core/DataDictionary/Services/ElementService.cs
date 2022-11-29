@@ -90,8 +90,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
-                CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName),
-                CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName)
+                CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
             };
         }
         

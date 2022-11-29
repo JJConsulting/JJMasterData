@@ -17,7 +17,7 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
+        builder.Services.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
         {
             var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
             mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;

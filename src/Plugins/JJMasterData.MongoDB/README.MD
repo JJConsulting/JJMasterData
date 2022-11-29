@@ -6,7 +6,7 @@
 {
   "JJMasterData": {
     "MongoDB": {
-      "MongoDBConnectionString": "mongodb://localhost:27017",
+      "ConnectionString": "mongodb://localhost:27017",
       "DatabaseName": "JJMasterData",
       "CollectionName": "metadata"
     }

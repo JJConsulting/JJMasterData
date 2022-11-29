@@ -5,8 +5,5 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace JJMasterData.MongoDB.Models;
 
 [BsonIgnoreExtraElements]
-public class MongoDBMetadata : Metadata
-{
-    [BsonId]
-    public ObjectId Id { get; set; }
-}
+[BsonNoId]
+public class MongoDBMetadata : Metadata { }

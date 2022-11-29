@@ -51,15 +51,25 @@ public class MongoDictionaryRepository : IDictionaryRepository
 
     public DataTable GetDataTable(IDictionary filters, string orderby, int regperpage, int pag, ref int tot)
     {
-        var bsonFilter = new BsonDocument(filters);
-        var metadataList = _metadataCollection
-            //.Find(bsonFilter)
-            .Find(_=>true)
-            // .Sort(orderby)
-            // .Limit(regperpage)
-            // .Skip(pag)
-            .ToList();
+        var bsonFilter = new BsonDocument(MapStructureFilters(filters));
 
+        IFindFluent<MongoDBMetadata, MongoDBMetadata> metadataFinder;
+
+        if (!bsonFilter.Any())
+        {
+            metadataFinder = _metadataCollection.Find(_ => true);
+        }
+        else
+        {
+            metadataFinder = _metadataCollection.Find(bsonFilter);
+        }
+
+        var metadataList = metadataFinder.ToList();
+            // .Sort(orderby)
+            // .Skip((pag - 1) * regperpage)
+            // .Limit(regperpage)
+            // .ToList();
+        
         tot = metadataList.Count;
 
         var values = new List<IDictionary>();
@@ -69,7 +79,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
             values.AddRange(MetadataStructure.GetStructure(metadata));
         }
         
-        return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values))!;
+        return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values.Where(v=>(string)v["type"]=="F")))!;
     }
 
     public bool Exists(string elementName)
@@ -90,5 +100,23 @@ public class MongoDictionaryRepository : IDictionaryRepository
     public void Delete(string id)
     {
         _metadataCollection.DeleteOne(metadata => metadata.Table.Name == id);
+    }
+
+    private IDictionary MapStructureFilters(IDictionary structureFilters)
+    {
+
+        var filters = new Hashtable();
+
+        if (structureFilters["namefilter"] != null)
+        {
+            filters["Table.Name"] = structureFilters["namefilter"];
+        }
+        
+        if (structureFilters["tablename"] != null)
+        {
+            filters["Table.TableName"] = structureFilters["tablename"];
+        }
+
+        return filters;
     }
 }
