@@ -2,7 +2,7 @@
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace JJMasterData.Web.Example.Pages;
+namespace JJMasterData.Web.Example.Pages.Components;
 public class JJFormViewExample : PageModel
 {
     public JJFormView FormView;
