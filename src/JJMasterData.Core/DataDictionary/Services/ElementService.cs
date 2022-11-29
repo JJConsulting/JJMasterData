@@ -92,8 +92,8 @@ public class ElementService : BaseService
 
         formElement.TableName = tableName;
         formElement.Name = GetDictionaryName(tableName);
-        formElement.ReadProcedureName = JJMasterDataOptions.GetReadProcedureName(tableName);
-        formElement.WriteProcedureName = JJMasterDataOptions.GetWriteProcedureName(tableName);
+        formElement.CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName);
+        formElement.CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName);
 
         var dictionary = new Metadata
         {

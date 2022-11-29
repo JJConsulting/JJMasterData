@@ -129,8 +129,8 @@ public sealed class JJMasterDataOptions
 
     internal static string GetReadProcedureName(Element element)
     {
-        if (!string.IsNullOrEmpty(element.ReadProcedureName))
-            return element.ReadProcedureName;
+        if (!string.IsNullOrEmpty(element.CustomProcNameGet))
+            return element.CustomProcNameGet;
 
         string tablename = element.TableName;
         
@@ -142,8 +142,8 @@ public sealed class JJMasterDataOptions
 
     internal static string GetWriteProcedureName(Element element)
     {
-        if (!string.IsNullOrEmpty(element.WriteProcedureName))
-            return element.WriteProcedureName;
+        if (!string.IsNullOrEmpty(element.CustomProcNameSet))
+            return element.CustomProcNameSet;
 
         string tablename = element.TableName;
         string pattern = JJService.Options.PrefixSetProc;

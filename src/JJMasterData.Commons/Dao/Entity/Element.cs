@@ -53,13 +53,13 @@ public class Element
     /// Custom name for recording procedure
     /// </summary>
     [DataMember(Name = "customprocnameget")]
-    public string ReadProcedureName { get; set; }
+    public string CustomProcNameGet { get; set; }
 
     /// <summary>
     /// Custom name for read procedure
     /// </summary>
     [DataMember(Name = "customprocnameset")]
-    public string WriteProcedureName { get; set; }
+    public string CustomProcNameSet { get; set; }
 
     /// <summary>
     /// Send dictionary between applications

@@ -43,8 +43,8 @@ public class FormElement : Element
         Info = element.Info;
         Indexes = element.Indexes;
         Relations = element.Relations;
-        ReadProcedureName = element.ReadProcedureName;
-        WriteProcedureName = element.WriteProcedureName;
+        CustomProcNameGet = element.CustomProcNameGet;
+        CustomProcNameSet = element.CustomProcNameSet;
         Sync = element.Sync;
         SyncMode = element.SyncMode;
         Title = element.Name;

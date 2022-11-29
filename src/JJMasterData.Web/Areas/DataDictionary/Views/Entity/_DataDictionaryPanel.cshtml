@@ -21,21 +21,21 @@
        @Html.TextBoxFor(model => model.FormElement.TableName, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-       @Html.LabelFor(Model => Model.FormElement.ReadProcedureName, Translate.Key("Get Procedure Name"),
+       @Html.LabelFor(Model => Model.FormElement.CustomProcNameGet, Translate.Key("Get Procedure Name"),
         new Dictionary<string, string>
         {
             { BootstrapHelper.DataToggle, "tooltip" },
             { "title", Translate.Key("Custom name for reading procedure") }
         })
-       @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
+       @Html.TextBoxFor(model => model.FormElement.CustomProcNameGet, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 ">
-       @Html.LabelFor(Model => Model.FormElement.WriteProcedureName, Translate.Key("Set Procedure Name"),
+       @Html.LabelFor(Model => Model.FormElement.CustomProcNameSet, Translate.Key("Set Procedure Name"),
         new Dictionary<string, string>
         {
             { BootstrapHelper.DataToggle, "tooltip" },
             { "title", Translate.Key("Custom name for recording procedure") }
         })
-       @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
+       @Html.TextBoxFor(model => model.FormElement.CustomProcNameSet, Model.HtmlAttributes)
     </div>
 </div>

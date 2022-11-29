@@ -24,10 +24,10 @@ public class EntityService : BaseService
             AddError("TableName", Translate.Key("Required table name field"));
 
     
-        if (!string.IsNullOrEmpty(formElement.ReadProcedureName) &&
-            !string.IsNullOrEmpty(formElement.WriteProcedureName))
+        if (!string.IsNullOrEmpty(formElement.CustomProcNameGet) &&
+            !string.IsNullOrEmpty(formElement.CustomProcNameSet))
         { 
-            if (formElement.ReadProcedureName.ToLower().Equals(formElement.WriteProcedureName.ToLower()))
+            if (formElement.CustomProcNameGet.ToLower().Equals(formElement.CustomProcNameSet.ToLower()))
             {
                 AddError("CustomProcNameGet", Translate.Key("Procedure names cannot be identical"));
             }
@@ -49,8 +49,8 @@ public class EntityService : BaseService
 
             dicParser.Table.Name = formElement.Name;
             dicParser.Table.TableName = formElement.TableName;
-            dicParser.Table.ReadProcedureName = formElement.ReadProcedureName;
-            dicParser.Table.WriteProcedureName = formElement.WriteProcedureName;
+            dicParser.Table.CustomProcNameGet = formElement.CustomProcNameGet;
+            dicParser.Table.CustomProcNameSet = formElement.CustomProcNameSet;
             dicParser.Table.Info = formElement.Info;
             dicParser.Form.Title = formElement.Title;
             dicParser.Form.SubTitle = formElement.SubTitle;
