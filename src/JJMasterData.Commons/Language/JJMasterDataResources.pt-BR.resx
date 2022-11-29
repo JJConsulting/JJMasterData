@@ -3390,4 +3390,7 @@
   <data name="All changes will be saved in the file located at the path:" xml:space="preserve">
     <value>Todas as alterações serão salvas no arquivo localizado no caminho:</value>
   </data>
+  <data name="Get Class" xml:space="preserve">
+    <value>Obter Classe</value>
+  </data>
 </root>
