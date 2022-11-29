@@ -8,8 +8,6 @@ public class HtmlElementTag
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlElementTag"/> class.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="hasClosingTag"></param>
     public HtmlElementTag(HtmlTag tag)
     {
         TagName = tag;

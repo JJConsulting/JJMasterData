@@ -1185,7 +1185,7 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// <inheritdoc cref="GetDataTable"/>
+    /// <inheritdoc cref="GetDataTable()"/>
     /// </summary>
     private DataTable GetDataTable(Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
         ref int total)
