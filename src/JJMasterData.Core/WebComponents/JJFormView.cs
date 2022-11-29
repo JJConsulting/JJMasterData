@@ -189,8 +189,7 @@ public class JJFormView : JJGridView
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
     }
-
-
+    
     #endregion
 
     internal override HtmlBuilder RenderHtml()

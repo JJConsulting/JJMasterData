@@ -1,12 +1,17 @@
 @page
-@model JJFormViewExample
 
-@using JJMasterData.Web.Extensions
+@using JJMasterData.Core.DataDictionary
 
 @{
     ViewData["Title"] = "JJFormView";
+    
+    void ConfigureFormElement(FormElement formElement)
+    {
+        formElement.Title = "My dynamic title";
+        formElement.SubTitle = "You can edit any property from FormElement at runtime";
+    }
 }
 
 <form>
-    @Model.FormView.GetHtmlString()
+    <jj-form-view element-name="Product" configure-form-element="ConfigureFormElement"/>
 </form>
