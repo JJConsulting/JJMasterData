@@ -60,7 +60,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         foreach (var value in values)
             EntityRepository.SetValues(element, value);
     }
-    private IEnumerable<Hashtable> ConvertDictionaryToHashtableList(IDictionary<string,string> dictionary, string culture)
+    private static IEnumerable<Hashtable> ConvertDictionaryToHashtableList(IDictionary<string,string> dictionary, string culture)
     {
         return dictionary.Select(pair => new Hashtable {                
             { "cultureCode", culture },
