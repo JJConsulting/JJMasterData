@@ -8,15 +8,15 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        var root = Path.Join(builder.Environment.ContentRootPath, "..", "..");
+        var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
         var settingsPath = Path.Combine(root, "appsettings.json");
 
         builder.Configuration.AddJsonFile(settingsPath, false, true);
         
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
-
-        builder.Services.AddJJMasterDataWeb(builder.Configuration, settingsPath).WithFormEvents();
+        
+        builder.Services.AddJJMasterDataWeb(settingsPath).WithFormEvents();
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(wrapper =>

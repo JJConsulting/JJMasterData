@@ -25,24 +25,16 @@ namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
-    {
-        services.AddOptions<JJMasterDataOptions>();
-        services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
-        services.AddHttpContextAccessor();
-        services.AddSession();
-        services.AddSystemWebAdaptersServices();
-        services.AddDistributedMemoryCache();
-        services.AddJJMasterDataServices();
-        services.AddUrlRequestCultureProvider();
-        services.AddAnonymousAuthorization();
-
-        return services.AddJJMasterDataCore();
-    }
-
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration,
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
         string filePath = "appsettings.json")
     {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(filePath, optional: false, reloadOnChange: true)
+            .Build();
+        
+        AddServices(services);
+
         services.ConfigureWritableOptions<JJMasterDataOptions>(
             configuration.GetSection("JJMasterData"), filePath);
         services.ConfigureWritableOptions<ConnectionStrings>(
@@ -50,7 +42,18 @@ public static class ServiceCollectionExtensions
         services.ConfigureWritableOptions<ConnectionProviders>(
             configuration.GetSection("ConnectionProviders"), filePath);
 
-        return AddJJMasterDataWeb(services);
+        return services.AddJJMasterDataCore();
+    }
+
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
+    {
+        AddServices(services);
+
+        services.Configure<JJMasterDataOptions>(configuration.GetJJMasterData());
+        services.Configure<ConnectionString>(configuration.GetSection("ConnectionString"));
+        services.Configure<ConnectionProviders>(configuration.GetSection("ConnectionProviders"));
+        
+        return services.AddJJMasterDataCore();
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
@@ -64,7 +67,7 @@ public static class ServiceCollectionExtensions
         {
             var wrapperOptions = wrapper.JJMasterDataOptions;
             options.Logger = wrapperOptions.Logger;
-            options.BootstrapVersion =wrapperOptions.BootstrapVersion;
+            options.BootstrapVersion = wrapperOptions.BootstrapVersion;
             options.LayoutPath = wrapperOptions.LayoutPath;
             options.SecretKey = wrapperOptions.SecretKey;
             options.TableName = wrapperOptions.TableName;
@@ -92,7 +95,22 @@ public static class ServiceCollectionExtensions
         services.Configure((Action<ConnectionStrings>)ConfigureConnectionStrings);
         services.Configure((Action<ConnectionProviders>)ConfigureConnectionProviders);
 
-        return AddJJMasterDataWeb(services);
+        AddServices(services);
+
+        return services.AddJJMasterDataCore();
+    }
+
+    private static void AddServices(IServiceCollection services)
+    {
+        services.AddOptions<JJMasterDataOptions>();
+        services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
+        services.AddHttpContextAccessor();
+        services.AddSession();
+        services.AddSystemWebAdaptersServices();
+        services.AddDistributedMemoryCache();
+        services.AddJJMasterDataServices();
+        services.AddUrlRequestCultureProvider();
+        services.AddAnonymousAuthorization();
     }
 
     internal static void AddSystemWebAdaptersServices(this IServiceCollection services)
@@ -191,7 +209,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IWritableOptions<T>>(provider =>
         {
             var options = provider.GetService<IOptionsMonitor<T>>()!;
-            return new WritableOptions<T>(options, section.Key, file);
+            return new JsonWritableOptions<T>(options, section.Key, file);
         });
     }
 }

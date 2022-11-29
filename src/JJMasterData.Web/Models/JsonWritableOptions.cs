@@ -5,13 +5,13 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Web.Models;
 
-public class WritableOptions<T> : IWritableOptions<T> where T : class, new()
+public class JsonWritableOptions<T> : IWritableOptions<T> where T : class, new()
 {
     private readonly IOptionsMonitor<T> _options;
     private readonly string _section;
     public string FilePath { get; }
 
-    public WritableOptions(
+    public JsonWritableOptions(
         IOptionsMonitor<T> options,
         string section,
         string filePath)
