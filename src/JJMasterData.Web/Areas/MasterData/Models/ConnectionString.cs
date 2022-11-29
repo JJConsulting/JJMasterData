@@ -25,8 +25,6 @@ public class ConnectionString
     public bool? Pooling { get; init; }
     public int? MinPoolSize { get; init; }
     public int? MaxPoolSize { get; init; }
-    
-    public ConnectionResult? ConnectionResult { get; set; }
 
     public ConnectionString()
     {

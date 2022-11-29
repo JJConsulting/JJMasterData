@@ -5,13 +5,13 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Web.Models;
 
-public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
+public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
 {
     private readonly IOptionsMonitor<T> _options;
     private readonly string _section;
     public string FilePath { get; }
 
-    public OptionsWriter(
+    public WritableJsonOptions(
         IOptionsMonitor<T> options,
         string section,
         string filePath)
@@ -26,11 +26,24 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 
     public async Task UpdateAsync(Action<T> applyChanges)
     {
-        var jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(FilePath));
-
         T? sectionObject;
+
+        JObject? jObject;
         
-        if (jObject!.TryGetValue(_section, out var section))
+        if (!File.Exists(FilePath))
+        {
+            await using var stream = new StreamWriter(FilePath, true);
+            await stream.WriteLineAsync("{}");
+            await stream.FlushAsync();
+            stream.Close();
+            jObject = new JObject();
+        }
+        else
+        {
+            jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(FilePath));
+        }
+        
+        if (jObject != null && jObject.TryGetValue(_section, out var section))
         {
             sectionObject = JsonConvert.DeserializeObject<T>(section.ToString());
         }
@@ -41,7 +54,11 @@ public class OptionsWriter<T> : IOptionsWriter<T> where T : class, new()
 
         applyChanges(sectionObject!);
 
-        jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
-        await File.WriteAllTextAsync(FilePath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+        if (jObject != null)
+        {
+            jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+
+            await File.WriteAllTextAsync(FilePath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+        }
     }
 }
