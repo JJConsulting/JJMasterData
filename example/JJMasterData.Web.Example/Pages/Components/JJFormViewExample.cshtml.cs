@@ -1,4 +1,3 @@
-#nullable disable
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

@@ -1,7 +1,11 @@
-@page 
+@page
 @model JJFormViewExample
 
 @using JJMasterData.Web.Extensions
+
+@{
+    ViewData["Title"] = "JJFormView";
+}
 
 <form>
     @Model.FormView.GetHtmlString()
