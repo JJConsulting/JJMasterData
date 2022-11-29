@@ -209,7 +209,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IWritableOptions<T>>(provider =>
         {
             var options = provider.GetService<IOptionsMonitor<T>>()!;
-            return new JsonWritableOptions<T>(options, section.Key, file);
+            return new WritableJsonOptions<T>(options, section.Key, file);
         });
     }
 }
