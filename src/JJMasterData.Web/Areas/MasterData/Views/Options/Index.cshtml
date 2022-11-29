@@ -60,15 +60,15 @@
         <div class="col-sm-12">
             @if (Model.IsFullscreen)
             {
-                <a href="/en-us/DataDictionary/" class="@BootstrapHelper.DefaultButton">
-                    <span class="fa fa-home"></span>&nbsp; @Translate.Key("Home")
-                </a>
+                <jj-link-button 
+                    url-action="/en-us/DataDictionary/" 
+                    icon="Home" 
+                    text="Home"/>
             }
-            <button class=" @BootstrapHelper.DefaultButton"
-                    formaction="@Url.Action("Save", "Options")"
-                    type="submit">
-                <span class="fa fa-save"></span>&nbsp; @Translate.Key("Save")
-            </button>
+            <jj-link-button type="LinkButtonType.Submit" 
+                            url-action="@Url.Action("Save", "Options")" 
+                            icon="Save" 
+                            text="Save"/>
         </div>
     </div>
 

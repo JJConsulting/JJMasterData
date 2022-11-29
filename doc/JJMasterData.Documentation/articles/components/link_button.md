@@ -4,18 +4,11 @@ Represents a clickable button.
 
 ## Usage
 
-
-```csharp
-@{
-     var link = new JJLinkButton();
-     link.Text = "JJ Consulting";
-     link.IconClass = "fa-solid fa-home";
-     link.UrlAction = "http://www.jjconsulting.com.br";
-}
-
-/// ...
-@Html.Raw(search.GetHtml())
-/// ...
+```html
+<jj-link-button 
+        icon="@Home" 
+        url-action="http://www.jjconsulting.tech"
+        text="JJ Consulting"/>
 ```
 
 ## Customization

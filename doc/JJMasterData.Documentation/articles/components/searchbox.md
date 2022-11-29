@@ -8,7 +8,7 @@ JJSearchBox is a searchable combobox.
 
 ```csharp
 @{
-  var search = new JJSearchBox
+  var searchBox = new JJSearchBox
    {
      Name = "mySearchBox",
      DataItem = new FormElementDataItem
@@ -19,7 +19,7 @@ JJSearchBox is a searchable combobox.
 }
 
 /// ...
-@Html.Raw(search.GetHtml())
+@Html.Raw(searchBox.GetHtml())
 /// ...
 ```
 ### Values
