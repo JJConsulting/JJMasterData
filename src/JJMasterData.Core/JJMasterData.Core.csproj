@@ -7,6 +7,7 @@
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyVersion>3.1.0</AssemblyVersion>
   </PropertyGroup>
 

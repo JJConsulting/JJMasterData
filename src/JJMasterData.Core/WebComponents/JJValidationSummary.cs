@@ -6,13 +6,10 @@ using System.Collections.Generic;
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Representa um painel com as mensagens de erro
+/// Represents a <see cref="JJAlert"/> with error messages.
 /// </summary>
 /// <example>
-/// Exemplo de como utilizar JJValidationSummary
-/// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJValidationSumaryExample.aspx)]
-/// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJValidationSumaryExample.aspx.cs)]
-/// O Resultado html ficará parecido com esse:
+/// The result will look like this:
 /// <img src="../media/JJValidationSumaryExample.png"/>
 /// </example>
 public class JJValidationSummary : JJBaseView
