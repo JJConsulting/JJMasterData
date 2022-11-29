@@ -270,7 +270,7 @@ namespace JJMasterData.Swagger
         private PathItem GetDelPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
-            var pkFields = f.FormFields.ToList().FindAll(x => x.IsPk);
+            var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
             var sDescription = new StringBuilder();
             sDescription.Append(f.Title);
             sDescription.Append("<br>Remove a record. ");
@@ -327,7 +327,7 @@ namespace JJMasterData.Swagger
         private PathItem GetDetailPathItem(FormElement f, ApiSettings api)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
-            var pkFields = f.FormFields.ToList().FindAll(x => x.IsPk);
+            var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
             var sDescription = new StringBuilder();
             sDescription.Append(f.Title);
             sDescription.Append("<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)<br>");
@@ -434,7 +434,7 @@ namespace JJMasterData.Swagger
                 @default = 0
             });
             
-            var fields = f.FormFields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
+            var fields = f.Fields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
             foreach (FormElementField item in fields)
             {
                 string fieldName = api.GetFieldNameParsed(item.Name);
@@ -594,7 +594,7 @@ namespace JJMasterData.Swagger
             modelSchema.properties = new Dictionary<string, Schema>();
             modelSchema.required = new List<string>();
 
-            foreach (FormElementField item in f.FormFields)
+            foreach (FormElementField item in f.Fields)
             {
                 if (ignoreIdentity && item.IsPk && item.AutoNum)
                     continue;

@@ -59,7 +59,7 @@ public class LogController : Controller
             SubTitle = string.Empty
         };
 
-        var tipo = f.FormFields[Logger.Options.Table.LevelColumnName];
+        var tipo = f.Fields[Logger.Options.Table.LevelColumnName];
         tipo.Component = FormComponent.ComboBox;
         tipo.DataItem.Items.Add(new DataItemValue("I", "Info"));
         tipo.DataItem.Items.Add(new DataItemValue("W", "Alerta"));

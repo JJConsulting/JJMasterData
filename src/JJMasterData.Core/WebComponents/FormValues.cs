@@ -32,7 +32,7 @@ internal class FormValues
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         string objname;
         object val;
-        foreach (var f in FormElement.FormFields)
+        foreach (var f in FormElement.Fields)
         {
             objname = (prefix == null ? prefix : string.Empty) + f.Name;
             val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);

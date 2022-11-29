@@ -120,13 +120,13 @@ public class AuditLogService
     public FormElement GetFormElement()
     {
         var form = new FormElement(GetElement());
-        form.FormFields[DIC_ID].VisibleExpression = "val:0";
-        form.FormFields[DIC_NAME].VisibleExpression = "val:0";
-        form.FormFields[DIC_BROWSER].VisibleExpression = "val:0";
-        form.FormFields[DIC_JSON].VisibleExpression = "val:0";
-        form.FormFields[DIC_MODIFIED].Component = FormComponent.DateTime;
+        form.Fields[DIC_ID].VisibleExpression = "val:0";
+        form.Fields[DIC_NAME].VisibleExpression = "val:0";
+        form.Fields[DIC_BROWSER].VisibleExpression = "val:0";
+        form.Fields[DIC_JSON].VisibleExpression = "val:0";
+        form.Fields[DIC_MODIFIED].Component = FormComponent.DateTime;
 
-        var origin = form.FormFields[DIC_ORIGIN];
+        var origin = form.Fields[DIC_ORIGIN];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem.ReplaceTextOnGrid = true;
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
@@ -135,7 +135,7 @@ public class AuditLogService
             origin.DataItem.Items.Add(item);
         }
 
-        var action = form.FormFields[DIC_ACTION];
+        var action = form.Fields[DIC_ACTION];
         action.Component = FormComponent.ComboBox;
         action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;

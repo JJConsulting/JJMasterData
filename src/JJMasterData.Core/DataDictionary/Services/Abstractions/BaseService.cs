@@ -89,7 +89,7 @@ public abstract class BaseService
         hints.AppendFormat(",'USERID'");
         if (formElement != null)
         {
-            foreach (var f in formElement.FormFields)
+            foreach (var f in formElement.Fields)
                 hints.AppendFormat(",'{0}'", f.Name);
         }
         hints.Append("]");

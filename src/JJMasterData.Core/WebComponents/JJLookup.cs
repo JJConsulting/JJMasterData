@@ -344,7 +344,7 @@ public class JJLookup : JJBaseControl
 
         if (string.IsNullOrEmpty(lookupRoute)) return null;
 
-        var field = view.FormElement.FormFields.ToList().Find(x => x.Name.Equals(lookupRoute));
+        var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
 
         if (field == null) return null;
 

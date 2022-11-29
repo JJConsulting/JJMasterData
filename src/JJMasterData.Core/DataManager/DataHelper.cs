@@ -125,7 +125,7 @@ namespace JJMasterData.Core.DataManager
             var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
             foreach (DictionaryEntry entry in paramValues)
             {
-                var field = formElement.FormFields[entry.Key.ToString()];
+                var field = formElement.Fields[entry.Key.ToString()];
                 if (!filters.ContainsKey(entry.Key.ToString()))
                     filters.Add(field.Name, entry.Value);
             }

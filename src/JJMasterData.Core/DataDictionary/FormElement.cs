@@ -27,7 +27,7 @@ public class FormElement : Element
     // cannot use element name 'Fields' because it is already being used by property
     // 'Fields' of type 'JJMasterData.Commons.Dao.Entity.Element'.
     [DataMember(Name = "fields")]
-    public FormElementList FormFields { get; private set; }
+    public new FormElementList  Fields { get; private set; }
 
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
@@ -35,7 +35,7 @@ public class FormElement : Element
 
     public FormElement()
     {
-        FormFields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
     }
 
@@ -52,7 +52,7 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        FormFields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
         foreach (var f in element.Fields)
         {
@@ -69,7 +69,7 @@ public class FormElement : Element
         TableName = schema.TableName;
         Title = schema.TableName;
         Panels = new List<FormElementPanel>();
-        FormFields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields, _formFields);
         foreach (DataColumn col in schema.Columns)
         {
             var field = new ElementField

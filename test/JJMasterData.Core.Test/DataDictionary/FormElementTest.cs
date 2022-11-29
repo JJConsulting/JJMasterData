@@ -16,9 +16,9 @@ public class FormElementTest
 
         Assert.Equal(formElement!.Name, form.Name);
         Assert.Equal(formElement.Title, form.Title);
-        Assert.Equal(formElement.FormFields[0].Name, form.FormFields[0].Name);
-        Assert.Equal(formElement.FormFields[0].Label, form.FormFields[0].Label);
-        Assert.Equal(formElement.FormFields[0].Component, form.FormFields[0].Component);
+        Assert.Equal(formElement.Fields[0].Name, form.Fields[0].Name);
+        Assert.Equal(formElement.Fields[0].Label, form.Fields[0].Label);
+        Assert.Equal(formElement.Fields[0].Component, form.Fields[0].Component);
     }
 
     private FormElement GetFormElement()
@@ -39,7 +39,7 @@ public class FormElementTest
             DataType = FieldType.Int,
             Component = FormComponent.Number
         };
-        formElement.FormFields.Add(field1);
+        formElement.Fields.Add(field1);
 
         var field2 = new FormElementField
         {
@@ -49,7 +49,7 @@ public class FormElementTest
             Size = 50
         };
         
-        formElement.FormFields.Add(field2);
+        formElement.Fields.Add(field2);
 
         return formElement;
     }

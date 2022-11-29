@@ -292,7 +292,7 @@ internal class DataImpHelp
             throw new ArgumentException(nameof(FormElement));
 
         var list = new List<FormElementField>();
-        foreach (var field in DataImp.FormElement.FormFields)
+        foreach (var field in DataImp.FormElement.Fields)
         {
             bool visible = DataImp.FieldManager.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)

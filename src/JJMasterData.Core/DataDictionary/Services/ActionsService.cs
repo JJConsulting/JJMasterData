@@ -30,7 +30,7 @@ public class ActionsService : BaseService
 
         if (context == ActionOrigin.Field)
         {
-            var field = metadata.GetFormElement().FormFields[fieldName];
+            var field = metadata.GetFormElement().Fields[fieldName];
             var action = field.Actions.Get(originalName);
             if (action != null)
                 field.Actions.Remove(action);
@@ -74,7 +74,7 @@ public class ActionsService : BaseService
         {
             case ActionOrigin.Field:
             {
-                var field = dicParser.GetFormElement().FormFields[fieldName];
+                var field = dicParser.GetFormElement().Fields[fieldName];
                 field.Actions.Set(action);
 
                 if (action.IsDefaultOption)
@@ -114,7 +114,7 @@ public class ActionsService : BaseService
         List<BasicAction> listAction = null;
         if (context == ActionOrigin.Field)
         {
-            var field = dicParser.GetFormElement().FormFields[fieldName];
+            var field = dicParser.GetFormElement().Fields[fieldName];
             listAction = field.Actions.GetAll();
         }
         else if (context == ActionOrigin.Grid)
@@ -203,7 +203,7 @@ public class ActionsService : BaseService
             else if (actionContext == ActionOrigin.Field)
             {
                 var formElement = dicParser.GetFormElement();
-                action = formElement.FormFields[fieldName].Actions.Get(actionName);
+                action = formElement.Fields[fieldName].Actions.Get(actionName);
             }
             action.Order = i + 1;
         }
