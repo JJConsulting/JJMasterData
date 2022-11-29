@@ -4,11 +4,11 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Hosting;
-internal class JJMasterDataConfigureOptions : IPostConfigureOptions<StaticFileOptions>
+internal class PostConfigureStaticFileOptions : IPostConfigureOptions<StaticFileOptions>
 {
     private readonly IWebHostEnvironment _environment;
     
-    public JJMasterDataConfigureOptions(IWebHostEnvironment environment)
+    public PostConfigureStaticFileOptions(IWebHostEnvironment environment)
     {
         _environment = environment;
     }

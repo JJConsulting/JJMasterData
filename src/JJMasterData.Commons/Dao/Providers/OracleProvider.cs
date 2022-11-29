@@ -243,7 +243,7 @@ internal class OracleProvider : BaseProvider
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataOptions.GetProcNameSet(element);
+        string procedureFinalName = JJMasterDataOptions.GetWriteProcedureName(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -500,7 +500,7 @@ internal class OracleProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         StringBuilder sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataOptions.GetProcNameGet(element);
+        string procedureFinalName = JJMasterDataOptions.GetReadProcedureName(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -816,8 +816,8 @@ internal class OracleProvider : BaseProvider
     private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetProcNameSet(element);
+        cmd.CmdType = CommandType.StoredProcedure;
+        cmd.Sql = JJMasterDataOptions.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
 
@@ -847,8 +847,8 @@ internal class OracleProvider : BaseProvider
     public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = System.Data.CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetProcNameGet(element);
+        cmd.CmdType = CommandType.StoredProcedure;
+        cmd.Sql = JJMasterDataOptions.GetReadProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderby));
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", regperpage));

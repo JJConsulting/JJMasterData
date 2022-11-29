@@ -163,6 +163,6 @@ public static class FieldValidator
 
     private static string GetFieldLinkHtml(string fieldName, string label)
     {
-        return $"<a href=\"javascript:$('#{fieldName}').focus();\" class=\"alert-link\">{label ?? fieldName}</a>";
+        return $"<a href=\"#void\" onclick=\"javascript:$('#{fieldName}').focus();\" class=\"alert-link\">{label ?? fieldName}</a>";
     }
 }
