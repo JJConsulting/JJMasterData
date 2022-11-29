@@ -28,7 +28,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         
         if (string.IsNullOrEmpty(tableName))
             return new Dictionary<string,string>();
-        if (string.IsNullOrEmpty(JJService.Options.GetConnectionString()))
+        if (string.IsNullOrEmpty(JJMasterDataOptions.GetConnectionString()))
             return new Dictionary<string,string>();
 
         var element = GetElement(tableName);
@@ -105,8 +105,8 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         {
             Name = tablename,
             TableName = tablename,
-            CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tablename),
-            CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tablename),
+            ReadProcedureName = JJMasterDataOptions.GetReadProcedureName(tablename),
+            WriteProcedureName = JJMasterDataOptions.GetWriteProcedureName(tablename),
             Info = "Resources"
         };
 
