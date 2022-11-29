@@ -40,8 +40,12 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
 
         if (databaseValues.Count > 0)
         {
-            stringLocalizerValues.ToList().ForEach(x => databaseValues[x.Key] = x.Value);
-            return databaseValues;
+            foreach (var dbValue in databaseValues.ToList())
+            {
+                stringLocalizerValues[dbValue.Key] = dbValue.Value;
+            }
+
+            return stringLocalizerValues;
         }
         
         if (stringLocalizerValues?.Count > 0)
