@@ -19,7 +19,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = DbTranslatorProvider.GetElement();
+        var element = JJMasterDataLocalizationProvider.GetElement();
         
         var formElement = new FormElement(element)
         {
@@ -35,15 +35,19 @@ public class ResourcesService : BaseService
 
         var cultureField = formView.FormElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
-        cultureField.Component = FormComponent.Search;
-        cultureField.DataItem = new FormElementDataItem();
-        cultureField.DataItem.Items = new List<DataItemValue>();
-        cultureField.DataItem.ReplaceTextOnGrid = false;
-        foreach (CultureInfo ci in supportedCultures)
+        cultureField.Component = FormComponent.ComboBox;
+        cultureField.DataItem = new FormElementDataItem
         {
-            var item = new DataItemValue();
-            item.Id = ci.Name;
-            item.Description = ci.Name + " " + ci.DisplayName;
+            Items = new List<DataItemValue>(),
+            ReplaceTextOnGrid = false
+        };
+        foreach (var cultureInfo in supportedCultures)
+        {
+            var item = new DataItemValue
+            {
+                Id = cultureInfo.Name,
+                Description = cultureInfo.Name + " " + cultureInfo.DisplayName
+            };
             cultureField.DataItem.Items.Add(item);
         }
    
