@@ -47,7 +47,6 @@ public class DataAccess
     /// </summary>
     public int TimeOut { get; set; } = 240;
 
-
     /// <summary>
     /// Keeps the database connection open, 
     /// Allowing to execute a sequence of commands; 
@@ -114,7 +113,6 @@ public class DataAccess
         ConnectionString = connectionString;
         ConnectionProvider = connectionProviderName;
     }
-
 
     public DbProviderFactory GetFactory()
     {
@@ -207,18 +205,13 @@ public class DataAccess
         _connection = null;
     }
 
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>Lucio Pelinson 14-04-2012</remarks>
+    ///<returns>Returns a DataTable object populated by a query with parameters</returns>
     public DataTable GetDataTable(string sql)
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
 
-
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/> with parameters</returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -257,14 +250,13 @@ public class DataAccess
         return dt;
     }
 
-
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<inheritdoc cref="GetDataTable(string)"/>
     public async Task<DataTable> GetDataTableAsync(string sql)
     {
         return await GetDataTableAsync(new DataAccessCommand(sql));
     }
 
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -303,7 +295,10 @@ public class DataAccess
         return dt;
     }
 
-    ///<inheritdoc cref="GetDataTable(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>
+    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> by ref.
+    /// </returns>
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
         DataTable dt = new DataTable();
@@ -334,10 +329,9 @@ public class DataAccess
         return dt;
     }
 
-
-    /// <summary>
+    /// <returns>
     /// Returns a single sql command value with parameters
-    /// </summary>
+    /// </returns>
     /// <remarks>
     /// To prevent SQL injection, please use the DataAccessCommand overload.
     /// </remarks>
@@ -346,7 +340,9 @@ public class DataAccess
         return GetResult(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>
+    /// Returns a object from a <see cref="DataAccessCommand"/>
+    /// </returns>
     public object GetResult(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -376,12 +372,13 @@ public class DataAccess
         return scalarResult;
     }
 
+    /// <inheritdoc cref="GetResult(string)"/>
     public async Task<object> GetResultAsync(string sql)
     {
         return await GetResultAsync(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
     public async Task<object> GetResultAsync(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -411,7 +408,9 @@ public class DataAccess
         return scalarResult;
     }
 
-    /// <inheritdoc cref="GetResult(string,System.Collections.Generic.List{JJMasterData.Commons.Dao.DataAccessParameter})"/>
+    /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> by ref.
+    /// </returns>
     public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         object scalarResult;
@@ -439,9 +438,6 @@ public class DataAccess
     /// <summary>
     /// Execute the command in the database and return the number of affected records.
     /// </summary>
-    /// <remarks>
-    /// Author: Lucio Pelinson 14-04-2012
-    /// </remarks>
     public int SetCommand(DataAccessCommand cmd)
     {
         int rowsAffected = 0;
@@ -621,7 +617,9 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// This method uses a <see cref="DbConnection"/> and a <see cref="DbTransaction"/> by ref.
+    /// </returns>
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         int numberOfRowsAffected = 0;
@@ -647,15 +645,13 @@ public class DataAccess
     }
 
     /// <summary>
-    /// Retrieves the first record of the sql statement in a Hashtable object.  [key(database field), value(value stored in database)] 
+    /// Retrieves the first record of the sql statement in a Hashtable object.
+    /// [key(database field), value(value stored in database)] 
     /// </summary>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    /// <remarks>
-    /// Author: Lucio Pelinson 17-04-2012
-    /// </remarks>
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
 
     /// <inheritdoc cref="GetFields(string)"/>
@@ -692,7 +688,7 @@ public class DataAccess
             if (!dr.IsClosed)
                 dr.Close();
 
-            foreach (DataAccessParameter parameter in cmd.Parameters)
+            foreach (var parameter in cmd.Parameters)
             {
                 if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                     parameter.Value = dbCommand.Parameters[parameter.Name].Value;
@@ -759,7 +755,7 @@ public class DataAccess
         return retCollection;
     }
 
-    private DataAccessCommand GetTableExistsCommand(string table)
+    private static DataAccessCommand GetTableExistsCommand(string table)
     {
         const string sql = @"SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
 
@@ -863,7 +859,7 @@ public class DataAccess
     {
         bool result;
         DbConnection connection = null;
-        String errorMessage = null;
+        string errorMessage = null;
         try
         {
             connection = GetFactory().CreateConnection();
@@ -889,6 +885,7 @@ public class DataAccess
                 {
                     connection.Close();
                 }
+
                 connection.Dispose();
             }
         }
@@ -976,14 +973,16 @@ public class DataAccess
         return await Task.FromResult(true);
     }
 
-    private Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
+    private static Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
     {
         return GetDataAccessException(ex, cmd.Sql, cmd.Parameters);
     }
 
-    private Exception GetDataAccessException(Exception ex, string sql, List<DataAccessParameter> parameters = null)
+    private static Exception GetDataAccessException(Exception ex, string sql,
+        List<DataAccessParameter> parameters = null)
     {
         ex.Data.Add("DataAccess Query", sql);
+
         if (parameters?.Count > 0)
         {
             var error = new StringBuilder();
@@ -996,8 +995,12 @@ public class DataAccess
                 error.Append(param.Type.ToString());
                 error.AppendLine("]");
             }
+
             ex.Data.Add("DataAccess Parameters", error.ToString());
+
+            return ex;
         }
+
         return ex;
     }
 
