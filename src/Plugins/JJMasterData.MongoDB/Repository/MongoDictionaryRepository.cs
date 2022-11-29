@@ -8,6 +8,7 @@ using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace JJMasterData.MongoDB.Repository;
 
@@ -50,8 +51,9 @@ public class MongoDictionaryRepository : IDictionaryRepository
 
     public DataTable GetDataTable(IDictionary filters, string orderby, int regperpage, int pag, ref int tot)
     {
-        var bson = new BsonDocument(filters);
+        var bsonFilter = new BsonDocument(filters);
         var metadataList = _metadataCollection
+            //.Find(bsonFilter)
             .Find(_=>true)
             // .Sort(orderby)
             // .Limit(regperpage)
@@ -59,8 +61,15 @@ public class MongoDictionaryRepository : IDictionaryRepository
             .ToList();
 
         tot = metadataList.Count;
+
+        var values = new List<IDictionary>();
+
+        foreach (var metadata in metadataList)
+        {
+            values.AddRange(MetadataStructure.GetStructure(metadata));
+        }
         
-        return metadataList.ToDataTable();
+        return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values))!;
     }
 
     public bool Exists(string elementName)

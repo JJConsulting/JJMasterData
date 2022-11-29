@@ -183,7 +183,7 @@ public class ElementService : BaseService
 
     public JJFormView GetFormView()
     {
-        var element = DictionaryDao.GetStructure();
+        var element = MetadataStructure.GetElement();
         var formElement = new FormElement(element);
 
         formElement.Title = "JJMasterData";
