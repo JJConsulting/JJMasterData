@@ -7,6 +7,7 @@ namespace JJMasterData.Core.Html;
 
 /// <summary>
 /// Represents a mutable string of HTML tags.
+/// <a href="https://portal.jjconsulting.com.br/jjdoc/articles/miscellaneous/htmlbuilder.html">To learn more click here</a> 
 /// </summary>
 public partial class HtmlBuilder
 {

@@ -47,3 +47,7 @@
     href: miscellaneous/python.md
   - name: Assemblies
     href: miscellaneous/assemblies.md
+  - name: DataAccess
+    href: miscellaneous/dataaccess.md
+  - name: HtmlBuilder
+  href: miscellaneous/htmlbuilder.md

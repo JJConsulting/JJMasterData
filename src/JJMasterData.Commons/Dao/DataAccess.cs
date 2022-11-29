@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Extensions;
@@ -14,13 +13,15 @@ using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Dao;
 
+/// <summary>
+/// Provides functionality to developers who write managed code similar to the functionality provided to native component object model (COM)
+/// <a href="https://portal.jjconsulting.com.br/jjdoc/articles/miscellaneous/dataaccess.html">To read more click here</a> 
+/// </summary>
 public class DataAccess
 {
     private DbProviderFactory _factory;
     private DbConnection _connection;
     private bool _keepAlive;
-
-    public bool GenerateLog { get; set; } = true;
 
     ///<summary>
     ///Database connection string; 
@@ -52,34 +53,10 @@ public class DataAccess
     /// Allowing to execute a sequence of commands; 
     /// </summary>
     /// <example>
-    /// This example shows how the KeepConnAlive method should be used
-    /// <code>
-    /// class TestClass  
-    /// { 
-    ///     private void Test()
-    ///     {
-    ///         var dao = new DataAccess())
-    ///         try
-    ///         {
-    ///             dao.KeepConnAlive = true;
-    ///             dao.SetCommand("update table1 set ...");
-    ///             dao.SetCommand("update table2 set ...");
-    ///         }
-    ///         catch (Exception ex)
-    ///         {
-    ///             //Do Log
-    ///         }
-    ///         finally
-    ///         {
-    ///            dao.KeepConnAlive = false;
-    ///         }
-    ///     }
-    /// }
-    /// </code> 
+    /// <a href="https://portal.jjconsulting.com.br/jjdoc/articles/miscellaneous/dataaccess.html">To read more click here</a>
     /// </example>
     /// <remarks>
     /// Default value is false;
-    /// Always run the Dispose() method;
     /// </remarks>
     public bool KeepConnAlive
     {
@@ -156,7 +133,8 @@ public class DataAccess
     {
         _connection ??= GetFactory().CreateConnection();
 
-        if (_connection?.State == ConnectionState.Open) return _connection;
+        if (_connection?.State == ConnectionState.Open)
+            return _connection;
 
         try
         {
@@ -175,7 +153,8 @@ public class DataAccess
     {
         _connection ??= GetFactory().CreateConnection();
 
-        if (_connection?.State == ConnectionState.Open) return _connection;
+        if (_connection?.State == ConnectionState.Open)
+            return _connection;
 
         try
         {
@@ -205,13 +184,23 @@ public class DataAccess
         _connection = null;
     }
 
-    ///<returns>Returns a DataTable object populated by a query with parameters</returns>
+    /// <summary>
+    /// Returns a DataTable object populated from a sql.
+    /// </summary>
+    /// <returns>
+    /// Returns a DataTable object populated by a query with parameters
+    /// </returns>
     public DataTable GetDataTable(string sql)
     {
         return GetDataTable(new DataAccessCommand(sql));
     }
 
-    ///<returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/> with parameters</returns>
+    /// <summary>
+    /// Returns a DataTable object populated from a sql command.
+    /// </summary>
+    /// <returns>
+    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/> with parameters
+    /// </returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -224,7 +213,6 @@ public class DataAccess
 
             da = GetFactory().CreateDataAdapter();
             da!.SelectCommand = dbCommand;
-
             da.Fill(dt);
 
             if (cmd.Parameters != null)
@@ -295,10 +283,11 @@ public class DataAccess
         return dt;
     }
 
-    /// <returns>
-    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
-    /// This method uses a <see cref="DbConnection"/> by ref.
-    /// </returns>
+    /// <summary>
+    /// Returns a DataTable object populated from a sql.
+    /// </summary>
+    /// <param name="sqlConn">Open Connection</param>
+    /// <param name="sql">Script sql, never use with concat parameters</param>
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
         DataTable dt = new DataTable();
@@ -329,20 +318,22 @@ public class DataAccess
         return dt;
     }
 
-    /// <returns>
-    /// Returns a single sql command value with parameters
-    /// </returns>
+    /// <summary>
+    /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
+    /// All other columns and rows are ignored.
+    /// </summary>
     /// <remarks>
-    /// To prevent SQL injection, please use the DataAccessCommand overload.
+    /// To execute command with parameters and prevent SQL injection, please use the DataAccessCommand overload.
     /// </remarks>
     public object GetResult(string sql)
     {
         return GetResult(new DataAccessCommand(sql));
     }
 
-    /// <returns>
-    /// Returns a object from a <see cref="DataAccessCommand"/>
-    /// </returns>
+    /// <summary>
+    /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
+    /// All other columns and rows are ignored.
+    /// </summary>
     public object GetResult(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -408,6 +399,13 @@ public class DataAccess
         return scalarResult;
     }
 
+    /// <summary>
+    /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
+    /// All other columns and rows are ignored.
+    /// </summary>
+    /// <param name="cmd">Command</param>
+    /// <param name="sqlConn">Open Connection</param>
+    /// <param name="trans">Transactions with Connection</param>
     /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> by ref.
     /// </returns>
@@ -434,9 +432,8 @@ public class DataAccess
         return scalarResult;
     }
 
-
     /// <summary>
-    /// Execute the command in the database and return the number of affected records.
+    /// ExecuteNonQuery command in the database and return the number of affected records.
     /// </summary>
     public int SetCommand(DataAccessCommand cmd)
     {
@@ -449,10 +446,11 @@ public class DataAccess
 
             rowsAffected += dbCommand.ExecuteNonQuery();
 
-            foreach (var parameter in cmd.Parameters.Where(parameter =>
-                         parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+            foreach (DataAccessParameter parameter in cmd.Parameters)
             {
-                parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                if (parameter.Direction == ParameterDirection.Output ||
+                    parameter.Direction == ParameterDirection.InputOutput)
+                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
             }
         }
         catch (Exception ex)
@@ -499,13 +497,9 @@ public class DataAccess
         return rowsAffected;
     }
 
-    /// <summary>
-    /// Runs one or more commands on the database with transactions.
-    /// </summary>
+    /// <summary>Runs one or more commands on the database with transactions.</summary>
     /// <returns>Returns the number of affected records.</returns>
-    /// <remarks>
-    /// Author: Lucio Pelinson 14-04-2012
-    /// </remarks>
+    /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(List<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
@@ -544,8 +538,7 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <inheritdoc cref="SetCommand(List&lt;DataAccessCommand&gt;)"/>
     public async Task<int> SetCommandAsync(List<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
@@ -584,40 +577,56 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <summary>
+    /// Execute the command in the database and return the number of affected records.
+    /// </summary>
     public int SetCommand(string sql)
     {
         return SetCommand(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <inheritdoc cref="SetCommand(string)"/>
     public async Task<int> SetCommandAsync(string sql)
     {
         return await SetCommandAsync(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <summary>Runs one or more commands on the database with transactions.</summary>
+    /// <returns>Returns the number of affected records.</returns>
+    /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(ArrayList sqlList)
     {
-        List<DataAccessCommand> aCmd = new List<DataAccessCommand>();
+        var cmdList = new List<DataAccessCommand>();
         foreach (string sql in sqlList)
         {
-            aCmd.Add(new DataAccessCommand(sql));
+            cmdList.Add(new DataAccessCommand(sql));
         }
 
-        int numberOfRowsAffected = SetCommand(aCmd);
+        int numberOfRowsAffected = SetCommand(cmdList);
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <inheritdoc cref="SetCommand(ArrayList)"/>
     public async Task<int> SetCommandAsync(ArrayList sqlList)
     {
-        var commands = (from string sql in sqlList select new DataAccessCommand(sql)).ToList();
-        int numberOfRowsAffected = await SetCommandAsync(commands);
+        var cmdList = new List<DataAccessCommand>();
+        foreach (string sql in sqlList)
+        {
+            cmdList.Add(new DataAccessCommand(sql));
+        }
+
+        int numberOfRowsAffected = await SetCommandAsync(cmdList);
         return numberOfRowsAffected;
     }
 
-    /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
+    /// <summary>
+    /// Execute the command in the database and return the number of affected records.
+    /// </summary>
+    /// <param name="cmd">Command</param>
+    /// <param name="sqlConn">Open Connection</param>
+    /// <param name="trans">Transactions with Connection</param>
+    /// <returns>
+    /// Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> and a <see cref="DbTransaction"/> by ref.
     /// </returns>
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
@@ -657,7 +666,15 @@ public class DataAccess
     /// <inheritdoc cref="GetFields(string)"/>
     public Task<Hashtable> GetFieldsAsync(string sql) => GetFieldsAsync(new DataAccessCommand(sql));
 
-    /// <inheritdoc cref="GetFields(string)"/>
+    /// <summary>
+    /// Retrieves the first record of the sql statement in a Hashtable object.
+    /// [key(database field), value(value stored in database)]
+    /// </summary>
+    /// <param name="cmd">Command</param>
+    /// <returns>
+    /// Return a Hashtable Object. 
+    /// If no record is found it returns null.
+    /// </returns>
     public Hashtable GetFields(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
@@ -707,7 +724,7 @@ public class DataAccess
         return retCollection;
     }
 
-    /// <inheritdoc cref="GetFields(string)"/>
+    /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
@@ -757,8 +774,7 @@ public class DataAccess
 
     private static DataAccessCommand GetTableExistsCommand(string table)
     {
-        const string sql = @"SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
-
+        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
         var command = new DataAccessCommand
         {
             Sql = sql,
@@ -794,6 +810,7 @@ public class DataAccess
         return result;
     }
 
+    /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName)
     {
         bool result;
@@ -809,13 +826,9 @@ public class DataAccess
         return result;
     }
 
-    /// <summary>
-    /// Verify the database connection
-    /// </summary>
+    /// <summary>Verify the database connection</summary>
     /// <returns>True if the connection is successful.</returns>
-    /// <remarks>
-    /// Author: Lucio Pelinson 28-04-2014
-    ///</remarks>
+    /// <remarks>Author: Lucio Pelinson 28-04-2014</remarks>
     public bool TryConnection(out string errorMessage)
     {
         bool result;
@@ -854,7 +867,7 @@ public class DataAccess
         return result;
     }
 
-    /// <inheritdoc cref="TryConnection(out string)"/>
+    /// <inheritdoc cref="TryConnection"/>
     public async Task<(bool, string)> TryConnectionAsync()
     {
         bool result;
@@ -893,10 +906,8 @@ public class DataAccess
         return (result, errorMessage);
     }
 
-    /// <summary>
-    /// Executes a database script.
-    /// </summary>
-    /// <returns>Retorns true if the execution is successful.</returns>
+    /// <summary>Executes a database script.</summary>
+    /// <returns>Returns true if the execution is successful.</returns>
     /// <remarks>Lucio Pelinson 18-02-2013</remarks> 
     public bool ExecuteBatch(string script)
     {
@@ -936,7 +947,7 @@ public class DataAccess
         return true;
     }
 
-    /// <inheritdoc cref="ExecuteBatch"/>
+    /// <inheritdoc cref="ExecuteBatch(string)"/>
     public async Task<bool> ExecuteBatchAsync(string script)
     {
         string markpar = "GO";
