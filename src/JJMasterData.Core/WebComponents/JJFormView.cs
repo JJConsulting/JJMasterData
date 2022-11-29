@@ -949,7 +949,7 @@ public class JJFormView : JJGridView
 
     private void ClearTempFiles()
     {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = FormElement.FormFields.ToList().FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}_formupload_jjfiles";

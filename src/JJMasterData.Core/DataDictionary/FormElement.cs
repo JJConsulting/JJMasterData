@@ -15,7 +15,7 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new List<FormElementField>();
+    private List<FormElementField> _formFields = new ();
     
     [DataMember(Name = "title")]
     public string Title { get; set; }
@@ -23,8 +23,11 @@ public class FormElement : Element
     [DataMember(Name = "subTitle")]
     public string SubTitle { get; set; }
     
+    // MongoDB.Bson.BsonSerializationException: The property 'Fields' of type 'JJMasterData.Core.DataDictionary.FormElement'
+    // cannot use element name 'Fields' because it is already being used by property
+    // 'Fields' of type 'JJMasterData.Commons.Dao.Entity.Element'.
     [DataMember(Name = "fields")]
-    public new FormElementList Fields { get; private set; }
+    public FormElementList FormFields { get; private set; }
 
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
@@ -32,7 +35,7 @@ public class FormElement : Element
 
     public FormElement()
     {
-        Fields = new FormElementList(base.Fields, _formFields);
+        FormFields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
     }
 
@@ -49,7 +52,7 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        Fields = new FormElementList(base.Fields, _formFields);
+        FormFields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
         foreach (var f in element.Fields)
         {
@@ -66,7 +69,7 @@ public class FormElement : Element
         TableName = schema.TableName;
         Title = schema.TableName;
         Panels = new List<FormElementPanel>();
-        Fields = new FormElementList(base.Fields, _formFields);
+        FormFields = new FormElementList(base.Fields, _formFields);
         foreach (DataColumn col in schema.Columns)
         {
             var field = new ElementField

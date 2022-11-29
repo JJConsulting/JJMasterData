@@ -134,10 +134,10 @@ public class ElementController : DataDictionaryController
     [HttpPost]
     public IActionResult Add(string tableName, bool importFields)
     {
-        var formElement = _elementService.CreateEntity(tableName, importFields);
-        if (formElement != null)
+        var element = _elementService.CreateEntity(tableName, importFields);
+        if (element != null)
         {
-            return RedirectToAction("Index", "Entity", new { dictionaryName = formElement.Name });
+            return RedirectToAction("Index", "Entity", new { dictionaryName = element.Name });
         }
 
         var jjValidationSummary = _elementService.GetValidationSummary();

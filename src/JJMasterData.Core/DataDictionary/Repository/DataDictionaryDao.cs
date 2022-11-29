@@ -22,7 +22,7 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
-    public List<Metadata> GetMetadataList(bool? sync)
+    public IList<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 
@@ -72,7 +72,7 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
-    public string[] GetNameList()
+    public IEnumerable<string> GetNameList()
     {
         var list = new List<string>();
         int tot = 10000;
@@ -242,13 +242,13 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetDataTable(Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(Hashtable filters, string orderby, int regperpage, int pag, ref int tot)
+    public DataTable GetDataTable(IDictionary filters, string orderby, int regperpage, int pag, ref int tot)
     {
         var element = GetStructure();
         return _entityRepository.GetDataTable(element,filters, orderby, regperpage, pag, ref tot);
     }
 
-    internal static Element GetStructure()
+    public static Element GetStructure()
     {
         var element = new Element(JJService.Options.TableName, "Data Dictionaries");
         element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);

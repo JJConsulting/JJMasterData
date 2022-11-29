@@ -33,7 +33,7 @@ public class ResourcesService : BaseService
         formView.ViewAction.SetVisible(false);
         formView.FilterAction.ExpandedByDefault = true;
 
-        var cultureField = formView.FormElement.Fields["cultureCode"];
+        var cultureField = formView.FormElement.FormFields["cultureCode"];
         cultureField.IsRequired = true;
         cultureField.Component = FormComponent.Search;
         cultureField.DataItem = new FormElementDataItem();
@@ -47,9 +47,9 @@ public class ResourcesService : BaseService
             cultureField.DataItem.Items.Add(item);
         }
    
-        formView.FormElement.Fields["resourceKey"].IsRequired = true;
-        formView.FormElement.Fields["resourceOrigin"].VisibleExpression = "val:0";
-        formView.FormElement.Fields["resourceOrigin"].Export = false;
+        formView.FormElement.FormFields["resourceKey"].IsRequired = true;
+        formView.FormElement.FormFields["resourceOrigin"].VisibleExpression = "val:0";
+        formView.FormElement.FormFields["resourceOrigin"].Export = false;
 
         formView.OnBeforeInsert += ValidateEspecialChars;
         formView.OnBeforeUpdate += ValidateEspecialChars;

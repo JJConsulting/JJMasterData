@@ -55,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppSettings", "AppSettings"
 		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.MongoDB", "src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj", "{F3309B09-66B6-41DC-9624-DE50F6600CF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -257,6 +259,18 @@ Global
 		{E3224095-1C9D-4248-BE8E-7ACFB9D34352}.Release|x64.Build.0 = Release|Any CPU
 		{E3224095-1C9D-4248-BE8E-7ACFB9D34352}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3224095-1C9D-4248-BE8E-7ACFB9D34352}.Release|x86.Build.0 = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Debug|x86.Build.0 = Debug|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|x64.Build.0 = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|x86.ActiveCfg = Release|Any CPU
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,6 +289,7 @@ Global
 		{14C3076E-B624-4F3B-A4A6-D091577937A1} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA} = {034CBF9B-6FEC-4D5C-A440-133F5310055D}
 		{C418E2A8-141A-45F9-B537-ABCA86FCC3F6} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
+		{F3309B09-66B6-41DC-9624-DE50F6600CF1} = {59427CF1-D6B7-4779-9E62-4717C5763762}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCB34875-DB5E-4444-99BA-3C362F8EF1BB}

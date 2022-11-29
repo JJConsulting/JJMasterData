@@ -38,7 +38,7 @@ internal class ActionMap
         ContextAction = contextAction;
         ActionName = actionName;
         PKFieldValues = new Hashtable();
-        foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk))
+        foreach (var f in formElement.FormFields.ToList().FindAll(x => x.IsPk))
         {
             if (row[f.Name] != null)
                 PKFieldValues.Add(f.Name, row[f.Name].ToString());

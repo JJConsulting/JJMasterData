@@ -42,7 +42,7 @@ public interface IEntityRepository
     /// Returns a DataTable with the records found.
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref int tot);
+    public DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regperpage, int pag, ref int tot);
 
     /// <summary>
     /// Returns records from the database based on the filter.  

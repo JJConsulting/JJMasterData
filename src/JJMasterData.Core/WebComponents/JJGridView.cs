@@ -159,7 +159,7 @@ public class JJGridView : JJBaseView
             if (FormElement == null)
                 throw new Exception("FormElement inválido");
 
-            _pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+            _pkFields = FormElement.FormFields.ToList().FindAll(x => x.IsPk);
 
             return _pkFields;
         }
@@ -176,7 +176,7 @@ public class JJGridView : JJBaseView
 
             _visibleFields = new List<FormElementField>();
             var defaultValues = DefaultValues;
-            foreach (var f in FormElement.Fields)
+            foreach (var f in FormElement.FormFields)
             {
                 if (FieldManager.IsVisible(f, PageState.List, defaultValues))
                     _visibleFields.Add(f);
@@ -786,7 +786,7 @@ public class JJGridView : JJBaseView
     private HtmlBuilder GetLookupHtml(string lookupRoute)
     {
         string fieldName = lookupRoute.Substring(GridFilter.FilterFieldPrefix.Length);
-        var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
+        var field = FormElement.FormFields.ToList().Find(x => x.Name.Equals(fieldName));
 
         if (field == null) return null;
 
@@ -886,7 +886,7 @@ public class JJGridView : JJBaseView
 
         if (EnableEditMode)
         {
-            var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
+            var listFieldsPost = FormElement.FormFields.ToList().FindAll(x => x.AutoPostBack);
             string functionname = "do_rowreload_" + Name;
             if (listFieldsPost.Count > 0)
             {
@@ -1341,7 +1341,7 @@ public class JJGridView : JJBaseView
         foreach (var row in values)
         {
             line++;
-            foreach (var f in FormElement.Fields)
+            foreach (var f in FormElement.FormFields)
             {
                 bool enable = FieldManager.IsEnable(f, PageState.List, row);
                 bool visible = FieldManager.IsVisible(f, PageState.List, row);
@@ -1523,7 +1523,7 @@ public class JJGridView : JJBaseView
             ActionOrigin.Form => null, //TODO: formAction
             ActionOrigin.Grid => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),
             ActionOrigin.Toolbar => ToolBarActions.Find(x => x.Name.Equals(actionMap.ActionName)),
-            ActionOrigin.Field => FormElement.Fields[actionMap.FieldName].Actions.Get(actionMap.ActionName),
+            ActionOrigin.Field => FormElement.FormFields[actionMap.FieldName].Actions.Get(actionMap.ActionName),
             _ => null,
         };
     }

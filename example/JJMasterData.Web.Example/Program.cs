@@ -1,6 +1,4 @@
-using JJMasterData.Commons.Options;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Web.Extensions;
 
 namespace JJMasterData.Web.Example;
@@ -19,7 +17,13 @@ public class Program
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
 
-        builder.AddJJMasterDataWeb(settingsPath).WithFormEvents();
+        builder.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
+        {
+            var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
+            mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
+            mongo.CollectionName = section.GetValue<string>("CollectionName")!;
+            mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
+        });
 
         var app = builder.Build();
 

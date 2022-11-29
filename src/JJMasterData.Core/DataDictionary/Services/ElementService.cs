@@ -74,36 +74,36 @@ public class ElementService : BaseService
 
     #region Add Dictionary
 
-    public FormElement CreateEntity(string tableName, bool importFields)
+    public Element CreateEntity(string tableName, bool importFields)
     {
         if (!ValidateEntity(tableName, importFields))
             return null;
 
-        FormElement formElement;
+        Element element;
         if (importFields)
         {
-            var element = _entityRepository.GetElementFromTable(tableName);
-            formElement = new FormElement(element);
+            element = _entityRepository.GetElementFromTable(tableName);
         }
         else
         {
-            formElement = new FormElement();
+            element  = new Element
+            {
+                TableName = tableName,
+                Name = GetDictionaryName(tableName),
+                CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName),
+                CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName)
+            };
         }
-
-        formElement.TableName = tableName;
-        formElement.Name = GetDictionaryName(tableName);
-        formElement.CustomProcNameGet = JJMasterDataOptions.GetDefaultProcNameGet(tableName);
-        formElement.CustomProcNameSet = JJMasterDataOptions.GetDefaultProcNameSet(tableName);
-
-        var dictionary = new Metadata
+        
+        var metadata = new Metadata
         {
-            Table = formElement.DeepCopy(),
-            Form = new MetadataForm(formElement)
+            Table = element.DeepCopy(),
+            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
         };
 
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DictionaryRepository.InsertOrReplace(metadata);
 
-        return formElement;
+        return element;
     }
 
     public bool ValidateEntity(string tableName, bool importFields)
@@ -187,27 +187,27 @@ public class ElementService : BaseService
         var formElement = new FormElement(element);
 
         formElement.Title = "JJMasterData";
-        formElement.Fields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
+        formElement.FormFields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.FormFields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
 
-        formElement.Fields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.Fields["json"].Component = FormComponent.TextArea;
-        formElement.Fields["json"].Export = false;
+        formElement.FormFields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
+        formElement.FormFields["json"].Component = FormComponent.TextArea;
+        formElement.FormFields["json"].Export = false;
 
-        formElement.Fields["type"].VisibleExpression = "val:0";
-        formElement.Fields["type"].DefaultValue = "val:F";
-        formElement.Fields["type"].Component = FormComponent.ComboBox;
-        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
-        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
+        formElement.FormFields["type"].VisibleExpression = "val:0";
+        formElement.FormFields["type"].DefaultValue = "val:F";
+        formElement.FormFields["type"].Component = FormComponent.ComboBox;
+        formElement.FormFields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
+        formElement.FormFields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
 
-        formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
+        formElement.FormFields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
 
-        formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["sync"].Component = FormComponent.ComboBox;
-        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
-        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.FormFields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.FormFields["sync"].Component = FormComponent.ComboBox;
+        formElement.FormFields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
+        formElement.FormFields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
 
-        formElement.Fields["modified"].Component = FormComponent.DateTime;
+        formElement.FormFields["modified"].Component = FormComponent.DateTime;
 
         var formView = new JJFormView(formElement);
         formView.Name = "List";
@@ -328,5 +328,13 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists() => JJService.EntityRepository.TableExists(JJService.Options.TableName);
+    public bool JJMasterDataTableExists()
+    {
+        if (DictionaryRepository is DictionaryDao)
+        {
+            return JJService.EntityRepository.TableExists(JJService.Options.TableName);
+        }
+
+        return true;
+    }
 }

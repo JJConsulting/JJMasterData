@@ -34,15 +34,15 @@ public interface IDictionaryRepository
     /// Metodo normalmente utilizado para sincronismo do dicionários entre sistemas.
     /// Permitindo remondar a herança original no sistema legado.
     /// </remarks>
-    List<Metadata> GetMetadataList(bool? sync);
+    IList<Metadata> GetMetadataList(bool? sync);
 
     /// <summary>
     /// Recupera a lista com os nomes do dicionario
     /// </summary>
-    string[] GetNameList();
+    IEnumerable<string> GetNameList();
 
     
-    DataTable GetDataTable(Hashtable filters, string orderby, int regperpage, int pag, ref int tot);
+    DataTable GetDataTable(IDictionary filters, string orderby, int regperpage, int pag, ref int tot);
 
     /// <summary>
     /// Verifica se o dicionário existe
