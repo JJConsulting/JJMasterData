@@ -47,7 +47,7 @@
       {
         "files": [
           "**/JJMasterData.Sample/**",
-          "**/JJMasterData.Examples/**",
+          "**/JJMasterData.Example/**",
           "media/**",
           "logo.svg",
           "favicon.ico"

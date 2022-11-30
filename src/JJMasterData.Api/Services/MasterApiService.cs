@@ -392,7 +392,7 @@ public class MasterApiService
                 if (!dic.Table.Fields.ContainsKey(key))
                     continue;
 
-                string value = _httpContext.Request.Query[key];
+                string? value = _httpContext.Request.Query[key];
                 filters.Add(dic.Table.Fields[key].Name, StringManager.ClearText(value));
             }
         }
