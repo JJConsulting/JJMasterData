@@ -18,9 +18,9 @@ public class Program
         builder.Services.AddJJMasterDataWeb(settingsPath).WithFormEvents();
         
         //You can also:
-        // builder.Services.AddJJMasterDataWeb(wrapper =>
+        // builder.Services.AddJJMasterDataWeb(options =>
         // {
-        //     wrapper.JJMasterDataOptions.BootstrapVersion = 5;
+        //     options.JJMasterData.BootstrapVersion = 5;
         // });
         
         var app = builder.Build();

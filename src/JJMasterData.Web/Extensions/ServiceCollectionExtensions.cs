@@ -57,15 +57,15 @@ public static class ServiceCollectionExtensions
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
-        Action<JJConfigurationWrapper> configureOptions)
+        Action<JJConfigurationOptions> configureOptions)
     {
-        var wrapper = new JJConfigurationWrapper();
+        var wrapper = new JJConfigurationOptions();
 
         configureOptions(wrapper);
 
         void ConfigureMasterDataOptions(JJMasterDataOptions options)
         {
-            var wrapperOptions = wrapper.JJMasterDataOptions;
+            var wrapperOptions = wrapper.JJMasterData;
             options.Logger = wrapperOptions.Logger;
             options.BootstrapVersion = wrapperOptions.BootstrapVersion;
             options.LayoutPath = wrapperOptions.LayoutPath;

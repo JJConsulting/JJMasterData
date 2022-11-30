@@ -10,6 +10,7 @@ public class ConnectionString
     public bool IntegratedSecurity { get; init; }
 
     public string? Username { get; init; }
+    
     public string? Password { get; init; }
 
     [Required] public string? Database { get; init; }
@@ -23,14 +24,15 @@ public class ConnectionString
     public bool? Encrypt { get; init; }
 
     public bool? Pooling { get; init; }
+
     public int? MinPoolSize { get; init; }
+
     public int? MaxPoolSize { get; init; }
 
     public ConnectionString()
     {
-        
     }
-    
+
     public ConnectionString(string? connectionString)
     {
         var builder = new DbConnectionStringBuilder
@@ -41,14 +43,17 @@ public class ConnectionString
         {
             Server = dataSource.ToString();
         }
+
         if (builder.TryGetValue("user id", out var userId))
         {
             Username = userId.ToString();
         }
+
         if (builder.TryGetValue("password", out var password))
         {
             Password = password.ToString();
         }
+
         if (builder.TryGetValue("initial catalog", out var initialCatalog))
         {
             Database = initialCatalog.ToString();
@@ -58,44 +63,44 @@ public class ConnectionString
         {
             ApplicationName = builder["application name"].ToString();
         }
-        
+
         if (builder.TryGetValue("integrated security", out var integratedSecurity))
         {
             IntegratedSecurity = bool.Parse(integratedSecurity.ToString()!);
         }
-        
+
         if (builder.TryGetValue("trustservercertificate", out var trustServerCertificate))
         {
             TrustServerCertificate = bool.Parse(trustServerCertificate.ToString()!);
         }
-        
+
         if (builder.TryGetValue("encrypt", out var encrypt))
         {
             Encrypt = bool.Parse(encrypt.ToString()!);
         }
-        
+
         if (builder.TryGetValue("timeout", out var timeout))
         {
             Timeout = int.Parse(timeout.ToString()!);
         }
-        
+
         if (builder.TryGetValue("pooling", out var pooling))
         {
             Pooling = bool.Parse(pooling.ToString()!);
         }
-        
+
         if (builder.TryGetValue("min pool size", out var minPoolSize))
         {
             MinPoolSize = int.Parse(minPoolSize.ToString()!);
         }
-        
+
         if (builder.TryGetValue("max pool size", out var maxPoolSize))
         {
             MaxPoolSize = int.Parse(maxPoolSize.ToString()!);
         }
     }
-    
-    
+
+
     /// <summary>
     /// Returns the string representation of a ConnectionString.
     /// </summary>
@@ -118,25 +123,25 @@ public class ConnectionString
 
         if (ApplicationName != null)
             builder["application name"] = ApplicationName;
-        
+
         if (Timeout != null)
             builder["timeout"] = Timeout;
-        
+
         if (TrustServerCertificate != null)
             builder["trustservercertificate"] = TrustServerCertificate;
-        
+
         if (Encrypt != null)
             builder["encrypt"] = Encrypt;
-            
+
         if (Pooling != null)
             builder["pooling"] = Pooling;
-        
+
         if (MinPoolSize != null)
             builder["min pool size"] = MinPoolSize;
-        
+
         if (MaxPoolSize != null)
             builder["max pool size"] = MaxPoolSize;
-        
+
         return builder.ToString();
     }
 }
