@@ -7,9 +7,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -96,7 +94,7 @@ public class InternalRedirectController : MasterDataController
 
         panel.LoadValuesFromPK(_relationValues);
         if (userId != null)
-            panel.SetUserValues("USERID", userId.ToString());
+            panel.SetUserValues("USERID", userId);
 
         var values = panel.GetFormValues();
         var errors = panel.ValidateFields(values, PageState.Update);
@@ -144,7 +142,7 @@ public class InternalRedirectController : MasterDataController
                     _dictionaryName = @params.Get(key);
                     break;
                 case "viewtype":
-                    _relationType = (RelationType)int.Parse(@params.Get(key));
+                    _relationType = (RelationType)int.Parse(@params.Get(key) ?? string.Empty);
                     break;
                 default:
                     _relationValues.Add(key, @params.Get(key));

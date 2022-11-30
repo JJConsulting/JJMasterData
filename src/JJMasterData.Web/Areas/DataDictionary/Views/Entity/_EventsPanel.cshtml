@@ -2,24 +2,24 @@
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        @Html.LabelFor(Model => Model.FormEventType, Translate.Key("Type"),
+        @Html.LabelFor(model => model.FormEventType, Translate.Key("Type"),
         new Dictionary<string, string>
         {
             { BootstrapHelper.DataToggle, "tooltip" },
             { "title", Translate.Key("Type") }
         })
-        @Html.TextBoxFor((Model => Model.FormEventType),Model.HtmlAttributes)
+        @Html.TextBoxFor((model => model.FormEventType),Model.HtmlAttributes)
     </div>
     @if (!Model.IsPythonFormEvent)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-6">
-            @Html.LabelFor(Model => Model.FormEventMethods, Translate.Key("Methods"),
+            @Html.LabelFor(model => model.FormEventMethods, Translate.Key("Methods"),
                 new Dictionary<string, string>
                 {
                     { BootstrapHelper.DataToggle, "tooltip" },
                     { "title", Translate.Key("Methods") }
                 })
-            @Html.TextBoxFor(Model=>Model.FormEventMethods,  Model.HtmlAttributes)
+            @Html.TextBoxFor(model=>model.FormEventMethods,  Model.HtmlAttributes)
         </div>
     }
 </div>

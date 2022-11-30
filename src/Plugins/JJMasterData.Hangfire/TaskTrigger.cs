@@ -90,7 +90,7 @@ internal class TaskTrigger
         IProgressBar consoleProgress = null;
         string consoleMessage = string.Empty;
             
-        worker.OnProgressChanged += (s, e) =>
+        worker.OnProgressChanged += (_, e) =>
         {
             BackgroundTask.SetProgress(key, e);
             if (context == null) return;

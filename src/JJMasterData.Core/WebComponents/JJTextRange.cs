@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
@@ -18,11 +17,6 @@ public class JJTextRange : JJBaseControl
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime;
     private bool IsTimeAware => FieldType is FieldType.DateTime;
 
-    public JJTextRange()
-    {
-
-    }
-    
     internal static JJBaseControl GetInstance(FormElementField field, Hashtable values)
     {
         string valueFrom = "";

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace JJMasterData.Api.Models;
 
@@ -19,7 +17,7 @@ public class DicSyncInfo
     /// Format "yyyy-MM-dd HH:mm"
     /// </summary>
     [DataMember(Name = "serverDate")]
-    public string ServerDate { get; set; }
+    public string? ServerDate { get; set; }
 
     /// <summary>
     /// Total processing time in milliseconds

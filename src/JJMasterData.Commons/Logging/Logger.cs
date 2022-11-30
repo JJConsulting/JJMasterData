@@ -25,6 +25,7 @@ public class Logger : ILogger
 
     public LoggerOptions Options { get; set; }
 
+    // ReSharper disable once NotAccessedField.Local
     private string CategoryName;
 
     public Logger()

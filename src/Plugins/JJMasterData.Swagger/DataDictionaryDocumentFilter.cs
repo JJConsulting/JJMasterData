@@ -456,7 +456,7 @@ namespace JJMasterData.Swagger
                         required = false,
                         type = schema.type,
                         format = schema.format
-                    }); ;
+                    });
 
                     oper.parameters.Add(new Parameter
                     {

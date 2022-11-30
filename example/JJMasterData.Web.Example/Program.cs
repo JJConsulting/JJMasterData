@@ -11,8 +11,12 @@ public class Program
         var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
         var settingsPath = Path.Combine(root, "appsettings.json");
 
+        //Without this IConfiguration don't work. If we add inside AddJJMasterDataWeb, I don't know why performance goes to trash.
+        builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
+        
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
+
         builder.Services.AddJJMasterDataWeb(settingsPath).WithFormEvents();
         
         //You can also:

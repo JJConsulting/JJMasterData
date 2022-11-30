@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 public class JJAlertTagHelper : TagHelper
 {
     [HtmlAttributeName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
     
     [HtmlAttributeName("message")]
-    public string Message { get; set; }
+    public string? Message { get; set; }
     
     [HtmlAttributeName("messages")]
     public List<string>? Messages { get; set; }

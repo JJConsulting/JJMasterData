@@ -33,10 +33,15 @@ public static class WebApplicationExtensions
         app.UseStaticFiles();
         app.UseDefaultFiles();
 
+        var list = new List<object>();
+        
+        if (options.RouteAttributes != null) 
+            list.AddRange(options.RouteAttributes);
+        
         app.MapControllerRoute(
                  name: "JJMasterData",
                  pattern: "{culture}/{area:exists}/{controller=Element}/{action=Index}/{dictionaryName?}/")
-            .PreBufferRequestStream().BufferResponseStream().WithAttributes(options.RouteAttributes?.ToArray());
+            .PreBufferRequestStream().BufferResponseStream().WithAttributes(list.ToArray());
 
         app.UseSystemWebAdapters();
         app.UseJJMasterData();

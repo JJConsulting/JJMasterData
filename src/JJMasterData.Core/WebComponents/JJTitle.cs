@@ -40,8 +40,6 @@ public class JJTitle : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        var builder = new HtmlBuilder();
-                
         return new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)

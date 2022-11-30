@@ -6,7 +6,7 @@ namespace JJMasterData.Commons.Test.Tasks;
 
 public class TaskWorkerTest : IBackgroundTaskWorker
 {
-    public event EventHandler<IProgressReporter> OnProgressChanged;
+    public event EventHandler<IProgressReporter>? OnProgressChanged;
 
     public Task RunWorkerAsync(CancellationToken token)
     {
@@ -19,7 +19,7 @@ public class TaskWorkerTest : IBackgroundTaskWorker
                 Console.WriteLine("Running Worker...");
                 reporter.Percentage = i * 10;
                 OnProgressChanged?.Invoke(this, new ProgressReporter());
-                Task.Delay(1000).Wait();
+                Task.Delay(1000, token).Wait(token);
             }
         }, token);
     }
@@ -29,10 +29,10 @@ public class TaskWorkerTest : IBackgroundTaskWorker
 public class BackgroundTaskTest
 {
 
-    public IBackgroundTaskWorker Worker => new TaskWorkerTest();
+    public static IBackgroundTaskWorker Worker => new TaskWorkerTest();
 
     //Implement your own IBackgroundTaskManager here if you want a specific test.
-    public IBackgroundTask BackgroundTask => JJService.BackgroundTask;
+    public static IBackgroundTask BackgroundTask => JJService.BackgroundTask;
 
     [Fact]
     public void RunTaskTest()

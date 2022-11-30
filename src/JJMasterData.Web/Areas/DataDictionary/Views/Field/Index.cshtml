@@ -1,5 +1,4 @@
-﻿@using JJMasterData.Web.Areas.DataDictionary.Models
-@model FormElementField
+﻿@model FormElementField
 
 
 <link href="~/js/codemirror/lib/codemirror.css" rel="stylesheet" />
@@ -148,14 +147,12 @@
             <div class="jjrelative">
                 <div id="listField">
                     <div class="list-group jjsortable" id="sortable_grid">
-                        @{int nLine = 0;}
                         @if (ViewBag.Fields.Count == 0)
                         {
                             <div>@Translate.Key("No record found")</div>
                         }
                         @foreach (FormElementField field in ViewBag.Fields)
                         {
-                            nLine++;
                             string fieldName = field.Name == null ? "nulo" : field.Name;
                             <a href="javascript:loadIframe('@Url.Action("Detail", new { dictionaryName = ViewBag.DictionaryName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"

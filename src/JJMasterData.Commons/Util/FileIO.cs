@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using JJMasterData.Commons.Options;
 
@@ -118,7 +119,7 @@ public class FileIO
                     oRow["Nome"] = oFile.Name;
                     oRow["Tamanho"] = Format.FormatFileSize(oFile.Length);
                     oRow["TamBytes"] = oFile.Length;
-                    oRow["LastWriteTime"] = oFile.LastWriteTime.ToString();
+                    oRow["LastWriteTime"] = oFile.LastWriteTime.ToString(CultureInfo.CurrentCulture);
                     dtFiles.Rows.Add(oRow);
                     iId++;
                 }

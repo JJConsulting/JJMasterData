@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using JJMasterData.Commons.Exceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Options;
 
@@ -779,7 +779,7 @@ public class DataAccess
             Sql = sql,
             Parameters =
             {
-                new DataAccessParameter()
+                new DataAccessParameter
                 {
                     Name = "@Table",
                     Value = table

@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Extensions;
+﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
@@ -114,43 +112,45 @@ public class JJDataImp : JJBaseProcess
         Upload.OnPostFile += Upload_OnPostFile;
 
         string action = CurrentContext.Request["current_uploadaction"];
-        string t = CurrentContext.Request.QueryString("t");
 
-        if ("process_check".Equals(action))
+        switch (action)
         {
-            var reporterProgress = GetCurrentProcess();
-            string json = JsonConvert.SerializeObject(reporterProgress);
-            CurrentContext.Response.SendResponse(json, "text/json");
-        }
-        else if ("process_stop".Equals(action))
-        {
-            AbortProcess();
-            CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
-        }
-        else if ("process_finished".Equals(action))
-        {
-            html = GetHtmlLogProcess();
-        }
-        else if ("process_help".Equals(action))
-        {
-            html = new DataImpHelp(this).GetHtmlHelp();
-        }
-        else if ("posted_past_text".Equals(action))
-        {
-            //Process de text from clipboard
-            if (!IsRunning())
+            case "process_check":
             {
-                string pasteValue = CurrentContext.Request.Form("pasteValue");
-                ImportInBackground(pasteValue);
+                var reporterProgress = GetCurrentProcess();
+                string json = JsonConvert.SerializeObject(reporterProgress);
+                CurrentContext.Response.SendResponse(json, "text/json");
+                break;
             }
-            html = GetHtmlWaitProcess();
-        }
-        else
-        {
-            if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
+            case "process_stop":
+                AbortProcess();
+                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
+                break;
+            case "process_finished":
+                html = GetHtmlLogProcess();
+                break;
+            case "process_help":
+                html = new DataImpHelp(this).GetHtmlHelp();
+                break;
+            case "posted_past_text":
+            {
+                //Process de text from clipboard
+                if (!IsRunning())
+                {
+                    string pasteValue = CurrentContext.Request.Form("pasteValue");
+                    ImportInBackground(pasteValue);
+                }
                 html = GetHtmlWaitProcess();
-            else
-                html = GetHtmlForm(ProcessKey);
+                break;
+            }
+            default:
+            {
+                if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
+                    html = GetHtmlWaitProcess();
+                else
+                    html = GetHtmlForm(ProcessKey);
+                break;
+            }
         }
 
         return html;
@@ -363,14 +363,14 @@ public class JJDataImp : JJBaseProcess
 
     private JJLinkButton GetBackButtonInstance()
     {
-        var _backButton = new JJLinkButton
+        var backButton = new JJLinkButton
         {
             IconClass = "fa fa-arrow-left",
             Text = "Back",
             ShowAsButton = true,
             OnClientClick = "uploadFile1Obj.remove();"
         };
-        return _backButton;
+        return backButton;
     }
 
     private JJLinkButton GetHelpButtonInstance()

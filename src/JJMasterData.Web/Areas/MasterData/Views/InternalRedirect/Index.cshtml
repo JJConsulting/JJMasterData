@@ -13,9 +13,9 @@
         </script>
     }
 
-    @Html.Raw(Model?.HtmlContent)
+    @Html.Raw(Model.HtmlContent)
 
-    if (Model?.ShowToolBar ?? false)
+    if (Model.ShowToolBar)
     {
         <div id="divToolbar">
             <button type="submit" class="btn btn-primary"

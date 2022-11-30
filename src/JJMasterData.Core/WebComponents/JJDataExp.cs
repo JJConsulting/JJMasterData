@@ -100,7 +100,6 @@ public class JJDataExp : JJBaseProcess
 
     private string GetFinishedMessageHtml(DataExpReporter reporter)
     {
-        var builder = new HtmlBuilder();
         if (!reporter.HasError)
         {
             string url = GetDownloadUrl(reporter.FilePath);

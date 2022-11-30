@@ -25,7 +25,7 @@ public class JJMessageBox : JJBaseView
     {
         Text = text;
         Icon = icon;
-        Size = MessageSize.Default;;
+        Size = MessageSize.Default;
         Title = Icon switch
         {
             MessageIcon.Error => "Erro",

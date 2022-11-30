@@ -26,14 +26,14 @@ public class MasterApiController : ControllerBase
     public ActionResult<MasterApiListResponse> GetAll(string elementName, [FromQuery]int pag = 1,
         [FromQuery]int regporpag = 1000, [FromQuery]string? orderby = null, [FromQuery]int? tot = 0)
     {
-        if (Request?.Headers?.Accept.ToString().Contains("text/csv") ?? false)
+        if (Request.Headers.Accept.ToString().Contains("text/csv"))
         {
             string text = _service.GetListFieldAsText(elementName, pag, regporpag, orderby);
 
             return Content(text, "text/csv");
         }
 
-        var response = _service.GetListFields(elementName, pag, regporpag, orderby, tot.Value);
+        var response = _service.GetListFields(elementName, pag, regporpag, orderby, tot!.Value);
         return Ok(response);
     }
 

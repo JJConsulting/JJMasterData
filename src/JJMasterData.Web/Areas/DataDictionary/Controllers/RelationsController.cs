@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -61,7 +60,8 @@ public class RelationsController : DataDictionaryController
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
         PopulateFkColumn(elementRelation.ChildElement);
-        ViewBag.Index = index;
+        if (index != null) 
+            ViewBag.Index = index;
 
         return View("Detail", elementRelation);
     }
@@ -115,7 +115,8 @@ public class RelationsController : DataDictionaryController
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
         elementRelation.Title = PopulateFkColumn(elementRelation.ChildElement);
-        ViewBag.Index = index;
+        if (index != null) 
+            ViewBag.Index = index;
         return View(elementRelation);
     }
 

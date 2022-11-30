@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -112,10 +111,10 @@ public class PanelController : DataDictionaryController
         if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
             ViewBag.Tab = Request.Form["selected_tab"];
         else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"];
+            ViewBag.Tab = TempData["selected_tab"]!;
 
         if (TempData.ContainsKey("error"))
-            ViewBag.Error = TempData["error"];
+            ViewBag.Error = TempData["error"]!;
 
         ViewBag.MenuId = "Panel";
         ViewBag.DictionaryName = formElement.Name;

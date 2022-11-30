@@ -86,10 +86,10 @@ public class LogController : Controller
 
     private void OnRenderCell(object sender, GridCellEventArgs e)
     {
-        string msg;
+        string? msg;
         if (e.Field.Name.Equals(Logger.Options.Table.ContentColumnName))
         {
-            msg = e.DataRow[Logger.Options.Table.ContentColumnName].ToString().Replace("\r\n", "<br>");
+            msg = e.DataRow[Logger.Options.Table.ContentColumnName].ToString()?.Replace("\r\n", "<br>");
         }
         else
         {

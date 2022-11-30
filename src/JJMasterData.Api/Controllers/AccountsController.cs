@@ -83,7 +83,7 @@ public class AccountsController : ControllerBase
         if (form == null)
             throw new ArgumentNullException(nameof(form));
 
-        UserAccessInfo info = Service.RecoverPassword(form); ;
+        var info = Service.RecoverPassword(form);
 
         if (!info.IsValid)
             Unauthorized();

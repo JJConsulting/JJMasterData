@@ -790,7 +790,7 @@ public class JJGridView : JJBaseView
 
         if (field == null) return null;
 
-        var lookup = (JJLookup)FieldManager.GetField(field, PageState.Filter, null, null);
+        var lookup = (JJLookup)FieldManager.GetField(field, PageState.Filter, null);
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();

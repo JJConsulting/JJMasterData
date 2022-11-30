@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Commons.Test.Logging;
 

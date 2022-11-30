@@ -117,7 +117,6 @@ internal class FormFileService
             throw new ArgumentNullException(nameof(FormFileContent));
 
         string fileName = fileContent.FileName;
-        MemoryStream memoryStream = fileContent.FileStream;
 
         if (OnBeforeCreateFile != null)
         {
@@ -133,7 +132,8 @@ internal class FormFileService
             DeleteAll();
 
         if (fileName?.LastIndexOf("\\") > 0)
-            fileName = fileName.Substring(fileName.LastIndexOf("\\") + 1);
+            // ReSharper disable once ReplaceSubstringWithRangeIndexer
+            fileName = fileName.Substring(fileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
         {
@@ -303,11 +303,9 @@ internal class FormFileService
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
-
-        var pathBuilder = new FormFilePathBuilder(FormElement);
+        
         foreach (var field in uploadFields)
         {
-            string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
             var fileService = new FormFileService(field.Name + "_formupload");
             fileService.DeleteAll();
         }

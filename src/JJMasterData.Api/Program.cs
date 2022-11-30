@@ -65,7 +65,7 @@ builder.Services.AddTransient<AccountService>();
 builder.Logging.AddJJMasterDataLogger();
 
 builder.Services.AddAuthentication(TokenAuthenticationHandler.Name)
-    .AddScheme<AuthenticationSchemeOptions, TokenAuthenticationHandler>(TokenAuthenticationHandler.Name, o => { });
+    .AddScheme<AuthenticationSchemeOptions, TokenAuthenticationHandler>(TokenAuthenticationHandler.Name, _ => { });
 
 var app = builder.Build();
 

@@ -1,14 +1,8 @@
-﻿using JJMasterData.Commons.Dao;
-
-namespace JJMasterData.Core.WebComponents;
+﻿namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseControl : JJBaseView
 {
     private string _text;
-
-    public JJBaseControl()
-    {
-    }
 
 
     /// <summary>

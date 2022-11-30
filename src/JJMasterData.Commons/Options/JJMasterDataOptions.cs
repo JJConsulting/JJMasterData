@@ -9,6 +9,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace JJMasterData.Commons.Options;
 
@@ -114,7 +115,7 @@ public sealed class JJMasterDataOptions
     public static string? GetConnectionString(string name = "ConnectionString")
     {
         if (IsNetFramework)
-            return System.Configuration.ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
+            return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
 
         return Configuration.GetConnectionString(name);
     }
@@ -123,7 +124,7 @@ public sealed class JJMasterDataOptions
     public static string? GetConnectionProvider(string name = "ConnectionString")
     {
         if (IsNetFramework)
-            return System.Configuration.ConfigurationManager.ConnectionStrings[name]?.ProviderName;
+            return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
 
         return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ??
                DataAccessProviderType.SqlServer.GetDescription();

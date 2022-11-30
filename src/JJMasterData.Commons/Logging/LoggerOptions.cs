@@ -3,7 +3,6 @@
 
 using System.Text.Json.Serialization;
 
-
 namespace JJMasterData.Commons.Logging;
 
 public record LoggerOptions

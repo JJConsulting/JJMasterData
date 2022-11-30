@@ -4,16 +4,16 @@ namespace JJMasterData.Api.Handlers;
 
 public class CultureHandler : DelegatingHandler
 {
-    protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (request != null && request.Headers != null && request.Headers.Count() > 0)
+        if (request.Headers.Any())
         {
             var reqHdrs = request.Headers.AcceptLanguage;
-            if (reqHdrs != null && reqHdrs.Count > 0)
+            if (reqHdrs.Count > 0)
             {
-                var headerValue = reqHdrs.OrderByDescending(e => e.Quality ?? 1.0D)
-                    .Where(e => !e.Quality.HasValue || e.Quality.Value > 0.0D)
-                    .First();
+                var headerValue = reqHdrs
+                    .OrderByDescending(e => e.Quality ?? 1.0D)
+                    .First(e => e.Quality is null or > 0.0D);
 
                 Thread.CurrentThread.CurrentUICulture = new CultureInfo(headerValue.Value);
             }

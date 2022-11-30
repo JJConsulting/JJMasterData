@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
@@ -122,13 +121,16 @@ public class FieldService : BaseService
         }
 
         if (field.AutoNum && field.DataType != FieldType.Int)
-            AddError(nameof(field.AutoNum), Translate.Key("Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
+            AddError(nameof(field.AutoNum),
+                Translate.Key(
+                    "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
 
         if (field.DataType is not FieldType.Varchar or FieldType.NVarchar or FieldType.NText)
         {
             if (field.Filter.Type is FilterMode.Contain)
             {
-                AddError(nameof(field.Filter.Type), Translate.Key("Only fields of type VarChar or Text can be of type Contains."));
+                AddError(nameof(field.Filter.Type),
+                    Translate.Key("Only fields of type VarChar or Text can be of type Contains."));
             }
         }
 
@@ -189,28 +191,28 @@ public class FieldService : BaseService
         }
     }
 
-    private bool ValidateDataItem(FormElementDataItem data)
+    private void ValidateDataItem(FormElementDataItem data)
     {
         if (data == null)
         {
             AddError("DataItem", Translate.Key("Undefined font settings"));
-            return false;
         }
 
-        switch (data.DataItemType)
+        switch (data!.DataItemType)
         {
             case DataItemType.SqlCommand:
-                {
-                    if (string.IsNullOrEmpty(data.Command.Sql))
-                        AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
+            {
+                if (string.IsNullOrEmpty(data.Command.Sql))
+                    AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
 
-                    if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
-                    {
-                        AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
-                                               "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
-                    }
-                    break;
+                if (data.ReplaceTextOnGrid && !data.Command!.Sql!.Contains("{search_id}"))
+                {
+                    AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
+                                            "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
                 }
+
+                break;
+            }
             case DataItemType.Manual:
                 ValidateManualItens(data.Items);
                 break;
@@ -218,51 +220,43 @@ public class FieldService : BaseService
                 ValidateDataElementMap(data.ElementMap);
                 break;
         }
-
-        return IsValid;
     }
 
-    private bool ValidateManualItens(List<DataItemValue> itens)
+    private void ValidateManualItens(IList<DataItemValue> itens)
     {
         if (itens == null || itens.Count == 0)
         {
             AddError("DataItem", Translate.Key("Item list not defined"));
-            return false;
         }
 
-        for (int i = 0; i < itens.Count; i++)
-        {
-            var it = itens[i];
-            if (string.IsNullOrEmpty(it.Id))
-                AddError("DataItem", Translate.Key("Item id {0} required", i));
+        if (itens != null)
+            for (int i = 0; i < itens.Count; i++)
+            {
+                var it = itens[i];
+                if (string.IsNullOrEmpty(it.Id))
+                    AddError("DataItem", Translate.Key("Item id {0} required", i));
 
-            if (string.IsNullOrEmpty(it.Description))
-                AddError("DataItem", Translate.Key("Item description {0} required", i));
-        }
-
-        return IsValid;
+                if (string.IsNullOrEmpty(it.Description))
+                    AddError("DataItem", Translate.Key("Item description {0} required", i));
+            }
     }
 
-    private bool ValidateDataElementMap(DataElementMap data)
+    private void ValidateDataElementMap(DataElementMap data)
     {
         if (data == null)
         {
             AddError("ElementMap", Translate.Key("Undefined mapping settings"));
-            return false;
         }
 
-        if (string.IsNullOrEmpty(data.ElementName))
+        if (string.IsNullOrEmpty(data!.ElementName))
             AddError(nameof(data.ElementName), Translate.Key("Required field [ElementName]"));
-
-        return IsValid;
     }
 
-    private bool ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
+    private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
     {
         if (dataFile == null)
         {
             AddError("DataFile", Translate.Key("Undefined file settings"));
-            return false;
         }
 
         if (dataBehavior == FieldBehavior.Virtual)
@@ -277,8 +271,6 @@ public class FieldService : BaseService
         if (dataFile.MultipleFile & dataFile.ExportAsLink)
             AddError(nameof(dataFile.ExportAsLink),
                 Translate.Key("The [ExportAsLink] field cannot be enabled with [MultipleFile]"));
-
-        return IsValid;
     }
 
     public bool SortFields(string elementName, string[] orderFields)
@@ -291,6 +283,7 @@ public class FieldService : BaseService
         {
             formElement.Fields[i] = newList[i];
         }
+
         dictionary.SetFormElement(formElement);
         DictionaryRepository.InsertOrReplace(dictionary);
         return true;
@@ -409,5 +402,4 @@ public class FieldService : BaseService
         DictionaryRepository.InsertOrReplace(metadata);
         return IsValid;
     }
-
 }

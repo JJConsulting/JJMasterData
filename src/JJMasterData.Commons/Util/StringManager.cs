@@ -194,7 +194,7 @@ public static class StringManager
         if (valor < 0)
         {
             isNegativo = true;
-            valor = valor * -1;
+            valor *= -1;
         }
         string strValor = valor.ToString("000000000000000.00");
         string valor_por_extenso = string.Empty;

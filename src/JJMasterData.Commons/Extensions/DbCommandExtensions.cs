@@ -55,7 +55,7 @@ public static class SqlCommandExtensions
                 {
                     if (sp.Direction is not (ParameterDirection.InputOutput or ParameterDirection.Output)) continue;
                     
-                    sql.Append("declare " + sp.ParameterName + "\t" + sp.SqlDbType.ToString() + "\t= ");
+                    sql.Append("declare " + sp.ParameterName + "\t" + sp.SqlDbType + "\t= ");
 
                     sql.AppendLine(((sp.Direction == ParameterDirection.Output) ? "null" : sp.ParameterValueAsSql()) + ";");
                 }

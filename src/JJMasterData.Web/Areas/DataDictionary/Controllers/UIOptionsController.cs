@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -28,7 +27,7 @@ public class UIOptionsController : DataDictionaryController
     [HttpPost]
     public ActionResult Edit(UIOptions uIOptions, string dictionaryName)
     {
-        if (_optionsService.EditOptions(uIOptions, dictionaryName))
+        if (_optionsService!.EditOptions(uIOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
 
         var jjValidationSummary = _optionsService.GetValidationSummary();
@@ -41,7 +40,7 @@ public class UIOptionsController : DataDictionaryController
 
     private UIOptions Populate(string dictionaryName)
     {
-        var dicParser = _optionsService.DictionaryRepository.GetMetadata(dictionaryName);
+        var dicParser = _optionsService!.DictionaryRepository.GetMetadata(dictionaryName);
         var uIOptions = dicParser.UIOptions;
         ViewBag.MenuId = "Options";
         ViewBag.DictionaryName = dictionaryName;

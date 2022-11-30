@@ -1,47 +1,50 @@
 @using JJMasterData.Commons.Logging
 @model JJMasterData.Web.Areas.MasterData.Models.OptionsViewModel 
 
-<div class="@BootstrapHelper.FormGroup">
+@if (Model.Options != null)
+{
+    <div class="@BootstrapHelper.FormGroup">
     <div class="row">
         <div class="col-sm-3">
-            <label asp-for="Options.Logger.WriteInConsole" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-for="Options.Logger.WriteInConsole" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
+            <label asp-for="Options!.Logger.WriteInConsole" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-for="Options!.Logger.WriteInConsole" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
             </select>
-            <span asp-validation-for="Options.Logger.WriteInConsole" class="text-danger"></span>
+            <span asp-validation-for="Options!.Logger.WriteInConsole" class="text-danger"></span>
         </div>
         <div class="col-sm-3">
-            <label asp-for="Options.Logger.WriteInTrace" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-for="Options.Logger.WriteInTrace" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
+            <label asp-for="Options!.Logger.WriteInTrace" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-for="Options!.Logger.WriteInTrace" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
             </select>
-            <span asp-validation-for="Options.Logger.WriteInTrace" class="text-danger"></span>
+            <span asp-validation-for="Options!.Logger.WriteInTrace" class="text-danger"></span>
         </div>
         <div class="col-sm-3">
-            <label asp-for="Options.Logger.WriteInEventViewer" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-for="Options.Logger.WriteInEventViewer" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
+            <label asp-for="Options!.Logger.WriteInEventViewer" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-for="Options!.Logger.WriteInEventViewer" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
             </select>
-            <span asp-validation-for="Options.Logger.WriteInEventViewer" class="text-danger"></span>
+            <span asp-validation-for="Options!.Logger.WriteInEventViewer" class="text-danger"></span>
         </div>
         <div class="col-sm-8">
-            <label asp-for="Options.Logger.WriteInDatabase" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-for="Options.Logger.WriteInDatabase" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
+            <label asp-for="Options!.Logger.WriteInDatabase" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-for="Options!.Logger.WriteInDatabase" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
             </select>
-            <span asp-validation-for="Options.Logger.WriteInDatabase" class="text-danger"></span>
+            <span asp-validation-for="Options!.Logger.WriteInDatabase" class="text-danger"></span>
         </div>
         <div class="col-sm-4">
-            <label asp-for="Options.Logger.Table.Name" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <input asp-for="Options.Logger.Table.Name" class="form-control"/>
-            <span asp-validation-for="Options.Logger.Table.Name" class="text-danger"></span>
+            <label asp-for="Options!.Logger.Table.Name" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <input asp-for="Options!.Logger.Table.Name" class="form-control"/>
+            <span asp-validation-for="Options!.Logger.Table.Name" class="text-danger"></span>
         </div>
         <div class="col-sm-8">
-            <label asp-for="Options.Logger.WriteInFile" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-for="Options.Logger.WriteInFile" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
+            <label asp-for="Options!.Logger.WriteInFile" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <select asp-for="Options!.Logger.WriteInFile" asp-items="@Html.GetEnumSelectList<LoggerOption>()" class="form-control form-select">
             </select>
-            <span asp-validation-for="Options.Logger.WriteInFile" class="text-danger"></span>
+            <span asp-validation-for="Options!.Logger.WriteInFile" class="text-danger"></span>
         </div>
         <div class="col-sm-4">
-            <label asp-for="Options.Logger.FileName" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <input asp-for="Options.Logger.FileName" class="form-control"/>
-            <span asp-validation-for="Options.Logger.FileName" class="text-danger"></span>
+            <label asp-for="Options!.Logger.FileName" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <input asp-for="Options!.Logger.FileName" class="form-control"/>
+            <span asp-validation-for="Options!.Logger.FileName" class="text-danger"></span>
         </div>
     </div>
 </div>
+}

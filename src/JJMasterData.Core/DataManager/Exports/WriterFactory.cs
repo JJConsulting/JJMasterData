@@ -58,6 +58,8 @@ public static class WriterFactory
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
 
+                // ReSharper disable once SuspiciousTypeConversion.Global;
+                // PdfWriter is dynamic loaded by plugin.
                 writer = pdfWriter as BaseWriter;
 
                 break;

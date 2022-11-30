@@ -11,20 +11,20 @@ public class AccountLogin
     /// </summary>
     [Required]
     [DataMember(Name = "user")]
-    public string User { get; set; }
+    public string? User { get; set; }
 
     /// <summary>
     /// Current password without cryptography
     /// </summary>
     [Required]
     [DataMember(Name = "password")]
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     /// <summary>
     /// AppId number from smartphone,  
     /// it's used on recover password
     /// </summary>
     [DataMember(Name = "appId")]
-    public string AppId { get; set; }
+    public string? AppId { get; set; }
 
 }

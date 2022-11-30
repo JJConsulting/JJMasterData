@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.Html;
 using System;
+using System.Globalization;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -122,11 +123,11 @@ internal class DataImpLog
             .AppendText("&nbsp;")
             .AppendText(Translate.Key("start"))
             .AppendText("&nbsp;")
-            .AppendText(reporter.StartDate.ToString())
+            .AppendText(reporter.StartDate.ToString(CultureInfo.CurrentCulture))
             .AppendText("&nbsp;")
             .AppendText(Translate.Key("end"))
             .AppendText("&nbsp;")
-            .AppendText(reporter.EndDate.ToString())
+            .AppendText(reporter.EndDate.ToString(CultureInfo.CurrentCulture))
             .AppendElement(HtmlTag.Br);
 
         if (!string.IsNullOrEmpty(reporter.UserId))

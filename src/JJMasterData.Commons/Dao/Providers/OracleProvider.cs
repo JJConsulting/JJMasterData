@@ -1,11 +1,11 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Options;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Dao.Providers;
 
@@ -290,7 +290,6 @@ internal class OracleProvider : BaseProvider
             sql.Append(TAB).Append(TAB);
             sql.Append("FROM ");
             sql.Append(element.TableName);
-            isFirst = true;
             foreach (var f in fields)
             {
                 if (f.IsPk)
@@ -382,7 +381,6 @@ internal class OracleProvider : BaseProvider
             sql.Append("UPDATE ");
             sql.Append(element.TableName);
             sql.AppendLine(" SET ");
-            isFirst = true;
             foreach (var f in fields)
             {
                 if (!f.IsPk)
@@ -493,7 +491,7 @@ internal class OracleProvider : BaseProvider
             throw new Exception("Invalid fields");
 
         //Verificamos se existe chave primaria
-        bool hasPk = HasPK(element);
+        bool unused = HasPK(element);
 
         var fields = element.Fields
             .ToList()
