@@ -466,7 +466,7 @@ public class DataAccess
         return rowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(JJMasterData.Commons.Dao.DataAccessCommand)"/>
+    /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(DataAccessCommand cmd)
     {
         int rowsAffected;
@@ -538,7 +538,6 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(List&lt;DataAccessCommand&gt;)"/>
     public async Task<int> SetCommandAsync(List<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;

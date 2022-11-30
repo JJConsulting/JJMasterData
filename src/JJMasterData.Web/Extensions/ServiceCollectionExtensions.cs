@@ -1,10 +1,16 @@
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Authorization;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
+using JJMasterData.Web.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +20,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Options;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Hosting;
 
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    
+    /// <summary>
+    /// Adds all services you need to run a JJMasterData
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="filePath">
+    /// Path relative to the base path stored in <see cref="IConfigurationBuilder.Properties"/>.
+    /// </param>
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
         string filePath = "appsettings.json")
     {
@@ -167,7 +175,7 @@ public static class ServiceCollectionExtensions
                 var culturePattern = new Regex(@"^[a-z]{2}(-[a-z]{2,4})?$",
                     RegexOptions.IgnoreCase);
 
-                if (segments?.Length > 0 && culturePattern.IsMatch(segments![0]))
+                if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))
                 {
                     currentCulture = segments[0];
                 }
