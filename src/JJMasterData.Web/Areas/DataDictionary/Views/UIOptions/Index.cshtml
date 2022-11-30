@@ -10,7 +10,7 @@
 
 @functions
 {
-    void GridView()
+    async Task GridView()
     {
         <div class="col-sm-4">
             <div class="checkbox">
@@ -149,6 +149,8 @@
                 </label>
             </div>
         </div>
+
+        await Task.CompletedTask;
     }
 
     async Task FormView()
@@ -222,7 +224,9 @@
                 <div class="accordion-body">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ GridView();}
+                            @{
+                                await GridView();
+                            }
                         </div>
                     </div>
                 </div>
@@ -241,7 +245,9 @@
                 <div class="accordion-body">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ await FormView(); }
+                            @{
+                                await FormView();
+                            }
                         </div>
                     </div>
                 </div>
@@ -262,7 +268,9 @@ else
                 <div class="@BootstrapHelper.PanelBody">
                     <div class="container-fluid">
                         <div class="row">
-                            @{ GridView(); }
+                            @{
+                                await GridView();
+                            }
                         </div>
                     </div>
                 </div>
