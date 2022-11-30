@@ -20,7 +20,6 @@
             "**/JJMasterData.Test/**",
             "**/JJMasterData.Web.DataDictionary/**",
             "**/JJMasterData.SourceControl/**",
-            "**/JJMasterData.Sample/**",
             "**/JJMasterData.Example/**"
           ]
         }

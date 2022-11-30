@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="JJMasterData.Sample\**" />
     <Compile Remove="lib\**" />
     <EmbeddedResource Remove="JJMasterData.Sample\**" />
     <EmbeddedResource Remove="lib\**" />
-    <None Remove="JJMasterData.Sample\**" />
     <None Remove="lib\**" />
   </ItemGroup>
 
