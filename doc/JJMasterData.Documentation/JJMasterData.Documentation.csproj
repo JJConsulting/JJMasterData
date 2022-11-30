@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Compile Remove="lib\**" />
-    <EmbeddedResource Remove="JJMasterData.Sample\**" />
     <EmbeddedResource Remove="lib\**" />
     <None Remove="lib\**" />
   </ItemGroup>

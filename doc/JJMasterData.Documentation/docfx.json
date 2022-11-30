@@ -6,21 +6,17 @@
           "files": [
             "**.csproj"
           ],
-          "src": "../../",
+          "src": "../../src",
           "exclude": [
             "**/bin/**",
             "**/obj/**",
             "_site/**",
             "_plugins/**",
+            "**/example/**",
+            "**/test/**",
             "**/JJMasterData.Api/**",
-            "**/JJMasterData.Api.Test/**",
-            "**/JJMasterData.Commons.Test/**",
-            "**/JJMasterData.Core.Test/**",
-            "**/JJMasterData.Web.Test/**",
-            "**/JJMasterData.Test/**",
-            "**/JJMasterData.Web.DataDictionary/**",
-            "**/JJMasterData.SourceControl/**",
-            "**/JJMasterData.Example/**"
+            "**/test/**",
+            "**/JJMasterData.SourceControl/**"
           ]
         }
       ],
@@ -46,8 +42,7 @@
     "resource": [
       {
         "files": [
-          "**/JJMasterData.Sample/**",
-          "**/JJMasterData.Example/**",
+          "example/JJMasterData.Web.Example/**",
           "media/**",
           "logo.svg",
           "favicon.ico"
@@ -76,7 +71,7 @@
       },
       "_gitUrlPattern": "github",
       "_appTitle": "JJMasterData",
-      "_appFooter": "<div><span>(Mars Version - 3.0)</span> - <a href='https://www.jjconsulting.com.br' alt=''>&copy; 2022 JJConsulting. All rights reserved.</a></div>"
+      "_appFooter": "<div><span>(Saturn Version - 4.0)</span> - <a href='https://www.jjconsulting.tech' alt=''>&copy; 2022 JJConsulting. All rights reserved.</a></div>"
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],

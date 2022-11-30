@@ -10,6 +10,7 @@
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<PackageIcon>JJMasterData.png</PackageIcon>
 		<PackageVersion>3.1.0</PackageVersion>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<AssemblyVersion>3.1.0</AssemblyVersion>
 	</PropertyGroup>
 	<PropertyGroup>
