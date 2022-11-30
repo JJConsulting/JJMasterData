@@ -22,7 +22,7 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
     }
 
     public T Value => _options.CurrentValue;
-    public T Get(string name) => _options.Get(name);
+    public T Get(string? name) => _options.Get(name);
 
     public async Task UpdateAsync(Action<T> applyChanges)
     {

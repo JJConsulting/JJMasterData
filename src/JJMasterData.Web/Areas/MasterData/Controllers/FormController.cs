@@ -1,5 +1,7 @@
 ﻿using JJMasterData.Commons.Util;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,8 +12,8 @@ public class FormController : MasterDataController
 {
     public IActionResult Render(string dictionaryName)
     {
-        var form = GetFormView(dictionaryName);
-        return View(form);
+        var model = new FormViewModel(dictionaryName, ConfigureFormView);
+        return View(model);
     }
     
     public IActionResult Download(string filePath)
@@ -21,16 +23,14 @@ public class FormController : MasterDataController
         return File(file, "application/octet-stream");
     }
 
-    private JJFormView GetFormView(string dictionaryName)
+    private void ConfigureFormView(JJFormView formView)
     {
         var userId = HttpContext.GetUserId();
-        var form = new JJFormView(dictionaryName);
 
-        if (userId != null)
-        {
-            form.SetCurrentFilter("USERID", userId);
-            form.SetUserValues("USERID", userId);
-        }
-        return form;
+        if (userId == null) 
+            return;
+        
+        formView.SetCurrentFilter("USERID", userId);
+        formView.SetUserValues("USERID", userId);
     }
 }

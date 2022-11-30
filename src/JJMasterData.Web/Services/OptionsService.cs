@@ -6,6 +6,7 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 using JJMasterData.Web.Models.Abstractions;
 
 namespace JJMasterData.Web.Services;

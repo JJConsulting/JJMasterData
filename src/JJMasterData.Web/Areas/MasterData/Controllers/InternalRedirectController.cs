@@ -7,6 +7,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

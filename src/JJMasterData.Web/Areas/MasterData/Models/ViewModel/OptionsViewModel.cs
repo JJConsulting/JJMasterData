@@ -1,10 +1,8 @@
-
-
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.WebComponents;
 
-namespace JJMasterData.Web.Areas.MasterData.Models;
+namespace JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 
 public class OptionsViewModel
 {
