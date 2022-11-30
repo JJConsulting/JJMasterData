@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -16,7 +15,6 @@ public class UIOptionsService : BaseService
 
     private bool ValidateOptions(UIOptions uIOptions, string dictionaryName)
     {
-        List<string> listError = new List<string>();
 
         if (uIOptions.Grid.EnableMultSelect)
         {

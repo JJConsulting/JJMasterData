@@ -20,7 +20,7 @@ public class AccountService
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
         DataAccess = new DataAccess();
     }
-    public UserAccessInfo Login(string username, string password, string appId)
+    public UserAccessInfo Login(string? username, string? password, string? appId)
     {
         var ret = new UserAccessInfo();
         try
@@ -38,13 +38,13 @@ public class AccountService
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
-                ret.ErrorId = int.Parse(col["ErrorId"].ToString());
-                ret.Message = Translate.Key(col["Message"].ToString());
-                ret.IsValid = "1".Equals(col["IsValid"].ToString());
+                ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
+                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
                 {
-                    ret.UserId = col["UserId"].ToString();
+                    ret.UserId = col["UserId"]?.ToString();
                     ret.Token = BuildToken(ret.UserId);
                     ret.Version = ApiVersion;
                 }
@@ -71,14 +71,16 @@ public class AccountService
     }
 
 
-    public UserAccessInfo ChangePassword(string username, string pwdCurrent, string pwdNew, string pwdConfirm)
+    public UserAccessInfo ChangePassword(string? username, string? pwdCurrent, string? pwdNew, string? pwdConfirm)
     {
         var ret = new UserAccessInfo();
         try
         {
-            var cmd = new DataAccessCommand();
-            cmd.Sql = "jj_changepassword";
-            cmd.CmdType = CommandType.StoredProcedure;
+            var cmd = new DataAccessCommand
+            {
+                Sql = "jj_changepassword",
+                CmdType = CommandType.StoredProcedure
+            };
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
             cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", Cript.EnigmaEncryptRP(pwdCurrent)));
             cmd.Parameters.Add(new DataAccessParameter("@pwdNew", Cript.EnigmaEncryptRP(pwdNew)));
@@ -87,13 +89,13 @@ public class AccountService
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
-                ret.ErrorId = int.Parse(col["ErrorId"].ToString());
-                ret.Message = Translate.Key(col["Message"].ToString());
-                ret.IsValid = "1".Equals(col["IsValid"].ToString());
+                ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
+                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
                 {
-                    ret.UserId = col["UserId"].ToString();
+                    ret.UserId = col["UserId"]?.ToString();
                     ret.Token = BuildToken(ret.UserId);
                     ret.Version = ApiVersion;
                 }
@@ -120,37 +122,43 @@ public class AccountService
     }
 
 
-    public UserAccessInfo RecoverPassword(string username, string appId)
+    public UserAccessInfo RecoverPassword(string? username, string? appId)
     {
         var ret = new UserAccessInfo();
         try
         {
-            var cmd = new DataAccessCommand();
-            cmd.Sql = "jj_recoverpassword";
-            cmd.CmdType = CommandType.StoredProcedure;
+            var cmd = new DataAccessCommand
+            {
+                Sql = "jj_recoverpassword",
+                CmdType = CommandType.StoredProcedure
+            };
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
-                ret.ErrorId = int.Parse(col["ErrorId"].ToString());
-                ret.Message = Translate.Key(col["Message"].ToString());
-                ret.IsValid = "1".Equals(col["IsValid"].ToString());
+                ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
+                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
                 {
-                    ret.UserId = col["UserId"].ToString();
+                    ret.UserId = col["UserId"]?.ToString();
                     ret.Token = BuildToken(ret.UserId);
                     ret.Version = ApiVersion;
 
                     if (ret.ErrorId == 101)
                     {
-                        string email = col["Email"].ToString();
-                        string pwd = Cript.EnigmaDecryptRP(col["Password"].ToString());
-                        int userId = int.Parse(ret.UserId);
+                        string? email = col["Email"]?.ToString();
+                        string pwd = Cript.EnigmaDecryptRP(col["Password"]?.ToString());
+                        if (ret.UserId != null)
+                        {
+                            int userId = int.Parse(ret.UserId);
 
-                        NotifyPasswordRecovered(userId, email, pwd);
+                            if (email != null) 
+                                NotifyPasswordRecovered(userId, email, pwd);
+                        }
                     }
                 }
             }
@@ -177,14 +185,14 @@ public class AccountService
         Email.SendMailConfig(email, null, "", subject, body, false, null, config);
     }
 
-    public string BuildToken(string userId)
+    public string BuildToken(string? userId)
     {
         string token = $"{userId}|{ApiVersion}|{DateTime.Now.ToString("yyyyMMddHHmmss")}";
         token = Cript.EnigmaEncryptRP(token);
         return Cript.Cript64(token);
     }
 
-    public TokenInfo? GetTokenInfo(string? token)
+    public static TokenInfo? GetTokenInfo(string? token)
     {
         if (string.IsNullOrEmpty(token))
             return null;
@@ -215,7 +223,7 @@ public class AccountService
         return info;
     }
 
-    private static string? GetParam(string param, object userId)
+    private static string? GetParam(string param, object? userId)
     {
         string? value = null;
         var dao = new DataAccess();
@@ -243,11 +251,11 @@ public class AccountService
         var config = new ConfigSmtp
         {
             Server = GetParam("SmtpServer", userId),
-            Port = int.Parse(GetParam("EmailPortNumber", userId)),
+            Port = int.Parse(GetParam("EmailPortNumber", userId) ?? string.Empty),
             Email = GetParam("FromEmail", userId),
             User = GetParam("EmailUser", userId),
             Password = Cript.EnigmaDecryptRP(GetParam("EmailPassword", userId)),
-            EnableSSL = GetParam("EmailSSL", userId).Equals("True")
+            EnableSSL = GetParam("EmailSSL", userId)!.Equals("True")
         };
 
         return config;

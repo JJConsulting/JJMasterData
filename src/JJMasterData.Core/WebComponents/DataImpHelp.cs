@@ -106,9 +106,10 @@ internal class DataImpHelp
         foreach (FormElementField field in list)
         {
             var tr = new HtmlBuilder(HtmlTag.Tr);
+            var currentOrderField = orderField;
             tr.AppendElement(HtmlTag.Td, td =>
             {
-                td.AppendText(orderField.ToString());
+                td.AppendText(currentOrderField.ToString());
             });
             tr.AppendElement(HtmlTag.Td, td =>
             {

@@ -12,7 +12,7 @@ namespace JJMasterData.Core.DataDictionary;
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
-public class FormElementList : IEnumerable<FormElementField>, ICollection<FormElementField>
+public class FormElementList : ICollection<FormElementField>
 {
     private IList<FormElementField> _FormFields;
     private ElementList _BaseFields;

@@ -1,5 +1,6 @@
 ﻿#if NETSTANDARD || NETCOREAPP
 using Microsoft.AspNetCore.Http;
+// ReSharper disable RedundantNameQualifier
 #endif
 
 namespace JJMasterData.Core.Http;

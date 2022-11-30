@@ -11,7 +11,7 @@ public class DicSyncParam
     /// Nome do dicionário
     /// </summary>
     [DataMember(Name = "name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Filtros a serem aplicados no count.

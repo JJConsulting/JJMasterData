@@ -630,7 +630,7 @@ public class JJFormUpload : JJBaseView
                 col.WithCssClass("col-sm-12");
                 col.AppendElement(HtmlTag.Img, img =>
                 {
-                    img.WithAttribute("id", $"pastedimage_{0}")
+                    img.WithAttribute("id", "pastedimage_0")
                        .WithAttribute("style", "max-height:350px;")
                        .WithAttribute("alt", Translate.Key("Preview Image"))
                        .WithCssClass("img-responsive");

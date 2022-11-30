@@ -1,9 +1,11 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Example.Pages.IndexModel
+
 @{
     ViewData["Title"] = "Home";
 }
+
 <div class="text-center">
     <h1 class="display-5">Welcome to JJMasterData Examples.</h1>
     <p> Get <a asp-page-handler="DownloadFile" method="get"> the DataDictionary exported file </a> and upload it to getting started.

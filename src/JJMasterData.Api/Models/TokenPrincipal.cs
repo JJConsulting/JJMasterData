@@ -5,8 +5,8 @@ namespace JJMasterData.Api.Models;
 
 public class TokenPrincipal : ClaimsPrincipal
 {
-    public new IIdentity Identity { get; internal set; }
-    public TokenInfo TokenInfo { get; internal set; }
+    public new IIdentity? Identity { get; internal set; }
+    public TokenInfo? TokenInfo { get; internal set; }
 
     public new bool IsInRole(string role)
     {

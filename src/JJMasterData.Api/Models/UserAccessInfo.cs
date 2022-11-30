@@ -40,23 +40,23 @@ public class UserAccessInfo
     /// Descrição do erro
     /// </summary>
     [DataMember(Name = "message")]
-    public string Message { get; set; }
+    public string? Message { get; set; }
 
     /// <summary>
     /// Token a ser utilizado nas requisições
     /// </summary>
     [DataMember(Name = "token")]
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// Id do Usuário
     /// </summary>
     [DataMember(Name = "userId")]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     /// <summary>
     /// Versão do sistema
     /// </summary>
     [DataMember(Name = "version")]
-    public string Version { get; set; }
+    public string? Version { get; set; }
 }

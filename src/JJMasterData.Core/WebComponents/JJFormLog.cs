@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -152,13 +151,12 @@ public class JJFormLog : JJBaseView
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Hashtable();
-        filter.Add(AuditLogService.DIC_ID, logId);
+        var filter = new Hashtable { { AuditLogService.DIC_ID, logId } };
 
         var values = EntityRepository.GetFields(Service.GetElement(), filter);
-        string json = values[AuditLogService.DIC_JSON].ToString();
-        string recordsKey = values[AuditLogService.DIC_KEY].ToString();
-        Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
+        string json = values[AuditLogService.DIC_JSON]?.ToString();
+        string recordsKey = values[AuditLogService.DIC_KEY]?.ToString();
+        var fields = JsonConvert.DeserializeObject<Hashtable>(json ?? string.Empty);
 
         var panel = DataPainel;
         panel.PageState = PageState.View;
@@ -372,7 +370,7 @@ public class JJFormLog : JJBaseView
                     div.AppendElement(HtmlTag.Br);
                     div.AppendElement(HtmlTag.B, b =>
                     {
-                        b.AppendText("IP: " + row["ip"].ToString());
+                        b.AppendText("IP: " + row["ip"]);
                     });
                 });
             });

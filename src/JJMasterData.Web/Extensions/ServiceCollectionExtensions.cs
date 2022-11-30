@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(filePath, optional: false, reloadOnChange: true)
             .Build();
-        
+
         AddServices(services);
 
         services.ConfigureWritableOptions<JJMasterDataOptions>(

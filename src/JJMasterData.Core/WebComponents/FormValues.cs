@@ -39,7 +39,7 @@ internal class FormValues
 
             if (f.Component == FormComponent.Search)
             {
-                var search = (JJSearchBox)FieldManager.GetField(f, state, values, null);
+                var search = (JJSearchBox)FieldManager.GetField(f, state, values);
                 search.AutoReloadFormFields = true;
                 val = search.SelectedValue;
             }

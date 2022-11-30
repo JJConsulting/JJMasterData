@@ -12,7 +12,7 @@ namespace JJMasterData.Core.WebComponents;
 
 internal class WebControlFactory
 {
-    public EventHandler<ActionEventArgs> OnRenderAction;
+    public readonly EventHandler<ActionEventArgs> OnRenderAction;
 
     private ActionManager _actionManager;
 
@@ -20,18 +20,15 @@ internal class WebControlFactory
     {
         get
         {
-            if (_actionManager == null)
-            {
-                var expManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
-                _actionManager = new ActionManager(FormElement, expManager, PanelName);
-            }
+            if (_actionManager != null) 
+                return _actionManager;
+            
+            var expManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
+            _actionManager = new ActionManager(FormElement, expManager, PanelName);
 
             return _actionManager;
         }
-        private set
-        {
-            _actionManager = value;
-        }
+        private set => _actionManager = value;
     }
 
     public string PanelName { get; private set; }
@@ -60,7 +57,6 @@ internal class WebControlFactory
         if (f == null)
             throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
 
-        bool viewOnly = f.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
         JJBaseControl baseView;
         switch (f.Component)
         {

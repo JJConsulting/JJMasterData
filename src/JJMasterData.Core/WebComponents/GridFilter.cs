@@ -140,7 +140,7 @@ internal class GridFilter
                 return null;
 
             var field = GridView.FormElement.Fields[filterName];
-            var jjSearchBox = GridView.FieldManager.GetField(field, PageState.Filter, GridView.CurrentFilter, null);
+            var jjSearchBox = GridView.FieldManager.GetField(field, PageState.Filter, GridView.CurrentFilter);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
         }

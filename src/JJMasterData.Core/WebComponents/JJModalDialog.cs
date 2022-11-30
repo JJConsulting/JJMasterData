@@ -24,8 +24,6 @@ public class JJModalDialog : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        string title = Translate.Key(Title);
-
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithAttribute("id", Name)

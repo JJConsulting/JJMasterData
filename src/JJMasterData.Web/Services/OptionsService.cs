@@ -47,7 +47,7 @@ public class OptionsService : BaseService
         {
             await ConnectionStringsWritableOptions!.UpdateAsync(options =>
             {
-                options.ConnectionString = model.ConnectionString!.ToString();
+                options.ConnectionString = model.ConnectionString.ToString();
             });
 
             await JJMasterDataWritableOptions!.UpdateAsync(options =>

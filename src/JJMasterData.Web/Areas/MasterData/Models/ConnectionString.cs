@@ -61,7 +61,7 @@ public class ConnectionString
 
         if (builder.TryGetValue("application name", out var appName))
         {
-            ApplicationName = builder["application name"].ToString();
+            ApplicationName = appName.ToString();
         }
 
         if (builder.TryGetValue("integrated security", out var integratedSecurity))

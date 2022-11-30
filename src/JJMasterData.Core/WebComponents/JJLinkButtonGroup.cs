@@ -23,10 +23,6 @@ namespace JJMasterData.Core.WebComponents
 
         public string CaretText { get; set; }
 
-        public JJLinkButtonGroup()
-        {
-        }
-
         internal override HtmlBuilder RenderHtml()
         {
             var inputGroup = new HtmlBuilder(HtmlTag.Div)

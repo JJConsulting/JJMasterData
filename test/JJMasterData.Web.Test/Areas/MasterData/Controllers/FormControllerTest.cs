@@ -1,15 +1,14 @@
-using JJMasterData.Web.Example;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.MasterData.Controllers;
 
 [CollectionDefinition("FormController", DisableParallelization = true)]
 [Order(2)]
-public class FormControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory<Program>>
+public class FormControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory>
 {
     private readonly HttpClient _client;
 
-    public FormControllerTest(JJMasterDataWebExampleAppFactory<Program> factory)
+    public FormControllerTest(JJMasterDataWebExampleAppFactory factory)
     {
         factory.EnsureServer();
         _client = factory.CreateClient();

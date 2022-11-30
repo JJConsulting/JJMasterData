@@ -1,12 +1,11 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
-using System;
+﻿using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Language;
 
 namespace JJMasterData.Commons.Dao.Providers;
 

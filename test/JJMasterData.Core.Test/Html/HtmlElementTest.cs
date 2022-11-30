@@ -84,7 +84,7 @@ public class HtmlElementTest
 
         var shtml = builder.ToString(indentHtml: true);
         
-        Assert.Equal(shtml.ToString(), builder.ToString(true));
+        Assert.Equal(shtml, builder.ToString(true));
     }
     
     

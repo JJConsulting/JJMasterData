@@ -71,11 +71,6 @@ public abstract class JJBaseView
 
     #region "Constructors"
 
-    public JJBaseView()
-    {
-    }
-
-
     #endregion
 
     /// <summary>

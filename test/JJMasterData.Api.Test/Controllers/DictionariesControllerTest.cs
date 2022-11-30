@@ -18,8 +18,7 @@ public class DictionariesControllerTest
         IEntityRepository entityRepository = JJService.EntityRepository; 
         IDictionaryRepository dictionaryRepository = new DictionaryDao(entityRepository);
         var dictionariesService = new DictionariesService(dictionaryRepository, entityRepository);
-        var accountService = new AccountService();
-        _controller = new DictionariesController(accountService, dictionariesService, dictionaryRepository);
+        _controller = new DictionariesController(dictionariesService, dictionaryRepository);
     }
     
     [Fact]

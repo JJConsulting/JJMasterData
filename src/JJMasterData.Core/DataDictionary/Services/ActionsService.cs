@@ -99,43 +99,45 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private bool ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
+    private void ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
             AddError(nameof(actionName), Translate.Key("Required [Name] field"));
-            return false;
         }
 
         if (originalName != null && originalName.Equals(actionName))
-            return true;
-
-
+            return;
+        
         List<BasicAction> listAction = null;
-        if (context == ActionOrigin.Field)
+        switch (context)
         {
-            var field = dicParser.GetFormElement().Fields[fieldName];
-            listAction = field.Actions.GetAll();
-        }
-        else if (context == ActionOrigin.Grid)
-        {
-            listAction = dicParser.UIOptions.GridActions.GetAll();
-        }
-        else if (context == ActionOrigin.Toolbar)
-        {
-            listAction = dicParser.UIOptions.ToolBarActions.GetAll();
+            case ActionOrigin.Field:
+            {
+                var field = dicParser.GetFormElement().Fields[fieldName];
+                listAction = field.Actions.GetAll();
+                break;
+            }
+            case ActionOrigin.Grid:
+                listAction = dicParser.UIOptions.GridActions.GetAll();
+                break;
+            case ActionOrigin.Toolbar:
+                listAction = dicParser.UIOptions.ToolBarActions.GetAll();
+                break;
         }
 
+        if (listAction == null) 
+            return;
+        
         foreach (var a in listAction)
         {
             if (a.Name.Equals(actionName))
-                AddError(nameof(actionName), Translate.Key("Invalid[Name] field! There is already an action registered with that name."));
+                AddError(nameof(actionName),
+                    Translate.Key("Invalid[Name] field! There is already an action registered with that name."));
         }
-
-        return IsValid;
     }
 
-    private bool ValidateAction(Metadata dicParser, BasicAction action)
+    private void ValidateAction(Metadata dicParser, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
@@ -180,8 +182,6 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(internalAction.ElementRedirect.ElementNameRedirect))
                 AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), Translate.Key("Required [Entity Name] field"));
         }
-
-        return IsValid;
     }
 
     public bool SortActions(string elementName, string[] listAction, ActionOrigin actionContext, string fieldName)

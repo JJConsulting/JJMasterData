@@ -1,8 +1,6 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
-using System;
 using System.Linq;
 
 namespace JJMasterData.Core.WebComponents;

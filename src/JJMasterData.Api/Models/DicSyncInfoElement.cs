@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace JJMasterData.Api.Models;
 
@@ -11,7 +10,7 @@ public class DicSyncInfoElement
     /// Dicionary Name
     /// </summary>
     [DataMember(Name = "name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Count command return

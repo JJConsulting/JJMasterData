@@ -4,13 +4,10 @@ namespace JJMasterData.Web.Extensions
 {
     internal static class IEndpointConventionBuilderExtensions
     {
-        public static TBuilder WithAttributes<TBuilder>(this TBuilder builder, Attribute[]? attributes)
+        public static TBuilder WithAttributes<TBuilder>(this TBuilder builder, object[] attributes)
             where TBuilder : IEndpointConventionBuilder
         {
-            if (attributes != null)
-            {
-                builder.WithMetadata(attributes);
-            }
+            builder.WithMetadata(attributes);
 
             return builder;
         }

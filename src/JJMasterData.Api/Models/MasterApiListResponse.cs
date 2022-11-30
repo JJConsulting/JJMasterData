@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Api.Models;
@@ -34,7 +33,7 @@ public class MasterApiListResponse
             foreach(var field in metadata.Table.Fields)
             {
                 string fieldName = metadata.Api.GetFieldNameParsed(field.Name);
-                object? val = row[field.Name];
+                object val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);
                 else

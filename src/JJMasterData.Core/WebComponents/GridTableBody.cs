@@ -46,7 +46,7 @@ internal class GridTableBody
 
         for (int i = 0; i < rows.Count; i++)
         {
-            trList.Add(GetRowHtmlElement(rows[i], i, false));
+            trList.Add(GetRowHtmlElement(rows[i], i, isAjax));
         }
 
         return trList;
