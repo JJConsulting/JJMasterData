@@ -9,8 +9,7 @@
     private showModal() {
         if (bootstrapVersion < 5) {
             $("#" + this.modalId).modal();
-        }
-        else {
+        } else {
             const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
             modal.show();
         }
@@ -22,20 +21,18 @@
         });
     }
 
-    private loadHtml(url, size) {
-        if ($("#" + this.modalId).length) {
-            $("#" + this.modalId).remove();
+    private loadHtml(url: string, size: number) {
+        const modalSelector = "#" + this.modalId;
+        if ($(modalSelector).length) {
+            $(modalSelector).remove();
+        }
+
+        if (size === undefined) {
+            size = 1;
         }
 
         let width;
         let height;
-
-        if (size === undefined) {
-            size = "1";
-        }
-
-        size = parseInt(size);
-
         let modalDialogDiv;
 
         switch (size) {
@@ -79,26 +76,19 @@
   height: 100%;
 }
 `
-
-
-
-
         let html = "";
-
         html += "<div id=\"popup-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
 
-        if (bootstrapVersion == 3 ) {
+        if (bootstrapVersion == 3) {
             html += modalDialogDiv;
-        }
-        else {
+        } else {
             $('head').append(`<style type="text/css">${modalDialogCss}</style>`);
             html += "<div class=\"modal-dialog\">";
         }
 
         if (bootstrapVersion != 3) {
             html += `    <div class="modal-content">\r\n`;
-        }
-        else {
+        } else {
             html += `    <div class="modal-content" style="height:100%;width:auto;">\r\n`;
         }
 
@@ -107,13 +97,11 @@
         if (bootstrapVersion == 3) {
             html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
             html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
-        }
-        else {
+        } else {
             html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
             if (bootstrapVersion >= 5) {
                 html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
-            }
-            else {
+            } else {
                 html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
             }
         }
@@ -134,7 +122,7 @@
         $(html).appendTo($("body"));
     }
 
-    show(title, url, size = 0) {
+    show(title: string, url: string, size : number = 1) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();

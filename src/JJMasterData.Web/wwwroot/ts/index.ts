@@ -7,6 +7,8 @@
             withCredentials: true
         }
     });
+});
 
+$(document).ready(function () {
     jjloadform("load");
 });

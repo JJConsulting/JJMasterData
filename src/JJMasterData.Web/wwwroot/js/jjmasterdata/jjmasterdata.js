@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
             withCredentials: true
         }
     });
+});
+$(document).ready(function () {
     jjloadform("load");
 });
 class JJDataExp {
@@ -1194,7 +1196,7 @@ var jjview = (function () {
             surl += surl.includes("?") ? "&" : "?";
             surl += "jjuploadform_" + pnlname + "=" + objid;
             surl += "&uploadvalues=" + values;
-            popup.show(title, surl);
+            popup.show(title, surl, 1);
         },
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();
@@ -1460,15 +1462,15 @@ class Popup {
         });
     }
     loadHtml(url, size) {
-        if ($("#" + this.modalId).length) {
-            $("#" + this.modalId).remove();
+        const modalSelector = "#" + this.modalId;
+        if ($(modalSelector).length) {
+            $(modalSelector).remove();
+        }
+        if (size === undefined) {
+            size = 1;
         }
         let width;
         let height;
-        if (size === undefined) {
-            size = "1";
-        }
-        size = parseInt(size);
         let modalDialogDiv;
         switch (size) {
             case 1:
@@ -1548,7 +1550,7 @@ class Popup {
         html += "</div>\r\n";
         $(html).appendTo($("body"));
     }
-    show(title, url, size = 0) {
+    show(title, url, size = 1) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
