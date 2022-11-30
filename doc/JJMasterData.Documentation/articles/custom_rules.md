@@ -32,10 +32,10 @@ If for some specific reason are with this scenario in .NET 6, set this key using
 To customize bussiness rules on form follow theses steps:
 
 ## Customizing with C# 
-A .NET Form Event is a that inherits from BaseFormEvent which consequently implements the IFormEvent interface. 
+A .NET Form Event is a that inherits from <xref:JJMasterData.Core.FormEvents.Abstractions.BaseFormEvent> which consequently implements the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface. 
 By creating such a class it is possible to execute code in all events defined by the interface.
 
-Create a class with starts with the Data Dictionary name and inherits it from [BaseFormEvent.](../lib/JJMasterData.Core.FormEvents.Abstractions.BaseFormEvent.html) <br>
+Create a class with starts with your Data Dictionary name and inherits it from BaseFormEvenet <br>
 
 Press "CTRL + ." on Visual Studio and click in Generate overrides...
 <img alt="CustomRules1" src="../media/CustomRules1.png"/>

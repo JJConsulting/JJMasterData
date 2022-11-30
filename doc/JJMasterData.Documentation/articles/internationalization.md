@@ -22,10 +22,10 @@ Go to ```/en-us/MasterData/Resources``` and populate the strings with your cultu
 <br>
 
 > [!TIP] 
-> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataSettings class.
+> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataOptions class.
 
 ## Create your own translator system
-You can change the behavior of system internationalization with the interface [ITranslator](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ITranslator.html) with your custom logic.
+You can change the behavior of system internationalization with the interface [ILocalizationProvider](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ILocalizationProvider.html) with your custom logic.
 
 ```cs
 builder.Services.WithTranslator(ITranslator)
