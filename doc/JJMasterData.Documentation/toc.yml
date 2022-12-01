@@ -4,5 +4,3 @@
 - name: JJMasterData
   href: lib/
   homepage: lib/JJMasterData.Core.WebComponents.yml
-- name: REST API
-  href: restapi/
