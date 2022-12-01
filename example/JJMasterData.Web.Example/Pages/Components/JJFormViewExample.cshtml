@@ -1,0 +1,17 @@
+@page
+
+@using JJMasterData.Core.WebComponents
+
+@{
+    ViewData["Title"] = "JJFormView";
+    
+    void ConfigureFormView(JJFormView formView)
+    {
+        formView.FormElement.Title = "My dynamic title";
+        formView.FormElement.SubTitle = "You can edit any property from FormElement at runtime";
+    }
+}
+
+<form>
+    <jj-form-view element-name="Product" configure-form-view="ConfigureFormView"/>
+</form>

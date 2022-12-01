@@ -12,7 +12,7 @@ internal class PostConfigureStaticFileOptions : IPostConfigureOptions<StaticFile
     {
         _environment = environment;
     }
-    public void PostConfigure(string name, StaticFileOptions options)
+    public void PostConfigure(string? name, StaticFileOptions options)
     {
         if (options.FileProvider == null && _environment.WebRootFileProvider == null)
         {

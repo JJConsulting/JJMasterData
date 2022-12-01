@@ -43,7 +43,7 @@ internal sealed class BackgroundTask : IBackgroundTask
         };
 
         taskWrapper.Task = new Task(() => {
-            worker.OnProgressChanged += (s, e) => { taskWrapper.ProgressResult = e; };
+            worker.OnProgressChanged += (_, e) => { taskWrapper.ProgressResult = e; };
             worker.RunWorkerAsync(cancellationSource.Token).Wait();
         });
 

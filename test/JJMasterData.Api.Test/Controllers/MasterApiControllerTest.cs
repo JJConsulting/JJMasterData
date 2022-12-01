@@ -37,8 +37,7 @@ public class MasterApiControllerTest
 
         IEntityRepository entityRepository = JJService.EntityRepository; 
         IDictionaryRepository dictionaryRepository = new DictionaryDao(entityRepository);
-        var accountService = new AccountService();
-        var masterApiService = new MasterApiService(accessor, accountService, entityRepository, dictionaryRepository);
+        var masterApiService = new MasterApiService(accessor, entityRepository, dictionaryRepository);
         _controller = new MasterApiController(masterApiService);
     }
     
@@ -51,7 +50,7 @@ public class MasterApiControllerTest
 
         var dictionary = result?.Value as Dictionary<string, object>;
         
-        Assert.Equal(1, dictionary["id"] );
+        Assert.Equal(1, dictionary?["id"] );
     }
     [Order(3)]
     [Theory]
@@ -70,6 +69,9 @@ public class MasterApiControllerTest
     public void PostTest(string parametersString, string elementName, bool replace)
     {
         var parameterList = JsonConvert.DeserializeObject<Hashtable[]>(parametersString);
+
+        if (parameterList == null) 
+            return;
         
         var result = _controller.Post(parameterList, elementName, replace);
 

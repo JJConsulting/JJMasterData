@@ -1,5 +1,5 @@
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Controllers;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +40,7 @@ public class OptionsController : MasterDataController
     {
         if (ModelState.IsValid)
         {
-            var result = await OptionsService.GetConnectionResultAsync(model.ConnectionString!.ToString());
+            var result = await OptionsService.GetConnectionResultAsync(model.ConnectionString.ToString());
             model.IsConnectionSuccessful = result.IsConnectionSuccessful;
 
             if (!result.IsConnectionSuccessful.GetValueOrDefault())

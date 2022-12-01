@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <PackageVersion>3.1.0</PackageVersion>
     <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyVersion>3.1.0</AssemblyVersion>
   </PropertyGroup>
 
@@ -54,6 +55,6 @@
   </PropertyGroup>
    
    <PropertyGroup>
-    <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>7.0</RuntimeFrameworkVersion>
   </PropertyGroup>
 </Project>

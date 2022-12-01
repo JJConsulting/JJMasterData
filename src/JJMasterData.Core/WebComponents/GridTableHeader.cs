@@ -25,9 +25,9 @@ internal class GridTableHeader
 
         html.AppendElement(HtmlTag.Tr, tr =>
         {
-            html.AppendElementIf(GridView.EnableMultSelect, GetMultSelectThHtmlElement);
-            html.AppendRange(GetVisibleFieldsThList());
-            html.AppendRange(GetActionsThList());
+            tr.AppendElementIf(GridView.EnableMultSelect, GetMultSelectThHtmlElement);
+            tr.AppendRange(GetVisibleFieldsThList());
+            tr.AppendRange(GetActionsThList());
         });
 
         return html;

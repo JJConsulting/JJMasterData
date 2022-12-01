@@ -65,4 +65,27 @@ public class HtmlElementTest
         Assert.Equal(shtml.ToString(), builder.ToString(true));
     }
 
+    [Fact]
+    public void RenderComplex_Test()
+    {
+        var builder = new HtmlBuilder(HtmlTag.Div)
+            .WithNameAndId("id1")
+            .WithCssClass("class1, class2")
+            .AppendElement(HtmlTag.H1, h1 =>
+            {
+                h1.AppendText("Simple Title"); 
+                h1.AppendElement(HtmlTag.Small, s =>
+                {
+                    s.AppendText("This is a subtitle");
+                });
+            });
+
+
+
+        var shtml = builder.ToString(indentHtml: true);
+        
+        Assert.Equal(shtml, builder.ToString(true));
+    }
+    
+    
 }

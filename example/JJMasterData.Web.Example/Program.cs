@@ -12,9 +12,10 @@ public class Program
         var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
         var settingsPath = Path.Combine(root, "appsettings.json");
 
-        builder.Configuration.AddJsonFile(settingsPath, false, true);
+        //Without this IConfiguration don't work. If we add inside AddJJMasterDataWeb, I don't know why performance goes to trash.
+        builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
         
-        builder.Services.AddRazorPages();
+        builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
@@ -26,9 +27,9 @@ public class Program
         });
         
         //You can also:
-        // builder.Services.AddJJMasterDataWeb(wrapper =>
+        // builder.Services.AddJJMasterDataWeb(options =>
         // {
-        //     wrapper.JJMasterDataOptions.BootstrapVersion = 5;
+        //     options.JJMasterData.BootstrapVersion = 5;
         // });
         
         var app = builder.Build();

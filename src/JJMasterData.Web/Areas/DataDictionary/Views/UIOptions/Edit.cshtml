@@ -1,5 +1,4 @@
-﻿
-@using JJMasterData.Web.Areas.DataDictionary.Models
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModel
 @model UIOptions
 
 <style>
@@ -60,7 +59,7 @@
         await Task.CompletedTask;
     }
     
-    void GridView()
+    async Task GridView()
     {
         <div class="container-fluid">
 
@@ -208,6 +207,8 @@
             </div>
 
         </div>
+
+        await Task.CompletedTask;
     }
 }
 
@@ -249,7 +250,7 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#formAccordion">
                     <div class="accordion-body">
-                        @{ GridView(); }
+                        @{ await GridView(); }
                     </div>
                 </div>
             </div>
@@ -281,7 +282,7 @@
                 </div>
                 <div id="collapseResumo" class="@(BootstrapHelper.Version == 3 ? "panel-collapse in collapse" : "panel-collapse collapse in")">
                     <div class="@BootstrapHelper.PanelBody">
-                        @{  GridView(); }
+                        @{ await GridView(); }
                     </div>
                 </div>
             </div>
@@ -300,8 +301,6 @@
             </div>
         </div>
     }
-
-
     <br/>
     <br/>
 }

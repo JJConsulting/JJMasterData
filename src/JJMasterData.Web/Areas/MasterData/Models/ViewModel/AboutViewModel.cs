@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace JJMasterData.Web.Areas.MasterData.Models;
+namespace JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 
 public class AboutViewModel
 {

@@ -790,7 +790,7 @@ public class JJGridView : JJBaseView
 
         if (field == null) return null;
 
-        var lookup = (JJLookup)FieldManager.GetField(field, PageState.Filter, null, null);
+        var lookup = (JJLookup)FieldManager.GetField(field, PageState.Filter, null);
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();
@@ -1185,7 +1185,7 @@ public class JJGridView : JJBaseView
     }
 
     /// <summary>
-    /// <inheritdoc cref="GetDataTable"/>
+    /// <inheritdoc cref="GetDataTable()"/>
     /// </summary>
     private DataTable GetDataTable(Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
         ref int total)

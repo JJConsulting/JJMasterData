@@ -727,14 +727,13 @@ internal static class ValidateBrazil
                 #region
 
                 strBase = (strOrigem.Trim() + "0000000").Substring(0, 7);
-                dynamic strVerificador = strOrigem.Trim().Substring(strOrigem.Trim().Length - 2);
 
                 intSoma = 0;
                 for (intPos = 0; intPos < 7; intPos++)
                 {
                     intValor = Convert.ToInt32(strBase.Substring(intPos, 1));
-                    intValor = intValor * (9 - intPos);
-                    intSoma = intSoma + intValor;
+                    intValor *= (9 - intPos);
+                    intSoma += intValor;
                 }
 
                 intResto = intSoma % 11;
@@ -752,8 +751,8 @@ internal static class ValidateBrazil
                 for (intPos = 0; intPos < 8; intPos++)
                 {
                     intValor = Convert.ToInt32((strBase + strDigito1).Substring(intPos, 1));
-                    intValor = intValor * (10 - intPos);
-                    intSoma = intSoma + intValor;
+                    intValor *= (10 - intPos);
+                    intSoma += intValor;
                 }
 
                 intResto = intSoma % 11;
@@ -967,7 +966,7 @@ internal static class ValidateBrazil
                     for (intPos = 1; (intPos <= 8); intPos++)
                     {
                         intValor = int.Parse(strBase.Substring((intPos - 1), 1));
-                        intValor = intValor * intPos;
+                        intValor *= intPos;
                         intSoma += intValor;
                     }
 

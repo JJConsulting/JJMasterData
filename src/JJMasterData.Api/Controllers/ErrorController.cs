@@ -15,7 +15,7 @@ public class ErrorController : ControllerBase
         var exceptionHandlerFeature =
             HttpContext.Features.Get<IExceptionHandlerFeature>()!;
 
-        var responseLetter = ExceptionManager.GetResponse(exceptionHandlerFeature?.Error);
+        var responseLetter = ExceptionManager.GetResponse(exceptionHandlerFeature.Error);
 
         return new ObjectResult(responseLetter)
         {

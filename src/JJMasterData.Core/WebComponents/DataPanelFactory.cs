@@ -1,7 +1,5 @@
-﻿using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace JJMasterData.Core.WebComponents

@@ -1,10 +1,10 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity;
 
 namespace JJMasterData.Commons.Dao.Providers;
 
@@ -265,10 +265,6 @@ internal class ProviderSQLite : BaseProvider
 
     public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
     {
-        var fields = element.Fields
-            .ToList()
-            .FindAll(x => x.DataBehavior == FieldBehavior.Real);
-
         var isFirst = true;
         var sSql = new StringBuilder();
 
@@ -376,7 +372,7 @@ internal class ProviderSQLite : BaseProvider
         sSql.Append(")");
         sSql.Append(" VALUES (");
         isFirst = true;
-        foreach (var f in fields)
+        foreach (var unused in fields)
         {
             if (isFirst)
                 isFirst = false;

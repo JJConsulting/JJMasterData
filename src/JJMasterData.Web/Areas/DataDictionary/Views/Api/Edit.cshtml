@@ -1,5 +1,5 @@
 ﻿@using JJMasterData.Commons.Dao.Entity
-@model JJMasterData.Web.Areas.DataDictionary.Models.ApiViewModel
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModel.ApiViewModel
 
 
 <partial name="_Menu"/>
@@ -46,7 +46,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            @Html.Raw(Model?.ValidationSummary?.GetHtml())
+            @Html.Raw(Model.ValidationSummary?.GetHtml())
         </div>
     </div>
 

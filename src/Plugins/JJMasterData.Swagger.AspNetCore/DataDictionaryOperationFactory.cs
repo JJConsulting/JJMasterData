@@ -217,21 +217,16 @@ internal class DataDictionaryOperationFactory
             }
             else
             {
-
-                Dictionary<string, OpenApiMediaType>? content = null;
-
                 var parameter = new OpenApiParameter
                 {
                     Name = Settings.GetFieldNameParsed(fieldName),
-                    Description = description ?? string.Empty,
+                    Description = description,
                     In = ParameterLocation.Query,
                     Required = false
                 };
 
                 if (field.Component == FormComponent.ComboBox
-                    && field.DataItem != null
-                    && field.DataItem.Items != null
-                    && field.DataItem.Items.Count > 0)
+                    && field.DataItem is { Items.Count: > 0 })
                 {
 
                     var enums = (from DataItemValue dataItem in field.DataItem.Items
@@ -240,7 +235,7 @@ internal class DataDictionaryOperationFactory
 
                     var example = new StringBuilder();
 
-                    content = new Dictionary<string, OpenApiMediaType>();
+                    var content = new Dictionary<string, OpenApiMediaType>();
 
                     foreach (DataItemValue dataItem in field.DataItem.Items)
                     {

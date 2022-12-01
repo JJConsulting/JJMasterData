@@ -2,7 +2,6 @@
 
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
@@ -178,7 +177,7 @@ public class FieldController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementField field)
+    private void PopulateViewBag(FormElement formElement, FormElementField? field)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -205,7 +204,7 @@ public class FieldController : DataDictionaryController
         if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
             ViewBag.Tab = Request.Form["selected_tab"].ToString();
         else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"];
+            ViewBag.Tab = TempData["selected_tab"]!;
 
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;

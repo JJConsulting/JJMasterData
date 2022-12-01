@@ -1,3 +1,4 @@
+### YamlMime:ManagedReference
 {
   "openapi": "3.0.1",
   "info": {
@@ -484,19 +485,19 @@
               "text/plain": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               },
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               },
               "text/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             }
@@ -579,7 +580,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -588,7 +589,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -597,7 +598,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -606,7 +607,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             }
@@ -656,7 +657,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -665,7 +666,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -674,7 +675,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -683,7 +684,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             }
@@ -733,7 +734,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -742,7 +743,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -751,7 +752,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             },
@@ -760,7 +761,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "additionalProperties": { }
+                  "additionalProperties": {}
                 }
               }
             }
@@ -827,25 +828,25 @@
             "application/json-patch+json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "application/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "text/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "application/*+json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             }
           }
@@ -920,25 +921,25 @@
             "application/json-patch+json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "application/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "text/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             },
             "application/*+json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": { }
+                "additionalProperties": {}
               }
             }
           }
@@ -1183,7 +1184,7 @@
           },
           "filters": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true
           },
           "mapFilters": {
@@ -1444,7 +1445,7 @@
           },
           "attributes": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true
           },
           "panelId": {
@@ -1552,7 +1553,7 @@
           },
           "filters": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true
           }
         },
@@ -2254,14 +2255,14 @@
           },
           "properties": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true,
             "readOnly": true,
             "deprecated": true
           },
           "options": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true,
             "readOnly": true
           }
@@ -3363,7 +3364,7 @@
             "type": "array",
             "items": {
               "type": "object",
-              "additionalProperties": { }
+              "additionalProperties": {}
             },
             "description": "Tabela com os dados da pesquisa",
             "nullable": true
@@ -3540,12 +3541,12 @@
           },
           "validationList": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true
           },
           "data": {
             "type": "object",
-            "additionalProperties": { },
+            "additionalProperties": {},
             "nullable": true
           }
         },
@@ -3880,7 +3881,7 @@
   },
   "security": [
     {
-      "token": [ ]
+      "token": []
     }
   ]
 }

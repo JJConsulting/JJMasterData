@@ -2,5 +2,5 @@
 
 public class JJMasterDataRoutingOptions
 {
-    public IEnumerable<Attribute>? RouteAttributes { get; set; }
+    public Attribute[]? RouteAttributes { get; set; }
 }

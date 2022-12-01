@@ -16,22 +16,19 @@ namespace JJMasterData.Api.Services;
 public class MasterApiService
 {
     private readonly HttpContext? _httpContext;
-    private readonly AccountService _accountService;
-    private IEntityRepository _entityRepository;
-    private IDictionaryRepository _dictionaryRepository;
+    private readonly IEntityRepository _entityRepository;
+    private readonly IDictionaryRepository _dictionaryRepository;
     
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
-                            AccountService accountService, 
                             IEntityRepository entityRepository, 
                             IDictionaryRepository dictionaryRepository)
     {
-        _httpContext = httpContextAccessor?.HttpContext;
-        _accountService = accountService;
+        _httpContext = httpContextAccessor.HttpContext;
         _entityRepository = entityRepository;
         _dictionaryRepository = dictionaryRepository;
     }
 
-    public string GetListFieldAsText(string elementName, int pag, int regporpag, string orderby)
+    public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -51,7 +48,7 @@ public class MasterApiService
         return text;
     }
 
-    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string orderby, int total = 0)
+    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby, int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -94,7 +91,7 @@ public class MasterApiService
         {
             string fieldName = dictionary.Api.GetFieldNameParsed(field.Name);
             if (fields.ContainsKey(field.Name))
-                listRet.Add(fieldName, fields![field.Name]!);
+                listRet.Add(fieldName, fields[field.Name]!);
         }
 
         return listRet;
@@ -338,16 +335,18 @@ public class MasterApiService
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
         {
-            var formValues = new FormValues();
-            formValues.Enable = formManager.Expression.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues);
-            formValues.Visible = formManager.Expression.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues);
+            var formValues = new FormValues
+            {
+                Enable = formManager.Expression.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
+                Visible = formManager.Expression.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
+            };
 
             if (newvalues != null && newvalues.Contains(f.Name))
-                formValues.Value = newvalues![f.Name]!;
+                formValues.Value = newvalues[f.Name]!;
 
             if (!f.Name.ToLower().Equals(objname.ToLower()))
             {
-                if (f.Component == FormComponent.ComboBox || f.Component == FormComponent.Search)
+                if (f.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = formManager.GetDataItemValues(f.DataItem, newvalues, pageState);
                 }
@@ -372,8 +371,8 @@ public class MasterApiService
         {
             //if field not exists, generate a exception
             var field = metadata.Table.Fields[entry.Key.ToString()];
-            if (!filters.ContainsKey(entry.Key.ToString()))
-                filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()));
+            if (!filters.ContainsKey(entry.Key.ToString() ?? string.Empty))
+                filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()));
         }
 
         return filters;
@@ -393,7 +392,7 @@ public class MasterApiService
                 if (!dic.Table.Fields.ContainsKey(key))
                     continue;
 
-                string value = _httpContext.Request.Query[key];
+                string? value = _httpContext.Request.Query[key];
                 filters.Add(dic.Table.Fields[key].Name, StringManager.ClearText(value));
             }
         }
@@ -408,7 +407,7 @@ public class MasterApiService
         }
         else
         {
-            if (!userId.Equals(filters![dic.Api.ApplyUserIdOn]!.ToString()))
+            if (!userId.Equals(filters[dic.Api.ApplyUserIdOn]!.ToString()))
             {
                 throw new UnauthorizedAccessException(
                     Translate.Key("Access denied to change user filter on {0}", dic.Table.Name));
@@ -420,11 +419,11 @@ public class MasterApiService
 
     private string GetUserId()
     {
-        var tokenInfo = _accountService.GetTokenInfo(_httpContext?.User?.Claims?.FirstOrDefault()?.Value);
+        var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
         if (tokenInfo == null)
             throw new UnauthorizedAccessException("Invalid Token");
 
-        string userId = tokenInfo.UserId;
+        string? userId = tokenInfo.UserId;
         if (string.IsNullOrEmpty(userId))
             throw new UnauthorizedAccessException("Invalid User");
 
@@ -460,7 +459,7 @@ public class MasterApiService
         return _dictionaryRepository.GetMetadata(elementName);
     }
 
-    private ResponseLetter CreateErrorResponseLetter(Hashtable erros, ApiSettings api)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
     {
         var letter = new ResponseLetter
         {
@@ -501,7 +500,7 @@ public class MasterApiService
             if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
-                    !original![entry.Key]!.Equals(entry.Value))
+                    !original[entry.Key]!.Equals(entry.Value))
                     newValues.Add(fieldName, entry.Value);
             }
             else

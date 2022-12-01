@@ -1,3 +1,4 @@
+using System.Globalization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 
@@ -65,8 +66,8 @@ public class JJSlider : JJBaseControl
            .WithAttribute("type", "range")
            .WithNameAndId(Name)
            .WithCssClass("jjslider form-range")
-           .WithAttribute("min", MinValue.ToString())
-           .WithAttribute("max", MaxValue.ToString())
+           .WithAttribute("min", MinValue.ToString(CultureInfo.CurrentCulture))
+           .WithAttribute("max", MaxValue.ToString(CultureInfo.CurrentCulture))
            .WithAttribute("step", "1")
            .WithAttributeIf(Value.HasValue, "value", Value?.ToString());
 

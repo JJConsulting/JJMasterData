@@ -56,22 +56,23 @@ public class JJTabNav : JJBaseView
             NavContent nav = ListTab[i];
             string navId = $"{Name}_nav_{i}";
 
+            var index = i;
             ul.AppendElement(HtmlTag.Li, li =>
             {
                 li.WithCssClassIf(BootstrapHelper.Version > 3, "nav-item")
-                  .WithCssClassIf(SelectedTabIndex == i && BootstrapHelper.Version == 3, "active")
+                  .WithCssClassIf(SelectedTabIndex == index && BootstrapHelper.Version == 3, "active")
                   .WithAttribute("role", "presentation")
                   .AppendElement(HtmlTag.A, a =>
                   {
                       a.WithAttribute("href", $"#{navId}")
                        .WithAttribute("aria-controls", navId)
-                       .WithAttribute("jj-tabindex", i.ToString())
+                       .WithAttribute("jj-tabindex", index.ToString())
                        .WithAttribute("jj-objectid", InputHiddenSelectedTabName)
-                       .WithAttribute("aria-selected", SelectedTabIndex == i ? "true" : "false")
+                       .WithAttribute("aria-selected", SelectedTabIndex == index ? "true" : "false")
                        .WithAttribute("role", "tab")
                        .WithDataAttribute("toggle", "tab")
                        .WithCssClass("jj-tab-link nav-link")
-                       .WithCssClassIf(SelectedTabIndex == i && BootstrapHelper.Version > 3, "active")
+                       .WithCssClassIf(SelectedTabIndex == index && BootstrapHelper.Version > 3, "active")
                        .AppendText(Translate.Key(nav.Title));
                   });
             });

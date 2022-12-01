@@ -29,7 +29,7 @@ public class Param
     public Param(string strConn, string strProvider, string tablename)
     {
         Dao = new DataAccess(strConn, strProvider);
-        TableName = tablename; 
+        TableName = tablename;
     }
 
 
@@ -48,18 +48,17 @@ public class Param
             sSql.Append(TableName);
             sSql.Append("] WHERE cfg_txt_key = @cfg_txt_key");
 
-            List<DataAccessParameter> parms = new List<DataAccessParameter>();
-            parms.Add(new DataAccessParameter("@cfg_txt_key", key, DbType.String));
-            bRet = int.Parse(Dao.GetResult(new DataAccessCommand(sSql.ToString(),parms)).ToString()) > 0;   
+            var parms = new List<DataAccessParameter> { new DataAccessParameter("@cfg_txt_key", key, DbType.String) };
+            bRet = int.Parse(Dao.GetResult(new DataAccessCommand(sSql.ToString(), parms)).ToString()) > 0;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             if (TryCreateStructure())
                 bRet = HasParam(key);
             else
-                throw ex;
+                throw;
         }
-            
+
         return bRet;
     }
 
@@ -80,7 +79,7 @@ public class Param
 
             List<DataAccessParameter> parms = new List<DataAccessParameter>();
             parms.Add(new DataAccessParameter("@cfg_txt_key", key, DbType.String));
-            object oRet = Dao.GetResult(new DataAccessCommand(sSql.ToString(),parms));
+            object oRet = Dao.GetResult(new DataAccessCommand(sSql.ToString(), parms));
             if (oRet != null)
                 sRet = oRet.ToString();
         }
@@ -92,7 +91,7 @@ public class Param
                 throw;
         }
 
-        return sRet; 
+        return sRet;
     }
 
     /// <summary>
@@ -109,7 +108,9 @@ public class Param
         int nQtd;
         try
         {
-            nQtd = Dao.SetCommand(HasParam(key) ? GetCmdUpdate(key, value, description) : GetCmdInsert(key, value, description));
+            nQtd = Dao.SetCommand(HasParam(key)
+                ? GetCmdUpdate(key, value, description)
+                : GetCmdInsert(key, value, description));
         }
         catch (Exception)
         {
@@ -119,7 +120,7 @@ public class Param
                 throw;
         }
 
-        return nQtd; 
+        return nQtd;
     }
 
     /// <summary>
@@ -132,12 +133,12 @@ public class Param
         {
             Dao.SetCommand(GetCmdDelete(key));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             if (TryCreateStructure())
                 DelParam(key);
             else
-                throw ex;
+                throw;
         }
     }
 
@@ -157,7 +158,10 @@ public class Param
                 bCreate = true;
             }
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
 
         return bCreate;
     }
@@ -212,7 +216,7 @@ public class Param
 
         List<DataAccessParameter> parms = new List<DataAccessParameter>();
         parms.Add(new DataAccessParameter("@cfg_txt_key", key, DbType.String));
-            
+
         DataAccessCommand cmd = new DataAccessCommand(script.ToString(), parms);
         return cmd;
     }
@@ -232,5 +236,4 @@ public class Param
         script.AppendLine(") ");
         Dao.SetCommand(script.ToString());
     }
-
 }

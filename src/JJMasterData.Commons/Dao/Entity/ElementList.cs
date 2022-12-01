@@ -12,7 +12,7 @@ namespace JJMasterData.Commons.Dao.Entity;
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
-public class ElementList : IEnumerable<ElementField>, IList<ElementField>, ICollection<ElementField>
+public class ElementList : IList<ElementField>
 {
     private readonly IList<ElementField> _list = new List<ElementField>();
 

@@ -20,7 +20,7 @@ namespace JJMasterData.Core.WebComponents;
 /// Represents a CRUD.
 /// </summary>
 /// <example>
-/// [!code-cshtml[Example](../../../doc/JJMasterData.Examples/Views/Example/JJFormView.cshtml)]
+/// [!code-cshtml[Example](../../../example/JJMasterData.Web.Example/Pages/Components/JJFormViewExample.cshtml)]
 /// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
@@ -189,8 +189,7 @@ public class JJFormView : JJGridView
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
     }
-
-
+    
     #endregion
 
     internal override HtmlBuilder RenderHtml()

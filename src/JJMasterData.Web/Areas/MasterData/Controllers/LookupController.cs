@@ -5,7 +5,6 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -87,7 +86,7 @@ public class LookupController : MasterDataController
         //Filters
         foreach (DictionaryEntry filter in filters)
         {
-            form.SetCurrentFilter(filter.Key.ToString(), filter.Value.ToString());
+            form.SetCurrentFilter(filter.Key.ToString(), filter.Value?.ToString());
         }
 
         ViewBag.HtmlPage = form.GetHtml();

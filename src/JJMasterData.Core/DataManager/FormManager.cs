@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -218,12 +217,14 @@ public class FormManager
             DataTable dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
-                var item = new DataItemValue();
-                item.Id = row[0].ToString();
-                item.Description = row[1].ToString().Trim();
+                var item = new DataItemValue
+                {
+                    Id = row[0].ToString(),
+                    Description = row[1].ToString()?.Trim()
+                };
                 if (DataItem.ShowImageLegend)
                 {
-                    item.Icon = (IconType)int.Parse(row[2].ToString());
+                    item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
                     item.ImageColor = row[3].ToString();
                 }
                 values.Add(item);

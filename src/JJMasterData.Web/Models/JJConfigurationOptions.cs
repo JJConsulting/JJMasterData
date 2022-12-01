@@ -3,16 +3,16 @@ using JJMasterData.Web.Areas.MasterData.Models;
 
 namespace JJMasterData.Web.Models;
 
-public class JJConfigurationWrapper
+public class JJConfigurationOptions
 {
-    public JJMasterDataOptions JJMasterDataOptions { get; set; }
+    public JJMasterDataOptions JJMasterData { get; set; }
     public ConnectionStrings ConnectionStrings { get;  set;} 
     public ConnectionProviders ConnectionProviders { get; set; } 
 
-    public JJConfigurationWrapper()
+    public JJConfigurationOptions()
     {
         ConnectionStrings = new ConnectionStrings();
-        JJMasterDataOptions = new JJMasterDataOptions();
+        JJMasterData = new JJMasterDataOptions();
         ConnectionProviders = new ConnectionProviders();
     }
 }

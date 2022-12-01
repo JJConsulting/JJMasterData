@@ -3,6 +3,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SystemWebAdapters;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace JJMasterData.Web.Controllers;
@@ -10,6 +11,7 @@ namespace JJMasterData.Web.Controllers;
 public class ErrorController : Controller
 {
     [Route("/Error")]
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Index([FromQuery]int? statusCode)
     {

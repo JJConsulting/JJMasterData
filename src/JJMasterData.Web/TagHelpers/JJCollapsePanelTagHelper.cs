@@ -12,10 +12,10 @@ public class JJCollapsePanelTagHelper : TagHelper
 {
     
     [HtmlAttributeName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
     
     [HtmlAttributeName("partial")]
-    public string Partial { get; set; }
+    public string? Partial { get; set; }
 
     [HtmlAttributeName("model")]
     public dynamic? Model { get; set; }
@@ -33,9 +33,12 @@ public class JJCollapsePanelTagHelper : TagHelper
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+
+        AssertAttributes();
+        
         var panel = new JJCollapsePanel
         {
-            Name = Title.ToLower().Replace(" ", "_"),
+            Name = Title!.ToLower().Replace(" ", "_"),
             Title = Title,
             HtmlContent = await RendererService.ToStringAsync(Partial,Model),
             TitleIcon = new JJIcon(Icon)
@@ -43,5 +46,13 @@ public class JJCollapsePanelTagHelper : TagHelper
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(panel.GetHtml());
         
+    }
+
+    private void AssertAttributes()
+    {
+        if (Title == null)
+            throw new ArgumentNullException(nameof(Title));
+        if(Partial == null)
+            throw new ArgumentNullException(nameof(Partial));
     }
 }

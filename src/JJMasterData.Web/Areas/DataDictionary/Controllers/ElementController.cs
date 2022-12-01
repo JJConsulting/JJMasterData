@@ -5,13 +5,10 @@ using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Reflection;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -20,13 +17,11 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    private readonly IServiceProvider _serviceProvider;
 
-    public ElementController(ElementService elementService,ThemeService themeService, IServiceProvider serviceProvider)
+    public ElementController(ElementService elementService,ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
-        _serviceProvider = serviceProvider;
     }
 
     public ActionResult Index()
@@ -93,7 +88,7 @@ public class ElementController : DataDictionaryController
         return View();
     }
 
-    private void OnPostFile(object sender, FormUploadFileEventArgs e)
+    private void OnPostFile(object? sender, FormUploadFileEventArgs e)
     {
         _elementService.Import(e.File.FileStream);
         if (ModelState.IsValid)

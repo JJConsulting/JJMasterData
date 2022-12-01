@@ -19,20 +19,22 @@ var dicDao = new DictionaryDao(entityRepository);
 var databaseDictionaries = dicDao.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 
-foreach (string file in Directory.EnumerateFiles(path, "*.json"))
+if (path != null)
 {
-    var json = new StreamReader(file).ReadToEnd();
-
-    var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
-
-    if(dicParser != null)
+    foreach (string file in Directory.EnumerateFiles(path, "*.json"))
     {
-        Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
-        dicDao.InsertOrReplace(dicParser);
+        var json = new StreamReader(file).ReadToEnd();
 
-        folderDictionaries.Add(dicParser);
+        var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
+
+        if (dicParser != null)
+        {
+            Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
+            dicDao.InsertOrReplace(dicParser);
+
+            folderDictionaries.Add(dicParser);
+        }
     }
-
 }
 
 foreach (var dicParser in databaseDictionaries)

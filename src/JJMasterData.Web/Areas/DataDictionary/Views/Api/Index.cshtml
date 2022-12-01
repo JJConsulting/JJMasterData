@@ -1,5 +1,4 @@
-﻿@using JJMasterData.Commons.Dao.Entity
-@model JJMasterData.Web.Areas.DataDictionary.Models.ApiViewModel
+﻿@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModel.ApiViewModel
 
 <partial name="_Menu"/>
 
@@ -118,11 +117,11 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="IsSync" @BootstrapHelper.GetDataToggle("tooltip") title="Utilizado no sincronismo?">@Translate.Key("Sync")</label>
-                    @Html.TextBox("IsSync", (string)(Model.IsSync ? Translate.Key("Yes") : Translate.Key("No")), new { @class = "form-control", disabled = "disabled" })
+                    @Html.TextBox("IsSync", Model.IsSync ? Translate.Key("Yes") : Translate.Key("No"), new { @class = "form-control", disabled = "disabled" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
                     <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="Modo do sincronismo">@Translate.Key("Mode")</label>
-                    @Html.TextBox("Mode", (SyncMode)Model.Mode, new { @class = "form-control", disabled = "disabled" })
+                    @Html.TextBox("Mode", Model.Mode, new { @class = "form-control", disabled = "disabled" })
                 </div>
             </div>
         </div>

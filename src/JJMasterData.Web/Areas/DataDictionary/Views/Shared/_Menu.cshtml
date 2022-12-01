@@ -1,7 +1,7 @@
 ﻿@inject ThemeService ThemeService
 @using JJMasterData.Web.Services
 @using Microsoft.AspNetCore.Html
-@model JJMasterData.Web.Areas.DataDictionary.Models.DataDictionaryViewModel;
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModel.DataDictionaryViewModel;
 
 @{
     IHtmlContent NavItem(string menuId)
@@ -9,7 +9,7 @@
 
         string cssClass = "nav-item jj-nav-item";
 
-        if (Model!.MenuId!.Equals(menuId) && BootstrapHelper.Version < 5)
+        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version < 5)
         {
             cssClass += " active";
         }
@@ -21,7 +21,7 @@
     {
         string cssClass = string.Empty;
 
-        if (Model!.MenuId!.Equals(menuId) && BootstrapHelper.Version == 5)
+        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version == 5)
         {
             cssClass += " active";
         }
@@ -33,7 +33,7 @@
     {
         string ariaSelected = "false";
 
-        if (Model!.MenuId!.Equals(menuId))
+        if (Model.MenuId!.Equals(menuId))
         {
             ariaSelected = "true";
         }

@@ -22,10 +22,7 @@ namespace JJMasterData.Core.WebComponents;
 /// Form responsible for managing files in a directory
 /// </summary>
 /// <example>
-/// Example 
-/// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx)]
-/// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJFormUploadExample.aspx.cs)]
-/// O Resultado html ficará parecido com esse:
+/// The output will look like this:
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadFile"/>
@@ -633,7 +630,7 @@ public class JJFormUpload : JJBaseView
                 col.WithCssClass("col-sm-12");
                 col.AppendElement(HtmlTag.Img, img =>
                 {
-                    img.WithAttribute("id", $"pastedimage_{0}")
+                    img.WithAttribute("id", "pastedimage_0")
                        .WithAttribute("style", "max-height:350px;")
                        .WithAttribute("alt", Translate.Key("Preview Image"))
                        .WithCssClass("img-responsive");

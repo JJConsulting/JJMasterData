@@ -5,16 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="JJMasterData.Sample\**" />
     <Compile Remove="lib\**" />
-    <EmbeddedResource Remove="JJMasterData.Sample\**" />
     <EmbeddedResource Remove="lib\**" />
-    <None Remove="JJMasterData.Sample\**" />
     <None Remove="lib\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="docfx.console" Version="2.58.9">
+    <PackageReference Include="docfx.console" Version="2.59.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

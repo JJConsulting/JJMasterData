@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace JJMasterData.Web.Test;
 
-public class JJMasterDataWebExampleAppFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
+public class JJMasterDataWebExampleAppFactory : WebApplicationFactory<Program>
 {
     private IHost? _host;
     protected override IHost CreateHost(IHostBuilder builder)

@@ -5,7 +5,7 @@
 @model  JJMasterData.Web.Areas.DataDictionary.Models.DataDictionaryListAction
 
 @{string sortableClass = string.Empty;}
-@if (Model.ListAction.Count > 1)
+@if (Model.ListAction?.Count > 1)
 {
     sortableClass = "jjsortable";
     <script language="javascript" type="text/javascript">
@@ -37,7 +37,7 @@
 <div class="row">
     <div class="col-sm-12">
         <ul class="list-group @sortableClass" id="sortable_@Model.Context.ToString()">
-            @foreach (BasicAction action in Model.ListAction)
+            @foreach (var action in Model.ListAction!)
             {
                 <li class="list-group-item" id="@action.Name">
                     <div style="height: 33px;">
@@ -123,13 +123,13 @@
         return sScript.ToString();
     }
 
-    public string GetUrlDisable(BasicAction action)
+    public string? GetUrlDisable(BasicAction action)
     {
         return Url.Action("EnableDisable", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName });
     }
 
-    public string GetUrlSort()
+    public string? GetUrlSort()
     {
         return Url.Action("Sort", "Actions",
             new { dictionaryName = Model.DictionaryName, fieldName = Model.FieldName });

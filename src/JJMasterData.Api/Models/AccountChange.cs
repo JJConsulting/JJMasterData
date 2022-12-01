@@ -11,26 +11,26 @@ public class AccountChange
     /// </summary>
     [Required]
     [DataMember(Name = "user")]
-    public string User { get; set; }
+    public string? User { get; set; }
 
     /// <summary>
     /// Current Password
     /// </summary>
     [Required]
     [DataMember(Name = "pwdCurrent")]
-    public string PwdCurrent { get; set; }
+    public string? PwdCurrent { get; set; }
 
     /// <summary>
     /// New Password
     /// </summary>
     [Required]
     [DataMember(Name = "pwdNew")]
-    public string PwdNew { get; set; }
+    public string? PwdNew { get; set; }
 
     /// <summary>
     /// Confirm Password
     /// </summary>
     [Required]
     [DataMember(Name = "pwdConfirm")]
-    public string PwdConfirm { get; set; }
+    public string? PwdConfirm { get; set; }
 }

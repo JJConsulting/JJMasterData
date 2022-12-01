@@ -5,7 +5,7 @@
 There are three ways to configure an application:
 <br><br>
 
-**1)** Add configuration key in appsettings.json (.NET Core) or web.config (.NET Framework) files
+**1)** Add configuration key in appsettings.json. On .NET Framework you will need to add `IConfiguration` via `Microsoft.Extensions.Configuration`
 
 <details><summary> >> appsettings.json (click to expand)</summary><br>
 
@@ -51,50 +51,10 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
 
 <br>
 
-<details><summary>>> web.config (click to expand)</summary><br> 
-
-```xml
-<?xml version="1.0"?>
-<configuration>
-	<appSettings>
-		<!--System Log (Error, Warning, Information, All, None) Default Value (None)-->
-		<add key="log_writeinconsole" value="None"/>
-		<add key="log_writeineventviewer" value="None"/>
-		<add key="log_writeintrace" value="None"/>
-		<add key="log_writeinfile" value="All"/>
-		<add key="log_filename" value="App_Data\log\yyyyMMdd_applog.txt"/>
-		<add key="log_writeindatabase" value="All"/>
-		<add key="log_tablename" value="tb_masterdata_log"/>
-		<add key="log_connectname" value="ConnectionString"/>
-		<add key="app.connectionstring" value="ConnectionString"/>
-		
-		<!--JJMasterData Settings-->
-		<add key="JJMasterData.PrefixProcGet" value="jj_get{tablename}"/>
-		<add key="JJMasterData.PrefixProcSet" value="jj_set{tablename}"/>
-		<add key="JJMasterData.TableName" value="tb_masterdata"/>
-		<add key="JJMasterData.TableResources" value="tb_masterdata_resources"/>
-		<add key="JJMasterData.URL" value="https://localhost/masterdata/"/>
-		<add key="JJMasterData.BootstrapVersion" value="3"/>
-		<add key="JJMasterData.BootstrapTheme" value="dark-blue"/>
-		
-		<!--Layout Settings-->
-		<add key="JJMasterData.LayoutUrl" value="~/Views/Shared/_Layout.vbhtml"/>
-		<add key="JJMasterData.LayoutUrlPopup" value="~/Views/Shared/_Layout.Popup.vbhtml"/>
-
-	</appSettings>
-	<connectionStrings>
-		<add name="Connectionstring" connectionString="data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True" providerName="System.Data.SqlClient"/>
-	</connectionStrings>
-	
-</configuration>
-```
-</details>
-<br>
-
 
 **2)** Changing code at application startup
 ```cs
-builder.Services.AddJJMasterDataWeb().WithSettings(options =>
+builder.Services.AddJJMasterDataWeb(options =>
 {
     options.BootstrapVersion = 5;
     options.ConnectionString = "data source=localhost;initial catalog=JJMasterData;Integrated Security=True";
@@ -102,13 +62,13 @@ builder.Services.AddJJMasterDataWeb().WithSettings(options =>
 ```
 
 
-**3)** By dependency injection implementing the object JJMasterData.Commons.Settings.ISettings
+**3)** By custom `IConfiguration`
 ```cs
 //Any class that implements a ISettings
-var settings = new JJMasterDataSettings();
+builder.Configuration.AddXmlFile("my_custom_source.xml");
 
 //That simple
-builder.Services.AddJJMasterDataWeb().WithSettings(settings);
+builder.Services.AddJJMasterDataWeb(builder.Configuration);
 
 //or if you prefer
 //builder.Services.AddSingleton(settings);
@@ -116,11 +76,12 @@ builder.Services.AddJJMasterDataWeb().WithSettings(settings);
 
 ## What to configure?
 
-**Global Settings**
+**Global Options**
 ```cs
-builder.Services.AddJJMasterDataWeb().WithSettings();
+///Edit your options at appsettings.json or pass IConfiguration via parameter.
+builder.Services.AddJJMasterDataWeb();
 ```
-_WithSettings_: Any property of classes [JJMasterDataSettings](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Settings.JJMasterDataSettings.html) as seen above.
+You can change any of the [JJMasterDataOptions](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Options.JJMasterDataOptions.html) as seen above.
 <br>
 
 **Log**
@@ -139,7 +100,7 @@ builder.Services.AddJJMasterDataWeb().WithJJMasterDataLogger();
 ```
 
 This is a simple application log that can be written to a file, database, etc... 
-We use it for testing, because it is not async. To configure the log see [LoggerSettings](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Logging.LoggerSettings.html)
+We use it for testing, because it is not async. To configure the log see [LoggerOptions](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Logging.LoggerOptions.html)
 
 
 **Internacionalization**

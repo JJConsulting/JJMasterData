@@ -237,7 +237,7 @@ public static class Format
 
     public static String FormatDecBR2USA(double value)
     {
-        return FormatDecBR2USA(value.ToString());
+        return FormatDecBR2USA(value.ToString(CultureInfo.CurrentCulture));
     }
 
     public static String FormatDecBR2USA(string text)

@@ -7,7 +7,7 @@ namespace JJMasterData.Api.Models;
 public class FormValues
 {
     [DataMember(Name = "value")]
-    public object Value { get; set; }
+    public object? Value { get; set; }
 
     [DataMember(Name = "enable")]
     public bool Enable { get; set; }
@@ -16,5 +16,5 @@ public class FormValues
     public bool Visible { get; set; }
 
     [DataMember(Name = "dataItems")]
-    public List<DataItemValue> DataItems { get; set; }
+    public List<DataItemValue>? DataItems { get; set; }
 }

@@ -11,12 +11,12 @@ public class AccountRecover
     /// </summary>
     [Required]
     [DataMember(Name = "user")]
-    public string User { get; set; }
+    public string? User { get; set; }
 
     /// <summary>
     /// AppId number from smartphone
     /// </summary>
     [DataMember(Name = "appId")]
-    public string AppId { get; set; }
+    public string? AppId { get; set; }
 
 }

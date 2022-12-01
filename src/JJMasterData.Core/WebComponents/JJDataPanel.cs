@@ -1,6 +1,9 @@
-﻿using JJMasterData.Commons.Dao;
+using System;
+using System.Collections;
+using System.Linq;
+using System.Text;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -8,10 +11,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -166,7 +165,7 @@ public class JJDataPanel : JJBaseView
                 var f = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
                 if (f != null)
                 {
-                    var jjSearchBox = FieldManager.GetField(f, PageState, Values, null);
+                    var jjSearchBox = FieldManager.GetField(f, PageState, Values);
                     jjSearchBox.GetHtml();
                 }
             }
@@ -267,6 +266,7 @@ public class JJDataPanel : JJBaseView
 
     /// <summary>
     /// Validate form fields and return a list with errors
+    ///  </summary>
     /// <returns>
     /// Key = Field Name
     /// Valor = Error message
@@ -301,7 +301,7 @@ public class JJDataPanel : JJBaseView
         string jsonMap = Cript.Descript64(criptMap);
         var parms = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
-        var action = FormElement.Fields[parms.FieldName].Actions.Get(parms.ActionName);
+        var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
         var values = GetFormValues();
 
         if (action is UrlRedirectAction urlAction)

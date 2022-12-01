@@ -1,8 +1,9 @@
+// ReSharper disable RedundantUsingDirective
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+#if NETFRAMEWORK
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading;
+#endif
 #if NETCOREAPP || NETSTANDARD
 using JJMasterData.Commons.DI;
 using Microsoft.AspNetCore.Http;
