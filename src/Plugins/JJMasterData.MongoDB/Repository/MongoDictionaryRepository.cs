@@ -109,7 +109,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
             replacement: mongoDbMetadata);
     }
 
-    
+     
     public void Delete(string dictionaryName)
     {
         _metadataCollection.DeleteOne(metadata => metadata.Table.Name == dictionaryName);
