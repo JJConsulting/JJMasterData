@@ -36,8 +36,6 @@ public class ElementController : DataDictionaryController
         {
             return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
         }
-
-        return View("Create");
     }
 
     private void OnRenderAction(object? sender, ActionEventArgs e)
@@ -160,13 +158,6 @@ public class ElementController : DataDictionaryController
             var error = new { success = false, message = ex.Message };
             return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
-    }
-
-    [HttpPost]
-    public IActionResult Create()
-    {
-        _elementService.ExecScriptsMasterData();
-        return RedirectToAction("Index");
     }
 
     public JJFormView GetEntityFormView()
