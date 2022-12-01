@@ -190,23 +190,23 @@ public class ElementService : BaseService
         {
             Title = "JJMasterData"
         };
-        formElement.FormFields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.FormFields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
-        formElement.FormFields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.FormFields["json"].Component = FormComponent.TextArea;
-        formElement.FormFields["json"].Export = false;
-        formElement.FormFields["type"].VisibleExpression = "val:0";
-        formElement.FormFields["type"].DefaultValue = "val:F";
-        formElement.FormFields["type"].Component = FormComponent.ComboBox;
-        formElement.FormFields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
-        formElement.FormFields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
-        formElement.FormFields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.FormFields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.FormFields["sync"].Component = FormComponent.ComboBox;
-        formElement.FormFields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
-        formElement.FormFields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.Fields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.Fields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
+        formElement.Fields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
+        formElement.Fields["json"].Component = FormComponent.TextArea;
+        formElement.Fields["json"].Export = false;
+        formElement.Fields["type"].VisibleExpression = "val:0";
+        formElement.Fields["type"].DefaultValue = "val:F";
+        formElement.Fields["type"].Component = FormComponent.ComboBox;
+        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
+        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
+        formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
+        formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.Fields["sync"].Component = FormComponent.ComboBox;
+        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
+        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
 
-        formElement.FormFields["modified"].Component = FormComponent.DateTime;
+        formElement.Fields["modified"].Component = FormComponent.DateTime;
 
         var formView = new JJFormView(formElement)
         {

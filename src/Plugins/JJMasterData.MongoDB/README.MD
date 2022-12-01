@@ -1,13 +1,13 @@
 # JJMasterData.MongoDB
 
 ## Usage
-1. Add the following section to your JJMasterData `IConfiguration` source.
+1. Add the following values to your `IConfiguration` source.
 ```json
 {
   "JJMasterData": {
     "MongoDB": {
       "ConnectionString": "mongodb://localhost:27017",
-      "DatabaseName": "JJMasterData",
+      "DatabaseName": "jjmasterdata",
       "CollectionName": "metadata"
     }
   }

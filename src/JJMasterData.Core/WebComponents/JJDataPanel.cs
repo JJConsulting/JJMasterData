@@ -162,7 +162,7 @@ public class JJDataPanel : JJBaseView
         {
             if (Name.Equals(pnlname))
             {
-                var f = FormElement.FormFields.ToList().Find(x => x.Name.Equals(objname));
+                var f = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
                 if (f != null)
                 {
                     var jjSearchBox = FieldManager.GetField(f, PageState, Values);
@@ -217,7 +217,7 @@ public class JJDataPanel : JJBaseView
             script.AppendLine($"\tjjutil.replaceEntertoTab('{Name}');");
         }
 
-        var listField = FormElement.FormFields.ToList();
+        var listField = FormElement.Fields.ToList();
         if (!listField.Exists(x => x.AutoPostBack))
         {
             script.AppendLine(new DataPanelScript(this).GetHtmlFormScript());
@@ -301,7 +301,7 @@ public class JJDataPanel : JJBaseView
         string jsonMap = Cript.Descript64(criptMap);
         var parms = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
-        var action = FormElement.FormFields[parms?.FieldName].Actions.Get(parms?.ActionName);
+        var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
         var values = GetFormValues();
 
         if (action is UrlRedirectAction urlAction)

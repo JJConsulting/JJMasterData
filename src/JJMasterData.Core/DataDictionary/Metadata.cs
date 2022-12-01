@@ -38,7 +38,7 @@ public class Metadata
 
         foreach (var item in Form.FormFields)
         {
-            FormElementField field = fe.FormFields[item.Name];
+            FormElementField field = fe.Fields[item.Name];
             field.Component = item.Component;
             field.VisibleExpression = item.VisibleExpression;
             field.EnableExpression = item.EnableExpression;
@@ -72,12 +72,12 @@ public class Metadata
         if (string.IsNullOrEmpty(formElement.Name))
             throw new ArgumentException(Translate.Key("Invalid dictionary name"));
 
-        for (int i = 0; i < formElement.FormFields.Count; i++)
+        for (int i = 0; i < formElement.Fields.Count; i++)
         {
-            formElement.FormFields[i].Order = i + 1;
+            formElement.Fields[i].Order = i + 1;
         }
 
-        Table = formElement.DeepCopy();
+        Table = formElement.DeepCopy<Element>();
         Form = new MetadataForm(formElement);
     }
 

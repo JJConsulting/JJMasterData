@@ -19,7 +19,7 @@ internal static class DataDictionarySchema
 
         var example = new OpenApiObject();
 
-        foreach (FormElementField field in formElement.FormFields)
+        foreach (FormElementField field in formElement.Fields)
         {
 
             example[field.Name] = GetFieldExample(field);

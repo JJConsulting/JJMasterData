@@ -333,7 +333,7 @@ public class MasterApiService
         var formManager = new FormManager(dictionary.GetFormElement(), expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
-        foreach (FormElementField f in element.FormFields)
+        foreach (FormElementField f in element.Fields)
         {
             var formValues = new FormValues
             {

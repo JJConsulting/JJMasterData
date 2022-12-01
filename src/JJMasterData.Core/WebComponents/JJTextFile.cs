@@ -178,7 +178,7 @@ public class JJTextFile : JJBaseControl
         if (!string.IsNullOrEmpty(parms.PkValues))
         {
             string[] values = parms.PkValues.Split('|');
-            var pkFields = FormElement.FormFields.ToList().FindAll(x => x.IsPk);
+            var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
             for (int i = 0; i < pkFields.Count; i++)
             {
                 if (FormValues.ContainsKey(pkFields[i].Name))
@@ -229,7 +229,7 @@ public class JJTextFile : JJBaseControl
 
     private bool HasPk()
     {
-        var pkFields = FormElement.FormFields.ToList().FindAll(x => x.IsPk);
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
         if (pkFields.Count == 0)
             return false;
 
@@ -372,7 +372,7 @@ public class JJTextFile : JJBaseControl
 
         if (uploadFormRoute == null) return null;
 
-        var field = view.FormElement.FormFields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
+        var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
 
         if (field == null) return null;
 

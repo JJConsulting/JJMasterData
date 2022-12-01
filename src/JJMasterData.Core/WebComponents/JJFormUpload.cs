@@ -384,10 +384,10 @@ public class JJFormUpload : JJBaseView
             GridView.DataSource = dt;
             GridView.FormElement.Title = Title;
             GridView.FormElement.SubTitle = SubTitle;
-            GridView.FormElement.FormFields["NameJS"].VisibleExpression = "val:0";
+            GridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
 
-            if (GridView.FormElement.FormFields.Contains("LastWriteTime"))
-                GridView.FormElement.FormFields["LastWriteTime"].Label = "Last Modified";
+            if (GridView.FormElement.Fields.Contains("LastWriteTime"))
+                GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
         }
 
         return GridView.GetHtmlBuilder();

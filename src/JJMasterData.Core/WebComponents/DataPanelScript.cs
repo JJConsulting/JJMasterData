@@ -20,7 +20,7 @@ internal class DataPanelScript
     public string GetHtmlFormScript()
     {
         var script = new StringBuilder();
-        var listFieldsExp = FormElement.FormFields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
+        var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
 
         foreach (var f in listFieldsExp)
         {
@@ -86,7 +86,7 @@ internal class DataPanelScript
         foreach (string fieldName in list)
         {
             string val = null;
-            var field = FormElement.FormFields.ToList().Find(x => x.Name.Equals(fieldName));
+            var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
             if (field != null && field.AutoPostBack)
                 continue;
 

@@ -109,7 +109,7 @@ public class IndexesController : DataDictionaryController
         var formElement = _indexesService.GetFormElement(dictionaryName);
         var listItems = new List<SelectListItem>();
 
-        foreach (var field in formElement.FormFields)
+        foreach (var field in formElement.Fields)
         {
             string name = field.Name;
             if (!string.IsNullOrEmpty(field.Label))

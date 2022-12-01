@@ -36,17 +36,17 @@ public class FieldService : BaseService
             return false;
         }
 
-        if (formElement.FormFields.Contains(originalName))
+        if (formElement.Fields.Contains(originalName))
         {
-            field.Actions = formElement.FormFields[originalName].Actions;
-            formElement.FormFields[originalName] = field;
+            field.Actions = formElement.Fields[originalName].Actions;
+            formElement.Fields[originalName] = field;
         }
         else
         {
-            formElement.FormFields.Add(field);
+            formElement.Fields.Add(field);
         }
 
-        formElement.FormFields[field.Name] = field;
+        formElement.Fields[field.Name] = field;
         dictionary.SetFormElement(formElement);
         DictionaryRepository.InsertOrReplace(dictionary);
 
@@ -100,7 +100,7 @@ public class FieldService : BaseService
 
         if (!string.IsNullOrEmpty(field.Name) && !field.Name.Equals(originalName))
         {
-            if (formElement.FormFields.Contains(field.Name))
+            if (formElement.Fields.Contains(field.Name))
                 AddError(nameof(field.Name), Translate.Key("Name of field already exists"));
         }
 
@@ -277,11 +277,11 @@ public class FieldService : BaseService
     {
         var dictionary = DictionaryRepository.GetMetadata(elementName);
         var formElement = dictionary.GetFormElement();
-        var newList = orderFields.Select(fieldName => formElement.FormFields[fieldName]).ToList();
+        var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
-        for (int i = 0; i < formElement.FormFields.Count; i++)
+        for (int i = 0; i < formElement.Fields.Count; i++)
         {
-            formElement.FormFields[i] = newList[i];
+            formElement.Fields[i] = newList[i];
         }
 
         dictionary.SetFormElement(formElement);
@@ -339,8 +339,8 @@ public class FieldService : BaseService
             return false;
 
         var formElement = dictionary.GetFormElement();
-        var field = formElement.FormFields[fieldName];
-        formElement.FormFields.Remove(field);
+        var field = formElement.Fields[fieldName];
+        formElement.Fields.Remove(field);
         dictionary.SetFormElement(formElement);
         DictionaryRepository.InsertOrReplace(dictionary);
 
@@ -391,13 +391,13 @@ public class FieldService : BaseService
         var formElement = metadata.GetFormElement();
         var newField = field.DeepCopy();
 
-        if (formElement.FormFields.Contains(newField.Name))
+        if (formElement.Fields.Contains(newField.Name))
         {
             AddError(newField.Name, Translate.Key("Name of field already exists"));
             return IsValid;
         }
 
-        formElement.FormFields.Add(newField);
+        formElement.Fields.Add(newField);
         metadata.SetFormElement(formElement);
         DictionaryRepository.InsertOrReplace(metadata);
         return IsValid;

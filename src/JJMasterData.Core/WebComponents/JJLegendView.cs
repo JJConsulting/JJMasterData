@@ -99,7 +99,7 @@ public class JJLegendView : JJBaseView
     
     private FormElementField GetFieldLegend()
     {
-        return FormElement.FormFields.FirstOrDefault(f 
+        return FormElement.Fields.FirstOrDefault(f 
             => f.Component == FormComponent.ComboBox && f.DataItem.ShowImageLegend);
     }
 

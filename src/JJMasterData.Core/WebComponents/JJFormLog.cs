@@ -245,11 +245,11 @@ public class JJFormLog : JJBaseView
         grid.SetCurrentFilter(AuditLogService.DIC_NAME, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DIC_MODIFIED + " DESC";
 
-        var fieldKey = grid.FormElement.FormFields[AuditLogService.DIC_KEY];
-        int qtdPk = FormElement.FormFields.Count(x => x.IsPk);
+        var fieldKey = grid.FormElement.Fields[AuditLogService.DIC_KEY];
+        int qtdPk = FormElement.Fields.Count(x => x.IsPk);
         if (qtdPk == 1)
         {
-            var f = FormElement.FormFields.First(x => x.IsPk);
+            var f = FormElement.Fields.First(x => x.IsPk);
             fieldKey.Label = f.Label;
             fieldKey.HelpDescription = "Primary key record";
         }

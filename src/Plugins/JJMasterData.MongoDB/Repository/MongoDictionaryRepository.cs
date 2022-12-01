@@ -64,6 +64,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
         {
             metadataFinder = _metadataCollection.Find(bsonFilter);
         }
+        
         tot = metadataFinder.ToList().Count;
         
         var metadataList = metadataFinder
@@ -102,7 +103,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
         _metadataCollection.DeleteOne(metadata => metadata.Table.Name == id);
     }
 
-    private IDictionary MapStructureFilters(IDictionary structureFilters)
+    private static IDictionary MapStructureFilters(IDictionary structureFilters)
     {
 
         var filters = new Hashtable();
