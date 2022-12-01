@@ -1,5 +1,4 @@
-﻿using JJMasterData.Api.Models;
-using JJMasterData.Commons.Dao;
+﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
@@ -7,6 +6,7 @@ using JJMasterData.Commons.Util;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
+using JJMasterData.Api.Models;
 
 namespace JJMasterData.Api.Services;
 

@@ -1,10 +1,10 @@
-﻿using JJMasterData.Api.Models;
-using JJMasterData.Api.Services;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using JJMasterData.Api.Models;
+using JJMasterData.Api.Services;
 
 namespace JJMasterData.Api.Controllers;
 

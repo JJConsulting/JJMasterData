@@ -10,6 +10,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
     <ProjectReference Include="..\..\JJMasterData.Core\JJMasterData.Core.csproj" />
   </ItemGroup>
 
