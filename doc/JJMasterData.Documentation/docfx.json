@@ -33,7 +33,6 @@
           "lib/**.md",
           "articles/**.md",
           "articles/**/toc.yml",
-          "restapi/**",
           "index.md",
           "toc.yml"
         ]
