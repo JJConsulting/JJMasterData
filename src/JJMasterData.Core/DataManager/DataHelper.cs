@@ -31,16 +31,13 @@ namespace JJMasterData.Core.DataManager
         }
 
         /// <summary>
-        /// Retorna uma lista apenas com as chaves primarias da tabela,
-        /// se não existir o valor da PK uma exceção será lançada
+        /// Returns a list with only the primary keys of the table, if the PK value does not exist,
+        /// an exception will be thrown
         /// </summary>
-        /// <remarks>
-        /// Se não existir o valor da PK uma DataDictionaryException será lançada
-        /// </remarks>
         public static Hashtable GetPkValues(Element element, IDictionary values)
         {
             if (element == null)
-                throw new ArgumentNullException(nameof(FormElement));
+                throw new ArgumentNullException(nameof(element));
 
             if (values == null)
                 throw new ArgumentNullException(nameof(values));
@@ -73,7 +70,7 @@ namespace JJMasterData.Core.DataManager
             var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
             if (values.Length != elementPks.Count)
                 throw new DataDictionaryException(Translate.Key("Invalid primary key"));
-
+            
             for (int i = 0; i < values.Length; i++)
             {
                 primaryKeys.Add(elementPks[i].Name, values[i]);
@@ -83,24 +80,36 @@ namespace JJMasterData.Core.DataManager
         }
 
         /// <summary>
-        /// Concat primary keys with separator caracteres
+        /// Concat primary keys with separator characters
         /// </summary>
         public static string ParsePkValues(FormElement formElement, IDictionary formValues, char separator)
         {
-            var pkFields = GetPkValues(formElement, formValues);
-            string name = string.Empty;
+            if (formElement == null)
+                throw new ArgumentNullException(nameof(formElement));
 
-            foreach (DictionaryEntry fieldKeyPar in pkFields)
+            if (formValues == null)
+                throw new ArgumentNullException(nameof(formValues));
+
+            var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
+            if (elementPks == null || elementPks.Count == 0)
+                throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", formElement.Name));
+            
+            string name = string.Empty;
+            foreach (var field in elementPks)
             {
                 if (name.Length > 0)
                     name += separator.ToString();
-
-                string value = fieldKeyPar.Value.ToString();
+                
+                if (!formValues.Contains(field.Name))
+                    throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));
+                    
+                string value = formValues[field.Name].ToString();
                 if (value.Contains(separator))
                     throw new Exception(Translate.Key("Primary key value {0} contains invalid characters.", value));
-
+                
                 name += value;
             }
+            
             return name;
         }
 
@@ -114,8 +123,8 @@ namespace JJMasterData.Core.DataManager
         }
 
         /// <summary>
-        /// Preserva o nome original do campo conforme cadastrado no dicionário 
-        /// e valida se o campo existe
+        /// Preserves the original name of the field as registered in the dictionary
+        /// and validates if the field exists
         /// </summary>
         public static Hashtable ParseOriginalName(FormElement formElement, Hashtable paramValues)
         {
@@ -133,21 +142,21 @@ namespace JJMasterData.Core.DataManager
             return filters;
         }
 
-        public static void CopyIntoHash(ref Hashtable newvalues, Hashtable valuesToBeCopied, bool replaceIfExistKey)
+        public static void CopyIntoHash(ref Hashtable newValues, Hashtable valuesToBeCopied, bool replaceIfExistKey)
         {
             if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
                 return;
 
             foreach (DictionaryEntry entry in valuesToBeCopied)
             {
-                if (newvalues.ContainsKey(entry.Key))
+                if (newValues.ContainsKey(entry.Key))
                 {
                     if (replaceIfExistKey)
-                        newvalues[entry.Key] = entry.Value;
+                        newValues[entry.Key] = entry.Value;
                 }
                 else
                 {
-                    newvalues.Add(entry.Key, entry.Value);
+                    newValues.Add(entry.Key, entry.Value);
                 }
             }
         }
