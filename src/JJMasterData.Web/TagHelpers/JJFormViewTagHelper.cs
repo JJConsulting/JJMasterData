@@ -12,8 +12,8 @@ public class JJFormViewTagHelper : TagHelper
     [HtmlAttributeName("element-name")] 
     public string? ElementName { get; set; }
     
-    [HtmlAttributeName("configure-form-view")] 
-    public Action<JJFormView>? ConfigureFormView { get; set; }
+    [HtmlAttributeName("configure")] 
+    public Action<JJFormView>? Configure { get; set; }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -22,8 +22,9 @@ public class JJFormViewTagHelper : TagHelper
             Name = Name
         };
 
-        ConfigureFormView?.Invoke(form);
+        Configure?.Invoke(form);
 
+        
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(form.GetHtml());
         return Task.CompletedTask;

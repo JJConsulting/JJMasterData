@@ -28,7 +28,7 @@ public class JJDataImp : JJBaseProcess
 
     #region "Properties"
 
-    private JJUploadFile _upload;
+    private JJUploadArea _upload;
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
@@ -66,7 +66,7 @@ public class JJDataImp : JJBaseProcess
         }
     }
 
-    public JJUploadFile Upload
+    public JJUploadArea Upload
     {
         get
         {
@@ -397,9 +397,9 @@ public class JJDataImp : JJBaseProcess
         return helpButton;
     }
 
-    private JJUploadFile GetUploadFileInstance()
+    private JJUploadArea GetUploadFileInstance()
     {
-        var upload = new JJUploadFile
+        var upload = new JJUploadArea
         {
             Multiple = false,
             EnableCopyPaste = false,

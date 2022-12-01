@@ -9,32 +9,29 @@ using System.IO;
 
 namespace JJMasterData.Core.WebComponents;
 
-/// TODO: Breaking change suggestion: JJUploadField, JJUploadFile sounds like a action in English.
-public class JJUploadFile : JJBaseView
+public class JJUploadArea : JJBaseView
 {
-    public delegate string OnPostFileAction(FormFileContent file);
-
     /// <summary>
-    /// Evento disparado ao renderizar o conteúdo HTML.
+    /// Event fired when rendering HTML content
     /// </summary>  
     /// <remarks>
-    /// Para realizar validações, basta retornar a mensagem de erro na função. 
-    /// Se a função retornar diferente de nulo o conteúdo será exibido como erro.
+    /// To perform validations, just return the error message in the function. 
+    /// If the function returns something other than null, the content will be displayed as an error.
     /// </remarks>
     public event EventHandler<FormUploadFileEventArgs> OnPostFile;
 
     /// <summary>
-    /// Tipod de extensão permitida, separados por virgula.
+    /// Allowed extension type, separated by comma.
     /// Default: *
     /// Example: txt,csv,log
     /// </summary>
     /// <remarks>
-    /// Em * os tipos de arquivos de sistemas são bloqueados como .exe .dll etc...
+    /// On the systems file types are blocked like .exe .dll etc...
     /// </remarks>
     public string AllowedTypes { get; set; }
 
     /// <summary>
-    /// Permite upload simultaneo de arquivos.
+    /// Allows simultaneous upload of files.
     /// Default: True
     /// </summary>
     public bool Multiple { get; set; }
@@ -90,7 +87,7 @@ public class JJUploadFile : JJBaseView
     
     public bool AutoSubmitAfterUploadAll { get; set; }
     
-    public JJUploadFile()
+    public JJUploadArea()
     {
         AllowedTypes = "*";
         Name = "uploadFile1";
@@ -303,8 +300,8 @@ public class JJUploadFile : JJBaseView
     }
     public bool IsPostAfterUploadAllFiles()
     {
-        string namefield = $"uploadaction_{Name}";
-        string action = CurrentContext.Request[namefield];
+        string nameField = $"uploadaction_{Name}";
+        string action = CurrentContext.Request[nameField];
         return "afteruploadall".Equals(action);
     }
 

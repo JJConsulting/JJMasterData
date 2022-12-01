@@ -25,7 +25,7 @@ namespace JJMasterData.Core.WebComponents;
 /// The output will look like this:
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
-/// <seealso cref="JJUploadFile"/>
+/// <seealso cref="JJUploadArea"/>
 public class JJFormUpload : JJBaseView
 {
     private const string FileName = "Name";
@@ -37,7 +37,7 @@ public class JJFormUpload : JJBaseView
     private ScriptAction _deleteAction;
     private ScriptAction _renameAction;
     private JJGridView _gridView;
-    private JJUploadFile _upload;
+    private JJUploadArea _upload;
     private FormFileService _service;
 
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
@@ -88,12 +88,12 @@ public class JJFormUpload : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public JJUploadFile Upload
+    public JJUploadArea Upload
     {
         get
         {
             if (_upload == null)
-                _upload = new JJUploadFile();
+                _upload = new JJUploadArea();
 
             return _upload;
         }

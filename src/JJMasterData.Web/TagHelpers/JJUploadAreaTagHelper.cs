@@ -3,22 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class JJUploadFieldTagHelper : TagHelper
+public class JJUploadAreaTagHelper : TagHelper
 {
     [HtmlAttributeName("name")] 
     public string? Name { get; set; }
     
-    [HtmlAttributeName("configure-upload-field")] 
-    public Action<JJUploadFile>? ConfigureUploadField { get; set; }
+    [HtmlAttributeName("configure")]
+    public Action<JJUploadArea>? Configure { get; set; }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var upload = new JJUploadFile
+        var upload = new JJUploadArea
         {
             Name = Name
         };
 
-        ConfigureUploadField?.Invoke(upload);
+        Configure?.Invoke(upload);
 
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(upload.GetHtml());

@@ -69,10 +69,10 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-        return View(ConfigureUploadField);
+        return View(ConfigureUploadArea);
     }
 
-    private void ConfigureUploadField(JJUploadFile upload)
+    private void ConfigureUploadArea(JJUploadArea upload)
     {
         upload.AddLabel = Translate.Key("Select Dictionaries");
         upload.AllowedTypes = "json";

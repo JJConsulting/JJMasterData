@@ -2,8 +2,8 @@
     Layout = "_MasterDataLayout.Popup";
 }
 
-@model Action<JJUploadFile>
+@model Action<JJUploadArea>
 
 <form asp-action="Import" method="post">
-    <jj-upload-field name="metadata-import" configure-upload-field="Model"/>
+    <jj-upload-area name="metadata-import" configure="Model"/>
 </form>
