@@ -1,26 +1,13 @@
 # JJMasterData.MongoDB
 
 ## Usage
-1. Add the following values to your `IConfiguration` source.
-```json
-{
-  "JJMasterData": {
-    "MongoDB": {
-      "ConnectionString": "mongodb://localhost:27017",
-      "DatabaseName": "jjmasterdata",
-      "CollectionName": "metadata"
-    }
-  }
-}
-```
-2. Add the following method to `JJServiceBuilder`:
+Add the following method to `JJServiceBuilder`:
 ```cs
 builder.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
 {
-    var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
-    mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
-    mongo.CollectionName = section.GetValue<string>("CollectionName")!;
-    mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
+    mongo.ConnectionString = "mongodb://localhost:27017";
+    mongo.CollectionName = "metadata";
+    mongo.DatabaseName = "jjmasterdata";
 });
 ```
 ## Development Setup

@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace JJMasterData.MongoDB.Models;
 
-public static class MongoDBMetadataMapper
+internal static class MongoDBMetadataMapper
 {
     public static MongoDBMetadata FromMetadata(Metadata metadata)
     {

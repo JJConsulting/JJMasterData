@@ -28,11 +28,9 @@ public class ElementController : DataDictionaryController
     {
         try
         {
-            if (_elementService.JJMasterDataTableExists())
-            {
-                var model = GetEntityFormView();
-                return View(model);
-            }
+            _elementService.CreateStructureIfNotExists();
+            var model = GetEntityFormView();
+            return View(model);
         }
         catch(DataAccessException)
         {

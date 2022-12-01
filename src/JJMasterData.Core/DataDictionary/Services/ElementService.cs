@@ -69,7 +69,7 @@ public class ElementService : BaseService
 
     public void ExecScriptsMasterData()
     {
-        DictionaryRepository.CreateStructure();
+        DictionaryRepository.CreateStructureIfNotExists();
     }
 
     #endregion
@@ -185,7 +185,7 @@ public class ElementService : BaseService
 
     public JJFormView GetFormView()
     {
-        var element = MetadataStructure.GetElement();
+        var element = DataDictionaryStructure.GetElement();
         var formElement = new FormElement(element)
         {
             Title = "JJMasterData"
@@ -240,7 +240,11 @@ public class ElementService : BaseService
     private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
         int tot = e.Tot;
-        e.DataSource = DictionaryRepository.GetDataTable(e.Filters, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+
+        var filter = DataDictionaryFilter.GetInstance(e.Filters);
+        
+        e.DataSource = DictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+        
         e.Tot = tot;
     }
 
@@ -332,13 +336,8 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists()
+    public void CreateStructureIfNotExists()
     {
-        if (DictionaryRepository.IsSql)
-        {
-            return JJService.EntityRepository.TableExists(JJService.Options.TableName);
-        }
-
-        return true;
+        
     }
 }
