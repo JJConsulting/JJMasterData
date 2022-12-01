@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -19,13 +19,12 @@ jobs:
         
     - name: Setup NodeJS
       uses: actions/setup-node@v3.4.1
-      
-    - name: Restore dependencies
-      run: dotnet restore
+
     - name: Restore TypeScript dependencies
       run: |
           cd src/JJMasterData.Web
           npm install
           cd ../../..
+          
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build
