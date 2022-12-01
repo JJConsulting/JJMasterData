@@ -2,7 +2,8 @@
     Layout = "_MasterDataLayout.Popup";
 }
 
-@using (Html.BeginForm())
-{
-    @Html.Raw(ViewBag.GetHtml)
-}
+@model Action<JJUploadFile>
+
+<form asp-action="Import" method="post">
+    <jj-upload-field name="metadata-import" configure-upload-field="Model"/>
+</form>
