@@ -22,7 +22,6 @@ public class OptionsController : MasterDataController
         return View(viewModel);
     }
     
-
     public async Task<IActionResult> Save(OptionsViewModel model)
     {
 

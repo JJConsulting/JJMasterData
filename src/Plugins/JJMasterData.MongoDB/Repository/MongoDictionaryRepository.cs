@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Data;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.MongoDB.Extensions;
 using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;

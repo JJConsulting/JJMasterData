@@ -1387,6 +1387,12 @@ public class JJGridView : JJBaseView
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
+    
+    public void AddToolBarAction(SubmitAction action)
+    {
+        ValidateAction(action);
+        ToolBarActions.Add(action);
+    }
 
     public void AddToolBarAction(ScriptAction action)
     {

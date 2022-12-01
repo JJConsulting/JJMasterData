@@ -310,13 +310,16 @@ public class ElementController : DataDictionaryController
 
         formView.AddToolBarAction(btnResources);
         
-        formView.AddToolBarAction(new UrlRedirectAction
+        formView.AddToolBarAction(new SubmitAction()
         {
+            Name = "btnDeleteMetadata",
+            Order = 0,
             Icon = IconType.Trash,
             Text = Translate.Key("Delete Selected"),
             IsGroup = false,
             ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
-            UrlRedirect = Url.Action("Delete", "Element")
+            ShowAsButton = true,
+            FormAction = Url.Action("Delete","Element")
         });
 
         formView.OnRenderAction += OnRenderAction;
@@ -324,7 +327,7 @@ public class ElementController : DataDictionaryController
         return formView;
     }
 
-    public ActionResult Theme()
+    public IActionResult Theme()
     {
         var theme = _themeService.GetTheme();
 
@@ -332,20 +335,20 @@ public class ElementController : DataDictionaryController
 
         return RedirectToAction(nameof(Index));
     }
-
-    public ActionResult Delete()
+    
+    public IActionResult Delete()
     {
-        var formView = _elementService.GetFormView();
+        var formView = GetEntityFormView();
+
         var selectedGridValues = formView.GetSelectedGridValues();
 
         selectedGridValues
             .Select(value => value["name"]!.ToString()!)
             .ToList()
-            .ForEach(metadata=>_elementService.DictionaryRepository.Delete(metadata));
+            .ForEach(metadata=> _elementService.DictionaryRepository.Delete(metadata));
         
         return RedirectToAction(nameof(Index));
     }
-    
 
     private JJFormView GetFormView()
     {
@@ -353,8 +356,6 @@ public class ElementController : DataDictionaryController
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
         
-
-
         return formView;
     }
 
