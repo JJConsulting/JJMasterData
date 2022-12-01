@@ -73,21 +73,17 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-
-        var upload = new JJUploadFile
-        {
-            Name = "dicImport",
-            AddLabel = Translate.Key("Select Dictionaries"),
-            AllowedTypes = "json",
-            AutoSubmitAfterUploadAll = false
-        };
-
-        upload.OnPostFile += OnPostFile;
-        ViewBag.GetHtml = upload.GetHtml();
-
-        return View();
+        return View(ConfigureUploadField);
     }
 
+    private void ConfigureUploadField(JJUploadFile upload)
+    {
+        upload.AddLabel = Translate.Key("Select Dictionaries");
+        upload.AllowedTypes = "json";
+        upload.AutoSubmitAfterUploadAll = false;
+        upload.OnPostFile += OnPostFile;
+    }
+    
     private void OnPostFile(object? sender, FormUploadFileEventArgs e)
     {
         _elementService.Import(e.File.FileStream);

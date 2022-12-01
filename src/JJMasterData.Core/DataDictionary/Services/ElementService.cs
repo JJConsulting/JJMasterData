@@ -319,8 +319,9 @@ public class ElementService : BaseService
 
     public bool Import(Stream file)
     {
-        string json = new StreamReader(file).ReadToEnd();
-        var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
+        file.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(file);
+        var dicParser = JsonConvert.DeserializeObject<Metadata>(reader.ReadToEnd());
         DictionaryRepository.InsertOrReplace(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");

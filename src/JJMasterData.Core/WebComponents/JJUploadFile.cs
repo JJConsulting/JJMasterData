@@ -180,14 +180,12 @@ public class JJUploadFile : JJBaseView
     {
         var fileData = CurrentContext.Request.GetFile("file");
         var stream = new MemoryStream();
-        string filename;
-
+        string filename = fileData.FileName;
+        
 #if NETFRAMEWORK
         fileData.InputStream.CopyTo(stream);
-        filename = fileData.FileName;
 #else
         fileData.CopyTo(stream);
-        filename = fileData.FileName;
 #endif
 
         var content = new FormFileContent
