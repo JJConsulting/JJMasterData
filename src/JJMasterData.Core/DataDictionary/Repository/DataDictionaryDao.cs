@@ -16,6 +16,8 @@ public class DictionaryDao : IDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
+    public bool IsSql => true;
+    
     public DictionaryDao(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
@@ -235,8 +237,8 @@ public class DictionaryDao : IDictionaryRepository
         return count > 0;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.ExecInitialSetup"/>
-    public void ExecInitialSetup()
+    ///<inheritdoc cref="IDictionaryRepository.CreateStructure"/>
+    public void CreateStructure()
     {
         _entityRepository.CreateDataModel(MetadataStructure.GetElement());
     }

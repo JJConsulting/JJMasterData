@@ -314,6 +314,15 @@ public class ElementController : DataDictionaryController
         };
 
         formView.AddToolBarAction(btnResources);
+        
+        formView.AddToolBarAction(new UrlRedirectAction
+        {
+            Icon = IconType.Trash,
+            Text = Translate.Key("Delete Selected"),
+            IsGroup = false,
+            ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
+            UrlRedirect = Url.Action("Delete", "Element")
+        });
 
         formView.OnRenderAction += OnRenderAction;
 
@@ -326,14 +335,30 @@ public class ElementController : DataDictionaryController
 
         _themeService.SetTheme(theme == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light);
 
-        return Redirect(nameof(Index));
+        return RedirectToAction(nameof(Index));
     }
+
+    public ActionResult Delete()
+    {
+        var formView = _elementService.GetFormView();
+        var selectedGridValues = formView.GetSelectedGridValues();
+
+        selectedGridValues
+            .Select(value => value["name"]!.ToString()!)
+            .ToList()
+            .ForEach(metadata=>_elementService.DictionaryRepository.Delete(metadata));
+        
+        return RedirectToAction(nameof(Index));
+    }
+    
 
     private JJFormView GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
+        
+
 
         return formView;
     }

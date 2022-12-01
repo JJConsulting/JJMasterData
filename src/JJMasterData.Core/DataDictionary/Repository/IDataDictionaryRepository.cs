@@ -7,9 +7,14 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 public interface IDictionaryRepository
 {
     /// <summary>
+    /// If the implementation uses a SQL database.
+    /// </summary>
+    bool IsSql { get; }
+    
+    /// <summary>
     /// Cria Estrutura do dicionário de dados
     /// </summary>
-    void ExecInitialSetup();
+    void CreateStructure();
 
     /// <summary>
     /// Retorna metadados armazenados no banco de dados

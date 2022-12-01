@@ -16,6 +16,8 @@ public class MongoDictionaryRepository : IDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
 
+    public bool IsSql => false;
+    
     public MongoDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
@@ -27,9 +29,10 @@ public class MongoDictionaryRepository : IDictionaryRepository
         _metadataCollection = mongoDatabase.GetCollection<MongoDBMetadata>(
             options.Value.CollectionName);
     }
-    public void ExecInitialSetup()
+    public void CreateStructure()
     {
-        // MongoDB don't need initial setup. It automatically handle database and table creation at runtime.
+        throw new InvalidOperationException(
+            "MongoDB don't need initial setup. It automatically handle database and table creation at runtime.");
     }
 
     public Metadata GetMetadata(string elementName)
