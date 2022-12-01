@@ -238,13 +238,13 @@ public class DataAccess
         return dt;
     }
 
-
+    ///<inheritdoc cref="GetDataTable(string)"/>
     public async Task<DataTable> GetDataTableAsync(string sql)
     {
         return await GetDataTableAsync(new DataAccessCommand(sql));
     }
 
-    
+    ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
         DbCommand dbCommand = null;
@@ -363,12 +363,13 @@ public class DataAccess
         return scalarResult;
     }
 
+    /// <inheritdoc cref="GetResult(string)"/>
     public async Task<object> GetResultAsync(string sql)
     {
         return await GetResultAsync(new DataAccessCommand(sql));
     }
 
-    
+    /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
     public async Task<object> GetResultAsync(DataAccessCommand cmd)
     {
         object scalarResult;
@@ -465,7 +466,7 @@ public class DataAccess
         return rowsAffected;
     }
 
-    
+    /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(DataAccessCommand cmd)
     {
         int rowsAffected;
@@ -583,7 +584,7 @@ public class DataAccess
         return SetCommand(new DataAccessCommand(sql));
     }
 
-    
+    /// <inheritdoc cref="SetCommand(string)"/>
     public async Task<int> SetCommandAsync(string sql)
     {
         return await SetCommandAsync(new DataAccessCommand(sql));
@@ -604,7 +605,7 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    
+    /// <inheritdoc cref="SetCommand(ArrayList)"/>
     public async Task<int> SetCommandAsync(ArrayList sqlList)
     {
         var cmdList = new List<DataAccessCommand>();
@@ -661,7 +662,7 @@ public class DataAccess
     /// </returns>
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
 
-    
+    /// <inheritdoc cref="GetFields(string)"/>
     public Task<Hashtable> GetFieldsAsync(string sql) => GetFieldsAsync(new DataAccessCommand(sql));
 
     /// <summary>
@@ -722,7 +723,7 @@ public class DataAccess
         return retCollection;
     }
 
-    
+    /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
@@ -808,7 +809,7 @@ public class DataAccess
         return result;
     }
 
-    
+    /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName)
     {
         bool result;
@@ -865,7 +866,7 @@ public class DataAccess
         return result;
     }
 
-    
+    /// <inheritdoc cref="TryConnection"/>
     public async Task<(bool, string)> TryConnectionAsync()
     {
         bool result;
@@ -945,7 +946,7 @@ public class DataAccess
         return true;
     }
 
-    
+    /// <inheritdoc cref="ExecuteBatch(string)"/>
     public async Task<bool> ExecuteBatchAsync(string script)
     {
         string markpar = "GO";
