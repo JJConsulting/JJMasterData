@@ -284,10 +284,11 @@ internal class ActionManager
             case SubmitAction submitAction:
                 link.UrlAction = submitAction.FormAction;
                 string confirmationMessage = submitAction.ConfirmationMessage;
-                if (!string.IsNullOrEmpty(confirmationMessage));
-                {
+                if (!string.IsNullOrWhiteSpace(confirmationMessage))
                     script = $"return confirm('{confirmationMessage}');";
-                }
+                else
+                    script = string.Empty;
+
                 break;
             default:
                 throw new NotImplementedException();
