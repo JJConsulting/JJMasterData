@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="filePath">
-    /// Path relative to the base path stored in <see cref="IConfigurationBuilder.Properties"/>.
+    /// Path relative to the base path stored in IConfigurationBuilder.Properties.
     /// </param>
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
         string filePath = "appsettings.json")
