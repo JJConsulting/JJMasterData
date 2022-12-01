@@ -77,7 +77,7 @@ public class Metadata
             formElement.Fields[i].Order = i + 1;
         }
 
-        Table = formElement.DeepCopy();
+        Table = formElement.DeepCopy<Element>();
         Form = new MetadataForm(formElement);
     }
 

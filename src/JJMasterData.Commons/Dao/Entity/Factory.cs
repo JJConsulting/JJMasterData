@@ -64,11 +64,11 @@ public class Factory : IEntityRepository
     public Hashtable GetFields(Element element, Hashtable filters) => Provider.GetFields(element, filters);
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref int tot) =>
-        Provider.GetDataTable(element, filters, orderby, regperpage, pag, ref tot);
+    public DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regperpage, int pag, ref int tot) =>
+        Provider.GetDataTable(element, (Hashtable)filters, orderby, regperpage, pag, ref tot);
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters) => Provider.GetDataTable(element, filters);
+    public DataTable GetDataTable(Element element, Hashtable filters) => Provider.GetDataTable(element,filters);
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(string)"/>
     public DataTable GetDataTable(string sql) => DataAccess.GetDataTable(sql);

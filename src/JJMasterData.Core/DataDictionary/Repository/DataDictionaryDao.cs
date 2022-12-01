@@ -22,7 +22,7 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
-    public List<Metadata> GetMetadataList(bool? sync)
+    public IList<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 
@@ -33,7 +33,7 @@ public class DictionaryDao : IDictionaryRepository
         string orderby = "name, type";
         string currentName = "";
         int tot = 1;
-        var dt = _entityRepository.GetDataTable(GetStructure(), filter, orderby, 10000, 1, ref tot);
+        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderby, 10000, 1, ref tot);
         Metadata currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
@@ -72,14 +72,14 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
-    public string[] GetNameList()
+    public IEnumerable<string> GetNameList()
     {
         var list = new List<string>();
         int tot = 10000;
         var filter = new Hashtable();
         filter.Add("type", "F");
 
-        var dt = _entityRepository.GetDataTable(GetStructure(), filter, null, tot, 1, ref tot);
+        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, null, tot, 1, ref tot);
         foreach (DataRow row in dt.Rows)
         {
             list.Add(row["name"].ToString());
@@ -96,7 +96,7 @@ public class DictionaryDao : IDictionaryRepository
 
         var filter = new Hashtable();
         filter.Add("name", elementName);
-        DataTable dt = _entityRepository.GetDataTable(GetStructure(), filter);
+        DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
 
@@ -139,7 +139,7 @@ public class DictionaryDao : IDictionaryRepository
         if (string.IsNullOrEmpty(metadata.Table.Name))
             throw new ArgumentNullException(nameof(metadata.Table.Name));
 
-        var element = GetStructure();
+        var element = DataDictionaryStructure.GetElement();
         string name = metadata.Table.Name;
         string jsonTable = JsonConvert.SerializeObject(metadata.Table);
 
@@ -209,11 +209,11 @@ public class DictionaryDao : IDictionaryRepository
         var filters = new Hashtable();
         filters.Add("name", id);
 
-        DataTable dt = _entityRepository.GetDataTable(GetStructure(), filters);
+        DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filters);
         if (dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", id));
 
-        var element = GetStructure();
+        var element = DataDictionaryStructure.GetElement();
         foreach (DataRow row in dt.Rows)
         {
             var delFilter = new Hashtable();
@@ -231,37 +231,27 @@ public class DictionaryDao : IDictionaryRepository
 
         Hashtable filter = new Hashtable();
         filter.Add("name", elementName);
-        int count = _entityRepository.GetCount(GetStructure(), filter);
+        int count = _entityRepository.GetCount(DataDictionaryStructure.GetElement(), filter);
         return count > 0;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.ExecInitialSetup"/>
-    public void ExecInitialSetup()
+    ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>
+    public void CreateStructureIfNotExists()
     {
-        _entityRepository.CreateDataModel(GetStructure());
+        if(!Exists(JJService.Options.TableName))
+            _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetDataTable(Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(Hashtable filters, string orderby, int regperpage, int pag, ref int tot)
+    public DataTable GetDataTable(DataDictionaryFilter filter, string orderby, int regperpage, int pag, ref int tot)
     {
-        var element = GetStructure();
-        return _entityRepository.GetDataTable(element,filters, orderby, regperpage, pag, ref tot);
-    }
+        var element = DataDictionaryStructure.GetElement();
 
-    internal static Element GetStructure()
-    {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
-        element.Fields.AddPK("type", "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
-        element.Fields["type"].EnableOnDelete = false;
-        element.Fields.AddPK("name", "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
-        element.Fields.Add("namefilter", "Dictionary Name", FieldType.NVarchar, 30, false, FilterMode.Contain, FieldBehavior.ViewOnly);
-        element.Fields.Add("tablename", "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
-        element.Fields.Add("info", "Info", FieldType.NVarchar, 150, false, FilterMode.None);
-        element.Fields.Add("owner", "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
-        element.Fields.Add("sync", "Sync", FieldType.Varchar, 1, false, FilterMode.Equal);
-        element.Fields.Add("modified", "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
-        element.Fields.Add("json", "Object", FieldType.Text, 0, false, FilterMode.None);
-        return element;
+        var filters = filter.ToHashtable();
+        
+        filters.Add("type","F");
+        
+        return _entityRepository.GetDataTable(element, filters, orderby, regperpage, pag, ref tot);
     }
 
     private void ApplyCompatibility(Metadata dicParser, string elementName)

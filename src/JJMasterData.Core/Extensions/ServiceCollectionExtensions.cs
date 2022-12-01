@@ -20,7 +20,5 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDictionaryRepository, DictionaryDao>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, TextWriter>();
-
-
     }
 }

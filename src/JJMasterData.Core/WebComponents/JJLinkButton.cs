@@ -84,7 +84,7 @@ public class JJLinkButton : JJBaseView, IAction
         {
             html.Tag.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
-            html.WithAttribute("form-action", UrlAction);
+            html.WithAttribute("formaction", UrlAction);
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else if (Type == LinkButtonType.Button)

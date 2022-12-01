@@ -14,7 +14,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -67,43 +69,43 @@ public class ElementService : BaseService
 
     public void ExecScriptsMasterData()
     {
-        DictionaryRepository.ExecInitialSetup();
+        DictionaryRepository.CreateStructureIfNotExists();
     }
 
     #endregion
 
     #region Add Dictionary
 
-    public FormElement CreateEntity(string tableName, bool importFields)
+    public Element CreateEntity(string tableName, bool importFields)
     {
         if (!ValidateEntity(tableName, importFields))
             return null;
 
-        FormElement formElement;
+        Element element;
         if (importFields)
         {
-            var element = _entityRepository.GetElementFromTable(tableName);
-            formElement = new FormElement(element);
+            element = _entityRepository.GetElementFromTable(tableName);
         }
         else
         {
-            formElement = new FormElement();
+            element  = new Element
+            {
+                TableName = tableName,
+                Name = GetDictionaryName(tableName),
+                CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
+            };
         }
-
-        formElement.TableName = tableName;
-        formElement.Name = GetDictionaryName(tableName);
-        formElement.CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName);
-        formElement.CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName);
-
-        var dictionary = new Metadata
+        
+        var metadata = new Metadata
         {
-            Table = formElement.DeepCopy(),
-            Form = new MetadataForm(formElement)
+            Table = element.DeepCopy(),
+            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
         };
 
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DictionaryRepository.InsertOrReplace(metadata);
 
-        return formElement;
+        return element;
     }
 
     public bool ValidateEntity(string tableName, bool importFields)
@@ -183,25 +185,22 @@ public class ElementService : BaseService
 
     public JJFormView GetFormView()
     {
-        var element = DictionaryDao.GetStructure();
-        var formElement = new FormElement(element);
-
-        formElement.Title = "JJMasterData";
+        var element = DataDictionaryStructure.GetElement();
+        var formElement = new FormElement(element)
+        {
+            Title = "JJMasterData"
+        };
         formElement.Fields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
-
         formElement.Fields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
         formElement.Fields["json"].Component = FormComponent.TextArea;
         formElement.Fields["json"].Export = false;
-
         formElement.Fields["type"].VisibleExpression = "val:0";
         formElement.Fields["type"].DefaultValue = "val:F";
         formElement.Fields["type"].Component = FormComponent.ComboBox;
         formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
         formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
-
         formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-
         formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields["sync"].Component = FormComponent.ComboBox;
         formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
@@ -209,9 +208,14 @@ public class ElementService : BaseService
 
         formElement.Fields["modified"].Component = FormComponent.DateTime;
 
-        var formView = new JJFormView(formElement);
-        formView.Name = "List";
-        formView.FilterAction.ExpandedByDefault = true;
+        var formView = new JJFormView(formElement)
+        {
+            Name = "List",
+            FilterAction =
+            {
+                ExpandedByDefault = true
+            }
+        };
         formView.DataPanel.UISettings.FormCols = 2;
         formView.MaintainValuesOnLoad = true;
         formView.EnableMultSelect = true;
@@ -219,8 +223,7 @@ public class ElementService : BaseService
         formView.EditAction.SetVisible(false);
         formView.InsertAction.SetVisible(false);
         formView.DeleteAction.SetVisible(false);
-        formView.DeleteSelectedRowsAction.SetVisible(true);
-        formView.DeleteSelectedRowsAction.ConfirmationMessage = "Are you sure you want to DELETE all selected records?";
+        formView.DeleteSelectedRowsAction.SetVisible(false);
 
         formView.ViewAction.IsGroup = true;
         formView.ViewAction.Text = "Details";
@@ -229,15 +232,19 @@ public class ElementService : BaseService
         if (!formView.CurrentFilter.ContainsKey("type"))
             formView.CurrentFilter.Add("type", "F");
 
-        formView.OnDataLoad += FormView_OnDataLoad;
+        formView.OnDataLoad += FormViewOnDataLoad;
 
         return formView;
     }
 
-    private void FormView_OnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
         int tot = e.Tot;
-        e.DataSource = DictionaryRepository.GetDataTable(e.Filters, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+
+        var filter = DataDictionaryFilter.GetInstance(e.Filters);
+        
+        e.DataSource = DictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+        
         e.Tot = tot;
     }
 
@@ -329,5 +336,8 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists() => JJService.EntityRepository.TableExists(JJService.Options.TableName);
+    public void CreateStructureIfNotExists()
+    {
+        
+    }
 }

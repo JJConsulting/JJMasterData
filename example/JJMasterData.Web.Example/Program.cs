@@ -1,3 +1,4 @@
+using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
@@ -17,7 +18,13 @@ public class Program
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
 
-        builder.Services.AddJJMasterDataWeb(settingsPath).WithFormEvents();
+        builder.Services.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
+        {
+            var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
+            mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
+            mongo.CollectionName = section.GetValue<string>("CollectionName")!;
+            mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
+        });
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

@@ -47,7 +47,7 @@ public class DictionariesService
         foreach (var os in listSync)
         {
             var dStartObj = DateTime.Now;
-            var dictionary = dictionaries.Find(x => x.Table.Name.Equals(os.Name));
+            var dictionary = dictionaries.First(x => x.Table.Name.Equals(os.Name));
             if (dictionary == null)
                 throw new Exception(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
 

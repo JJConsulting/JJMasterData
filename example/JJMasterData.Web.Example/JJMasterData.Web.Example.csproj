@@ -14,6 +14,7 @@
   
     <ItemGroup>
       <ProjectReference Include="..\..\src\JJMasterData.Web\JJMasterData.Web.csproj" />
+      <ProjectReference Include="..\..\src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj" />
     </ItemGroup>
   
 </Project>

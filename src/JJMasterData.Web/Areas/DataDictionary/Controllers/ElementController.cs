@@ -28,11 +28,9 @@ public class ElementController : DataDictionaryController
     {
         try
         {
-            if (_elementService.JJMasterDataTableExists())
-            {
-                var model = GetEntityFormView();
-                return View(model);
-            }
+            _elementService.CreateStructureIfNotExists();
+            var model = GetEntityFormView();
+            return View(model);
         }
         catch(DataAccessException)
         {
@@ -125,10 +123,10 @@ public class ElementController : DataDictionaryController
     [HttpPost]
     public IActionResult Add(string tableName, bool importFields)
     {
-        var formElement = _elementService.CreateEntity(tableName, importFields);
-        if (formElement != null)
+        var element = _elementService.CreateEntity(tableName, importFields);
+        if (element != null)
         {
-            return RedirectToAction("Index", "Entity", new { dictionaryName = formElement.Name });
+            return RedirectToAction("Index", "Entity", new { dictionaryName = element.Name });
         }
 
         var jjValidationSummary = _elementService.GetValidationSummary();
@@ -305,19 +303,45 @@ public class ElementController : DataDictionaryController
         };
 
         formView.AddToolBarAction(btnResources);
+        
+        formView.AddToolBarAction(new SubmitAction()
+        {
+            Name = "btnDeleteMetadata",
+            Order = 0,
+            Icon = IconType.Trash,
+            Text = Translate.Key("Delete Selected"),
+            IsGroup = false,
+            ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
+            ShowAsButton = true,
+            FormAction = Url.Action("Delete","Element")
+        });
 
         formView.OnRenderAction += OnRenderAction;
 
         return formView;
     }
 
-    public ActionResult Theme()
+    public IActionResult Theme()
     {
         var theme = _themeService.GetTheme();
 
         _themeService.SetTheme(theme == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light);
 
-        return Redirect(nameof(Index));
+        return RedirectToAction(nameof(Index));
+    }
+    
+    public IActionResult Delete()
+    {
+        var formView = GetEntityFormView();
+
+        var selectedGridValues = formView.GetSelectedGridValues();
+
+        selectedGridValues
+            .Select(value => value["name"]!.ToString()!)
+            .ToList()
+            .ForEach(metadata=> _elementService.DictionaryRepository.Delete(metadata));
+        
+        return RedirectToAction(nameof(Index));
     }
 
     private JJFormView GetFormView()
@@ -325,7 +349,7 @@ public class ElementController : DataDictionaryController
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
         formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-
+        
         return formView;
     }
 

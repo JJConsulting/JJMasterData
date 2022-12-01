@@ -188,7 +188,7 @@ public class RelationsController : DataDictionaryController
     public void PopulatePkTable()
     {
         var listItem = new List<SelectListItem>();
-        string[] list = _relationsService.DictionaryRepository.GetNameList();
+        IEnumerable<string> list = _relationsService.DictionaryRepository.GetNameList();
 
         foreach (string name in list)
         {

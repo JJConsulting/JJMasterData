@@ -232,6 +232,7 @@ internal class ActionManager
             IsDefaultOption = action.IsDefaultOption,
             DividerLine = action.DividerLine,
             ShowAsButton = action.ShowAsButton,
+            Type = action is SubmitAction ? LinkButtonType.Submit : default,
             CssClass = action.CssClass,
             IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw",
             Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
@@ -273,23 +274,23 @@ internal class ActionManager
             case LegendAction:
                 script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
                 break;
-            default:
-            {
-                if (action is SqlCommandAction | action is PythonScriptAction)
-                {
-                    script = GetCommandScript(action, formValues, contextAction);
-                }
-                else if (action is SortAction)
-                {
-                    script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
+            case SqlCommandAction:
+            case PythonScriptAction:
+                script = GetCommandScript(action, formValues, contextAction);
                 break;
-            }
+            case SortAction:
+                script = BootstrapHelper.GetModalScript($"sort_modal_{ComponentName}");
+                break;
+            case SubmitAction submitAction:
+                link.UrlAction = submitAction.FormAction;
+                string confirmationMessage = submitAction.ConfirmationMessage;
+                if (!string.IsNullOrEmpty(confirmationMessage));
+                {
+                    script = $"return confirm('{confirmationMessage}');";
+                }
+                break;
+            default:
+                throw new NotImplementedException();
         }
 
         link.OnClientClick = script;

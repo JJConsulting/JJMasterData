@@ -101,7 +101,7 @@ public abstract class BaseService
         var dicElement = new Dictionary<string, string>();
         dicElement.Add(string.Empty, Translate.Key("--Select--"));
 
-        string[] list = DictionaryRepository.GetNameList();
+        IEnumerable<string> list = DictionaryRepository.GetNameList();
         foreach (string name in list)
         {
             dicElement.Add(name, name);
