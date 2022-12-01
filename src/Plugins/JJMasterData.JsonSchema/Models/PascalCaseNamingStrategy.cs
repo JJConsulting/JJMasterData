@@ -21,7 +21,7 @@ public class PascalCaseNamingStrategy : NamingStrategy
     /// </param>
     /// <param name="overrideSpecifiedNames">
     /// A flag indicating whether explicitly specified property names should be processed,
-    /// e.g. a property name customized with a <see cref="JsonPropertyAttribute"/>.
+    /// e.g. a property name customized with a JsonPropertyAttribute.
     /// </param>
     public PascalCaseNamingStrategy(bool processDictionaryKeys, bool overrideSpecifiedNames)
     {

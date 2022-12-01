@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>10</LangVersion>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
