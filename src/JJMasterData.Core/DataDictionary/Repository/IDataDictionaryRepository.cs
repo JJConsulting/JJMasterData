@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -7,56 +6,64 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 public interface IDictionaryRepository
 {
     /// <summary>
-    /// Cria Estrutura do dicionário de dados
+    /// Create Data Dictionary Structure
     /// </summary>
     void CreateStructureIfNotExists();
 
     /// <summary>
-    /// Retorna metadados armazenados no banco de dados
+    /// Returns metadata stored in the database
     /// </summary>
-    /// <param name="elementName"></param>
     /// <returns>
-    /// Retorna Objeto armazenado no banco. 
-    /// Responsável por montar o Element, FormElement 
-    /// e outras configurações de layout
+    /// Returns Object stored in the database.
+    /// Responsible for assembling the Element, FormElement and other layout settings
     /// </returns>
-    Metadata GetMetadata(string elementName);
+    Metadata GetMetadata(string dictionaryName);
 
     /// <summary>
-    /// Recupera uma lista de metadados armazenados no banco de dados
+    /// Retrieves a list of metadata stored in the database
     /// </summary>
     /// <param name="sync">
-    /// true=Somente itens que serão sincronizados. 
-    /// false=Somente itens sem sincronismo
-    /// null=Todos
+    /// true=Only items that will be sync. 
+    /// false=Only not sync items
+    /// null=All
     /// </param>
     /// <remarks>
-    /// Metodo normalmente utilizado para sincronismo do dicionários entre sistemas.
-    /// Permitindo remondar a herança original no sistema legado.
+    /// Method normally used for synchronizing dictionaries between systems.
+    /// Allowing to rebuild the original inheritance in the legacy system.
     /// </remarks>
     IList<Metadata> GetMetadataList(bool? sync);
 
     /// <summary>
-    /// Recupera a lista com os nomes do dicionario
+    /// Retrieve the list of names from the dictionary
     /// </summary>
     IEnumerable<string> GetNameList();
-
     
-    DataTable GetDataTable(DataDictionaryFilter filters, string orderby, int regperpage, int pag, ref int tot);
-
     /// <summary>
-    /// Verifica se o dicionário existe
+    /// Returns records from the database based on the filter.    
     /// </summary>
-    bool Exists(string elementName);
+    /// <param name="filters">Available filters</param>
+    /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
+    /// <param name="recordsPerPage">Number of records to be displayed per page</param>
+    /// <param name="currentPage">Current page</param>
+    /// <param name="totalRecords">If the value is zero, it returns as a reference the number of records based on the filter.</param>
+    /// <returns>
+    /// Returns a DataTable with the records found.
+    /// If no record is found it returns null.
+    /// </returns>
+    DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <summary>
-    /// Persiste o dicionário no banco de dados
+    /// Checks if the dictionary exists
+    /// </summary>
+    bool Exists(string dictionaryName);
+
+    /// <summary>
+    /// Persist the dictionary
     /// </summary>
     void InsertOrReplace(Metadata metadata);
 
     /// <summary>
-    /// Exclui o elemento no banco de dados
+    /// Delete the dictionary
     /// </summary>
-    /// <param name="id">Nome do dicionário</param>
-    void Delete(string id);
+    void Delete(string dictionaryName);
 }

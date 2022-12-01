@@ -120,17 +120,17 @@ internal abstract class BaseProvider
         return DataAccess.GetFields(cmd);
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot)
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Dao.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    public DataTable GetDataTable(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref int tot)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
-        if (!ValidateOrderByClause(element, orderby))
+        if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
         DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
+        var cmd = GetCommandRead(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
         DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
         if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
@@ -165,28 +165,28 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag,
+    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
         bool showLogInfo, string delimiter = "|")
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
-        if (!ValidateOrderByClause(element, orderby))
+        if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
         var plainTextWriter = new PlainTextReader(this);
         plainTextWriter.ShowLogInfo = showLogInfo;
         plainTextWriter.Delimiter = delimiter;
 
-        return plainTextWriter.GetListFieldsAsText(element, filters, orderby, regporpag, pag);
+        return plainTextWriter.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage);
     }
 
-    private bool ValidateOrderByClause(Element element, string orderby)
+    private bool ValidateOrderByClause(Element element, string orderBy)
     {
-        if (string.IsNullOrEmpty(orderby))
+        if (string.IsNullOrEmpty(orderBy))
             return true;
 
-        var clauses = orderby.Split(',');
+        var clauses = orderBy.Split(',');
         foreach (string clause in clauses)
         {
             if (!string.IsNullOrEmpty(clause))

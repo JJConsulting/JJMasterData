@@ -63,9 +63,9 @@ public class Factory : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
     public Hashtable GetFields(Element element, Hashtable filters) => Provider.GetFields(element, filters);
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regperpage, int pag, ref int tot) =>
-        Provider.GetDataTable(element, (Hashtable)filters, orderby, regperpage, pag, ref tot);
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
+        Provider.GetDataTable(element, (Hashtable)filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
     public DataTable GetDataTable(Element element, Hashtable filters) => Provider.GetDataTable(element,filters);
@@ -107,7 +107,7 @@ public class Factory : IEntityRepository
     public Element GetElementFromTable(string tableName) => Provider.GetElementFromTable(tableName);
 
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag, bool showLogInfo, string delimiter = "|") =>
-        Provider.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo, delimiter);
+    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
+        Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
 
 }

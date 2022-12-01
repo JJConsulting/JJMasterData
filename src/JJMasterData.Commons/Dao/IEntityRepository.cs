@@ -11,9 +11,9 @@ public interface IEntityRepository
     /// </summary>
     /// <param name="element">Estruture basic from a table</param>
     /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
-    /// <param name="regporpag">Number of records to be displayed per page</param>
-    /// <param name="pag">Current page</param>
+    /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
+    /// <param name="recordsPerPage">Number of records to be displayed per page</param>
+    /// <param name="currentPage">Current page</param>
     /// <param name="showLogInfo">Records detailed log of each operation</param>
     /// <param name="delimiter">Field delimiter in text file (default is pipe)</param>
     /// <returns>
@@ -27,22 +27,22 @@ public interface IEntityRepository
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag, bool showLogInfo, string delimiter = "|");
+    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
 
     /// <summary>
     /// Returns records from the database based on the filter.    
     /// </summary>
     /// <param name="element">Base element with the basic structure of the table.</param>
     /// <param name="filters">List of filters to be used. [key(database field), value(value stored in database)]</param>
-    /// <param name="orderby">Record Order, field followed by ASC or DESC</param>
-    /// <param name="regperpage">Number of records to be displayed per page</param>
-    /// <param name="pag">Current page</param>
-    /// <param name="tot">If the value is zero, it returns as a reference the number of records based on the filter.</param>
+    /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
+    /// <param name="recordsPerPage">Number of records to be displayed per page</param>
+    /// <param name="currentPage">Current page</param>
+    /// <param name="totalRecords">If the value is zero, it returns as a reference the number of records based on the filter.</param>
     /// <returns>
     /// Returns a DataTable with the records found.
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regperpage, int pag, ref int tot);
+    public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <summary>
     /// Returns records from the database based on the filter.  

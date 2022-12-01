@@ -30,10 +30,10 @@ public class DictionaryDao : IDictionaryRepository
         if (sync.HasValue)
             filter.Add("sync", (bool)sync ? "1" : "0");
 
-        string orderby = "name, type";
+        string orderBy = "name, type";
         string currentName = "";
         int tot = 1;
-        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderby, 10000, 1, ref tot);
+        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderBy, 10000, 1, ref tot);
         Metadata currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
@@ -89,16 +89,16 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
-    public Metadata GetMetadata(string elementName)
+    public Metadata GetMetadata(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary invalid"));
+        if (string.IsNullOrEmpty(dictionaryName))
+            throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
 
         var filter = new Hashtable();
-        filter.Add("name", elementName);
+        filter.Add("name", dictionaryName);
         DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter);
         if (dt.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", elementName));
+            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
 
         var metadata = new Metadata();
         foreach (DataRow row in dt.Rows)
@@ -122,7 +122,7 @@ public class DictionaryDao : IDictionaryRepository
             }
         }
 
-        ApplyCompatibility(metadata, elementName);
+        ApplyCompatibility(metadata, dictionaryName);
 
         return metadata;
     }
@@ -201,23 +201,23 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.Delete"/>
-    public void Delete(string id)
+    public void Delete(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentException();
 
         var filters = new Hashtable();
-        filters.Add("name", id);
+        filters.Add("name", dictionaryName);
 
         DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filters);
         if (dt.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", id));
+            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
 
         var element = DataDictionaryStructure.GetElement();
         foreach (DataRow row in dt.Rows)
         {
             var delFilter = new Hashtable();
-            delFilter.Add("name", id);
+            delFilter.Add("name", dictionaryName);
             delFilter.Add("type", row["type"].ToString());
             _entityRepository.Delete(element, delFilter);
         }
@@ -242,8 +242,8 @@ public class DictionaryDao : IDictionaryRepository
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetDataTable(Hashtable, string, int, int, ref int)"/>
-    public DataTable GetDataTable(DataDictionaryFilter filter, string orderby, int regperpage, int pag, ref int tot)
+    ///<inheritdoc cref="IDictionaryRepository.GetDataTable"/>
+    public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
 
@@ -251,7 +251,7 @@ public class DictionaryDao : IDictionaryRepository
         
         filters.Add("type","F");
         
-        return _entityRepository.GetDataTable(element, filters, orderby, regperpage, pag, ref tot);
+        return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
     }
 
     private void ApplyCompatibility(Metadata dicParser, string elementName)

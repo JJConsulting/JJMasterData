@@ -26,13 +26,16 @@ public class MongoDictionaryRepository : IDictionaryRepository
             options.Value.CollectionName);
     }
 
+    ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists(){}
 
-    public Metadata GetMetadata(string elementName)
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
+    public Metadata GetMetadata(string dictionaryName)
     {
-        return _metadataCollection.Find(metadata=> metadata.Table.Name == elementName).FirstOrDefault();
+        return _metadataCollection.Find(metadata=> metadata.Table.Name == dictionaryName).FirstOrDefault();
     }
 
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
     public IList<Metadata> GetMetadataList(bool? sync)
     {
         var dbMetadataCollection =  _metadataCollection.Find(_ => true).ToList();
@@ -40,12 +43,14 @@ public class MongoDictionaryRepository : IDictionaryRepository
         return dbMetadataCollection.Select(MongoDBMetadataMapper.FromMongoDBMetadata).ToList();
     }
 
+    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
         return _metadataCollection.Find(_ => true).ToList().Select(metadata => metadata.Table.Name).ToList();
     }
 
-    public DataTable GetDataTable(DataDictionaryFilter filters, string orderby, int regperpage, int pag, ref int tot)
+    ///<inheritdoc cref="IDictionaryRepository.GetDataTable"/>
+    public DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
 
@@ -60,18 +65,19 @@ public class MongoDictionaryRepository : IDictionaryRepository
             metadataFinder = _metadataCollection.Find(bsonFilter);
         }
 
-        if (!string.IsNullOrEmpty(orderby))
+        if (!string.IsNullOrEmpty(orderBy))
         {
-            var orderByMapper = MapOrderBy(orderby);
+            var orderByMapper = MapOrderBy(orderBy);
 
             metadataFinder.Sort(new BsonDocument(orderByMapper.ToDictionary()));
         }
-
-        tot = (int)metadataFinder.CountDocuments();
+        
+        if (totalRecords <= 0)
+            totalRecords = (int)metadataFinder.CountDocuments();
         
         var metadataList = metadataFinder
-            .Skip((pag - 1) * regperpage)
-            .Limit(regperpage)
+            .Skip((currentPage - 1) * recordsPerPage)
+            .Limit(recordsPerPage)
             .ToList();
         
         var values = new List<IDictionary>();
@@ -84,11 +90,13 @@ public class MongoDictionaryRepository : IDictionaryRepository
         return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values.Where(v=>(string)v["type"]! =="F")))!;
     }
     
-    public bool Exists(string elementName)
+    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
+    public bool Exists(string dictionaryName)
     {
-        return _metadataCollection.Find(metadata => metadata.Table.Name == elementName).ToList().Count > 0;
+        return _metadataCollection.Find(metadata => metadata.Table.Name == dictionaryName).ToList().Count > 0;
     }
 
+    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
     public void InsertOrReplace(Metadata metadata)
     {
         var mongoDbMetadata = MongoDBMetadataMapper.FromMetadata(metadata);
@@ -101,9 +109,10 @@ public class MongoDictionaryRepository : IDictionaryRepository
             replacement: mongoDbMetadata);
     }
 
-    public void Delete(string id)
+    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
+    public void Delete(string dictionaryName)
     {
-        _metadataCollection.DeleteOne(metadata => metadata.Table.Name == id);
+        _metadataCollection.DeleteOne(metadata => metadata.Table.Name == dictionaryName);
     }
 
     private static IDictionary MapStructureFields(DataDictionaryFilter filter)
@@ -136,10 +145,10 @@ public class MongoDictionaryRepository : IDictionaryRepository
         return filters;
     }
     
-    private static MongoDBOrderByMapper MapOrderBy(string orderby)
+    private static MongoDBOrderByMapper MapOrderBy(string orderBy)
     {
-        string name = orderby.Split(" ")[0];
-        string type = orderby.Split(" ")[1];
+        string name = orderBy.Split(" ")[0];
+        string type = orderBy.Split(" ")[1];
         
         return name switch
         {
@@ -148,7 +157,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
             "modified" => new MongoDBOrderByMapper("LastModified", type),
             "info" => new MongoDBOrderByMapper("Table.Info", type),
             "sync" => new MongoDBOrderByMapper("Table.Sync", type),
-            _ => throw new ArgumentException(orderby)
+            _ => throw new ArgumentException(orderBy)
         };
     }
 
