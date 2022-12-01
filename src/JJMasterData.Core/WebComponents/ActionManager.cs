@@ -301,7 +301,6 @@ internal class ActionManager
 
     public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
     {
-
         var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
 
         try

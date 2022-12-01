@@ -1,5 +1,6 @@
 ﻿@model JJMasterData.Web.Areas.MasterData.Models.ViewModel.FormViewModel
 
-<form>
+@using (Html.BeginForm())
+{
     <jj-form-view element-name="@Model.DictionaryName" configure-form-view="Model.ConfigureFormView"/>
-</form>
+}

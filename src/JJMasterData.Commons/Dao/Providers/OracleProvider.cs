@@ -842,15 +842,15 @@ internal class OracleProvider : BaseProvider
         return cmd;
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regperpage, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = JJMasterDataOptions.GetReadProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderby));
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", regperpage));
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "pag", pag));
+        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderBy));
+        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", recordsPerPage));
+        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "pag", currentPage));
 
         foreach (var field in element.Fields)
         {

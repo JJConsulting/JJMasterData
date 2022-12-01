@@ -25,7 +25,7 @@ internal abstract class BaseProvider
     public abstract DataAccessCommand GetCommandInsert(Element element, Hashtable values);
     public abstract DataAccessCommand GetCommandUpdate(Element element, Hashtable values);
     public abstract DataAccessCommand GetCommandDelete(Element element, Hashtable filters);
-    public abstract DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot);
+    public abstract DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
     public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values);
 
     ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>

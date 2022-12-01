@@ -10,10 +10,7 @@ namespace JJMasterData.Commons.Dao.Providers;
 
 internal class ProviderSQLite : BaseProvider
 {
-    private const string INSERT = "I";
-    private const string UPDATE = "A";
-    private const string DELETE = "E";
-    private const string TAB = "\t";
+    private const string Tab = "\t";
     public override string VariablePrefix => "@";
 
     public ProviderSQLite(DataAccess dataAccess) : base(dataAccess)
@@ -46,7 +43,7 @@ internal class ProviderSQLite : BaseProvider
             else
                 sSql.AppendLine(",");
 
-            sSql.Append(TAB);
+            sSql.Append(Tab);
             sSql.Append("[");
             sSql.Append(f.Name);
             sSql.Append("] ");
@@ -83,7 +80,7 @@ internal class ProviderSQLite : BaseProvider
             {
                 isFirst = false;
                 sSql.AppendLine(",");
-                sSql.Append(TAB);
+                sSql.Append(Tab);
                 sSql.Append("PRIMARY KEY (");
             }
             else
@@ -123,18 +120,18 @@ internal class ProviderSQLite : BaseProvider
                 sSql.Append("] ON ");
                 sSql.AppendLine(element.TableName);
 
-                sSql.Append(TAB);
+                sSql.Append(Tab);
                 sSql.AppendLine("(");
                 for (int i = 0; i < index.Columns.Count; i++)
                 {
                     if (i > 0)
                         sSql.AppendLine(", ");
 
-                    sSql.Append(TAB);
+                    sSql.Append(Tab);
                     sSql.Append(index.Columns[i]);
                 }
                 sSql.AppendLine("");
-                sSql.Append(TAB);
+                sSql.Append(Tab);
                 sSql.AppendLine(")");
                 sSql.AppendLine("GO");
                 nIndex++;
@@ -152,15 +149,13 @@ internal class ProviderSQLite : BaseProvider
         if (element.Relations.Count > 0)
         {
             sSql.AppendLine("-- RELATIONS");
-            var listContraint = new List<string>();
+            var listConstraint = new List<string>();
             foreach (var r in element.Relations)
             {
-                string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
-
-                //Tratamento para nome repedido de contraint
-                if (!listContraint.Contains(contraintName))
+                string constraintName = $"FK_{r.ChildElement}_{element.TableName}";
+                if (!listConstraint.Contains(constraintName))
                 {
-                    listContraint.Add(contraintName);
+                    listConstraint.Add(constraintName);
                 }
                 else
                 {
@@ -168,10 +163,10 @@ internal class ProviderSQLite : BaseProvider
                     int nCount = 1;
                     while (hasContraint)
                     {
-                        if (!listContraint.Contains(contraintName + nCount))
+                        if (!listConstraint.Contains(constraintName + nCount))
                         {
-                            contraintName = contraintName + nCount;
-                            listContraint.Add(contraintName);
+                            constraintName += nCount;
+                            listConstraint.Add(constraintName);
                             hasContraint = false;
                         }
                         nCount++;
@@ -181,9 +176,9 @@ internal class ProviderSQLite : BaseProvider
                 sSql.Append("ALTER TABLE ");
                 sSql.AppendLine(r.ChildElement);
                 sSql.Append("ADD CONSTRAINT [");
-                sSql.Append(contraintName);
+                sSql.Append(constraintName);
                 sSql.AppendLine("] ");
-                sSql.Append(TAB);
+                sSql.Append(Tab);
                 sSql.Append("FOREIGN KEY (");
 
                 for (int rc = 0; rc < r.Columns.Count; rc++)
@@ -196,7 +191,7 @@ internal class ProviderSQLite : BaseProvider
                     sSql.Append("]");
                 }
                 sSql.AppendLine(")");
-                sSql.Append(TAB);
+                sSql.Append(Tab);
                 sSql.Append("REFERENCES ");
                 sSql.Append(element.TableName);
                 sSql.Append(" (");
@@ -214,14 +209,14 @@ internal class ProviderSQLite : BaseProvider
                 if (r.UpdateOnCascade)
                 {
                     sSql.AppendLine("");
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (r.DeleteOnCascade)
                 {
                     sSql.AppendLine("");
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("ON DELETE CASCADE ");
                 }
 
@@ -263,7 +258,7 @@ internal class ProviderSQLite : BaseProvider
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var isFirst = true;
         var sSql = new StringBuilder();
@@ -275,13 +270,13 @@ internal class ProviderSQLite : BaseProvider
         {
             if (isFirst)
             {
-                sSql.Append(TAB).Append(TAB);
+                sSql.Append(Tab).Append(Tab);
                 sSql.Append(" WHERE ");
                 isFirst = false;
             }
             else
             {
-                sSql.Append(TAB).Append(TAB);
+                sSql.Append(Tab).Append(Tab);
                 sSql.Append("AND ");
             }
 
@@ -291,17 +286,17 @@ internal class ProviderSQLite : BaseProvider
 
         }
 
-        if (!string.IsNullOrEmpty(orderby))
+        if (!string.IsNullOrEmpty(orderBy))
         {
             sSql.Append(" ORDER BY ");
-            sSql.Append(orderby);
+            sSql.Append(orderBy);
         }
 
-        if (pTot != null && (int)pTot.Value == 0 && regporpag > 0)
+        if (pTot != null && (int)pTot.Value == 0 && recordsPerPage > 0)
         {
-            var offset = (pag - 1) * regporpag;
+            var offset = (currentPage - 1) * recordsPerPage;
             sSql.Append("LIMIT ");
-            sSql.Append(regporpag);
+            sSql.Append(recordsPerPage);
             sSql.Append(" OFFSET");
             sSql.Append(offset);
         }
@@ -438,13 +433,13 @@ internal class ProviderSQLite : BaseProvider
             {
                 if (isFirst)
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("AND ");
                 }
 
@@ -487,21 +482,19 @@ internal class ProviderSQLite : BaseProvider
 
         sSql.Append("DELETE FROM ");
         sSql.Append(element.TableName);
-
-        isFirst = true;
         foreach (var f in fields)
         {
             if (f.IsPk)
             {
                 if (isFirst)
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("AND ");
                 }
 
@@ -595,13 +588,13 @@ internal class ProviderSQLite : BaseProvider
             {
                 if (isFirst)
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(TAB).Append(TAB);
+                    sSql.Append(Tab).Append(Tab);
                     sSql.Append("AND ");
                 }
 

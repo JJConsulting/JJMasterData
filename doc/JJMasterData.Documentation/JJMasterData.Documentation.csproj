@@ -8,6 +8,9 @@
     <Compile Remove="lib\**" />
     <EmbeddedResource Remove="lib\**" />
     <None Remove="lib\**" />
+    <Compile Remove="restapi\**" />
+    <EmbeddedResource Remove="restapi\**" />
+    <None Remove="restapi\**" />
   </ItemGroup>
 
   <ItemGroup>
