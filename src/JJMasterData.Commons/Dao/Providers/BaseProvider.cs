@@ -28,7 +28,7 @@ internal abstract class BaseProvider
     public abstract DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref DataAccessParameter pTot);
     public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values);
 
-    ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
+    
     public void Insert(Element element, Hashtable values)
     {
         var command = GetCommandInsert(element, values);
@@ -49,7 +49,7 @@ internal abstract class BaseProvider
         }
     }
 
-    ///<inheritdoc cref="IEntityRepository.Update(Element, Hashtable)"/>
+    
     public int Update(Element element, Hashtable values)
     {
         var cmd = GetCommandUpdate(element, values);
@@ -57,7 +57,7 @@ internal abstract class BaseProvider
         return numberRowsAffected;
     }
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable)"/>
+    
     public CommandOperation SetValues(Element element, Hashtable values)
     {
         var commandType = CommandOperation.None;
@@ -94,7 +94,7 @@ internal abstract class BaseProvider
         return commandType;
     }
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable, bool)"/>
+    
     public CommandOperation SetValues(Element element, Hashtable values, bool ignoreResults)
     {
         if (ignoreResults)
@@ -103,7 +103,7 @@ internal abstract class BaseProvider
         return SetValues(element, values);
     }
 
-    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
+    
     public int Delete(Element element, Hashtable filters)
     {
         var cmd = GetCommandDelete(element, filters);
@@ -111,7 +111,7 @@ internal abstract class BaseProvider
         return numberRowsAffected;
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
+    
     public Hashtable GetFields(Element element, Hashtable filters)
     {
         DataAccessParameter pTot =
@@ -120,7 +120,7 @@ internal abstract class BaseProvider
         return DataAccess.GetFields(cmd);
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Dao.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    
     public DataTable GetDataTable(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref int tot)
     {
         if (element == null)
@@ -139,14 +139,14 @@ internal abstract class BaseProvider
         return dt;
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
+    
     public DataTable GetDataTable(Element element, Hashtable filters)
     {
         int tot = 1;
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
+    
     public int GetCount(Element element, Hashtable filters)
     {
         int tot = 0;
@@ -154,7 +154,7 @@ internal abstract class BaseProvider
         return tot;
     }
 
-    ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
+    
     public void CreateDataModel(Element element)
     {
         var scriptSql = new StringBuilder();
@@ -164,7 +164,7 @@ internal abstract class BaseProvider
         DataAccess.ExecuteBatch(scriptSql.ToString());
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
+    
     public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
         bool showLogInfo, string delimiter = "|")
     {

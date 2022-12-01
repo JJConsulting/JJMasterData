@@ -338,9 +338,7 @@ public class JJSearchBox : JJBaseControl
         return null;
     }
 
-    /// <summary>
-    /// <inheritdoc cref="GetValues(string)"/>
-    /// </summary>
+    
     private List<DataItemValue> GetValues(string searchText, string searchId)
     {
         if (DataItem == null)

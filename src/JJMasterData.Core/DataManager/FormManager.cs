@@ -12,13 +12,13 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormManager
 {
-    /// <inheritdoc cref="Commons.Dao.Entity.Factory"/>
+    
     public IEntityRepository EntityRepository => Expression.EntityRepository;
 
-    /// <inheritdoc cref="ExpressionManager"/>
+    
     public ExpressionManager Expression { get; private set; }
 
-    /// <inheritdoc cref="FormElement"/>
+    
     public FormElement FormElement { get; private set; }
 
     public FormManager(FormElement formElement, ExpressionManager expression)

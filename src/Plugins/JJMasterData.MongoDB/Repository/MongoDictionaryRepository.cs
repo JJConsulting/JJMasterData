@@ -26,16 +26,16 @@ public class MongoDictionaryRepository : IDictionaryRepository
             options.Value.CollectionName);
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>
+    
     public void CreateStructureIfNotExists(){}
 
-    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
+    
     public Metadata GetMetadata(string dictionaryName)
     {
         return _metadataCollection.Find(metadata=> metadata.Table.Name == dictionaryName).FirstOrDefault();
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
+    
     public IList<Metadata> GetMetadataList(bool? sync)
     {
         var dbMetadataCollection =  _metadataCollection.Find(_ => true).ToList();
@@ -43,13 +43,13 @@ public class MongoDictionaryRepository : IDictionaryRepository
         return dbMetadataCollection.Select(MongoDBMetadataMapper.FromMongoDBMetadata).ToList();
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
+    
     public IEnumerable<string> GetNameList()
     {
         return _metadataCollection.Find(_ => true).ToList().Select(metadata => metadata.Table.Name).ToList();
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetDataTable"/>
+    
     public DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
@@ -90,13 +90,13 @@ public class MongoDictionaryRepository : IDictionaryRepository
         return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values.Where(v=>(string)v["type"]! =="F")))!;
     }
     
-    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
+    
     public bool Exists(string dictionaryName)
     {
         return _metadataCollection.Find(metadata => metadata.Table.Name == dictionaryName).ToList().Count > 0;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
+    
     public void InsertOrReplace(Metadata metadata)
     {
         var mongoDbMetadata = MongoDBMetadataMapper.FromMetadata(metadata);
@@ -109,7 +109,7 @@ public class MongoDictionaryRepository : IDictionaryRepository
             replacement: mongoDbMetadata);
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
+    
     public void Delete(string dictionaryName)
     {
         _metadataCollection.DeleteOne(metadata => metadata.Table.Name == dictionaryName);
