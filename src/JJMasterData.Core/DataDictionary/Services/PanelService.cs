@@ -42,7 +42,7 @@ public class PanelService : BaseService
             }
         }
 
-        foreach (FormElementField f in formElement.Fields)
+        foreach (FormElementField f in formElement.FormFields)
         {
             if (selectedFields.Contains(f.Name))
             {

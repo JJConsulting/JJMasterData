@@ -50,7 +50,7 @@ public class FormManager
 
         var errors = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 
-        foreach (var field in FormElement.Fields)
+        foreach (var field in FormElement.FormFields)
         {
             bool isVisible = Expression.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
             if (!isVisible)
@@ -88,7 +88,7 @@ public class FormManager
             throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
 
         var newvalues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var f in FormElement.Fields)
+        foreach (var f in FormElement.FormFields)
         {
             if (formValues.Contains(f.Name))
             {
@@ -106,7 +106,7 @@ public class FormManager
     public Hashtable GetDefaultValues(Hashtable formValues, PageState state)
     {
         var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        var list = FormElement.Fields
+        var list = FormElement.FormFields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
 
@@ -160,7 +160,7 @@ public class FormManager
 
     private void ApplyTriggerValues(ref Hashtable formValues, PageState pageState)
     {
-        var listFields = FormElement.Fields
+        var listFields = FormElement.FormFields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
         foreach (var e in listFields)

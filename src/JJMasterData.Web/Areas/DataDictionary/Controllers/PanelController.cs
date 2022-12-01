@@ -122,7 +122,7 @@ public class PanelController : DataDictionaryController
         ViewBag.Panels = formElement.Panels;
         ViewBag.AvailableFields = GetAvailableFields(formElement, panel);
         ViewBag.SelectedFields = (panel.PanelId > 0) ?
-            formElement.Fields.ToList().FindAll(x => x.PanelId == panel.PanelId) :
+            formElement.FormFields.ToList().FindAll(x => x.PanelId == panel.PanelId) :
             new List<FormElementField>();
     }
 
@@ -131,15 +131,15 @@ public class PanelController : DataDictionaryController
         var list = new List<FormElementField>();
         if ((string?)Request.Query["enabled_fields"] == null)
         {
-            list = formElement.Fields.ToList().FindAll(x => x.PanelId == 0);
+            list = formElement.FormFields.ToList().FindAll(x => x.PanelId == 0);
         }
         else
         {
             string[] availableFields = Request.Form["enabled_fields"].ToString().Split(',');
             foreach (string fieldName in availableFields)
             {
-                if (formElement.Fields.Contains(fieldName))
-                    list.Add(formElement.Fields[fieldName]);
+                if (formElement.FormFields.Contains(fieldName))
+                    list.Add(formElement.FormFields[fieldName]);
             }
         }
 

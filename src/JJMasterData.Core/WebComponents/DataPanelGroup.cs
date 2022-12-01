@@ -71,7 +71,7 @@ internal class DataPanelGroup
     {
         var list = new List<HtmlBuilder>();
 
-        bool dontContainsVisibleFields = !FormElement.Fields.ToList()
+        bool dontContainsVisibleFields = !FormElement.FormFields.ToList()
             .Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0"));
         
         if (dontContainsVisibleFields)
@@ -152,7 +152,7 @@ internal class DataPanelGroup
     private HtmlBuilder GetHtmlForm(FormElementPanel panel)
     {
         int panelId = panel?.PanelId ?? 0;
-        var fields = FormElement.Fields.ToList()
+        var fields = FormElement.FormFields.ToList()
             .FindAll(x => x.PanelId == panelId)
             .OrderBy(x => x.LineGroup)
             .ThenBy(x => x.Order)

@@ -118,9 +118,9 @@ public class GridSortingConfig
         };
 
         var sortList = GetSortList();
-        var fieldsList = sortList.Select(sort => FormElement.Fields[sort.FieldName]).ToList();
+        var fieldsList = sortList.Select(sort => FormElement.FormFields[sort.FieldName]).ToList();
 
-        foreach (var item in FormElement.Fields)
+        foreach (var item in FormElement.FormFields)
         {
             var f = fieldsList.Find(x => x.Name.Equals(item.Name));
             if (f == null)

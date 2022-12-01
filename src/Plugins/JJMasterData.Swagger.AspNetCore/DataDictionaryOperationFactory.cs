@@ -24,7 +24,7 @@ internal class DataDictionaryOperationFactory
     internal OpenApiOperation Get()
     {
 
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var pkFields = FormElement.FormFields.ToList().FindAll(x => x.IsPk);
 
         string nameFields = string.Empty;
         foreach (var field in pkFields)
@@ -180,7 +180,7 @@ internal class DataDictionaryOperationFactory
         };
 
 
-        var fields = FormElement.Fields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
+        var fields = FormElement.FormFields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
 
         foreach (FormElementField field in fields)
         {
@@ -533,7 +533,7 @@ internal class DataDictionaryOperationFactory
     }
     internal OpenApiOperation Delete()
     {
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var pkFields = FormElement.FormFields.ToList().FindAll(x => x.IsPk);
 
         var description = new StringBuilder();
         description.Append(FormElement.Title);

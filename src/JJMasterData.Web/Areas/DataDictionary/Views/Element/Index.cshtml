@@ -1,7 +1,8 @@
 ﻿@using JJMasterData.Web.Extensions
 @model JJFormView;
 
-<form method="post">
+@using (Html.BeginForm())
+{
     @Model.GetHtml().ToHtmlString()
-</form>
+}
     

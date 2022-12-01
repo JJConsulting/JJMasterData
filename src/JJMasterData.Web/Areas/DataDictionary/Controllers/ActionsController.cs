@@ -52,7 +52,7 @@ public class ActionsController : DataDictionaryController
                 break;
             case ActionOrigin.Field:
                 var formElement = dicParcer.GetFormElement();
-                action = formElement.Fields[fieldName].Actions.Get(actionName);
+                action = formElement.FormFields[fieldName].Actions.Get(actionName);
                 break;
         }
 

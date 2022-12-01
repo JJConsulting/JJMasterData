@@ -41,9 +41,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
             if (_fields == null)
             {
                 if (Configuration.ExportAllFields)
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                    _fields = FormElement.FormFields.ToList().FindAll(x => x.Export);
                 else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
+                    _fields = FormElement.FormFields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
             }
 
             return _fields;

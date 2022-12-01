@@ -26,14 +26,14 @@ public class FieldController : DataDictionaryController
         {
             if (TempData.ContainsKey("field"))
                 field = TempData.Get<FormElementField>("field");
-            else if (formElement.Fields.Count > 0)
-                field = formElement.Fields[0];
+            else if (formElement.FormFields.Count > 0)
+                field = formElement.FormFields[0];
             else
                 field = new FormElementField();
         }
         else
         {
-            field = formElement.Fields[fieldName];
+            field = formElement.FormFields[fieldName];
         }
 
         PopulateViewBag(formElement, field);
@@ -44,7 +44,7 @@ public class FieldController : DataDictionaryController
     public IActionResult Detail(string dictionaryName, string fieldName)
     {
         var formElement = _fieldService.GetFormElement(dictionaryName);
-        var field = formElement.Fields[fieldName];
+        var field = formElement.FormFields[fieldName];
         PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
@@ -198,8 +198,8 @@ public class FieldController : DataDictionaryController
         field.DataFile.MaxFileSize /= 1000000;
 
         //Refresh action
-        if (formElement.Fields.Contains(field.Name))
-            field.Actions = formElement.Fields[field.Name].Actions;
+        if (formElement.FormFields.Contains(field.Name))
+            field.Actions = formElement.FormFields[field.Name].Actions;
 
         if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
             ViewBag.Tab = Request.Form["selected_tab"].ToString();
@@ -221,7 +221,7 @@ public class FieldController : DataDictionaryController
         ViewBag.HintDictionary = _fieldService.GetHintDictionary(formElement);
         ViewBag.MaxRequestLength = GetMaxRequestLength();
         ViewBag.FieldName = field.Name;
-        ViewBag.Fields = formElement.Fields;
+        ViewBag.Fields = formElement.FormFields;
 
         if (field.Component != FormComponent.Lookup) return;
         

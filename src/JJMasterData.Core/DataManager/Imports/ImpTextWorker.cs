@@ -243,7 +243,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             throw new ArgumentException(nameof(FormElement));
 
         var list = new List<FormElementField>();
-        foreach (var field in FormElement.Fields)
+        foreach (var field in FormElement.FormFields)
         {
             bool visible = FieldManager.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)

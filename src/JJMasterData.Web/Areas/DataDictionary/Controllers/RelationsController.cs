@@ -152,7 +152,7 @@ public class RelationsController : DataDictionaryController
         FormElement formElement = _relationsService.GetFormElement(dictionaryName);
         List<SelectListItem> listItem = new List<SelectListItem>();
 
-        foreach (var field in formElement.Fields)
+        foreach (var field in formElement.FormFields)
         {
             listItem.Add(new SelectListItem(field.Name, field.Name));
         }

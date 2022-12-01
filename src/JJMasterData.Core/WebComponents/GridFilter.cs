@@ -136,17 +136,17 @@ internal class GridFilter
                 return null;
 
             string filterName = objName.Substring(FilterFieldPrefix.Length);
-            if (!GridView.FormElement.Fields.Contains(filterName))
+            if (!GridView.FormElement.FormFields.Contains(filterName))
                 return null;
 
-            var field = GridView.FormElement.Fields[filterName];
+            var field = GridView.FormElement.FormFields[filterName];
             var jjSearchBox = GridView.FieldManager.GetField(field, PageState.Filter, GridView.CurrentFilter);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
         }
 
         var action = GridView.FilterAction;
-        var fields = GridView.FormElement.Fields.ToList().FindAll(
+        var fields = GridView.FormElement.FormFields.ToList().FindAll(
             x => x.Filter.Type != FilterMode.None && !x.VisibleExpression.Equals("val:0"));
 
         foreach(var field in fields)
@@ -301,7 +301,7 @@ internal class GridFilter
             throw new NullReferenceException(nameof(GridView.FormElement));
 
         Hashtable values = null;
-        var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
+        var fieldsFilter = GridView.FormElement.FormFields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
             string name = $"{FilterFieldPrefix}{f.Name}";
@@ -380,7 +380,7 @@ internal class GridFilter
             return null;
 
         Hashtable values = null;
-        var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
+        var fieldsFilter = GridView.FormElement.FormFields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
             string name = $"{FilterFieldPrefix}{f.Name}";
@@ -428,10 +428,10 @@ internal class GridFilter
             if (string.IsNullOrEmpty(item.Value.ToString()))
                 continue;
 
-            if (!GridView.FormElement.Fields.Contains(item.Key.ToString()))
+            if (!GridView.FormElement.FormFields.Contains(item.Key.ToString()))
                 continue;
 
-            var field = GridView.FormElement.Fields[item.Key.ToString()];
+            var field = GridView.FormElement.FormFields[item.Key.ToString()];
             if (field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"))
                 return true;
         }

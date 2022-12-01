@@ -29,7 +29,7 @@ public class MetadataForm
         Title = e.Title;
         SubTitle = e.SubTitle;
         Panels = e.Panels;
-        foreach (var f in e.Fields)
+        foreach (var f in e.FormFields)
         {
             FormFields.Add(new MetadataFormField(f));
         }

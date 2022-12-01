@@ -285,7 +285,7 @@ internal class FormFileService
 
     internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys)
     {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = FormElement.FormFields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
 
@@ -300,7 +300,7 @@ internal class FormFileService
 
     internal static void DeleteFiles(FormElement FormElement, Hashtable primaryKeys)
     {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
+        var uploadFields = FormElement.FormFields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
         

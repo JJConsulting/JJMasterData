@@ -64,15 +64,14 @@ public class MongoDictionaryRepository : IDictionaryRepository
         {
             metadataFinder = _metadataCollection.Find(bsonFilter);
         }
-
-        var metadataList = metadataFinder.ToList();
-            // .Sort(orderby)
-            // .Skip((pag - 1) * regperpage)
-            // .Limit(regperpage)
-            // .ToList();
+        tot = metadataFinder.ToList().Count;
         
-        tot = metadataList.Count;
-
+        var metadataList = metadataFinder
+            // .Sort(orderby)
+            .Skip((pag - 1) * regperpage)
+            .Limit(regperpage)
+            .ToList();
+        
         var values = new List<IDictionary>();
 
         foreach (var metadata in metadataList)
