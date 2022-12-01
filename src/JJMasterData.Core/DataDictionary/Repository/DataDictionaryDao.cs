@@ -21,7 +21,7 @@ public class DictionaryDao : IDictionaryRepository
         _entityRepository = entityRepository;
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
     public IList<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
@@ -71,7 +71,7 @@ public class DictionaryDao : IDictionaryRepository
         return list;
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
         var list = new List<string>();
@@ -88,7 +88,7 @@ public class DictionaryDao : IDictionaryRepository
         return list.ToArray();
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
     public Metadata GetMetadata(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
@@ -127,7 +127,7 @@ public class DictionaryDao : IDictionaryRepository
         return metadata;
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
     public void InsertOrReplace(Metadata metadata)
     {
         if (metadata == null)
@@ -200,7 +200,7 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
     public void Delete(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
@@ -223,7 +223,7 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
     public bool Exists(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -235,22 +235,22 @@ public class DictionaryDao : IDictionaryRepository
         return count > 0;
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
-        if(!Exists(JJService.Options.TableName))
+        if (!Exists(JJService.Options.TableName))
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
-    
+    ///<inheritdoc cref="IDictionaryRepository.GetDataTable"/>
     public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
 
         var filters = filter.ToHashtable();
-        
-        filters.Add("type","F");
-        
+
+        filters.Add("type", "F");
+
         return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
     }
 
