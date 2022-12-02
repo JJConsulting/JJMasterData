@@ -1,10 +1,9 @@
-using System.Runtime.Serialization;
+#if NETFRAMEWORK || NETSTANDARD
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.FormEvents.Abstractions;
 
-[DataContract]
 public abstract class BaseFormEvent : IFormEvent
 {
     public virtual void OnAfterDelete(object sender, FormAfterActionEventArgs args) { }
@@ -17,3 +16,4 @@ public abstract class BaseFormEvent : IFormEvent
     public virtual void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args) { }
     public virtual void OnInstanceCreated(JJFormView sender) { }
 }
+#endif

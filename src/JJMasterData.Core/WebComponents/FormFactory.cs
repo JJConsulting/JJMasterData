@@ -28,7 +28,7 @@ internal static class FormFactory
         form.FormElement = dicParser.GetFormElement();
         SetFormptions(form, dicParser.UIOptions);
 
-        var assemblyFormEvent = FormEventManager.GetFormEvent(elementName);
+        var assemblyFormEvent = new FormEventResolver().GetFormEvent(elementName);
         if (assemblyFormEvent != null)
         {
             AddFormEvent(form, assemblyFormEvent);
@@ -47,20 +47,10 @@ internal static class FormFactory
         GridViewFactory.SetGridOptions(form, options.Grid);
     }
 
-    private static void AddFormEvent(JJFormView form, IFormEvent assemblyFormEvent)
+    private static void AddFormEvent(JJFormView form, IFormEvent formEvent)
     {
-        foreach (var method in FormEventManager.GetFormEventMethods(assemblyFormEvent))
-        {
-            switch (method)
-            {
-                case "OnBeforeImport":
-                    form.DataImp.OnBeforeImport += assemblyFormEvent.OnBeforeImport;
-                    break;
-                case "OnInstanceCreated":
-                    form.OnInstanceCreated += assemblyFormEvent.OnInstanceCreated;
-                    break;
-            }
-        }
+        form.DataImp.OnBeforeImport += formEvent.OnBeforeImport;
+        form.OnInstanceCreated += formEvent.OnInstanceCreated;
     }
 
 

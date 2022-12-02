@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents;
@@ -13,35 +11,19 @@ namespace JJMasterData.Core.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-
-    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder)
+    public static JJServiceBuilder WithFormEventResolver(this JJServiceBuilder builder)
     {
-        var assemblies = new List<Assembly>
-        {
-            Assembly.GetCallingAssembly()
-        };
+        builder.Services.AddSingleton<IFormEventResolver,FormEventResolver>();
 
-        return builder.WithFormEvents(assemblies.ToArray());
-    }
-
-    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder, params Assembly[] assemblies)
-    {
-        FormEventManager.Assemblies = assemblies;
-
-        var formEventTypes = FormEventManager.GetFormEventTypes(assemblies);
-        foreach (var type in formEventTypes.Where(type => !type.IsAbstract))
-        {
-            builder.Services.Add(new ServiceDescriptor(type, type, ServiceLifetime.Transient));
-        }
         return builder;
     }
 
-    public static JJServiceBuilder WithPythonEngine(this JJServiceBuilder builder, IPythonEngine engine)
+    public static JJServiceBuilder WithPythonEngine<T>(this JJServiceBuilder builder) where T : IPythonEngine
     {
-        builder.Services.AddSingleton(engine);
+        builder.Services.AddSingleton(typeof(IPythonEngine), typeof(T));
         return builder;
     }
-
+    
     public static JJServiceBuilder WithPdfExportation<T>(this JJServiceBuilder builder) where T : IPdfWriter
     {
         builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));

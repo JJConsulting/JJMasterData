@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.FormEvents;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -133,7 +134,7 @@ public class JJFormView : JJGridView
             if (_service == null)
             { 
                 var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext)
+                _service = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
                 {
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible,

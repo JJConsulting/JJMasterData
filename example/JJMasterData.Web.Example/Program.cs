@@ -24,7 +24,7 @@ public class Program
             mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        });
+        }).WithFormEventResolver();
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

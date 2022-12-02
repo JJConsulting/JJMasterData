@@ -10,6 +10,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Net;
 using JJMasterData.Api.Models;
+using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Api.Services;
 
@@ -18,14 +19,15 @@ public class MasterApiService
     private readonly HttpContext? _httpContext;
     private readonly IEntityRepository _entityRepository;
     private readonly IDictionaryRepository _dictionaryRepository;
-    
+    private readonly IFormEventResolver? _formEventResolver;
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
                             IEntityRepository entityRepository, 
-                            IDictionaryRepository dictionaryRepository)
+                            IDictionaryRepository dictionaryRepository, IFormEventResolver? formEventResolver)
     {
         _httpContext = httpContextAccessor.HttpContext;
         _entityRepository = entityRepository;
         _dictionaryRepository = dictionaryRepository;
+        _formEventResolver = formEventResolver;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
@@ -442,7 +444,7 @@ public class MasterApiService
         var dataContext = new DataContext(DataContextSource.Api, userId);
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext)
+        var service = new FormService(formManager, dataContext, _formEventResolver)
         {
             EnableHistoryLog = logActionIsVisible
         };
