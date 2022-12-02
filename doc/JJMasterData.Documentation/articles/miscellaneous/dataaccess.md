@@ -1,11 +1,4 @@
-# DataAccess Class
-Classes that expose data access services and implements ADO methods.<br>
-Provides functionality to developers who write managed code similar to the functionality provided to native component object model (COM).<br>
-
-[DataAccess Class](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Commons.Dao.DataAccess.html)
-
-## Connection String
-By default DataAccess recover connection string from appsettings.json with name ````ConnectionString````,
+By default DataAccess recover connection string from appsettings.json with name ```ConnectionString```,
 but you can pass a custom string connection in the constructor.
 
 ## How use?

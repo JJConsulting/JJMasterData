@@ -14,9 +14,12 @@ using JJMasterData.Commons.Options;
 namespace JJMasterData.Commons.Dao;
 
 /// <summary>
+/// Classes that expose data access services and implements ADO methods.<br />
 /// Provides functionality to developers who write managed code similar to the functionality provided to native component object model (COM)
-/// <a href="https://portal.jjconsulting.com.br/jjdoc/articles/miscellaneous/dataaccess.html">To read more click here</a> 
 /// </summary>
+/// <example>
+/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/miscellaneous/dataaccess.md)]
+/// </example>
 public class DataAccess
 {
     private DbProviderFactory _factory;
@@ -69,12 +72,19 @@ public class DataAccess
         }
     }
 
+    /// <summary>
+    /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
+    /// </summary>
     public DataAccess()
     {
         ConnectionString = JJMasterDataOptions.GetConnectionString();
         ConnectionProvider = JJMasterDataOptions.GetConnectionProvider();
     }
 
+    /// <summary>
+    /// New instance from a custom connection string name
+    /// </summary>
+    /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
     public DataAccess(string connectionStringName)
     {
         ConnectionString = JJMasterDataOptions.GetConnectionString(connectionStringName);
@@ -85,6 +95,8 @@ public class DataAccess
     /// Initialize a connectionString with a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
     /// </summary>
+    /// <param name="connectionString">Conections string with data source, user etc...</param>
+    /// <param name="connectionProviderName">Provider name. Avaliable provider see <see cref="DataAccessProviderType"/></param>
     public DataAccess(string connectionString, string connectionProviderName)
     {
         ConnectionString = connectionString;

@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="server.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="docfx.console" Version="2.59.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
