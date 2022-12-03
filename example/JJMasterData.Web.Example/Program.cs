@@ -1,3 +1,4 @@
+using System.Reflection;
 using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Python.Extensions;
@@ -25,8 +26,7 @@ public class Program
             mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        })
-            .WithPythonFormEventResolver(options => options.ScriptsPath = "/home/gumbarros/Documents/Scripts");
+        }).WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

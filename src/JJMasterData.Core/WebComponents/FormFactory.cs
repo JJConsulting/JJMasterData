@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using System;
+using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -21,21 +22,23 @@ internal static class FormFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
 
+        var formEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
+        if (formEvent != null)
+        {
+            AddFormEvent(form, formEvent);
+        }
+        
         form.Name = "jjview" + elementName.ToLower();
         var dicDao = DictionaryRepositoryFactory.GetInstance();
-        var dicParser = dicDao.GetMetadata(elementName);
+        var metadata = dicDao.GetMetadata(elementName);
 
-        form.FormElement = dicParser.GetFormElement();
-        SetFormptions(form, dicParser.UIOptions);
-
-        var assemblyFormEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
-        if (assemblyFormEvent != null)
-        {
-            AddFormEvent(form, assemblyFormEvent);
-        }
+        formEvent?.OnMetadataLoad(form, new MetadataLoadEventArgs(metadata));
+        
+        form.FormElement = metadata.GetFormElement();
+        SetFormOptions(form, metadata.UIOptions);
     }
 
-    internal static void SetFormptions(JJFormView form, UIOptions options)
+    internal static void SetFormOptions(JJFormView form, UIOptions options)
     {
         if (options == null) 
             return;
@@ -50,7 +53,6 @@ internal static class FormFactory
     private static void AddFormEvent(JJFormView form, IFormEvent formEvent)
     {
         form.DataImp.OnBeforeImport += formEvent.OnBeforeImport;
-        form.OnInstanceCreated += formEvent.OnInstanceCreated;
     }
 
 

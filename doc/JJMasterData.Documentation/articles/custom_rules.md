@@ -1,97 +1,137 @@
 # Customize Rules
 
-The main way to customize is using the FormEvents class to define by the IFormEvent interface. These can be Python scripts or .NET assemblies.
+There are three ways to customize MasterData
+
+- FormEvents
+- Editing your JJFormView at runtime
+- Stored procedures
+
+The first way is the recommended, FormEvents don't customize the database and they reflect on systems that use JJMasterData.WebApi. They also works on any JJFormView object.
+
+# FormEvents
 
 ## Overview
-The purpose of a class implementing IFormEvent, is to padronize the customizations and programmaticaly customize your dictionary rules without a custom View.
+The purpose of a class implementing <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent>, is to patronize the customizations and programmatically customize your dictionary rules without a custom view.
+
 <br>
 
-Program.cs file
+To use them add to your `Program.cs` file the following method:
+
 ```cs
-builder.Services.AddJJMasterDataWeb().WithFormEvents();
+builder.Services.AddJJMasterDataWeb().WithFormEventResolver();
 ```
 
 If the class it is not in the current assembly you must pass the assembly path on startup.
-```cs
-Assembly assemblyWithEvents = typeof(ProductsFormEvent).Assembly;
-builder.Services.AddJJMasterDataWeb().WithFormEvents(assemblyWithEvents);
-```
-
-or
-
-If you are using .NET Framework and want to display your assemblies in a external Data Dictionary website, add to the external site Web.Config, the following key:
-If for some specific reason are with this scenario in .NET 6, set this key using JJMasterDataSettings.
-
-```xml
-	<add key="JJMasterData.ExternalAssemblies" value="C:\\FullPathToTheMainApplicationAssembly" />
-```
-
-> [!TIP] 
-> To use them, just add WithFormEvents() method on AddJJMasterDataWeb(). It will automatically add any class implementing IFormEvent to the services container.
-
-To customize bussiness rules on form follow theses steps:
-
-## Customizing with C# 
-A .NET Form Event is a that inherits from <xref:JJMasterData.Core.FormEvents.Abstractions.BaseFormEvent> which consequently implements the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface. 
-By creating such a class it is possible to execute code in all events defined by the interface.
-
-Create a class with starts with your Data Dictionary name and inherits it from BaseFormEvenet <br>
-
-Press "CTRL + ." on Visual Studio and click in Generate overrides...
-<img alt="CustomRules1" src="../media/CustomRules1.png"/>
-
-Then choose the events to customize
-<img alt="CustomRules2" src="../media/CustomRules2.png"/>
-
-It's look like with this
 
 ```cs
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.WebComponents;
-
-namespace JJMasterData.Web.DataDictionary
+Assembly assemblyWithEvents = typeof(MyFormEvent).Assembly;
+builder.Services.AddJJMasterDataWeb().WithFormEventResolver(options=>
 {
-    public class ProductsFormEvent : BaseFormEvent
+    options.Assemblies = assemblyWithEvents;
+});
+```
+
+To customize your business rules you can use one of these:
+
+## Assembly reflection (Default implementation)
+A .NET Form Event is a class that implements the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface.
+
+Create a class with starts with your metadata name or use the `FormEvent` attribute.
+
+### .NET 6+
+
+If you're using .NET 6+, you can use the default interface methods feature!
+
+Implement IFormEvent in your class and then generate your overrides with CTRL+. in your class using VS or Rider:
+
+<img alt="Generate Overrides" src="../media/GenerateOverrides.png"/>
+
+Your implementation will look like this:
+```cs
+[FormEvent("Example")] // or a class that starts with your element name.
+public class MyFormEvent : IFormEvent
+{
+    public void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
     {
-        public override void OnInstanceCreated(JJFormView sender)
-        {
-            sender.FormElement.Title = "My Custom title";
-        }
+        args.Metadata.Form.SubTitle = "You can edit your metadata at runtime using the FormEvent class";
     }
 }
 ```
 
-## Customizing with Python
+### .NET Standard / Framework
 
-Create a python file with your data dictionary name and implement a class with the same name. Add jjmasterdata.py to enable autocomplete features.
-To deploy, paste the file on the bin folder of your site or specify the path on the services setup.
-```py
-from JJMasterData.Core.FormEvents.Abstractions import BaseFormEvent
+These target frameworks don't support default interface methods. Follow the same steps implementing `BaseFormEvent`.
 
-class DataDictionaryName(BaseFormEvent):
-	def OnInstanceCreated(self, sender):
-		sender.FormElement.Title = "Hello from Python!"
-```
+## Python Scripts
 
-## How to inject them?
-
-Install JJMasterData.Python and them simply inject in your application startup with the following code:
+Create a python file with your data dictionary name and implement a class with the same name. Add the JJMasterData folder (coming soon to pip) 
+to enable autocomplete features.
+Specify the path on the services setup.
 
 ```csharp
-	services.AddJJMasterDataWeb().WithPythonEngine()
+builder.Services.AddJJMasterDataWeb()
+        .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
 ```
 
-## Customizing with Database procedure 
+```py
+from JJMasterData.Core.FormEvents.Abstractions import BaseFormEvent
+from JJMasterData.Core.FormEvents.Args import *
 
-In the MSSQL procedure you can throw a custom exception with error id > 50000. 
+class Example(BaseFormEvent):
+
+    def OnBeforeInsert(self, sender, args: FormBeforeActionEventArgs):
+        if int(args.Values["NumericField"]) < 0:
+            args.Errors["NumericField"] = "Value needs to be greater than 0"
+
+    def OnMetadataLoad(self, sender, args: MetadataLoadEventArgs):
+        args.Metadata.Form.SubTitle = "Hello from IronPython runtime."
+```
+
+> [!TIP]
+> Since IronPython runs on the CLR and does not use Reflection as our default implementation, higher performance is expected.
+
+## IFormEventResolver
+
+Implement your own <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEventResolver> 
+that returns a <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> from a dictionary name.
+
+At your Program.cs use:
+```cs
+builder.Services.AddJJMasterDataWeb().WithFormEventResolver<TYourImplementation>();
+```
+
+# Customizing your FormView
+
+At your custom view:
+
+```html
+@{
+
+    void Configure(JJFormView formView)
+    {
+        formView.FormElement.SubTitle = "You can edit any property from JJFormView at runtime";
+    }
+}
+<form>
+    <jj-form-view element-name="Product" configure="Configure"/>
+</form>
+
+```
+
+> [!WARNING]
+> These changes will only reflect at this view
+
+# Customizing with stored procedures
+
+In your stored procedure (defined at your Data Dictionary) you can throw a custom exception with a code `>` than 50000. 
 
 ```sql
-IF (1=1)
-  THROW 50001, 'My Custom error message', 1
+IF (MyCustomLogic, you can use your @Parameters)
+  THROW 50001, 'My custom validation rule', 1
 ```
 
 > [!WARNING] 
-> It is not a best practice, recommended only for simple validations.
+> It is not a best practice write business rules at database, recommended only for simple validations.
 
-
+---
 

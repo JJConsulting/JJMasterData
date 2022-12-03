@@ -54,11 +54,13 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext, IFormEventResolver eventResolver)
+    public FormService(FormManager formManager, DataContext dataContext, IFormEventResolver eventResolver = null)
     {
         FormManager = formManager;
         DataContext = dataContext;
         FormEventResolver = eventResolver;
+        
+        AddFormEvent();
     }
 
     #endregion
@@ -256,7 +258,7 @@ public class FormService
         return default;
     }
 
-    public void AddFormEvent()
+    private void AddFormEvent()
     {
         var formEvent = FormEventResolver.GetFormEvent(FormElement.Name);
 

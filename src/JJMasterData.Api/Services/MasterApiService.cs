@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Net;
 using JJMasterData.Api.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Api.Services;
 
@@ -432,15 +433,21 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(Metadata dictionary)
+    private FormService GetFormService(Metadata metadata)
     {
-        bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
         var userValues = new Hashtable
         {
             { "USERID", GetUserId() }
         };
-        var formElement = dictionary.GetFormElement();
+
+        var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
+        
+        formEvent?.OnMetadataLoad(this,new MetadataLoadEventArgs(metadata));
+        
+        var formElement = metadata.GetFormElement();
+        
         var dataContext = new DataContext(DataContextSource.Api, userId);
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
@@ -448,8 +455,7 @@ public class MasterApiService
         {
             EnableHistoryLog = logActionIsVisible
         };
-
-        service.AddFormEvent();
+        
         return service;
     }
 

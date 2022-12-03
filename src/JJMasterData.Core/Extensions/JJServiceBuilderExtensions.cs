@@ -23,6 +23,13 @@ public static class JJServiceBuilderExtensions
 
         return builder;
     }
+    
+    public static JJServiceBuilder WithFormEventResolver<T>(this JJServiceBuilder builder) where  T: class, IFormEventResolver
+    {
+        builder.Services.AddSingleton<IFormEventResolver, T>();
+
+        return builder;
+    }
 
     public static JJServiceBuilder WithPythonEngine<T>(this JJServiceBuilder builder) where T : IPythonEngine
     {

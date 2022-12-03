@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using IronPython.Hosting;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Python.Engine;
 using JJMasterData.Python.Models;
@@ -20,7 +21,9 @@ public class PythonFormEventResolver : IFormEventResolver
     {
         var engine = new PythonEngine().GetScriptEngine();
 
-        var file = Directory.GetFiles(ScriptsPath, elementName + ".py", SearchOption.AllDirectories).FirstOrDefault();
+        var file = Directory
+            .GetFiles(ScriptsPath, elementName + ".py", SearchOption.AllDirectories)
+            .FirstOrDefault();
 
         var source = engine.CreateScriptSourceFromFile(file);
 

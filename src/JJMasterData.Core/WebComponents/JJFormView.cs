@@ -6,7 +6,6 @@ using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.FormEvents.Handlers;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
@@ -35,7 +34,6 @@ public class JJFormView : JJGridView
     public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
     public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
     public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    public event FormViewHandler OnInstanceCreated;
 
     #endregion
 
@@ -137,14 +135,16 @@ public class JJFormView : JJGridView
                 _service = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
                 {
                     EnableErrorLink = true,
-                    EnableHistoryLog = LogAction.IsVisible,
-                    OnBeforeInsert = OnBeforeInsert,
-                    OnBeforeUpdate = OnBeforeUpdate,
-                    OnBeforeDelete = OnBeforeDelete,
-                    OnAfterInsert = OnAfterInsert,
-                    OnAfterUpdate = OnAfterUpdate,
-                    OnAfterDelete = OnAfterDelete
+                    EnableHistoryLog = LogAction.IsVisible
                 };
+
+                _service.OnBeforeInsert += OnBeforeInsert;
+                _service.OnBeforeUpdate += OnBeforeUpdate;
+                _service.OnBeforeDelete += OnBeforeDelete;
+
+                _service.OnAfterDelete += OnAfterDelete;
+                _service.OnAfterUpdate += OnAfterUpdate;
+                _service.OnAfterInsert += OnAfterInsert;
             }
                 
             return _service;
@@ -182,8 +182,6 @@ public class JJFormView : JJGridView
     public JJFormView(string elementName) : this()
     {
         FormFactory.SetFormViewParams(this, elementName);
-
-        OnInstanceCreated?.Invoke(this);
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -960,7 +958,7 @@ public class JJFormView : JJGridView
     
     public void SetOptions(UIOptions options)
     {
-        FormFactory.SetFormptions(this, options);
+        FormFactory.SetFormOptions(this, options);
     }
 
     private JJLinkButton GetButtonOk()

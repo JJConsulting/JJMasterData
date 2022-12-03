@@ -12,28 +12,33 @@ namespace JJMasterData.Core.FormEvents;
 internal class FormEventResolver : IFormEventResolver
 {
     private IEnumerable<Assembly> Assemblies { get; }
+
     public FormEventResolver(IOptions<FormEventOptions> options)
     {
         Assemblies = options.Value.Assemblies;
     }
+
     public IFormEvent GetFormEvent(string elementName)
     {
-        var assemblies = new List<Assembly>()
+        var assemblies = new List<Assembly>
         {
             Assembly.GetEntryAssembly()
         };
-        
-        if(Assemblies?.Any() ?? false)
+
+        if (Assemblies?.Any() ?? false)
             assemblies.AddRange(Assemblies);
-        
+
         var formEventType = GetFormEventTypes(assemblies)
-            .FirstOrDefault(info => info.GetCustomAttribute<FormEventAttribute>().ElementName == elementName);
+            .FirstOrDefault(info =>
+                info.GetCustomAttribute<FormEventAttribute>().ElementName == elementName ||
+                info.Name.StartsWith(elementName));
 
         if (formEventType != null)
             return (IFormEvent)System.Activator.CreateInstance(formEventType);
 
         return null;
     }
+
     private static IEnumerable<TypeInfo> GetFormEventTypes(IEnumerable<Assembly> assemblies)
     {
         return assemblies.SelectMany(a => a.DefinedTypes.Where(x =>
