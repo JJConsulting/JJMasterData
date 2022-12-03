@@ -23,7 +23,7 @@ public static class Extensions
         if(configure != null)
             builder.Services.Configure(configure);
         
-        builder.Services.AddSingleton<IFormEventResolver,PythonFormEventResolver>();
+        builder.Services.AddTransient<IFormEventResolver,PythonFormEventResolver>();
         
         return builder;
     }

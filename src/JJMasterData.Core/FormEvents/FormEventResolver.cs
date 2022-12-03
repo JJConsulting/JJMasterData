@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JJMasterData.Core.FormEvents.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.FormEvents;
@@ -11,10 +13,12 @@ namespace JJMasterData.Core.FormEvents;
 /// </summary>
 internal class FormEventResolver : IFormEventResolver
 {
+    private IServiceProvider ServiceProvider { get; }
     private IEnumerable<Assembly> Assemblies { get; }
 
-    public FormEventResolver(IOptions<FormEventOptions> options)
+    public FormEventResolver(IOptions<FormEventOptions> options, IServiceProvider serviceProvider)
     {
+        ServiceProvider = serviceProvider;
         Assemblies = options.Value.Assemblies;
     }
 
@@ -33,10 +37,11 @@ internal class FormEventResolver : IFormEventResolver
                 info.GetCustomAttribute<FormEventAttribute>().ElementName == elementName ||
                 info.Name.StartsWith(elementName));
 
-        if (formEventType != null)
-            return (IFormEvent)System.Activator.CreateInstance(formEventType);
-
-        return null;
+        if (formEventType == null) 
+            return null;
+        
+        using var scope = ServiceProvider.CreateScope();
+        return (IFormEvent)ActivatorUtilities.CreateInstance(scope.ServiceProvider, formEventType);
     }
 
     private static IEnumerable<TypeInfo> GetFormEventTypes(IEnumerable<Assembly> assemblies)

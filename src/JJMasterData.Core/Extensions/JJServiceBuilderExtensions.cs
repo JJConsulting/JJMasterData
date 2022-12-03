@@ -19,14 +19,14 @@ public static class JJServiceBuilderExtensions
         if(configure != null)
             builder.Services.Configure(configure);
         
-        builder.Services.AddSingleton<IFormEventResolver,FormEventResolver>();
+        builder.Services.AddTransient<IFormEventResolver,FormEventResolver>();
 
         return builder;
     }
     
     public static JJServiceBuilder WithFormEventResolver<T>(this JJServiceBuilder builder) where  T: class, IFormEventResolver
     {
-        builder.Services.AddSingleton<IFormEventResolver, T>();
+        builder.Services.AddTransient<IFormEventResolver, T>();
 
         return builder;
     }

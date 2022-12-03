@@ -7,6 +7,6 @@ internal static class FormEventResolverFactory
 {
     public static IFormEventResolver GetResolver()
     {
-        return JJService.Provider?.GetService(typeof(IFormEventResolver)) as IFormEventResolver;
+        return JJService.Provider.GetService(typeof(IFormEventResolver)) as IFormEventResolver;
     }
 }
