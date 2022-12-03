@@ -1,4 +1,3 @@
-#if NETFRAMEWORK || NETSTANDARD
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 
@@ -16,4 +15,3 @@ public abstract class BaseFormEvent : IFormEvent
     public virtual void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args) { }
     public virtual void OnInstanceCreated(JJFormView sender) { }
 }
-#endif

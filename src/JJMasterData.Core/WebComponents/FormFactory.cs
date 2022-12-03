@@ -28,7 +28,7 @@ internal static class FormFactory
         form.FormElement = dicParser.GetFormElement();
         SetFormptions(form, dicParser.UIOptions);
 
-        var assemblyFormEvent = new FormEventResolver().GetFormEvent(elementName);
+        var assemblyFormEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
         if (assemblyFormEvent != null)
         {
             AddFormEvent(form, assemblyFormEvent);

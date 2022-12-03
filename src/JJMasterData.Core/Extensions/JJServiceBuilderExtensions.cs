@@ -1,4 +1,7 @@
-﻿using JJMasterData.Commons.DI;
+﻿#nullable enable
+
+using System;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -11,8 +14,11 @@ namespace JJMasterData.Core.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder WithFormEventResolver(this JJServiceBuilder builder)
+    public static JJServiceBuilder WithFormEventResolver(this JJServiceBuilder builder, Action<FormEventOptions>? configure = null)
     {
+        if(configure != null)
+            builder.Services.Configure(configure);
+        
         builder.Services.AddSingleton<IFormEventResolver,FormEventResolver>();
 
         return builder;

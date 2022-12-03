@@ -4,7 +4,7 @@ using System.Reflection;
 using JJMasterData.Core.DataDictionary;
 using Microsoft.Scripting.Hosting;
 
-namespace JJMasterData.Python;
+namespace JJMasterData.Python.Engine;
 
 /// <summary>
 /// Class responsible for handling Python 3.4 scripts
@@ -18,7 +18,7 @@ public class PythonEngine : IPythonEngine
 
     private ScriptEngine _engine;
 
-    private ScriptEngine GetEngine(Dictionary<string, object> args = null)
+    public ScriptEngine GetScriptEngine(Dictionary<string, object> args = null)
     {
         if (_engine == null)
         {
@@ -52,6 +52,6 @@ public class PythonEngine : IPythonEngine
 
     public dynamic Execute(string script, Dictionary<string, object> args = null)
     {
-        return GetEngine(args).CreateScriptSourceFromString(script).Execute();
+        return GetScriptEngine(args).CreateScriptSourceFromString(script).Execute();
     }
 }
