@@ -67,8 +67,15 @@ public class ElementController : DataDictionaryController
     {
         var formView = GetFormView();
         var selectedRows = formView.GetSelectedGridValues();
-        var zipFile = _elementService.Export(selectedRows);
-        return File(zipFile, "application/zip", "Dictionaries.zip");
+
+        if(selectedRows.Count == 1)
+        {
+            var jsonBytes = _elementService.ExportSingleRow(selectedRows[0]);
+            return File(jsonBytes, "application/json", selectedRows[0]["name"]!.ToString() + ".json");
+        }
+
+        var zipBytes = _elementService.ExportMultipleRows(selectedRows);
+        return File(zipBytes, "application/zip", "Dictionaries.zip");
     }
 
     public IActionResult Import()

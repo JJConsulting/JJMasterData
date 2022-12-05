@@ -305,7 +305,17 @@ public class ElementService : BaseService
     }
     #endregion
 
-    public byte[] Export(List<Hashtable> selectedRows)
+    public byte[] ExportSingleRow(Hashtable row)
+    {
+        string dictionaryName = row["name"].ToString();
+        var metadata = DictionaryRepository.GetMetadata(dictionaryName);
+
+        string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+
+        return Encoding.ASCII.GetBytes(json);
+    }
+
+    public byte[] ExportMultipleRows(List<Hashtable> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
@@ -313,8 +323,8 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
-                string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
+                var metadata = DictionaryRepository.GetMetadata(dictionaryName);
+                string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
                 using var streamWriter = new StreamWriter(jsonFile.Open());
