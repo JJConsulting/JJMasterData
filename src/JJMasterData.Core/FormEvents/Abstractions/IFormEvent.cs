@@ -1,6 +1,4 @@
-﻿using System;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+﻿using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.FormEvents.Abstractions;
 
@@ -16,13 +14,13 @@ public interface IFormEvent
     public void OnAfterDelete(object sender, FormAfterActionEventArgs args);
     public void OnMetadataLoad(object sender, MetadataLoadEventArgs args);
 #else
-    public virtual void OnBeforeInsert(object sender, FormBeforeActionEventArgs args){}
-    public virtual void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args){}
-    public virtual void OnBeforeDelete(object sender, FormBeforeActionEventArgs args){}
-    public virtual void OnBeforeImport(object sender, FormBeforeActionEventArgs args){}
-    public virtual void OnAfterInsert(object sender, FormAfterActionEventArgs args){}
-    public virtual void OnAfterUpdate(object sender, FormAfterActionEventArgs args){}
-    public virtual void OnAfterDelete(object sender, FormAfterActionEventArgs args){}
-    public virtual void OnMetadataLoad(object sender, MetadataLoadEventArgs args) {}
+    public void OnBeforeInsert(object sender, FormBeforeActionEventArgs args){}
+    public void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args){}
+    public void OnBeforeDelete(object sender, FormBeforeActionEventArgs args){}
+    public void OnBeforeImport(object sender, FormBeforeActionEventArgs args){}
+    public void OnAfterInsert(object sender, FormAfterActionEventArgs args){}
+    public void OnAfterUpdate(object sender, FormAfterActionEventArgs args){}
+    public void OnAfterDelete(object sender, FormAfterActionEventArgs args){}
+    public void OnMetadataLoad(object sender, MetadataLoadEventArgs args) {}
 #endif
 }
