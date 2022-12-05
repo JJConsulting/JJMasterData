@@ -228,7 +228,7 @@ public class ElementService : BaseService
         formView.ViewAction.IsGroup = true;
         formView.ViewAction.Text = "Details";
         formView.ViewAction.ToolTip = null;
-
+        formView.ViewAction.Icon = IconType.Code;
         if (!formView.CurrentFilter.ContainsKey("type"))
             formView.CurrentFilter.Add("type", "F");
 
