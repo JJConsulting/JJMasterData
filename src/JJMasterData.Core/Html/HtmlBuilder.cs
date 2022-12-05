@@ -123,12 +123,12 @@ public partial class HtmlBuilder
 
     private string GetAttributesHtml()
     {
-        var attrs = new StringBuilder();
+        var attributes = new StringBuilder();
         foreach (var item in _attributes)
         {
-            attrs.Append($" {item.Key}=\"{item.Value}\"");
+            attributes.Append($" {item.Key}=\"{item.Value}\"");
         }
-        return attrs.ToString();
+        return attributes.ToString();
     }
     public string GetAttribute(string key)
     {

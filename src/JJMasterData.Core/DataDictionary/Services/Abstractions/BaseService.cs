@@ -98,10 +98,10 @@ public abstract class BaseService
 
     public Dictionary<string, string> GetElementList()
     {
-        var dicElement = new Dictionary<string, string>();
-        dicElement.Add(string.Empty, Translate.Key("--Select--"));
+        var dicElement = new Dictionary<string, string> { { string.Empty, Translate.Key("--Select--") } };
 
-        IEnumerable<string> list = DictionaryRepository.GetNameList();
+        var list = DictionaryRepository.GetNameList();
+        
         foreach (string name in list)
         {
             dicElement.Add(name, name);
@@ -109,5 +109,4 @@ public abstract class BaseService
 
         return dicElement;
     }
-
 }

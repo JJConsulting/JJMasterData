@@ -201,7 +201,6 @@ internal class GridTableBody
     private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
         Hashtable values)
     {
-        var tdList = new List<HtmlBuilder>();
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -222,10 +221,9 @@ internal class GridTableBody
 
             if (link != null)
                 td.AppendElement(link);
-            tdList.Add(td);
+            
+            yield return td;
         }
-
-        return tdList;
     }
 
     private HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, Hashtable values)

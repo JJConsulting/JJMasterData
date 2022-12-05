@@ -55,16 +55,12 @@ internal class DataPanelGroup
 
     private IEnumerable<HtmlBuilder> GetNonTabPanels()
     {
-        var list = new List<HtmlBuilder>();
-        
         foreach (var panel in FormElement.Panels.Where(p => p.Layout != PanelLayout.Tab))
         {
             var htmlPanel = GetHtmlPanelGroup(panel);
             if (htmlPanel != null)
-                list.Add(htmlPanel);
+                yield return htmlPanel;
         }
-
-        return list;
     }
 
     private IEnumerable<HtmlBuilder> GetFieldsWithoutPanel()

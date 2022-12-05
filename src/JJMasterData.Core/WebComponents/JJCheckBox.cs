@@ -33,12 +33,14 @@ public class JJCheckBox : JJBaseControl
         Value = "1";
     }
 
-    internal static JJCheckBox GetInstance(FormElementField f, object value)
+    internal static JJCheckBox GetInstance(FormElementField field, object value)
     {
-        var check = new JJCheckBox();
-        check.Name = f.Name;
-        check.IsChecked = ExpressionManager.ParseBool(value);
-        check.ToolTip = f.HelpDescription;
+        var check = new JJCheckBox
+        {
+            Name = field.Name,
+            IsChecked = ExpressionManager.ParseBool(value),
+            ToolTip = field.HelpDescription
+        };
         return check;
     }
 
@@ -47,12 +49,7 @@ public class JJCheckBox : JJBaseControl
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
             .WithCssClassIf(!Enabled, "disabled")
-            .AppendElement(HtmlTag.Label, label =>
-            {
-                label.AppendElement(GetInputHtml());
-                label.AppendText(Translate.Key(Text));
-                
-            });
+            .AppendElement(GetInputHtml());
 
         return html;
     }

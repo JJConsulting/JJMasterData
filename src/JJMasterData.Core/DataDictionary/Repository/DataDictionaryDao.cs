@@ -74,18 +74,14 @@ public class DictionaryDao : IDictionaryRepository
     ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
-        var list = new List<string>();
-        int tot = 10000;
-        var filter = new Hashtable();
-        filter.Add("type", "F");
+        int totalRecords = 10000;
+        var filter = new Hashtable { { "type", "F" } };
 
-        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, null, tot, 1, ref tot);
+        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, null, totalRecords, 1, ref totalRecords);
         foreach (DataRow row in dt.Rows)
         {
-            list.Add(row["name"].ToString());
+            yield return row["name"].ToString();
         }
-
-        return list.ToArray();
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
@@ -94,31 +90,30 @@ public class DictionaryDao : IDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
 
-        var filter = new Hashtable();
-        filter.Add("name", dictionaryName);
-        DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter);
-        if (dt.Rows.Count == 0)
+        var filter = new Hashtable { { "name", dictionaryName } };
+        var dataTable = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter);
+        if (dataTable.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
 
         var metadata = new Metadata();
-        foreach (DataRow row in dt.Rows)
+        foreach (DataRow row in dataTable.Rows)
         {
             string json = row["json"].ToString();
-            if (row["type"].ToString().Equals("T"))
+            
+            switch (row["type"].ToString())
             {
-                metadata.Table = JsonConvert.DeserializeObject<Element>(json);
-            }
-            else if (row["type"].ToString().Equals("F"))
-            {
-                metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-            }
-            else if (row["type"].ToString().Equals("L"))
-            {
-                metadata.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
-            }
-            else if (row["type"].ToString().Equals("A"))
-            {
-                metadata.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                case "T":
+                    metadata.Table = JsonConvert.DeserializeObject<Element>(json);
+                    break;
+                case "F":
+                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+                    break;
+                case "L":
+                    metadata.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+                    break;
+                case "A":
+                    metadata.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                    break;
             }
         }
 
@@ -206,15 +201,14 @@ public class DictionaryDao : IDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentException();
 
-        var filters = new Hashtable();
-        filters.Add("name", dictionaryName);
+        var filters = new Hashtable { { "name", dictionaryName } };
 
-        DataTable dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filters);
-        if (dt.Rows.Count == 0)
+        var dataTable = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filters);
+        if (dataTable.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
 
         var element = DataDictionaryStructure.GetElement();
-        foreach (DataRow row in dt.Rows)
+        foreach (DataRow row in dataTable.Rows)
         {
             var delFilter = new Hashtable();
             delFilter.Add("name", dictionaryName);
@@ -229,8 +223,7 @@ public class DictionaryDao : IDictionaryRepository
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        Hashtable filter = new Hashtable();
-        filter.Add("name", elementName);
+        Hashtable filter = new Hashtable { { "name", elementName } };
         int count = _entityRepository.GetCount(DataDictionaryStructure.GetElement(), filter);
         return count > 0;
     }
@@ -254,7 +247,7 @@ public class DictionaryDao : IDictionaryRepository
         return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
     }
 
-    private void ApplyCompatibility(Metadata dicParser, string elementName)
+    private static void ApplyCompatibility(Metadata dicParser, string elementName)
     {
         if (dicParser == null)
             return;

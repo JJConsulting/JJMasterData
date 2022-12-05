@@ -135,9 +135,9 @@ namespace JJMasterData.Core.Html
         /// </summary>
         public HtmlBuilder WithDataAttribute(string name, string value)
         {
-            string attrName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
-            attrName += name;
-            return WithAttribute(attrName, value);
+            string attributeName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
+            attributeName += name;
+            return WithAttribute(attributeName, value);
         }
 
     }

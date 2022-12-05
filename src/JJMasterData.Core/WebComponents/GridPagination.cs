@@ -112,12 +112,14 @@ internal class GridPagination
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
             label.AppendText(Translate.Key("Showing"));
+            label.AppendText(" ");
+            
             if (_totalPages <= 1)
             {
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($" {GridView.TotalRecords.ToString("N0")} ");
+                    span.AppendText($" {GridView.TotalRecords:N0} ");
                     span.AppendText(Translate.Key("record(s)"));
                 });
             }
@@ -153,7 +155,7 @@ internal class GridPagination
         var selectedValues = GridView.GetSelectedGridValues();
         string noRecordSelected = Translate.Key("No record selected");
         string oneRecordSelected = Translate.Key("A selected record");
-        string multipleRecordsSelected = Translate.Key("{0} selected records", selectedValues);
+        string multipleRecordsSelected = Translate.Key("{0} selected records", selectedValues?.Count);
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithAttribute("id", $"selectedtext_{GridView.Name}");
