@@ -6,7 +6,7 @@ using JJMasterData.Core.FormEvents.Args;
 namespace JJMasterData.Web.Example.FormEvents.CSharp;
 
 [FormEvent("Example")]
-public class MyFormEvent : IFormEvent
+public class MyFormEvent : BaseFormEvent
 {
     public IEntityRepository Repository { get; }
     
@@ -16,7 +16,7 @@ public class MyFormEvent : IFormEvent
         Repository = repository;
     }
     
-    public void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
+    public override void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
     {
         args.Metadata.Form.SubTitle = "You can edit your metadata at runtime using FormEvents";
     }

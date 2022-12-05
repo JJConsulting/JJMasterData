@@ -21,8 +21,7 @@ namespace JJMasterData.Core.DataManager
 
             var currentContext = JJHttpContext.GetInstance();
             if (currentContext.HasContext() &&
-                currentContext.Session != null &&
-                currentContext.Session["USERID"] != null)
+                currentContext.Session?["USERID"] != null)
             {
                 return currentContext.Session["USERID"];
             }

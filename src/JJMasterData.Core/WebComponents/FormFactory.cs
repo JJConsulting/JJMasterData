@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using System;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents;
@@ -29,10 +30,12 @@ internal static class FormFactory
         }
         
         form.Name = "jjview" + elementName.ToLower();
-        var dicDao = DictionaryRepositoryFactory.GetInstance();
-        var metadata = dicDao.GetMetadata(elementName);
-
-        formEvent?.OnMetadataLoad(form, new MetadataLoadEventArgs(metadata));
+        
+        var dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+        var metadata = dictionaryRepository.GetMetadata(elementName);
+        
+        var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
+        formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
         
         form.FormElement = metadata.GetFormElement();
         SetFormOptions(form, metadata.UIOptions);

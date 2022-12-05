@@ -441,14 +441,15 @@ public class MasterApiService
         {
             { "USERID", GetUserId() }
         };
+        
+        var dataContext = new DataContext(DataContextSource.Api, userId);
 
         var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
-        
-        formEvent?.OnMetadataLoad(this,new MetadataLoadEventArgs(metadata));
+
+        formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
         
-        var dataContext = new DataContext(DataContextSource.Api, userId);
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext, _formEventResolver)

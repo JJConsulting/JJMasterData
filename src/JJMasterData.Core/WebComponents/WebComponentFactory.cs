@@ -1,5 +1,8 @@
 ﻿using JJMasterData.Core.DataDictionary.Repository;
 using System;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -33,9 +36,15 @@ namespace JJMasterData.Core.WebComponents
                 throw new ArgumentNullException(nameof(elementName));
 
             var dicDao = DictionaryRepositoryFactory.GetInstance();
-            var dicParser = dicDao.GetMetadata(elementName);
-            dataPanel.FormElement = dicParser.GetFormElement();
-            dataPanel.ProcessOptions = dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions;
+            var metadata = dicDao.GetMetadata(elementName);
+            
+            var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
+            
+            var formEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
+            formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+            
+            dataPanel.FormElement = metadata.GetFormElement();
+            dataPanel.ProcessOptions = metadata.UIOptions.ToolBarActions.ImportAction.ProcessOptions;
         }
 
     }

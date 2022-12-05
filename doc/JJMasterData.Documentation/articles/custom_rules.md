@@ -38,29 +38,21 @@ A .NET Form Event is a class that implements the <xref:JJMasterData.Core.FormEve
 
 Create a class with starts with your metadata name or use the `FormEvent` attribute.
 
-### .NET 6+
-
-If you're using .NET 6+, you can use the default interface methods feature!
-
-Implement IFormEvent in your class and then generate your overrides with CTRL+. in your class using VS or Rider:
+Inherit from BaseFormEvent (that implements IFormEvent) in your class and then generate your overrides with CTRL+. in your class using VS or Rider:
 
 <img alt="Generate Overrides" src="../media/GenerateOverrides.png"/>
 
 Your implementation will look like this:
 ```cs
 [FormEvent("Example")] // or a class that starts with your element name.
-public class MyFormEvent : IFormEvent
+public class MyFormEvent : BaseFormEvent
 {
-    public void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
+    public override void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
     {
         args.Metadata.Form.SubTitle = "You can edit your metadata at runtime using the FormEvent class";
     }
 }
 ```
-
-### .NET Standard / Framework
-
-These target frameworks don't support default interface methods. Follow the same steps implementing `BaseFormEvent`.
 
 ## Python Scripts
 
@@ -113,7 +105,7 @@ At your custom view:
     }
 }
 <form>
-    <jj-form-view element-name="Product" configure="Configure"/>
+    <jj-form-view element-name="Example" configure="Configure"/>
 </form>
 
 ```
