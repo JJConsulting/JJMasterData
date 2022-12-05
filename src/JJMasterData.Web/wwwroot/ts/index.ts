@@ -1,12 +1,5 @@
-﻿document.addEventListener("DOMContentLoaded", function() {
+﻿$(function () {
     // @ts-ignore
-    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0)
-    
-    $.ajaxSetup({
-        xhrFields: {
-            withCredentials: true
-        }
-    });
-
-    jjloadform("load");
+    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
+    jjloadform("load", null);
 });

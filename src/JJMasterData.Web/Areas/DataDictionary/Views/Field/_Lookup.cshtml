@@ -60,7 +60,7 @@
                         DataElementMapFilter mapFilter = Model.DataItem.ElementMap.MapFilters[i];
                         <tr>
                             <td>
-                                @mapFilter.FieldName<span>=</span>@mapFilter.ExpressionValue
+                                @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
                                 @Html.HiddenFor(x => x.DataItem.ElementMap.MapFilters[i].FieldName, mapFilter.FieldName)
                                 @Html.HiddenFor(x => x.DataItem.ElementMap.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
                             </td>
