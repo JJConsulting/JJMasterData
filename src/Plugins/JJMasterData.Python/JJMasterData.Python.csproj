@@ -23,12 +23,5 @@
     <ProjectReference Include="..\..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
     <ProjectReference Include="..\..\JJMasterData.Core\JJMasterData.Core.csproj" />
   </ItemGroup>
-    
-  <ItemGroup>
-    <EmbeddedResource Include="Python\JJMasterData\FormEvents\Args\FormAfterActionEventArgs.py" />
-    <EmbeddedResource Include="Python\JJMasterData\FormEvents\Args\FormBeforeActionEventArgs.py" />
-    <EmbeddedResource Include="Python\JJMasterData\FormEvents\Args\MetadataLoadEventArgs.py" />
-    <EmbeddedResource Include="Python\JJMasterData\FormEvents\PythonFormEvent.py" />
-  </ItemGroup>
 
 </Project>

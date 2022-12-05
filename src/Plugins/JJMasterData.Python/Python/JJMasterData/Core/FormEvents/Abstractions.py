@@ -1,10 +1,10 @@
-from FormBeforeActionEventArgs import FormBeforeActionEventArgs
-from FormAfterActionEventArgs import FormAfterActionEventArgs
-from MetadataLoadEventArgs import MetadataLoadEventArgs
+from .Args import FormBeforeActionEventArgs
+from .Args import FormAfterActionEventArgs
+from .Args import MetadataLoadEventArgs
 
 
 # noinspection PyPep8Naming
-class PythonFormEvent:
+class BaseFormEvent:
     def OnAfterDelete(self, sender, args: FormAfterActionEventArgs):
         pass
 
