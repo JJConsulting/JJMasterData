@@ -33,6 +33,11 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <EmbeddedResource Include="Scripts\**\*" />
+    </ItemGroup>
+
+
     <ItemGroup>
         <ProjectReference Include="..\JJMasterData.Core\JJMasterData.Core.csproj" />
     </ItemGroup>
