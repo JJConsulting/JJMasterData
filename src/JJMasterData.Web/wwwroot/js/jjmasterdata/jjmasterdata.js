@@ -1,11 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
+$(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
-    $.ajaxSetup({
-        xhrFields: {
-            withCredentials: true
-        }
-    });
-    jjloadform("load");
+    jjloadform("load", null);
 });
 function setupCollapsePanel(name) {
     let nameSelector = "#" + name;

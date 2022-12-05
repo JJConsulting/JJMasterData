@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0</TargetFrameworks>
-    <PackageVersion>3.1.0</PackageVersion>
+    <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
+    <PackageVersion>3.0.35</PackageVersion>
     <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyVersion>3.1.0</AssemblyVersion>
+    <AssemblyVersion>3.0.35</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <LangVersion>11</LangVersion>
+    <LangVersion>10</LangVersion>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
@@ -45,7 +44,7 @@
   
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.1.0</Version>
+    <Version>3.0.14</Version>
     <Company>JJ Consulting</Company>
     <Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -55,6 +54,6 @@
   </PropertyGroup>
    
    <PropertyGroup>
-    <RuntimeFrameworkVersion>7.0</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
   </PropertyGroup>
 </Project>

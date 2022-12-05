@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <OutputType>Library</OutputType>
@@ -11,30 +11,25 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.0</AssemblyVersion>
-        <FileVersion>3.1.0</FileVersion>
-        <PackageVersion>3.1.0</PackageVersion>
-        <Version>3.1.0</Version>
+        <AssemblyVersion>3.0.35</AssemblyVersion>
+        <FileVersion>3.0.35</FileVersion>
+        <PackageVersion>3.0.35</PackageVersion>
+        <Version>3.0.35</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Mars Version</Product>
-        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="wwwroot\**\*" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <EmbeddedResource Include="Scripts\**\*" />
     </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
@@ -43,9 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="package.json" />
-        <_ContentIncludedByDefault Remove="package-lock.json" />
-        <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -58,5 +51,9 @@
             <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
+    
+    <ProjectExtensions>
+        <VisualStudio><UserProperties /></VisualStudio>
+    </ProjectExtensions>
 
 </Project>
