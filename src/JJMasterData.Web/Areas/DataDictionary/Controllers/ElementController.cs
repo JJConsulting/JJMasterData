@@ -18,7 +18,7 @@ public class ElementController : DataDictionaryController
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
 
-    public ElementController(ElementService elementService,ThemeService themeService)
+    public ElementController(ElementService elementService, ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
@@ -32,9 +32,9 @@ public class ElementController : DataDictionaryController
             var model = GetEntityFormView();
             return View(model);
         }
-        catch(DataAccessException)
+        catch (DataAccessException)
         {
-            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen=true });
+            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen = true });
         }
     }
 
@@ -43,6 +43,10 @@ public class ElementController : DataDictionaryController
         var formName = e.FieldValues["name"]?.ToString();
         switch (e.Action.Name)
         {
+            case "render":
+                e.LinkButton.OnClientClick =
+                    $"window.open('{Url.Action("Render", "Form", new { dictionaryName = formName, Area = "MasterData" })}', '_blank').focus();";
+                break;
             case "tools":
                 e.LinkButton.UrlAction = Url.Action("Index", "Entity", new { dictionaryName = formName });
                 e.LinkButton.OnClientClick = "";
@@ -63,8 +67,15 @@ public class ElementController : DataDictionaryController
     {
         var formView = GetFormView();
         var selectedRows = formView.GetSelectedGridValues();
-        var zipFile = _elementService.Export(selectedRows);
-        return File(zipFile, "application/zip", "Dictionaries.zip");
+
+        if(selectedRows.Count == 1)
+        {
+            var jsonBytes = _elementService.ExportSingleRow(selectedRows[0]);
+            return File(jsonBytes, "application/json", selectedRows[0]["name"]!.ToString() + ".json");
+        }
+
+        var zipBytes = _elementService.ExportMultipleRows(selectedRows);
+        return File(zipBytes, "application/zip", "Dictionaries.zip");
     }
 
     public IActionResult Import()
@@ -79,7 +90,7 @@ public class ElementController : DataDictionaryController
         upload.AutoSubmitAfterUploadAll = false;
         upload.OnPostFile += OnPostFile;
     }
-    
+
     private void OnPostFile(object? sender, FormUploadFileEventArgs e)
     {
         _elementService.Import(e.File.FileStream);
@@ -102,7 +113,6 @@ public class ElementController : DataDictionaryController
 
     public IActionResult ClassSourceCode(string dictionaryName)
     {
-
         ViewBag.ClassSourceCode = _elementService.GetClassSourceCode(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
 
@@ -174,6 +184,16 @@ public class ElementController : DataDictionaryController
         };
         formView.AddGridAction(acTools);
 
+        var renderBtn = new ScriptAction
+        {
+            Icon = IconType.Eye,
+            Name = "render",
+            Text = Translate.Key("Render"),
+            EnableExpression = "exp:'T' <> {type}",
+            IsGroup = true
+        };
+        formView.AddGridAction(renderBtn);
+
         var acdup = new UrlRedirectAction
         {
             Icon = IconType.FilesO,
@@ -243,7 +263,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("Index", "About", new {Area="MasterData"}),
+            UrlRedirect = Url.Action("Index", "About", new { Area = "MasterData" }),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -262,9 +282,9 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-        
+
         formView.AddToolBarAction(btnLog);
-        
+
         var btnSettings = new UrlRedirectAction
         {
             Name = "btnAppSettings",
@@ -273,13 +293,13 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Application Options"),
-            UrlRedirect = Url.Action("Index", "Options", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Options", new { Area = "MasterData" }),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
         };
-        
+
         formView.AddToolBarAction(btnSettings);
-        
+
         var btnResources = new UrlRedirectAction
         {
             Name = "btnResources",
@@ -288,13 +308,13 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Resources"),
-            UrlRedirect = Url.Action("Index", "Resources", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Resources", new { Area = "MasterData" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
 
         formView.AddToolBarAction(btnResources);
-        
+
         formView.AddToolBarAction(new SubmitAction()
         {
             Name = "btnDeleteMetadata",
@@ -304,7 +324,7 @@ public class ElementController : DataDictionaryController
             IsGroup = false,
             ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
             ShowAsButton = true,
-            FormAction = Url.Action("Delete","Element")
+            FormAction = Url.Action("Delete", "Element")
         });
 
         formView.OnRenderAction += OnRenderAction;
@@ -320,7 +340,7 @@ public class ElementController : DataDictionaryController
 
         return RedirectToAction(nameof(Index));
     }
-    
+
     public IActionResult Delete()
     {
         var formView = GetEntityFormView();
@@ -330,8 +350,8 @@ public class ElementController : DataDictionaryController
         selectedGridValues
             .Select(value => value["name"]!.ToString()!)
             .ToList()
-            .ForEach(metadata=> _elementService.DictionaryRepository.Delete(metadata));
-        
+            .ForEach(metadata => _elementService.DictionaryRepository.Delete(metadata));
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -339,9 +359,9 @@ public class ElementController : DataDictionaryController
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var formView = _elementService.GetFormView();
-        formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-        
+        formView.FormElement.Title =
+            $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
+
         return formView;
     }
-
 }

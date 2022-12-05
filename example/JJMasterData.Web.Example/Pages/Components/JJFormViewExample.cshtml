@@ -1,16 +1,34 @@
 @page
 
 @using JJMasterData.Core.WebComponents
+@using JJMasterData.Core.DataDictionary.Repository
+@using JJMasterData.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@inject IDictionaryRepository DictionaryRepository
 
 @{
     ViewData["Title"] = "JJFormView";
-    
+
+    bool dictionaryExists = DictionaryRepository.Exists("Example");
+
     void Configure(JJFormView formView)
     {
         formView.FormElement.SubTitle = "You can edit any property from JJFormView at runtime";
     }
 }
 
-<form>
-    <jj-form-view element-name="Example" configure="Configure"/>
-</form>
+@if (dictionaryExists)
+{
+    <form>
+        <jj-form-view element-name="Example" configure="Configure"/>
+    </form>
+}
+else
+{
+    <jj-alert 
+        color="Danger" 
+        icon="Times" 
+        title="Dictionary not found." 
+        message="Please import Example.json. Check Intro for instructions."/>
+}
