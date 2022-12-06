@@ -54,33 +54,8 @@ public class MyFormEvent : BaseFormEvent
 }
 ```
 
-## Python Scripts
-
-Create a python file with your data dictionary name and implement a class with the same name. Add the JJMasterData folder (coming soon to pip) 
-to enable autocomplete features.
-Specify the path on the services setup.
-
-```csharp
-builder.Services.AddJJMasterDataWeb()
-        .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
-```
-
-```py
-from JJMasterData.Core.FormEvents.Abstractions import BaseFormEvent
-from JJMasterData.Core.FormEvents.Args import *
-
-class Example(BaseFormEvent):
-
-    def OnBeforeInsert(self, sender, args: FormBeforeActionEventArgs):
-        if int(args.Values["NumericField"]) < 0:
-            args.Errors["NumericField"] = "Value needs to be greater than 0"
-
-    def OnMetadataLoad(self, sender, args: MetadataLoadEventArgs):
-        args.Metadata.Form.SubTitle = "Hello from IronPython runtime."
-```
-
-> [!TIP]
-> Since IronPython runs on the CLR and does not use Reflection as our default implementation, higher performance is expected.
+## Python
+Check our [Plugin](plugins/python.md)
 
 ## IFormEventResolver
 
