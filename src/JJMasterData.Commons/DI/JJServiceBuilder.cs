@@ -18,7 +18,7 @@ public class JJServiceBuilder
     
     public JJServiceBuilder AddDefaultServices()
     {
-        Services.AddScoped<IEntityRepository, Factory>();
+        Services.AddScoped<IEntityRepository,Factory>();
         Services.AddLocalization();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddTransient<IBackgroundTask, BackgroundTask>();

@@ -10,6 +10,8 @@ using System.Collections;
 using System.Diagnostics;
 using System.Net;
 using JJMasterData.WebApi.Models;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -18,14 +20,15 @@ public class MasterApiService
     private readonly HttpContext? _httpContext;
     private readonly IEntityRepository _entityRepository;
     private readonly IDictionaryRepository _dictionaryRepository;
-    
+    private readonly IFormEventResolver? _formEventResolver;
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
                             IEntityRepository entityRepository, 
-                            IDictionaryRepository dictionaryRepository)
+                            IDictionaryRepository dictionaryRepository, IFormEventResolver? formEventResolver)
     {
         _httpContext = httpContextAccessor.HttpContext;
         _entityRepository = entityRepository;
         _dictionaryRepository = dictionaryRepository;
+        _formEventResolver = formEventResolver;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
@@ -430,24 +433,30 @@ public class MasterApiService
         return userId;
     }
 
-    private FormService GetFormService(Metadata dictionary)
+    private FormService GetFormService(Metadata metadata)
     {
-        bool logActionIsVisible = dictionary.UIOptions.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
         var userValues = new Hashtable
         {
             { "USERID", GetUserId() }
         };
-        var formElement = dictionary.GetFormElement();
+        
         var dataContext = new DataContext(DataContextSource.Api, userId);
+
+        var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
+
+        formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
+        
+        var formElement = metadata.GetFormElement();
+        
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext)
+        var service = new FormService(formManager, dataContext, _formEventResolver)
         {
             EnableHistoryLog = logActionIsVisible
         };
-
-        service.AddFormEvent();
+        
         return service;
     }
 

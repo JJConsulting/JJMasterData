@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
@@ -72,12 +74,7 @@ public sealed class JJMasterDataOptions
     /// Default value:_MasterDataLayout.Popup <br></br>
     /// </summary>
     public string? PopUpLayoutPath { get; set; }
-
-    /// <summary>
-    /// Default value: null <br></br>
-    /// </summary>
-    public string[]? ExternalAssembliesPath { get; set; }
-
+    
     public string ExportationFolderPath { get; set; }
 
     /// <summary>

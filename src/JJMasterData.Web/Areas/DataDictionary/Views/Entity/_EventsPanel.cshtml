@@ -10,16 +10,4 @@
         })
         @Html.TextBoxFor((model => model.FormEventType),Model.HtmlAttributes)
     </div>
-    @if (!Model.IsPythonFormEvent)
-    {
-        <div class="@BootstrapHelper.FormGroup col-sm-6">
-            @Html.LabelFor(model => model.FormEventMethods, Translate.Key("Methods"),
-                new Dictionary<string, string>
-                {
-                    { BootstrapHelper.DataToggle, "tooltip" },
-                    { "title", Translate.Key("Methods") }
-                })
-            @Html.TextBoxFor(model=>model.FormEventMethods,  Model.HtmlAttributes)
-        </div>
-    }
 </div>

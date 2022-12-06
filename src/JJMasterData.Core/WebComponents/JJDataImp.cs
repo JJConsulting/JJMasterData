@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -301,7 +304,7 @@ public class JJDataImp : JJBaseProcess
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
         var dataContext = new DataContext(DataContextSource.Upload, UserId);
-        var formService = new FormService(FormManager, dataContext)
+        var formService = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
         {
             EnableErrorLink = false,
             EnableHistoryLog = EnableHistoryLog,

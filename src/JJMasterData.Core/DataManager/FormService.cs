@@ -25,6 +25,8 @@ public class FormService
     public FormManager FormManager { get; private set; }
 
     public DataContext DataContext { get; private set; }
+    
+    public IFormEventResolver FormEventResolver { get; }
 
     public AuditLogService AuditLog
     {
@@ -52,10 +54,13 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext)
+    public FormService(FormManager formManager, DataContext dataContext, IFormEventResolver eventResolver = null)
     {
         FormManager = formManager;
         DataContext = dataContext;
+        FormEventResolver = eventResolver;
+        
+        AddFormEvent();
     }
 
     #endregion
@@ -253,35 +258,20 @@ public class FormService
         return default;
     }
 
-    public void AddFormEvent()
+    private void AddFormEvent()
     {
-        IFormEvent formEvent = FormEventManager.GetFormEvent(FormElement.Name);
-        foreach (var method in FormEventManager.GetFormEventMethods(formEvent))
+        var formEvent = FormEventResolver.GetFormEvent(FormElement.Name);
+
+        if (formEvent != null)
         {
-            switch (method)
-            {
-                case "OnBeforeInsert":
-                    OnBeforeInsert += formEvent.OnBeforeInsert;
-                    break;
-                case "OnBeforeUpdate":
-                    OnBeforeUpdate += formEvent.OnBeforeUpdate;
-                    break;
-                case "OnBeforeDelete":
-                    OnBeforeDelete += formEvent.OnBeforeDelete;
-                    break;
-                case "OnAfterInsert":
-                    OnAfterInsert += formEvent.OnAfterInsert;
-                    break;
-                case "OnAfterUpdate":
-                    OnAfterUpdate += formEvent.OnAfterUpdate;
-                    break;
-                case "OnAfterDelete":
-                    OnAfterDelete += formEvent.OnAfterDelete;
-                    break;
-                case "OnBeforeImport":
-                    OnBeforeImport += formEvent.OnBeforeImport;
-                    break;
-            }
+            OnBeforeInsert += formEvent.OnBeforeInsert;
+            OnBeforeDelete += formEvent.OnBeforeDelete;
+            OnBeforeUpdate += formEvent.OnBeforeUpdate;
+            OnBeforeImport += formEvent.OnBeforeImport;
+
+            OnAfterDelete += formEvent.OnAfterDelete;
+            OnAfterInsert += formEvent.OnAfterInsert;
+            OnAfterUpdate += formEvent.OnAfterUpdate;
         }
     }
 

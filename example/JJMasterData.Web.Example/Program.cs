@@ -24,7 +24,8 @@ public class Program
             mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        });
+        }).WithFormEventResolver();
+            // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

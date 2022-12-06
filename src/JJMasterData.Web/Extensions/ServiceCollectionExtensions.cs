@@ -80,7 +80,6 @@ public static class ServiceCollectionExtensions
             options.SecretKey = wrapperOptions.SecretKey;
             options.TableName = wrapperOptions.TableName;
             options.ExportationFolderPath = wrapperOptions.ExportationFolderPath;
-            options.ExternalAssembliesPath = wrapperOptions.ExternalAssembliesPath;
             options.PrefixGetProc = wrapperOptions.PrefixGetProc;
             options.PrefixSetProc = wrapperOptions.PrefixSetProc;
             options.ResourcesTableName = wrapperOptions.ResourcesTableName;

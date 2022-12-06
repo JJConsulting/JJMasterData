@@ -1,5 +1,7 @@
 ﻿using JJMasterData.JsonSchema.Writers;
 
-var writer = new JJMasterDataOptionsWriter();
+var optionsWriter = new JJMasterDataOptionsWriter();
+var metadataWriter = new MetadataWriter();
 
-await writer.WriteAsync();
+await optionsWriter.WriteAsync();
+await metadataWriter.WriteAsync();
