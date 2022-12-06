@@ -50,7 +50,6 @@ public class MasterApiService
 
         return text;
     }
-
     public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby, int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -73,7 +72,6 @@ public class MasterApiService
 
         return ret;
     }
-
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
         var dictionary = _dictionaryRepository.GetMetadata(elementName);
@@ -99,32 +97,27 @@ public class MasterApiService
 
         return listRet;
     }
-
-    public List<ResponseLetter> SetFields(Hashtable[] listParam, string elementName, bool replace = false)
+    public IEnumerable<ResponseLetter> SetFields(IEnumerable<Hashtable> paramsList, string elementName, bool replace = false)
     {
-        if (listParam == null)
-            throw new ArgumentNullException(nameof(listParam));
+        if (paramsList == null)
+            throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableAdd | !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+
+        foreach (var values in paramsList)
         {
-            ResponseLetter ret = replace ?
+            yield return replace ?
                 InsertOrReplace(formService, values, dictionary.Api) :
                 Insert(formService, values, dictionary.Api);
-
-            listRet.Add(ret);
         }
-        return listRet;
     }
-
-    public List<ResponseLetter> UpdateFields(Hashtable[] listParam, string elementName)
+    public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<Hashtable> paramsList, string elementName)
     {
-        if (listParam == null)
+        if (paramsList == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
         var dictionary = GetDataDictionary(elementName);
@@ -132,40 +125,32 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+        
+        foreach (var values in paramsList)
         {
-            var ret = Update(formService, values, dictionary.Api);
-            listRet.Add(ret);
+            yield return Update(formService, values, dictionary.Api);
         }
-
-        return listRet;
     }
-
-    public List<ResponseLetter> UpdatePart(Hashtable[] listParam, string elementName)
+    public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<Hashtable> paramsList, string elementName)
     {
-        if (listParam == null)
-            throw new ArgumentNullException(nameof(listParam));
+        if (paramsList == null)
+            throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
-        if (listParam == null)
+        if (paramsList == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+
+        foreach (var values in paramsList)
         {
-            var ret = Patch(formService, values, dictionary.Api);
-            listRet.Add(ret);
+            yield return Patch(formService, values, dictionary.Api);
         }
-
-        return listRet;
     }
-
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
+    private static ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -192,8 +177,7 @@ public class MasterApiService
         }
         return ret;
     }
-
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
+    private static ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -221,8 +205,7 @@ public class MasterApiService
         }
         return ret;
     }
-
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
+    private static ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -364,7 +347,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(Metadata metadata, Hashtable? paramValues)
+    private Hashtable ParseFilter(Metadata metadata, IDictionary? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -380,7 +363,6 @@ public class MasterApiService
 
         return filters;
     }
-
     private Hashtable GetDefaultFilter(Metadata dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
@@ -419,7 +401,6 @@ public class MasterApiService
 
         return filters;
     }
-
     private string GetUserId()
     {
         var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
@@ -432,7 +413,6 @@ public class MasterApiService
 
         return userId;
     }
-
     private FormService GetFormService(Metadata metadata)
     {
         bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
@@ -459,7 +439,84 @@ public class MasterApiService
         
         return service;
     }
+    public FileStream GetDictionaryFile(string elementName, string id, string fieldName, string fileName)
+    {
+        var formElement = GetFormElement(elementName);
 
+        var folderPath = formElement.Fields.First(f => f.Name == fieldName).DataFile.FolderPath;
+
+        var path = Path.Combine(folderPath, id);
+
+        string? file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
+
+        if (file == null)
+            throw new KeyNotFoundException(Translate.Key("File not found"));
+
+        var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
+        
+        return fileStream;
+    }
+    public void SetDictionaryFile(string elementName, string fieldName, string pkValues, IFormFile file)
+    {
+        var formElement = GetFormElement(elementName);
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+        var folderPath = field.DataFile.FolderPath;
+
+        SetPhysicalFile(pkValues, file, folderPath, field);
+
+        SetEntityFile(pkValues, file, formElement, field);
+    }
+    private void SetEntityFile(string pkValues, IFormFile file, FormElement formElement, FormElementField field)
+    {
+        var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
+
+        var values = _entityRepository.GetFields(formElement, primaryKeys);
+
+        if (field.DataFile.MultipleFile)
+        {
+            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+
+            if (!currentFiles.Contains(file.FileName))
+            {
+                currentFiles.Add(file.FileName);
+                values[field.Name] = string.Join(",", currentFiles);
+            }
+        }
+        else
+        {
+            values[field.Name] = file.FileName;
+        }
+
+        _entityRepository.SetValues(formElement, values);
+    }
+    private static void SetPhysicalFile(string id, IFormFile file, string folderPath, FormElementField field)
+    {
+        var path = Path.Combine(folderPath, id);
+
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        if (!field.DataFile.MultipleFile)
+        {
+            foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
+            {
+                fileInfo.Delete();
+            }
+        }
+
+        using var fileStream =
+            new FileStream(Path.Combine(path, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+        file.CopyToAsync(fileStream);
+    }
+    public void DeleteFile(string elementName, string fieldName, string pkValues, string fileName)
+    {
+        var formElement = GetFormElement(elementName);
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+        
+        DeletePhysicalFile(field, pkValues, fileName);
+        DeleteEntityFile(formElement, field, pkValues, fileName);
+    }
     private Metadata GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -467,8 +524,71 @@ public class MasterApiService
 
         return _dictionaryRepository.GetMetadata(elementName);
     }
+    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName).GetFormElement();
+    private static void DeletePhysicalFile(FormElementField field, string pkValues, string fileName)
+    {
+        var folderPath = field.DataFile.FolderPath;
 
-    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
+        var path = Path.Combine(folderPath, Path.Combine(pkValues, fileName));
+        if (File.Exists(path))
+            File.Delete(path);
+        else
+            throw new KeyNotFoundException(Translate.Key("File not found"));
+    }
+    private void DeleteEntityFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
+    {
+        var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
+
+        var values = _entityRepository.GetFields(formElement, primaryKeys);
+
+        if (field.DataFile.MultipleFile)
+        {
+            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+
+            if (currentFiles.Contains(fileName))
+            {
+                currentFiles.Remove(fileName);
+                values[field.Name] = string.Join(",", currentFiles);
+            }
+        }
+        else
+        {
+            values[field.Name] = null;
+        }
+
+
+        _entityRepository.SetValues(formElement, values);
+    }
+    
+    /// <summary>
+    /// Compares the values of the fields received with those sent to the bank, returning different records
+    /// </summary>
+    /// <remarks>
+    /// This happens due to triggers or values
+    /// returned in set methods (id autoNum) for example
+    /// </remarks>
+    private static Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
+    {
+        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        foreach (DictionaryEntry entry in result)
+        {
+            if (entry.Value == null)
+                continue;
+
+            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            if (original.ContainsKey(entry.Key))
+            {
+                if (original[entry.Key] == null && entry.Value != null ||
+                    !original[entry.Key]!.Equals(entry.Value))
+                    newValues.Add(fieldName, entry.Value);
+            }
+            else
+                newValues.Add(fieldName, entry.Value);
+        }
+
+        return newValues.Count > 0 ? newValues : null;
+    }
+    private static ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
     {
         var letter = new ResponseLetter
         {
@@ -488,37 +608,4 @@ public class MasterApiService
 
         return letter;
     }
-
-    /// <summary>
-    /// Compara os valores dos campos recebidos com os enviados para banco,
-    /// retornando os registros diferentes
-    /// </summary>
-    /// <remarks>
-    /// Isso acontece devido as triggers ou os valores 
-    /// retornados nos metodos de set (id autoNum) por exemplo
-    /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
-    {
-        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (DictionaryEntry entry in result)
-        {
-            if (entry.Value == null)
-                continue;
-
-            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
-            if (original.ContainsKey(entry.Key))
-            {
-                if (original[entry.Key] == null && entry.Value != null ||
-                    !original[entry.Key]!.Equals(entry.Value))
-                    newValues.Add(fieldName, entry.Value);
-            }
-            else
-            {   
-                newValues.Add(fieldName, entry.Value);
-            }
-        }
-
-        return newValues.Count > 0 ? newValues : null;
-    }
-
 }

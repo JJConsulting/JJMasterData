@@ -30,7 +30,7 @@ public class DictionaryDao : IDictionaryRepository
         if (sync.HasValue)
             filter.Add("sync", (bool)sync ? "1" : "0");
 
-        string orderBy = "name, type";
+        const string orderBy = "name, type";
         string currentName = "";
         int tot = 1;
         var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderBy, 10000, 1, ref tot);

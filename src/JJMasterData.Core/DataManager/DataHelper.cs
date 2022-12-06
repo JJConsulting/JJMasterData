@@ -33,7 +33,7 @@ namespace JJMasterData.Core.DataManager
         /// Returns a list with only the primary keys of the table, if the PK value does not exist,
         /// an exception will be thrown
         /// </summary>
-        public static Hashtable GetPkValues(Element element, IDictionary values)
+        public static IDictionary GetPkValues(Element element, IDictionary values)
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
@@ -47,7 +47,7 @@ namespace JJMasterData.Core.DataManager
             if (elementPks == null || elementPks.Count == 0)
                 throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
 
-            foreach (ElementField field in elementPks)
+            foreach (var field in elementPks)
             {
                 if (!values.Contains(field.Name))
                     throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));
@@ -58,7 +58,7 @@ namespace JJMasterData.Core.DataManager
             return primaryKeys;
         }
 
-        public static Hashtable GetPkValues(Element element, string parsedValues, char separator)
+        public static IDictionary GetPkValues(Element element, string parsedValues, char separator)
         {
             var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 

@@ -241,9 +241,9 @@ public class JJDataPanel : JJBaseView
             if (!string.IsNullOrEmpty(criptPkval))
             {
                 string parsedPkval = Cript.Descript64(criptPkval);
-                var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
+                var filters = new Hashtable(DataHelper.GetPkValues(FormElement, parsedPkval, '|'));
                 var entityRepository = FieldManager.Expression.EntityRepository;
-                tempvalues = entityRepository.GetFields(FormElement, filters);
+                tempvalues = new Hashtable(entityRepository.GetFields(FormElement, filters));
             }
         }
         if (tempvalues == null)
