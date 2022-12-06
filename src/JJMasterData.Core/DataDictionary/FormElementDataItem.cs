@@ -13,8 +13,8 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElementDataItem
 {
-    private DataAccessCommand _Command;
-    private List<DataItemValue> _Itens;
+    private DataAccessCommand _command;
+    private List<DataItemValue> _items;
 
     /// <summary>
     /// Tipo da origem dos dados
@@ -30,17 +30,8 @@ public class FormElementDataItem
     [DataMember(Name = "command")]
     public DataAccessCommand Command
     {
-        get
-        {
-            if (_Command == null)
-                _Command = new DataAccessCommand();
-
-            return _Command;
-        }
-        set
-        {
-            _Command = value;
-        }
+        get => _command ??= new DataAccessCommand();
+        set => _command = value;
     }
 
     /// <summary>
@@ -49,19 +40,8 @@ public class FormElementDataItem
     [DataMember(Name = "itens")]
     public List<DataItemValue> Items
     {
-        get
-        {
-            if (_Itens == null)
-            {
-                _Itens = new List<DataItemValue>();
-            }
-                    
-            return _Itens;
-        }
-        set
-        {
-            _Itens = value;
-        }
+        get => _items ??= new List<DataItemValue>();
+        set => _items = value;
     }
 
     /// <summary>

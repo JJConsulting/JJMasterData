@@ -81,7 +81,7 @@ internal class GridPagination
                 a.WithCssClass("page-link");
                 a.WithAttribute("style", "cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithAttribute("onclick", GetDoPaginationMethod(page));
+                a.WithAttribute("onclick", GetDoPaginationScript(page));
                 if (icon != null)
                 {
                     a.AppendElement(new JJIcon(icon.Value));
@@ -95,7 +95,7 @@ internal class GridPagination
         return li;
     }
 
-    private string GetDoPaginationMethod(int page)
+    private string GetDoPaginationScript(int page)
     {
         string name = GridView.Name;
         string enableAjax = GridView.EnableAjax ? "true" : "false";
@@ -138,8 +138,7 @@ internal class GridPagination
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText("&nbsp;");
-                    span.AppendText(GridView.TotalRecords.ToString("N0"));
+                    span.AppendText($"&nbsp;{GridView.TotalRecords:N0}");
                 });
             }
         });

@@ -16,9 +16,6 @@
   <a href="https://img.shields.io/badge/Microsoft_SQL_Server-CC2927">
     <img src="https://img.shields.io/badge/SQL_Server-CC2927?logo=microsoft-sql-server&logoColor=white" alt="TS">
   </a>
-  <a href="https://img.shields.io/badge/Python">
-    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="SQL Server">
-  </a>
   <a href="https://www.nuget.org/profiles/jjconsulting">
     <img src="https://img.shields.io/nuget/v/JJMasterData.Web.svg?color=004880" alt="NuGet">
   </a>
@@ -30,16 +27,10 @@
 JJMasterData is an open-source .NET library to help you create dynamic CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
 
 ## Features
-- Complete CRUD operations ✅
-- Pages generated at runtime ✅
-- Data export & import ✅
-- Hangfire support ✅
-- Database script generation ✅
-- IronPython support ✅
-- Bootstrap 3,4 & 5 support ✅
-- Log interface ✅
-- xUnit library ✅
-
+- Pages generated at runtime 🔥
+- Data exportation & importation ↔️
+- Database script generation ✍️
+- Plugins support by [interfaces](https://portal.jjconsulting.com.br/jjdoc/articles/plugins/intro.html) 🪄
 <br>
 
 # Demo
@@ -62,28 +53,27 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 
 <br>
 
-## Building from source
+## Building from source 🧰
 1. Install [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
 2. Install [NodeJS](https://nodejs.org/en/download/)
 
-3. Clone the repository JJMasterData
+3. Clone this git repository
 
-4. Open through JJMasterData.sln file
+4. Open `JJMasterData.sln `file at your IDE
 
-5. Set the JJMasterData.Web.Example as startup project
+5. Set the `JJMasterData.WebExample` as startup project
 
-6. Click with right button on top of JJMasterData.Web, open the terminal and execute the command
+6. At `src/JJMasterData.Web` run at your terminal
 ```bash
 npm i
 ```
-
-7. It will be necessary to direct to a Database of your choice. It is possible to use the VisualStudio’s Database. You will need to find the Database’s name in appsettings.json according to the picture below
+7. It will be necessary to add a Database of your choice. You will need add a ConnectionString at your `IConfiguration` source.
 ![image](https://user-images.githubusercontent.com/100393691/203789109-ef71f492-3f90-4739-8c41-8a92890c72dc.png)
 
-8. Execute the project
+8. Run the project
 
-9. This is the expected result <br>
+9. This is the expected output <br>
 ![image](https://user-images.githubusercontent.com/100393691/203789353-14c24b8d-cf2c-4717-891a-b01e58559a4c.png)
 
 
@@ -97,7 +87,7 @@ npm i
 
 <br>
 
-## Bugs and feature requests
+## Bugs and feature requests 🐛
 Have a bug or a feature request? 
 Please first search for existing and closed issues.</br>
 If your problem or idea is not addressed yet, [please open a new issue](https://github.com/jjconsulting/JJMasterData/issues/new).

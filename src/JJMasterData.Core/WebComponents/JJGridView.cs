@@ -85,17 +85,8 @@ public class JJGridView : JJBaseView
     
     internal IEntityRepository EntityRepository
     {
-        get
-        {
-            if (_entityRepository == null)
-                _entityRepository = JJService.EntityRepository;
-
-            return _entityRepository;
-        }
-        set
-        {
-            _entityRepository = value;
-        }
+        get => _entityRepository ??= JJService.EntityRepository;
+        set => _entityRepository = value;
     }
 
     internal FormManager FormManager
@@ -141,10 +132,10 @@ public class JJGridView : JJBaseView
                 ShowBorder = CurrentUI.ShowBorder,
                 ShowRowStriped = CurrentUI.ShowRowStriped,
                 EntityRepository = EntityRepository,
-                UserValues = UserValues
+                UserValues = UserValues,
+                ProcessOptions = ExportAction.ProcessOptions,
+                OnRenderCell = OnRenderCell
             };
-            _dataExp.OnRenderCell = OnRenderCell;
-            _dataExp.ProcessOptions = ExportAction.ProcessOptions;
 
             return _dataExp;
         }
@@ -403,10 +394,15 @@ public class JJGridView : JJBaseView
             if (_table != null) 
                 return _table;
             
-            _table = new GridTable(this);
-            _table.Body.OnRenderAction = OnRenderAction;
-            _table.Body.OnRenderSelectedCell = OnRenderSelectedCell;
-            _table.Body.OnRenderCell = OnRenderCell;
+            _table = new GridTable(this)
+            {
+                Body =
+                {
+                    OnRenderAction = OnRenderAction,
+                    OnRenderSelectedCell = OnRenderSelectedCell,
+                    OnRenderCell = OnRenderCell
+                }
+            };
 
             return _table;
         }
@@ -629,15 +625,15 @@ public class JJGridView : JJBaseView
             return GetLookupHtml(lookupRoute);
 
         html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
-        html.AppendElementIf(FilterAction.IsVisible,()=> Filter.GetHtmlFilter());
-        html.AppendElementIf(ShowToolbar, GetToolbarHtmlElement);
+        html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtmlBuilder);
+        html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
-        html.AppendElement(GetTableHtmlElement());
+        html.AppendElement(GetTableHtmlBuilder());
 
         return html;
     }
 
-    private HtmlBuilder GetTableHtmlElement()
+    private HtmlBuilder GetTableHtmlBuilder()
     {
         AssertProperties();
         
@@ -805,11 +801,11 @@ public class JJGridView : JJBaseView
         return title;
     }
 
-    internal HtmlBuilder GetToolbarHtmlElement() => new GridToolbar(this).GetHtmlElement();
+    internal HtmlBuilder GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlElement();
 
-    public string GetFilterHtml() => Filter.GetHtmlFilter().ToString();
+    public string GetFilterHtml() => Filter.GetFilterHtmlBuilder().ToString();
 
-    public string GetToolbarHtml() => GetToolbarHtmlElement().ToString();
+    public string GetToolbarHtml() => GetToolbarHtmlBuilder().ToString();
 
     private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
 

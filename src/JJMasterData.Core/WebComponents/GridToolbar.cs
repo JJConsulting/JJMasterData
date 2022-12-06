@@ -22,9 +22,8 @@ internal class GridToolbar
         return toolbar.GetHtmlBuilder();
     }
 
-    private IList<HtmlBuilder> GetActionsHtmlElement()
+    private IEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
-        var htmlList = new List<HtmlBuilder>();
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         
         foreach (var action in actions)
@@ -37,7 +36,7 @@ internal class GridToolbar
 
                 if (filterAction.EnableScreenSearch)
                 {
-                    htmlList.Add(GridView.Filter.GetHtmlToolBarSearch());
+                    yield return GridView.Filter.GetHtmlToolBarSearch();
                     continue;
                 }
             }
@@ -45,20 +44,19 @@ internal class GridToolbar
             var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
             if (linkButton.Visible)
             {
-                if (action is ExportAction && GridView.DataExp.IsRunning())
+                switch (action)
                 {
-                    linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
-                    linkButton.Spinner.Visible = true;
-                }
-                else if (action is ImportAction && GridView.DataImp.IsRunning())
-                {
-                    linkButton.Spinner.Visible = true;
+                    case ExportAction when GridView.DataExp.IsRunning():
+                        linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
+                        linkButton.Spinner.Visible = true;
+                        break;
+                    case ImportAction when GridView.DataImp.IsRunning():
+                        linkButton.Spinner.Visible = true;
+                        break;
                 }
 
-                htmlList.Add(linkButton.GetHtmlBuilder());
+                yield return linkButton.GetHtmlBuilder();
             }
         }
-
-        return htmlList;
     }
 }
