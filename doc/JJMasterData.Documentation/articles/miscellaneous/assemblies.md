@@ -1,30 +1,27 @@
-# Dependencies
+# Assemblies
 
-JJMasterData dependencies can be represented by the following diagram:
+JJMasterData dependency tree can be represented by the following diagram:
 
-![Dependencies](../../media/JJMasterDataDeps.png)
+![Dependencies](../../media/JJMasterDataDependencies.png)
 
 ## Assemblies
 
-### JJMasterData.Web.Bootstraper 
-Target: .NET 6
-</br>
-Website to use the Razor Class Library during development.
 ### JJMasterData.Web 
-Target: .NET 6 
+Target Frameworks: .NET 6 & .NET 7
 </br>
-DataDictionary Razor Class Library.
-### JJMasterData.Api
-Target: .NET 6
+Razor Class Library with web graphical interfaces to manipulate and render your metadata.
+
+### JJMasterData.WebApi
+Target Framework: .NET 7
 </br>
-RESTful API to access the DataDictionary.
+Restful API to consume your metadata at any front-end.
 
 ### JJMasterData.Core
-Targets: .NET 6, .NET Standard 2.0 and .NET Framework 4.8
+Target Frameworks: .NET 6, .NET 7, .NET Standard 2.0 and .NET Framework 4.8
 </br>
-Class library with the components to render the data in HTML.
+Library to access your metadata from .NET and/or render it at HTML components.
 
 ### JJMasterData.Commons
 Target: .NET Standard 2.0
 </br>
-Class library with utilities to all assemblies, like database access, l10n, logging and utils.
+Utilities to all assemblies, like database access, l10n, logging and utils.
