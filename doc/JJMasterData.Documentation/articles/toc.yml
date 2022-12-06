@@ -17,10 +17,12 @@
     href: expressions.md
   - name: Reserved Keywords
     href: reserved_keywords.md
-- name: Data Dictionary
+- name: Tutorials
   items:
+  - name: Configuring Data Upload
+    href: tutorials/data_file.md
   - name: Importing and Exporting Data Dictionaries
-    href: data_dictionary/import_export.md
+    href: tutorials/import_export.md    
 - name: Components
   href: components/intro.md
   items:
@@ -28,8 +30,6 @@
     href: components/alert.md
   - name: JJSearchBox
     href: components/searchbox.md
-  - name: JJDataFile
-    href: components/data_file.md
   - name: JJFormView
     href: components/form_view.md
 - name: Errors
@@ -39,15 +39,19 @@
       href: errors/jj001.md
     - name: JJ002 - {search_id} is required at queries using ReplaceTextOnGrid.
       href: errors/jj002.md
+- name: Plugins
+  items:
+  - name: Hangfire
+    href: plugins/hangfire.md
+  - name: MongoDB
+    href: plugins/mongodb.md
+  - name: Source Control
+    href: plugins/sourcecontrol.md
+  - name: Python
+    href: plugins/python.md
 - name: Miscellaneous
   items:
   - name: .NET Framework Support
     href: miscellaneous/netframework.md
-  - name: Python F.A.Q
-    href: miscellaneous/python.md
   - name: Assemblies
     href: miscellaneous/assemblies.md
-  - name: DataAccess
-    href: miscellaneous/dataaccess.md
-  - name: HtmlBuilder
-  href: miscellaneous/htmlbuilder.md

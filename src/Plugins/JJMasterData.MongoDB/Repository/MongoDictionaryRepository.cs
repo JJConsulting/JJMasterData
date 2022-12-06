@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.MongoDB.Models;
@@ -7,6 +5,8 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Data;
 
 namespace JJMasterData.MongoDB.Repository;
 

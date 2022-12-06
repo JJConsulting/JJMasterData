@@ -342,7 +342,8 @@ ASALocalRun/
 healthchecksdb
 
 #Custom 
-/doc/JJMasterData.Doc/Help/**
+/doc/JJMasterData.Documentation/lib/**
+/doc/JJMasterData.Documentation/_site/**
 
 # Dangerous values to public source control
 appsettings.json

@@ -1,10 +1,6 @@
-# HtmlBuilder Class
-Light way for creating HTML string with fluent method syntax of C#.<br>
-All Components generate a HtmlBuilder.
+Simple way for creating HTML string with fluent method syntax of C#.<br>
+All Web Components generate a HtmlBuilder.
 
-[HtmlBuilder Class](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.Web.Html.HtmlBuilder.html)
-
-## Examples
 Single element
 ```csharp
 var builder = new HtmlBuilder(HtmlTags.Input)

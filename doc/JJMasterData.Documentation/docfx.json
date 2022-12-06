@@ -12,6 +12,7 @@
             "**/obj/**",
             "_site/**",
             "_plugins/**",
+            "**/Plugins/**.cs*",
             "**/example/**",
             "**/test/**",
             "**/JJMasterData.Api/**",
@@ -70,7 +71,7 @@
       },
       "_gitUrlPattern": "github",
       "_appTitle": "JJMasterData",
-      "_appFooter": "<div><span>(Saturn Version - 4.0)</span> - <a href='https://www.jjconsulting.tech' alt=''>&copy; 2022 JJConsulting. All rights reserved.</a></div>"
+      "_appFooter": "<div><span>(Saturn Version - 3.1)</span> - <a href='https://www.jjconsulting.tech' alt=''>&copy; 2023 JJConsulting. All rights reserved.</a></div>"
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
