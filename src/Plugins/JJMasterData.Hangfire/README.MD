@@ -1,3 +1,2 @@
-# JJMasterData.Hangfire
 
-Hangfire support for background tasks.
+[!include(../../../doc/JJMasterData.Documentation/articles/plugins/hangfire.md)]

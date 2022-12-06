@@ -5,6 +5,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
+
 public class JJAlertTagHelper : TagHelper
 {
     [HtmlAttributeName("title")]

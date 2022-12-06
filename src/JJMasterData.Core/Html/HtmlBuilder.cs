@@ -9,7 +9,7 @@ namespace JJMasterData.Core.Html;
 /// Represents a mutable string of HTML tags.
 /// </summary>
 /// <example>
-/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/miscellaneous/htmlbuilder.md)]
+/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/usages/htmlbuilder.md)]
 /// </example>
 public partial class HtmlBuilder
 {
