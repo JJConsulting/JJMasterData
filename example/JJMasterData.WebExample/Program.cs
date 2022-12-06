@@ -2,7 +2,7 @@ using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 
-namespace JJMasterData.Web.Example;
+namespace JJMasterData.WebExample;
 
 public class Program
 {
@@ -25,7 +25,7 @@ public class Program
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
         }).WithFormEventResolver();
-            // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
+            // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

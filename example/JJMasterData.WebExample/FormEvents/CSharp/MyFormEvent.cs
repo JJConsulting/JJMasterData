@@ -3,7 +3,7 @@ using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 
-namespace JJMasterData.Web.Example.FormEvents.CSharp;
+namespace JJMasterData.WebExample.FormEvents.CSharp;
 
 [FormEvent("Example")]
 public class MyFormEvent : BaseFormEvent
