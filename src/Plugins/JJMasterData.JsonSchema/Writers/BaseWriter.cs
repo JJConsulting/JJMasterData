@@ -1,24 +1,31 @@
 using JJMasterData.JsonSchema.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 
 namespace JJMasterData.JsonSchema.Writers;
 
-public abstract class BaseWriter
+public abstract class BaseWriter 
 {
     protected readonly JSchemaGenerator Generator;
 
     protected BaseWriter()
     {
-        Generator = new JSchemaGenerator();
-        Generator.GenerationProviders.Add(new StringEnumGenerationProvider());
-        Generator.ContractResolver = new DefaultContractResolver()
+        Generator = new JSchemaGenerator
         {
-            NamingStrategy = new PascalCaseNamingStrategy(true,true)
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new PascalCaseNamingStrategy(true,true)
+            }
         };
+        
+        Generator.GenerationProviders.Add(new StringEnumGenerationProvider());
     }
 
-    protected static string GetFilePath(string? fileName)
+    public abstract Task WriteAsync();
+    
+    private static string GetFilePath(string? fileName)
     {
         string workingDirectory = Environment.CurrentDirectory;
         string? projectDirectory = Directory.GetParent(workingDirectory)?.Parent?.Parent?.FullName;
@@ -27,5 +34,9 @@ public abstract class BaseWriter
 
         return path;
     }
-    
+
+    protected static async Task WriteSchemaAsync(string fileName, JSchema schema)
+    {
+        await File.WriteAllTextAsync(GetFilePath(fileName), schema.ToString());
+    }
 }

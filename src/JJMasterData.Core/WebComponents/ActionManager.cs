@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -301,7 +302,7 @@ internal class ActionManager
 
     public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
     {
-        var scriptManager = FormEventEngineFactory.GetEngine<IPythonEngine>();
+        var scriptManager = JJService.Provider.GetService(typeof(IPythonEngine)) as IPythonEngine;
 
         try
         {
@@ -315,7 +316,7 @@ internal class ActionManager
                 }
 
                 foreach (var row in selectedRows)
-                    scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
+                    scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
 
                 gridView.ClearSelectedGridValues();
             }

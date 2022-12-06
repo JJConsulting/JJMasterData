@@ -4,6 +4,8 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using System;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -21,21 +23,25 @@ internal static class FormFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
 
-        form.Name = "jjview" + elementName.ToLower();
-        var dicDao = DictionaryRepositoryFactory.GetInstance();
-        var dicParser = dicDao.GetMetadata(elementName);
-
-        form.FormElement = dicParser.GetFormElement();
-        SetFormptions(form, dicParser.UIOptions);
-
-        var assemblyFormEvent = FormEventManager.GetFormEvent(elementName);
-        if (assemblyFormEvent != null)
+        var formEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
+        if (formEvent != null)
         {
-            AddFormEvent(form, assemblyFormEvent);
+            AddFormEvent(form, formEvent);
         }
+        
+        form.Name = "jjview" + elementName.ToLower();
+        
+        var dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+        var metadata = dictionaryRepository.GetMetadata(elementName);
+        
+        var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
+        formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+        
+        form.FormElement = metadata.GetFormElement();
+        SetFormOptions(form, metadata.UIOptions);
     }
 
-    internal static void SetFormptions(JJFormView form, UIOptions options)
+    internal static void SetFormOptions(JJFormView form, UIOptions options)
     {
         if (options == null) 
             return;
@@ -47,20 +53,9 @@ internal static class FormFactory
         GridViewFactory.SetGridOptions(form, options.Grid);
     }
 
-    private static void AddFormEvent(JJFormView form, IFormEvent assemblyFormEvent)
+    private static void AddFormEvent(JJFormView form, IFormEvent formEvent)
     {
-        foreach (var method in FormEventManager.GetFormEventMethods(assemblyFormEvent))
-        {
-            switch (method)
-            {
-                case "OnBeforeImport":
-                    form.DataImp.OnBeforeImport += assemblyFormEvent.OnBeforeImport;
-                    break;
-                case "OnInstanceCreated":
-                    form.OnInstanceCreated += assemblyFormEvent.OnInstanceCreated;
-                    break;
-            }
-        }
+        form.DataImp.OnBeforeImport += formEvent.OnBeforeImport;
     }
 
 
