@@ -1,5 +1,5 @@
 # JJMasterData Documetantion
-We use docfx to build the documetation in markdown to learn more visit 
+We use docfx to build the documentation in markdown to learn more visit 
 [DocFx Documetantion](https://dotnet.github.io/docfx/)
 
 ## Building from source

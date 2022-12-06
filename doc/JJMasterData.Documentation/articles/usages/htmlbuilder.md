@@ -1,4 +1,4 @@
-Light way for creating HTML string with fluent method syntax of C#.<br>
+Simple way for creating HTML string with fluent method syntax of C#.<br>
 All Web Components generate a HtmlBuilder.
 
 Single element
