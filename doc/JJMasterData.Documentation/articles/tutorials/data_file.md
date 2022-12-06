@@ -1,5 +1,5 @@
 
-# JJ DataFile
+# DataFile - Configuring Data Upload
 
 JJDataFile is the component responsible to manipulate files at your FormView.
 

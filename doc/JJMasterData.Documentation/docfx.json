@@ -12,6 +12,7 @@
             "**/obj/**",
             "_site/**",
             "_plugins/**",
+            "**/Plugins/**",
             "**/example/**",
             "**/test/**",
             "**/JJMasterData.Api/**",
