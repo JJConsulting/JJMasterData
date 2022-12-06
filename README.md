@@ -68,13 +68,13 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 ```bash
 npm i
 ```
-7. It will be necessary to add a Database of your choice. You will need add a ConnectionString at your `IConfiguration` source.
+7. It will be necessary to add a database of your choice. You will need add a ConnectionString at your `IConfiguration` source.<br>
 ![image](https://user-images.githubusercontent.com/100393691/203789109-ef71f492-3f90-4739-8c41-8a92890c72dc.png)
 
 8. Run the project
 
 9. This is the expected output <br>
-![image](https://user-images.githubusercontent.com/100393691/203789353-14c24b8d-cf2c-4717-891a-b01e58559a4c.png)
+![image](https://user-images.githubusercontent.com/52143624/205990349-fc9c24d1-c9e6-4729-a334-4d0487222d29.png)
 
 
 ## Special Thanks
