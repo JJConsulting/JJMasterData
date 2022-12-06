@@ -32,7 +32,11 @@ public class MongoDBDictionaryRepository : IDictionaryRepository
     ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
     public Metadata GetMetadata(string dictionaryName)
     {
-        return _metadataCollection.Find(metadata=> metadata.Table.Name == dictionaryName).FirstOrDefault();
+        var metadata = _metadataCollection.Find(metadata => metadata.Table.Name == dictionaryName).FirstOrDefault();
+        
+        DataDictionaryStructure.ApplyCompatibility(metadata, dictionaryName);
+
+        return metadata;
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>

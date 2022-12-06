@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary.Action;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -118,5 +121,87 @@ public class DataDictionaryStructure
 
         return structure;
     }
-    
+
+    public static void ApplyCompatibility(Metadata dicParser, string elementName)
+    {
+        if (dicParser == null)
+            return;
+
+        if (dicParser.Table == null)
+            throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
+
+        //Mantendo compatibilidate versão Nairobi
+        dicParser.UIOptions ??= new UIOptions();
+
+        dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
+
+        dicParser.UIOptions.GridActions ??= new GridActions();
+        //Fim compatibilidate Nairobi
+
+
+        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
+        if (dicParser.Api == null)
+        {
+            dicParser.Api = new ApiSettings();
+            if (dicParser.Table.Sync)
+            {
+                dicParser.Api.EnableGetAll = true;
+                dicParser.Api.EnableGetDetail = true;
+                dicParser.Api.EnableAdd = true;
+                dicParser.Api.EnableUpdate = true;
+                dicParser.Api.EnableUpdatePart = true;
+                dicParser.Api.EnableDel = true;
+            }
+        }
+
+        if (string.IsNullOrEmpty(dicParser.Table.TableName))
+        {
+            dicParser.Table.TableName = dicParser.Table.Name;
+        }
+        //Fim compatibilidate Denver
+
+        //Tokio
+        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
+
+        //Professor
+        if (dicParser.Form != null)
+        {
+            foreach (var field in dicParser.Form.FormFields)
+            {
+                if (field.DataItem is not { DataItemType: DataItemType.Manual })
+                    continue;
+
+                if (field.DataItem.Command != null && !string.IsNullOrEmpty(field.DataItem.Command.Sql))
+                    field.DataItem.DataItemType = DataItemType.SqlCommand;
+                else if (field.DataItem.ElementMap != null && !string.IsNullOrEmpty(field.DataItem.ElementMap.ElementName))
+                    field.DataItem.DataItemType = DataItemType.Dictionary;
+            }
+        }
+
+        //Arturito
+        foreach (var action in dicParser.UIOptions.GridActions.GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        foreach (var action in dicParser.UIOptions.ToolBarActions
+                     .GetAll()
+                     .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
+        {
+            action.IsCustomAction = true;
+        }
+
+        //Alpha Centauri
+
+        dicParser.UIOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+
+        dicParser.UIOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
+
+        //Sirius
+
+        dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+
+        dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+    }
 }
