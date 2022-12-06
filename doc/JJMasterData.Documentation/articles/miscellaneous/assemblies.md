@@ -17,7 +17,7 @@ Target Framework: .NET 7
 Restful API to consume your metadata at any front-end.
 
 ### JJMasterData.Core
-Target Frameworks: .NET 6, .NET Standard 2.0 and .NET Framework 4.8
+Target Frameworks: .NET 6, .NET 7, .NET Standard 2.0 and .NET Framework 4.8
 </br>
 Library to access your metadata from .NET and/or render it at HTML components.
 
