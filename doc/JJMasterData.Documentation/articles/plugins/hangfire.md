@@ -1,10 +1,2 @@
-
-# Hangfire Plugin
-
-Hangfire support for background tasks.
-
-## How to configure?
-
-
-### Important points
+[!include[Readme](../../../../src/Plugins/JJMasterData.Hangfire/README.MD)]
 

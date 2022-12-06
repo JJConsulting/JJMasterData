@@ -12,7 +12,7 @@
             "**/obj/**",
             "_site/**",
             "_plugins/**",
-            "**/Plugins/**",
+            "**/Plugins/**.cs*",
             "**/example/**",
             "**/test/**",
             "**/JJMasterData.Api/**",

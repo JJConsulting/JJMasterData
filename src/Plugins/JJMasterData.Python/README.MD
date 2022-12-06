@@ -1,6 +1,3 @@
-
-# Python F.A.Q
-
 ## How to access the database ?
 
 #### You can use the data_access object.

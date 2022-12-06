@@ -43,11 +43,15 @@
   items:
   - name: Hangfire
     href: plugins/hangfire.md
+  - name: MongoDB
+    href: plugins/mongodb.md
+  - name: Source Control
+    href: plugins/sourcecontrol.md
+  - name: Python
+    href: plugins/python.md
 - name: Miscellaneous
   items:
   - name: .NET Framework Support
     href: miscellaneous/netframework.md
-  - name: Python F.A.Q
-    href: miscellaneous/python.md
   - name: Assemblies
     href: miscellaneous/assemblies.md

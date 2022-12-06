@@ -1,2 +1,9 @@
+# Hangfire Plugin
 
-[!include(../../../doc/JJMasterData.Documentation/articles/plugins/hangfire.md)]
+Hangfire support for background tasks.
+
+## How to configure?
+
+
+### Important points
+

@@ -18,7 +18,7 @@ namespace JJMasterData.Commons.Dao;
 /// Provides functionality to developers who write managed code similar to the functionality provided to native component object model (COM)
 /// </summary>
 /// <example>
-/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/miscellaneous/dataaccess.md)]
+/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/usages/dataaccess.md)]
 /// </example>
 public class DataAccess
 {
