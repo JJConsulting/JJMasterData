@@ -16,5 +16,5 @@ public class FormValues
     public bool Visible { get; set; }
 
     [DataMember(Name = "dataItems")]
-    public List<DataItemValue>? DataItems { get; set; }
+    public IList<DataItemValue>? DataItems { get; set; }
 }

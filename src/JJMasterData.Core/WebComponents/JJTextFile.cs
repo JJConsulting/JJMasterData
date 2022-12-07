@@ -113,7 +113,7 @@ public class JJTextFile : JJBaseControl
         btn.ShowAsButton = true;
         btn.OnClientClick = GetOpenUploadFormAction();
         btn.ToolTip = "Manage Files";
-        btn.IconClass = IconHelper.GetClassName(IconType.Paperclip);
+        btn.IconClass = IconType.Paperclip.GetClassName();
         textGroup.Actions.Add(btn);
 
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -318,7 +318,7 @@ public class JJTextFile : JJBaseControl
     private JJLinkButton GetLinkButton(string filename)
     {
         var btn = new JJLinkButton();
-        btn.IconClass = IconHelper.GetClassName(IconType.CloudDownload);
+        btn.IconClass = IconType.CloudDownload.GetClassName();
         btn.Text = filename;
         btn.UrlAction = GetDownloadLink(filename);
         btn.IsGroup = true;

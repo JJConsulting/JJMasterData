@@ -37,7 +37,7 @@ public class GridSortingConfig
         var btnSort = new JJLinkButton
         {
             Name = "btnsort_" + Name,
-            IconClass = IconHelper.GetClassName(IconType.Check),
+            IconClass = IconType.Check.GetClassName(),
             ShowAsButton = true,
             Text = "Sort",
             OnClientClick = $"jjview.doMultSorting('{Name}');"
@@ -47,7 +47,7 @@ public class GridSortingConfig
         var btnCancel = new JJLinkButton
         {
             Text = "Cancel",
-            IconClass = IconHelper.GetClassName(IconType.Times),
+            IconClass = IconType.Times.GetClassName(),
             ShowAsButton = true,
             OnClientClick = $"$('#sort_modal_{Name}').modal('hide');"
         };

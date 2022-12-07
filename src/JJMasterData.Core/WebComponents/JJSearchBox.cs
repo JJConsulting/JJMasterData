@@ -43,7 +43,7 @@ public class JJSearchBox : JJBaseControl
     private const string TriggerLengthAttribute = "triggerlength";
 
     private IEntityRepository _entityRepository;
-    private List<DataItemValue> _values;
+    private IList<DataItemValue> _values;
     private FormElementDataItem _dataItem;
     private string _selectedValue;
     private string _text;
@@ -338,12 +338,12 @@ public class JJSearchBox : JJBaseControl
         return null;
     }
 
-    private List<DataItemValue> GetValues(string searchText, string searchId)
+    private IList<DataItemValue> GetValues(string searchText, string searchId)
     {
         if (DataItem == null)
             return null;
 
-        var values = new List<DataItemValue>();
+        IList<DataItemValue> values = new List<DataItemValue>();
         if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
         {
 
@@ -399,7 +399,7 @@ public class JJSearchBox : JJBaseControl
         foreach (var i in listValue)
         {
             if (DataItem.ShowImageLegend)
-                description = $"{i.Description}|{IconHelper.GetClassName(i.Icon)}|{i.ImageColor}";
+                description = $"{i.Description}|{i.Icon.GetClassName()}|{i.ImageColor}";
             else
                 description = i.Description;
 

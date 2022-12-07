@@ -225,7 +225,7 @@ public class JJDataImp : JJBaseProcess
         var btnStop = new JJLinkButton
         {
             OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{Translate.Key("Stopping Processing...")}');",
-            IconClass = IconHelper.GetClassName(IconType.Stop),
+            IconClass = IconType.Stop.GetClassName(),
             Text = Translate.Key("Stop the import.")
         };
         html.AppendElement(btnStop);

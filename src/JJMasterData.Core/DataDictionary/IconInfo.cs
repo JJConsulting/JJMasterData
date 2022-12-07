@@ -1,28 +1,10 @@
 ﻿namespace JJMasterData.Core.DataDictionary;
 
-public class IconInfo
+public record IconInfo(int Id, string Description, string Unicode, string ClassName)
 {
-    public IconType Icon { get; set; }
-    public string Description { get; set; }
-    public string Unicode { get; set; }
-    public string ClassName { get; set; }
-    public int Id
-    {
-        get
-        {
-            return (int)Icon;
-        }
-    }
-
-
-    public IconInfo() { }
-
-    public IconInfo(int iconId, string description, string unicode, string className)
-    {
-        Icon = (IconType)iconId;
-        Description = description;
-        Unicode = unicode;
-        ClassName = className;
-    }
-
+    public int Id { get; } = Id;
+    public IconType Icon { get; } = (IconType)Id;
+    public string Description { get; } = Description;
+    public string Unicode { get; } = Unicode;
+    public string ClassName { get; } = ClassName;
 }

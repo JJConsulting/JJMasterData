@@ -267,7 +267,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             if (field.DataItem.ShowImageLegend)
             {
-                image = new Text(IconHelper.Get(item.Icon).Unicode.Replace(";", string.Empty));
+                image = new Text(IconHelper.GetIconInfo(item.Icon).Unicode.Replace(";", string.Empty));
                 var color = ColorTranslator.FromHtml(item.ImageColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";
@@ -284,7 +284,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         return value;
     }
 
-    private PdfFont CreateFontAwesomeIcon()
+    private static PdfFont CreateFontAwesomeIcon()
     {
         string fontPath = AppDomain.CurrentDomain.BaseDirectory;
         fontPath += @"Fonts\fontawesome-webfont.ttf";

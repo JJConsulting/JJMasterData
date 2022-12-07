@@ -235,7 +235,7 @@ internal class ActionManager
             ShowAsButton = action.ShowAsButton,
             Type = action is SubmitAction ? LinkButtonType.Submit : default,
             CssClass = action.CssClass,
-            IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw",
+            IconClass = action.Icon.GetClassName() + " fa-fw",
             Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
             Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues)
         };

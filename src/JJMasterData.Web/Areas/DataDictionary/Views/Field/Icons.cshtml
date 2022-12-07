@@ -1,5 +1,4 @@
-﻿
-<style>
+﻿<style>
     .icon {
         margin-bottom: 5px;
         margin-top: 5px;
@@ -16,8 +15,7 @@
     <script lang="javascript" type="text/javascript">
     
         function postValues(cod, description) {
-            var owner = window.parent;
-            owner.setIconValue('@ViewBag.ItemId', cod, description);
+            window.parent.setIconValue('@ViewBag.ItemId', cod, description);
             window.close();
             return false;
         }
