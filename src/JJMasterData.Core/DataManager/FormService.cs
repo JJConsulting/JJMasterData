@@ -252,6 +252,21 @@ public class FormService
 
         return default;
     }
+    
+    public void AddFormEvent(IFormEvent formEvent)
+    {
+        if (formEvent != null)
+        {
+            OnBeforeInsert += formEvent.OnBeforeInsert;
+            OnBeforeDelete += formEvent.OnBeforeDelete;
+            OnBeforeUpdate += formEvent.OnBeforeUpdate;
+            OnBeforeImport += formEvent.OnBeforeImport;
+
+            OnAfterDelete += formEvent.OnAfterDelete;
+            OnAfterInsert += formEvent.OnAfterInsert;
+            OnAfterUpdate += formEvent.OnAfterUpdate;
+        }
+    }
 
     #endregion
 }

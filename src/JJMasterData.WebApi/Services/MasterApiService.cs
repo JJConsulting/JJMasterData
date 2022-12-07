@@ -458,16 +458,7 @@ public class MasterApiService
             EnableHistoryLog = logActionIsVisible
         };
 
-        if (formEvent != null)
-        {
-            service.OnBeforeInsert += formEvent.OnBeforeInsert;
-            service.OnBeforeUpdate += formEvent.OnBeforeUpdate;
-            service.OnBeforeDelete += formEvent.OnBeforeDelete;
-
-            service.OnAfterDelete += formEvent.OnAfterDelete;
-            service.OnAfterUpdate += formEvent.OnAfterUpdate;
-            service.OnAfterInsert += formEvent.OnAfterInsert;
-        }
+        service.AddFormEvent(formEvent);
         
         return service;
     }
