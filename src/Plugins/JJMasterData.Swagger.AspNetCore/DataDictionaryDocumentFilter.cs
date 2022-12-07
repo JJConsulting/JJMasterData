@@ -3,6 +3,9 @@ using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.DI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
@@ -10,9 +13,10 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 {
     private readonly IDictionaryRepository _dictionaryRepository;
 
-    public DataDictionaryDocumentFilter(IDictionaryRepository dictionaryRepository)
+    // Swagger IDocumentFilter is not DI supported.
+    public DataDictionaryDocumentFilter()
     {
-        _dictionaryRepository = dictionaryRepository;
+        _dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
     }
 
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
@@ -22,7 +26,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
         foreach (var metadata in dictionaries)
         {
-            FormElement formElement = metadata.GetFormElement();
+            var formElement = metadata.GetFormElement();
 
             DataDictionaryPathItem defaultPathItem = new($"/MasterApi/{formElement.Name}");
             DataDictionaryPathItem detailPathItem = new($"/MasterApi/{formElement.Name}/{{id}}");

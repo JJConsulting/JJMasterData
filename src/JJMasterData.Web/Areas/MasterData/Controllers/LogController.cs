@@ -2,12 +2,14 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
@@ -17,9 +19,9 @@ public class LogController : Controller
 {
     private Logger Logger { get; set; }
 
-    public LogController()
+    public LogController(IOptions<JJMasterDataOptions> options)
     {
-        Logger = new Logger();
+        Logger = new Logger(options.Value.Logger);
     }
 
     public ActionResult Index()
@@ -40,10 +42,9 @@ public class LogController : Controller
     [HttpGet]
     public ActionResult ClearAll()
     {
-        var logger = new Logger();
-        logger.ClearLog();
+        Logger.ClearLog();
 
-        GetLoggingGridView(logger);
+        GetLoggingGridView(Logger);
 
         return RedirectToAction("Index");
     }

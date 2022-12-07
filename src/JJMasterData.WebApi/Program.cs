@@ -2,6 +2,7 @@ using System.Reflection;
 using JJMasterData.WebApi.Handlers;
 using JJMasterData.WebApi.Services;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Swagger.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -56,13 +57,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddJJMasterDataCore();
+builder.Services.AddJJMasterDataCore().WithFormEventResolver();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddTransient<MasterApiService>();
 builder.Services.AddTransient<AccountService>();
-
-builder.Logging.AddJJMasterDataLogger();
 
 builder.Services.AddAuthentication(TokenAuthenticationHandler.Name)
     .AddScheme<AuthenticationSchemeOptions, TokenAuthenticationHandler>(TokenAuthenticationHandler.Name, _ => { });

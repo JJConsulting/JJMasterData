@@ -23,7 +23,7 @@ public class MasterApiService
     private readonly IFormEventResolver? _formEventResolver;
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
                             IEntityRepository entityRepository, 
-                            IDictionaryRepository dictionaryRepository, IFormEventResolver? formEventResolver)
+                            IDictionaryRepository dictionaryRepository, IFormEventResolver? formEventResolver = null)
     {
         _httpContext = httpContextAccessor.HttpContext;
         _entityRepository = entityRepository;

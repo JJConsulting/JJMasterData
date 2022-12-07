@@ -14,7 +14,6 @@ public class Program
 
         //Without this IConfiguration don't work. If we add inside AddJJMasterDataWeb, I don't know why performance goes to trash.
         builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
-        
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
 
@@ -24,8 +23,10 @@ public class Program
             mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
             mongo.CollectionName = section.GetValue<string>("CollectionName")!;
             mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        }).WithFormEventResolver();
-            // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
+        }).WithFormEventResolver(); 
+        
+        //You can also:
+        // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>
