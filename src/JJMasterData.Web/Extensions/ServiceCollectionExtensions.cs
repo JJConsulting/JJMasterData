@@ -6,14 +6,12 @@ using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Authorization;
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Filters;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
 using JJMasterData.Web.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -147,7 +145,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            string defaultCulture = "en-US";
+            const string defaultCulture = "en-US";
             options.DefaultRequestCulture = new RequestCulture(defaultCulture);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
