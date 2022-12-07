@@ -241,13 +241,13 @@ public class JJDataPanel : JJBaseView
             if (!string.IsNullOrEmpty(criptPkval))
             {
                 string parsedPkval = Cript.Descript64(criptPkval);
-                var filters = new Hashtable(DataHelper.GetPkValues(FormElement, parsedPkval, '|'));
+                var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
                 var entityRepository = FieldManager.Expression.EntityRepository;
-                tempvalues = new Hashtable(entityRepository.GetFields(FormElement, filters));
+                tempvalues =entityRepository.GetFields(FormElement, filters);
             }
         }
-        if (tempvalues == null)
-            tempvalues = new Hashtable();
+        
+        tempvalues ??= new Hashtable();
 
         DataHelper.CopyIntoHash(ref tempvalues, Values, true);
 

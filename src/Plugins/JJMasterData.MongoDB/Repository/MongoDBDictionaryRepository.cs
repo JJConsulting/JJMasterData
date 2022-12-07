@@ -40,7 +40,7 @@ public class MongoDBDictionaryRepository : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
-    public IList<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync)
     {
         var dbMetadataCollection =  _metadataCollection.Find(_ => true).ToList();
 

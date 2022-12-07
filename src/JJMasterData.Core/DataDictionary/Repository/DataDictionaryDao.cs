@@ -22,7 +22,7 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
-    public IList<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 

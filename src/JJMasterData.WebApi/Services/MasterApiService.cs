@@ -66,8 +66,10 @@ public class MasterApiService
         if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
-        var ret = new MasterApiListResponse();
-        ret.Tot = total;
+        var ret = new MasterApiListResponse
+        {
+            Tot = total
+        };
         ret.SetDataTableValues(dictionary, dt);
 
         return ret;
@@ -150,7 +152,7 @@ public class MasterApiService
             yield return Patch(formService, values, dictionary.Api);
         }
     }
-    private static ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -177,7 +179,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private static ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -189,10 +191,12 @@ public class MasterApiService
                 if (formResult.NumberOfRowsAffected == 0)
                     throw new KeyNotFoundException(Translate.Key("No records found"));
 
-                ret = new ResponseLetter();
-                ret.Status = (int)HttpStatusCode.OK;
-                ret.Message = Translate.Key("Record updated successfully");
-                ret.Data = GetDiff(apiValues, values, api);
+                ret = new ResponseLetter
+                {
+                    Status = (int)HttpStatusCode.OK,
+                    Message = Translate.Key("Record updated successfully"),
+                    Data = GetDiff(apiValues, values, api)
+                };
             }
             else
             {
@@ -205,7 +209,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private static ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
         try
@@ -439,13 +443,14 @@ public class MasterApiService
         
         return service;
     }
-    public FileStream GetDictionaryFile(string elementName, string id, string fieldName, string fileName)
+    public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
     {
         var formElement = GetFormElement(elementName);
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+        
+        var builder = new FormFilePathBuilder(formElement);
 
-        var folderPath = formElement.Fields.First(f => f.Name == fieldName).DataFile.FolderPath;
-
-        var path = Path.Combine(folderPath, id);
+        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
 
         string? file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
 
@@ -460,9 +465,8 @@ public class MasterApiService
     {
         var formElement = GetFormElement(elementName);
         var field = formElement.Fields.First(f => f.Name == fieldName);
-        var folderPath = field.DataFile.FolderPath;
 
-        SetPhysicalFile(pkValues, file, folderPath, field);
+        SetPhysicalFile(pkValues, file, formElement, field);
 
         SetEntityFile(pkValues, file, formElement, field);
     }
@@ -489,10 +493,12 @@ public class MasterApiService
 
         _entityRepository.SetValues(formElement, values);
     }
-    private static void SetPhysicalFile(string id, IFormFile file, string folderPath, FormElementField field)
+    private static void SetPhysicalFile(string pkValues, IFormFile file, FormElement formElement, FormElementField field)
     {
-        var path = Path.Combine(folderPath, id);
+        var builder = new FormFilePathBuilder(formElement);
 
+        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
+        
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
 
@@ -514,7 +520,7 @@ public class MasterApiService
         var formElement = GetFormElement(elementName);
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
-        DeletePhysicalFile(field, pkValues, fileName);
+        DeletePhysicalFile(formElement, field, pkValues, fileName);
         DeleteEntityFile(formElement, field, pkValues, fileName);
     }
     private Metadata GetDataDictionary(string elementName)
@@ -525,11 +531,14 @@ public class MasterApiService
         return _dictionaryRepository.GetMetadata(elementName);
     }
     private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName).GetFormElement();
-    private static void DeletePhysicalFile(FormElementField field, string pkValues, string fileName)
+    private void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
-        var folderPath = field.DataFile.FolderPath;
+        var builder = new FormFilePathBuilder(formElement);
 
-        var path = Path.Combine(folderPath, Path.Combine(pkValues, fileName));
+        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
+
+        var filePath = Path.Combine(path, fileName);
+        
         if (File.Exists(path))
             File.Delete(path);
         else
@@ -567,7 +576,7 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private static Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)
@@ -588,7 +597,7 @@ public class MasterApiService
 
         return newValues.Count > 0 ? newValues : null;
     }
-    private static ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
     {
         var letter = new ResponseLetter
         {

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace JJMasterData.Core.DataManager;
 
-internal class FormFilePathBuilder
+public class FormFilePathBuilder
 {
     private FormElement FormElement { get; set; }
 
@@ -16,10 +16,10 @@ internal class FormFilePathBuilder
         FormElement = formElement;
     }
 
-    public string GetFolderPath(FormElementField ElementField, Hashtable formValues)
+    public string GetFolderPath(FormElementField field, Hashtable formValues)
     {
-        if (ElementField.DataFile == null)
-            throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", ElementField.Name);
+        if (field.DataFile == null)
+            throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
         //Pks concat with  underline
         string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
@@ -28,10 +28,10 @@ internal class FormFilePathBuilder
                 pkval));
 
         //Path configured in the dictionary
-        string path = ElementField.DataFile.FolderPath;
+        string path = field.DataFile.FolderPath;
 
         if (string.IsNullOrEmpty(path))
-            throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", ElementField.Name);
+            throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
 
         path = path.Replace("{app.path}", FileIO.GetApplicationPath());
         path = Path.Combine(path, pkval);
