@@ -48,7 +48,7 @@ public class MasterApiController : ControllerBase
     [HttpPost]
     public ActionResult<ResponseLetter> Post([FromBody] Hashtable[] listParam, string elementName, bool replace = false)
     {
-        return GetResponseMessage(new List<ResponseLetter>(_service.SetFields(listParam, elementName, replace)));
+        return GetResponseMessage(_service.SetFields(listParam, elementName, replace));
     }
     
     [HttpPut]

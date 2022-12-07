@@ -35,7 +35,7 @@ public class LogController : Controller
             factory.CreateDataModel(Logger.GetElement());
         }
 
-        var gridView = GetLoggingGridView(Logger);
+        var gridView = GetLoggingGridView();
         return View(gridView);
     }
 
@@ -44,17 +44,13 @@ public class LogController : Controller
     {
         Logger.ClearLog();
 
-        GetLoggingGridView(Logger);
 
         return RedirectToAction("Index");
     }
 
-    private JJGridView GetLoggingGridView(Logger logger)
+    private JJGridView GetLoggingGridView()
     {
-        if (logger == null)
-            throw new ArgumentNullException(nameof(logger));
-
-        var f = new FormElement(logger.GetElement())
+        var f = new FormElement(Logger.GetElement())
         {
             Title = Translate.Key("Application Log"),
             SubTitle = string.Empty
@@ -66,8 +62,10 @@ public class LogController : Controller
         tipo.DataItem.Items.Add(new DataItemValue("W", "Alerta"));
         tipo.DataItem.Items.Add(new DataItemValue("E", "Erro"));
 
-        var gridView = new JJGridView(f);
-        gridView.CurrentOrder = $"{Logger.Options.Table.DateColumnName} DESC";
+        var gridView = new JJGridView(f)
+        {
+            CurrentOrder = $"{Logger.Options.Table.DateColumnName} DESC"
+        };
         gridView.OnRenderCell += OnRenderCell!;
 
         var btnClearAll = new UrlRedirectAction
@@ -83,8 +81,7 @@ public class LogController : Controller
 
         return gridView;
     }
-        
-
+    
     private void OnRenderCell(object sender, GridCellEventArgs e)
     {
         string? msg;
