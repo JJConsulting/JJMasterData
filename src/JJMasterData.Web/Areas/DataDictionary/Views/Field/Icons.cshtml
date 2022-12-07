@@ -23,7 +23,7 @@
 }
 
 <div class="row">
-    @foreach (var icon in IconHelper.GetIconInfoList())
+    @foreach (var icon in IconHelper.Icons)
     {
         <div class="col-sm-2 text-center icon">
             <div class="icon text-center" onclick="postValues('@icon.Id.ToString()', '@icon.Description');">

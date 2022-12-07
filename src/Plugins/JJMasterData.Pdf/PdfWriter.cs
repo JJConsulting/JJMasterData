@@ -267,7 +267,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             if (field.DataItem.ShowImageLegend)
             {
-                image = new Text(item.Icon.AsIconInfo().Unicode.Replace(";", string.Empty));
+                image = new Text(item.Icon.GetIconInfo().Unicode.Replace(";", string.Empty));
                 var color = ColorTranslator.FromHtml(item.ImageColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";
