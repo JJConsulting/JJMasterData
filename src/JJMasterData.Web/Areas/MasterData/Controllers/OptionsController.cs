@@ -1,4 +1,3 @@
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
