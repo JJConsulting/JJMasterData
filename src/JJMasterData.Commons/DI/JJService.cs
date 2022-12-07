@@ -41,6 +41,5 @@ public static class JJService
         }
     }
 
-    [Obsolete("Please use ILogger at ctors. Microsoft recommend this because with ILogger<T>, T show the caller namespace.")]
     public static ILogger Logger => Provider.GetRequiredService<ILogger<Logger>>();
 }
