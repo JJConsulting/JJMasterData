@@ -284,7 +284,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         return value;
     }
 
-    private static PdfFont CreateFontAwesomeIcon()
+    private PdfFont CreateFontAwesomeIcon()
     {
         string fontPath = AppDomain.CurrentDomain.BaseDirectory;
         fontPath += @"Fonts\fontawesome-webfont.ttf";
