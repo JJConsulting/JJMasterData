@@ -113,24 +113,11 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
         services.AddHttpContextAccessor();
         services.AddSession();
-        services.AddSystemWebAdaptersServices();
+        services.AddSystemWebAdapters();
         services.AddDistributedMemoryCache();
         services.AddJJMasterDataServices();
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
-    }
-
-    internal static void AddSystemWebAdaptersServices(this IServiceCollection services)
-    {
-        services.AddSystemWebAdapters();
-        services.AddTransient<ResponseEndFilter>();
-        services.AddOptions<MvcOptions>()
-            .Configure(options =>
-            {
-                // We want the check for HttpResponse.End() to be done as soon as possible after the action is run.
-                // This will minimize any chance that output will be written which will fail since the response has completed.
-                options.Filters.Add<ResponseEndFilter>(int.MaxValue);
-            });
     }
 
     internal static void AddAnonymousAuthorization(this IServiceCollection services)
