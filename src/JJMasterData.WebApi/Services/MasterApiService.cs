@@ -452,10 +452,13 @@ public class MasterApiService
         
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext, _formEventResolver)
+
+        var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible
         };
+
+        service.AddFormEvent(formEvent);
         
         return service;
     }

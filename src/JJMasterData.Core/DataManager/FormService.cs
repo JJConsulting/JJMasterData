@@ -26,8 +26,6 @@ public class FormService
 
     public DataContext DataContext { get; private set; }
     
-    public IFormEventResolver FormEventResolver { get; }
-
     public AuditLogService AuditLog
     {
         get => _auditLog ??= new AuditLogService(DataContext, EntityRepository);
@@ -54,13 +52,10 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext, IFormEventResolver eventResolver = null)
+    public FormService(FormManager formManager, DataContext dataContext)
     {
         FormManager = formManager;
         DataContext = dataContext;
-        FormEventResolver = eventResolver;
-        
-        AddFormEvent();
     }
 
     #endregion
@@ -257,11 +252,9 @@ public class FormService
 
         return default;
     }
-
-    private void AddFormEvent()
+    
+    public void AddFormEvent(IFormEvent formEvent)
     {
-        var formEvent = FormEventResolver.GetFormEvent(FormElement.Name);
-
         if (formEvent != null)
         {
             OnBeforeInsert += formEvent.OnBeforeInsert;
