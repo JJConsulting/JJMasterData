@@ -17,13 +17,14 @@ public class JJFormViewTagHelper : TagHelper
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var form = new JJFormView(ElementName ?? throw new ArgumentNullException(nameof(ElementName)))
+        var form = new JJFormView(ElementName ?? throw new ArgumentNullException(nameof(ElementName)));
+
+        if (!string.IsNullOrEmpty(Name))
         {
-            Name = Name
-        };
+            form.Name = Name;
+        }
 
         Configure?.Invoke(form);
-
         
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(form.GetHtml());
