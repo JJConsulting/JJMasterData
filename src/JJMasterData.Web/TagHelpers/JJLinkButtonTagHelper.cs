@@ -29,7 +29,7 @@ public class JJLinkButtonTagHelper : TagHelper
         var link = new JJLinkButton
         {
             Text = Text,
-            IconClass = Icon.GetClassName(),
+            IconClass = Icon.GetCssClass(),
             UrlAction = UrlAction,
             Enabled = Enabled ?? true,
             Type = Type ?? LinkButtonType.Button,

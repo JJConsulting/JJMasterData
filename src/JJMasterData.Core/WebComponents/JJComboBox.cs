@@ -141,7 +141,7 @@ public class JJComboBox : JJBaseControl
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(SelectedValue != null && SelectedValue.Equals(value.Id), "selected", "selected")
-                .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetClassName())
+                .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
                 .AppendText(label);
 
             options.Add(option);

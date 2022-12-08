@@ -399,7 +399,7 @@ public class JJSearchBox : JJBaseControl
         foreach (var i in listValue)
         {
             if (DataItem.ShowImageLegend)
-                description = $"{i.Description}|{i.Icon.GetClassName()}|{i.ImageColor}";
+                description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}";
             else
                 description = i.Description;
 

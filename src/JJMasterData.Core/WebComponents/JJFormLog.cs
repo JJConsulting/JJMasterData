@@ -275,7 +275,7 @@ public class JJFormLog : JJBaseView
         btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
         btn.OnClientClick = $"jjview.viewLog('{Name}','');";
-        btn.IconClass = IconType.ArrowLeft.GetClassName();
+        btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
 
         var toolbar = new JJToolbar();

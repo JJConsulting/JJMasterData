@@ -201,19 +201,5 @@ public class DataDictionaryStructure
         dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
         dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
-        
-        //Saturn
-        //Suggestion: Move this compatibilizer to importation, run only one time at all systems and remove this.
-        foreach (var action in dicParser.UIOptions.ToolBarActions.GetAll())
-        {
-            if((int)action.Icon < 60000)
-                action.Icon = Enum.GetValues(typeof(IconType)).OfType<IconType>().ToList()[(int)action.Icon];
-        }
-
-        foreach (var action in dicParser.UIOptions.GridActions.GetAll())
-        {
-            if((int)action.Icon < 60000)
-                action.Icon =  Enum.GetValues(typeof(IconType)).OfType<IconType>().ToList()[(int)action.Icon];
-        }
     }
 }

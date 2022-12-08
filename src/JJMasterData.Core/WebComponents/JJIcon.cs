@@ -18,7 +18,7 @@ public class JJIcon : JJBaseView
 
     public JJIcon(IconType icon)
     {
-        IconClass = icon.GetClassName();
+        IconClass = icon.GetCssClass();
     }
 
     public JJIcon(IconType icon, string color) : this(icon)

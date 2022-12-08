@@ -966,7 +966,7 @@ public class JJFormView : JJGridView
         var btn = new JJLinkButton
         {
             Text = "Save",
-            IconClass = IconType.Check.GetClassName(),
+            IconClass = IconType.Check.GetCssClass(),
             OnClientClick = $"return jjview.doPainelAction('{Name}','OK');"
         };
         if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
@@ -989,7 +989,7 @@ public class JJFormView : JJGridView
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
             OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');",
-            IconClass = IconType.Times.GetClassName(),
+            IconClass = IconType.Times.GetCssClass(),
             Text = "Cancel"
         };
         return btn;
@@ -998,7 +998,7 @@ public class JJFormView : JJGridView
     private JJLinkButton GetButtonBack()
     {
         var btn = GetButtonCancel();
-        btn.IconClass = IconType.ArrowLeft.GetClassName();
+        btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;
     }
@@ -1010,7 +1010,7 @@ public class JJFormView : JJGridView
         {
             Type = LinkButtonType.Button,
             Text = "Hide Log",
-            IconClass = IconType.Film.GetClassName(),
+            IconClass = IconType.Film.GetCssClass(),
             CssClass = "btn btn-primary btn-small",
             OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}"
         };
@@ -1024,7 +1024,7 @@ public class JJFormView : JJGridView
         {
             Type = LinkButtonType.Button,
             Text = "View Log",
-            IconClass = IconType.Film.GetClassName(),
+            IconClass = IconType.Film.GetCssClass(),
             CssClass = BootstrapHelper.DefaultButton + " btn-small",
             OnClientClick = scriptAction
         };
