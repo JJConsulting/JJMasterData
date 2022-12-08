@@ -19,6 +19,8 @@
     href: reserved_keywords.md
 - name: Tutorials
   items:
+  - name: Creating your first dictionary
+    href: tutorials/creating_data_dictionary.md
   - name: Configuring Data Upload
     href: tutorials/data_file.md
   - name: Importing and Exporting Data Dictionaries
