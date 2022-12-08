@@ -1548,7 +1548,7 @@
             Aplica filtros na grid mantendo os valores padrões
             </summary>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.GridFilter.GetHtmlFilter">
+        <member name="M:JJMasterData.Core.WebComponents.GridFilter.GetFilterHtmlBuilder">
             <summary>
             Renderiza o conteúdo do filtro
             </summary>
@@ -2681,7 +2681,7 @@
             Retorna Html renderizado
             </returns>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetHtmlFilter">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetFilterHtmlBuilder">
             <summary>
             Renderiza o conteúdo do filtro
             </summary>

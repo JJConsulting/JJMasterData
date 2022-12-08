@@ -107,7 +107,7 @@ internal class GridFilter
         JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
     
-    public HtmlBuilder GetHtmlFilter()
+    public HtmlBuilder GetFilterHtmlBuilder()
     {
         bool isVisible = GridView.FieldManager.IsVisible(
             GridView.FilterAction, PageState.List, GridView.DefaultValues);

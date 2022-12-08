@@ -9,11 +9,11 @@ namespace JJMasterData.MongoDB.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder WithMongoDB(this JJServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
+    public static JJServiceBuilder WithMongoDBDataDictionaryRepository(this JJServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
     {
         
         builder.Services.Configure(options);
-        builder.Services.Replace(ServiceDescriptor.Transient<IDictionaryRepository, MongoDictionaryRepository>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IDictionaryRepository, MongoDBDictionaryRepository>());
         return builder;
     }
 }

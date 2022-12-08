@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\example\JJMasterData.Web.Example\JJMasterData.Web.Example.csproj" />
+    <ProjectReference Include="..\..\example\JJMasterData.WebExample\JJMasterData.WebExample.csproj" />
   </ItemGroup>
 
 </Project>

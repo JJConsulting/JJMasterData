@@ -39,17 +39,14 @@ internal class GridTableBody
         return tbody;
     }
 
-    private IList<HtmlBuilder> GetRowsList(bool isAjax = false)
+    private IEnumerable<HtmlBuilder> GetRowsList(bool isAjax = false)
     {
         var rows = GridView.DataSource.Rows;
-        var trList = new List<HtmlBuilder>();
-
+        
         for (int i = 0; i < rows.Count; i++)
         {
-            trList.Add(GetRowHtmlElement(rows[i], i, isAjax));
+            yield return GetRowHtmlElement(rows[i], i, isAjax);
         }
-
-        return trList;
     }
 
     internal HtmlBuilder GetRowHtmlElement(DataRow row, int index, bool isAjax)
@@ -91,9 +88,8 @@ internal class GridTableBody
         return html;
     }
 
-    private IList<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, Hashtable values, string onClickScript)
+    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, Hashtable values, string onClickScript)
     {
-        var htmlList = new List<HtmlBuilder>();
         foreach (var field in GridView.VisibleFields)
         {
             string value = string.Empty;
@@ -138,11 +134,9 @@ internal class GridTableBody
                     }
                 }
             }
-
-            htmlList.Add(td);
+            
+            yield return td;
         }
-
-        return htmlList;
     }
 
     private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values,
@@ -181,7 +175,7 @@ internal class GridTableBody
         return div;
     }
 
-    public IList<HtmlBuilder> GetActionsHtmlList(Hashtable values)
+    public IEnumerable<HtmlBuilder> GetActionsHtmlList(Hashtable values)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);

@@ -118,11 +118,13 @@ public class FieldController : DataDictionaryController
     {
         for (int i = 0; i < qtdRowsToAdd; i++)
         {
-            var item = new DataItemValue();
-            item.Id = field.DataItem.Items.Count.ToString();
-            item.Description = "";
-            item.Icon = IconType.Star;
-            item.ImageColor = "#ffffff";
+            var item = new DataItemValue
+            {
+                Id = field.DataItem.Items.Count.ToString(),
+                Description = "",
+                Icon = IconType.Star,
+                ImageColor = "#ffffff"
+            };
             field.DataItem.Items.Add(item);
         }
         return RedirectToIndex(dictionaryName, field);

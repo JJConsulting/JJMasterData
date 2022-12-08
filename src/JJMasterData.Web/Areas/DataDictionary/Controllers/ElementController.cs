@@ -9,6 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModel;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -80,7 +81,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Import()
     {
-        return View(ConfigureUploadArea);
+        return View(new ImportViewModel(ConfigureUploadArea));
     }
 
     private void ConfigureUploadArea(JJUploadArea upload)

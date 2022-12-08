@@ -1,9 +1,21 @@
 # JJMasterData.MongoDB
 
+# Intro
+Plugin used to add support for the MongoDB database.
+At the moment only the `IDataDictionaryRepository` interface (used to store your database metadata) is implemented.
+
+# Motivation
+
+The metadata in JJMasterData is represented by JSON objects. We believe that it 
+makes more sense to store metadata in JSON format 
+in a NoSQL database than in a relational database. <br>
+In the future it is also planned to implement the forms data storage (`IEntityRepository`).
+
 ## Usage
 Add the following method to `JJServiceBuilder`:
 ```cs
-builder.AddJJMasterDataWeb(settingsPath).WithMongoDB(mongo =>
+builder.AddJJMasterDataWeb(settingsPath)
+.WithMongoDBDataDictionaryRepository(mongo =>
 {
     mongo.ConnectionString = "mongodb://localhost:27017";
     mongo.CollectionName = "metadata";

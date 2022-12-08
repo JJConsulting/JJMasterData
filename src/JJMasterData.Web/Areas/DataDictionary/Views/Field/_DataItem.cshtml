@@ -71,14 +71,14 @@
     }
 
     function setIconValue(fieldid, cod, description) {
-        let oFldId = window.document.getElementById("DataItem_Itens_" + fieldid + "__Icon");
-        oFldId.value = cod;
+        let fieldIcon = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon");
+        fieldIcon.value = cod;
 
-        let oFld = window.document.getElementById("DataItem_Itens_" + fieldid + "__Icon_text");
-        oFld.value = description;
+        let fieldIconText = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon_text");
+        fieldIconText.value = description;
 
         popup.hide();
-        oFld.focus();
+        fieldIconText.focus();
     }
 
     function addDataItem(qtd) {
@@ -90,7 +90,7 @@
             value: qtd
         }).appendTo("form");
 
-        var url = "@Url.Action("AddDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("AddDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -103,13 +103,13 @@
             value: dataItemIndex
         }).appendTo("form");
 
-        var url = "@Url.Action("RemoveDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
     function removeAllDataItem() {
         messageWait.show();
-        var url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -123,7 +123,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("List Type")">@Translate.Key("ListType")</label>
-        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+        <select asp-for="DataItem.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
                 <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
@@ -190,11 +190,11 @@
             {
                 <tr>
                     <td>
-                        @Html.TextBox("DataItem.Itens[" + i + "].Id",
+                        @Html.TextBox("DataItem.Items[" + i + "].Id",
                             Model.DataItem.Items[i].Id, new { @class = "form-control" })
                     </td>
                     <td>
-                        @Html.TextBox("DataItem.Itens[" + i + "].Description",
+                        @Html.TextBox("DataItem.Items[" + i + "].Description",
                             Model.DataItem.Items[i].Description, new { @class = "form-control" })
                     </td>
 
@@ -202,7 +202,7 @@
                     {
                         <td>
                             @{
-                                var iconId = "DataItem.Itens[" + i + "].Icon";
+                                var iconId = "DataItem.Items[" + i + "].Icon";
                                 var cbo = new JJSearchBox();
                                 cbo.DataItem.ShowImageLegend = true;
                                 cbo.DataItem.Items = IconHelper.GetListImages();
@@ -222,7 +222,7 @@
                             </div>
                         </td>
                         <td>
-                            @Html.TextBox("DataItem.Itens[" + i + "].ImageColor",
+                            @Html.TextBox("DataItem.Items[" + i + "].ImageColor",
                                 Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
                         </td>
                     }

@@ -3,7 +3,6 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SystemWebAdapters;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace JJMasterData.Web.Controllers;

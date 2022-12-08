@@ -10,11 +10,11 @@ using System.Data;
 
 namespace JJMasterData.MongoDB.Repository;
 
-public class MongoDictionaryRepository : IDictionaryRepository
+public class MongoDBDictionaryRepository : IDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
 
-    public MongoDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDBDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);
@@ -32,7 +32,11 @@ public class MongoDictionaryRepository : IDictionaryRepository
     ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
     public Metadata GetMetadata(string dictionaryName)
     {
-        return _metadataCollection.Find(metadata=> metadata.Table.Name == dictionaryName).FirstOrDefault();
+        var metadata = _metadataCollection.Find(metadata => metadata.Table.Name == dictionaryName).FirstOrDefault();
+        
+        DataDictionaryStructure.ApplyCompatibility(metadata, dictionaryName);
+
+        return metadata;
     }
 
     ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
@@ -122,18 +126,21 @@ public class MongoDictionaryRepository : IDictionaryRepository
 
         if (filter.Name != null)
         {
-            filters["Table.Name"] = filter.Name;
+            filters["Table.Name"] = new Hashtable
+            {
+                {"$regex", filter.Name}
+            };
         }
         
         if (filter.ContainsTableName != null)
         {
-            filters["Table.TableName"] = new Hashtable()
+            filters["Table.TableName"] = new Hashtable
             {
                 {"$in", filter.ContainsTableName}
             };
         }
         
-        if (filter.LastModifiedFrom != null && filter.LastModifiedTo != null)
+        if (filter is { LastModifiedFrom: { }, LastModifiedTo: { } })
         {
             filters["LastModified"] = new Hashtable
             {

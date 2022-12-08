@@ -39,19 +39,19 @@ public class ActionsController : DataDictionaryController
             throw new ArgumentNullException(nameof(dictionaryName));
         }
 
-        var dicParcer = _actionsService.DictionaryRepository.GetMetadata(dictionaryName);
+        var metadata = _actionsService.DictionaryRepository.GetMetadata(dictionaryName);
 
         BasicAction? action = null;
         switch (context)
         {
             case ActionOrigin.Grid:
-                action = dicParcer.UIOptions.GridActions.Get(actionName);
+                action = metadata.UIOptions.GridActions.Get(actionName);
                 break;
             case ActionOrigin.Toolbar:
-                action = dicParcer.UIOptions.ToolBarActions.Get(actionName);
+                action = metadata.UIOptions.ToolBarActions.Get(actionName);
                 break;
             case ActionOrigin.Field:
-                var formElement = dicParcer.GetFormElement();
+                var formElement = metadata.GetFormElement();
                 action = formElement.Fields[fieldName].Actions.Get(actionName);
                 break;
         }

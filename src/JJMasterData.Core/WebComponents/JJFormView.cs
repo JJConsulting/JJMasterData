@@ -20,7 +20,7 @@ namespace JJMasterData.Core.WebComponents;
 /// Represents a CRUD.
 /// </summary>
 /// <example>
-/// [!code-cshtml[Example](../../../example/JJMasterData.Web.Example/Pages/Components/JJFormViewExample.cshtml)]
+/// [!code-cshtml[Example](../../../example/JJMasterData.WebExample/Pages/Components/JJFormViewExample.cshtml)]
 /// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
@@ -132,7 +132,7 @@ public class JJFormView : JJGridView
             if (_service == null)
             { 
                 var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
+                _service = new FormService(FormManager, dataContext)
                 {
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible
@@ -215,7 +215,7 @@ public class JJFormView : JJGridView
             }
             else if (Name.Equals(pnlname))
             {
-                Filter.GetHtmlFilter();
+                Filter.GetFilterHtmlBuilder();
             }
             else
             {

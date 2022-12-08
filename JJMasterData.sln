@@ -26,6 +26,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Pdf", "src\Plugins\JJMasterData.Pdf\JJMasterData.Pdf.csproj", "{40C11852-04ED-413B-9FED-C9666D62B0A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2A275D42-9681-495E-80B8-D0529680DED7}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6DF8173F-DE7A-4110-B192-856C0CD48D37}"
 EndProject
@@ -44,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.Example", "example\JJMasterData.Web.Example\JJMasterData.Web.Example.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebExample", "example\JJMasterData.WebExample\JJMasterData.WebExample.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppSettings", "AppSettings", "{BF9BF48F-98C7-465F-B01E-DC839641EA7A}"
 	ProjectSection(SolutionItems) = preProject

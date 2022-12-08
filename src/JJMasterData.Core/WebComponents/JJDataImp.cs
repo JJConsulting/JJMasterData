@@ -304,7 +304,7 @@ public class JJDataImp : JJBaseProcess
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
         var dataContext = new DataContext(DataContextSource.Upload, UserId);
-        var formService = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
+        var formService = new FormService(FormManager, dataContext)
         {
             EnableErrorLink = false,
             EnableHistoryLog = EnableHistoryLog,
