@@ -36,8 +36,11 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
 
             if (metadata.Api.EnableGetDetail)
+            {
                 detailPathItem.AddOperation(OperationType.Get, factory.Get());
-
+                detailPathItem.AddOperation(OperationType.Get, factory.GetFile());
+            }
+            
             if (metadata.Api.EnableAdd)
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
 

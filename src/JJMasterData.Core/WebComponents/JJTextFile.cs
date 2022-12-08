@@ -130,20 +130,21 @@ public class JJTextFile : JJBaseControl
 
     private string GetRefreshScript(JJFormUpload formUpload)
     {
-        var script = new StringBuilder();
-        script.AppendLine("$(document).ready(function () {");
-        script.AppendLine($"window.parent.$(\"#v_{Name}\").val(\"{GetPresentationText(formUpload)}\");");
-        script.AppendLine($"window.parent.$(\"#{Name}\").val(\"{GetFileName(formUpload)}\");");
-        script.AppendLine("});");
-
-        return script.ToString();
+        return $$"""
+            $(document).ready(function () {
+                window.parent.$("#v_{{Name}}").val("{{GetPresentationText(formUpload)}}");
+                window.parent.$("#{{Name}}").val("{{GetFileName(formUpload)}}");
+            });
+        """;
     }
 
     private string GetOpenUploadFormAction()
     {
-        var parms = new OpenFormParms();
-        parms.PageState = PageState;
-        parms.Enable = Enabled & !ReadOnly;
+        var parms = new OpenFormParms
+        {
+            PageState = PageState,
+            Enable = Enabled & !ReadOnly
+        };
 
         if (PageState != PageState.Insert)
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
