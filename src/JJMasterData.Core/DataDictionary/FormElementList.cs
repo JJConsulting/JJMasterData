@@ -14,26 +14,26 @@ namespace JJMasterData.Core.DataDictionary;
 [Serializable]
 public class FormElementList : ICollection<FormElementField>
 {
-    private IList<FormElementField> _FormFields;
-    private ElementList _BaseFields;
+    private IList<FormElementField> _formFields;
+    private ElementList _baseFields;
 
     public FormElementList()
     {
-        _BaseFields = new ElementList();
-        _FormFields = new List<FormElementField>();
+        _baseFields = new ElementList();
+        _formFields = new List<FormElementField>();
     }
 
     public FormElementList(ElementList baseFields, List<FormElementField> formFields)
     {
-        _BaseFields = baseFields;
-        _FormFields = formFields;
+        _baseFields = baseFields;
+        _formFields = formFields;
     }
 
     #region Implementation of IEnumerable
 
     public IEnumerator<FormElementField> GetEnumerator()
     {
-        return _FormFields.GetEnumerator();
+        return _formFields.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -47,19 +47,19 @@ public class FormElementList : ICollection<FormElementField>
 
     public void Add(FormElementField item)
     {
-        _BaseFields.Add(item);
-        _FormFields.Add(item);
+        _baseFields.Add(item);
+        _formFields.Add(item);
     }
 
     public void Clear()
     {
-        _BaseFields.Clear();
-        _FormFields.Clear();
+        _baseFields.Clear();
+        _formFields.Clear();
     }
 
     public bool Contains(string fieldName)
     {
-        foreach (FormElementField val in _FormFields)
+        foreach (FormElementField val in _formFields)
         {
             if (val.Name.Equals(fieldName))
                 return true;
@@ -69,29 +69,29 @@ public class FormElementList : ICollection<FormElementField>
 
     public bool Contains(FormElementField item)
     {
-        return _FormFields.Contains(item);
+        return _formFields.Contains(item);
     }
 
     public void CopyTo(FormElementField[] array, int arrayIndex)
     {
-        _BaseFields.CopyTo(array.ToArray<ElementField>(), arrayIndex);
-        _FormFields.CopyTo(array, arrayIndex);
+        _baseFields.CopyTo(array.ToArray<ElementField>(), arrayIndex);
+        _formFields.CopyTo(array, arrayIndex);
     }
 
     public bool Remove(FormElementField item)
     {
-        _BaseFields.Remove(item);
-        return _FormFields.Remove(item);
+        _baseFields.Remove(item);
+        return _formFields.Remove(item);
     }
 
     public int Count
     {
-        get { return _FormFields.Count; }
+        get { return _formFields.Count; }
     }
 
     public bool IsReadOnly
     {
-        get { return _FormFields.IsReadOnly; }
+        get { return _formFields.IsReadOnly; }
     }
 
     #endregion
@@ -100,12 +100,12 @@ public class FormElementList : ICollection<FormElementField>
     {
         get
         {
-            return _FormFields[index];
+            return _formFields[index];
         }
         set
         {
-            _FormFields[index] = value;
-            _BaseFields[index] = value;
+            _formFields[index] = value;
+            _baseFields[index] = value;
         }
     }
 
@@ -116,7 +116,7 @@ public class FormElementList : ICollection<FormElementField>
             if (string.IsNullOrEmpty(fieldName))
                 throw new ArgumentNullException(nameof(fieldName));
 
-            foreach (FormElementField val in _FormFields)
+            foreach (FormElementField val in _formFields)
             {
                 if (val.Name.ToLower().Equals(fieldName.ToLower()))
                     return val;
@@ -126,13 +126,13 @@ public class FormElementList : ICollection<FormElementField>
         set
         {
             bool isOk = false;
-            for (int i = 0; i < _FormFields.Count; i++)
+            for (int i = 0; i < _formFields.Count; i++)
             {
-                FormElementField e = _FormFields[i];
+                FormElementField e = _formFields[i];
                 if (e.Name.ToLower().Equals(fieldName.ToLower()))
                 {
-                    _FormFields[i] = value;
-                    _BaseFields[i] = value;
+                    _formFields[i] = value;
+                    _baseFields[i] = value;
                     isOk = true;
                     break;
                 }
@@ -145,9 +145,9 @@ public class FormElementList : ICollection<FormElementField>
     public int IndexOf(string fieldName)
     {
         int index = -1;
-        for (int i = 0; i < _FormFields.Count; i++)
+        for (int i = 0; i < _formFields.Count; i++)
         {
-            if (_FormFields[i].Name.Equals(fieldName))
+            if (_formFields[i].Name.Equals(fieldName))
             {
                 index = i;
                 break;
@@ -155,5 +155,5 @@ public class FormElementList : ICollection<FormElementField>
         }
         return index;
     }
-
+ 
 }

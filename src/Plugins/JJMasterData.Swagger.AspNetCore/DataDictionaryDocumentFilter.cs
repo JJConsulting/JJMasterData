@@ -28,18 +28,15 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
         {
             var formElement = metadata.GetFormElement();
 
-            DataDictionaryPathItem defaultPathItem = new($"/MasterApi/{formElement.Name}");
-            DataDictionaryPathItem detailPathItem = new($"/MasterApi/{formElement.Name}/{{id}}");
-            DataDictionaryOperationFactory factory = new(formElement, metadata.Api);
+            var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
+            var detailPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}");
+            var factory = new DataDictionaryOperationFactory(formElement, metadata.Api);
 
             if (metadata.Api.EnableGetAll)
                 defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
 
             if (metadata.Api.EnableGetDetail)
-            {
                 detailPathItem.AddOperation(OperationType.Get, factory.Get());
-                detailPathItem.AddOperation(OperationType.Get, factory.GetFile());
-            }
             
             if (metadata.Api.EnableAdd)
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
@@ -55,6 +52,25 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
             document.Paths.AddDataDictionaryPath(defaultPathItem);
             document.Paths.AddDataDictionaryPath(detailPathItem);
+            
+            foreach (var field in formElement.Fields)
+            {
+                if (field.Component != FormComponent.File || field.DataFile == null) 
+                    continue;
+                
+                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/file/{field.Name}/{{fileName}}");
+                if (metadata.Api.EnableGetAll)
+                    filePathItem.AddOperation(OperationType.Get, factory.GetFile(field));
+                    
+                //if (metadata.Api.EnableAdd)
+                //detailPathItem.AddOperation(OperationType.Get, factory.PostFile(field));
+                        
+                //if (metadata.Api.EnableDel)
+                //detailPathItem.AddOperation(OperationType.Get, factory.DeleteFile(field));
+                
+                document.Paths.AddDataDictionaryPath(filePathItem);
+            }
+            
         }
     }
 }
