@@ -1,0 +1,147 @@
+@model UIOptions
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowTitle">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowTitle)
+                    <b>ShowTitle</b><br/>
+                    @Translate.Key("Show title in page header")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="EnableAjax">
+                    @Html.CheckBox("EnableAjax", true, new { disabled = "disabled" })
+                    <b>@Translate.Key("EnableAjax")</b><br/>
+                    @Translate.Key("Post via Ajax")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_EnableSorting">
+                    @Html.CheckBoxFor(model => Model.Grid.EnableSorting)
+                    <b>@Translate.Key("EnableSorting")</b><br/>
+                    @Translate.Key("Enable Column Sorting")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_EnableMultSelect">
+                    @Html.CheckBoxFor(model => Model.Grid.EnableMultSelect)
+                    <b>@Translate.Key("Enable MultSelect")</b><br/>
+                    @Translate.Key("Allows you to select multiple lines in the grid")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_MaintainValuesOnLoad">
+                    @Html.CheckBoxFor(model => Model.Grid.MaintainValuesOnLoad)
+                    <b>@Translate.Key("MaintainValuesOnLoad")</b><br/>
+                    @Translate.Key("Maintains grid filters, order and pagination")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowRowHover">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowRowHover)
+                    <b>@Translate.Key("ShowRowHover")</b><br/>
+                    @Translate.Key("Change a line color on mouseover")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowRowStriped">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowRowStriped)
+                    <b>@Translate.Key("ShowRowStriped")</b><br/>
+                    @Translate.Key("display zebra columns")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowBorder">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowBorder)
+                    <b>@Translate.Key("ShowBorder")</b><br/>
+                    @Translate.Key("Show border on grid")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowToolBar">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowToolBar)
+                    <b>@Translate.Key("ShowToolbar")</b><br/>
+                    @Translate.Key("Show ToolBar on grid")
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowPagging">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowPagging)
+                    <b>@Translate.Key("ShowPagging")</b><br/>
+                    @Translate.Key("Displays paging controls")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Total Records per page")">@Translate.Key("TotalPerPage")</label>
+            @Html.TextBoxFor(model => Model.Grid.TotalPerPage, new { text = "5", @class = "form-control", width = "90px" })
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Total buttons on paging")">@Translate.Key("TotalPaggingButton")</label>
+            @Html.TextBoxFor(model => Model.Grid.TotalPaggingButton, new { text = "5", @class = "form-control", width = "90px", style = "margin-botton:10px" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_ShowHeaderWhenEmpty">
+                    @Html.CheckBoxFor(model => Model.Grid.ShowHeaderWhenEmpty)
+                    <b>@Translate.Key("ShowHeaderWhenEmpty")</b><br/>
+                    @Translate.Key("Indicates whether the gridview header will be visible when there is no data")
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Text applied when there are no records to be applied")">@Translate.Key("EmptyDataText")</label>
+            @Html.TextBoxFor(model => Model.Grid.EmptyDataText, new { text = "There is no record to apply", @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label for="Grid_HeaderFixed">
+                    @Html.CheckBoxFor(model => Model.Grid.HeaderFixed)
+                    <b>@Translate.Key("Header Fixed")</b><br/>
+                    @Translate.Key("Fix the grid header when scrolling")
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

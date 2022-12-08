@@ -21,8 +21,10 @@ public class JJCollapsePanelTagHelper : TagHelper
     public dynamic? Model { get; set; }
     
     [HtmlAttributeName("icon")]
-    
     public IconType Icon { get; set; }
+    
+    [HtmlAttributeName("expanded-by-default")]
+    public bool ExpandedByDefault { get; set; }
 
     private RazorPartialRendererService RendererService { get; }
     
@@ -40,6 +42,7 @@ public class JJCollapsePanelTagHelper : TagHelper
         {
             Name = Title!.ToLower().Replace(" ", "_"),
             Title = Title,
+            ExpandedByDefault = ExpandedByDefault,
             HtmlContent = await RendererService.ToStringAsync(Partial,Model),
             TitleIcon = new JJIcon(Icon)
         };
