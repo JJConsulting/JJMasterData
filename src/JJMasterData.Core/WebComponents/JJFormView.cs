@@ -81,7 +81,7 @@ public class JJFormView : JJGridView
             {
                 _dataPanel = new JJDataPanel(FormElement)
                 {
-                    Name = "jjpainel_" + Name,
+                    Name = "jjpainel_" + FormElement.Name.ToLower(),
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
                     RenderPanelGroup = true
@@ -187,6 +187,7 @@ public class JJFormView : JJGridView
     public JJFormView(FormElement formElement) : this()
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        Name = "jjview" + formElement.Name.ToLower();
     }
     
     #endregion

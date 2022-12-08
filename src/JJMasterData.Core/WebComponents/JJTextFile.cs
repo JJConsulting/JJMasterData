@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
 using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
@@ -357,12 +356,13 @@ public class JJTextFile : JJBaseControl
 
     public static bool IsFormUploadRoute(JJBaseView view)
     {
-        string dataPanelName = view switch
-        {
-            JJFormView formView => formView.DataPanel.Name,
-            JJDataPanel dataPanel => dataPanel.Name,
-            _ => string.Empty
-        };
+        string dataPanelName;
+        if (view is JJFormView formView)
+            dataPanelName = formView.DataPanel.Name;
+        else if (view is JJDataPanel dataPanel)
+            dataPanelName = dataPanel.Name;
+        else
+            dataPanelName = string.Empty;
 
         return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
