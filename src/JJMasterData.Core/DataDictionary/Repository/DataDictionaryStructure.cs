@@ -130,16 +130,15 @@ public class DataDictionaryStructure
         if (dicParser.Table == null)
             throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
 
-        //Mantendo compatibilidate versão Nairobi
+        //Nairobi
         dicParser.UIOptions ??= new UIOptions();
 
         dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
 
         dicParser.UIOptions.GridActions ??= new GridActions();
-        //Fim compatibilidate Nairobi
 
 
-        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
+        //Denver
         if (dicParser.Api == null)
         {
             dicParser.Api = new ApiSettings();
@@ -158,7 +157,6 @@ public class DataDictionaryStructure
         {
             dicParser.Table.TableName = dicParser.Table.Name;
         }
-        //Fim compatibilidate Denver
 
         //Tokio
         if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
@@ -203,5 +201,19 @@ public class DataDictionaryStructure
         dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
         dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+        
+        //Saturn
+        //Suggestion: Move this compatibilizer to importation, run only one time at all systems and remove this.
+        foreach (var action in dicParser.UIOptions.ToolBarActions.GetAll())
+        {
+            if((int)action.Icon < 60000)
+                action.Icon = Enum.GetValues(typeof(IconType)).OfType<IconType>().ToList()[(int)action.Icon];
+        }
+
+        foreach (var action in dicParser.UIOptions.GridActions.GetAll())
+        {
+            if((int)action.Icon < 60000)
+                action.Icon =  Enum.GetValues(typeof(IconType)).OfType<IconType>().ToList()[(int)action.Icon];
+        }
     }
 }
