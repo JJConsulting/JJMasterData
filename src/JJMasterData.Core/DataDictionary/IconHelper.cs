@@ -16,7 +16,8 @@ public static class IconHelper
     }
     public static string GetCssClass(this IconType icon)
     {
-        return AsIconInfo(icon).ClassName;
+        string description = PascalToParamCase(icon.ToString());
+        return $"fa fa-{description}";
     }
     public static IconInfo AsIconInfo(this IconType icon)
     {
