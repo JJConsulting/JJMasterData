@@ -13,10 +13,12 @@ public class JJUploadAreaTagHelper : TagHelper
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var upload = new JJUploadArea
+        var upload = new JJUploadArea();
+
+        if (!string.IsNullOrEmpty(Name))
         {
-            Name = Name
-        };
+            upload.Name = Name;
+        }
 
         Configure?.Invoke(upload);
 

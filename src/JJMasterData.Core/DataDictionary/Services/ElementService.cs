@@ -348,6 +348,6 @@ public class ElementService : BaseService
 
     public void CreateStructureIfNotExists()
     {
-        
+        DictionaryRepository.CreateStructureIfNotExists();
     }
 }

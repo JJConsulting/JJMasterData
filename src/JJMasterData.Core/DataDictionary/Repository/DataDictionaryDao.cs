@@ -2,13 +2,11 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.Action;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -218,14 +216,9 @@ public class DictionaryDao : IDictionaryRepository
     }
 
     ///<inheritdoc cref="IDictionaryRepository.Exists"/>
-    public bool Exists(string elementName)
+    public bool Exists(string tableName)
     {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
-        Hashtable filter = new Hashtable { { "name", elementName } };
-        int count = _entityRepository.GetCount(DataDictionaryStructure.GetElement(), filter);
-        return count > 0;
+        return _entityRepository.TableExists(tableName);
     }
 
     ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>

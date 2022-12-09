@@ -1,0 +1,40 @@
+@model UIOptions
+
+
+<div class="col-sm-4">
+    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of columns where fields will be rendered by default")">@Translate.Key("FormCols")</label>
+    @Html.DropDownListFor(model => Model.Form.FormCols, new[]
+    {
+        new SelectListItem { Text = Translate.Key("1 (one column)"), Value = "1" },
+        new SelectListItem { Text = Translate.Key("2 (two columns)"), Value = "2" },
+        new SelectListItem { Text = Translate.Key("3 (three columns)"), Value = "3" },
+        new SelectListItem { Text = Translate.Key("4 (four columns)"), Value = "4" },
+        new SelectListItem { Text = Translate.Key("6 (six columns)"), Value = "6" },
+        new SelectListItem { Text = Translate.Key("12 (twelve columns)"), Value = "12" },
+    }, new { @class = "form-control" })
+</div>
+
+<div class="col-sm-4">
+    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Horizontal label layout on left side of field, vertical label layout above field")">@Translate.Key("LayoutFields")</label>
+    @Html.DropDownListFor(model => Model.Form.IsVerticalLayout, new[]
+    {
+        new SelectListItem { Text = Translate.Key("VERTICAL"), Value = "true" },
+        new SelectListItem { Text = Translate.Key("HORIZONTAL"), Value = "false" }
+    }, new { @class = "form-control", disabled = "disabled" })
+</div>
+
+<div class="col-sm-4">
+    <div class="checkbox">
+        <label for="ShowViewModeAsStatic">
+            @Html.CheckBox("ShowViewModeAsStatic", Model.Form.ShowViewModeAsStatic, new { disabled = "disabled" })
+            <b>@Translate.Key("ShowViewModeAsStatic")</b><br/>
+            @Translate.Key("When the panel is not in preview mode ")
+            @Translate.Key("remover as bordas dos campos exibindo como texto.")
+        </label>
+    </div>
+</div>
+
+<div class="@BootstrapHelper.FormGroup col-sm-4 required">
+    <label class="@BootstrapHelper.Label " for="FormEnterKey" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Behavior of the Enter key on the form")">@Translate.Key("EnterKey")</label>
+    <select asp-for="Form.EnterKey" disabled="disabled" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+</div>

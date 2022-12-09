@@ -132,7 +132,7 @@ public class JJFormView : JJGridView
             if (_service == null)
             { 
                 var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext, FormEventResolverFactory.GetResolver())
+                _service = new FormService(FormManager, dataContext)
                 {
                     EnableErrorLink = true,
                     EnableHistoryLog = LogAction.IsVisible

@@ -34,7 +34,7 @@ internal class FormEventResolver : IFormEventResolver
 
         var formEventType = GetFormEventTypes(assemblies)
             .FirstOrDefault(info =>
-                info.GetCustomAttribute<FormEventAttribute>().ElementName == elementName ||
+                info.GetCustomAttribute<FormEventAttribute>()?.ElementName == elementName ||
                 info.Name.StartsWith(elementName));
 
         if (formEventType == null) 
