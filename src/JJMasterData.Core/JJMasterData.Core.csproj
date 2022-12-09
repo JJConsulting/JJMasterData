@@ -29,7 +29,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Remove="DI\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,16 +40,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="DI\**" />
-    <Compile Remove="DataDictionary\Repository\DataDictionaryFactory.cs" />
-    <Compile Remove="FormEvents\FormEventResolverFactory.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="DI\**" />
   </ItemGroup>
   
   <PropertyGroup>

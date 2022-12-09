@@ -10,11 +10,11 @@ using System.Data;
 
 namespace JJMasterData.MongoDB.Repository;
 
-public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
+public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
 
-    public MongoDbDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDBDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);

@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using System;
 using JJMasterData.Core.DI;
 
