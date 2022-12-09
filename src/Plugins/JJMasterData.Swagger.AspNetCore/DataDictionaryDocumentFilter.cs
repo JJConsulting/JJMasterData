@@ -59,7 +59,8 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                     continue;
                 
                 var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/file/{field.Name}/{{fileName}}");
-                if (metadata.Api.EnableGetAll)
+                
+                if (metadata.Api.EnableGetDetail)
                     filePathItem.AddOperation(OperationType.Get, factory.GetFile(field));
                     
                 //if (metadata.Api.EnableAdd)

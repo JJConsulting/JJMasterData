@@ -11,9 +11,8 @@ namespace JJMasterData.Web.Controllers;
 public class ErrorController : Controller
 {
     [Route("/Error")]
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Index([FromQuery]int? statusCode, [FromServices] ILogger<ErrorController> logger)
+    public IActionResult Index([FromQuery]int? statusCode, [FromServices] ILogger<ErrorController>? logger)
     {
         var exceptionHandler =
             HttpContext.Features.Get<IExceptionHandlerPathFeature>();
@@ -27,7 +26,7 @@ public class ErrorController : Controller
         };
         
 
-        logger.LogError(model.Exception + "\n\n" + model.StackTrace);
+        logger?.LogError(model.Exception + "\n\n" + model.StackTrace);
 
         return View(model);
     }

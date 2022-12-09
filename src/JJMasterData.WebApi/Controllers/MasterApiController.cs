@@ -85,15 +85,7 @@ public class MasterApiController : ControllerBase
     {
         throw new NotImplementedException();
     }
-
-    /// <summary>
-    /// Get the specified file from the following parameters:
-    /// </summary>
-    /// <param name="elementName"/>
-    /// <param name="id">Comma separated primary key values.</param>
-    /// <param name="fieldName"/>
-    /// <param name="fileName">Name of the file to be returned.</param>
-    /// <returns></returns>
+    
     [HttpGet]
     [Route("{id}/file/{fieldName}/{fileName}")]
     public IActionResult GetFile(string elementName, string id, string fieldName, string fileName)
@@ -103,14 +95,6 @@ public class MasterApiController : ControllerBase
         return File(fileStream, "application/octet-stream", fileName);
     }
     
-    /// <summary>
-    /// Sets a file using the following parameters:
-    /// </summary>
-    /// <param name="elementName"/>
-    /// <param name="fieldName"/>
-    /// <param name="id">Comma separated primary key values.</param>
-    /// <param name="file">File to be saved.</param>
-    /// <returns></returns>
     [HttpPost]
     [Route("{id}/file/{fieldName}")]
     public IActionResult PostFile(string elementName, string fieldName, string id, IFormFile file)
@@ -120,14 +104,6 @@ public class MasterApiController : ControllerBase
         return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
     }
     
-    /// <summary>
-    /// Deletes a file using the following parameters:
-    /// </summary>
-    /// <param name="elementName"></param>
-    /// <param name="fieldName"></param>
-    /// <param name="id">Comma separated primary key values.</param>
-    /// <param name="fileName">Name of the file to be deleted.</param>
-    /// <returns></returns>
     [HttpDelete]
     [Route("{id}/file/{fieldName}/{fileName}")]
     public IActionResult DeleteFile(string elementName, string fieldName, string id, string fileName)

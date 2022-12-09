@@ -606,7 +606,7 @@ internal class DataDictionaryOperationFactory
         var nameFields = GetPrimaryKeysNames(pkFields);
         var operation = new OpenApiOperation
         {
-            Summary = $"Download specified file from field {field.Name} with following parameters.",
+            Summary = $"Download specified file from the field {field.Name}",
             Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
             OperationId = ModelName + "_GetFile",
             Tags = new List<OpenApiTag>(),
@@ -626,7 +626,7 @@ internal class DataDictionaryOperationFactory
         });
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Settings.GetFieldNameParsed("fileName"),
+            Name = "fileName",
             Description = "File name",
             In = ParameterLocation.Path,
             Required = true,
@@ -636,15 +636,15 @@ internal class DataDictionaryOperationFactory
             }
         });
         
-        var content = new Dictionary<string, OpenApiMediaType>();
-        content.Add("application/octet-stream", new OpenApiMediaType
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
         {
             Encoding = new Dictionary<string, OpenApiEncoding>
             {
                 { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
             }
-        });
-        
+        } } };
+
         operation.Parameters.Add(GetAcceptLanguageParameter());
         operation.Responses.Add("200", new OpenApiResponse
         {

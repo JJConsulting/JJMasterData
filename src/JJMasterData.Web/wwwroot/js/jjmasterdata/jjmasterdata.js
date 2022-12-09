@@ -545,7 +545,7 @@ function jjloadform(event, prefixSelector) {
         catch (_a) {
             isValid = true;
         }
-        if (showWaitOnPost && isValid) {
+        if (isValid && showWaitOnPost) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });

@@ -448,9 +448,14 @@ public class MasterApiService
     }
     public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var formElement = GetFormElement(elementName);
-        var field = formElement.Fields.First(f => f.Name == fieldName);
+        var metadata = _dictionaryRepository.GetMetadata(elementName);
+        if (!metadata.Api.EnableGetDetail)
+            throw new UnauthorizedAccessException();
         
+        var formElement = metadata.GetFormElement();
+        
+        var field = formElement.Fields.First(f => f.Name == fieldName);
+
         var builder = new FormFilePathBuilder(formElement);
 
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
