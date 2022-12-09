@@ -29,7 +29,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
             var formElement = metadata.GetFormElement();
 
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
-            var detailPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}");
+            var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
             var factory = new DataDictionaryOperationFactory(formElement, metadata.Api);
 
             if (metadata.Api.EnableGetAll)
@@ -58,18 +58,20 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 if (field.Component != FormComponent.File || field.DataFile == null) 
                     continue;
                 
-                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/file/{field.Name}/{{fileName}}");
+                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/file/{field.Name}");
+                var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
                 
                 if (metadata.Api.EnableGetDetail)
-                    filePathItem.AddOperation(OperationType.Get, factory.GetFile(field));
+                    fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
                     
-                //if (metadata.Api.EnableAdd)
-                //detailPathItem.AddOperation(OperationType.Get, factory.PostFile(field));
+                if (metadata.Api.EnableAdd && metadata.Api.EnableUpdate)
+                    filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
                         
-                //if (metadata.Api.EnableDel)
-                //detailPathItem.AddOperation(OperationType.Get, factory.DeleteFile(field));
+                if (metadata.Api.EnableDel)
+                    fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
                 
                 document.Paths.AddDataDictionaryPath(filePathItem);
+                document.Paths.AddDataDictionaryPath(fileDetailPathItem);
             }
             
         }

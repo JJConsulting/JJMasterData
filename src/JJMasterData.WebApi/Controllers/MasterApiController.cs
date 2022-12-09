@@ -22,7 +22,7 @@ public class MasterApiController : ControllerBase
 
     [HttpGet]
     [Produces(typeof(MasterApiListResponse))]
-    [Route("{pag?}/{regporpag?}/{orderby?}/{tot?}")]
+    [Route("{pag?}/{regporpag:int?}/{orderby?}/{tot?}")]
     public ActionResult<MasterApiListResponse> GetAll(string elementName, [FromQuery] int pag = 1,
         [FromQuery] int regporpag = 1000, [FromQuery] string? orderby = null, [FromQuery] int? tot = 0)
     {

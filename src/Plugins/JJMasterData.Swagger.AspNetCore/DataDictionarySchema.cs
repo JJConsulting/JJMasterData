@@ -19,12 +19,12 @@ internal static class DataDictionarySchema
 
         var example = new OpenApiObject();
 
-        foreach (FormElementField field in formElement.Fields)
+        foreach (var field in formElement.Fields)
         {
 
             example[field.Name] = GetFieldExample(field);
 
-            if (ignoreIdentity && field.IsPk && field.AutoNum)
+            if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
 
             string fieldName = api.GetFieldNameParsed(field.Name);
@@ -44,7 +44,7 @@ internal static class DataDictionarySchema
         return modelSchema;
     }
 
-    private static IOpenApiAny GetFieldExample(FormElementField field)
+    private static IOpenApiAny GetFieldExample(ElementField field)
     {
         return field.DataType switch
         {
@@ -101,10 +101,7 @@ internal static class DataDictionarySchema
         }
 
 
-        if (item.Component == FormComponent.ComboBox
-                    && item.DataItem != null
-                    && item.DataItem.Items != null
-                    && item.DataItem.Items.Count > 0)
+        if (item is { Component: FormComponent.ComboBox, DataItem.Items.Count: > 0 })
         {
             foreach (var dataItem in item.DataItem.Items)
             {
