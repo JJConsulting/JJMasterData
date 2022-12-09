@@ -10,8 +10,8 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 

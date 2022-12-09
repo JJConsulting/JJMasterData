@@ -13,11 +13,11 @@ namespace JJMasterData.WebApi.Services;
 public class DictionariesService
 {
     private IEntityRepository _entityRepository;
-    private IDictionaryRepository _dictionaryRepository;
+    private IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DictionariesService(IDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
+    public DictionariesService(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
     {
-        _dictionaryRepository = dictionaryRepository;
+        _dataDictionaryRepository = dataDictionaryRepository;
         _entityRepository = entityRepository;
     }
 
@@ -40,7 +40,7 @@ public class DictionariesService
             throw new ArgumentException(Translate.Key("DicSyncParam invalid"));
 
         var dStart = DateTime.Now;
-        var dictionaries = _dictionaryRepository.GetMetadataList(true);
+        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
         var syncInfo = new DicSyncInfo();
         syncInfo.ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
         int totRecords = 0;

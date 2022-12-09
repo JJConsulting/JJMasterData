@@ -43,9 +43,9 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
 
-    public static JJServiceBuilder WithDictionaryRepository<T>(this JJServiceBuilder builder) where T : class, IDictionaryRepository 
+    public static JJServiceBuilder WithDictionaryRepository<T>(this JJServiceBuilder builder) where T : class, IDataDictionaryRepository 
     {
-        builder.Services.Replace(ServiceDescriptor.Transient<IDictionaryRepository, T>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, T>());
         return builder;
     }
 

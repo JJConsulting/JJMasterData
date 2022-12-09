@@ -10,14 +10,14 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    public FieldService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public FieldService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
     {
-        var dictionary = DictionaryRepository.GetMetadata(elementName);
+        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
         var formElement = dictionary.GetFormElement();
 
         RemoveUnusedProperties(ref field);
@@ -48,7 +48,7 @@ public class FieldService : BaseService
 
         formElement.Fields[field.Name] = field;
         dictionary.SetFormElement(formElement);
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
@@ -275,7 +275,7 @@ public class FieldService : BaseService
 
     public bool SortFields(string elementName, string[] orderFields)
     {
-        var dictionary = DictionaryRepository.GetMetadata(elementName);
+        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
         var formElement = dictionary.GetFormElement();
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
@@ -285,7 +285,7 @@ public class FieldService : BaseService
         }
 
         dictionary.SetFormElement(formElement);
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
         return true;
     }
 
@@ -313,7 +313,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = DictionaryRepository.GetMetadata(elementMap.ElementName);
+            var dataEntry = DataDictionaryRepository.GetMetadata(elementMap.ElementName);
             var fieldKey = dataEntry.Table.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -334,7 +334,7 @@ public class FieldService : BaseService
 
     public bool DeleteField(string dictionaryName, string fieldName)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         if (!dictionary.Table.Fields.ContainsKey(fieldName))
             return false;
 
@@ -342,14 +342,14 @@ public class FieldService : BaseService
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
         dictionary.SetFormElement(formElement);
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
 
     public string GetNextFieldName(string dictionaryName, string fieldName)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var element = dictionary.Table;
         string nextField = null;
         if (element.Fields.ContainsKey(fieldName))
@@ -374,7 +374,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = DictionaryRepository.GetMetadata(map.ElementName);
+        var dataEntry = DataDictionaryRepository.GetMetadata(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 
@@ -399,7 +399,7 @@ public class FieldService : BaseService
 
         formElement.Fields.Add(newField);
         metadata.SetFormElement(formElement);
-        DictionaryRepository.InsertOrReplace(metadata);
+        DataDictionaryRepository.InsertOrReplace(metadata);
         return IsValid;
     }
 }

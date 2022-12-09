@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Http;
 using System;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -19,7 +20,7 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
 
-            var dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+            var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
             var metadata = dictionaryRepository.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = metadata.GetFormElement();

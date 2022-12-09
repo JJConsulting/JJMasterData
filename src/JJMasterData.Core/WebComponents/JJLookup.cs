@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -287,7 +288,7 @@ public class JJLookup : JJBaseControl
 
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(idSearch));
 
-        var dicDao = DictionaryRepositoryFactory.GetInstance();
+        var dicDao = JJServiceCore.DataDictionaryRepository;
         Hashtable fields;
         try
         {

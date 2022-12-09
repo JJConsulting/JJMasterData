@@ -465,7 +465,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = new DictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
+        var dicParser = new DataDictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
         var formsel = new JJFormView(dicParser.GetFormElement())
         {
             EntityRepository = EntityRepository,
@@ -511,7 +511,7 @@ public class JJFormView : JJGridView
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         var dictionary = dicDao.GetMetadata(InsertAction.ElementNameToSelect);
         var element = dictionary.Table;
         var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
@@ -774,7 +774,7 @@ public class JJFormView : JJGridView
         }
 
 
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         foreach (var relation in relations)
         {
             var dic = dicDao.GetMetadata(relation.ChildElement);

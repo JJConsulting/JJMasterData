@@ -3,7 +3,7 @@ using System.Data;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public interface IDictionaryRepository
+public interface IDataDictionaryRepository
 {
     /// <summary>
     /// Create Data Dictionary Structure

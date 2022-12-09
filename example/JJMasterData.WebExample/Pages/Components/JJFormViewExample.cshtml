@@ -5,12 +5,12 @@
 @using JJMasterData.Web.TagHelpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
-@inject IDictionaryRepository DictionaryRepository
+@inject IDataDictionaryRepository DataDictionaryRepository
 
 @{
     ViewData["Title"] = "JJFormView";
 
-    bool dictionaryExists = DictionaryRepository.Exists("Example");
+    bool dictionaryExists = DataDictionaryRepository.Exists("Example");
 
     void Configure(JJFormView formView)
     {

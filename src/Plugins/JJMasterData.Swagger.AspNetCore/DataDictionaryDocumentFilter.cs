@@ -8,17 +8,17 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 public class DataDictionaryDocumentFilter : IDocumentFilter
 {
-    private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DataDictionaryDocumentFilter(IDictionaryRepository dictionaryRepository)
+    public DataDictionaryDocumentFilter(IDataDictionaryRepository dataDictionaryRepository)
     {
-        _dictionaryRepository = dictionaryRepository;
+        _dataDictionaryRepository = dataDictionaryRepository;
     }
 
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var dictionaries = _dictionaryRepository.GetMetadataList(true);
+        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
 
         foreach (var metadata in dictionaries)
         {

@@ -39,7 +39,7 @@ internal class ActionManager
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         var dicParser = dicDao.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);

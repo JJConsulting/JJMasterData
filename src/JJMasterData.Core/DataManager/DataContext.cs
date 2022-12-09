@@ -14,7 +14,7 @@ public class DataContext
     
     public string? BrowserInfo { get; internal set; }
     
-    public DataContext(DataContextSource source, string userId)
+    public DataContext(DataContextSource source, string? userId)
     {
         Source = source;
         UserId = userId;

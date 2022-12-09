@@ -19,7 +19,7 @@ public class FormService
 
     private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
-    private FormElement FormElement => FormManager.FormElement;
+    public FormElement FormElement => FormManager.FormElement;
 
     public FormManager FormManager { get; private set; }
 

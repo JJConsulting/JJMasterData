@@ -1,6 +1,8 @@
 ﻿using JJMasterData.Core.DataDictionary.Repository;
 using System;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Args;
 
@@ -35,12 +37,12 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName));
 
-            var dicDao = DictionaryRepositoryFactory.GetInstance();
+            var dicDao = JJServiceCore.DataDictionaryRepository;
             var metadata = dicDao.GetMetadata(elementName);
             
             var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
             
-            var formEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
+            var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(elementName);
             formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
             
             dataPanel.FormElement = metadata.GetFormElement();

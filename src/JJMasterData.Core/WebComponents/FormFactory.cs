@@ -5,6 +5,7 @@ using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using System;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents;
@@ -23,7 +24,7 @@ internal static class FormFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
 
-        var formEvent = FormEventResolverFactory.GetResolver().GetFormEvent(elementName);
+        var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(elementName);
         if (formEvent != null)
         {
             AddFormEvent(form, formEvent);
@@ -31,7 +32,7 @@ internal static class FormFactory
         
         form.Name = "jjview" + elementName.ToLower();
         
-        var dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+        var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
         var metadata = dictionaryRepository.GetMetadata(elementName);
         
         var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));

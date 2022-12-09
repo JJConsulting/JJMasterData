@@ -171,7 +171,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            Metadata dicParser = _relationsService.DictionaryRepository.GetMetadata(childElement);
+            Metadata dicParser = _relationsService.DataDictionaryRepository.GetMetadata(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {
@@ -188,7 +188,7 @@ public class RelationsController : DataDictionaryController
     public void PopulatePkTable()
     {
         var listItem = new List<SelectListItem>();
-        IEnumerable<string> list = _relationsService.DictionaryRepository.GetNameList();
+        IEnumerable<string> list = _relationsService.DataDictionaryRepository.GetNameList();
 
         foreach (string name in list)
         {
