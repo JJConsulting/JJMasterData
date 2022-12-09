@@ -203,16 +203,21 @@
                         <td>
                             @{
                                 var iconId = "DataItem.Items[" + i + "].Icon";
-                                var cbo = new JJSearchBox();
-                                cbo.DataItem.ShowImageLegend = true;
-                                cbo.DataItem.Items = IconHelper.GetListImages();
-                                cbo.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
-                                cbo.Name = iconId;
+                                var searchBox = new JJSearchBox
+                                {
+                                    DataItem =
+                                    {
+                                        ShowImageLegend = true,
+                                        Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
+                                    },
+                                    SelectedValue = (Model.DataItem.Items[i].Id).ToString(),
+                                    Name = iconId
+                                };
                             }
 
                             <div class="row">
                                 <div class="col-sm-10">
-                                    @Html.Raw(cbo.GetHtml())
+                                    @Html.Raw(searchBox.GetHtml())
                                 </div>
                                 <div class="col-sm-2">
                                     <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.show('Icons','@Url.Action("Icons", new { dictionaryName = ViewBag.DictionaryName, itemId = i })');">

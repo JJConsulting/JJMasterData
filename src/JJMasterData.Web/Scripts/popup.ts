@@ -134,7 +134,7 @@
         $(html).appendTo($("body"));
     }
 
-    show(title, url, size = 0) {
+    show(title, url, size = 1) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
