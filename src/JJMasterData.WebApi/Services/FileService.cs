@@ -9,11 +9,10 @@ namespace JJMasterData.WebApi.Services;
 
 public class FileService
 {
-
-    private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly IDataDictionaryRepository _dictionaryRepository;
     private readonly IEntityRepository _entityRepository;
 
-    public FileService(IDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
+    public FileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
     {
         _dictionaryRepository = dictionaryRepository;
         _entityRepository = entityRepository;

@@ -20,7 +20,7 @@ public class DataDictionaryDao : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IList<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 
