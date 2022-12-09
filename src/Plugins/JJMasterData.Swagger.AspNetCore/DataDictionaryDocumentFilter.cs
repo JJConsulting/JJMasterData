@@ -5,24 +5,24 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
 public class DataDictionaryDocumentFilter : IDocumentFilter
 {
-    private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    // Swagger IDocumentFilter is not DI supported.
     public DataDictionaryDocumentFilter()
     {
-        _dictionaryRepository = DictionaryRepositoryFactory.GetInstance();
+        _dataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
     }
 
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var dictionaries = _dictionaryRepository.GetMetadataList(true);
+        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
 
         foreach (var metadata in dictionaries)
         {

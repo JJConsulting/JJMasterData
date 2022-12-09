@@ -8,8 +8,8 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class UIOptionsService : BaseService
 {
-    public UIOptionsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
@@ -18,7 +18,7 @@ public class UIOptionsService : BaseService
 
         if (uIOptions.Grid.EnableMultSelect)
         {
-            var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
+            var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
             var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -36,11 +36,11 @@ public class UIOptionsService : BaseService
         {
             if (ValidateOptions(uIOptions, dictionaryName))
             {
-                var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
+                var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
                 dicParser.UIOptions.Form = uIOptions.Form;
                 dicParser.UIOptions.Grid = uIOptions.Grid;
 
-                DictionaryRepository.InsertOrReplace(dicParser);
+                DataDictionaryRepository.InsertOrReplace(dicParser);
             }
         }
         catch (Exception ex)

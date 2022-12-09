@@ -13,13 +13,13 @@ namespace JJMasterData.WebApi.Controllers;
 public class DictionariesController : ControllerBase
 {
     private readonly DictionariesService _dictionariesService;
-    private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
     public DictionariesController(DictionariesService dictionariesService, 
-                                  IDictionaryRepository dictionaryRepository)
+                                  IDataDictionaryRepository dataDictionaryRepository)
     {
         _dictionariesService = dictionariesService;
-        _dictionaryRepository = dictionaryRepository;
+        _dataDictionaryRepository = dataDictionaryRepository;
     }
     /// <summary>
     /// Get all dictionaries with sync enabled.
@@ -34,7 +34,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/")]
     public ActionResult<Metadata[]> GetAll()
     {
-        var dicList = _dictionaryRepository.GetMetadataList(true);
+        var dicList = _dataDictionaryRepository.GetMetadataList(true);
         if (dicList == null)
             return NotFound();
 
@@ -55,7 +55,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/{id}")]
     public Metadata Get(string id)
     {
-        return _dictionaryRepository.GetMetadata(id);
+        return _dataDictionaryRepository.GetMetadata(id);
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Swagger
 {
@@ -14,8 +15,8 @@ namespace JJMasterData.Swagger
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            var dao = DictionaryRepositoryFactory.GetInstance();
-            var dictionaries = dao.GetMetadataList(null);
+            var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
+            var dictionaries = dictionaryRepository.GetMetadataList(null);
 
             foreach (Metadata metadata in dictionaries)
             {

@@ -7,8 +7,8 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService : BaseService
 {
-    public EntityService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public EntityService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
@@ -16,7 +16,7 @@ public class EntityService : BaseService
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
-            if (DictionaryRepository.Exists(formElement.Name))
+            if (DataDictionaryRepository.Exists(formElement.Name))
                 AddError("Name", Translate.Key("There is already a dictionary with the name {0}",formElement.Name));
         }
 
@@ -45,7 +45,7 @@ public class EntityService : BaseService
         
         try
         {
-            var dicParser = DictionaryRepository.GetMetadata(entityName);
+            var dicParser = DataDictionaryRepository.GetMetadata(entityName);
 
             dicParser.Table.Name = formElement.Name;
             dicParser.Table.TableName = formElement.TableName;
@@ -57,12 +57,12 @@ public class EntityService : BaseService
 
             if (!entityName.Equals(formElement.Name))
             {
-                DictionaryRepository.Delete(entityName);
-                DictionaryRepository.InsertOrReplace(dicParser);
+                DataDictionaryRepository.Delete(entityName);
+                DataDictionaryRepository.InsertOrReplace(dicParser);
             }
             else
             {
-                DictionaryRepository.InsertOrReplace(dicParser);
+                DataDictionaryRepository.InsertOrReplace(dicParser);
             }
 
             return formElement;

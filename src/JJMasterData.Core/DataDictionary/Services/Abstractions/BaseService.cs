@@ -12,12 +12,12 @@ public abstract class BaseService
 {
     private readonly IValidationDictionary _validationDictionary;
 
-    public IDictionaryRepository DictionaryRepository { get; }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
 
-    protected BaseService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
+    protected BaseService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
     {
         _validationDictionary = validationDictionary;
-        DictionaryRepository = dictionaryRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
     }
 
     protected void AddError(string field, string message)
@@ -34,7 +34,7 @@ public abstract class BaseService
 
     public FormElement GetFormElement(string dictionaryName)
     {
-        var dicParser = DictionaryRepository.GetMetadata(dictionaryName);
+        var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
         return dicParser.GetFormElement();
     }
 
@@ -100,7 +100,7 @@ public abstract class BaseService
     {
         var dicElement = new Dictionary<string, string> { { string.Empty, Translate.Key("--Select--") } };
 
-        var list = DictionaryRepository.GetNameList();
+        var list = DataDictionaryRepository.GetNameList();
         
         foreach (string name in list)
         {

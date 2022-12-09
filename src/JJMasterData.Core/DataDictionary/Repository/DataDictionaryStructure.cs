@@ -130,16 +130,15 @@ public class DataDictionaryStructure
         if (dicParser.Table == null)
             throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
 
-        //Mantendo compatibilidate versão Nairobi
+        //Nairobi
         dicParser.UIOptions ??= new UIOptions();
 
         dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
 
         dicParser.UIOptions.GridActions ??= new GridActions();
-        //Fim compatibilidate Nairobi
 
 
-        //Mantendo compatibilidate versão Denver 27/10/2020 (remover após 1 ano)
+        //Denver
         if (dicParser.Api == null)
         {
             dicParser.Api = new ApiSettings();
@@ -158,7 +157,6 @@ public class DataDictionaryStructure
         {
             dicParser.Table.TableName = dicParser.Table.Name;
         }
-        //Fim compatibilidate Denver
 
         //Tokio
         if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();

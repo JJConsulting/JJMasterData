@@ -1,13 +1,6 @@
 // ReSharper disable RedundantUsingDirective
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-#if NETFRAMEWORK
-using System.Security.Claims;
-#endif
-#if NETCOREAPP || NETSTANDARD
-using JJMasterData.Commons.DI;
-using Microsoft.AspNetCore.Http;
-#endif
 
 namespace JJMasterData.Core.Http;
 
@@ -31,18 +24,18 @@ public class JJHttpContext
     internal static System.Web.HttpContext SystemWebCurrent => System.Web.HttpContext.Current;
 #endif
 #if NETCOREAPP 
-    internal static System.Web.HttpContext SystemWebCurrent => JJService.Provider?.GetService<IHttpContextAccessor>()?.HttpContext;
+    internal static System.Web.HttpContext SystemWebCurrent => Commons.DI.JJService.Provider?.GetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>()?.HttpContext;
 #endif
 #if NETCOREAPP || NETSTANDARD
-    internal static HttpContext AspNetCoreCurrent
+    internal static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent
     {
         get
         {
-            var accessor = JJService.Provider?.GetService<IHttpContextAccessor>();
+            var accessor = Commons.DI.JJService.Provider?.GetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
 
             if (accessor?.HttpContext != null) return accessor.HttpContext;
 
-            var context = new HttpContextAccessor().HttpContext;
+            var context = new Microsoft.AspNetCore.Http.HttpContextAccessor().HttpContext;
 
             return context;
 
@@ -83,7 +76,7 @@ public class JJHttpContext
     public bool HasClaimsIdentity()
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent != null && SystemWebCurrent.User.Identity is ClaimsIdentity;
+        return SystemWebCurrent != null && SystemWebCurrent.User.Identity is System.Security.Claims.ClaimsIdentity;
 #else
         var claims = AspNetCoreCurrent?.User?.Claims;
         return claims != null && claims.Any();
@@ -97,7 +90,7 @@ public class JJHttpContext
     public string GetClaim(string key)
     {
 #if NETFRAMEWORK
-        if (SystemWebCurrent.User.Identity is not ClaimsIdentity identity)
+        if (SystemWebCurrent.User.Identity is not System.Security.Claims.ClaimsIdentity identity)
             return null;
 
         var claim = identity.Claims.FirstOrDefault(c => c.Type == key);

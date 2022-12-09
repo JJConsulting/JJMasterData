@@ -6,15 +6,15 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    public ApiService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public ApiService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
     public bool EditApi(Metadata dicParser)
     {
         if (ValidateApi(dicParser))
-            DictionaryRepository.InsertOrReplace(dicParser);
+            DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return IsValid;
     }

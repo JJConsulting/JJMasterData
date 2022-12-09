@@ -3,7 +3,6 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
-using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using System;
@@ -20,7 +19,7 @@ public class FormService
 
     private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
-    private FormElement FormElement => FormManager.FormElement;
+    public FormElement FormElement => FormManager.FormElement;
 
     public FormManager FormManager { get; private set; }
 

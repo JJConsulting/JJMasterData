@@ -6,8 +6,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -41,7 +39,7 @@ internal class ActionManager
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         var dicParser = dicDao.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
@@ -235,7 +233,7 @@ internal class ActionManager
             ShowAsButton = action.ShowAsButton,
             Type = action is SubmitAction ? LinkButtonType.Submit : default,
             CssClass = action.CssClass,
-            IconClass = IconHelper.GetClassName(action.Icon) + " fa-fw",
+            IconClass = action.Icon.GetCssClass() + " fa-fw",
             Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
             Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues)
         };

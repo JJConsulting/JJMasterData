@@ -196,12 +196,12 @@ public class FormManager
         return val;
     }
 
-    public List<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
+    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)
             return null;
 
-        var values = new List<DataItemValue>();
+        IList<DataItemValue> values = new List<DataItemValue>();
         if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
         {
 

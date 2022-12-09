@@ -36,8 +36,8 @@ public class MasterApiControllerTest
         };
 
         IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDictionaryRepository dictionaryRepository = new DictionaryDao(entityRepository);
-        var masterApiService = new MasterApiService(accessor, entityRepository, dictionaryRepository, null);
+        IDataDictionaryRepository dataDictionaryRepository = new DataDictionaryDao(entityRepository);
+        var masterApiService = new MasterApiService(accessor, entityRepository, dataDictionaryRepository, null);
         _controller = new MasterApiController(masterApiService);
     }
     

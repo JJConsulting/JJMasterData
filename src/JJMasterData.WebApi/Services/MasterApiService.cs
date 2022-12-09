@@ -19,15 +19,15 @@ public class MasterApiService
 {
     private readonly HttpContext? _httpContext;
     private readonly IEntityRepository _entityRepository;
-    private readonly IDictionaryRepository _dictionaryRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
                             IEntityRepository entityRepository, 
-                            IDictionaryRepository dictionaryRepository, IFormEventResolver? formEventResolver = null)
+                            IDataDictionaryRepository dataDictionaryRepository, IFormEventResolver? formEventResolver)
     {
         _httpContext = httpContextAccessor.HttpContext;
         _entityRepository = entityRepository;
-        _dictionaryRepository = dictionaryRepository;
+        _dataDictionaryRepository = dataDictionaryRepository;
         _formEventResolver = formEventResolver;
     }
 
@@ -36,7 +36,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetMetadata(elementName);
+        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -55,7 +55,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetMetadata(elementName);
+        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -76,7 +76,7 @@ public class MasterApiService
     }
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
-        var dictionary = _dictionaryRepository.GetMetadata(elementName);
+        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
         if (!dictionary.Api.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -307,7 +307,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dictionaryRepository.GetMetadata(elementName);
+        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
 
         if (!dictionary.Api.EnableAdd & !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -427,16 +427,12 @@ public class MasterApiService
         };
         
         var dataContext = new DataContext(DataContextSource.Api, userId);
-
         var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
-
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-
         var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible
@@ -451,7 +447,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return _dictionaryRepository.GetMetadata(elementName);
+        return _dataDictionaryRepository.GetMetadata(elementName);
     }
     private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName).GetFormElement();
     

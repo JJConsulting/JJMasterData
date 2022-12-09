@@ -22,6 +22,7 @@ public static class JJService
             return scope.ServiceProvider.GetService<IEntityRepository>();
         }
     }
+    
     public static JJMasterDataOptions Options
     {
         get

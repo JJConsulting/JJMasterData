@@ -15,7 +15,7 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJComboBox : JJBaseControl
 {
-    private List<DataItemValue> _values;
+    private IList<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
     private IEntityRepository _entityRepository;
@@ -106,7 +106,7 @@ public class JJComboBox : JJBaseControl
         return combobox;
     }
 
-    private HtmlBuilder GetSelectElement(List<DataItemValue> values)
+    private HtmlBuilder GetSelectElement(IEnumerable<DataItemValue> values)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control ")
@@ -123,7 +123,7 @@ public class JJComboBox : JJBaseControl
         return select;
     }
 
-    private List<HtmlBuilder> GetOptions(List<DataItemValue> values)
+    private IEnumerable<HtmlBuilder> GetOptions(IEnumerable<DataItemValue> values)
     {
         var options = new List<HtmlBuilder>();
 
@@ -141,7 +141,7 @@ public class JJComboBox : JJBaseControl
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(SelectedValue != null && SelectedValue.Equals(value.Id), "selected", "selected")
-                .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", IconHelper.GetClassName(value.Icon))
+                .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
                 .AppendText(label);
 
             options.Add(option);
@@ -150,7 +150,7 @@ public class JJComboBox : JJBaseControl
         return options;
     }
 
-    private List<HtmlBuilder> GetReadOnlyInputs(List<DataItemValue> values)
+    private IEnumerable<HtmlBuilder> GetReadOnlyInputs(IEnumerable<DataItemValue> values)
     {
         var inputs = new List<HtmlBuilder>();
 
@@ -196,7 +196,7 @@ public class JJComboBox : JJBaseControl
         return selectedText;
     }
 
-    public List<DataItemValue> GetValues()
+    public IList<DataItemValue> GetValues()
     {
         try
         {
@@ -262,12 +262,12 @@ public class JJComboBox : JJBaseControl
         return listValues?.ToList().Find(x => x.Id.Equals(searchId));
     }
 
-    private List<DataItemValue> GetValues(string searchId)
+    private IList<DataItemValue> GetValues(string searchId)
     {
         if (DataItem == null)
             return null;
 
-        var values = new List<DataItemValue>();
+        IList<DataItemValue> values = new List<DataItemValue>();
         if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
         {
             string sql = DataItem.Command.Sql;

@@ -8,14 +8,14 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationsService : BaseService
 {
-    public RelationsService(IValidationDictionary validationDictionary, IDictionaryRepository dictionaryRepository)
-        : base(validationDictionary, dictionaryRepository)
+    public RelationsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
     public void Save(ElementRelation elementRelation, string sIndex, string dictionaryName)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relations = dictionary.Table.Relations;
 
         if (!string.IsNullOrEmpty(sIndex))
@@ -28,7 +28,7 @@ public class RelationsService : BaseService
             relations.Add(elementRelation);
         }
 
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
     public bool ValidateRelation(string childElement, string pkColumnName, string fkColumnName)
@@ -39,7 +39,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
         
-        if (!DictionaryRepository.Exists(childElement))
+        if (!DataDictionaryRepository.Exists(childElement))
         {
             AddError("Entity", Translate.Key("Entity {0} not found", childElement));
             return IsValid;
@@ -57,7 +57,7 @@ public class RelationsService : BaseService
             return IsValid;
         }
 
-        var dictionary = DictionaryRepository.GetMetadata(childElement);
+        var dictionary = DataDictionaryRepository.GetMetadata(childElement);
         var element = dictionary.Table;
         if (!element.Fields.ContainsKey(fkColumnName))
         {
@@ -137,16 +137,16 @@ public class RelationsService : BaseService
 
     public void Delete(string dictionaryName, string index)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         ElementRelation elementRelation = dictionary.Table.Relations[int.Parse(index)];
         dictionary.Table.Relations.Remove(elementRelation);
-        DictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
 
     public void MoveDown(string dictionaryName, string index)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relations = dictionary.Table.Relations;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
@@ -155,14 +155,14 @@ public class RelationsService : BaseService
             relations[indexToMoveDown + 1] = relations[indexToMoveDown];
             relations[indexToMoveDown] = elementRelation;
 
-            DictionaryRepository.InsertOrReplace(dictionary);
+            DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }
 
 
     public void MoveUp(string dictionaryName, string index)
     {
-        var dictionary = DictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relations = dictionary.Table.Relations;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
@@ -170,7 +170,7 @@ public class RelationsService : BaseService
             ElementRelation elementRelation = relations[indexToMoveUp - 1];
             relations[indexToMoveUp - 1] = relations[indexToMoveUp];
             relations[indexToMoveUp] = elementRelation;
-            DictionaryRepository.InsertOrReplace(dictionary);
+            DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }
 

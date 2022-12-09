@@ -10,9 +10,6 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -225,7 +222,7 @@ public class JJDataImp : JJBaseProcess
         var btnStop = new JJLinkButton
         {
             OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{Translate.Key("Stopping Processing...")}');",
-            IconClass = IconHelper.GetClassName(IconType.Stop),
+            IconClass = IconType.Stop.GetCssClass(),
             Text = Translate.Key("Stop the import.")
         };
         html.AppendElement(btnStop);

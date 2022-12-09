@@ -351,7 +351,7 @@ public class ElementController : DataDictionaryController
         selectedGridValues
             .Select(value => value["name"]!.ToString()!)
             .ToList()
-            .ForEach(metadata => _elementService.DictionaryRepository.Delete(metadata));
+            .ForEach(metadata => _elementService.DataDictionaryRepository.Delete(metadata));
 
         return RedirectToAction(nameof(Index));
     }
