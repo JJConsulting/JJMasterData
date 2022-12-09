@@ -58,7 +58,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 if (field.Component != FormComponent.File || field.DataFile == null) 
                     continue;
                 
-                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/file/{field.Name}");
+                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
                 var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
                 
                 if (metadata.Api.EnableGetDetail)
@@ -67,6 +67,9 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 if (metadata.Api.EnableAdd && metadata.Api.EnableUpdate)
                     filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
                         
+                if (metadata.Api.EnableUpdatePart)
+                    fileDetailPathItem.AddOperation(OperationType.Patch, factory.RenameFile(field));
+                
                 if (metadata.Api.EnableDel)
                     fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
                 

@@ -6,7 +6,7 @@ namespace JJMasterData.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("masterApi/{elementName}/{id}/file/{fieldName}")]
+[Route("masterApi/{elementName}/{id}/{fieldName}/file")]
 public class FileController : ControllerBase
 {
     private readonly FileService _service;
@@ -31,6 +31,20 @@ public class FileController : ControllerBase
         _service.SetDictionaryFile(elementName, fieldName, id, file);
 
         return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
+    }
+    
+    [HttpPatch]
+    [Route("{fileName}")]
+    public IActionResult RenameFile(
+        string elementName,
+        string fieldName,
+        string id,
+        string fileName,
+        [FromQuery] string newName)
+    {
+        _service.RenameFile(elementName, fieldName, id, fileName, newName);
+
+        return Ok($"File sucessfuly renamed from {fileName} to {newName}");
     }
     
     [HttpDelete]

@@ -671,22 +671,26 @@ internal class DataDictionaryOperationFactory
             Content = new Dictionary<string, OpenApiMediaType>
             {
                 {
-                    "multipart/formdata", new OpenApiMediaType
+                    "multipart/form-data", new OpenApiMediaType
                     {
                         Schema = new OpenApiSchema
                         {
-                            Type = "string",
-                            Format = "binary",
-                            Properties = new Dictionary<string, OpenApiSchema>
+                            Type = "object",
+                            Properties =
                             {
-                                {"file", new OpenApiSchema
+                                {"file",new OpenApiSchema
                                 {
-                                    Description = "IFormFile to be uploaded.",
                                     Type = "string",
-                                    Format = "binary",
-                                    
-                                }} 
+                                    Format = "binary"
+                                }}
                             }
+                        },
+                        Encoding =
+                        {
+                            {"file", new OpenApiEncoding
+                            {
+                                Style = ParameterStyle.Form
+                            }}
                         }
                     }
                 }
@@ -708,7 +712,7 @@ internal class DataDictionaryOperationFactory
             Description = "Success",
             Content = content
         });
-        operation.Tags.Add(new()
+        operation.Tags.Add(new OpenApiTag
         {
             Name = FormElement.Name
         });
@@ -775,6 +779,78 @@ internal class DataDictionaryOperationFactory
         operation.Responses.AddDefaultValues();
         return operation;
     }
+    public OpenApiOperation RenameFile(FormElementField field)
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var nameFields = GetPrimaryKeysNames(pkFields);
+        var operation = new OpenApiOperation
+        {
+            Summary = $"Rename the specified file from the field {field.Name}",
+            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = ModelName + "_RenameFile",
+            Tags = new List<OpenApiTag>(),
+            Responses = new OpenApiResponses(),
+            Parameters = new List<OpenApiParameter>()
+        };
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = Settings.GetFieldNameParsed("id"),
+            Description = "Primary Key Value.<br>" + nameFields,
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "fileName",
+            Description = "Old file name",
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "newName",
+            Description = "New file name",
+            In = ParameterLocation.Query,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
+        {
+            Encoding = new Dictionary<string, OpenApiEncoding>
+            {
+                { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
+            }
+        } } };
+        
+        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Responses.Add("200", new OpenApiResponse
+        {
+            Description = "Success",
+            Content = content
+        });
+        operation.Tags.Add(new()
+        {
+            Name = FormElement.Name
+        });
+
+        operation.Responses.AddDefaultValues();
+        return operation;
+    }
     #endregion
     private static OpenApiParameter GetAcceptLanguageParameter()
     {
@@ -809,4 +885,6 @@ internal class DataDictionaryOperationFactory
 
         return nameFields;
     }
+
+
 }
