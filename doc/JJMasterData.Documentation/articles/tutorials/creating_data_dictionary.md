@@ -1,5 +1,8 @@
 # Creating a Data Dictionary from a table 
 
+Para a criação da estrutura de dados com JJMasterData através de uma tabela já existente em seu banco de dados, é necessário que o campo “Import field” esteja marcado. O campo Table Name será preenchido com o nome da tabela já existente. Preenchido o table Name e marcado o campo Import fields, é só clicar em next e será criada sua estrutura de dados.
+
+Depois de criada, você poderá acessar a aba Fields e você irá ver os campos da sua tabela preexistente, sendo possível edita-los. Também podendo acrescentar novos campos utilizando o ícone de adicionar, ao lado da barra de pesquisa, porém é importante que seja feito o alter table após a adição do novo campo.
 
 # Creating a Data Dictionary from scratch
 
@@ -10,27 +13,31 @@ Com o JJMasterData será possível fazer a importação ou criação da sua tabe
 
 TUTORIAL SEM TABELA
 
+**Entity**
+
 Para a criação da estrutura de dados direto pelo JJMasterData será necessário deixar o campo “import field” desmarcado, inserir o nome da tabela a ser criada e clicar em Next. Preenchido o campo Table Name e clicado em Next, você irá acessar a janela de Entidade. Aqui você irá encontra os seguintes itens:
 
-Dictionary name:  Será o nome que irá representar o seu metadado.
+*Dictionary name:*  Será o nome que irá representar o seu metadado.
 	
-Table Name: Nome da tabela onde seus dados ficarão armazenados.
+*Table Name:* Nome da tabela onde seus dados ficarão armazenados.
 
-Get procedure Name: Nome da procedure que Irá realizar a leitura dos dados.
+*Get procedure Name:*  Nome da procedure que Irá realizar a leitura dos dados.
 
-Set Procedure Name: Nome da procedure que Irá realizar aescrita dos dados.
+*Set Procedure Name:* Nome da procedure que Irá realizar aescrita dos dados.
 
-Title:  Aqui você irá preencher com o título que será exibido dentro do Form
+*Title:*  Aqui você irá preencher com o título que será exibido dentro do Form
 
-Subtitle: Aqui você irá preencher com o subtítulo que será exibido dentro do Form
+*Subtitle:* Aqui você irá preencher com o subtítulo que será exibido dentro do Form
 
-Info: Informações fixas que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
+*Info:* Informações fixas que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
+
+**Fields**
 
 O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os dados que irão ser exibidos na criação da nova tabela a partir dos metadados. É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
 
-FieldName: Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
+*FieldName:* Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
 
-Label: Este campo deve ser preenchido de acordo com o nome que deseja ser exibido no título da coluna, por exemplo, caso seja uma coluna de emails, o título deverá conter esse nome ou algo que tenha relação.
+*Label:* Este campo deve ser preenchido de acordo com o nome que deseja ser exibido no título da coluna, por exemplo, caso seja uma coluna de emails, o título deverá conter esse nome ou algo que tenha relação.
 
 DafaultValue: Uma expressão que irá retornar um valor padrão caso o valor dentro do banco de dados seja nulo.
 
@@ -38,7 +45,8 @@ Filter: Campo que indica um tipo de filtro que será executado na procedure de g
 
 DataBehavior: Comportamento de dados
 
-Real- Será usand em Get e Set;
+Real- Será usado em Get e Set;
+
 Virtual - Será utilizado somente em Set;
 
 ViewOnly - Será usado somente em Get;
@@ -54,6 +62,5 @@ PK: Definir se é ou não a chave primária.
 Identity:  Se o campo será auto incremento, por exemplo, se ele irá retornar um campo de forma automática de dentro do banco de dados. 
 
 Help Description: Mensagem a ser exibida para o usuário com a finalidade auxilia-lo.
-
 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
