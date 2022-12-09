@@ -220,6 +220,8 @@ internal class FormFileService
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
+        FolderPath = folderPath;
+        
         foreach (var file in MemoryFiles)
         {
             string fileName = file.Content.FileName;
@@ -237,8 +239,7 @@ internal class FormFileService
                 SavePhysicalFile(file.Content);
             }
         }
-
-        FolderPath = folderPath;
+        
         MemoryFiles = null;
     }
 

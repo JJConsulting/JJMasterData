@@ -3,6 +3,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,6 +21,7 @@ public class JJServiceBuilder
     
     public JJServiceBuilder AddDefaultServices()
     {
+        Services.AddOptions<JJMasterDataOptions>();
         Services.AddLocalization();
         Services.AddLogging(builder =>
         {

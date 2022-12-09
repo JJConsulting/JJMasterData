@@ -107,7 +107,6 @@ public static class ServiceCollectionExtensions
 
     private static void AddServices(IServiceCollection services)
     {
-        services.AddOptions<JJMasterDataOptions>();
         services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
         services.AddHttpContextAccessor();
         services.AddSession();

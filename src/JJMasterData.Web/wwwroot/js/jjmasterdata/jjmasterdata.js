@@ -538,7 +538,14 @@ function jjloadform(event, prefixSelector) {
         ajaxStop: function () { messageWait.hide(); }
     });
     $("form").on("submit", function () {
-        if ($("form").valid() && showWaitOnPost) {
+        let isValid;
+        try {
+            isValid = $("form").valid();
+        }
+        catch (_a) {
+            isValid = true;
+        }
+        if (showWaitOnPost && isValid) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });
