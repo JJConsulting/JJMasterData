@@ -25,8 +25,8 @@ public class ElementService : BaseService
     private readonly IEntityRepository _entityRepository;
     public ElementService(IValidationDictionary validationDictionary, 
                           IEntityRepository entityRepository, 
-                          IDictionaryRepository dictionaryRepository) 
-        : base(validationDictionary, dictionaryRepository)
+                          IDataDictionaryRepository dataDictionaryRepository) 
+        : base(validationDictionary, dataDictionaryRepository)
     {
         _entityRepository = entityRepository;
     }
@@ -35,7 +35,7 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var dictionary = DictionaryRepository.GetMetadata(id);
+        var dictionary = DataDictionaryRepository.GetMetadata(id);
         var element = dictionary.Table;
         var listScripts = new List<string>
         {
@@ -50,7 +50,7 @@ public class ElementService : BaseService
 
     public void ExecScripts(string id, string scriptExec)
     {
-        var dictionary = DictionaryRepository.GetMetadata(id);
+        var dictionary = DataDictionaryRepository.GetMetadata(id);
         var element = dictionary.Table;
 
         switch (scriptExec)
@@ -69,7 +69,7 @@ public class ElementService : BaseService
 
     public void ExecScriptsMasterData()
     {
-        DictionaryRepository.CreateStructureIfNotExists();
+        DataDictionaryRepository.CreateStructureIfNotExists();
     }
 
     #endregion
@@ -103,7 +103,7 @@ public class ElementService : BaseService
             Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
         };
 
-        DictionaryRepository.InsertOrReplace(metadata);
+        DataDictionaryRepository.InsertOrReplace(metadata);
 
         return element;
     }
@@ -112,7 +112,7 @@ public class ElementService : BaseService
     {
         if (ValidateName(tableName))
         {
-            if (DictionaryRepository.Exists(tableName))
+            if (DataDictionaryRepository.Exists(tableName))
             {
                 AddError("Name", Translate.Key("There is already a dictionary with the name ") + tableName);
             }
@@ -155,9 +155,9 @@ public class ElementService : BaseService
     {
         if (ValidateEntity(newName))
         {
-            var dicParser = DictionaryRepository.GetMetadata(originName);
+            var dicParser = DataDictionaryRepository.GetMetadata(originName);
             dicParser.Table.Name = newName;
-            DictionaryRepository.InsertOrReplace(dicParser);
+            DataDictionaryRepository.InsertOrReplace(dicParser);
 
         }
 
@@ -174,7 +174,7 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("Mandatory dictionary name field"));
         }
 
-        if (DictionaryRepository.Exists(name))
+        if (DataDictionaryRepository.Exists(name))
         {
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
@@ -243,7 +243,7 @@ public class ElementService : BaseService
 
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
         
-        e.DataSource = DictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
+        e.DataSource = DataDictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
         
         e.Tot = tot;
     }
@@ -256,7 +256,7 @@ public class ElementService : BaseService
     {
         string prop = "public @PropType @PropName { get; set; } ";
 
-        var dicParser = DictionaryRepository.GetMetadata(dicName);
+        var dicParser = DataDictionaryRepository.GetMetadata(dicName);
         var propsBuilder = new StringBuilder();
 
         foreach (var item in dicParser.Table.Fields.ToList())
@@ -308,7 +308,7 @@ public class ElementService : BaseService
     public byte[] ExportSingleRow(Hashtable row)
     {
         string dictionaryName = row["name"].ToString();
-        var metadata = DictionaryRepository.GetMetadata(dictionaryName);
+        var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
 
         string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
@@ -323,7 +323,7 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var metadata = DictionaryRepository.GetMetadata(dictionaryName);
+                var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
                 string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
@@ -339,7 +339,7 @@ public class ElementService : BaseService
         file.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(file);
         var dicParser = JsonConvert.DeserializeObject<Metadata>(reader.ReadToEnd());
-        DictionaryRepository.InsertOrReplace(dicParser);
+        DataDictionaryRepository.InsertOrReplace(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");
 
@@ -348,6 +348,6 @@ public class ElementService : BaseService
 
     public void CreateStructureIfNotExists()
     {
-        DictionaryRepository.CreateStructureIfNotExists();
+        DataDictionaryRepository.CreateStructureIfNotExists();
     }
 }

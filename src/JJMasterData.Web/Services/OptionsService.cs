@@ -18,11 +18,11 @@ public class OptionsService : BaseService
     internal IWritableOptions<JJMasterDataOptions>? JJMasterDataWritableOptions { get; }
 
     public OptionsService(IValidationDictionary validationDictionary,
-        IDictionaryRepository dictionaryRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
         IWritableOptions<JJMasterDataOptions>? masterDataWritableOptions = null,
         IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
-        : base(validationDictionary, dictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
         ConnectionStringsWritableOptions = connectionStringsWritableOptions;

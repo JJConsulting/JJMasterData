@@ -13,7 +13,7 @@ public static class JJServiceBuilderExtensions
     {
         
         builder.Services.Configure(options);
-        builder.Services.Replace(ServiceDescriptor.Transient<IDictionaryRepository, MongoDBDictionaryRepository>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDbDataDictionaryRepository>());
         return builder;
     }
 }

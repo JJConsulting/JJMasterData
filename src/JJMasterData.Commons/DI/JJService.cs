@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.DI;
 
-public static class JJService
+public class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
@@ -22,6 +22,7 @@ public static class JJService
             return scope.ServiceProvider.GetService<IEntityRepository>();
         }
     }
+    
     public static JJMasterDataOptions Options
     {
         get
