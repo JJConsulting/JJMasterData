@@ -11,16 +11,7 @@ public class Factory : IEntityRepository
     private DataAccess _dataAccess;
     private BaseProvider _provider;
 
-    internal DataAccess DataAccess
-    {
-        get
-        {
-            if (_dataAccess == null)
-                _dataAccess = new DataAccess();
-
-            return _dataAccess;
-        }
-    }
+    internal DataAccess DataAccess => _dataAccess ??= new DataAccess();
 
     internal BaseProvider Provider
     {
@@ -43,32 +34,32 @@ public class Factory : IEntityRepository
         }
     }
 
-    ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
-    public void Insert(Element element, Hashtable values) => Provider.Insert(element, values);
+    ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
+    public void Insert(Element element, IDictionary values) => Provider.Insert(element, new Hashtable(values));
 
-    ///<inheritdoc cref="IEntityRepository.Update(Element, Hashtable)"/>
-    public int Update(Element element, Hashtable values) => Provider.Update(element, values);
+    ///<inheritdoc cref="IEntityRepository.Update(Element, IDictionary)"/>
+    public int Update(Element element, IDictionary values) => Provider.Update(element, new Hashtable(values));
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable)"/>
-    public CommandOperation SetValues(Element element, Hashtable values) =>
-        Provider.SetValues(element, values);
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary)"/>
+    public CommandOperation SetValues(Element element, IDictionary values) =>
+        Provider.SetValues(element, new Hashtable(values));
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable, bool)"/>
-    public CommandOperation SetValues(Element element, Hashtable values, bool ignoreResults) =>
-        Provider.SetValues(element, values, ignoreResults);
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary, bool)"/>
+    public CommandOperation SetValues(Element element, IDictionary values, bool ignoreResults) =>
+        Provider.SetValues(element, new Hashtable(values), ignoreResults);
 
-    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
-    public int Delete(Element element, Hashtable filters) => Provider.Delete(element, filters);
+    ///<inheritdoc cref="IEntityRepository.Delete(Element, IDictionary)"/>
+    public int Delete(Element element, IDictionary filters) => Provider.Delete(element, new Hashtable(filters));
 
-    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
-    public Hashtable GetFields(Element element, Hashtable filters) => Provider.GetFields(element, filters);
+    ///<inheritdoc cref="IEntityRepository.GetFields(Element, IDictionary)"/>
+    public Hashtable GetFields(Element element, IDictionary filters) => Provider.GetFields(element, new Hashtable(filters));
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element,System.Collections.IDictionary,string,int,int,ref int)"/>
     public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
-        Provider.GetDataTable(element, (Hashtable)filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
+        Provider.GetDataTable(element, new Hashtable(filters), orderBy, recordsPerPage, currentPage, ref totalRecords);
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters) => Provider.GetDataTable(element,filters);
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
+    public DataTable GetDataTable(Element element, IDictionary filters) => Provider.GetDataTable(element,new Hashtable(filters));
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(string)"/>
     public DataTable GetDataTable(string sql) => DataAccess.GetDataTable(sql);
@@ -89,7 +80,7 @@ public class Factory : IEntityRepository
     public bool ExecuteBatch(string script) => DataAccess.ExecuteBatch(script);
 
     ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
-    public int GetCount(Element element, Hashtable filters) => Provider.GetCount(element, filters);
+    public int GetCount(Element element, IDictionary filters) => Provider.GetCount(element, new Hashtable(filters));
 
     ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
     public void CreateDataModel(Element element) => Provider.CreateDataModel(element);
@@ -106,8 +97,8 @@ public class Factory : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetElementFromTable(string)"/>
     public Element GetElementFromTable(string tableName) => Provider.GetElementFromTable(tableName);
 
-    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
-        Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
+    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element,IDictionary,string,int,int,bool,string)"/>
+    public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
+        Provider.GetListFieldsAsText(element, new Hashtable(filters), orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
 
 }

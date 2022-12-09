@@ -92,7 +92,17 @@
     });
 
     $("form").on("submit",function () {
-        if ( $("form").valid() && showWaitOnPost) {
+        
+        let isValid : boolean;
+        
+        try {
+            isValid = $("form").valid();
+        }
+        catch {
+            isValid = true;
+        }
+        
+        if (isValid && showWaitOnPost) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });

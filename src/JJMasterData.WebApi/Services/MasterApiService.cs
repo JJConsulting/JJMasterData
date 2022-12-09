@@ -50,7 +50,6 @@ public class MasterApiService
 
         return text;
     }
-
     public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby, int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -67,13 +66,14 @@ public class MasterApiService
         if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
-        var ret = new MasterApiListResponse();
-        ret.Tot = total;
+        var ret = new MasterApiListResponse
+        {
+            Tot = total
+        };
         ret.SetDataTableValues(dictionary, dt);
 
         return ret;
     }
-
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
@@ -99,32 +99,27 @@ public class MasterApiService
 
         return listRet;
     }
-
-    public List<ResponseLetter> SetFields(Hashtable[] listParam, string elementName, bool replace = false)
+    public IEnumerable<ResponseLetter> SetFields(IEnumerable<Hashtable> paramsList, string elementName, bool replace = false)
     {
-        if (listParam == null)
-            throw new ArgumentNullException(nameof(listParam));
+        if (paramsList == null)
+            throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableAdd | !dictionary.Api.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+
+        foreach (var values in paramsList)
         {
-            ResponseLetter ret = replace ?
+            yield return replace ?
                 InsertOrReplace(formService, values, dictionary.Api) :
                 Insert(formService, values, dictionary.Api);
-
-            listRet.Add(ret);
         }
-        return listRet;
     }
-
-    public List<ResponseLetter> UpdateFields(Hashtable[] listParam, string elementName)
+    public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<Hashtable> paramsList, string elementName)
     {
-        if (listParam == null)
+        if (paramsList == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
         var dictionary = GetDataDictionary(elementName);
@@ -132,39 +127,31 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+        
+        foreach (var values in paramsList)
         {
-            var ret = Update(formService, values, dictionary.Api);
-            listRet.Add(ret);
+            yield return Update(formService, values, dictionary.Api);
         }
-
-        return listRet;
     }
-
-    public List<ResponseLetter> UpdatePart(Hashtable[] listParam, string elementName)
+    public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<Hashtable> paramsList, string elementName)
     {
-        if (listParam == null)
-            throw new ArgumentNullException(nameof(listParam));
+        if (paramsList == null)
+            throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
-        if (listParam == null)
+        if (paramsList == null)
             throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
 
         var formService = GetFormService(dictionary);
-        var listRet = new List<ResponseLetter>();
-        foreach (Hashtable values in listParam)
+
+        foreach (var values in paramsList)
         {
-            var ret = Patch(formService, values, dictionary.Api);
-            listRet.Add(ret);
+            yield return Patch(formService, values, dictionary.Api);
         }
-
-        return listRet;
     }
-
     private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
@@ -192,7 +179,6 @@ public class MasterApiService
         }
         return ret;
     }
-
     private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
@@ -205,10 +191,12 @@ public class MasterApiService
                 if (formResult.NumberOfRowsAffected == 0)
                     throw new KeyNotFoundException(Translate.Key("No records found"));
 
-                ret = new ResponseLetter();
-                ret.Status = (int)HttpStatusCode.OK;
-                ret.Message = Translate.Key("Record updated successfully");
-                ret.Data = GetDiff(apiValues, values, api);
+                ret = new ResponseLetter
+                {
+                    Status = (int)HttpStatusCode.OK,
+                    Message = Translate.Key("Record updated successfully"),
+                    Data = GetDiff(apiValues, values, api)
+                };
             }
             else
             {
@@ -221,7 +209,6 @@ public class MasterApiService
         }
         return ret;
     }
-
     private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
     {
         ResponseLetter ret;
@@ -364,7 +351,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(Metadata metadata, Hashtable? paramValues)
+    private Hashtable ParseFilter(Metadata metadata, IDictionary? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -380,7 +367,6 @@ public class MasterApiService
 
         return filters;
     }
-
     private Hashtable GetDefaultFilter(Metadata dic, bool loadQueryString = false)
     {
         if (_httpContext == null)
@@ -419,7 +405,6 @@ public class MasterApiService
 
         return filters;
     }
-
     private string GetUserId()
     {
         var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
@@ -432,7 +417,6 @@ public class MasterApiService
 
         return userId;
     }
-
     private FormService GetFormService(Metadata metadata)
     {
         bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
@@ -458,7 +442,6 @@ public class MasterApiService
         
         return service;
     }
-
     private Metadata GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -466,7 +449,36 @@ public class MasterApiService
 
         return _dataDictionaryRepository.GetMetadata(elementName);
     }
+    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName).GetFormElement();
+    
+    /// <summary>
+    /// Compares the values of the fields received with those sent to the bank, returning different records
+    /// </summary>
+    /// <remarks>
+    /// This happens due to triggers or values
+    /// returned in set methods (id autoNum) for example
+    /// </remarks>
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
+    {
+        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        foreach (DictionaryEntry entry in result)
+        {
+            if (entry.Value == null)
+                continue;
 
+            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            if (original.ContainsKey(entry.Key))
+            {
+                if (original[entry.Key] == null && entry.Value != null ||
+                    !original[entry.Key]!.Equals(entry.Value))
+                    newValues.Add(fieldName, entry.Value);
+            }
+            else
+                newValues.Add(fieldName, entry.Value);
+        }
+
+        return newValues.Count > 0 ? newValues : null;
+    }
     private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
     {
         var letter = new ResponseLetter
@@ -487,37 +499,4 @@ public class MasterApiService
 
         return letter;
     }
-
-    /// <summary>
-    /// Compara os valores dos campos recebidos com os enviados para banco,
-    /// retornando os registros diferentes
-    /// </summary>
-    /// <remarks>
-    /// Isso acontece devido as triggers ou os valores 
-    /// retornados nos metodos de set (id autoNum) por exemplo
-    /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
-    {
-        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (DictionaryEntry entry in result)
-        {
-            if (entry.Value == null)
-                continue;
-
-            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
-            if (original.ContainsKey(entry.Key))
-            {
-                if (original[entry.Key] == null && entry.Value != null ||
-                    !original[entry.Key]!.Equals(entry.Value))
-                    newValues.Add(fieldName, entry.Value);
-            }
-            else
-            {   
-                newValues.Add(fieldName, entry.Value);
-            }
-        }
-
-        return newValues.Count > 0 ? newValues : null;
-    }
-
 }

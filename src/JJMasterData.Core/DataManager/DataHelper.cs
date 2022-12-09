@@ -47,7 +47,7 @@ namespace JJMasterData.Core.DataManager
             if (elementPks == null || elementPks.Count == 0)
                 throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
 
-            foreach (ElementField field in elementPks)
+            foreach (var field in elementPks)
             {
                 if (!values.Contains(field.Name))
                     throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));

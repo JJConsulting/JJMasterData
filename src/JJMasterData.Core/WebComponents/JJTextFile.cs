@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Linq;
-using System.Text;
 using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
@@ -130,20 +129,21 @@ public class JJTextFile : JJBaseControl
 
     private string GetRefreshScript(JJFormUpload formUpload)
     {
-        var script = new StringBuilder();
-        script.AppendLine("$(document).ready(function () {");
-        script.AppendLine($"window.parent.$(\"#v_{Name}\").val(\"{GetPresentationText(formUpload)}\");");
-        script.AppendLine($"window.parent.$(\"#{Name}\").val(\"{GetFileName(formUpload)}\");");
-        script.AppendLine("});");
-
-        return script.ToString();
+        return $$"""
+            $(document).ready(function () {
+                window.parent.$("#v_{{Name}}").val("{{GetPresentationText(formUpload)}}");
+                window.parent.$("#{{Name}}").val("{{GetFileName(formUpload)}}");
+            });
+        """;
     }
 
     private string GetOpenUploadFormAction()
     {
-        var parms = new OpenFormParms();
-        parms.PageState = PageState;
-        parms.Enable = Enabled & !ReadOnly;
+        var parms = new OpenFormParms
+        {
+            PageState = PageState,
+            Enable = Enabled & !ReadOnly
+        };
 
         if (PageState != PageState.Insert)
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
@@ -356,12 +356,13 @@ public class JJTextFile : JJBaseControl
 
     public static bool IsFormUploadRoute(JJBaseView view)
     {
-        string dataPanelName = view switch
-        {
-            JJFormView formView => formView.DataPanel.Name,
-            JJDataPanel dataPanel => dataPanel.Name,
-            _ => string.Empty
-        };
+        string dataPanelName;
+        if (view is JJFormView formView)
+            dataPanelName = formView.DataPanel.Name;
+        else if (view is JJDataPanel dataPanel)
+            dataPanelName = dataPanel.Name;
+        else
+            dataPanelName = string.Empty;
 
         return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }

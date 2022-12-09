@@ -7,8 +7,10 @@ using System.Threading;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging;
 
@@ -28,12 +30,12 @@ public class Logger : ILogger
     // ReSharper disable once NotAccessedField.Local
     private string CategoryName;
 
-    public Logger()
+    public Logger(LoggerOptions options)
     {
-        Options = JJService.Options.Logger;
+        Options = options;
     }
 
-    public Logger(string categoryName) : this()
+    public Logger(string categoryName, LoggerOptions options) : this(options)
     {
         CategoryName = categoryName;
     }

@@ -31,7 +31,7 @@ public interface IDataDictionaryRepository
     /// Method normally used for synchronizing dictionaries between systems.
     /// Allowing to rebuild the original inheritance in the legacy system.
     /// </remarks>
-    IList<Metadata> GetMetadataList(bool? sync);
+    IEnumerable<Metadata> GetMetadataList(bool? sync);
 
     /// <summary>
     /// Retrieve the list of names from the dictionary

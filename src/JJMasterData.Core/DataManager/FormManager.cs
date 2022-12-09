@@ -79,7 +79,7 @@ public class FormManager
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    public Hashtable MergeWithExpressionValues(Hashtable formValues, PageState pageState, bool replaceNullValues)
+    public Hashtable MergeWithExpressionValues(IDictionary formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));

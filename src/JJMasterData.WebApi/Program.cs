@@ -1,9 +1,10 @@
 using System.Reflection;
 using JJMasterData.WebApi.Handlers;
-using JJMasterData.WebApi.Services;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Swagger.AspNetCore;
+using JJMasterData.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 var root = Path.Join(builder.Environment.ContentRootPath, "..","..");
 var sharedSettings = Path.Combine(root, "appsettings.json");
 builder.Configuration.AddJsonFile(sharedSettings).AddJsonFile("appsettings.json");
+
+builder.Services.Configure<JJMasterDataOptions>(builder.Configuration.GetJJMasterData());
+
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
@@ -56,13 +60,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddJJMasterDataCore();
+
+builder.Services.AddJJMasterDataApi();
+builder.Services.AddJJMasterDataCore().WithFormEventResolver();
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
-builder.Services.AddTransient<MasterApiService>();
-builder.Services.AddTransient<AccountService>();
-
-builder.Logging.AddJJMasterDataLogger();
 
 builder.Services.AddAuthentication(TokenAuthenticationHandler.Name)
     .AddScheme<AuthenticationSchemeOptions, TokenAuthenticationHandler>(TokenAuthenticationHandler.Name, _ => { });

@@ -243,11 +243,11 @@ public class JJDataPanel : JJBaseView
                 string parsedPkval = Cript.Descript64(criptPkval);
                 var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
                 var entityRepository = FieldManager.Expression.EntityRepository;
-                tempvalues = entityRepository.GetFields(FormElement, filters);
+                tempvalues =entityRepository.GetFields(FormElement, filters);
             }
         }
-        if (tempvalues == null)
-            tempvalues = new Hashtable();
+        
+        tempvalues ??= new Hashtable();
 
         DataHelper.CopyIntoHash(ref tempvalues, Values, true);
 
