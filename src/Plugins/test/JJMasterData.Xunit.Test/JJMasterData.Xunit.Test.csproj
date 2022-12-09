@@ -23,6 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
+      <ProjectReference Include="..\..\..\JJMasterData.Core\JJMasterData.Core.csproj" />
       <ProjectReference Include="..\..\JJMasterData.Xunit\JJMasterData.Xunit.csproj" />
     </ItemGroup>
 

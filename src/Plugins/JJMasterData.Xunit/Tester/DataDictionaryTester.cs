@@ -45,7 +45,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
         };
         
         var dataContext = new DataContext(DataContextSource, UserId);
-        var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
+        var formEvent = _formEventResolver.GetFormEvent(metadata.Table.Name);
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
@@ -119,11 +119,13 @@ internal class DataDictionaryTester : IDataDictionaryTester
 
     public FormLetter<DataTable> Read(Hashtable? filters = null)
     {
-        _entityRepository.GetDataTable( _formService filters, null,) _formService.GetDataTable(filters);
+        var ret = new FormLetter<DataTable>();
+        ret.Result =_entityRepository.GetDataTable( _formService.FormElement, filters);
+        return ret;
     }
-
     
-    public int Delete(Hashtable values) => _formService.Delete(this, values);
+    public FormLetter Delete(Hashtable values) => _formService.Delete(values);
+    
     public Hashtable GetFixtureValues()
     {
         var fixture = new Fixture();

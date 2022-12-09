@@ -1,25 +1,32 @@
 using AutoFixture;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Xunit.Assertions;
 using System.Collections;
+using JJMasterData.Core.DataDictionary.Repository;
 
 namespace JJMasterData.Xunit.Test;
 
 public class AssertTest
 {
+    private readonly IDataDictionaryRepository _dictionaryRepository;
+
+    public AssertTest(IDataDictionaryRepository dictionaryRepository)
+    {
+        _dictionaryRepository = dictionaryRepository;
+    }
+
     [Fact]
     public void AssertDataDictionaryWithDefaultValuesTest()
     {
-        var formElement = new DictionaryDao().GetDictionary("AssertDataDictionary").GetFormElement();
-
+        var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
+        var formElement = metadata.GetFormElement();
         formElement.AssertAllOperations();
     }
     
     [Fact]
     public void AssertDataDictionaryWithConfiguredValuesTest()
     {
-        var formElement = new DictionaryDao().GetDictionary("AssertDataDictionary").GetFormElement();
-
+        var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
+        var formElement = metadata.GetFormElement();
         var id = new Fixture().Create<int>();
 
         formElement.AssertAllOperations(options =>
