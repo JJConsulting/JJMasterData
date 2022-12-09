@@ -18,18 +18,16 @@ public class AssertTest
     public void AssertDataDictionaryWithDefaultValuesTest()
     {
         var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
-        var formElement = metadata.GetFormElement();
-        formElement.AssertAllOperations();
+        metadata.AssertAllOperations();
     }
     
     [Fact]
     public void AssertDataDictionaryWithConfiguredValuesTest()
     {
         var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
-        var formElement = metadata.GetFormElement();
         var id = new Fixture().Create<int>();
 
-        formElement.AssertAllOperations(options =>
+        metadata.AssertAllOperations(options =>
         {
             options.InsertValues = new Hashtable
             {

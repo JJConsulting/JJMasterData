@@ -4,7 +4,7 @@ using AutoFixture;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Abstractions;
@@ -15,36 +15,31 @@ namespace JJMasterData.Xunit.Tester;
 internal class DataDictionaryTester : IDataDictionaryTester
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly IDataDictionaryRepository _dictionaryRepository;
     private readonly IFormEventResolver _formEventResolver;
     private readonly FormService _formService;
  
     public string DictionaryName { get; }
     public string? UserId { get; }
-    public DataContextSource DataContextSource { get; }
     
-    public DataDictionaryTester(string dictionaryName, DataContextSource dataContextSource = DataContextSource.Api, string? userId = null)
+    public DataDictionaryTester(Metadata metadata, string? userId = null)
     {
-        DictionaryName = dictionaryName;
-        DataContextSource = dataContextSource;
+        DictionaryName = metadata.Table.Name;
         UserId = userId;
         
         _entityRepository = JJService.EntityRepository;
-        _dictionaryRepository =  JJServiceCore.DataDictionaryRepository;
         _formEventResolver = JJServiceCore.FormEventResolver;
-        _formService = GetFormService();
+        _formService = GetFormService(metadata);
     }
- 
-    private FormService GetFormService()
+   
+    private FormService GetFormService(Metadata metadata)
     {
-        var metadata = _dictionaryRepository.GetMetadata(DictionaryName);
         bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
         var userValues = new Hashtable
         {
             { "USERID", UserId }
         };
         
-        var dataContext = new DataContext(DataContextSource, UserId);
+        var dataContext = new DataContext(DataContextSource.Form, UserId);
         var formEvent = _formEventResolver.GetFormEvent(metadata.Table.Name);
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         

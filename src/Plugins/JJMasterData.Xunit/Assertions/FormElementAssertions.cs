@@ -7,52 +7,51 @@ namespace JJMasterData.Xunit.Assertions;
 
 public static class DataDictionaryAssertions 
 {
-    public static FormElement AssertAllOperations(this FormElement formElement, Hashtable? values = null)
+    public static Metadata AssertAllOperations(this Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.AllOperations(values);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
     
-    
-    public static FormElement AssertAllOperations(this FormElement formElement, Action<DataDictionaryTesterValues> configure)
+    public static Metadata AssertAllOperations(this Metadata metadata, Action<DataDictionaryTesterValues> configure)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.AllOperations(configure);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
     
-    public static FormElement AssertInsert(this FormElement formElement, Hashtable? values = null)
+    public static Metadata AssertInsert(this Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.Insert(values);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
     
-    public static FormElement AssertUpdate(this FormElement formElement, Hashtable values)
+    public static Metadata AssertUpdate(this Metadata metadata, Hashtable values)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.Update(values);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
     
-    public static FormElement AssertRead(this FormElement formElement, Hashtable? values = null)
+    public static Metadata AssertRead(this Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.Read(values);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
     
-    public static FormElement AssertDelete(this FormElement formElement, Hashtable values)
+    public static Metadata AssertDelete(this Metadata metadata, Hashtable values)
     {
-        var tester = new DataDictionaryTester(formElement.Name);
+        var tester = new DataDictionaryTester(metadata);
         var result = tester.Delete(values);
         Assert.True(result.IsValid);
-        return formElement;
+        return metadata;
     }
 }
