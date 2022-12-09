@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.DI;
 
-public class JJService
+public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
