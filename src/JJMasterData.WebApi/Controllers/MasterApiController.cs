@@ -85,34 +85,7 @@ public class MasterApiController : ControllerBase
     {
         throw new NotImplementedException();
     }
-    
-    [HttpGet]
-    [Route("{id}/file/{fieldName}/{fileName}")]
-    public IActionResult GetFile(string elementName, string id, string fieldName, string fileName)
-    {
-        var fileStream = _service.GetDictionaryFile(elementName, id, fieldName, fileName);
 
-        return File(fileStream, "application/octet-stream", fileName);
-    }
-    
-    [HttpPost]
-    [Route("{id}/file/{fieldName}")]
-    public IActionResult PostFile(string elementName, string fieldName, string id, IFormFile file)
-    {
-        _service.SetDictionaryFile(elementName, fieldName, id, file);
-
-        return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
-    }
-    
-    [HttpDelete]
-    [Route("{id}/file/{fieldName}/{fileName}")]
-    public IActionResult DeleteFile(string elementName, string fieldName, string id, string fileName)
-    {
-        _service.DeleteFile(elementName, fieldName, id, fileName);
-
-        return Ok("File successfully deleted.");
-    }
-    
     private ActionResult<ResponseLetter> GetResponseMessage(IEnumerable<ResponseLetter> responseLetters)
     {
         var responseLetterList = responseLetters.ToList();
