@@ -29,7 +29,7 @@
                 DataItem =
                 {
                     ShowImageLegend = true,
-                    Items = IconHelper.GetIconDataItemList().ToList()
+                    Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
                 },
                 SelectedValue = ((int)Model.Icon).ToString(),
                 Name = "Icon"

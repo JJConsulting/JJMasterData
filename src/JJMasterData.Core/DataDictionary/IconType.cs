@@ -1,4 +1,5 @@
-﻿namespace JJMasterData.Core.DataDictionary;
+﻿// ReSharper disable All
+namespace JJMasterData.Core.DataDictionary;
 
 public enum IconType
 {
@@ -12,7 +13,7 @@ public enum IconType
     Ambulance = 7,
     Anchor = 8,
     Android = 9,
-    AngelList = 10,
+    Angellist = 10,
     AngleDoubleDown = 11,
     AngleDoubleLeft = 12,
     AngleDoubleRight = 13,
@@ -49,7 +50,7 @@ public enum IconType
     Bank = 44,
     BarChart = 45,
     BarChartO = 46,
-    BarCode = 47,
+    Barcode = 47,
     Bars = 48,
     Battery0 = 49,
     Battery1 = 50,
@@ -90,7 +91,7 @@ public enum IconType
     Building = 85,
     BuildingO = 86,
     Bullhorn = 87,
-    BullsEye = 88,
+    Bullseye = 88,
     Bus = 89,
     Buysellads = 90,
     Cab = 91,
@@ -155,8 +156,8 @@ public enum IconType
     Cny = 150,
     Code = 151,
     CodeFork = 152,
-    CodePen = 153,
-    CodiePie = 154,
+    Codepen = 153,
+    Codiepie = 154,
     Coffee = 155,
     Cog = 156,
     Cogs = 157,
@@ -178,7 +179,7 @@ public enum IconType
     CreditCardAlt = 173,
     Crop = 174,
     Crosshairs = 175,
-    Css3 = 176,
+    Css_3 = 176,
     Cube = 177,
     Cubes = 178,
     Cut = 179,
@@ -335,8 +336,8 @@ public enum IconType
     HourglassO = 330,
     HourglassStart = 331,
     Houzz = 332,
-    Html5 = 333,
-    Cursor = 334,
+    Html_5 = 333,
+    ICursor = 334,
     Ils = 335,
     Image = 336,
     Inbox = 337,
@@ -630,7 +631,6 @@ public enum IconType
     TrashO = 625,
     Tree = 626,
     Trello = 627,
-    Tripadvisor = 628,
     Trophy = 629,
     Truck = 630,
     Try = 631,
@@ -695,5 +695,53 @@ public enum IconType
     Youtube = 690,
     YoutubePlay = 691,
     YoutubeSquare = 692
+}
 
+public static class IconTypeExtensions
+{
+    public static string GetCssClass(this IconType icon)
+    {
+        string description = PascalToParamCase(icon.ToString());
+        return $"fa fa-{description}";
+    }
+ 
+    public static string GetDescription(this IconType icon)
+    {
+        return PascalToParamCase(icon.ToString());
+    }
+    
+    public static int GetId(this IconType icon)
+    {
+        return (int)icon;
+    }
+    
+    private static string PascalToParamCase(string icon)
+    {
+        int i = 0;
+        string parsedName = string.Empty;
+        foreach (char c in icon)
+        {
+            i++;
+            if (i == 1)
+            {
+                parsedName += c;
+                continue;
+            }
+
+            if (c == '_')
+            {
+                i = 0;
+                continue;
+            }
+            
+            if (char.IsUpper(c) || char.IsDigit(c))
+            {
+                parsedName += '-';
+            }
+            
+            parsedName += c;
+        }
+
+        return parsedName.ToLower();
+    }
 }

@@ -10,9 +10,6 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
