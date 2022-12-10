@@ -10,11 +10,11 @@ using System.Data;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DataDictionaryDao : IDataDictionaryRepository
+public class DataDictionaryDAO : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
-    public DataDictionaryDao(IEntityRepository entityRepository)
+    public DataDictionaryDAO(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
     }
