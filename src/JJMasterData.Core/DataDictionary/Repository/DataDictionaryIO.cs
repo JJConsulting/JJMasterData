@@ -7,64 +7,52 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
+/// <summary>
+/// The Data Dictionaries (metadata) are stored in files in a custom folder
+/// </summary>
 public class DataDictionaryIO : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
+    public string FolderPath { get; }
+    
     public DataDictionaryIO(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
+        FolderPath = "DataDictionaries";
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
     public IEnumerable<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
+        var dir = new DirectoryInfo(FolderPath);
+        var files = dir.GetFiles("*.json");
 
-        var filter = new Hashtable();
-        if (sync.HasValue)
-            filter.Add("sync", (bool)sync ? "1" : "0");
-
-        const string orderBy = "name, type";
-        string currentName = "";
-        int tot = 1;
-        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderBy, 10000, 1, ref tot);
-        Metadata currentParser = null;
-        foreach (DataRow row in dt.Rows)
+        foreach (var file in files)
         {
-            string name = row["name"].ToString();
-            if (!currentName.Equals(name))
-            {
-                DataDictionaryStructure.ApplyCompatibility(currentParser, name);
+            string json = File.ReadAllText(file.FullName);
+            var metadata = JsonConvert.DeserializeObject<Metadata>(json);
+            
+            if (metadata == null)
+                continue;
 
-                currentName = name;
-                list.Add(new Metadata());
-                currentParser = list[list.Count - 1];
-            }
-
-            string json = row["json"].ToString();
-            if (row["type"].ToString().Equals("T"))
+            if (!sync.HasValue)
             {
-                currentParser.Table = JsonConvert.DeserializeObject<Element>(json);
+                list.Add(metadata);
+                continue;
             }
-            else if (row["type"].ToString().Equals("F"))
+            
+            if (metadata.Table.Sync == sync.Value)
             {
-                currentParser.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-            }
-            else if (row["type"].ToString().Equals("L"))
-            {
-                currentParser.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
-            }
-            else if (row["type"].ToString().Equals("A"))
-            {
-                currentParser.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                list.Add(metadata);
             }
         }
-
-        DataDictionaryStructure.ApplyCompatibility(currentParser, currentName);
 
         return list;
     }
@@ -72,14 +60,7 @@ public class DataDictionaryIO : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
-        int totalRecords = 10000;
-        var filter = new Hashtable { { "type", "F" } };
-
-        var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, null, totalRecords, 1, ref totalRecords);
-        foreach (DataRow row in dt.Rows)
-        {
-            yield return row["name"].ToString();
-        }
+        return Directory.GetFiles("*.json");
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>

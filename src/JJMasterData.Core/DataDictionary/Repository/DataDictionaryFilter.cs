@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
+/// <summary>
+/// The Data Dictionaries (metadata) are stored in the Database
+/// </summary>
 public class DataDictionaryFilter
 {
     public string Name { get; set; }

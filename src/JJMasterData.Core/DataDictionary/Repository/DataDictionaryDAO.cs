@@ -48,19 +48,19 @@ public class DataDictionaryDAO : IDataDictionaryRepository
             string json = row["json"].ToString();
             if (row["type"].ToString().Equals("T"))
             {
-                currentParser.Table = JsonConvert.DeserializeObject<Element>(json);
+                currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                currentParser.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+                currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
-                currentParser.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+                currentParser!.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
             }
             else if (row["type"].ToString().Equals("A"))
             {
-                currentParser.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                currentParser!.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
             }
         }
 

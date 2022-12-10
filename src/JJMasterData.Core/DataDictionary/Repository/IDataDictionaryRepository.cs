@@ -3,6 +3,9 @@ using System.Data;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
+/// <summary>
+/// The repository of Data Dictionaries (metadata)
+/// </summary>
 public interface IDataDictionaryRepository
 {
     /// <summary>
