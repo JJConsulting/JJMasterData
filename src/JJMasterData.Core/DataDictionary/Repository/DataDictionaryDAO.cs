@@ -20,7 +20,7 @@ public class DataDictionaryDAO : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
         var list = new List<Metadata>();
 
@@ -216,9 +216,9 @@ public class DataDictionaryDAO : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string tableName)
+    public bool Exists(string dictionaryName)
     {
-        return _entityRepository.TableExists(tableName);
+        return _entityRepository.TableExists(dictionaryName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>

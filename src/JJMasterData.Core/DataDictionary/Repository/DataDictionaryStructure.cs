@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
@@ -41,7 +42,7 @@ public class DataDictionaryStructure
         
         return element;
     }
-
+    
     public static IList<IDictionary> GetStructure(Metadata metadata, DateTime modified)
     {
         string name = metadata.Table.Name;

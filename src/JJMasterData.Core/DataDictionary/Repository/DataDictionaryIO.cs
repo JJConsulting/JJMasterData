@@ -24,21 +24,22 @@ public class DataDictionaryIO : IDataDictionaryRepository
     public DataDictionaryIO(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
-        FolderPath = "DataDictionaries";
+        FolderPath = "Metadata";
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
         var list = new List<Metadata>();
         var dir = new DirectoryInfo(FolderPath);
-        var files = dir.GetFiles("*.json");
 
+        if (!dir.Exists)
+            return list;
+        
+        var files = dir.GetFiles("*.json");
         foreach (var file in files)
         {
-            string json = File.ReadAllText(file.FullName);
-            var metadata = JsonConvert.DeserializeObject<Metadata>(json);
-            
+            var metadata = GetMetadata(file.Name);
             if (metadata == null)
                 continue;
 
@@ -60,45 +61,15 @@ public class DataDictionaryIO : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
-        return Directory.GetFiles("*.json");
+        return Directory.GetFiles(FolderPath, "*.json");
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public Metadata GetMetadata(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
-
-        var filter = new Hashtable { { "name", dictionaryName } };
-        var dataTable = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter);
-        if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
-
-        var metadata = new Metadata();
-        foreach (DataRow row in dataTable.Rows)
-        {
-            string json = row["json"].ToString();
-            
-            switch (row["type"].ToString())
-            {
-                case "T":
-                    metadata.Table = JsonConvert.DeserializeObject<Element>(json);
-                    break;
-                case "F":
-                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-                    break;
-                case "L":
-                    metadata.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
-                    break;
-                case "A":
-                    metadata.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
-                    break;
-            }
-        }
-
-        DataDictionaryStructure.ApplyCompatibility(metadata, dictionaryName);
-
-        return metadata;
+        string fileFullName = GetFullFileName(dictionaryName);
+        string json = File.ReadAllText(fileFullName);
+        return JsonConvert.DeserializeObject<Metadata>(json);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
@@ -113,111 +84,106 @@ public class DataDictionaryIO : IDataDictionaryRepository
         if (string.IsNullOrEmpty(metadata.Table.Name))
             throw new ArgumentNullException(nameof(metadata.Table.Name));
 
-        var element = DataDictionaryStructure.GetElement();
-        string name = metadata.Table.Name;
-        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
-
-        DateTime dNow = DateTime.Now;
-
-        var values = new Hashtable();
-        values.Add("name", name);
-        values.Add("tablename", metadata.Table.TableName);
-        values.Add("info", metadata.Table.Info);
-        values.Add("type", "T");
-        values.Add("json", jsonTable);
-        values.Add("sync", metadata.Table.Sync ? "1" : "0");
-        values.Add("modified", dNow);
-        _entityRepository.SetValues(element, values);
-
-        if (metadata.Form != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "F");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(element, values);
-        }
-
-        if (metadata.UIOptions != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.UIOptions);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "L");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(element, values);
-        }
-
-        if (metadata.Api != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Api);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("info", "");
-            values.Add("type", "A");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(element, values);
-        }
+        string json = JsonConvert.SerializeObject(metadata);
+        string fileFullName = GetFullFileName(metadata.Table.Name);
+        File.WriteAllText(fileFullName, json);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
     public void Delete(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentException();
-
-        var filters = new Hashtable { { "name", dictionaryName } };
-
-        var dataTable = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filters);
-        if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
-
-        var element = DataDictionaryStructure.GetElement();
-        foreach (DataRow row in dataTable.Rows)
-        {
-            var delFilter = new Hashtable();
-            delFilter.Add("name", dictionaryName);
-            delFilter.Add("type", row["type"].ToString());
-            _entityRepository.Delete(element, delFilter);
-        }
+        string fileFullName = GetFullFileName(dictionaryName);
+        File.Delete(fileFullName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string tableName)
+    public bool Exists(string dictionaryName)
     {
-        return _entityRepository.TableExists(tableName);
+        string fileFullName = GetFullFileName(dictionaryName);
+        return File.Exists(fileFullName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
-        if(!Exists(JJService.Options.TableName))
-            _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
+        if (!Directory.Exists(FolderPath))
+            Directory.CreateDirectory(FolderPath);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
     public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
-        var element = DataDictionaryStructure.GetElement();
+        var dtFiles = new DataTable();
+        dtFiles.Columns.Add(DataDictionaryStructure.Type, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.Name, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.NameFilter, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.TableName, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.Info, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.Owner, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.Sync, typeof(string));
+        dtFiles.Columns.Add(DataDictionaryStructure.LastModified, typeof(DateTime));
+        dtFiles.Columns.Add(DataDictionaryStructure.Json, typeof(string));
 
-        var filters = filter.ToHashtable();
+        var dir = new DirectoryInfo(FolderPath);
+        if (!dir.Exists)
+            return dtFiles;
         
-        filters.Add("type","F");
+        var files = dir.GetFiles("*.json");
+        foreach (var file in files)
+        {
+            var metadata = GetMetadata(file.Name);
+            if (metadata == null)
+                continue;
+
+            if (filter != null)
+            {
+                if (!string.IsNullOrEmpty(filter.Name) && !metadata.Table.Name.Contains(filter.Name))
+                    continue;
+
+                if (filter.ContainsTableName != null)
+                {
+                    bool containsName = filter.ContainsTableName.Any(tableName => metadata.Table.TableName.Contains(tableName));
+                    if (!containsName)
+                        continue;
+                }   
+                
+                if (filter.LastModifiedFrom.HasValue && file.LastWriteTime < filter.LastModifiedFrom)
+                    continue;
+                    
+                if (filter.LastModifiedTo.HasValue && file.LastWriteTime > filter.LastModifiedTo)
+                    continue;
+            }
+            
+            var row = dtFiles.NewRow();
+            row[DataDictionaryStructure.Type] = "F";
+            row[DataDictionaryStructure.Name] = metadata.Table.Name;
+            row[DataDictionaryStructure.NameFilter] = metadata.Table.Name;
+            row[DataDictionaryStructure.TableName] = metadata.Table.Name;
+            row[DataDictionaryStructure.Info] = metadata.Table.Name;
+            row[DataDictionaryStructure.Owner] = metadata.Table.Name;
+            row[DataDictionaryStructure.Sync] = metadata.Table.Name;
+            row[DataDictionaryStructure.LastModified] = metadata.Table.Name;
+            row[DataDictionaryStructure.Json] = metadata.Table.Name;
+            
+            row["Tamanho"] = Format.FormatFileSize(file.Length);
+            row["TamBytes"] = file.Length;
+            row["LastWriteTime"] = file.LastWriteTime.ToString(CultureInfo.CurrentCulture);
+            dtFiles.Rows.Add(row);
+           
+        }
         
-        return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
+        return dtFiles;
+      
+    }
+
+    private string GetFullFileName(string dictionaryName)
+    {
+        if (string.IsNullOrEmpty(dictionaryName))
+            throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
+
+        if (!dictionaryName.EndsWith(".json"))
+            dictionaryName += ".json";
+        
+        return Path.Combine(FolderPath, dictionaryName);
     }
 }

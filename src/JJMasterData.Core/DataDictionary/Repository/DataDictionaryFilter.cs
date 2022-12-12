@@ -39,13 +39,11 @@ public class DataDictionaryFilter
             result.LastModifiedTo = DateTime.Parse(filter[DataDictionaryStructure.LastModifiedTo].ToString());
         }
 
-
         return result;
     }
     public Hashtable ToHashtable()
     {
         var result = new Hashtable();
-        
         if (Name != null)
         {
             result[DataDictionaryStructure.NameFilter] = Name;
@@ -53,15 +51,11 @@ public class DataDictionaryFilter
         
         if (ContainsTableName != null && ContainsTableName.Any())
         {
-
             string tableNameFilter = string.Empty;
-
             for (int i = 0; i < ContainsTableName.Count; i++)
             {
                 if (i > 0)
-                {
                     tableNameFilter += ",";
-                }
 
                 tableNameFilter += ContainsTableName[i];
             }
@@ -80,4 +74,5 @@ public class DataDictionaryFilter
 
         return result;
     }
+
 }
