@@ -1,6 +1,6 @@
 using System.Reflection;
 using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 

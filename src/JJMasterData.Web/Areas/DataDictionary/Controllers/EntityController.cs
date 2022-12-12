@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModel;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;

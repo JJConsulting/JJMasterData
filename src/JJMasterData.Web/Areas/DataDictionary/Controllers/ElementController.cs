@@ -9,7 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModel;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
