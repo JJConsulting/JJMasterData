@@ -7,14 +7,15 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Data;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.MongoDB.Repository;
 
-public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
+public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
 
-    public MongoDBDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDbDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);
@@ -54,7 +55,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    public  IEnumerable<MetadataInfo>  GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
 
@@ -83,15 +84,8 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
             .Skip((currentPage - 1) * recordsPerPage)
             .Limit(recordsPerPage)
             .ToList();
-        
-        var values = new List<IDictionary>();
 
-        foreach (var metadata in metadataList)
-        {
-            values.AddRange(DataDictionaryStructure.GetStructure(metadata, metadata.LastModified));
-        }
-        
-        return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values.Where(v=>(string)v["type"]! =="F")))!;
+        return metadataList.Select(metadata => new MetadataInfo(metadata, metadata.LastModified)).ToList();
     }
     
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>

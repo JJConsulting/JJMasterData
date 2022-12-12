@@ -7,14 +7,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DataDictionaryDAO : IDataDictionaryRepository
+public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
-    public DataDictionaryDAO(IEntityRepository entityRepository)
+    public DatabaseDataDictionaryRepository(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
     }
@@ -229,14 +230,13 @@ public class DataDictionaryDAO : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    public IEnumerable<MetadataInfo> GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
-
         var filters = filter.ToHashtable();
-        
         filters.Add("type","F");
-        
-        return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
+
+        var dt = _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords); 
+        return dt.ToModelList<MetadataInfo>();
     }
 }

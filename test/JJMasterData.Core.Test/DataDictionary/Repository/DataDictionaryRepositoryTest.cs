@@ -1,8 +1,5 @@
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Test.DataDictionary.Repository;
 
@@ -10,11 +7,10 @@ public class DataDictionaryRepositoryTest
 {
     private IDataDictionaryRepository _repository;
     
-    public DataDictionaryRepositoryTest(IEntityRepository entityRepository)
+    public DataDictionaryRepositoryTest(IOptions<FileSystemDataDictionaryOptions> options)
     {
-        _repository = new DataDictionaryIO(entityRepository);
+        _repository = new FileSystemDataDictionaryRepository(options);
     }
-    
     
     [Fact]
     public void GetMetadataListTest()

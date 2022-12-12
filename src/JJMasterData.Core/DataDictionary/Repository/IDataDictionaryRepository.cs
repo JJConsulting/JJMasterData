@@ -53,7 +53,7 @@ public interface IDataDictionaryRepository
     /// Returns a DataTable with the records found.
     /// If no record is found it returns null.
     /// </returns>
-    DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
+    IEnumerable<MetadataInfo> GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <summary>
     /// Checks if the dictionary exists

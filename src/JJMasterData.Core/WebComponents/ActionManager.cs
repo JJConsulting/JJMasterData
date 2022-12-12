@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Text;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -39,8 +40,8 @@ internal class ActionManager
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicDao = new DataDictionaryDAO(EntityRepository);
-        var dicParser = dicDao.GetMetadata(action.ElementRedirect.ElementNameRedirect);
+        var dicRepository = JJServiceCore.DataDictionaryRepository;
+        var dicParser = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = dicParser.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         string popup = "true";

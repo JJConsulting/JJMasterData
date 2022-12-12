@@ -238,14 +238,11 @@ public class ElementService : BaseService
     private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
         int tot = e.Tot;
-
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
-        
-        e.DataSource = DataDictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
-        
+        var list = DataDictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot); 
+        e.DataSource = list.ToDataTable();
         e.Tot = tot;
     }
-
 
     #endregion
 
