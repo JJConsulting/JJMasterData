@@ -31,23 +31,19 @@ public class JJResponse
     /// <param name="contentType">Optional. Usually application/json</param>
     public void SendResponse(string data, string contentType = null)
     {
-        #if NETFRAMEWORK
         SystemWebCurrent.Response.ClearContent();
-        
+        #if NETFRAMEWORK
         if (contentType != null)
         {
             SystemWebCurrent.Response.ContentType = contentType;
         }
-
-        SystemWebCurrent.Response.Write(data);
         #else
-        AspNetCoreCurrent.Response.Clear();
         if (!AspNetCoreCurrent.Response.HasStarted && contentType != null)
         {
             AspNetCoreCurrent.Response.ContentType = contentType;
         }
         #endif
-        
+        SystemWebCurrent.Response.Write(data);
         SystemWebCurrent.Response.End();
     }
 
