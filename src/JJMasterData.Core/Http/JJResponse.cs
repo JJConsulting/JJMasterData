@@ -31,6 +31,7 @@ public class JJResponse
     /// <param name="contentType">Optional. Usually application/json</param>
     public void SendResponse(string data, string contentType = null)
     {
+        #if NETFRAMEWORK
         SystemWebCurrent.Response.ClearContent();
         
         if (contentType != null)
@@ -39,6 +40,13 @@ public class JJResponse
         }
 
         SystemWebCurrent.Response.Write(data);
+        #else
+        AspNetCoreCurrent.Response.Clear();
+        if (!AspNetCoreCurrent.Response.HasStarted && contentType != null)
+        {
+            AspNetCoreCurrent.Response.ContentType = contentType;
+        }
+        #endif
         
         SystemWebCurrent.Response.End();
     }
@@ -60,7 +68,8 @@ public class JJResponse
 #if NETFRAMEWORK
         SystemWebCurrent.Response.Headers.Add(key, value);
 #else
-        AspNetCoreCurrent.Response.Headers.Add(key, value);
+        if(!AspNetCoreCurrent.Response.HasStarted)
+            AspNetCoreCurrent.Response.Headers.Add(key, value);
 #endif
     }
 
