@@ -460,7 +460,7 @@ JJFeedbackIcon.successClass = "jj-icon-success";
 JJFeedbackIcon.warningClass = "jj-icon-warning";
 JJFeedbackIcon.errorClass = "jj-icon-error";
 function jjloadform(event, prefixSelector) {
-    if (prefixSelector === undefined) {
+    if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
     $(prefixSelector + ".selectpicker").selectpicker({
