@@ -19,9 +19,9 @@ public class DataDictionaryFilter
     {
         var result = new DataDictionaryFilter();
 
-        if (filter.ContainsKey(DataDictionaryStructure.NameFilter))
+        if (filter.ContainsKey(DataDictionaryStructure.Name))
         {
-            result.Name = filter[DataDictionaryStructure.NameFilter].ToString();
+            result.Name = filter[DataDictionaryStructure.Name].ToString();
         }
 
         if (filter.ContainsKey(DataDictionaryStructure.TableName))

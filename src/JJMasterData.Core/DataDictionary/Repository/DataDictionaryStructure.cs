@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 

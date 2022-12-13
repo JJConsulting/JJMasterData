@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         if (!dir.Exists)
             return list;
         
-        var files = dir.GetFiles("*.json");
+        var files = dir.GetFiles("*.json").OrderBy(x => x.Name);
         foreach (var file in files)
         {
             string dictionaryName = file.Name;
@@ -127,7 +128,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         var dir = new DirectoryInfo(FolderPath);
         if (!dir.Exists)
             return list;
-        
+
         var files = dir.GetFiles("*.json");
         foreach (var file in files)
         {
@@ -140,12 +141,12 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
 
             if (filter != null)
             {
-                if (!string.IsNullOrEmpty(filter.Name) && !metadata.Table.Name.Contains(filter.Name))
+                if (!string.IsNullOrEmpty(filter.Name) && !metadata.Table.Name.ToLower().Contains(filter.Name.ToLower()))
                     continue;
 
                 if (filter.ContainsTableName != null)
                 {
-                    bool containsName = filter.ContainsTableName.Any(tableName => metadata.Table.TableName.Contains(tableName));
+                    bool containsName = filter.ContainsTableName.Any(tableName => metadata.Table.TableName.ToLower().Contains(tableName.ToLower()));
                     if (!containsName)
                         continue;
                 }   
@@ -161,8 +162,8 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
             list.Add(metadataInfo);
         }
 
-        totalRecords = list.Count();
-        return list; //.Skip(currentPage*totalRecords).Take(currentPage);
+        totalRecords = list.Count;
+        return list.OrderBy(orderBy).Skip((currentPage - 1) * recordsPerPage).Take(recordsPerPage);
     }
 
     private string GetFullFileName(string dictionaryName)

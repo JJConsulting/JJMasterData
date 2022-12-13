@@ -46,7 +46,7 @@ public interface IDataDictionaryRepository
     /// <param name="filters">Available filters</param>
     /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
     /// <param name="recordsPerPage">Number of records to be displayed per page</param>
-    /// <param name="currentPage">Current page</param>
+    /// <param name="currentPage">Current page (start with 1)</param>
     /// <param name="totalRecords">If the value is zero, it returns as a reference the number of records based on the filter.</param>
     /// <returns>
     /// Returns a DataTable with the records found.

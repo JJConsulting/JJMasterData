@@ -18,20 +18,8 @@ public class Program
         
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
-
-        var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
-        
-        /*
-        {
-            var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
-            mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
-            mongo.CollectionName = section.GetValue<string>("CollectionName")!;
-            mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        })
-        */
-        
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithFileSystemDataDictionary()
+            .WithMongoDbDataDictionary()
             .WithFormEventResolver()
             .WithPdfExportation();
         

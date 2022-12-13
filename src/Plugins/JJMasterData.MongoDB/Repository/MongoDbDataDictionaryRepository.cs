@@ -136,7 +136,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         
         if (filter is { LastModifiedFrom: { }, LastModifiedTo: { } })
         {
-            filters["LastModified"] = new Hashtable
+            filters["Modified"] = new Hashtable
             {
                 {"$gt", filter.LastModifiedFrom.Value},
                 {"$lt", filter.LastModifiedTo.Value}
@@ -155,7 +155,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         {
             "name" => new MongoDBOrderByMapper("Table.Name", type),
             "tablename" => new MongoDBOrderByMapper("Table.TableName", type),
-            "modified" => new MongoDBOrderByMapper("LastModified", type),
+            "modified" => new MongoDBOrderByMapper("Modified", type),
             "info" => new MongoDBOrderByMapper("Table.Info", type),
             "sync" => new MongoDBOrderByMapper("Table.Sync", type),
             _ => throw new ArgumentException(orderBy)
