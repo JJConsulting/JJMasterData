@@ -18,7 +18,7 @@ Specify the path on the services setup.
 
 ```csharp
 builder.Services.AddJJMasterDataWeb()
-        .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.Web.Example/FormEvents/Python");
+        .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
 ```
 
 ```py
