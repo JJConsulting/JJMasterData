@@ -10,10 +10,8 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using ResponseEndFilter = JJMasterData.Web.Filters.ResponseEndFilter;
 
 namespace JJMasterData.Web.Extensions;
 
@@ -26,26 +24,13 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddSession();
 
-        AddSystemWebAdapters(services);
+        services.AddSystemWebAdapters();
 
         services.AddDistributedMemoryCache();
         services.AddJJMasterDataServices();
         services.AddUrlRequestCultureProvider();
         services.AddAnonymousAuthorization();
         return services.AddJJMasterData();
-    }
-
-    private static void AddSystemWebAdapters(IServiceCollection services)
-    {
-        services.AddSystemWebAdapters();
-        services.AddTransient<ResponseEndFilter>();
-        services.AddOptions<MvcOptions>()
-            .Configure(options =>
-            {
-                // We want the check for HttpResponse.End() to be done as soon as possible after the action is run.
-                // This will minimize any chance that output will be written which will fail since the response has completed.
-                options.Filters.Add<ResponseEndFilter>(int.MaxValue);
-            });
     }
 
     private static void AddAnonymousAuthorization(this IServiceCollection services)

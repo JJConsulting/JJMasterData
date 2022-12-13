@@ -356,7 +356,7 @@ var jjdictionary = (function () {
     };
 })();
 function jjloadform(event, prefixSelector) {
-    if (prefixSelector === undefined) {
+    if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
     $(prefixSelector + ".selectpicker").selectpicker("render");

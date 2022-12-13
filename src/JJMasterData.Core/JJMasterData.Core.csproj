@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
-    <PackageVersion>3.0.35</PackageVersion>
+    <PackageVersion>3.0.36</PackageVersion>
     <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
-    <AssemblyVersion>3.0.35</AssemblyVersion>
+    <AssemblyVersion>3.0.36</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="1.0.0-preview.3.22370.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />

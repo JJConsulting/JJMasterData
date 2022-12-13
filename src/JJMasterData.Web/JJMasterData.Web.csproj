@@ -11,10 +11,10 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.0.35</AssemblyVersion>
-        <FileVersion>3.0.35</FileVersion>
-        <PackageVersion>3.0.35</PackageVersion>
-        <Version>3.0.35</Version>
+        <AssemblyVersion>3.0.36</AssemblyVersion>
+        <FileVersion>3.0.36</FileVersion>
+        <PackageVersion>3.0.36</PackageVersion>
+        <Version>3.0.36</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Mars Version</Product>
@@ -31,6 +31,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>
