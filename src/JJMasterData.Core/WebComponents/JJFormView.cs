@@ -330,7 +330,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.ResponseRedirect(UrlRedirect);
+                    CurrentContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -345,7 +345,7 @@ public class JJFormView : JJGridView
         if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
-            CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
+            CurrentContext.Response.Redirect(CurrentContext.Request.AbsoluteUri);
             return null;
         }
         if ("REFRESH".Equals(formAction))
@@ -397,7 +397,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.ResponseRedirect(UrlRedirect);
+                    CurrentContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -592,7 +592,7 @@ public class JJFormView : JJGridView
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
-            CurrentContext.Response.ResponseRedirect(UrlRedirect);
+            CurrentContext.Response.Redirect(UrlRedirect);
             return null;
         }
 

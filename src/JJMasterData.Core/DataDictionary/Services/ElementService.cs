@@ -259,7 +259,7 @@ public class ElementService : BaseService
 
         foreach (var item in dicParser.Table.Fields.ToList())
         {
-            var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
             var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 

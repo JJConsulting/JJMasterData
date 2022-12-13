@@ -14,13 +14,6 @@ public class FormController : MasterDataController
         var model = new FormViewModel(dictionaryName, ConfigureFormView);
         return View(model);
     }
-    
-    public IActionResult Download(string filePath)
-    {
-        var file = System.IO.File.Open(Cript.Descript64(filePath), FileMode.Open) as Stream;
-        
-        return File(file, "application/octet-stream");
-    }
 
     private void ConfigureFormView(JJFormView formView)
     {

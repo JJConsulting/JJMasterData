@@ -1565,8 +1565,9 @@ class Popup {
         });
     }
     loadHtml(url, size) {
-        if ($("#" + this.modalId).length) {
-            $("#" + this.modalId).remove();
+        const modalIdSelector = `#${this.modalId}`;
+        if ($(modalIdSelector).length) {
+            $(modalIdSelector).remove();
         }
         let width;
         let height;

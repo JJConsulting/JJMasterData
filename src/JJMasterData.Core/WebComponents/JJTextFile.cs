@@ -239,7 +239,7 @@ public class JJTextFile : JJBaseControl
             if (!FormValues.ContainsKey(pkField.Name))
                 return false;
 
-            string value = FormValues[pkField.Name].ToString();
+            string value = FormValues[pkField.Name]!.ToString();
             if (!Validate.ValidFileName(value))
                 return false;
         }
@@ -256,7 +256,7 @@ public class JJTextFile : JJBaseControl
     {
         string pnlName = string.Empty;
         if (Attributes.ContainsKey("pnlname"))
-            pnlName = Attributes["pnlname"].ToString();
+            pnlName = Attributes["pnlname"]?.ToString();
 
         return pnlName;
     }
