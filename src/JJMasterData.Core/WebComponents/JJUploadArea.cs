@@ -189,6 +189,7 @@ public class JJUploadArea : JJBaseView
         {
             FileName = filename,
             Bytes = stream.ToArray(),
+            Length = stream.Length,
             LastWriteTime = DateTime.Now
         };
 

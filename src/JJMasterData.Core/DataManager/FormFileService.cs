@@ -261,7 +261,8 @@ internal class FormFileService
                     Content =
                     {
                         FileName = file.Name,
-                        LastWriteTime = file.LastWriteTime
+                        Length = file.Length,
+                        LastWriteTime = file.LastWriteTime,
                     }
                 };
                 formfiles.Add(formfile);

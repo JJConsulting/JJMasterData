@@ -411,7 +411,7 @@ public class JJFormUpload : JJBaseView
                 ul.WithCssClass("list-group list-group-flush");
                 ul.AppendElement(GetHtmlGalleryPreview(file.FileName));
                 ul.AppendElement(GetHtmlGalleryListItem("Name", file.FileName));
-                ul.AppendElement(GetHtmlGalleryListItem("Size", file.Bytes.Length + " Bytes"));
+                ul.AppendElement(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
                 ul.AppendElement(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
                 ul.AppendElement(HtmlTag.Li, li =>
                 {
@@ -577,7 +577,7 @@ public class JJFormUpload : JJBaseView
         {
             { FileName, file.FileName },
             { LastWriteTime, file.LastWriteTime },
-            { Size, file.Bytes.Length },
+            { Size, file.Length },
             { FileNameJs, file.FileName.Replace("'", "\\'") }
         };
 
@@ -663,14 +663,14 @@ public class JJFormUpload : JJBaseView
         dt.Columns.Add(LastWriteTime, typeof(string));
         dt.Columns.Add(FileNameJs, typeof(string));
 
-        foreach (var fileInfo in files.Where(mFiles => !mFiles.Deleted))
+        foreach (var fileInfo in files.Where(f => !f.Deleted))
         {
-            var mFiles = fileInfo.Content;
+            var content = fileInfo.Content;
             var dataRow = dt.NewRow();
-            dataRow["Name"] = mFiles.FileName;
-            dataRow["Size"] = Format.FormatFileSize(mFiles.Bytes.Length);
-            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
-            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
+            dataRow["Name"] = content.FileName;
+            dataRow["Size"] = Format.FormatFileSize(content.Length);
+            dataRow["LastWriteTime"] = content.LastWriteTime.ToDateTimeString();
+            dataRow["NameJS"] = content.FileName.Replace("'", "\\'");
             dt.Rows.Add(dataRow);
         }
 
