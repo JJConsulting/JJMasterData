@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.FormEvents.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -40,7 +41,7 @@ internal class FormEventResolver : IFormEventResolver
         if (formEventType == null) 
             return null;
         
-        using var scope = ServiceProvider.CreateScope();
+        using var scope = JJService.Provider.CreateScope();
         return (IFormEvent)ActivatorUtilities.CreateInstance(scope.ServiceProvider, formEventType);
     }
 
