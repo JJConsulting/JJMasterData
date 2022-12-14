@@ -45,7 +45,7 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
 - *DataBehavior:* Comportamento de dados
 
-   - Real: Será usado em Get e Set;
+    - Real: Será usado em Get e Set;
 
     - Virtual: Será utilizado somente em Set;
 
@@ -64,3 +64,39 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 - *Help Description:* Mensagem a ser exibida para o usuário com a finalidade auxilia-lo.
 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
+
+**Panels**
+- General
+    - Layout:
+    - Color:
+    - Expanded By Default:
+    - Title:
+    - Subtitle:
+    - Available Field:
+    - Selected Fields:
+- Adavanced
+    - Visible Expression:
+    - Enable Expression:
+    - CssClass:
+
+**Indexes**
+- New Index
+
+**Relations**
+- New
+
+**Actions**
+- Grid
+    - View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
+    - Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
+    - Delete: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Está opção irá deletar a linha de informações desejada.
+- Toolbar
+    - Insert:
+    - config:
+    - Export:
+    - Import:
+    - Refresh:
+    - Legend:
+    - Sort:
+    - Filter:
+    - Log:
