@@ -25,14 +25,18 @@ public class JJResponse
     public void SendResponse(string data, string contentType = null)
     {
         SystemWebCurrent.Response.ClearContent();
-        
-        if (SystemWebCurrent.Response.ContentType == null && contentType != null)
+        #if NETFRAMEWORK
+        if (contentType != null)
         {
             SystemWebCurrent.Response.ContentType = contentType;
         }
-
+        #else
+        if (!AspNetCoreCurrent.Response.HasStarted && contentType != null)
+        {
+            AspNetCoreCurrent.Response.ContentType = contentType;
+        }
+        #endif
         SystemWebCurrent.Response.Write(data);
-        
         SystemWebCurrent.Response.End();
     }
 
@@ -53,7 +57,8 @@ public class JJResponse
 #if NETFRAMEWORK
         SystemWebCurrent.Response.Headers.Add(key, value);
 #else
-        AspNetCoreCurrent.Response.Headers.Add(key, value);
+        if(!AspNetCoreCurrent.Response.HasStarted)
+            AspNetCoreCurrent.Response.Headers.Add(key, value);
 #endif
     }
 
