@@ -18,8 +18,6 @@ internal class GridTableBody
 {
     private string Name => $"table_{GridView.Name}";
     private JJGridView GridView { get; }
-
-    //TODO: When C# 11 releases, add the required keyword
     public EventHandler<ActionEventArgs> OnRenderAction { get; set; }
     public EventHandler<GridCellEventArgs> OnRenderCell { get; set; }
     public EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell { get; set; }

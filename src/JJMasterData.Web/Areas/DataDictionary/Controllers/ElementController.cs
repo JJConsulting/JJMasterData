@@ -188,8 +188,8 @@ public class ElementController : DataDictionaryController
         var renderBtn = new ScriptAction
         {
             Icon = IconType.Eye,
-            Name = "render",
-            Text = Translate.Key("Render"),
+            Name = "preview",
+            Text = Translate.Key("Preview"),
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
