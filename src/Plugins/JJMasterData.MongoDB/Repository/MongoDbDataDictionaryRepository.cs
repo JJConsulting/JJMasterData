@@ -4,10 +4,7 @@ using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using System.Collections;
-using System.Data;
-using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.MongoDB.Repository;
 
@@ -54,8 +51,8 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         return _metadataCollection.Find(_ => true).ToList().Select(metadata => metadata.Table.Name).ToList();
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public  IEnumerable<MetadataInfo>  GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
+    public  IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
 

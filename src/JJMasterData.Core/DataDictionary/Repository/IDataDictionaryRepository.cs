@@ -41,18 +41,14 @@ public interface IDataDictionaryRepository
     IEnumerable<string> GetNameList();
     
     /// <summary>
-    /// Returns records from the database based on the filter.    
+    /// Returns records from the database based on the filter.
     /// </summary>
     /// <param name="filters">Available filters</param>
     /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
     /// <param name="recordsPerPage">Number of records to be displayed per page</param>
     /// <param name="currentPage">Current page (start with 1)</param>
     /// <param name="totalRecords">If the value is zero, it returns as a reference the number of records based on the filter.</param>
-    /// <returns>
-    /// Returns a DataTable with the records found.
-    /// If no record is found it returns null.
-    /// </returns>
-    IEnumerable<MetadataInfo> GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
+    IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <summary>
     /// Checks if the dictionary exists

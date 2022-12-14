@@ -224,7 +224,7 @@ public class ElementService : BaseService
         int tot = e.Tot;
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
         string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
-        var list = DataDictionaryRepository.GetDataTable(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot); 
+        var list = DataDictionaryRepository.GetMetadataInfoList(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot); 
         e.DataSource = list.ToDataTable();
         e.Tot = tot;
     }

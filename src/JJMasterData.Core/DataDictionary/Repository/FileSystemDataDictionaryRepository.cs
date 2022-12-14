@@ -120,8 +120,8 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
             Directory.CreateDirectory(FolderPath);
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public IEnumerable<MetadataInfo> GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
+    public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var list = new List<MetadataInfo>();
         

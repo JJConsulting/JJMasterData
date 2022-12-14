@@ -229,8 +229,8 @@ public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public IEnumerable<MetadataInfo> GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
+    public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
         var filters = filter.ToHashtable();
