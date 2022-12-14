@@ -60,7 +60,7 @@ public class ApiSettings
     }
 
     /// <summary>
-    /// Formato o campo conforme parametrização do dicionário
+    /// Format the field according to the dictionary parameterization
     /// </summary>
     public string GetFieldNameParsed(string fieldName)
     {

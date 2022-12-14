@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using iText.IO.Font;
 using iText.Kernel.Colors;
@@ -267,7 +268,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             if (field.DataItem.ShowImageLegend)
             {
-                image = new Text(IconHelper.Get(item.Icon).Unicode.Replace(";", string.Empty));
+                image = new Text(item.Icon.GetUnicode().ToString());
                 var color = ColorTranslator.FromHtml(item.ImageColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";
@@ -286,12 +287,22 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     private PdfFont CreateFontAwesomeIcon()
     {
-        string fontPath = AppDomain.CurrentDomain.BaseDirectory;
-        fontPath += @"Fonts\fontawesome-webfont.ttf";
-
-        var fontProgram = FontProgramFactory.CreateFont(fontPath);
+        var fontBytes = ExtractResource("JJMasterData.Pdf.Fonts.fontawesome-webfont.ttf");
+        var fontProgram = FontProgramFactory.CreateFont(fontBytes, true);
+        
         return PdfFontFactory.CreateFont(fontProgram);
     }
-
-
+    
+    private static byte[] ExtractResource(string filename)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var resFilestream = assembly.GetManifestResourceStream(filename);
+        
+        if (resFilestream == null)
+            return null;
+        byte[] ba = new byte[resFilestream.Length];
+        resFilestream.Read(ba, 0, ba.Length);
+        return ba;
+    }
+    
 }

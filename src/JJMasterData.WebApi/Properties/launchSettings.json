@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "JJMasterData.API": {
+    "JJMasterData.WebApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

@@ -27,7 +27,7 @@ public interface IEntityRepository
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
+    public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
 
     /// <summary>
     /// Returns records from the database based on the filter.    
@@ -53,7 +53,7 @@ public interface IEntityRepository
     /// Returns a DataTable with the records found. 
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(Element element, Hashtable filters);
+    public DataTable GetDataTable(Element element, IDictionary filters);
 
     /// <summary>
     /// Returns first record based on filter.  
@@ -64,7 +64,7 @@ public interface IEntityRepository
     /// Return a Hashtable Object. 
     /// If no record is found then returns null.
     /// </returns>
-    public Hashtable GetFields(Element element, Hashtable filters);
+    public Hashtable GetFields(Element element, IDictionary filters);
 
     /// <summary>
     /// Returns the number of records in the database
@@ -74,7 +74,7 @@ public interface IEntityRepository
     /// <returns>
     /// Returns an integer.
     /// </returns>
-    public int GetCount(Element element, Hashtable filters);
+    public int GetCount(Element element, IDictionary filters);
 
     /// <summary>
     /// Update a record in the database 
@@ -83,7 +83,7 @@ public interface IEntityRepository
     /// <param name="element">Base element with a basic table structure</param>
     /// <param name="values">List of values ​​to be stored in the database</param>
     /// <returns>Return the number of the rows affected</returns>
-    public int Update(Element element, Hashtable values);
+    public int Update(Element element, IDictionary values);
 
     /// <summary>
     /// Delete records based on filter.  
@@ -92,7 +92,7 @@ public interface IEntityRepository
     /// <param name="element">Base element with the basic structure of the table</param>
     /// <param name="filters">List of filters to be used</param>
     /// <returns>Return the number of the rows affected</returns>
-    public int Delete(Element element, Hashtable filters);
+    public int Delete(Element element, IDictionary filters);
 
     /// <summary>
     /// Add a record to the database.
@@ -104,7 +104,7 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public void Insert(Element element, Hashtable values);
+    public void Insert(Element element, IDictionary values);
 
     /// <summary>
     /// Insert or Update a record in the database.
@@ -118,7 +118,7 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public CommandOperation SetValues(Element element, Hashtable values);
+    public CommandOperation SetValues(Element element, IDictionary values);
 
     /// <summary>
     /// Set a record in the database.
@@ -133,7 +133,7 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public CommandOperation SetValues(Element element, Hashtable values, bool ignoreResults);
+    public CommandOperation SetValues(Element element, IDictionary values, bool ignoreResults);
 
     /// <summary>
     /// Create an element's tables and procedures

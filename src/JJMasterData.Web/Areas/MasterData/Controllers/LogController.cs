@@ -2,12 +2,14 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
@@ -17,9 +19,9 @@ public class LogController : Controller
 {
     private Logger Logger { get; set; }
 
-    public LogController()
+    public LogController(IOptions<JJMasterDataOptions> options)
     {
-        Logger = new Logger();
+        Logger = new Logger(options.Value.Logger);
     }
 
     public ActionResult Index()
@@ -33,27 +35,22 @@ public class LogController : Controller
             factory.CreateDataModel(Logger.GetElement());
         }
 
-        var gridView = GetLoggingGridView(Logger);
+        var gridView = GetLoggingGridView();
         return View(gridView);
     }
 
     [HttpGet]
     public ActionResult ClearAll()
     {
-        var logger = new Logger();
-        logger.ClearLog();
+        Logger.ClearLog();
 
-        GetLoggingGridView(logger);
 
         return RedirectToAction("Index");
     }
 
-    private JJGridView GetLoggingGridView(Logger logger)
+    private JJGridView GetLoggingGridView()
     {
-        if (logger == null)
-            throw new ArgumentNullException(nameof(logger));
-
-        var f = new FormElement(logger.GetElement())
+        var f = new FormElement(Logger.GetElement())
         {
             Title = Translate.Key("Application Log"),
             SubTitle = string.Empty
@@ -65,8 +62,10 @@ public class LogController : Controller
         tipo.DataItem.Items.Add(new DataItemValue("W", "Alerta"));
         tipo.DataItem.Items.Add(new DataItemValue("E", "Erro"));
 
-        var gridView = new JJGridView(f);
-        gridView.CurrentOrder = $"{Logger.Options.Table.DateColumnName} DESC";
+        var gridView = new JJGridView(f)
+        {
+            CurrentOrder = $"{Logger.Options.Table.DateColumnName} DESC"
+        };
         gridView.OnRenderCell += OnRenderCell!;
 
         var btnClearAll = new UrlRedirectAction
@@ -82,8 +81,7 @@ public class LogController : Controller
 
         return gridView;
     }
-        
-
+    
     private void OnRenderCell(object sender, GridCellEventArgs e)
     {
         string? msg;

@@ -6,7 +6,7 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Areas.MasterData.Models.ViewModel;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Models.Abstractions;
 
 namespace JJMasterData.Web.Services;
@@ -18,11 +18,11 @@ public class OptionsService : BaseService
     internal IWritableOptions<JJMasterDataOptions>? JJMasterDataWritableOptions { get; }
 
     public OptionsService(IValidationDictionary validationDictionary,
-        IDictionaryRepository dictionaryRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
         IWritableOptions<JJMasterDataOptions>? masterDataWritableOptions = null,
         IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
-        : base(validationDictionary, dictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
         ConnectionStringsWritableOptions = connectionStringsWritableOptions;

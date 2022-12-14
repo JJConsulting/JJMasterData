@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using JJMasterData.Core.FormEvents;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -81,7 +80,7 @@ public class JJFormView : JJGridView
             {
                 _dataPanel = new JJDataPanel(FormElement)
                 {
-                    Name = "jjpainel_" + Name,
+                    Name = "jjpainel_" + FormElement.Name.ToLower(),
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
                     RenderPanelGroup = true
@@ -187,6 +186,7 @@ public class JJFormView : JJGridView
     public JJFormView(FormElement formElement) : this()
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        Name = "jjview" + formElement.Name.ToLower();
     }
     
     #endregion
@@ -466,7 +466,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = new DictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
+        var dicParser = new DataDictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
         var formsel = new JJFormView(dicParser.GetFormElement())
         {
             EntityRepository = EntityRepository,
@@ -512,7 +512,7 @@ public class JJFormView : JJGridView
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         var dictionary = dicDao.GetMetadata(InsertAction.ElementNameToSelect);
         var element = dictionary.Table;
         var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
@@ -775,7 +775,7 @@ public class JJFormView : JJGridView
         }
 
 
-        var dicDao = new DictionaryDao(EntityRepository);
+        var dicDao = new DataDictionaryDao(EntityRepository);
         foreach (var relation in relations)
         {
             var dic = dicDao.GetMetadata(relation.ChildElement);
@@ -966,7 +966,7 @@ public class JJFormView : JJGridView
         var btn = new JJLinkButton
         {
             Text = "Save",
-            IconClass = IconHelper.GetClassName(IconType.Check),
+            IconClass = IconType.Check.GetCssClass(),
             OnClientClick = $"return jjview.doPainelAction('{Name}','OK');"
         };
         if (DataPanel.UISettings.EnterKey == FormEnterKey.Submit)
@@ -989,7 +989,7 @@ public class JJFormView : JJGridView
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
             OnClientClick = $"jjview.doPainelAction('{Name}','CANCEL');",
-            IconClass = IconHelper.GetClassName(IconType.Times),
+            IconClass = IconType.Times.GetCssClass(),
             Text = "Cancel"
         };
         return btn;
@@ -998,7 +998,7 @@ public class JJFormView : JJGridView
     private JJLinkButton GetButtonBack()
     {
         var btn = GetButtonCancel();
-        btn.IconClass = IconHelper.GetClassName(IconType.ArrowLeft);
+        btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;
     }
@@ -1010,7 +1010,7 @@ public class JJFormView : JJGridView
         {
             Type = LinkButtonType.Button,
             Text = "Hide Log",
-            IconClass = IconHelper.GetClassName(IconType.Film),
+            IconClass = IconType.Film.GetCssClass(),
             CssClass = "btn btn-primary btn-small",
             OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}"
         };
@@ -1024,7 +1024,7 @@ public class JJFormView : JJGridView
         {
             Type = LinkButtonType.Button,
             Text = "View Log",
-            IconClass = IconHelper.GetClassName(IconType.Film),
+            IconClass = IconType.Film.GetCssClass(),
             CssClass = BootstrapHelper.DefaultButton + " btn-small",
             OnClientClick = scriptAction
         };

@@ -460,7 +460,7 @@ JJFeedbackIcon.successClass = "jj-icon-success";
 JJFeedbackIcon.warningClass = "jj-icon-warning";
 JJFeedbackIcon.errorClass = "jj-icon-error";
 function jjloadform(event, prefixSelector) {
-    if (prefixSelector === undefined) {
+    if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
     $(prefixSelector + ".selectpicker").selectpicker({
@@ -538,7 +538,14 @@ function jjloadform(event, prefixSelector) {
         ajaxStop: function () { messageWait.hide(); }
     });
     $("form").on("submit", function () {
-        if ($("form").valid() && showWaitOnPost) {
+        let isValid;
+        try {
+            isValid = $("form").valid();
+        }
+        catch (_a) {
+            isValid = true;
+        }
+        if (isValid && showWaitOnPost) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });
@@ -1288,11 +1295,11 @@ var jjview = (function () {
         },
         openUploadForm: function (objid, title, values) {
             const pnlname = $("#v_" + objid).attr("pnlname");
-            let surl = $("form").attr("action");
-            surl += surl.includes("?") ? "&" : "?";
-            surl += "jjuploadform_" + pnlname + "=" + objid;
-            surl += "&uploadvalues=" + values;
-            popup.show(title, surl, 1);
+            let url = $("form").attr("action");
+            url += url.includes("?") ? "&" : "?";
+            url += "jjuploadform_" + pnlname + "=" + objid;
+            url += "&uploadvalues=" + values;
+            popup.show(title, url, 1);
         },
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();
@@ -1646,7 +1653,7 @@ class Popup {
         html += "</div>\r\n";
         $(html).appendTo($("body"));
     }
-    show(title, url, size = 0) {
+    show(title, url, size = 1) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();

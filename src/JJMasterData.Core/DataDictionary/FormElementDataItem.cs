@@ -14,7 +14,7 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElementDataItem
 {
     private DataAccessCommand _command;
-    private List<DataItemValue> _items;
+    private IList<DataItemValue> _items;
 
     /// <summary>
     /// Tipo da origem dos dados
@@ -38,7 +38,7 @@ public class FormElementDataItem
     /// ComboBox items [Key, Value]
     /// </summary>
     [DataMember(Name = "itens")]
-    public List<DataItemValue> Items
+    public IList<DataItemValue> Items
     {
         get => _items ??= new List<DataItemValue>();
         set => _items = value;

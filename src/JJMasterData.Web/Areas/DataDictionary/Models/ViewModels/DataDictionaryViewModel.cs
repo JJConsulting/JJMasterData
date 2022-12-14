@@ -1,6 +1,6 @@
 using JJMasterData.Core.WebComponents;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModel;
+namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class DataDictionaryViewModel
 {

@@ -611,6 +611,7 @@ public class JJGridView : JJBaseView
     public JJGridView(FormElement formElement) : this()
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        Name = "jjview" + formElement.Name.ToLower();
     }
 
 

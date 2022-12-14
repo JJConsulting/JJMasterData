@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Xunit.Tester;
@@ -6,8 +7,8 @@ namespace JJMasterData.Xunit.Tester;
 internal interface IDataDictionaryTester
 {
     DataDictionaryTesterResult AllOperations(Hashtable? values = null);
-    DataDictionaryResult Insert(Hashtable values);
-    DataDictionaryResult Update(Hashtable values);
-    DataDictionaryResult Read(Hashtable? filters = null);
-    DataDictionaryResult Delete(Hashtable values);
+    FormLetter Insert(Hashtable values);
+    FormLetter Update(Hashtable values);
+    FormLetter<DataTable> Read(Hashtable? filters = null);
+    FormLetter Delete(Hashtable values);
 }

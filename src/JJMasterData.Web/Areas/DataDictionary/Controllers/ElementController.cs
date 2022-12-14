@@ -9,7 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModel;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -351,7 +351,7 @@ public class ElementController : DataDictionaryController
         selectedGridValues
             .Select(value => value["name"]!.ToString()!)
             .ToList()
-            .ForEach(metadata => _elementService.DictionaryRepository.Delete(metadata));
+            .ForEach(metadata => _elementService.DataDictionaryRepository.Delete(metadata));
 
         return RedirectToAction(nameof(Index));
     }

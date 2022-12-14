@@ -40,7 +40,7 @@ public class UIOptionsController : DataDictionaryController
 
     private UIOptions Populate(string dictionaryName)
     {
-        var dicParser = _optionsService!.DictionaryRepository.GetMetadata(dictionaryName);
+        var dicParser = _optionsService!.DataDictionaryRepository.GetMetadata(dictionaryName);
         var uIOptions = dicParser.UIOptions;
         ViewBag.MenuId = "Options";
         ViewBag.DictionaryName = dictionaryName;

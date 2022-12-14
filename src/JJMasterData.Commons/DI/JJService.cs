@@ -22,6 +22,7 @@ public static class JJService
             return scope.ServiceProvider.GetService<IEntityRepository>();
         }
     }
+    
     public static JJMasterDataOptions Options
     {
         get
@@ -41,5 +42,5 @@ public static class JJService
         }
     }
 
-    public static ILogger Logger => Provider.GetService<ILogger>() ?? new Logger();
+    public static ILogger Logger => Provider.GetRequiredService<ILogger<Logger>>();
 }

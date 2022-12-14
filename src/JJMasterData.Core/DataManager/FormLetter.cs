@@ -34,6 +34,8 @@ public class FormLetter
 public class FormLetter<T> : FormLetter
 {
     public T? Result { get; set; }
+    
+    public FormLetter() : base() { }
     public FormLetter(Hashtable errors) : base(errors) { }
-
+    
 }

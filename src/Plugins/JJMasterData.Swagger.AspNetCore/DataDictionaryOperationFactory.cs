@@ -4,37 +4,24 @@ using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Text;
 using JJMasterData.Commons.Dao.Entity;
+using Microsoft.AspNetCore.Http;
 using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
 internal class DataDictionaryOperationFactory
 {
-
     internal FormElement FormElement { get; set; }
     internal ApiSettings Settings { get; set; }
     internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
-
     internal DataDictionaryOperationFactory(FormElement formElement, ApiSettings settings)
     {
         FormElement = formElement;
         Settings = settings;
     }
-
     internal OpenApiOperation Get()
     {
-
-        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
-
-        string nameFields = string.Empty;
-        foreach (var field in pkFields)
-        {
-            if (nameFields.Length > 0)
-                nameFields += ", ";
-
-            nameFields += field.Name.ToLower();
-        }
-
+        string nameFields = GetPrimaryKeysNames();
         var operation = new OpenApiOperation
         {
             Summary = "Get a specific record",
@@ -42,7 +29,7 @@ internal class DataDictionaryOperationFactory
             OperationId = ModelName + "_Get",
             Tags = new List<OpenApiTag>
             {
-                new OpenApiTag
+                new()
                 {
                     Name = FormElement.Name
                 }
@@ -72,7 +59,7 @@ internal class DataDictionaryOperationFactory
             },
             Parameters = new List<OpenApiParameter>
             {
-                new OpenApiParameter
+                new()
                 {
                     Name = Settings.GetFieldNameParsed("id"),
                     Description = "Primary Key Value.<br>" + nameFields,
@@ -99,7 +86,7 @@ internal class DataDictionaryOperationFactory
             Summary = "Get all records",
             Tags = new List<OpenApiTag>
             {
-                new OpenApiTag
+                new()
                 {
                     Name = FormElement.Name
                 }
@@ -127,7 +114,7 @@ internal class DataDictionaryOperationFactory
             OperationId = ModelName + "_GetAll",
             Parameters = new List<OpenApiParameter>
         {
-            new OpenApiParameter
+            new()
             {
                 Name = Settings.GetFieldNameParsed("pag"),
                 Description = "Current page",
@@ -140,7 +127,7 @@ internal class DataDictionaryOperationFactory
                     Default =  new OpenApiInteger(1)
                 }
             },
-            new OpenApiParameter
+            new()
             {
                 Name = Settings.GetFieldNameParsed("regporpag"),
                 Description = "Number of records per page",
@@ -153,7 +140,7 @@ internal class DataDictionaryOperationFactory
                     Default =  new OpenApiInteger(5)
                 }
             },
-            new OpenApiParameter
+            new()
             {
                 Name = Settings.GetFieldNameParsed("orderby"),
                 Description = "Order of records (default is pk ASC). Attention, this field is case sensitive.",
@@ -164,7 +151,7 @@ internal class DataDictionaryOperationFactory
                     Type = "string"
                 }
             },
-            new OpenApiParameter
+            new()
             {
                 Name = Settings.GetFieldNameParsed("tot"),
                 Description = "If you pass the total, the count of records will not be executed saving processing. (optional)",
@@ -271,7 +258,6 @@ internal class DataDictionaryOperationFactory
 
         return operation;
     }
-
     internal OpenApiOperation Post()
     {
         StringBuilder description = new();
@@ -308,7 +294,7 @@ internal class DataDictionaryOperationFactory
             Summary = "Add new records",
             Tags = new List<OpenApiTag>
             {
-                    new OpenApiTag
+                    new()
                     {
                         Name = FormElement.Name
                     }
@@ -350,7 +336,7 @@ internal class DataDictionaryOperationFactory
             },
             Parameters = new List<OpenApiParameter>
                 {
-                    new OpenApiParameter
+                    new()
                     {
                         Name = Settings.GetFieldNameParsed("replace"),
                         Description = "If record exists updates it, otherwise insert. (default false)",
@@ -361,7 +347,6 @@ internal class DataDictionaryOperationFactory
                             Type = "boolean"
                         }
                     }
-
                 }
         };
 
@@ -403,7 +388,7 @@ internal class DataDictionaryOperationFactory
             Summary = "Update records",
             Tags = new List<OpenApiTag>
             {
-                new OpenApiTag
+                new()
                 {
                     Name = FormElement.Name
                 }
@@ -485,7 +470,7 @@ internal class DataDictionaryOperationFactory
             Summary = "Update some especific fields",
             Tags = new List<OpenApiTag>
             {
-                new OpenApiTag
+                new()
                 {
                     Name = FormElement.Name
                 }
@@ -539,20 +524,11 @@ internal class DataDictionaryOperationFactory
         description.Append(FormElement.Title);
         description.Append("<br>Remove a record.");
         if (pkFields.Count > 1)
-            description.Append("Please enter the values ​​of the PKs separated by commas in the order of the object");
+            description.Append("Please enter the values of the PKs separated by commas in the order of the object");
         else
             description.Append("Please enter the value of the primary key as a parameter.");
 
-
-        string nameFields = string.Empty;
-        foreach (var field in pkFields)
-        {
-            if (nameFields.Length > 0)
-                nameFields += ", ";
-
-            nameFields += field.Name;
-        }
-
+        string nameFields = GetPrimaryKeysNames(pkFields);
         var operation = new OpenApiOperation
         {
             Summary = "Delete a specific record",
@@ -560,7 +536,7 @@ internal class DataDictionaryOperationFactory
             OperationId = ModelName + "_Del",
             Tags = new List<OpenApiTag>
             {
-                new OpenApiTag
+                new()
                 {
                     Name = FormElement.Name
                 }
@@ -586,7 +562,7 @@ internal class DataDictionaryOperationFactory
             },
             Parameters = new List<OpenApiParameter>
             {
-                new OpenApiParameter
+                new()
                 {
                     Name = Settings.GetFieldNameParsed("id"),
                     Description = "Primary Key Value.<br>" + nameFields,
@@ -605,6 +581,277 @@ internal class DataDictionaryOperationFactory
 
         return operation;
     }
+    #region File
+    internal OpenApiOperation GetFile(FormElementField field)
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var nameFields = GetPrimaryKeysNames(pkFields);
+        var operation = new OpenApiOperation
+        {
+            Summary = $"Download specified file from the field {field.Name}",
+            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = ModelName + "_GetFile",
+            Tags = new List<OpenApiTag>(),
+            Responses = new OpenApiResponses(),
+            Parameters = new List<OpenApiParameter>()
+        };
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = Settings.GetFieldNameParsed("id"),
+            Description = "Primary Key Value.<br>" + nameFields,
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "fileName",
+            Description = "File name",
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
+        {
+            Encoding = new Dictionary<string, OpenApiEncoding>
+            {
+                { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
+            }
+        } } };
+
+        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Responses.Add("200", new OpenApiResponse
+        {
+            Description = "Success",
+            Content = content
+        });
+        operation.Tags.Add(new()
+        {
+            Name = FormElement.Name
+        });
+
+        operation.Responses.AddDefaultValues();
+        return operation;
+    }
+    internal OpenApiOperation PostFile(FormElementField field)
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var nameFields = GetPrimaryKeysNames(pkFields);
+        var operation = new OpenApiOperation
+        {
+            Summary = $"Post a file to the field {field.Name}",
+            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = ModelName + "_PostFile",
+            Tags = new List<OpenApiTag>(),
+            Responses = new OpenApiResponses(),
+            Parameters = new List<OpenApiParameter>()
+        };
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = Settings.GetFieldNameParsed("id"),
+            Description = "Primary Key Value.<br>" + nameFields,
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+
+        operation.RequestBody = new OpenApiRequestBody
+        {
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                {
+                    "multipart/form-data", new OpenApiMediaType
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties =
+                            {
+                                {"file",new OpenApiSchema
+                                {
+                                    Type = "string",
+                                    Format = "binary"
+                                }}
+                            }
+                        },
+                        Encoding =
+                        {
+                            {"file", new OpenApiEncoding
+                            {
+                                Style = ParameterStyle.Form
+                            }}
+                        }
+                    }
+                }
+            }
+        };
+
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
+        {
+            Encoding = new Dictionary<string, OpenApiEncoding>
+            {
+                { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
+            }
+        } } };
+        
+        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Responses.Add("200", new OpenApiResponse
+        {
+            Description = "Success",
+            Content = content
+        });
+        operation.Tags.Add(new OpenApiTag
+        {
+            Name = FormElement.Name
+        });
+
+        operation.Responses.AddDefaultValues();
+        return operation;
+    }
+    internal OpenApiOperation DeleteFile(FormElementField field)
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var nameFields = GetPrimaryKeysNames(pkFields);
+        var operation = new OpenApiOperation
+        {
+            Summary = $"Deletes the specified file from the field {field.Name}",
+            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = ModelName + "_DeleteFile",
+            Tags = new List<OpenApiTag>(),
+            Responses = new OpenApiResponses(),
+            Parameters = new List<OpenApiParameter>()
+        };
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = Settings.GetFieldNameParsed("id"),
+            Description = "Primary Key Value.<br>" + nameFields,
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "fileName",
+            Description = "File name",
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
+        {
+            Encoding = new Dictionary<string, OpenApiEncoding>
+            {
+                { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
+            }
+        } } };
+
+        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Responses.Add("200", new OpenApiResponse
+        {
+            Description = "Success",
+            Content = content
+        });
+        operation.Tags.Add(new()
+        {
+            Name = FormElement.Name
+        });
+
+        operation.Responses.AddDefaultValues();
+        return operation;
+    }
+    public OpenApiOperation RenameFile(FormElementField field)
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        var nameFields = GetPrimaryKeysNames(pkFields);
+        var operation = new OpenApiOperation
+        {
+            Summary = $"Rename the specified file from the field {field.Name}",
+            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = ModelName + "_RenameFile",
+            Tags = new List<OpenApiTag>(),
+            Responses = new OpenApiResponses(),
+            Parameters = new List<OpenApiParameter>()
+        };
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = Settings.GetFieldNameParsed("id"),
+            Description = "Primary Key Value.<br>" + nameFields,
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "fileName",
+            Description = "Old file name",
+            In = ParameterLocation.Path,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+        
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "newName",
+            Description = "New file name",
+            In = ParameterLocation.Query,
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
+
+        var content = new Dictionary<string, OpenApiMediaType>
+        { { "application/octet-stream", new OpenApiMediaType
+        {
+            Encoding = new Dictionary<string, OpenApiEncoding>
+            {
+                { "utf-8", new OpenApiEncoding { ContentType = "application/octet-stream" } }
+            }
+        } } };
+        
+        operation.Parameters.Add(GetAcceptLanguageParameter());
+        operation.Responses.Add("200", new OpenApiResponse
+        {
+            Description = "Success",
+            Content = content
+        });
+        operation.Tags.Add(new()
+        {
+            Name = FormElement.Name
+        });
+
+        operation.Responses.AddDefaultValues();
+        return operation;
+    }
+    #endregion
     private static OpenApiParameter GetAcceptLanguageParameter()
     {
         return new OpenApiParameter
@@ -620,4 +867,24 @@ internal class DataDictionaryOperationFactory
             }
         };
     }
+    public string GetPrimaryKeysNames()
+    {
+        var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
+        return GetPrimaryKeysNames(pkFields);
+    }
+    public string GetPrimaryKeysNames(List<FormElementField> pkFields)
+    {
+        string nameFields = string.Empty;
+        foreach (var field in pkFields)
+        {
+            if (nameFields.Length > 0)
+                nameFields += ", ";
+
+            nameFields += field.Name.ToLower();
+        }
+
+        return nameFields;
+    }
+
+
 }

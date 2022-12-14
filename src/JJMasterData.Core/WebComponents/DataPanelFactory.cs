@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using System;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents
 {
@@ -18,7 +18,7 @@ namespace JJMasterData.Core.WebComponents
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName));
 
-            var dicDao = DictionaryRepositoryFactory.GetInstance();
+            var dicDao = JJServiceCore.DataDictionaryRepository;
             var dicParser = dicDao.GetMetadata(elementName);
             var formElement = dicParser.GetFormElement();
 

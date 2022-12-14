@@ -79,7 +79,7 @@ public class FormManager
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    public Hashtable MergeWithExpressionValues(Hashtable formValues, PageState pageState, bool replaceNullValues)
+    public Hashtable MergeWithExpressionValues(IDictionary formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
@@ -196,12 +196,12 @@ public class FormManager
         return val;
     }
 
-    public List<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
+    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)
             return null;
 
-        var values = new List<DataItemValue>();
+        IList<DataItemValue> values = new List<DataItemValue>();
         if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
         {
 

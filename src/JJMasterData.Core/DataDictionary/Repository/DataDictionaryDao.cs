@@ -10,17 +10,17 @@ using System.Data;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DictionaryDao : IDictionaryRepository
+public class DataDictionaryDao : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
-    public DictionaryDao(IEntityRepository entityRepository)
+    public DataDictionaryDao(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetMetadataList"/>
-    public IList<Metadata> GetMetadataList(bool? sync)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
+    public IEnumerable<Metadata> GetMetadataList(bool? sync)
     {
         var list = new List<Metadata>();
 
@@ -28,7 +28,7 @@ public class DictionaryDao : IDictionaryRepository
         if (sync.HasValue)
             filter.Add("sync", (bool)sync ? "1" : "0");
 
-        string orderBy = "name, type";
+        const string orderBy = "name, type";
         string currentName = "";
         int tot = 1;
         var dt = _entityRepository.GetDataTable(DataDictionaryStructure.GetElement(), filter, orderBy, 10000, 1, ref tot);
@@ -69,7 +69,7 @@ public class DictionaryDao : IDictionaryRepository
         return list;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetNameList"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
         int totalRecords = 10000;
@@ -82,7 +82,7 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetMetadata"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public Metadata GetMetadata(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
@@ -120,7 +120,7 @@ public class DictionaryDao : IDictionaryRepository
         return metadata;
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.InsertOrReplace"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
     public void InsertOrReplace(Metadata metadata)
     {
         if (metadata == null)
@@ -193,7 +193,7 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.Delete"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
     public void Delete(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
@@ -215,20 +215,20 @@ public class DictionaryDao : IDictionaryRepository
         }
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.Exists"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
     public bool Exists(string tableName)
     {
         return _entityRepository.TableExists(tableName);
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.CreateStructureIfNotExists"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
         if(!Exists(JJService.Options.TableName))
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
-    ///<inheritdoc cref="IDictionaryRepository.GetDataTable"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
     public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
