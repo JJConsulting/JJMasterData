@@ -23,12 +23,11 @@ public static class Log
     
     public static void AddError(string value)
     {
-        _logger.LogError(value);
-    }
+        _logger.LogError(value); }
     
     public static void AddError(string value, string source)
     {
-        _logger.LogError(value, source, LoggerLevel.Error);
+        _logger.LogError(value, source);
     }
     
     public static void AddInfo(string value)
@@ -38,7 +37,7 @@ public static class Log
     
     public static void AddInfo(string value, string source)
     {
-        _logger.LogInformation(value, source, LoggerLevel.Information);
+        _logger.LogInformation(value, source);
     }
     
     public static void AddWarning(string value)
@@ -48,7 +47,7 @@ public static class Log
     
     public static void AddWarning(string value, string source)
     {
-        _logger.LogWarning(value, source, LoggerLevel.Warning);
+        _logger.LogWarning(value, source);
     }
 }
 

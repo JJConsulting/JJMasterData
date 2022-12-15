@@ -25,7 +25,7 @@ public class JJServiceBuilder
         Services.AddLocalization();
         Services.AddLogging(builder =>
         {
-            builder.AddJJMasterDataLogger();
+            //builder.AddJJMasterDataLogger();
         });
         Services.AddScoped<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();

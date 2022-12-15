@@ -1,6 +1,7 @@
 ﻿using System;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,15 +32,16 @@ public static class ServiceExtensions
         return app;
     }
 
-    public static ILoggingBuilder AddJJMasterDataLogger(this ILoggingBuilder builder)
+    public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder)
     {
         builder.AddConfiguration();
-        
-        builder.Services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<ILoggerProvider, LoggerProvider>());
-
-        LoggerProviderOptions.RegisterProviderOptions
-            <JJMasterDataOptions, LoggerProvider>(builder.Services);
+        //todo: add dblogger
+        // builder.
+        // builder.Services.TryAddEnumerable(
+        //     ServiceDescriptor.Singleton<ILoggerProvider, DbLoggerProvider>());
+        //
+        // LoggerProviderOptions.RegisterProviderOptions
+        //     <JJMasterDataOptions, DbLoggerProvider>(builder.Services);
         
         return builder;
     }
