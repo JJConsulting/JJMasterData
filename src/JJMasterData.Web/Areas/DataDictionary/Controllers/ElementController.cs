@@ -21,13 +21,10 @@ public class ElementController : DataDictionaryController
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
 
-    public ElementController(ElementService elementService, ThemeService themeService, ILogger<ElementController> logger)
+    public ElementController(ElementService elementService, ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
-        Log.AddInfo("PAN DO SERVICEBUILDER");
-        logger.LogInformation("Informação do ILogger");
-        throw new Exception("pan exception");
     }
 
     public ActionResult Index()
