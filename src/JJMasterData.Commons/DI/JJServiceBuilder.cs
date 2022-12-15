@@ -2,13 +2,10 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -27,6 +24,7 @@ public class JJServiceBuilder
         Services.AddLogging(builder =>
         {
             builder.AddDbLoggerProvider();
+            builder.AddFileLoggerProvider();
         });
         Services.AddTransient<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();

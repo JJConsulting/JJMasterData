@@ -1,10 +1,12 @@
-﻿using JJMasterData.Commons.DI;
+﻿using System;
+using JJMasterData.Commons.DI;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
 /// <summary>
 /// Static accessor to the ILogger interface.
+/// When possible, use ILogger via constructor injection.
 /// </summary>
 public static class Log
 {
@@ -14,7 +16,6 @@ public static class Log
     {
         _logger = JJService.Logger;
     }
-
 
     public static void Configure(ILogger logger)
     {

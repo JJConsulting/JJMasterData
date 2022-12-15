@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
@@ -41,9 +40,7 @@ public class DbLogger : ILogger
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         if (!IsEnabled(logLevel))
-        {
             return;
-        }
 
         var values = new Hashtable
         {
