@@ -57,7 +57,7 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
 - *Required:* Irá definir a obrigatoriedade do preenchimento do campo.
 
-- *PK:* Definir se é ou não a chave primária.
+- *PK:* Definir se é ou não a chave primária, é importante que você preencha um dos itens da sua tabela como chave primária.
 
 - *Identity:*  Se o campo será auto incremento, por exemplo, se ele irá retornar um campo de forma automática de dentro do banco de dados. 
 
