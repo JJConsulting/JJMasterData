@@ -92,18 +92,20 @@ public class JJComboBox : JJBaseControl
         if (values == null)
             throw new ArgumentException(Translate.Key("Data source not defined for combo"), Name);
 
-        var combobox = new HtmlBuilder(HtmlTag.Div);
+
 
         if (ReadOnly)
         {
+            var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));
+            return combobox;
         }
         else
         {
-            combobox.AppendElement(GetSelectElement(values));
+            return GetSelectElement(values);
         }
 
-        return combobox;
+
     }
 
     private HtmlBuilder GetSelectElement(IEnumerable<DataItemValue> values)
@@ -132,7 +134,8 @@ public class JJComboBox : JJBaseControl
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, Translate.Key("(All)"))
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, Translate.Key("(Choose)"));
 
-        options.Add(firstOption);
+        if (DataItem.FirstOption != FirstOptionMode.None)
+            options.Add(firstOption);
 
         foreach (var value in values)
         {

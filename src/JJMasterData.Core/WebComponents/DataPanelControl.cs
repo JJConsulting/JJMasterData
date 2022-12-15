@@ -168,12 +168,7 @@ internal class DataPanelControl
             fullClass = "col-sm-8";
         }
 
-        if (BootstrapHelper.Version > 3)
-        {
-            labelClass += " d-flex justify-content-end align-items-center";
-            fieldClass += " d-flex justify-content-start align-items-center";
-        }
-
+  
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
@@ -181,6 +176,15 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var f in fields)
         {
+            if (!string.IsNullOrEmpty(f.CssClass))
+                fieldClass = f.CssClass;
+
+            if (BootstrapHelper.Version > 3)
+            {
+                labelClass += " d-flex justify-content-end align-items-center";
+                fieldClass += " d-flex justify-content-start align-items-center";
+            }
+
             //Visible expression
             bool visible = FieldManager.IsVisible(f, PageState, Values);
             if (!visible)
@@ -196,7 +200,7 @@ internal class DataPanelControl
                 CssClass = labelClass
             };
 
-            fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : $" {f.CssClass}";
+            fldClass = string.Empty;
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fldClass += " has-error";
 
@@ -289,6 +293,11 @@ internal class DataPanelControl
             }
             else if (field is JJComboBox comboBox)
             {
+                if (f.Filter.IsRequired || f.Filter.Type == FilterMode.MultValuesEqual || f.Filter.Type == FilterMode.MultValuesContain)
+                    comboBox.DataItem.FirstOption = FirstOptionMode.None;
+                else
+                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
+
                 if (f.Filter.Type == FilterMode.MultValuesEqual)
                     comboBox.MultiSelect = true;
             }
