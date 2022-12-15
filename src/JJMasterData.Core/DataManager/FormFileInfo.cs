@@ -1,8 +1,16 @@
-﻿namespace JJMasterData.Core.DataManager;
+﻿using System;
+
+namespace JJMasterData.Core.DataManager;
 
 public class FormFileInfo
 {
-    public FormFileContent Content {get; set;} = new();
+    private FormFileContent _content;
+
+    public FormFileContent Content
+    {
+        get => _content ??= _content;
+        set => _content = value;
+    }
 
     public bool Deleted { get; set; }
 
