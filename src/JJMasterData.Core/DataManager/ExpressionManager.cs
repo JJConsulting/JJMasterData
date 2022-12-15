@@ -270,22 +270,15 @@ public class ExpressionManager
         }
         catch (Exception ex)
         {
-            var sErr = new StringBuilder();
-            sErr.AppendLine(Translate.Key("Error retrieving expression or trigger."));
-            sErr.Append(Translate.Key("Field"));
-            sErr.Append(": ");
-            sErr.AppendLine(f.Name);
+            var errorMessage = new StringBuilder();
+            errorMessage.AppendLine(Translate.Key("Error retrieving expression or trigger."));
+            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.Append(": ");
+            errorMessage.AppendLine(f.Name);
 
-            var sErrLog = new StringBuilder(sErr.ToString());
-            sErrLog.Append(Translate.Key("Expression"));
-            sErrLog.Append(": ");
-            sErrLog.AppendLine(expression);
-            sErrLog.Append(Translate.Key("Detail Message"));
-            sErrLog.Append(": ");
-            sErrLog.AppendLine(ex.Message);
-            Log.AddError(sErrLog.ToString());
+            Log.AddError(ex, errorMessage.ToString());
 
-            throw new Exception(sErr.ToString(), ex);
+            throw new Exception(errorMessage.ToString(), ex);
         }
         return retVal;
     }

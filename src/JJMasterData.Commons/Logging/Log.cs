@@ -10,6 +10,9 @@ namespace JJMasterData.Commons.Logging;
 /// </summary>
 public static class Log
 {
+
+    public const string JJSource = "JJMasterData";
+    
     private static ILogger _logger;
 
     static Log()
@@ -22,33 +25,25 @@ public static class Log
         _logger = logger;
     }
     
-    public static void AddError(string value)
+
+    public static void AddError(string value, string source = "System")
     {
-        _logger.LogError(value); }
-    
-    public static void AddError(string value, string source)
-    {
-        _logger.LogError(value, source);
+        _logger.LogError(value, new EventId(0, source));
     }
     
-    public static void AddInfo(string value)
+    public static void AddError(Exception exception, string message)
     {
-        _logger.LogInformation(value);
+        _logger.LogError(exception, message);
     }
     
-    public static void AddInfo(string value, string source)
+    public static void AddInfo(string value, string source = "System")
     {
-        _logger.LogInformation(value, source);
+        _logger.LogInformation(value, new EventId(0, source));
     }
-    
-    public static void AddWarning(string value)
+
+    public static void AddWarning(string value, string source = "System")
     {
-        _logger.LogWarning(value);
-    }
-    
-    public static void AddWarning(string value, string source)
-    {
-        _logger.LogWarning(value, source);
+        _logger.LogWarning(value, new EventId(0, source));
     }
 }
 

@@ -4,6 +4,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ public class LogController : Controller
     {
         EntityRepository = entityRepository;
         Options = options.Value;
-        LoggerElement = DbLoggerElement.GetInstance(options.Value.TableName);
+        LoggerElement = DbLoggerElement.GetInstance(options.Value);
     }
 
     public ActionResult Index()
@@ -57,7 +58,7 @@ public class LogController : Controller
             SubTitle = string.Empty
         };
 
-        var logLevel = formElement.Fields["LogLevel"];
+        var logLevel = formElement.Fields[Options.LevelColumnName];
         logLevel.Component = FormComponent.ComboBox;
         
         logLevel.DataItem.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
@@ -70,7 +71,7 @@ public class LogController : Controller
         
         var gridView = new JJGridView(formElement)
         {
-            CurrentOrder = "Created DESC"
+            CurrentOrder = $"{Options.CreatedColumnName} DESC"
         };
 
         var btnClearAll = new UrlRedirectAction
@@ -81,9 +82,25 @@ public class LogController : Controller
             ShowAsButton = true,
             UrlRedirect = Url.Action("ClearAll")
         };
-            
+
+        gridView.OnRenderCell += OnRenderCell;
         gridView.AddToolBarAction(btnClearAll);
 
         return gridView;
     }
+    private void OnRenderCell(object? sender, GridCellEventArgs e)
+    {
+        string? message;
+        if (e.Field.Name.Equals(Options.MessageColumnName))
+        {
+            message = e.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
+        }
+        else
+        {
+            message = e.Sender.GetHtml();
+        }
+
+        e.HtmlResult = message;
+    }
+    
 }

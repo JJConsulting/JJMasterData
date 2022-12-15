@@ -6,84 +6,68 @@ public static class DbLoggerElement
 {
     private static Element _element;
     
-    public static Element GetInstance(string tableName)
+    public static Element GetInstance(DbLoggerOptions options)
     {
 
         if (_element != null)
             return _element;
-        
+
         _element = new Element
         {
-            Name = "Logger",
-            TableName = tableName,
+            Name = "Logging",
+            TableName = options.TableName,
+            Info = "System Log",
             Fields =
             {
                 new ElementField
                 {
-                    Name = "Created",
+                    Name = options.CreatedColumnName,
                     Label = "Created",
+                    IsPk = true,
                     DataType = FieldType.DateTime,
-                    Filter = new ElementFilter
+                    Filter =
                     {
                         Type = FilterMode.Range
-                    },
-                    IsPk = true
+                    }
                 },
                 new ElementField
                 {
-                    Name = "LogLevel",
-                    Label = "LogLevel",
-                    DataType = FieldType.Int,
-                    Filter = new ElementFilter
+                    Name = options.LevelColumnName,
+                    Label = "Level",
+                    DataType = FieldType.Varchar,
+                    Size = 1,
+                    Filter =
                     {
                         Type = FilterMode.Equal
                     }
                 },
                 new ElementField
                 {
-                    Name = "EventId",
-                    Label = "EventId",
-                    DataType = FieldType.Int
+                    Name = options.EventColumnName,
+                    Label = "Event",
+                    DataType = FieldType.Varchar,
+                    Size = 50,
+                    Filter =
+                    {
+                        Type = FilterMode.Contain
+                    }
                 },
                 new ElementField
                 {
-                    Name = "EventName",
-                    Label = "Event Name",
-                    Size = 100,
-                    DataType = FieldType.Varchar
-                },
-                new ElementField
-                {
-                    Name = "Message",
+                    Name = options.MessageColumnName,
                     Label = "Message",
+                    DataType = FieldType.Varchar,
                     Size = 700,
-                    DataType = FieldType.Varchar
-                },   
-                new ElementField
-                {
-                    Name = "ExceptionMessage",
-                    Label = "Exception Message",
-                    Size = 700,
-                    DataType = FieldType.Varchar
-                },               
-                new ElementField
-                {
-                    Name = "ExceptionStackTrace",
-                    Label = "Exception StackTrace",
-                    Size = 700,
-                    DataType = FieldType.Varchar
-                },
-                new ElementField
-                {
-                    Name = "ExceptionSource",
-                    Label = "Exception Source",
-                    Size = 700,
-                    DataType = FieldType.Varchar
+                    Filter =
+                    {
+                        Type = FilterMode.Contain
+                    }
                 }
             }
         };
-
+        
         return _element;
+        
     }
     
 }

@@ -9,7 +9,6 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -22,10 +21,13 @@ public class ElementController : DataDictionaryController
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
 
-    public ElementController(ElementService elementService, ThemeService themeService)
+    public ElementController(ElementService elementService, ThemeService themeService, ILogger<ElementController> logger)
     {
         _themeService = themeService;
         _elementService = elementService;
+        Log.AddInfo("PAN DO SERVICEBUILDER");
+        logger.LogInformation("Informação do ILogger");
+        throw new Exception("pan exception");
     }
 
     public ActionResult Index()

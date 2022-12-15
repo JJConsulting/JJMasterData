@@ -1,5 +1,7 @@
+#nullable enable
 using System;
 using System.Collections;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
@@ -37,30 +39,44 @@ public class DbLogger : ILogger
     /// <param name="state">The event's state.</param>
     /// <param name="exception">The event's exception. An instance of <see cref="Exception" /></param>
     /// <param name="formatter">A delegate that formats </param>
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         if (!IsEnabled(logLevel))
             return;
-
+    
         var values = new Hashtable
         {
-            ["Created"] = DateTime.Now,
-            ["LogLevel"] = logLevel,
-            ["EventId"] = eventId.Id,
-            ["EventName"] = eventId.Name,
-            ["Message"] = formatter(state, exception),
-            ["ExceptionMessage"] = exception?.Message,
-            ["ExceptionStackTrace"] = exception?.StackTrace,
-            ["ExceptionSource"] = exception?.Source
+            [_dbLoggerProvider.Options.CreatedColumnName] = DateTime.Now,
+            [_dbLoggerProvider.Options.LevelColumnName] = logLevel,
+            [_dbLoggerProvider.Options.EventColumnName] = eventId.Name,
+            [_dbLoggerProvider.Options.MessageColumnName] = GetMessage(eventId, formatter(state, exception), exception),
         };
-
-        string tableName = _dbLoggerProvider.Options.TableName;
         
-        var element = DbLoggerElement.GetInstance(tableName);
+        var element = DbLoggerElement.GetInstance(_dbLoggerProvider.Options);
         
-        if (!_dbLoggerProvider.Repository.TableExists(tableName))
+        if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
             _dbLoggerProvider.Repository.CreateDataModel(element);
         
         _dbLoggerProvider.Repository.Insert(element, values);
+    }
+
+    private string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
+    {
+        var message = new StringBuilder();
+        
+        message.AppendLine(eventId.Name);
+        message.AppendLine(formatterMessage);
+
+        if (exception != null)
+        {
+            message.AppendLine("Message:");
+            message.AppendLine(exception.Message);
+            message.AppendLine("Stacktrace:");
+            message.AppendLine(exception.StackTrace);
+            message.AppendLine("Source:");
+            message.AppendLine(exception.Source);
+        }
+
+        return message.ToString();
     }
 }

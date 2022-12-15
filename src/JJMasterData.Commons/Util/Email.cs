@@ -136,7 +136,7 @@ public class Email
                 sErr.AppendLine(" ");
                 sErr.Append(ex.InnerException.Message);
             }
-            Log.AddError(sErr.ToString(), "JJLIB");
+            Log.AddError(sErr.ToString());
             lRet = false;
         }
         finally

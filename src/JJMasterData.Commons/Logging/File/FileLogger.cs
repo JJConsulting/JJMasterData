@@ -61,9 +61,9 @@ public class FileLogger : ILogger
         
         if (!Directory.Exists(directory))
             Directory.CreateDirectory(directory!);
-
-        using var writer = new StreamWriter(path, true);
         
-        writer.Write(values);
+        using var writer = new StreamWriter(path, true);
+
+        writer.Write(values + ",\n");
     }
 }
