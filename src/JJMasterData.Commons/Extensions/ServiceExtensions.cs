@@ -25,12 +25,7 @@ public static class ServiceExtensions
         JJService.Provider = provider;
         return JJService.Provider;
     }
-
-    public static IApplicationBuilder UseJJMasterData(this IApplicationBuilder app)
-    {
-        app.ApplicationServices.UseJJMasterData();
-        return app;
-    }
+    
 
     public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder)
     {
@@ -40,8 +35,7 @@ public static class ServiceExtensions
         // builder.Services.TryAddEnumerable(
         //     ServiceDescriptor.Singleton<ILoggerProvider, DbLoggerProvider>());
         //
-        // LoggerProviderOptions.RegisterProviderOptions
-        //     <JJMasterDataOptions, DbLoggerProvider>(builder.Services);
+        // 
         
         return builder;
     }

@@ -44,13 +44,11 @@ public class DbLogger : ILogger
         {
             return;
         }
- 
-        var threadId = Thread.CurrentThread.ManagedThreadId;
-        
+
         var values = new Hashtable
         {
-            ["ThreadId"] = threadId,
-            ["LogLevel"] = logLevel.ToString(),
+            ["Created"] = DateTime.Now,
+            ["LogLevel"] = logLevel,
             ["EventId"] = eventId.Id,
             ["EventName"] = eventId.Name,
             ["Message"] = formatter(state, exception),
@@ -63,7 +61,7 @@ public class DbLogger : ILogger
         
         var element = DbLoggerElement.GetInstance(tableName);
         
-        if (_dbLoggerProvider.Repository.TableExists(tableName))
+        if (!_dbLoggerProvider.Repository.TableExists(tableName))
             _dbLoggerProvider.Repository.CreateDataModel(element);
         
         _dbLoggerProvider.Repository.Insert(element, values);

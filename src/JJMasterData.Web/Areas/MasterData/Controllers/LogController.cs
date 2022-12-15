@@ -1,13 +1,9 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Logging.Db;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,10 +30,9 @@ public class LogController : Controller
 
     public ActionResult Index()
     {
-        if (EntityRepository.TableExists(Options.TableName))
+        if (!EntityRepository.TableExists(Options.TableName))
         {
-            var factory = new Factory();
-            factory.CreateDataModel(LoggerElement);
+            EntityRepository.CreateDataModel(LoggerElement);
         }
 
         var gridView = GetLoggingGridView();
@@ -56,24 +51,27 @@ public class LogController : Controller
 
     private JJGridView GetLoggingGridView()
     {
-        var f = new FormElement(LoggerElement)
+        var formElement = new FormElement(LoggerElement)
         {
             Title = Translate.Key("Application Log"),
             SubTitle = string.Empty
         };
 
-        var tipo = f.Fields["LogLevel"];
-        tipo.Component = FormComponent.ComboBox;
+        var logLevel = formElement.Fields["LogLevel"];
+        logLevel.Component = FormComponent.ComboBox;
         
-        //TODO
-        // tipo.DataItem.Items.Add(new DataItemValue("2", "Alerta"));
-        // tipo.DataItem.Items.Add(new DataItemValue("3", "Erro"));
-
-        var gridView = new JJGridView(f)
+        logLevel.DataItem.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
+        
+        var gridView = new JJGridView(formElement)
         {
-            CurrentOrder = $"Log DESC"
+            CurrentOrder = "Created DESC"
         };
-        gridView.OnRenderCell += OnRenderCell!;
 
         var btnClearAll = new UrlRedirectAction
         {
@@ -88,20 +86,4 @@ public class LogController : Controller
 
         return gridView;
     }
-    
-    private void OnRenderCell(object sender, GridCellEventArgs e)
-    {
-        // string? msg;
-        // if (e.Field.Name.Equals(Logger.Options.Table.ContentColumnName))
-        // {
-        //     msg = e.DataRow[Logger.Options.Table.ContentColumnName].ToString()?.Replace("\r\n", "<br>");
-        // }
-        // else
-        // {
-        //     msg = e.Sender.GetHtml();
-        // }
-        //
-        // e.HtmlResult = e.;
-    }
-
 }

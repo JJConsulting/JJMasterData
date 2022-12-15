@@ -3,6 +3,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +26,9 @@ public class JJServiceBuilder
         Services.AddLocalization();
         Services.AddLogging(builder =>
         {
-            //builder.AddJJMasterDataLogger();
+            builder.AddDbLoggerProvider();
         });
-        Services.AddScoped<IEntityRepository,Factory>();
+        Services.AddTransient<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddTransient<IBackgroundTask, BackgroundTask>();
         return this;

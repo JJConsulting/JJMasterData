@@ -41,12 +41,6 @@ public static class DbLoggerElement
                 },
                 new ElementField
                 {
-                    Name = "ThreadId",
-                    Label = "ThreadId",
-                    DataType = FieldType.Int
-                },
-                new ElementField
-                {
                     Name = "EventId",
                     Label = "EventId",
                     DataType = FieldType.Int
@@ -55,30 +49,35 @@ public static class DbLoggerElement
                 {
                     Name = "EventName",
                     Label = "Event Name",
+                    Size = 100,
                     DataType = FieldType.Varchar
                 },
                 new ElementField
                 {
                     Name = "Message",
                     Label = "Message",
+                    Size = 700,
                     DataType = FieldType.Varchar
                 },   
                 new ElementField
                 {
                     Name = "ExceptionMessage",
                     Label = "Exception Message",
+                    Size = 700,
                     DataType = FieldType.Varchar
                 },               
                 new ElementField
                 {
                     Name = "ExceptionStackTrace",
                     Label = "Exception StackTrace",
+                    Size = 700,
                     DataType = FieldType.Varchar
                 },
                 new ElementField
                 {
                     Name = "ExceptionSource",
                     Label = "Exception Source",
+                    Size = 700,
                     DataType = FieldType.Varchar
                 }
             }
