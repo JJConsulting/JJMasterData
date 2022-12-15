@@ -8,7 +8,7 @@ public class FormFileInfo
 
     public FormFileContent Content
     {
-        get => _content ??= _content;
+        get => _content ??= new FormFileContent();
         set => _content = value;
     }
 
