@@ -73,21 +73,21 @@ internal class DataPanelControl
         var html = new HtmlBuilder(HtmlTag.Div);
         int linegroup = int.MinValue;
         HtmlBuilder row = null;
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
             //visible expression
-            bool visible = FieldManager.IsVisible(f, PageState, Values);
+            bool visible = FieldManager.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
 
             //value
             object value = null;
-            if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(f, Values[f.Name]);
+            if (Values != null && Values.Contains(field.Name))
+                value = FieldManager.FormatVal(field, Values[field.Name]);
 
-            if (linegroup != f.LineGroup)
+            if (linegroup != field.LineGroup)
             {
-                linegroup = f.LineGroup;
+                linegroup = field.LineGroup;
                 row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("row");
                 html.AppendElement(row);
@@ -96,39 +96,39 @@ internal class DataPanelControl
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
-            row.AppendElement(htmlField);
+            row?.AppendElement(htmlField);
 
             string fieldClass;
-            if (FieldManager.IsRange(f, PageState))
+            if (FieldManager.IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
-            else if (!string.IsNullOrEmpty(f.CssClass))
+            else if (!string.IsNullOrEmpty(field.CssClass))
             {
-                fieldClass = f.CssClass;
+                fieldClass = field.CssClass;
             }
             else
             {
-                if (f.Component == FormComponent.TextArea | f.Component == FormComponent.CheckBox)
+                if (field.Component == FormComponent.TextArea | field.Component == FormComponent.CheckBox)
                     fieldClass = "col-sm-12";
                 else
                     fieldClass = colClass;
             }
             htmlField.WithCssClass(fieldClass);
 
-            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(field.Name))
                 htmlField.WithCssClass("has-error");
 
             if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
 
-            if (f.Component != FormComponent.CheckBox)
-                htmlField.AppendElement(new JJLabel(f));
+            if (field.Component != FormComponent.CheckBox)
+                htmlField.AppendElement(new JJLabel(field));
 
             if (IsViewModeAsStatic)
-                htmlField.AppendElement(GetStaticField(f));
+                htmlField.AppendElement(GetStaticField(field));
             else
-                htmlField.AppendElement(GetControlField(f, value));
+                htmlField.AppendElement(GetControlField(field, value));
         }
 
         return html;

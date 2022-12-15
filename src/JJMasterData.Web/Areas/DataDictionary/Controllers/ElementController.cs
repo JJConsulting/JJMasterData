@@ -44,7 +44,7 @@ public class ElementController : DataDictionaryController
         var formName = e.FieldValues["name"]?.ToString();
         switch (e.Action.Name)
         {
-            case "render":
+            case "preview":
                 e.LinkButton.OnClientClick =
                     $"window.open('{Url.Action("Render", "Form", new { dictionaryName = formName, Area = "MasterData" })}', '_blank').focus();";
                 break;
