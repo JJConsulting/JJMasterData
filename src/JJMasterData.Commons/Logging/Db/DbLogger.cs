@@ -43,10 +43,12 @@ public class DbLogger : ILogger
     {
         if (!IsEnabled(logLevel))
             return;
-    
+
+        var now = DateTime.Now;
+        
         var values = new Hashtable
         {
-            [_dbLoggerProvider.Options.CreatedColumnName] = DateTime.UtcNow,
+            [_dbLoggerProvider.Options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
             [_dbLoggerProvider.Options.LevelColumnName] = (int)logLevel,
             [_dbLoggerProvider.Options.EventColumnName] = eventId.Name,
             [_dbLoggerProvider.Options.MessageColumnName] = GetMessage(eventId, formatter(state, exception), exception),
