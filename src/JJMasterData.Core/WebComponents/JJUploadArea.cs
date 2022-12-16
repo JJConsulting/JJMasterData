@@ -176,7 +176,7 @@ public class JJUploadArea : JJBaseView
     private FormFileContent GetFile()
     {
         var fileData = CurrentContext.Request.GetFile("file");
-        var stream = new MemoryStream();
+        using var stream = new MemoryStream();
         string filename = fileData.FileName;
         
 #if NETFRAMEWORK
@@ -188,9 +188,9 @@ public class JJUploadArea : JJBaseView
         var content = new FormFileContent
         {
             FileName = filename,
-            FileStream = stream,
-            LastWriteTime = DateTime.Now,
-            SizeBytes = stream.Length
+            Bytes = stream.ToArray(),
+            Length = stream.Length,
+            LastWriteTime = DateTime.Now
         };
 
         return content;

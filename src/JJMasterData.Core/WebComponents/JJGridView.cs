@@ -701,7 +701,7 @@ public class JJGridView : JJBaseView
         return false;
     }
 
-    private IList<HtmlBuilder> GetHiddenInputs()
+    private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
         var elementList = new List<HtmlBuilder>();
         

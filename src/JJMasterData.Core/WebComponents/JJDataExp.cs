@@ -12,6 +12,7 @@ using System.Collections;
 using System.Data;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
@@ -88,14 +89,9 @@ public class JJDataExp : JJBaseProcess
         return new JJIcon(IconType.FileTextO);
     }
 
-    internal string GetDownloadUrl(string filePath)
+    internal static string GetDownloadUrl(string filePath)
     {
-        var uriBuilder = new UriBuilder(CurrentContext.Request.AbsoluteUri);
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        query[JJDownloadFile.DownloadParameter] = Cript.Cript64(filePath);
-        uriBuilder.Query = query.ToString() ?? string.Empty;
-
-        return uriBuilder.ToString();
+        return JJDownloadFile.GetDownloadUrl(filePath);
     }
 
     private string GetFinishedMessageHtml(DataExpReporter reporter)
@@ -212,14 +208,14 @@ public class JJDataExp : JJBaseProcess
         exporter.CurrentContext = HttpContext.Current;
         exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
         
-        exporter.RunWorkerAsync(CancellationToken.None).Wait();
+        Task.Run(async () => await exporter.RunWorkerAsync(CancellationToken.None));
 
         var download = new JJDownloadFile
         {
             FilePath = exporter.FolderPath
         };
 
-        download.ResponseDirectDownload();
+        download.DirectDownload();
     }
 
     internal void ExportFileInBackground(Hashtable filter, string order)

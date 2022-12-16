@@ -80,11 +80,13 @@ public class TextWriter : BaseWriter, ITextWriter
                 var renderCell = OnRenderCell;
                 if (renderCell != null)
                 {
-                    var args = new GridCellEventArgs();
-                    args.Field = field;
-                    args.DataRow = row;
-                    args.Sender = new JJText(value);
-                    OnRenderCell.Invoke(this, args);
+                    var args = new GridCellEventArgs
+                    {
+                        Field = field,
+                        DataRow = row,
+                        Sender = new JJText(value)
+                    };
+                    renderCell.Invoke(this, args);
                     value = args.HtmlResult;
                 }
 
@@ -99,7 +101,7 @@ public class TextWriter : BaseWriter, ITextWriter
         }
     }
 
-    private void GenerateHeader(StreamWriter sw)
+    private void GenerateHeader(System.IO.TextWriter sw)
     {
         bool isFirst = true;
         foreach (var field in Fields)

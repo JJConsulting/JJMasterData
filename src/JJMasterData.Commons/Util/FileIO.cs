@@ -70,21 +70,6 @@ public class FileIO
         ///Carrega os registros de um diretório em um DataTable
         ///</summary>
         ///<param name="fullPath">Caminho completo do diretório</param>
-        ///<returns>
-        ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
-        ///</returns>
-        ///<remarks>
-        ///Author: Lucio Pelinson 21-05-2012
-        ///</remarks>
-        public static DataTable GetDataTableFiles(string fullPath)
-        {
-            return GetDataTableFiles(fullPath, null);
-        }
-
-        ///<summary>
-        ///Carrega os registros de um diretório em um DataTable
-        ///</summary>
-        ///<param name="fullPath">Caminho completo do diretório</param>
         ///<param name="searchPattern">Condição para filtro de arquivos (opcional)</param>
         ///<returns>
         ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
@@ -92,7 +77,7 @@ public class FileIO
         ///<remarks>
         ///Author: Lucio Pelinson 30-05-2017
         ///</remarks>
-        public static DataTable GetDataTableFiles(string fullPath, string searchPattern)
+        public static DataTable GetDataTableFiles(string fullPath, string searchPattern = null)
         {
             var dir = new DirectoryInfo(fullPath);
             var dtFiles = new DataTable();
