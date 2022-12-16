@@ -133,7 +133,7 @@ public class FileIO
 
             try
             {
-                using FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                 stream.Close();
             }
             catch (IOException)

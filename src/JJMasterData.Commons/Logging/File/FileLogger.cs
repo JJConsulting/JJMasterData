@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 
@@ -45,24 +47,38 @@ public class FileLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
-        var directory = Path.GetDirectoryName(path);
-        
-        if (!Directory.Exists(directory))
-            Directory.CreateDirectory(directory!);
-        
-        using var writer = new StreamWriter(path, true);
+        Task.Run(async() =>
+        {
+            var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
+            var directory = Path.GetDirectoryName(path);
 
-        string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
-        
-        writer.Write(record);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory!);
+
+            string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
+
+            int retry = 0;
+            do
+            {
+                try
+                {
+                    using var writer = new StreamWriter(path, true);
+                    await writer.WriteAsync(record);
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(1000);
+                    retry++;
+                }
+            } while (FileIO.IsFileLocked(path) && retry < 5);
+        });
     }
 
     private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
     {
         var log = new StringBuilder();
 
-        log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTimeOffset.UtcNow);
+        log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
         log.AppendFormat(" [{0}] ", logLevel);
 
         if (!string.IsNullOrWhiteSpace(eventName))
