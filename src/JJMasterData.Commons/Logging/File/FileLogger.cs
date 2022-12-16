@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -65,5 +66,13 @@ public class FileLogger : ILogger
         using var writer = new StreamWriter(path, true);
 
         writer.Write(values + ",\n");
+    }
+
+    private string GetLogRecord(LogLevel logLevel, string message, Exception exception)
+    {
+        var log = new StringBuilder();
+        log.AppendFormat("[{0:yyyy-MM-dd HH:mm:ss+00:00}]", DateTimeOffset.UtcNow);
+        var logRecord =
+            $"{"[" +  + "]"} [{logLevel.ToString()}] {message} {(exception != null ? exception.StackTrace : "")}";
     }
 }
