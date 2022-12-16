@@ -9,7 +9,9 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 

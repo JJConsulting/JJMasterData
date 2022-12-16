@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +23,8 @@ public class ErrorController : Controller
             Exception = exceptionHandler?.Error.Message ?? Translate.Key("Page not found"),
             StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
         };
-        
 
-        logger?.LogError(model.Exception + "\n\n" + model.StackTrace);
+        logger?.LogError(exceptionHandler?.Error, "Error");
 
         return View(model);
     }
