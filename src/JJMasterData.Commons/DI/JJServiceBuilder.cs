@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Dao;
+﻿using System;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
@@ -17,10 +18,21 @@ public class JJServiceBuilder
     {
         Services = services;
     }
-    
-    public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
+
+    public JJServiceBuilder ConfigureJJMasterDataOptions(IConfiguration configuration)
     {
-        Services.AddOptions<JJMasterDataOptions>().Bind(configuration.GetSection("JJMasterData"));
+        Services.Configure<JJMasterDataOptions>(configuration);
+        return this;
+    }
+    
+    public JJServiceBuilder ConfigureJJMasterDataOptions(Action<JJMasterDataOptions> configure)
+    {
+        Services.Configure(configure);
+        return this;
+    }
+    
+    public JJServiceBuilder AddDefaultServices()
+    {
         Services.AddLocalization();
         Services.AddLogging(builder =>
         {

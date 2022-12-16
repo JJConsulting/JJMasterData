@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
             .AddJsonFile(filePath, optional: false, reloadOnChange: true)
             .Build();
 
-        AddServices(services);
+        AddDefaultServices(services);
 
         services.ConfigureWritableOptions<JJMasterDataOptions>(
             configuration.GetSection("JJMasterData"), filePath);
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
     {
-        AddServices(services);
+        AddDefaultServices(services);
 
         services.Configure<ConnectionString>(configuration.GetSection("ConnectionString"));
         services.Configure<ConnectionProviders>(configuration.GetSection("ConnectionProviders"));
@@ -98,12 +98,12 @@ public static class ServiceCollectionExtensions
         services.Configure((Action<ConnectionStrings>)ConfigureConnectionStrings);
         services.Configure((Action<ConnectionProviders>)ConfigureConnectionProviders);
 
-        AddServices(services);
+        AddDefaultServices(services);
 
-        return services.AddJJMasterDataCore();
+        return services.AddJJMasterDataCore(ConfigureMasterDataOptions);
     }
 
-    private static void AddServices(IServiceCollection services)
+    private static void AddDefaultServices(IServiceCollection services)
     {
         services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
         services.AddHttpContextAccessor();
