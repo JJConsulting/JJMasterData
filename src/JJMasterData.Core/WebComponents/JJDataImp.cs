@@ -29,12 +29,18 @@ public class JJDataImp : JJBaseProcess
     #region "Properties"
 
     private JJUploadArea _upload;
+    
+    private JJLinkButton _backButton;
+    private JJLinkButton _helpButton;
+    private JJLinkButton _logButton;
 
-    public JJLinkButton BackButton { get; } = GetBackButton();
-    public JJLinkButton HelpButton { get; } = GetHelpButton();
-    public JJLinkButton LogButton { get; } = GetLogButton();
+    public JJLinkButton BackButton => _backButton ??= GetBackButton();
 
-    public JJUploadArea Upload => _upload ??= GetUploadFileInstance();
+    public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
+
+    public JJLinkButton LogButton => _logButton ??= GetLogButton();
+
+    public JJUploadArea Upload => _upload ??= GetUploadArea();
 
     public bool EnableHistoryLog { get; set; }
 
@@ -350,7 +356,7 @@ public class JJDataImp : JJBaseProcess
         };
     }
 
-    private JJUploadArea GetUploadFileInstance()
+    private JJUploadArea GetUploadArea()
     {
         return new JJUploadArea
         {
