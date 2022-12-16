@@ -200,7 +200,6 @@ public class ProtheusConnect : IDisposable
 
     public bool CallProc(int objectID, string cFunction)
     {
-        Log.AddError("inicio teste");  
         if (DllProtheus == IntPtr.Zero)
             DllProtheus = FunctionLoader.LoadWin32Library(DllPath);
 
@@ -214,7 +213,7 @@ public class ProtheusConnect : IDisposable
         }
         catch (AccessViolationException ex)
         {
-            Log.AddError(ex.ToString());
+            Log.AddError(ex, ex.Message);
             lRet = false;
         }
         catch

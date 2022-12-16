@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
 
     private static void AddJJMasterDataServices(this IServiceCollection services)
     {
-        services.AddScoped<IDataDictionaryRepository, DataDictionaryDao>();
+        services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
     }

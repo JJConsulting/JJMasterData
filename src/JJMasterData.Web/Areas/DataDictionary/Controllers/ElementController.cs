@@ -9,7 +9,9 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -66,13 +68,13 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Export()
     {
-        var formView = GetFormView();
-        var selectedRows = formView.GetSelectedGridValues();
+        var gridView = GetFormView();
+        var selectedRows = gridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
         {
             var jsonBytes = _elementService.ExportSingleRow(selectedRows[0]);
-            return File(jsonBytes, "application/json", selectedRows[0]["name"]!.ToString() + ".json");
+            return File(jsonBytes, "application/json", selectedRows[0]["name"] + ".json");
         }
 
         var zipBytes = _elementService.ExportMultipleRows(selectedRows);
@@ -94,7 +96,7 @@ public class ElementController : DataDictionaryController
 
     private void OnPostFile(object? sender, FormUploadFileEventArgs e)
     {
-        _elementService.Import(e.File.FileStream);
+        _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
             e.SuccessMessage = Translate.Key("Dictionary imported successfully!");
@@ -171,9 +173,9 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public JJFormView GetEntityFormView()
+    public JJGridView GetEntityFormView()
     {
-        var formView = GetFormView();
+        var gridView = GetFormView();
 
         var acTools = new UrlRedirectAction
         {
@@ -183,7 +185,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsDefaultOption = true
         };
-        formView.AddGridAction(acTools);
+        gridView.AddGridAction(acTools);
 
         var renderBtn = new ScriptAction
         {
@@ -193,9 +195,9 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
-        formView.AddGridAction(renderBtn);
+        gridView.AddGridAction(renderBtn);
 
-        var acdup = new UrlRedirectAction
+        var btnDuplicate = new UrlRedirectAction
         {
             Icon = IconType.FilesO,
             Name = "duplicate",
@@ -203,7 +205,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
-        formView.AddGridAction(acdup);
+        gridView.AddGridAction(btnDuplicate);
 
         var btnAdd = new UrlRedirectAction
         {
@@ -213,7 +215,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlRedirect = Url.Action("Add")
         };
-        formView.AddToolBarAction(btnAdd);
+        gridView.AddToolBarAction(btnAdd);
 
         var btnImport = new UrlRedirectAction
         {
@@ -227,7 +229,7 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-        formView.AddToolBarAction(btnImport);
+        gridView.AddToolBarAction(btnImport);
 
         var btnExport = new ScriptAction
         {
@@ -238,9 +240,9 @@ public class ElementController : DataDictionaryController
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"jjdictionary.exportElement('{formView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
+                $"jjdictionary.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
         };
-        formView.AddToolBarAction(btnExport);
+        gridView.AddToolBarAction(btnExport);
 
         var themeMode = _themeService.GetTheme();
         var btnTheme = new UrlRedirectAction
@@ -254,7 +256,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnTheme);
+        gridView.AddToolBarAction(btnTheme);
 
         var btnAbout = new UrlRedirectAction
         {
@@ -269,7 +271,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnAbout);
+        gridView.AddToolBarAction(btnAbout);
 
         var btnLog = new UrlRedirectAction
         {
@@ -284,7 +286,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnLog);
+        gridView.AddToolBarAction(btnLog);
 
         var btnSettings = new UrlRedirectAction
         {
@@ -299,7 +301,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnSettings);
+        gridView.AddToolBarAction(btnSettings);
 
         var btnResources = new UrlRedirectAction
         {
@@ -314,9 +316,9 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnResources);
+        gridView.AddToolBarAction(btnResources);
 
-        formView.AddToolBarAction(new SubmitAction()
+        gridView.AddToolBarAction(new SubmitAction()
         {
             Name = "btnDeleteMetadata",
             Order = 0,
@@ -328,9 +330,9 @@ public class ElementController : DataDictionaryController
             FormAction = Url.Action("Delete", "Element")
         });
 
-        formView.OnRenderAction += OnRenderAction;
+        gridView.OnRenderAction += OnRenderAction;
 
-        return formView;
+        return gridView;
     }
 
     public IActionResult Theme()
@@ -356,13 +358,13 @@ public class ElementController : DataDictionaryController
         return RedirectToAction(nameof(Index));
     }
 
-    private JJFormView GetFormView()
+    private JJGridView GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var formView = _elementService.GetFormView();
-        formView.FormElement.Title =
+        var gridView = _elementService.GetFormView();
+        gridView.FormElement.Title =
             $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
 
-        return formView;
+        return gridView;
     }
 }

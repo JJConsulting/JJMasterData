@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ public class ResourcesController : MasterDataController
         
         if (string.IsNullOrEmpty(tablename))
         {
-            throw new Exception("Resources table not found.");
+            throw new JJMasterDataException("Resources table not found.");
         }
         
         var formView = _resourcesService.GetFormView(_options.SupportedCultures);

@@ -24,10 +24,10 @@ internal class OracleProvider : BaseProvider
     public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         StringBuilder sSql = new StringBuilder();
         StringBuilder sKeys = new StringBuilder();
@@ -234,12 +234,12 @@ internal class OracleProvider : BaseProvider
     public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
-        StringBuilder sql = new StringBuilder();
+        var sql = new StringBuilder();
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
@@ -485,10 +485,10 @@ internal class OracleProvider : BaseProvider
     public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         //Verificamos se existe chave primaria
         bool unused = HasPK(element);

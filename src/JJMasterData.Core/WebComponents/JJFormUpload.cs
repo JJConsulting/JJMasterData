@@ -15,6 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -241,7 +243,7 @@ public class JJFormUpload : JJBaseView
         var video = Service.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
-                          Convert.ToBase64String(video.FileStream.ToArray(), 0, video.FileStream.ToArray().Length);
+                          Convert.ToBase64String(video.Bytes.ToArray(), 0, video.Bytes.ToArray().Length);
 
 
         var script = new StringBuilder();
@@ -277,26 +279,21 @@ public class JJFormUpload : JJBaseView
         string src;
         if (file.IsInMemory)
         {
-            string base64 = Convert.ToBase64String(file.Content.FileStream.ToArray());
+            string base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
             src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
             var filePath = Path.Combine(Service.FolderPath, fileName);
-            var appPath = HttpContext.Current!.Request.ApplicationPath;
-
-            if (!appPath.EndsWith("/"))
-                appPath += "/";
-
-            var culture = CultureInfo.CurrentCulture.Name + "/";
-            src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
+            src = JJDownloadFile.GetDownloadUrl(filePath);
         }
 
-        var script = new StringBuilder();
-        script.AppendLine("	$(document).ready(function () { ");
-        script.AppendLine("   $('#img').css('max-height',window.innerHeight);");
-        script.AppendLine("   $('#img').show('slow');");
-        script.AppendLine("	}); ");
+        const string script = """
+            $(document).ready(function () {
+                $('#img').css('max-height',window.innerHeight);
+                $('#img').show('slow');
+            });
+        """;
 
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendElement(HtmlTag.Center, c =>
@@ -416,7 +413,7 @@ public class JJFormUpload : JJBaseView
                 ul.WithCssClass("list-group list-group-flush");
                 ul.AppendElement(GetHtmlGalleryPreview(file.FileName));
                 ul.AppendElement(GetHtmlGalleryListItem("Name", file.FileName));
-                ul.AppendElement(GetHtmlGalleryListItem("Size", file.SizeBytes + " Bytes"));
+                ul.AppendElement(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
                 ul.AppendElement(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
                 ul.AppendElement(HtmlTag.Li, li =>
                 {
@@ -527,18 +524,12 @@ public class JJFormUpload : JJBaseView
 
         if (file.IsInMemory)
         {
-            string base64 = Convert.ToBase64String(file.Content.FileStream.ToArray());
+            string base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
             src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
-            var appPath = HttpContext.Current!.Request.ApplicationPath;
-
-            if (!appPath.EndsWith("/"))
-                appPath += "/";
-
-            var culture = CultureInfo.CurrentCulture.Name + "/";
-            src = $"{appPath}{culture}MasterData/Form/Download?filePath={Cript.Cript64(filePath)}".Trim();
+            src = JJDownloadFile.GetDownloadUrl(filePath);
         }
 
         if (url.Contains('?'))
@@ -584,11 +575,13 @@ public class JJFormUpload : JJBaseView
 
     private Hashtable ConvertToHashtable(FormFileContent file)
     {
-        var hash = new Hashtable();
-        hash.Add(FileName, file.FileName);
-        hash.Add(LastWriteTime, file.LastWriteTime);
-        hash.Add(Size, file.SizeBytes);
-        hash.Add(FileNameJs, file.FileName.Replace("'", "\\'"));
+        var hash = new Hashtable
+        {
+            { FileName, file.FileName },
+            { LastWriteTime, file.LastWriteTime },
+            { Size, file.Length },
+            { FileNameJs, file.FileName.Replace("'", "\\'") }
+        };
 
         return hash;
     }
@@ -672,14 +665,14 @@ public class JJFormUpload : JJBaseView
         dt.Columns.Add(LastWriteTime, typeof(string));
         dt.Columns.Add(FileNameJs, typeof(string));
 
-        foreach (var fileInfo in files.Where(mFiles => !mFiles.Deleted))
+        foreach (var fileInfo in files.Where(f => !f.Deleted))
         {
-            var mFiles = fileInfo.Content;
+            var content = fileInfo.Content;
             var dataRow = dt.NewRow();
-            dataRow["Name"] = mFiles.FileName;
-            dataRow["Size"] = Format.FormatFileSize(mFiles.SizeBytes);
-            dataRow["LastWriteTime"] = mFiles.LastWriteTime.ToDateTimeString();
-            dataRow["NameJS"] = mFiles.FileName.Replace("'", "\\'");
+            dataRow["Name"] = content.FileName;
+            dataRow["Size"] = Format.FormatFileSize(content.Length);
+            dataRow["LastWriteTime"] = content.LastWriteTime.ToDateTimeString();
+            dataRow["NameJS"] = content.FileName.Replace("'", "\\'");
             dt.Rows.Add(dataRow);
         }
 
@@ -734,12 +727,17 @@ public class JJFormUpload : JJBaseView
             var args = new FormDownloadFileEventArgs(fileName, null);
             OnBeforeDownloadFile.Invoke(this, args);
 
+            
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+            {
+                var exception = new JJMasterDataException(args.ErrorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
         }
 
         var download = new JJDownloadFile(fileName);
-        download.ResponseDirectDownload();
+        download.DirectDownload();
     }
 
     /// <summary>

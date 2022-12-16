@@ -71,7 +71,6 @@ public static class ServiceCollectionExtensions
         void ConfigureMasterDataOptions(JJMasterDataOptions options)
         {
             var wrapperOptions = wrapper.JJMasterData;
-            options.Logger = wrapperOptions.Logger;
             options.BootstrapVersion = wrapperOptions.BootstrapVersion;
             options.LayoutPath = wrapperOptions.LayoutPath;
             options.SecretKey = wrapperOptions.SecretKey;

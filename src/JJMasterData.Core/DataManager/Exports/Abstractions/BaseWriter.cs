@@ -113,14 +113,11 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = JJService.Options.ExportationFolderPath;
-            folderPath += FormElement.Name;
-            folderPath += "\\";
+            string folderPath = Path.Combine(JJService.Options.ExportationFolderPath, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {
-                folderPath += UserId;
-                folderPath += "\\";
+                folderPath = Path.Combine(folderPath, UserId);
             }
 
             if (!Directory.Exists(folderPath))
@@ -195,13 +192,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                             else
                                 goto default;
                             break;
-                        case DataDictionaryException:
+                        case JJMasterDataException:
                             ProcessReporter.Message = ex.Message;
                             break;
                         default:
                             ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Log.AddError(ex.Message);
+                            Log.AddError(ex, ex.Message);
                             break;
                     }
                 }
@@ -210,7 +207,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                     ProcessReporter.EndDate = DateTime.Now;
                     Reporter(ProcessReporter);
                 }
-            });
+            }, token);
     }
 
     public void Reporter(DataExpReporter processReporter)
@@ -264,17 +261,19 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         else
             title = "file";
 
-        title = StringManager.NoAccents(title);
-        string[] espChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
-        for (int i = 0; i < espChars.Length; i++)
+        title = StringManager.GetStringWithoutAccents(title);
+        
+        string[] escapeChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
+        
+        foreach (var @char in escapeChars)
         {
-            title = title.Replace(espChars[i], "");
+            title = title.Replace(@char, string.Empty);
         }
 
         title = HttpUtility.UrlEncode(title, Encoding.UTF8);
         string ext = Configuration.FileExtension.ToString().ToLower();
 
-        return $"{title}_{DateTime.Now.ToString("yyyMMdd_HHmmss")}.{ext}";
+        return $"{title}_{DateTime.Now:yyyMMdd_HHmmss}.{ext}";
     }
 
 

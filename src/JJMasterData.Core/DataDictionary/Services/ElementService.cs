@@ -181,32 +181,24 @@ public class ElementService : BaseService
     }
 
 
-    public JJFormView GetFormView()
+    public JJGridView GetFormView()
     {
-        var element = DataDictionaryStructure.GetElement();
-        var formElement = new FormElement(element)
-        {
-            Title = "JJMasterData"
-        };
-        formElement.Fields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
-        formElement.Fields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.Fields["json"].Component = FormComponent.TextArea;
-        formElement.Fields["json"].Export = false;
-        formElement.Fields["type"].VisibleExpression = "val:0";
-        formElement.Fields["type"].DefaultValue = "val:F";
-        formElement.Fields["type"].Component = FormComponent.ComboBox;
-        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("F", "Form"));
-        formElement.Fields["type"].DataItem.Items.Add(new DataItemValue("T", "Table"));
-        formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["sync"].Component = FormComponent.ComboBox;
-        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("1", "Yes"));
-        formElement.Fields["sync"].DataItem.Items.Add(new DataItemValue("0", "No"));
+        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
+        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
 
-        formElement.Fields["modified"].Component = FormComponent.DateTime;
-
-        var formView = new JJFormView(formElement)
+        var formElement = new FormElement(element);
+        formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
+        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("1", "Yes"));
+        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
+        formElement.Title = "JJMasterData";
+        
+        var gridView = new JJGridView(formElement)
         {
             Name = "List",
             FilterAction =
@@ -214,38 +206,28 @@ public class ElementService : BaseService
                 ExpandedByDefault = true
             }
         };
-        formView.DataPanel.UISettings.FormCols = 2;
-        formView.MaintainValuesOnLoad = true;
-        formView.EnableMultSelect = true;
-        formView.ExportAction.SetVisible(false);
-        formView.EditAction.SetVisible(false);
-        formView.InsertAction.SetVisible(false);
-        formView.DeleteAction.SetVisible(false);
-        formView.DeleteSelectedRowsAction.SetVisible(false);
+        
+        gridView.MaintainValuesOnLoad = true;
+        gridView.EnableMultSelect = true;
+        gridView.ExportAction.SetVisible(false);
+        
+        if (!gridView.CurrentFilter.ContainsKey("type"))
+            gridView.CurrentFilter.Add("type", "F");
 
-        formView.ViewAction.IsGroup = true;
-        formView.ViewAction.Text = "Details";
-        formView.ViewAction.ToolTip = null;
-        formView.ViewAction.Icon = IconType.Code;
-        if (!formView.CurrentFilter.ContainsKey("type"))
-            formView.CurrentFilter.Add("type", "F");
+        gridView.OnDataLoad += FormViewOnDataLoad;
 
-        formView.OnDataLoad += FormViewOnDataLoad;
-
-        return formView;
+        return gridView;
     }
 
     private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
         int tot = e.Tot;
-
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
-        
-        e.DataSource = DataDictionaryRepository.GetDataTable(filter, e.OrderBy, e.RegporPag, e.CurrentPage, ref tot);
-        
+        string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
+        var list = DataDictionaryRepository.GetMetadataInfoList(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot); 
+        e.DataSource = list.ToDataTable();
         e.Tot = tot;
     }
-
 
     #endregion
 
@@ -259,7 +241,7 @@ public class ElementService : BaseService
 
         foreach (var item in dicParser.Table.Fields.ToList())
         {
-            var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
             var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 

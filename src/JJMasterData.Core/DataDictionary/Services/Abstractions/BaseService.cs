@@ -62,7 +62,7 @@ public abstract class BaseService
                 AddError(nameof(name), Translate.Key($"The [Name] field contains an invalid character({c})"));
         }
 
-        string nameNoAccents = StringManager.NoAccents(name);
+        string nameNoAccents = StringManager.GetStringWithoutAccents(name);
         if (!nameNoAccents.Equals(name))
             AddError(nameof(name), Translate.Key("The [Name] field cannot contain accents."));
 

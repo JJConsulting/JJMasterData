@@ -120,7 +120,7 @@ public class MasterApiService
     public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<Hashtable> paramsList, string elementName)
     {
         if (paramsList == null)
-            throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
+            throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.Api.EnableUpdate)
@@ -143,7 +143,7 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         if (paramsList == null)
-            throw new DataDictionaryException(Translate.Key("Invalid parameter or not a list"));
+            throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
 
         var formService = GetFormService(dictionary);
 

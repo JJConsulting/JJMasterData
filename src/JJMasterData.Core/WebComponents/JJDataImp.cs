@@ -29,53 +29,18 @@ public class JJDataImp : JJBaseProcess
     #region "Properties"
 
     private JJUploadArea _upload;
+    
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
 
-    public JJLinkButton BackButton
-    {
-        get
-        {
-            if (_backButton == null)
-                _backButton = GetBackButtonInstance();
+    public JJLinkButton BackButton => _backButton ??= GetBackButton();
 
-            return _backButton;
-        }
-    }
+    public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
 
-    public JJLinkButton HelpButton
-    {
-        get
-        {
-            if (_helpButton == null)
-                _helpButton = GetHelpButtonInstance();
+    public JJLinkButton LogButton => _logButton ??= GetLogButton();
 
-            return _helpButton;
-        }
-    }
-
-    public JJLinkButton LogButton
-    {
-        get
-        {
-            if (_logButton == null)
-                _logButton = GetLogButtonInstance();
-
-            return _logButton;
-        }
-    }
-
-    public JJUploadArea Upload
-    {
-        get
-        {
-            if (_upload == null)
-                _upload = GetUploadFileInstance();
-
-            return _upload;
-        }
-    }
+    public JJUploadArea Upload => _upload ??= GetUploadArea();
 
     public bool EnableHistoryLog { get; set; }
 
@@ -109,7 +74,7 @@ public class JJDataImp : JJBaseProcess
     internal override HtmlBuilder RenderHtml()
     {
         HtmlBuilder html = null;
-        Upload.OnPostFile += Upload_OnPostFile;
+        Upload.OnPostFile += OnPostFile;
 
         string action = CurrentContext.Request["current_uploadaction"];
 
@@ -275,15 +240,12 @@ public class JJDataImp : JJBaseProcess
 
         return html;
     }
-
-    /// <summary>
-    /// Função executada ao finalizar o upload do arquivo
-    /// </summary>
-    private void Upload_OnPostFile(object sender, FormUploadFileEventArgs e)
+    
+    private void OnPostFile(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
-        Stream stream = e.File.FileStream;
-        using (StreamReader reader = new StreamReader(stream))
+        Stream stream = new MemoryStream(e.File.Bytes);
+        using (var reader = new StreamReader(stream))
         {
             while (!reader.EndOfStream)
             {
@@ -335,7 +297,7 @@ public class JJDataImp : JJBaseProcess
         BackgroundTask.Run(ProcessKey, worker);
     }
 
-    internal  DataImpDto GetCurrentProcess()
+    internal DataImpDto GetCurrentProcess()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
         var reporter = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);
@@ -361,53 +323,48 @@ public class JJDataImp : JJBaseProcess
         return dto;
     }
 
-    private JJLinkButton GetBackButtonInstance()
+    private static JJLinkButton GetBackButton()
     {
-        var backButton = new JJLinkButton
+        return new JJLinkButton
         {
             IconClass = "fa fa-arrow-left",
             Text = "Back",
             ShowAsButton = true,
             OnClientClick = "uploadFile1Obj.remove();"
         };
-        return backButton;
     }
 
-    private JJLinkButton GetHelpButtonInstance()
+    private static JJLinkButton GetHelpButton()
     {
-        var helpButton = new JJLinkButton
+        return new JJLinkButton
         {
             IconClass = "fa fa-question-circle",
             Text = "Help",
             ShowAsButton = true,
             OnClientClick = "$('#current_uploadaction').val('process_help'); $('form:first').submit();"
         };
-        return helpButton;
     }
 
-    private JJLinkButton GetLogButtonInstance()
+    private static JJLinkButton GetLogButton()
     {
-        var helpButton = new JJLinkButton
+        return new JJLinkButton
         {
             IconClass = "fa fa-film",
             Text = "Last Import",
             ShowAsButton = true,
             OnClientClick = "$('#current_uploadaction').val('process_finished'); $('form:first').submit();"
         };
-        return helpButton;
     }
 
-    private JJUploadArea GetUploadFileInstance()
+    private JJUploadArea GetUploadArea()
     {
-        var upload = new JJUploadArea
+        return new JJUploadArea
         {
             Multiple = false,
             EnableCopyPaste = false,
             Name = Name + "_upload",
             AllowedTypes = "txt,csv,log"
         };
-
-        return upload;
     }
 
 }

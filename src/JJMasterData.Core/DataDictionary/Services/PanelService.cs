@@ -13,13 +13,16 @@ public class PanelService : BaseService
     {
     }
 
-    public bool SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
+    public void SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var formElement = dictionary.GetFormElement();
 
+        if(selectedFields?.Length == 0){}
+            AddError(nameof(selectedFields), "No fields selected for this panel.");
+        
         if (!ValidatePanel(panel))
-            return false;
+            return;
 
         if (panel.PanelId == 0)
         {
@@ -42,23 +45,21 @@ public class PanelService : BaseService
             }
         }
 
-        foreach (FormElementField f in formElement.Fields)
+        foreach (var field in formElement.Fields)
         {
-            if (selectedFields.Contains(f.Name))
+            if (selectedFields!.Contains(field.Name))
             {
-                f.PanelId = panel.PanelId;
+                field.PanelId = panel.PanelId;
             }
             else
             {
-                if (f.PanelId == panel.PanelId)
-                    f.PanelId = 0;
+                if (field.PanelId == panel.PanelId)
+                    field.PanelId = 0;
             }
         }
 
         dictionary.SetFormElement(formElement);
         DataDictionaryRepository.InsertOrReplace(dictionary);
-
-        return IsValid;
     }
 
     private bool ValidatePanel(FormElementPanel panel)
@@ -67,7 +68,6 @@ public class PanelService : BaseService
             AddError(nameof(panel.VisibleExpression), "Required [VisibleExpression] panel");
         else if (!ValidateExpression(panel.VisibleExpression, "val:", "exp:"))
             AddError(nameof(panel.VisibleExpression), "Invalid [VisibleExpression] panel");
-
         if (string.IsNullOrWhiteSpace(panel.EnableExpression))
             AddError(nameof(panel.EnableExpression), "Required [VisibleExpression] panel");
         else if (!ValidateExpression(panel.EnableExpression, "val:", "exp:"))

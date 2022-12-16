@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -170,7 +171,7 @@ public class JJTextFile : JJBaseControl
         string json = Cript.Descript64(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
-            throw new Exception(Translate.Key("Invalid parameters when opening file upload"));
+            throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
 
         PageState = parms.PageState;
         Enabled = parms.Enable;
@@ -239,7 +240,7 @@ public class JJTextFile : JJBaseControl
             if (!FormValues.ContainsKey(pkField.Name))
                 return false;
 
-            string value = FormValues[pkField.Name].ToString();
+            string value = FormValues[pkField.Name]!.ToString();
             if (!Validate.ValidFileName(value))
                 return false;
         }
@@ -256,7 +257,7 @@ public class JJTextFile : JJBaseControl
     {
         string pnlName = string.Empty;
         if (Attributes.ContainsKey("pnlname"))
-            pnlName = Attributes["pnlname"].ToString();
+            pnlName = Attributes["pnlname"]?.ToString();
 
         return pnlName;
     }

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Dao;
@@ -82,8 +83,6 @@ public sealed class JJMasterDataOptions
     /// </summary>
     public string SecretKey { get; set; }
 
-    public LoggerOptions Logger { get; set; }
-
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
     internal static IConfiguration Configuration
@@ -104,9 +103,8 @@ public sealed class JJMasterDataOptions
         PrefixSetProc = "{tablename}Set";
         LayoutPath = "_MasterDataLayout";
         PopUpLayoutPath = "_MasterDataLayout.PopUp";
-        ExportationFolderPath = $"{FileIO.GetApplicationPath()}\\App_Data\\JJExportFiles\\";
+        ExportationFolderPath = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
         SecretKey = "ChangeMe";
-        Logger = new LoggerOptions();
     }
 
     public static string? GetConnectionString(string name = "ConnectionString")

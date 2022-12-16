@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 
@@ -43,23 +44,23 @@ internal class PlainTextReader
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
             if (conn == null)
-                throw new Exception("Error on create connection object");
+                throw new JJMasterDataException("Error on create connection object");
 
             conn.ConnectionString = dataAccess.ConnectionString;
             conn.Open();
 
             DbCommand dbCmd = providerFactory.CreateCommand();
             if (dbCmd == null)
-                throw new Exception("Error on create DbCommand");
+                throw new JJMasterDataException("Error on create DbCommand");
 
             foreach (DataAccessParameter parm in cmd.Parameters)
             {
                 DbParameter oPar = providerFactory.CreateParameter();
                 if (oPar == null)
-                    throw new Exception("Error on create DbParameter");
+                    throw new JJMasterDataException("Error on create DbParameter");
 
                 oPar.DbType = parm.Type;
-                oPar.Value = parm.Value == null ? DBNull.Value : parm.Value;
+                oPar.Value = parm.Value ?? DBNull.Value;
                 oPar.ParameterName = parm.Name;
                 dbCmd.Parameters.Add(oPar);
             }
@@ -88,7 +89,7 @@ internal class PlainTextReader
                     {
                         currentField = field.Name;
                         if (!columns.ContainsKey(field.Name))
-                            throw new Exception(Translate.Key("{0} field not found", field.Name));
+                            throw new JJMasterDataException(Translate.Key("{0} field not found", field.Name));
 
                         if (col > 0)
                             sRet.Append(Delimiter);
@@ -188,9 +189,14 @@ internal class PlainTextReader
             message.AppendLine($"Exception: {ex.Message}");
             message.AppendLine($"Stacktrace: {ex.StackTrace}");
 
-            Log.AddError(message.ToString());
+            
+            var exception = new JJMasterDataException(message.ToString(), ex);
+            
+            Log.AddError(exception, message.ToString());
 
-            throw new Exception(message.ToString(), ex);
+            throw exception;
+
+
         }
         finally
         {

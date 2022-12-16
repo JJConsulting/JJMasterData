@@ -18,16 +18,11 @@ public class Program
         
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
-
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithMongoDBDataDictionaryRepository(mongo =>
-        {
-            var section = builder.Configuration.GetSection("JJMasterData:MongoDB");
-            mongo.ConnectionString = section.GetValue<string>("ConnectionString")!;
-            mongo.CollectionName = section.GetValue<string>("CollectionName")!;
-            mongo.DatabaseName = section.GetValue<string>("DatabaseName")!;
-        })
-            .WithFormEventResolver().WithPdfExportation();
+            .WithMongoDbDataDictionary()
+            .WithFormEventResolver()
+            .WithPdfExportation();
+        
             // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
         //You can also:

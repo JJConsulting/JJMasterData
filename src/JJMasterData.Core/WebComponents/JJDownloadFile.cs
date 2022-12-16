@@ -4,8 +4,11 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Html;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -28,20 +31,15 @@ public class JJDownloadFile : JJBaseView
 
     public bool IsExternalLink { get; set; }
 
-    public static JJDownloadFile GetInstance()
-    {
-        return new JJDownloadFile();
-    }
-
     internal override HtmlBuilder RenderHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
-            throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
+            throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
     
         if (IsExternalLink)
             return GetDownloadHtmlElement();
         
-        ResponseDirectDownload();
+        DirectDownload();
     
         return null;
     }
@@ -96,26 +94,36 @@ public class JJDownloadFile : JJBaseView
         return html;
     }
     
-    internal void ResponseDirectDownload()
+    internal void DirectDownload()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new ArgumentNullException(nameof(FilePath));
 
-        var fileName = FilePath.Substring(FilePath.LastIndexOf('\\') + 1);
         if (!File.Exists(FilePath))
         {
-            Log.AddError(Translate.Key("File not found at {0}", FilePath));
-            throw new Exception(Translate.Key("File {0} not found!", fileName));
+            var exception = new JJMasterDataException(Translate.Key("File {0} not found!", FilePath));
+            Log.AddError(exception, exception.Message);
+            throw exception;
         }
 
-        CurrentContext.Response.ClearResponse();
-        CurrentContext.Response.AddResponseHeader("Content-Type", MimeTypeUtil.GetMimeType(fileName));
-        CurrentContext.Response.AddResponseHeader("Content-Transfer-Encoding", "binary");
-        CurrentContext.Response.AddResponseHeader("Content-Description", "file Transfer");
-        CurrentContext.Response.AddResponseHeader("Content-Disposition",
-            $"attachment; filename={HttpUtility.UrlEncode(fileName)}");
+        DirectDownload(FilePath);
+    }
 
-        CurrentContext.Response.SendFile(FilePath);
+    internal void DirectDownload(string filePath)
+    {
+        var context = JJHttpContext.GetInstance();
+        context.Response.Redirect(GetDownloadUrl(filePath));
+    }
+
+    internal static string GetDownloadUrl(string filePath)
+    {
+        var appPath = HttpContext.Current!.Request.ApplicationPath;
+
+        if (!appPath.EndsWith("/"))
+            appPath += "/";
+
+        var culture = CultureInfo.CurrentCulture.Name + "/";
+        return $"{appPath}{culture}MasterData/File/Download?filePath={Cript.Cript64(filePath)}";
     }
 
     public static bool IsDownloadRoute(JJBaseView view)
@@ -142,7 +150,7 @@ public class JJDownloadFile : JJBaseView
 
         string filePath = Cript.Descript64(criptFilePath);
         if (filePath == null)
-            throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
+            throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
         var download = new JJDownloadFile
         {

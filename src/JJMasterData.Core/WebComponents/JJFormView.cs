@@ -12,6 +12,8 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -330,7 +332,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.ResponseRedirect(UrlRedirect);
+                    CurrentContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -345,7 +347,7 @@ public class JJFormView : JJGridView
         if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
-            CurrentContext.Response.ResponseRedirect(CurrentContext.Request.AbsoluteUri);
+            CurrentContext.Response.Redirect(CurrentContext.Request.AbsoluteUri);
             return null;
         }
         if ("REFRESH".Equals(formAction))
@@ -397,7 +399,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.ResponseRedirect(UrlRedirect);
+                    CurrentContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -466,7 +468,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = new DataDictionaryDao(EntityRepository).GetMetadata(action.ElementNameToSelect);
+        var dicParser = JJServiceCore.DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
         var formsel = new JJFormView(dicParser.GetFormElement())
         {
             EntityRepository = EntityRepository,
@@ -512,8 +514,8 @@ public class JJFormView : JJGridView
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var dicDao = new DataDictionaryDao(EntityRepository);
-        var dictionary = dicDao.GetMetadata(InsertAction.ElementNameToSelect);
+        var dicRepository = JJServiceCore.DataDictionaryRepository;
+        var dictionary = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var element = dictionary.Table;
         var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
         var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
@@ -592,7 +594,7 @@ public class JJFormView : JJGridView
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
-            CurrentContext.Response.ResponseRedirect(UrlRedirect);
+            CurrentContext.Response.Redirect(UrlRedirect);
             return null;
         }
 
@@ -774,11 +776,10 @@ public class JJFormView : JJGridView
             html.AppendElement(collapse);
         }
 
-
-        var dicDao = new DataDictionaryDao(EntityRepository);
+        var dicRepository = JJServiceCore.DataDictionaryRepository;
         foreach (var relation in relations)
         {
-            var dic = dicDao.GetMetadata(relation.ChildElement);
+            var dic = dicRepository.GetMetadata(relation.ChildElement);
             var childElement = dic.GetFormElement();
 
             var filter = new Hashtable();

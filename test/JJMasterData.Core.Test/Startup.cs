@@ -25,7 +25,10 @@ public class Startup
     }
     private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
     {
-        services.AddJJMasterDataCore();
-        services.BuildServiceProvider().UseJJMasterData();
+        services.AddJJMasterDataCore()
+            .WithFileSystemDataDictionary();
+        
+        services.BuildServiceProvider()
+            .UseJJMasterData();
     }
 }

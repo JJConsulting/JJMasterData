@@ -20,10 +20,10 @@ internal class ProviderSQLite : BaseProvider
     public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         StringBuilder sSql = new StringBuilder();
 

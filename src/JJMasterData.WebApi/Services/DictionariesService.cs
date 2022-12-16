@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.WebApi.Models;
 
 namespace JJMasterData.WebApi.Services;
@@ -41,15 +42,17 @@ public class DictionariesService
 
         var dStart = DateTime.Now;
         var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
-        var syncInfo = new DicSyncInfo();
-        syncInfo.ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        var syncInfo = new DicSyncInfo
+        {
+            ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+        };
         int totRecords = 0;
         foreach (var os in listSync)
         {
             var dStartObj = DateTime.Now;
             var dictionary = dictionaries.First(x => x.Table.Name.Equals(os.Name));
             if (dictionary == null)
-                throw new Exception(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
+                throw new JJMasterDataException(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
 
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
             var info = new DicSyncInfoElement();
@@ -68,7 +71,7 @@ public class DictionariesService
 
             if (maxRecordsAllowed > 0 && info.RecordSize > maxRecordsAllowed)
             {
-                throw new Exception(Translate.Key("Number maximum of records exceeded on {0}, contact the administrator.", os.Name));
+                throw new JJMasterDataException(Translate.Key("Number maximum of records exceeded on {0}, contact the administrator.", os.Name));
             }
         }
 

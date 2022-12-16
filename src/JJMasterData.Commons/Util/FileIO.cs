@@ -23,30 +23,26 @@ public class FileIO
         }
 
         /// <summary>
-        /// Retorna o caminho fisico com base no nome do arquivo
+        /// Returns physical path based on file name, also replaces DateTime templates.
         /// </summary>
-        /// <param name="filepath">Parte ou Caminho completo do arquivo</param>
-        /// <returns>Caminho completo do arquivo</returns>
+        /// <param name="filepath">Part or full path of file</param>
+        /// <returns>File full path</returns>
         public static string ResolveFilePath(string filepath)
         {
-            //Substituimos as barras incorretas para caminho físico
-            filepath = filepath.Replace("/", "\\");
+            var now = DateTime.Now;  
+            filepath = filepath.Replace("dd", now.ToString("dd"));
+            filepath = filepath.Replace("MM", now.ToString("MM"));
+            filepath = filepath.Replace("yyyy", now.ToString("yyyy"));
+            filepath = filepath.Replace("HH", now.ToString("HH"));
+            filepath = filepath.Replace("mm", now.ToString("mm"));
+            filepath = filepath.Replace("ss", now.ToString("ss"));
 
-            //Aplicamos as variáveis de data
-            DateTime dNow = DateTime.Now;  
-            filepath = filepath.Replace("dd", dNow.ToString("dd"));
-            filepath = filepath.Replace("MM", dNow.ToString("MM"));
-            filepath = filepath.Replace("yyyy", dNow.ToString("yyyy"));
-            filepath = filepath.Replace("HH", dNow.ToString("HH"));
-            filepath = filepath.Replace("mm", dNow.ToString("mm"));
-            filepath = filepath.Replace("ss", dNow.ToString("ss"));
-
-            //Padronizamos o caminho para nunca iniciar com barra
+            //We defaulted the path to never start with a slash
             if (filepath.StartsWith("\\") && !filepath.Substring(1, 1).Equals("\\"))
                 filepath = filepath.Substring(1);
 
-            //Se o caminho completo não for informado, incluimos o caminho a partir da aplicação
-            if (!filepath.Contains(":") && !filepath.StartsWith("\\\\"))
+            //If the full path is not provided, we include the path from the application
+            if (!filepath.Contains(":") && !filepath.StartsWith("\\\\") && !filepath.StartsWith("/"))
                 filepath = Path.Combine(GetApplicationPath(), filepath);
 
             return filepath; 
@@ -55,7 +51,7 @@ public class FileIO
         /// <summary>
         /// Returns the application path.
         /// .NET Framework: AppDomain.CurrentDomain.BaseDirectory
-        /// .NET 6+: Environment.CurrentrDirectory
+        /// .NET 6+: Environment.CurrentDirectory
         /// </summary>
         /// <returns></returns>
         public static string GetApplicationPath()
@@ -70,21 +66,6 @@ public class FileIO
         ///Carrega os registros de um diretório em um DataTable
         ///</summary>
         ///<param name="fullPath">Caminho completo do diretório</param>
-        ///<returns>
-        ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
-        ///</returns>
-        ///<remarks>
-        ///Author: Lucio Pelinson 21-05-2012
-        ///</remarks>
-        public static DataTable GetDataTableFiles(string fullPath)
-        {
-            return GetDataTableFiles(fullPath, null);
-        }
-
-        ///<summary>
-        ///Carrega os registros de um diretório em um DataTable
-        ///</summary>
-        ///<param name="fullPath">Caminho completo do diretório</param>
         ///<param name="searchPattern">Condição para filtro de arquivos (opcional)</param>
         ///<returns>
         ///DataTable contendo nome e tamanho dos arquivos localizados no diretório
@@ -92,37 +73,38 @@ public class FileIO
         ///<remarks>
         ///Author: Lucio Pelinson 30-05-2017
         ///</remarks>
-        public static DataTable GetDataTableFiles(string fullPath, string searchPattern)
+        public static DataTable GetDataTableFiles(string fullPath, string searchPattern = null)
         {
-            DirectoryInfo oDir = new DirectoryInfo(fullPath);
-            DataTable dtFiles = new DataTable();
-            DataRow oRow;
+            var dir = new DirectoryInfo(fullPath);
+            var dtFiles = new DataTable();
             dtFiles.Columns.Add("Id", typeof(string));
             dtFiles.Columns.Add("Nome", typeof(string));
             dtFiles.Columns.Add("Tamanho", typeof(string));
             dtFiles.Columns.Add("TamBytes", typeof(double));
             dtFiles.Columns.Add("LastWriteTime", typeof(string));
             dtFiles.Columns.Add("NomeCompleto", typeof(string));
-            if (oDir.Exists)
-            {
-                int iId = 0;
-                FileInfo[] files;
-                if (searchPattern == null)
-                    files = oDir.GetFiles();
-                else
-                    files = oDir.GetFiles(searchPattern);
 
-                foreach (FileInfo oFile in files)
-                {
-                    oRow = dtFiles.NewRow();
-                    oRow["Id"] = iId.ToString();
-                    oRow["Nome"] = oFile.Name;
-                    oRow["Tamanho"] = Format.FormatFileSize(oFile.Length);
-                    oRow["TamBytes"] = oFile.Length;
-                    oRow["LastWriteTime"] = oFile.LastWriteTime.ToString(CultureInfo.CurrentCulture);
-                    dtFiles.Rows.Add(oRow);
-                    iId++;
-                }
+            if (!dir.Exists) 
+                return dtFiles;
+            
+            int iId = 0;
+            FileInfo[] files;
+            
+            if (searchPattern == null)
+                files = dir.GetFiles();
+            else
+                files = dir.GetFiles(searchPattern);
+
+            foreach (FileInfo oFile in files)
+            {
+                var row = dtFiles.NewRow();
+                row["Id"] = iId.ToString();
+                row["Nome"] = oFile.Name;
+                row["Tamanho"] = Format.FormatFileSize(oFile.Length);
+                row["TamBytes"] = oFile.Length;
+                row["LastWriteTime"] = oFile.LastWriteTime.ToString(CultureInfo.CurrentCulture);
+                dtFiles.Rows.Add(row);
+                iId++;
             }
             return dtFiles;
         }
@@ -137,7 +119,7 @@ public class FileIO
 
             try
             {
-                using FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                using var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                 stream.Close();
             }
             catch (IOException)
