@@ -192,13 +192,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                             else
                                 goto default;
                             break;
-                        case DataDictionaryException:
+                        case JJMasterDataException:
                             ProcessReporter.Message = ex.Message;
                             break;
                         default:
                             ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Log.AddError(ex.Message);
+                            Log.AddError(ex, ex.Message);
                             break;
                     }
                 }

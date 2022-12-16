@@ -2,6 +2,7 @@
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
@@ -127,8 +128,11 @@ public abstract class JJBaseProcess : JJBaseView
             var error = new StringBuilder();
             error.AppendLine(Translate.Key("User not found, contact system administrator."));
             error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
-            Log.AddError(error.ToString());
-            throw new Exception(error.ToString());
+            
+            var exception = new JJMasterDataException(error.ToString());
+            Log.AddError(exception, exception.Message);
+            
+            throw exception;
         }
 
         processKey.Append($"?userid={UserId}");

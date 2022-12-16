@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
 
@@ -46,7 +47,7 @@ public class DataDictionaryStructure
             return;
 
         if (dicParser.Table == null)
-            throw new Exception(Translate.Key("Dictionary {0} not found", elementName));
+            throw new JJMasterDataException(Translate.Key("Dictionary {0} not found", elementName));
 
         //Nairobi
         dicParser.UIOptions ??= new UIOptions();

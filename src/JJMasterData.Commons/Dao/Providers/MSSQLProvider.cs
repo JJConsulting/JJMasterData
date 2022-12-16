@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
@@ -26,10 +27,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
         var keys = new StringBuilder();
@@ -225,10 +226,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         StringBuilder sql = new StringBuilder();
 
@@ -490,10 +491,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         var fields = element.Fields
             .ToList()
@@ -1157,7 +1158,7 @@ internal class MSSQLProvider : BaseProvider
             throw new ArgumentNullException(nameof(tableName));
 
         if (!DataAccess.TableExists(tableName))
-            throw new Exception(Translate.Key("Table {0} not found", tableName));
+            throw new JJMasterDataException(Translate.Key("Table {0} not found", tableName));
 
         var element = new Element
         {

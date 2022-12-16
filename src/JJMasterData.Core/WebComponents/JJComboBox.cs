@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -207,8 +209,9 @@ public class JJComboBox : JJBaseControl
         }
         catch (Exception ex)
         {
-            var err = Translate.Key("Error loading data from JJComboBox {0}. Error Details: {1}", Name, ex.Message);
-            throw new Exception(err);
+            var exception = new JJMasterDataException(Translate.Key("Error loading data from JJComboBox {0}. Error Details: {1}", Name, ex.Message),ex);
+            Log.AddError(exception, exception.Message);
+            throw exception;
         }
 
         return _values;

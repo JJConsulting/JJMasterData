@@ -10,9 +10,6 @@ namespace JJMasterData.Commons.Logging;
 /// </summary>
 public static class Log
 {
-
-    public const string JJSource = "JJMasterData";
-    
     private static ILogger _logger;
 
     static Log()

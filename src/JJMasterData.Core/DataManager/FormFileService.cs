@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -67,17 +69,17 @@ internal class FormFileService
             throw new ArgumentNullException(nameof(currentName));
 
         if (string.IsNullOrWhiteSpace(newName))
-            throw new Exception(Translate.Key("Required file name"));
+            throw new ArgumentNullException(Translate.Key("Required file name"));
 
         if (!Validate.ValidFileName(newName))
-            throw new Exception(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
+            throw new JJMasterDataException(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new Exception(Translate.Key("The file extension must remain the same"));
+            throw new JJMasterDataException(Translate.Key("The file extension must remain the same"));
 
         var files = GetFiles();
         if (files.Exists(x => x.Content.FileName.Equals(newName)))
-            throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
+            throw new JJMasterDataException(Translate.Key("A file with the name {0} already exists", newName));
 
         if (OnBeforeRenameFile != null)
         {
@@ -85,7 +87,7 @@ internal class FormFileService
             OnBeforeRenameFile.Invoke(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+                throw new JJMasterDataException(args.ErrorMessage);
         }
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
@@ -96,7 +98,7 @@ internal class FormFileService
         {
             var file = files.Find(x => x.Content.FileName.Equals(currentName));
             if (file == null)
-                throw new Exception(Translate.Key("file {0} not found!", currentName));
+                throw new JJMasterDataException(Translate.Key("file {0} not found!", currentName));
 
             file.Content.FileName = newName;
             if (file.Content.Bytes == null & string.IsNullOrEmpty(file.OriginName))
@@ -126,7 +128,12 @@ internal class FormFileService
             string errorMessage = evt.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
-                throw new Exception(errorMessage);
+            {
+                var exception = new JJMasterDataException(errorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
+                
         }
 
         if (replaceIfExists && CountFiles() > 0)
@@ -169,8 +176,13 @@ internal class FormFileService
             var args = new FormDeleteFileEventArgs(fileName);
             OnBeforeDeleteFile.Invoke(this, args);
 
+            
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+            {
+                var exception = new JJMasterDataException(args.ErrorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
         }
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))

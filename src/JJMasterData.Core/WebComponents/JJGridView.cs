@@ -148,7 +148,7 @@ public class JJGridView : JJBaseView
             if (_pkFields != null) return _pkFields;
 
             if (FormElement == null)
-                throw new Exception("FormElement inválido");
+                throw new ArgumentNullException(nameof(FormElement));
 
             _pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
 
@@ -163,7 +163,7 @@ public class JJGridView : JJBaseView
             if (_visibleFields != null) return _visibleFields;
 
             if (FormElement == null)
-                throw new Exception("FormElement inválido");
+                throw new ArgumentNullException(nameof(FormElement));
 
             _visibleFields = new List<FormElementField>();
             var defaultValues = DefaultValues;
@@ -842,7 +842,7 @@ public class JJGridView : JJBaseView
             throw new ArgumentNullException(nameof(FormElement));
 
         if (EnableMultSelect && PrimaryKeyFields.Count == 0)
-            throw new Exception(
+            throw new JJMasterDataException(
                 Translate.Key(
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
     }

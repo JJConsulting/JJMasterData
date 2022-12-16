@@ -81,7 +81,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                     currentProcess.Message = Translate.Key("Process aborted by user");
                     currentProcess.AddError(currentProcess.Message);
                 }
-                else if (ex is DataDictionaryException)
+                else if (ex is JJMasterDataException)
                 {
                     currentProcess.Message = ex.Message;
                     currentProcess.AddError(currentProcess.Message);
@@ -167,7 +167,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 currentProcess.AddError(error);
 
                 error += Translate.Key("Click on the [Help] link for more information regarding the file layout.");
-                throw new DataDictionaryException(error);
+                throw new JJMasterDataException(error);
             }
 
             //Analisa se ignora a primeira linha do arquivo

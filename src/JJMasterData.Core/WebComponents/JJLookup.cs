@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Core.DI;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -143,16 +144,31 @@ public class JJLookup : JJBaseControl
     }
 
     #endregion
-
+    
+    #region "DTOs"
+    private record LookupUrlDto(string Url)
+    {
+        [JsonProperty("url")]
+        public string Url { get; } = Url;
+        public string ToJson() => JsonConvert.SerializeObject(this);
+    }
+    private record LookupDescriptionDto(string Description)
+    {
+        [JsonProperty("description")]
+        public string Description { get; } = Description;
+        public string ToJson() => JsonConvert.SerializeObject(this);
+    }
+    #endregion
+    
     internal override HtmlBuilder RenderHtml()
     {
         if (!IsLookupRoute())
             return GetLookupHtmlElement();
 
         if (IsAjaxGetDescription())
-            ResponseAjax();
+            SendDescription();
         else
-            ResponseParams();
+            SendUrl();
 
         return null;
     }
@@ -205,7 +221,7 @@ public class JJLookup : JJBaseControl
         return null;
     }
 
-    public void ResponseParams()
+    public void SendUrl()
     {
         var elementMap = DataItem.ElementMap;
 
@@ -231,27 +247,29 @@ public class JJLookup : JJBaseControl
                 @params.Append(filterParsed);
             }
         }
-
+        
         string url = $"{ConfigurationHelper.GetUrlMasterData()}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
-        string json = "{ \"url\": \"" + url + "\" }";
-        CurrentContext.Response.SendResponse(json, "application/json");
-    }
 
-    private void ResponseAjax()
+        var dto = new LookupUrlDto(url);
+        
+        CurrentContext.Response.SendResponse(dto.ToJson(), "application/json");
+    }
+    
+    private void SendDescription()
     {
-        string json = string.Empty;
+        LookupDescriptionDto dto = null;
         try
         {
-            string idSearch = CurrentContext.Request["lkid"];
-            string textSearch = GetDescription(idSearch);
-            json = "{ \"description\": \"" + textSearch + "\" }";
+            string searchId = CurrentContext.Request["lkid"];
+            string description = GetDescription(searchId);
+            dto = new LookupDescriptionDto(description);
         }
         catch (Exception ex)
         {
-            Log.AddError(ex.Message);
+            Log.AddError(ex, ex.Message);
         }
 
-        CurrentContext.Response.SendResponse(json, "application/json");
+        CurrentContext.Response.SendResponse(dto?.ToJson(), "application/json");
     }
 
     /// <summary>
@@ -260,9 +278,9 @@ public class JJLookup : JJBaseControl
     /// <returns>Returns the description of the id</returns>
     public string GetDescription() => GetDescription(SelectedValue);
 
-    private string GetDescription(string idSearch)
+    private string GetDescription(string searchId)
     {
-        if (string.IsNullOrEmpty(idSearch))
+        if (string.IsNullOrEmpty(searchId))
             return null;
 
         if (DataItem.ElementMap.Filters == null)
@@ -270,7 +288,7 @@ public class JJLookup : JJBaseControl
 
         if (OnlyNumbers)
         {
-            bool isNumeric = int.TryParse(idSearch, out _);
+            bool isNumeric = int.TryParse(searchId, out _);
             if (!isNumeric)
                 return null;
         }
@@ -286,7 +304,7 @@ public class JJLookup : JJBaseControl
             }
         }
 
-        filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(idSearch));
+        filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(searchId));
 
         var dicDao = JJServiceCore.DataDictionaryRepository;
         Hashtable fields;

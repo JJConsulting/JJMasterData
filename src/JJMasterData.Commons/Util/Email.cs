@@ -154,8 +154,6 @@ public class Email
 
         return lRet;
     }
-
-
 }
 
 public class ConfigSmtp
@@ -194,21 +192,21 @@ public class ConfigSmtp
 
     public override string ToString()
     {
-        StringBuilder sVal = new StringBuilder();
-        sVal.Append("EMAIL=");
-        sVal.Append(Email);
-        sVal.Append(";SERVER=");
-        sVal.Append(Server);
-        sVal.Append(";PORT=");
-        sVal.Append(Port);
-        sVal.Append(";USER=");
-        sVal.Append(User);
-        sVal.Append(";PWD=");
-        sVal.Append(Password);
-        sVal.Append(";SSL=");
-        sVal.Append(EnableSSL ? "1" : "0");
+        var @string = new StringBuilder();
+        @string.Append("EMAIL=");
+        @string.Append(Email);
+        @string.Append(";SERVER=");
+        @string.Append(Server);
+        @string.Append(";PORT=");
+        @string.Append(Port);
+        @string.Append(";USER=");
+        @string.Append(User);
+        @string.Append(";PWD=");
+        @string.Append(Password);
+        @string.Append(";SSL=");
+        @string.Append(EnableSSL ? "1" : "0");
 
-        return sVal.ToString();
+        return @string.ToString();
     }
 
 }

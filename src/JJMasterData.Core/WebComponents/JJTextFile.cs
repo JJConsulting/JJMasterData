@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -170,7 +171,7 @@ public class JJTextFile : JJBaseControl
         string json = Cript.Descript64(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
-            throw new Exception(Translate.Key("Invalid parameters when opening file upload"));
+            throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
 
         PageState = parms.PageState;
         Enabled = parms.Enable;

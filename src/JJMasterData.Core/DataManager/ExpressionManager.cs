@@ -6,6 +6,7 @@ using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Protheus;
@@ -216,10 +217,10 @@ public class ExpressionManager
                 }
                 catch (Exception ex)
                 {
-                    var errMsg = new StringBuilder();
-                    errMsg.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
-                    errMsg.Append(ex.Message);
-                    Log.AddError(errMsg.ToString());
+                    var message = new StringBuilder();
+                    message.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
+                    message.Append(ex.Message);
+                    Log.AddError(ex, message.ToString());
                 }
             }
             else if (expression.StartsWith("sql:"))
@@ -233,7 +234,7 @@ public class ExpressionManager
             {
                 string[] exp = expression.Replace("\"", "").Replace("'", "").Split(',');
                 if (exp.Length < 3)
-                    throw new Exception(Translate.Key("Invalid Protheus Request"));
+                    throw new JJMasterDataException(Translate.Key("Invalid Protheus Request"));
 
                 string urlProtheus = ParseExpression(exp[0], state, false, formValues);
                 string functionName = ParseExpression(exp[1], state, false, formValues);
@@ -245,28 +246,30 @@ public class ExpressionManager
             }
             else
             {
-                var sErr = new StringBuilder();
-                sErr.Append(Translate.Key("Expression not started with"));
-                sErr.Append(" [val, exp, sql or protheus]. ");
-                sErr.Append(Translate.Key("Field"));
-                sErr.Append(": ");
-                sErr.Append(f.Name);
-                sErr.Append(Translate.Key("Content"));
-                sErr.Append(": ");
-                sErr.Append(expression);
-                throw new ArgumentException(sErr.ToString());
+                var errorMessage = new StringBuilder();
+                errorMessage.Append(Translate.Key("Expression not started with"));
+                errorMessage.Append(" [val, exp, sql or protheus]. ");
+                errorMessage.Append(Translate.Key("Field"));
+                errorMessage.Append(": ");
+                errorMessage.Append(f.Name);
+                errorMessage.Append(Translate.Key("Content"));
+                errorMessage.Append(": ");
+                errorMessage.Append(expression);
+                throw new ArgumentException(errorMessage.ToString());
             }
         }
-        catch (ProtheusException pe)
+        catch (ProtheusException ex)
         {
-            var sErr = new StringBuilder();
-            sErr.Append(Translate.Key("Error retrieving expression in Protheus integration."));
-            sErr.Append(" ");
-            sErr.Append(Translate.Key("Field"));
-            sErr.Append(": ");
-            sErr.AppendLine(f.Name);
-            sErr.Append(pe.Message);
-            throw new Exception(sErr.ToString());
+            var errorMessage = new StringBuilder();
+            errorMessage.Append(Translate.Key("Error retrieving expression in Protheus integration."));
+            errorMessage.Append(" ");
+            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.Append(": ");
+            errorMessage.AppendLine(f.Name);
+            errorMessage.Append(ex.Message);
+            var exception = new JJMasterDataException(errorMessage.ToString(), ex);
+            Log.AddError(exception, exception.Message);
+            throw exception;
         }
         catch (Exception ex)
         {
@@ -275,10 +278,13 @@ public class ExpressionManager
             errorMessage.Append(Translate.Key("Field"));
             errorMessage.Append(": ");
             errorMessage.AppendLine(f.Name);
+        
+            var exception = new JJMasterDataException(errorMessage.ToString(), ex);
+            
+            Log.AddError(exception, exception.Message);
 
-            Log.AddError(ex, errorMessage.ToString());
+            throw exception;
 
-            throw new Exception(errorMessage.ToString(), ex);
         }
         return retVal;
     }

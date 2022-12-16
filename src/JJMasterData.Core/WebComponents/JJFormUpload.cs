@@ -15,6 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -725,8 +727,13 @@ public class JJFormUpload : JJBaseView
             var args = new FormDownloadFileEventArgs(fileName, null);
             OnBeforeDownloadFile.Invoke(this, args);
 
+            
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+            {
+                var exception = new JJMasterDataException(args.ErrorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
         }
 
         var download = new JJDownloadFile(fileName);

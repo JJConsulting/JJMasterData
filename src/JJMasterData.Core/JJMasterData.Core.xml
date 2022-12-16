@@ -1035,7 +1035,7 @@
             se não existir o valor da PK uma exceção será lançada
             </summary>
             <remarks>
-            Se não existir o valor da PK uma DataDictionaryException será lançada
+            Se não existir o valor da PK uma JJMasterDataException será lançada
             </remarks>
         </member>
         <member name="M:JJMasterData.Core.DataDictionary.FormManager.ParseOriginalName(System.Collections.Hashtable)">

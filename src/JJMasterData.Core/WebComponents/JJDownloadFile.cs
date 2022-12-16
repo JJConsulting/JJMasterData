@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
@@ -33,7 +34,7 @@ public class JJDownloadFile : JJBaseView
     internal override HtmlBuilder RenderHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
-            throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
+            throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
     
         if (IsExternalLink)
             return GetDownloadHtmlElement();
@@ -100,8 +101,9 @@ public class JJDownloadFile : JJBaseView
 
         if (!File.Exists(FilePath))
         {
-            Log.AddError(Translate.Key("File not found at {0}", FilePath));
-            throw new Exception(Translate.Key("File {0} not found!", FilePath));
+            var exception = new JJMasterDataException(Translate.Key("File {0} not found!", FilePath));
+            Log.AddError(exception, exception.Message);
+            throw exception;
         }
 
         DirectDownload(FilePath);
@@ -148,7 +150,7 @@ public class JJDownloadFile : JJBaseView
 
         string filePath = Cript.Descript64(criptFilePath);
         if (filePath == null)
-            throw new Exception(Translate.Key("Invalid file path or badly formatted URL"));
+            throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
         var download = new JJDownloadFile
         {

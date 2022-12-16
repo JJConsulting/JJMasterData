@@ -24,7 +24,7 @@ public class ErrorController : Controller
             StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
         };
 
-        logger?.LogError(exceptionHandler?.Error, "Error");
+        logger?.LogError(exceptionHandler?.Error, "ErrorController Exception");
 
         return View(model);
     }

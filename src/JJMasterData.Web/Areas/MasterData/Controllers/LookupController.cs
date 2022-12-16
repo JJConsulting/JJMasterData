@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Web;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -40,11 +41,13 @@ public class LookupController : MasterDataController
         }
             
         if (elementName == null | objid == null)
-            throw new Exception(Translate.Key("Invalid Parameter"));
+            throw new JJMasterDataException(Translate.Key("Invalid Parameter"));
 
         //FormView
-        var form = new JJFormView(elementName);
-        form.ShowTitle = false;
+        var form = new JJFormView(elementName)
+        {
+            ShowTitle = false
+        };
 
         //Actions
         if (!enableAction)

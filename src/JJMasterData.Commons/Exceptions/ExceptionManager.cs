@@ -9,7 +9,7 @@ using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Commons.Exceptions;
 
-public class ExceptionManager
+public static class ExceptionManager
 {
     public static ResponseLetter GetResponse(Exception ex)
     {
@@ -20,7 +20,7 @@ public class ExceptionManager
                 err.Message = exAccess.Message;
                 err.Status = (int)HttpStatusCode.Unauthorized;
                 break;
-            case DataDictionaryException dcEx:
+            case JJMasterDataException dcEx:
                 err.Message = dcEx.Message;
                 err.Status = (int)HttpStatusCode.BadRequest;
                 Log.AddError(ex.Message);
@@ -39,7 +39,7 @@ public class ExceptionManager
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
-                Log.AddError(ex.Message);
+                Log.AddError(ex, ex.Message);
                 err.Message = ex.Message;
                 err.Status = (int)HttpStatusCode.InternalServerError;
                 break;
@@ -51,26 +51,24 @@ public class ExceptionManager
     public static string GetMessage(SqlException ex)
     {
         string message;
-        if (ex.Number == 547)
+        switch (ex.Number)
         {
-            message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
-        }
-        else if (ex.Number == 2627 || ex.Number == 2601)
-        {
-            message = Translate.Key("Record already registered.");
-        }
-        else if (ex.Number == 170)
-        {
-            message = Translate.Key("Invalid character.");
-        }
-        else if (ex.Number >= 50000)
-        {
-            message = ex.Message;
-        }
-        else
-        {
-            message = Translate.Key("Unexpected error.");
-            Log.AddError(ex.ToString());
+            case 547:
+                message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
+                break;
+            case 2627 or 2601:
+                message = Translate.Key("Record already registered.");
+                break;
+            case 170:
+                message = Translate.Key("Invalid character.");
+                break;
+            case >= 50000:
+                message = ex.Message;
+                break;
+            default:
+                message = Translate.Key("Unexpected error.");
+                Log.AddError(ex.ToString());
+                break;
         }
 
         return message;
@@ -79,7 +77,7 @@ public class ExceptionManager
     public static string GetMessage(Exception ex)
     {
         if (ex is SqlException exSql)
-            return  GetMessage(exSql);
+            return GetMessage(exSql);
         
         return ex.Message;
     }

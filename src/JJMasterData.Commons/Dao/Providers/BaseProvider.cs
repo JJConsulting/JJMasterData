@@ -73,7 +73,7 @@ internal abstract class BaseProvider
                 string err = Translate.Key("Element");
                 err += " " + element.Name;
                 err += ": " + Translate.Key("Invalid return of @RET variable in procedure");
-                throw new DataDictionaryException(err);
+                throw new JJMasterDataException(err);
             }
 
             commandType = (CommandOperation)nret;
@@ -217,7 +217,7 @@ internal abstract class BaseProvider
                 string err = Translate.Key("Element");
                 err += " " + element.Name;
                 err += ": " + Translate.Key("Invalid return of @RET variable in procedure");
-                throw new DataDictionaryException(err);
+                throw new JJMasterDataException(err);
             }
 
             ret = (CommandOperation)nret;
