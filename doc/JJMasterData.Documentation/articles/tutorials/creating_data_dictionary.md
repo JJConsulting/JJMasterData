@@ -49,7 +49,7 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
     - Virtual: Será utilizado somente em Set;
 
-    - ViewOnly: Será usado somente em Get;
+    - ViewOnly: Será usado somente em Get.
 
 - *DataType:* Tipo dos dados que serão recebidos para tabela.
 
@@ -66,18 +66,17 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
 
 **Panels**
+     Permite separar os campos do dicionários em paineis. Mas somente para as ações de adicionar, editar e visualizar.
+
 - General
-    - Layout:
-    - Color:
-    - Expanded By Default:
-    - Title:
-    - Subtitle:
-    - Available Field:
-    - Selected Fields:
+    - Layout: É Maneira com que o painel será reinderizado.
+    - Expanded By Default: Está opção irá definir se o painel   criado será iniciado maximizado por minimizado por padrão.
+    - Available Field: Serão os itens que não serão exibidos como paineis.
+    - Selected Fields: Ao mudar um item da sua tabela para o campo Selected fields, você verá que ao acessar sua tabela e tentar realizar alguma ação entre adicionar, editar e visualizar um item, ele irá ser exibido como painel.
 - Adavanced
-    - Visible Expression:
-    - Enable Expression:
-    - CssClass:
+    - Visible Expression: seeref
+    - Enable Expression: seeref
+    - CssClass: Classe Css do campo.
 
 **Indexes**
 - New Index
