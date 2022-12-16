@@ -5,6 +5,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -19,9 +20,9 @@ public class JJServiceBuilder
         Services = services;
     }
     
-    public JJServiceBuilder AddDefaultServices()
+    public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
     {
-        Services.AddOptions<JJMasterDataOptions>();
+        Services.AddOptions<JJMasterDataOptions>().Bind(configuration.GetSection("JJMasterData"));
         Services.AddLocalization();
         Services.AddLogging(builder =>
         {

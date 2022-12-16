@@ -48,18 +48,17 @@ public static class ServiceCollectionExtensions
         services.ConfigureWritableOptions<ConnectionProviders>(
             configuration.GetSection("ConnectionProviders"), filePath);
 
-        return services.AddJJMasterDataCore();
+        return services.AddJJMasterDataCore(configuration);
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
     {
         AddServices(services);
 
-        services.Configure<JJMasterDataOptions>(configuration.GetJJMasterData());
         services.Configure<ConnectionString>(configuration.GetSection("ConnectionString"));
         services.Configure<ConnectionProviders>(configuration.GetSection("ConnectionProviders"));
         
-        return services.AddJJMasterDataCore();
+        return services.AddJJMasterDataCore(configuration);
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,

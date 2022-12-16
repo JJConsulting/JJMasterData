@@ -3,22 +3,35 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace JJMasterData.Core.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
+    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, string filePath = "appsettings.json")
     {
-        services.AddJJMasterDataServices();   
-        return services.AddJJMasterDataCommons();
+        var configuration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile(filePath, optional: false, reloadOnChange: true)
+        .Build();
+
+        services.AddJJMasterDataServices();
+        return services.AddJJMasterDataCommons(configuration);
+    }
+
+    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddJJMasterDataServices();
+        return services.AddJJMasterDataCommons(configuration);
     }
 
     private static void AddJJMasterDataServices(this IServiceCollection services)
     {
         services.AddScoped<IDataDictionaryRepository, DataDictionaryDao>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
-        services.AddTransient<ITextWriter, TextWriter>();
+        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
     }
 }
