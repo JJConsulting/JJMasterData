@@ -62,9 +62,9 @@ public class PanelController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Save(string dictionaryName, FormElementPanel panel, [FromForm] string selectedFields)
+    public IActionResult Save(string dictionaryName, FormElementPanel panel, [FromForm] string? selectedFields)
     {
-        string[] splittedFields = selectedFields.Split(',');
+        string[]? splittedFields = selectedFields?.Split(',');
         _panelService.SavePanel(dictionaryName, panel, splittedFields);
         if (ModelState.IsValid)
         {
