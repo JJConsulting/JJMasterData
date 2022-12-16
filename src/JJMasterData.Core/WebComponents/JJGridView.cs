@@ -354,7 +354,7 @@ public class JJGridView : JJBaseView
             if (_currentUI != null)
                 return _currentUI;
 
-            // Removing it from here when calling the GetDataTable() method outside the class does not respect pagination
+            // Removing it from here when calling the GetMetadataInfoList() method outside the class does not respect pagination
             var actionMap = CurrentActionMap;
             var action = GetCurrentAction(actionMap);
             if (action is ConfigAction)

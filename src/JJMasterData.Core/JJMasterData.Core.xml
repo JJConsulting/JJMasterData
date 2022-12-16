@@ -2788,7 +2788,7 @@
             Executa uma ação SQL
             </summary>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetDataTable">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetMetadataInfoList">
             <summary>
             Recupera os registros do banco de dados com base nos filtros atuais.  
             </summary>
@@ -2802,7 +2802,7 @@
             utilizando a proc informada no FormElement;
             </returns>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetDataTable(System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetMetadataInfoList(System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
             <summary>
             Recupera os registros do banco de dados com base no filtro.  
             </summary>

@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -41,87 +39,7 @@ public class DataDictionaryStructure
         
         return element;
     }
-
-    public static IList<IDictionary> GetStructure(Metadata metadata, DateTime modified)
-    {
-        string name = metadata.Table.Name;
-        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
-
-        var structure = new List<IDictionary>();
-
-        if (metadata.Table != null)
-        {
-            var values = new Hashtable
-            {
-                { Name, name },
-                { TableName, metadata.Table.TableName },
-                { Info, metadata.Table.Info },
-                { Type, "T" },
-                { Owner, null },
-                { Json, jsonTable },
-                { Sync, metadata.Table.Sync ? "1" : "0" },
-                { LastModified, modified }
-            };
-            
-            structure.Add(values);
-        }
-        
-        if (metadata.Form != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
-
-            var values = new Hashtable
-            {
-                { Name, name },
-                { TableName, metadata.Table.TableName },
-                { Info, metadata.Table.Info },
-                { Type, "F" },
-                { Owner, name },
-                { Json, jsonForm },
-                { Sync, metadata.Table.Sync ? "1" : "0" },
-                { LastModified, modified }
-            };
-
-            structure.Add(values);
-        }
-
-        if (metadata.UIOptions != null)
-        {
-            string json = JsonConvert.SerializeObject(metadata.UIOptions);
-            var values = new Hashtable
-            {
-                { Name, name },
-                { TableName, metadata.Table.TableName },
-                { Info, "" },
-                { Type, "L" },
-                { Owner, name },
-                { Json, json },
-                { Sync, metadata.Table.Sync ? "1" : "0" },
-                { LastModified, modified }
-            };
-            structure.Add(values);
-        }
-
-        if (metadata.Api != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Api);
-            var values = new Hashtable
-            {
-                { Name, name },
-                { TableName, metadata.Table.TableName },
-                { Info, "" },
-                { Type, "A" },
-                { Owner, name },
-                { Json, jsonForm },
-                { Sync, metadata.Table.Sync ? "1" : "0" },
-                { LastModified, modified }
-            };
-            structure.Add(values);
-        }
-
-        return structure;
-    }
-
+    
     public static void ApplyCompatibility(Metadata dicParser, string elementName)
     {
         if (dicParser == null)

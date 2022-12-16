@@ -367,7 +367,7 @@ internal class GridTableBody
 
     private Hashtable GetValues(DataRow row)
     {
-        var values = new Hashtable();
+        var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);

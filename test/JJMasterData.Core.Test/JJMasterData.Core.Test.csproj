@@ -32,4 +32,12 @@
     <None Remove="DataDictionary\__init__.py" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Metadata\Example.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

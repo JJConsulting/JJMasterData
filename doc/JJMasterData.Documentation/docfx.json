@@ -42,7 +42,7 @@
     "resource": [
       {
         "files": [
-          "example/JJMasterData.Web.Example/**",
+          "example/JJMasterData.WebExample/**",
           "media/**",
           "logo.svg",
           "favicon.ico"

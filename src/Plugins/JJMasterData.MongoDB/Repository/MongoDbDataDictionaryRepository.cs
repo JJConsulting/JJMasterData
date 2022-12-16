@@ -4,17 +4,15 @@ using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using System.Collections;
-using System.Data;
 
 namespace JJMasterData.MongoDB.Repository;
 
-public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
+public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
 
-    public MongoDBDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDbDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);
@@ -53,8 +51,8 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
         return _metadataCollection.Find(_ => true).ToList().Select(metadata => metadata.Table.Name).ToList();
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public DataTable GetDataTable(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
+    public  IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
 
@@ -83,15 +81,8 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
             .Skip((currentPage - 1) * recordsPerPage)
             .Limit(recordsPerPage)
             .ToList();
-        
-        var values = new List<IDictionary>();
 
-        foreach (var metadata in metadataList)
-        {
-            values.AddRange(DataDictionaryStructure.GetStructure(metadata, metadata.LastModified));
-        }
-        
-        return JsonConvert.DeserializeObject<DataTable>(JsonConvert.SerializeObject(values.Where(v=>(string)v["type"]! =="F")))!;
+        return metadataList.Select(metadata => new MetadataInfo(metadata, metadata.LastModified)).ToList();
     }
     
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
@@ -142,7 +133,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
         
         if (filter is { LastModifiedFrom: { }, LastModifiedTo: { } })
         {
-            filters["LastModified"] = new Hashtable
+            filters["Modified"] = new Hashtable
             {
                 {"$gt", filter.LastModifiedFrom.Value},
                 {"$lt", filter.LastModifiedTo.Value}
@@ -161,7 +152,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
         {
             "name" => new MongoDBOrderByMapper("Table.Name", type),
             "tablename" => new MongoDBOrderByMapper("Table.TableName", type),
-            "modified" => new MongoDBOrderByMapper("LastModified", type),
+            "modified" => new MongoDBOrderByMapper("Modified", type),
             "info" => new MongoDBOrderByMapper("Table.Info", type),
             "sync" => new MongoDBOrderByMapper("Table.Sync", type),
             _ => throw new ArgumentException(orderBy)

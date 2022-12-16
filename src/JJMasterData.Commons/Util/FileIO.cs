@@ -94,35 +94,36 @@ public class FileIO
         ///</remarks>
         public static DataTable GetDataTableFiles(string fullPath, string searchPattern)
         {
-            DirectoryInfo oDir = new DirectoryInfo(fullPath);
-            DataTable dtFiles = new DataTable();
-            DataRow oRow;
+            var dir = new DirectoryInfo(fullPath);
+            var dtFiles = new DataTable();
             dtFiles.Columns.Add("Id", typeof(string));
             dtFiles.Columns.Add("Nome", typeof(string));
             dtFiles.Columns.Add("Tamanho", typeof(string));
             dtFiles.Columns.Add("TamBytes", typeof(double));
             dtFiles.Columns.Add("LastWriteTime", typeof(string));
             dtFiles.Columns.Add("NomeCompleto", typeof(string));
-            if (oDir.Exists)
-            {
-                int iId = 0;
-                FileInfo[] files;
-                if (searchPattern == null)
-                    files = oDir.GetFiles();
-                else
-                    files = oDir.GetFiles(searchPattern);
 
-                foreach (FileInfo oFile in files)
-                {
-                    oRow = dtFiles.NewRow();
-                    oRow["Id"] = iId.ToString();
-                    oRow["Nome"] = oFile.Name;
-                    oRow["Tamanho"] = Format.FormatFileSize(oFile.Length);
-                    oRow["TamBytes"] = oFile.Length;
-                    oRow["LastWriteTime"] = oFile.LastWriteTime.ToString(CultureInfo.CurrentCulture);
-                    dtFiles.Rows.Add(oRow);
-                    iId++;
-                }
+            if (!dir.Exists) 
+                return dtFiles;
+            
+            int iId = 0;
+            FileInfo[] files;
+            
+            if (searchPattern == null)
+                files = dir.GetFiles();
+            else
+                files = dir.GetFiles(searchPattern);
+
+            foreach (FileInfo oFile in files)
+            {
+                var row = dtFiles.NewRow();
+                row["Id"] = iId.ToString();
+                row["Nome"] = oFile.Name;
+                row["Tamanho"] = Format.FormatFileSize(oFile.Length);
+                row["TamBytes"] = oFile.Length;
+                row["LastWriteTime"] = oFile.LastWriteTime.ToString(CultureInfo.CurrentCulture);
+                dtFiles.Rows.Add(row);
+                iId++;
             }
             return dtFiles;
         }
