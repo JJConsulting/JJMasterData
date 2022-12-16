@@ -25,6 +25,9 @@ public class JJCollapsePanelTagHelper : TagHelper
     
     [HtmlAttributeName("expanded-by-default")]
     public bool ExpandedByDefault { get; set; }
+    
+    [HtmlAttributeName("configure")]
+    public Action<JJCollapsePanel>? Configure { get; set; }
 
     private RazorPartialRendererService RendererService { get; }
     
@@ -55,9 +58,10 @@ public class JJCollapsePanelTagHelper : TagHelper
             panel.HtmlContent = await RendererService.ToStringAsync(Partial, Model);
         }
         
+        Configure?.Invoke(panel);
+        
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(panel.GetHtml());
-        
     }
 
     private void AssertAttributes()
