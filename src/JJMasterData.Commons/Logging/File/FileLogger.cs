@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+
 
 namespace JJMasterData.Commons.Logging.File;
 
@@ -45,18 +45,6 @@ public class FileLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        var values = new JObject
-        {
-            ["Created"] = DateTime.Now,
-            ["LogLevel"] = logLevel.ToString(),
-            ["EventId"] = eventId.Id,
-            ["EventName"] = eventId.Name,
-            ["Message"] = formatter(state, exception),
-            ["ExceptionMessage"] = exception?.Message,
-            ["ExceptionStackTrace"] = exception?.StackTrace,
-            ["ExceptionSource"] = exception?.Source
-        };
-        
         var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
         var directory = Path.GetDirectoryName(path);
         
@@ -65,14 +53,34 @@ public class FileLogger : ILogger
         
         using var writer = new StreamWriter(path, true);
 
-        writer.Write(values + ",\n");
+        string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
+        
+        writer.Write(record);
     }
 
-    private string GetLogRecord(LogLevel logLevel, string message, Exception exception)
+    private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
     {
         var log = new StringBuilder();
-        log.AppendFormat("[{0:yyyy-MM-dd HH:mm:ss+00:00}]", DateTimeOffset.UtcNow);
-        var logRecord =
-            $"{"[" +  + "]"} [{logLevel.ToString()}] {message} {(exception != null ? exception.StackTrace : "")}";
+
+        log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTimeOffset.UtcNow);
+        log.AppendFormat(" [{0}] ", logLevel);
+
+        if (!string.IsNullOrWhiteSpace(eventName))
+        {
+            log.AppendFormat(" [{0}] ", eventName);
+        }
+        
+        log.AppendFormat(" {0} ", message);
+
+        if (exception != null)
+        {
+            log.AppendLine(exception.Message);
+            log.AppendLine(exception.StackTrace);
+            log.AppendFormat("Source: {0}", exception.Source);
+        }
+
+        log.AppendLine();
+
+        return log.ToString();
     }
 }
