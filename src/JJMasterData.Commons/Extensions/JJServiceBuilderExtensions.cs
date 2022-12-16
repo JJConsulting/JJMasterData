@@ -1,14 +1,28 @@
 using JJMasterData.Commons.DI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace JJMasterData.Commons.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
+    {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(filePath, optional: false, reloadOnChange: true)
+            .Build();
+
+        var builder = new JJServiceBuilder(services);
+        builder.AddDefaultServices(configuration);
+        return builder;
+    }
+
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
     {
         var builder = new JJServiceBuilder(services);
-        builder.AddDefaultServices();
+        builder.AddDefaultServices(configuration);
         return builder;
     }
 }
