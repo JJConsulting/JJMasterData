@@ -34,7 +34,7 @@ public static class DbLoggerElement
                 {
                     Name = options.LevelColumnName,
                     Label = "Level",
-                    DataType = FieldType.Varchar,
+                    DataType = FieldType.Int,
                     Size = 1,
                     Filter =
                     {
@@ -56,8 +56,7 @@ public static class DbLoggerElement
                 {
                     Name = options.MessageColumnName,
                     Label = "Message",
-                    DataType = FieldType.Varchar,
-                    Size = 700,
+                    DataType = FieldType.Text,
                     Filter =
                     {
                         Type = FilterMode.Contain

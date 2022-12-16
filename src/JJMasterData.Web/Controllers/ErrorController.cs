@@ -23,8 +23,8 @@ public class ErrorController : Controller
             Exception = exceptionHandler?.Error.Message ?? Translate.Key("Page not found"),
             StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
         };
-
-        logger?.LogError(exceptionHandler?.Error, "ErrorController Exception");
+        
+        logger?.LogError(exceptionHandler?.Error, exceptionHandler?.Error.Message);
 
         return View(model);
     }
