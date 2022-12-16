@@ -791,27 +791,27 @@ internal class OracleProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
     {
         return GetCommandWrite(INSERT, element, values);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
     {
         return GetCommandWrite(UPDATE, element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
     {
         return GetCommandWrite(DELETE, element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
+    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
@@ -825,32 +825,40 @@ internal class OracleProvider : BaseProvider
 
         foreach (var f in fields)
         {
-            var param = new DataAccessParameter();
-            param.Name = string.Format("{0}{1}", VariablePrefix, f.Name);
-            param.Size = f.Size;
-            param.Value = values.ContainsKey(f.Name) ? values[f.Name] : DBNull.Value;
-            param.Type = GetDbType(f.DataType);
+            var param = new DataAccessParameter
+            {
+                Name = $"{VariablePrefix}{f.Name}",
+                Size = f.Size,
+                Value = values.Contains(f.Name) ? values[f.Name] : DBNull.Value,
+                Type = GetDbType(f.DataType)
+            };
             cmd.Parameters.Add(param);
         }
 
-        var pRet = new DataAccessParameter();
-        pRet.Direction = ParameterDirection.Output;
-        pRet.Name = VariablePrefix + "RET";
-        pRet.Type = DbType.Int32;
+        var pRet = new DataAccessParameter
+        {
+            Direction = ParameterDirection.Output,
+            Name = VariablePrefix + "RET",
+            Type = DbType.Int32
+        };
         cmd.Parameters.Add(pRet);
 
         return cmd;
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetReadProcedureName(element);
-        cmd.Parameters = new List<DataAccessParameter>();
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "orderby", orderBy));
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "regporpag", recordsPerPage));
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "pag", currentPage));
+        var cmd = new DataAccessCommand
+        {
+            CmdType = CommandType.StoredProcedure,
+            Sql = JJMasterDataOptions.GetReadProcedureName(element),
+            Parameters = new List<DataAccessParameter>
+            {
+                new(VariablePrefix + "orderby", orderBy),
+                new(VariablePrefix + "regporpag", recordsPerPage),
+                new(VariablePrefix + "pag", currentPage)
+            }
+        };
 
         foreach (var field in element.Fields)
         {
@@ -858,39 +866,43 @@ internal class OracleProvider : BaseProvider
             {
                 object valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_from") &&
+                    filters.Contains(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
                 {
                     valueFrom = filters[field.Name + "_from"];
                 }
-                var pFrom = new DataAccessParameter();
-                pFrom.Direction = ParameterDirection.Input;
-                pFrom.Type = GetDbType(field.DataType);
-                pFrom.Size = field.Size;
-                pFrom.Name = VariablePrefix + field.Name + "_from";
-                pFrom.Value = valueFrom;
-                cmd.Parameters.Add(pFrom);
+                var fromParameter = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = VariablePrefix + field.Name + "_from",
+                    Value = valueFrom
+                };
+                cmd.Parameters.Add(fromParameter);
 
                 object valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_to") &&
+                    filters.Contains(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)
                 {
                     valueTo = filters[field.Name + "_to"];
                 }
-                var pTo = new DataAccessParameter();
-                pTo.Direction = ParameterDirection.Input;
-                pTo.Type = GetDbType(field.DataType);
-                pTo.Size = field.Size;
-                pTo.Name = VariablePrefix + field.Name + "_to";
-                pTo.Value = valueTo;
-                cmd.Parameters.Add(pTo);
+                var toParameter = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = VariablePrefix + field.Name + "_to",
+                    Value = valueTo
+                };
+                cmd.Parameters.Add(toParameter);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
                 object value = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name) &&
+                    filters.Contains(field.Name) &&
                     filters[field.Name] != null)
                 {
                     value = filters[field.Name];
@@ -908,18 +920,19 @@ internal class OracleProvider : BaseProvider
 
         cmd.Parameters.Add(pTot);
 
-        var pCur = new DataAccessParameter();
-        pCur.Name = VariablePrefix + "cur_OUT";
-        pCur.Direction = ParameterDirection.Output;
-        pCur.Type = DbType.Object;
+        var pCur = new DataAccessParameter
+        {
+            Name = VariablePrefix + "cur_OUT",
+            Direction = ParameterDirection.Output,
+            Type = DbType.Object
+        };
 
         cmd.Parameters.Add(pCur);
 
 
         return cmd;
     }
-
-
+    
     private string GetStrType(FieldType dataType)
     {
         string sType = dataType.ToString();

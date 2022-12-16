@@ -22,14 +22,14 @@ internal abstract class BaseProvider
     public abstract string GetScriptReadProcedure(Element element);
     public abstract Element GetElementFromTable(string tableName);
 
-    public abstract DataAccessCommand GetCommandInsert(Element element, Hashtable values);
-    public abstract DataAccessCommand GetCommandUpdate(Element element, Hashtable values);
-    public abstract DataAccessCommand GetCommandDelete(Element element, Hashtable filters);
-    public abstract DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
-    public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values);
+    public abstract DataAccessCommand GetCommandInsert(Element element, IDictionary values);
+    public abstract DataAccessCommand GetCommandUpdate(Element element, IDictionary values);
+    public abstract DataAccessCommand GetCommandDelete(Element element, IDictionary filters);
+    public abstract DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
+    public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values);
 
-    ///<inheritdoc cref="IEntityRepository.Insert(Element, Hashtable)"/>
-    public void Insert(Element element, Hashtable values)
+    ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
+    public void Insert(Element element, IDictionary values)
     {
         var command = GetCommandInsert(element, values);
         var newFields = DataAccess.GetFields(command);
@@ -41,7 +41,7 @@ internal abstract class BaseProvider
         {
             if (element.Fields.ContainsKey(entry.Key.ToString()))
             {
-                if (values.ContainsKey(entry.Key))
+                if (values.Contains(entry.Key))
                     values[entry.Key] = entry.Value;
                 else
                     values.Add(entry.Key, entry.Value);
@@ -49,16 +49,16 @@ internal abstract class BaseProvider
         }
     }
 
-    ///<inheritdoc cref="IEntityRepository.Update(Element, Hashtable)"/>
-    public int Update(Element element, Hashtable values)
+    ///<inheritdoc cref="IEntityRepository.Update(Element, IDictionary)"/>
+    public int Update(Element element, IDictionary values)
     {
         var cmd = GetCommandUpdate(element, values);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable)"/>
-    public CommandOperation SetValues(Element element, Hashtable values)
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary)"/>
+    public CommandOperation SetValues(Element element, IDictionary values)
     {
         var commandType = CommandOperation.None;
         var command = GetCommandInsertOrReplace(element, values);
@@ -84,7 +84,7 @@ internal abstract class BaseProvider
         {
             if (!element.Fields.ContainsKey(entry.Key.ToString())) continue;
 
-            if (values.ContainsKey(entry.Key))
+            if (values.Contains(entry.Key))
                 values[entry.Key] = entry.Value;
 
             else
@@ -94,8 +94,8 @@ internal abstract class BaseProvider
         return commandType;
     }
 
-    ///<inheritdoc cref="IEntityRepository.SetValues(Element, Hashtable, bool)"/>
-    public CommandOperation SetValues(Element element, Hashtable values, bool ignoreResults)
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary, bool)"/>
+    public CommandOperation SetValues(Element element, IDictionary values, bool ignoreResults)
     {
         if (ignoreResults)
             return SetValuesNoResult(element, values);
@@ -104,7 +104,7 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
-    public int Delete(Element element, Hashtable filters)
+    public int Delete(Element element, IDictionary filters)
     {
         var cmd = GetCommandDelete(element, filters);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
@@ -112,7 +112,7 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
-    public Hashtable GetFields(Element element, Hashtable filters)
+    public Hashtable GetFields(Element element, IDictionary filters)
     {
         DataAccessParameter pTot =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
@@ -121,7 +121,7 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Dao.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref int tot)
+    public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int tot)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -140,14 +140,14 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
-    public DataTable GetDataTable(Element element, Hashtable filters)
+    public DataTable GetDataTable(Element element, IDictionary filters)
     {
         int tot = 1;
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
-    public int GetCount(Element element, Hashtable filters)
+    public int GetCount(Element element, IDictionary filters)
     {
         int tot = 0;
         GetDataTable(element, filters, null, 1, 1, ref tot);
@@ -165,7 +165,7 @@ internal abstract class BaseProvider
     }
 
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
+    public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
         bool showLogInfo, string delimiter = "|")
     {
         if (element == null)
@@ -203,7 +203,7 @@ internal abstract class BaseProvider
         return true;
     }
 
-    private CommandOperation SetValuesNoResult(Element element, Hashtable values)
+    private CommandOperation SetValuesNoResult(Element element, IDictionary values)
     {
         var ret = CommandOperation.None;
         var command = GetCommandInsertOrReplace(element, values);
@@ -212,8 +212,7 @@ internal abstract class BaseProvider
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
         if (oret.Value != DBNull.Value)
         {
-            int nret;
-            if (!int.TryParse(oret.Value.ToString(), out nret))
+            if (!int.TryParse(oret.Value.ToString(), out var nret))
             {
                 string err = Translate.Key("Element");
                 err += " " + element.Name;

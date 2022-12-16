@@ -902,27 +902,27 @@ internal class MSSQLProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
     {
         return GetCommandWrite(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
     {
         return GetCommandWrite(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
     {
         return GetCommandWrite(DeleteInitial, element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var command = new DataAccessCommand
         {
@@ -942,7 +942,7 @@ internal class MSSQLProvider : BaseProvider
             {
                 object valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_from") &&
+                    filters.Contains(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
                 {
                     valueFrom = filters[field.Name + "_from"];
@@ -959,7 +959,7 @@ internal class MSSQLProvider : BaseProvider
 
                 object valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_to") &&
+                    filters.Contains(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)
                 {
                     valueTo = filters[field.Name + "_to"];
@@ -1000,7 +1000,7 @@ internal class MSSQLProvider : BaseProvider
     }
 
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
+    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
@@ -1035,11 +1035,11 @@ internal class MSSQLProvider : BaseProvider
     }
 
 
-    private object GetElementValue(ElementField f, Hashtable values)
+    private object GetElementValue(ElementField f, IDictionary values)
     {
         object value = DBNull.Value;
         if (values != null &&
-            values.ContainsKey(f.Name) &&
+            values.Contains(f.Name) &&
             values[f.Name] != null)
         {
             if ((f.DataType == FieldType.Date ||

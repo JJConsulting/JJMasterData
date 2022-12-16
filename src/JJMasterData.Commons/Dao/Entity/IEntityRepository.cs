@@ -126,8 +126,8 @@ public interface IEntityRepository
     /// </summary>
     /// <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
     /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <param name="ignoreResults">By default the values ​​returned in the set procedures are returned by reference in the hashtable values ​​object, 
+    /// <param name="values">List of values to be stored in the database</param>
+    /// <param name="ignoreResults">By default the values returned in the set procedures are returned by reference in the hashtable values object, 
     /// if this ignoreResults parameter is true this action is ignored, improving performance</param>
     /// <remarks>
     /// How to do:

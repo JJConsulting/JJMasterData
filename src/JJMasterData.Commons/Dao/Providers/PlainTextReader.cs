@@ -26,7 +26,7 @@ internal class PlainTextReader
     }
 
 
-    public string GetListFieldsAsText(Element element, Hashtable filters, string orderby, int regporpag, int pag)
+    public string GetListFieldsAsText(Element element, IDictionary filters, string orderby, int regporpag, int pag)
     {
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
