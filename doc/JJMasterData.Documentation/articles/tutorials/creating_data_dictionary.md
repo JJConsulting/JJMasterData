@@ -93,9 +93,9 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Import: Este item será exibido como upload para o usuário, permitindo a importação de dados para sua tabela através de arquivos txt, csv e log. Você poderá clicar no botão Help Para visualizar a formatação de upload do arquivo.
     - Refresh: A opção refresh irá atualizar sua tabela de dados, para caso haja alguma mudança para ser exibida.
     - Legend: A legenda é utilizada para auxiliar a descrição do dado dentro de sua tabela, por exemplo, você poderá criar a legenda para uma coluna de sexo, em que é possível atribuir a descrição Woman, Man e na sequência associar com cores e ícones. Você pode ver uma descrição completa de como criar sua legenda através do link (LINK PARA DATA_ITEM_LEG)
-    - Sort:
-    - Filter:
-    - Log:
+    - Sort: Permite que o usuário ordenar a busca pelos itens, por exemplo, em ordem alfabética.
+    - Filter: Mostra todas as opções de filtro para busca de itens dentro da tabela.
+    - Log: Registra e exibe as ações feitas dentro da tabela, sendo adicionar, editar e deletar.
 
 **API**
 
