@@ -58,6 +58,8 @@ public class LogController : Controller
             SubTitle = string.Empty
         };
 
+        formElement.Fields["Id"].VisibleExpression = "val:0";
+
         var logLevel = formElement.Fields[Options.LevelColumnName];
         logLevel.Component = FormComponent.ComboBox;
         
