@@ -132,6 +132,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
             {
                 case FieldType.Date:
                 case FieldType.DateTime:
+                case FieldType.DateTime2:
                     example[field.Name] = fixture.Create<DateTime>();
                     break;
                 case FieldType.Float:

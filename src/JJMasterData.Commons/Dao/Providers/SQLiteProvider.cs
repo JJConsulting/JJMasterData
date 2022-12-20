@@ -557,6 +557,9 @@ internal class ProviderSQLite : BaseProvider
             case FieldType.DateTime:
                 t = DbType.DateTime;
                 break;
+            case FieldType.DateTime2:
+                t = DbType.DateTime2;
+                break;
             case FieldType.Float:
                 t = DbType.Single;
                 break;

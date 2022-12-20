@@ -7,6 +7,7 @@ public enum FieldType
 {
     Date = 1,
     DateTime = 2,
+    DateTime2 = 9,
     Float = 3,
     Int = 4,
     NText = 5,
