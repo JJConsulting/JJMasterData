@@ -634,6 +634,8 @@ public class JJGridView : JJBaseView
         return html;
     }
 
+    public string GetTableHtml() => GetTableHtmlBuilder().ToString();
+
     private HtmlBuilder GetTableHtmlBuilder()
     {
         AssertProperties();
@@ -1233,7 +1235,7 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    private List<Hashtable> GetGridValues(DataTable dt = null)
+    public List<Hashtable> GetGridValues(DataTable dt = null)
     {
         if (dt == null)
         {

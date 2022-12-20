@@ -35,7 +35,7 @@ internal class DataPanelControl
         UISettings = dataPanel.UISettings;
         FieldManager = dataPanel.FieldManager;
         PageState = dataPanel.PageState;
-        Erros = dataPanel.Erros;
+        Erros = dataPanel.Errors;
         Values = dataPanel.Values;
         Name = dataPanel.Name;
     }

@@ -739,7 +739,7 @@ public class JJFormView : JJGridView
 
         var painel = DataPanel;
         painel.PageState = pageState;
-        painel.Erros = erros;
+        painel.Errors = erros;
         painel.Values = values;
         painel.AutoReloadFormFields = autoReloadFormFields;
 

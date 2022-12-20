@@ -1336,7 +1336,7 @@
             Campos do formulário, composto por um hash com o nome e valor do campo
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.Events.ActionEventArgs.ResultHtml">
+        <member name="P:JJMasterData.Core.WebComponents.Events.ActionEventArgs.HtmlResult">
             <summary>
             (opcional) Retorno esperado com o conteudo HTML renderizado
             </summary>
@@ -1431,7 +1431,7 @@
             Objeto renderizado
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.Events.GridCellEventArgs.ResultHtml">
+        <member name="P:JJMasterData.Core.WebComponents.Events.GridCellEventArgs.HtmlResult">
             <summary>
             Retorno esperado com o conteudo HTML renderizado
             </summary>
