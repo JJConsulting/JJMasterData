@@ -78,11 +78,8 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Enable Expression: seeref
     - CssClass: Classe Css do campo.
 
-**Indexes**
-- New Index
-
-**Relations**
-- New
+**Indexes and Relationships**
+-Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
 
 **Actions**
 - Grid
@@ -99,3 +96,12 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Sort:
     - Filter:
     - Log:
+
+**API**
+-Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST api.
+
+    -ApplyUseridOn:
+
+    -JsonFormat: Você poderá escolher dois formatos para seu arquivo Json. Ao selecionar o Default, será definido o padrão escolhido pelo usuário ou 
+
+    -Sync:

@@ -21,6 +21,8 @@
   items:
   - name: Creating your first dictionary
     href: tutorials/creating_data_dictionary.md
+  - name: Configurations
+    href: tutorials/configs.md
   - name: Configuring Data Upload
     href: tutorials/data_file.md
   - name: Importing and Exporting Data Dictionaries
