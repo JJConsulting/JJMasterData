@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.WebComponents;
 
-public enum Positon
+public enum Position
 {
     Right = 0,
     Left = 1
@@ -13,13 +13,17 @@ public enum Positon
 
 public class JJCollapsePanel : JJBaseView
 {
-    public Positon PositonButton { get; set; }
+    public Position ButtonPosition { get; set; }
 
     public string Title { get; set; }
 
+    public string SubTitle { get; set; }
+
     public JJIcon TitleIcon { get; set; }
-    
+
     public string HtmlContent { get; set; }
+
+    public HtmlBuilder HtmlBuilderContent { get; set; }
 
     public List<JJLinkButton> Buttons { get; set; }
 
@@ -31,159 +35,169 @@ public class JJCollapsePanel : JJBaseView
     {
         get
         {
-            string collapseMode = CurrentContext.Request["collapse_mode_" + Name];
-            if (string.IsNullOrEmpty(collapseMode))
-                return ExpandedByDefault;
-            return "1".Equals(collapseMode);
+            var collapseMode = CurrentContext.Request["collapse_mode_" + Name];
+            return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
         }
     }
 
     public JJCollapsePanel()
     {
-        PositonButton = Positon.Right;
+        ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = new List<JJLinkButton>();
         Color = PanelColor.Default;
         TitleIcon = null;
     }
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-        char TAB = '\t';
-        StringBuilder html = new ();
-        string title = Translate.Key(Title);
-        if (BootstrapHelper.Version < 5)
+        var root = new HtmlBuilder(HtmlTag.Div);
+
+        root.AppendElement(HtmlTag.Input, input =>
         {
-            html.Append("<input type=\"hidden\" id=\"collapse_mode_");
-            html.Append(Name);
-            html.Append("\" name=\"collapse_mode_");
-            html.Append(Name);
-            html.Append("\" value=\"");
-            html.Append(IsCollapseOpen ? "1" : "0");
-            html.AppendLine("\" />");
+            input.WithAttribute("hidden", "hidden");
+            input.WithNameAndId($"collapse_mode_{Name}");
+            input.WithValue(IsCollapseOpen ? "1" : "0");
+        });
 
-            html.AppendLine($"<div class=\"{BootstrapHelper.PanelGroup}\"> ");
-            html.Append(TAB, 1);
+        root.AppendElement(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
 
+        root.AppendScript($"setupCollapsePanel('{Name}')");
 
-            html.AppendFormat($"<div class=\"{BootstrapHelper.GetPanel(Color.ToString().ToLower())}\">");
-
-
-            html.AppendLine("");
-            html.Append(TAB, 2);
-            html.Append($"<div class=\"{BootstrapHelper.GetPanelHeading(Color.ToString().ToLower())}\" href=\"#collapseOne\" data-toggle=\"collapse\" data-target=\"#");
-            html.Append(Name);
-            html.Append("\" aria-expanded=\"");
-            html.Append(IsCollapseOpen.ToString().ToLower());
-            html.AppendLine("\"> ");
-            html.Append(TAB, 3);
-            html.AppendLine($"<div class=\"{BootstrapHelper.PanelTitle} unselectable\">");
-
-            html.Append(TAB, 4);
-            html.Append("<a>");
-            if (TitleIcon != null)
-            {
-                html.Append(TitleIcon.GetHtml());
-                html.Append("&nbsp;");
-            }
-            html.Append(title);
-            html.AppendLine("</a>");
-
-            html.Append(TAB, 3);
-            html.AppendLine("</div>");
-            html.Append(TAB, 2);
-            html.AppendLine("</div> ");
-            html.Append(TAB, 3);
-            html.Append("<div id=\"");
-            html.Append(Name);
-            if (BootstrapHelper.Version == 3)
-            {
-                html.Append("\" class=\"panel-collapse collapse ");
-                if (IsCollapseOpen)
-                    html.Append("in ");
-            }
-            else
-            {
-                html.Append($"\" class=\"panel-collapse in collapse {(IsCollapseOpen ? "show" : string.Empty)} ");
-            }
-            html.AppendLine("\" > ");
-            html.Append(TAB, 3);
-            html.AppendLine($"<div class=\"{BootstrapHelper.PanelBody} {CssClass}\">");
-            html.AppendLine(HtmlContent);
-            html.Append(TAB, 4);
-            html.AppendLine("<div class=\"row\"> ");
-            html.Append(TAB, 5);
-
-            if (Positon.Left == (PositonButton))
-                html.AppendLine("<div class=\"col-md-12 text-left\"> ");
-            else
-                html.AppendLine("<div class=\"col-md-12 text-right\"> ");
-
-            foreach (JJLinkButton btn in Buttons)
-            {
-                html.Append(TAB, 6);
-                html.AppendLine(btn.GetHtml());
-            }
-            html.Append(TAB, 5);
-            html.AppendLine("</div> ");
-            html.Append(TAB, 4);
-            html.AppendLine("</div> ");
-
-            html.Append(TAB, 3);
-            html.AppendLine("</div> ");
-            html.Append(TAB, 2);
-            html.AppendLine("</div> ");
-            html.Append(TAB, 1);
-            html.AppendLine("</div> ");
-
-            html.AppendLine("</div> ");
-
-            html.AppendLine("<script type=\"text/javascript\"> ");
-            html.AppendLine(" ");
-            html.AppendLine("	$(document).ready(function () { ");
-            html.AppendLine("		$('#" + Name + "').on('hidden.bs.collapse', function () { ");
-            html.AppendLine("			$(\"#collapse_mode_" + Name + "\").val(\"0\"); ");
-            html.AppendLine("		}); ");
-            html.AppendLine(" ");
-            html.AppendLine("		$('#" + Name + "').on('show.bs.collapse', function () { ");
-            html.AppendLine("			$(\"#collapse_mode_" + Name + "\").val(\"1\"); ");
-            html.AppendLine("		}); ");
-            html.AppendLine("	}); ");
-            html.AppendLine("</script>");
-
-            
-        }
-        else
-        {
-            html.AppendLine($"<div class=\"accordion pb-1\" id=\"{Name.ToLower()}-accordion\">");
-            html.AppendLine("    <div class=\"accordion-item\">");
-            html.AppendLine($"        <h2 class=\"accordion-header bg-{Color.ToString().ToLower().Replace("default", "jjmasterdata")}\" id=\"heading-{Name.ToLower()}\">");
-            html.Append($"            <button class=\"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{Name.ToLower()}\"");
-            html.AppendLine($"aria-expanded=\"{IsCollapseOpen.ToString().ToLower()}\" aria-controls=\"collapseOne\">");
-            html.AppendLine($"                {title}");
-            html.AppendLine("            </button>");
-            html.AppendLine("        </h2>");
-            html.AppendLine($"        <div id=\"collapse-{Name.ToLower()}\" class=\"accordion-collapse collapse {(IsCollapseOpen ? "show" : "")}\" aria-labelledby=\"heading-{Name.ToLower()}\" data-bs-parent=\"#{Name.ToLower()}-accordion\">");
-            html.AppendLine("            <div class=\"accordion-body\">");
-            html.AppendLine(HtmlContent);
-            html.AppendLine("            <div class=\"row\"> ");
-
-            if (Positon.Left == (PositonButton))
-                html.AppendLine("<div class=\"col-md-12 text-start\"> ");
-            else
-                html.AppendLine("<div class=\"col-md-12 text-end\"> ");
-            foreach (JJLinkButton btn in Buttons)
-            {
-                html.Append(TAB, 6);
-                html.AppendLine(btn.GetHtml());
-            }
-            html.AppendLine("</div> ");
-            html.AppendLine("</div> ");
-            html.AppendLine("            </div>");
-            html.AppendLine("        </div>");
-            html.AppendLine("    </div>");
-            html.AppendLine("</div>");
-        }
-        return html.ToString();
+        return root;
     }
+
+    #region Bootstrap 5 Accordion
+    private HtmlBuilder GetAccordion()
+    {
+        var accordion = new HtmlBuilder(HtmlTag.Div)
+                .WithCssClass("accordion pb-1 mb-3")
+                .WithAttribute("id", $"{Name}")
+                .AppendElement(HtmlTag.Div, div =>
+                {
+                    div.WithCssClass("accordion-item");
+                    div.AppendElement(GetAccordionHeader());
+                    div.AppendElement(GetAccordionBody());
+                });
+        return accordion;
+    }
+
+    private HtmlBuilder GetAccordionHeader()
+    {
+        var h2 = new HtmlBuilder(HtmlTag.H2)
+        .WithCssClass(
+            $"accordion-header bg-{Color.ToString().ToLower().Replace("default", "jjmasterdata")}")
+        .WithAttribute("id", $"heading-{Name.ToLower()}")
+        .AppendElement(HtmlTag.Button, button =>
+        {
+            button.WithCssClass($"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}");
+            button.WithAttribute("type", "button");
+            button.WithAttribute("id", $"heading-{Name.ToLower()}");
+            button.WithDataAttribute("toggle", "collapse");
+            button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
+            button.AppendElement(TitleIcon);
+            button.AppendTextIf(TitleIcon != null, "&nbsp;");
+            button.AppendText(Translate.Key(Title));
+        });
+
+        return h2;
+    }
+    private HtmlBuilder GetAccordionBody()
+    {
+        var body = new HtmlBuilder(HtmlTag.Div)
+            .WithAttribute("id", $"collapse-{Name.ToLower()}")
+            .WithCssClass("accordion-collapse collapse")
+            .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
+            .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
+            .WithDataAttribute("parent", $"#{Name}")
+            .AppendElement(GetBody());
+        return body;
+    }
+    #endregion
+
+    #region Bootstrap 3/4 Panel
+    private HtmlBuilder GetPanel()
+    {
+        var panel = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass(BootstrapHelper.PanelGroup)
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
+                div.AppendElement(GetPanelHeading());
+                div.AppendElement(HtmlTag.Div, body =>
+                {
+                    body.WithNameAndId(Name)
+                    .WithCssClass("panel-collapse collapse")
+                    .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
+                    .AppendElement(GetBody());
+                });
+            });
+        return panel;
+    }
+    private HtmlBuilder GetPanelHeading()
+    {
+        var panelHeading = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()))
+            .WithAttribute("href", "#collapseOne")
+            .WithDataAttribute("toggle", "collapse")
+            .WithDataAttribute("target", "#" + Name)
+            .WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLower())
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass($"{BootstrapHelper.PanelTitle} unselectable");
+                div.AppendElement(HtmlTag.A, a =>
+                {
+                    a.AppendElement(TitleIcon);
+                    a.AppendTextIf(TitleIcon != null, "&nbsp;");
+                    a.AppendText(Translate.Key(Title));
+                });
+            });
+        return panelHeading;
+    }
+
+    #endregion
+
+    private HtmlBuilder GetBody()
+    {
+        var panelBody = new HtmlBuilder(HtmlTag.Div);
+
+        if (!string.IsNullOrEmpty(SubTitle))
+        {
+            var title = new JJTitle(null, SubTitle);
+            panelBody.AppendElement(title.GetHtmlBlockquote());
+        }
+
+        panelBody.AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent);
+        panelBody.AppendElementIf(HtmlBuilderContent != null,()=> HtmlBuilderContent);
+        panelBody.AppendElementIf(Buttons.Count > 0,GetButtons);
+        panelBody.WithCssClass(CssClass);
+        panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
+
+        return panelBody;
+    }
+
+    private HtmlBuilder GetButtons()
+    {
+        if (Buttons.Count == 0)
+            return null;
+
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("row")
+            .AppendElement(HtmlTag.Div, div =>
+            {
+                div.WithCssClass("col-md-12");
+                div.WithCssClassIf(ButtonPosition == Position.Left, BootstrapHelper.TextLeft);
+                div.WithCssClassIf(ButtonPosition == Position.Right, BootstrapHelper.TextRight);
+
+                foreach (var btn in Buttons)
+                {
+                    div.AppendText("&nbsp;");
+                    div.AppendElement(btn.RenderHtml().WithCssClass("ms-1"));
+                }
+
+            });
+
+        return html;
+    }
+
 }

@@ -1,0 +1,320 @@
+{
+  "table": {
+    "name": "Example",
+    "info": null,
+    "fields": [
+      {
+        "fieldid": 0,
+        "fieldname": "ID",
+        "label": "ID",
+        "datatype": 4,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 0,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": true,
+        "autonum": true,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "TextField",
+        "label": "TextField",
+        "datatype": 8,
+        "filter": {
+          "type": 3,
+          "isrequired": false
+        },
+        "size": 50,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "NumericField",
+        "label": "NumericField",
+        "datatype": 4,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 0,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "DateField",
+        "label": "DateField",
+        "datatype": 1,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 0,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      },
+      {
+        "fieldid": 0,
+        "fieldname": "DateTimeField",
+        "label": "DateTimeField",
+        "datatype": 2,
+        "filter": {
+          "type": 1,
+          "isrequired": false
+        },
+        "size": 0,
+        "defaultvalue": null,
+        "isrequired": false,
+        "ispk": false,
+        "autonum": false,
+        "databehavior": 1
+      }
+    ],
+    "indexes": [],
+    "relations": [],
+    "tableName": "Example",
+    "customprocnameget": "sp_Example_get",
+    "customprocnameset": "sp_Example_set",
+    "sync": false,
+    "mode": 1
+  },
+  "form": {
+    "formfields": [
+      {
+        "name": "ID",
+        "component": 1,
+        "visibleexpression": "exp:{pagestate} = 'LIST'",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 1,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "TextField",
+        "component": 1,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 2,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "NumericField",
+        "component": 8,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 3,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": null,
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "DateField",
+        "component": 4,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 4,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      },
+      {
+        "name": "DateTimeField",
+        "component": 5,
+        "visibleexpression": "val:1",
+        "enableexpression": "val:1",
+        "triggerexpression": null,
+        "order": 5,
+        "linegroup": 0,
+        "cssclass": null,
+        "helpdescription": null,
+        "dataitem": {
+          "dataItemType": 0,
+          "command": {
+            "cmdType": 1,
+            "sql": null,
+            "parameters": []
+          },
+          "itens": [],
+          "elementMap": {
+            "elementName": null,
+            "fieldKey": null,
+            "fieldDescription": null,
+            "popUpSize": 0,
+            "mapFilters": [],
+            "enableElementActions": false
+          },
+          "firstoption": 1,
+          "replacetextongrid": true,
+          "showimagelegend": false
+        },
+        "datafile": null,
+        "export": true,
+        "validaterequest": true,
+        "autopostback": false,
+        "maxvalue": null,
+        "minvalue": null,
+        "numberdecimalplaces": 0,
+        "actions": {
+          "commandActions": [],
+          "urlRedirectActions": [],
+          "internalActions": [],
+          "scriptActions": []
+        },
+        "attributes": {},
+        "panelid": 0,
+        "internalnotes": null
+      }
+    ],
+    "title": "My Example Data Dictionary",
+    "subtitle": null,
+    "panels": []
+  },
+  "uioptions": null,
+  "api": null
+}

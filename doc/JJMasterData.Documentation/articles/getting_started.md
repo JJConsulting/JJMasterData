@@ -28,7 +28,7 @@ Add the following lines to your _Layout.cshtml <head>
 <partial name="_MasterDataTheme"/>
 ```
 **IMPORTANT**: If you have Bootstrap and jQuery installed, remove it from your _Layout.cshtml both CSS and JS,
-JJMasterData already have Bootstrap and jQuery installed. You can choose Bootstrap 3, 4 and 5 using [JJMasterDataSettings](../lib/JJMasterData.Commons.Settings.JJMasterDataSettings.html).
+JJMasterData already have Bootstrap and jQuery installed. You can choose Bootstrap 3, 4 and 5 using <xref:JJMasterData.Commons.Options.JJMasterDataOptions>.
 If you really want to use your own Bootstrap or jQuery files or CDNs, check _MasterDataStylesheets and _MasterDataScripts source code and specify all dependencies except Bootstrap.
 
 ## 4. Create your first Data Dictionary

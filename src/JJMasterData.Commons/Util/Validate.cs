@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 
 namespace JJMasterData.Commons.Util;
@@ -11,12 +12,8 @@ public static class Validate
     /// <returns>Retorna Verdadeiro caso o CNPJ seja valido</returns> 
     public static bool ValidCnpj(string cnpj)
     {
-        int[] multiplicador1 = new int[12] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] multiplicador2 = new int[13] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int soma;
-        int resto;
-        string digito;
-        string tempCnpj;
+        int[] multiplicador1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int[] multiplicador2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
 
         cnpj = cnpj.Trim();
         cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "").Replace("_", "");
@@ -24,9 +21,9 @@ public static class Validate
         if (cnpj.Length != 14)
             return false;
 
-        tempCnpj = cnpj.Substring(0, 12);
-        soma = 0; for (int i = 0; i < 12; i++) soma += int.Parse(tempCnpj[i].ToString()) * multiplicador1[i];
-        resto = (soma % 11);
+        var tempCnpj = cnpj.Substring(0, 12);
+        var soma = 0; for (int i = 0; i < 12; i++) soma += int.Parse(tempCnpj[i].ToString()) * multiplicador1[i];
+        var resto = (soma % 11);
 
         if (resto < 2)
         {
@@ -38,8 +35,8 @@ public static class Validate
         }
 
 
-        digito = resto.ToString();
-        tempCnpj = tempCnpj + digito;
+        var digito = resto.ToString();
+        tempCnpj += digito;
         soma = 0;
 
         for (int i = 0; i < 13; i++)
@@ -52,7 +49,7 @@ public static class Validate
         else
             resto = 11 - resto;
 
-        digito = digito + resto;
+        digito += resto;
 
         return cnpj.EndsWith(digito);
     }
@@ -83,7 +80,7 @@ public static class Validate
             
         if (double.TryParse(sTel, out nTel))
         {
-            if (nTel.ToString().Length > 7)
+            if (nTel.ToString(CultureInfo.CurrentCulture).Length > 7)
                 validTel = true;
         }
         return validTel;
@@ -92,8 +89,8 @@ public static class Validate
     /// <summary>
     /// Valida Inscrição estadual do cliente
     /// </summary>
-    /// <param name="pUF">Estado</param>
-    /// <param name="pInscr">Inscrição Estadual</param>
+    /// <param name="uf">Estado</param>
+    /// <param name="inscr">Inscrição Estadual</param>
     public static bool ValidIE(string uf, string inscr)
     {
         return ValidateBrazil.ValidIE(uf, inscr);
@@ -135,12 +132,8 @@ public static class Validate
     /// <returns>Retorna Verdadeiro caso o CPF seja valido</returns> 
     public static bool ValidCpf(string cpf)
     {
-        int[] multiplicador1 = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] multiplicador2 = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-        string tempCpf;
-        string digito;
-        int soma;
-        int resto;
+        int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
 
         cpf = cpf.Trim();
         cpf = StringManager.ClearCpfCnpjChars(cpf);
@@ -174,22 +167,22 @@ public static class Validate
                 return false;
         }
 
-        tempCpf = cpf.Substring(0, 9);
-        soma = 0;
+        var tempCpf = cpf.Substring(0, 9);
+        var soma = 0;
 
         for (int i = 0; i < 9; i++)
             soma +=
 
                 int.Parse(tempCpf[i].ToString()) * multiplicador1[i];
-        resto = soma % 11;
+        var resto = soma % 11;
 
         if (resto < 2)
             resto = 0;
         else
             resto = 11 - resto;
 
-        digito = resto.ToString();
-        tempCpf = tempCpf + digito;
+        var digito = resto.ToString();
+        tempCpf += digito;
         soma = 0;
 
         for (int i = 0; i < 10; i++)
@@ -202,7 +195,7 @@ public static class Validate
         else
             resto = 11 - resto;
 
-        digito = digito + resto;
+        digito += resto;
 
         return cpf.EndsWith(digito);
 

@@ -26,8 +26,13 @@ public class DataElementMap
         get
         {
             var _filters = new Hashtable();
-            foreach (var item in MapFilters)
-                _filters.Add(item.FieldName, item.ExpressionValue);
+            
+            if (MapFilters != null)
+            {
+                foreach (var item in MapFilters)
+                    _filters.Add(item.FieldName, item.ExpressionValue);
+            }
+
                 
             return _filters;
         }

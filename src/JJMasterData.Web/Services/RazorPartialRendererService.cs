@@ -14,15 +14,16 @@ public class RazorPartialRendererService
 {
     private readonly IRazorViewEngine _viewEngine;
     private readonly ITempDataProvider _tempDataProvider;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     public RazorPartialRendererService(
         IRazorViewEngine viewEngine,
         ITempDataProvider tempDataProvider,
-        IServiceProvider serviceProvider)
+        IHttpContextAccessor httpContextAccessor)
     {
         _viewEngine = viewEngine;
         _tempDataProvider = tempDataProvider;
-        _serviceProvider = serviceProvider;
+        _httpContextAccessor = httpContextAccessor;
     }
     public async Task<string> ToStringAsync<TModel>(string partialName, TModel model)
     {
@@ -62,15 +63,11 @@ public class RazorPartialRendererService
         var searchedLocations = getPartialResult.SearchedLocations.Concat(findPartialResult.SearchedLocations);
         var errorMessage = string.Join(
             Environment.NewLine,
-            new[] { $"Unable to find partial '{partialName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+            new[] { $"Unable to find partial '{partialName}'. The following locations were searched:" }.Concat(searchedLocations));
         throw new InvalidOperationException(errorMessage);
     }
     private ActionContext GetActionContext()
     {
-        var httpContext = new DefaultHttpContext
-        {
-            RequestServices = _serviceProvider
-        };
-        return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+        return new ActionContext(_httpContextAccessor.HttpContext!,  _httpContextAccessor.HttpContext!.GetRouteData(), new ActionDescriptor());
     }
 }

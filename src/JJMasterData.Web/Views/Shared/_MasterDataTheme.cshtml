@@ -1,9 +1,9 @@
 ﻿@using JJMasterData.Web.Services
-@inject ThemeService ThemeService
+@inject ThemeService Service
 
 <script type="text/javascript" src="~/js/dark-reader/dark-reader.min.js"></script>
 <script>
-    theme = @((int)ThemeService.GetTheme());
+    theme = @((int)Service.GetTheme());
 
     if (theme == 1) {
         DarkReader.enable({

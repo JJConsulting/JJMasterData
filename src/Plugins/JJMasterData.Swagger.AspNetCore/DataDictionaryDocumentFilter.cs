@@ -1,50 +1,82 @@
-﻿using System.Reflection;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.DI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
 public class DataDictionaryDocumentFilter : IDocumentFilter
 {
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
+
+    public DataDictionaryDocumentFilter()
+    {
+        _dataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
+    }
+
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
-
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
 
-        var dao = new DictionaryDao();
-        var dictionaries = dao.GetListDictionary(true);
-
-        foreach (DicParser dic in dictionaries)
+        foreach (var metadata in dictionaries)
         {
-            FormElement formElement = dic.GetFormElement();
+            var formElement = metadata.GetFormElement();
 
-            DataDictionaryPathItem defaultPathItem = new($"/MasterApi/{formElement.Name}");
-            DataDictionaryPathItem detailPathItem = new($"/MasterApi/{formElement.Name}/{{id}}");
+            var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
+            var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
+            var factory = new DataDictionaryOperationFactory(formElement, metadata.Api);
 
-            DataDictionaryOperationFactory factory = new(formElement, dic.Api);
-
-            if (dic.Api.EnableGetAll)
+            if (metadata.Api.EnableGetAll)
                 defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
 
-            if (dic.Api.EnableGetDetail)
+            if (metadata.Api.EnableGetDetail)
                 detailPathItem.AddOperation(OperationType.Get, factory.Get());
-
-            if (dic.Api.EnableAdd)
+            
+            if (metadata.Api.EnableAdd)
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
 
-            if (dic.Api.EnableUpdate)
+            if (metadata.Api.EnableUpdate)
                 defaultPathItem.AddOperation(OperationType.Put, factory.Put());
 
-            if (dic.Api.EnableUpdatePart)
+            if (metadata.Api.EnableUpdatePart)
                 defaultPathItem.AddOperation(OperationType.Patch, factory.Patch());
 
-            if (dic.Api.EnableDel)
+            if (metadata.Api.EnableDel)
                 detailPathItem.AddOperation(OperationType.Delete, factory.Delete());
 
             document.Paths.AddDataDictionaryPath(defaultPathItem);
             document.Paths.AddDataDictionaryPath(detailPathItem);
+            
+            foreach (var field in formElement.Fields)
+            {
+                if (field.Component != FormComponent.File || field.DataFile == null) 
+                    continue;
+                
+                var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
+                var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
+                
+                if (metadata.Api.EnableGetDetail)
+                    fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
+                    
+                if (metadata.Api.EnableAdd && metadata.Api.EnableUpdate)
+                    filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
+                        
+                if (metadata.Api.EnableUpdatePart)
+                    fileDetailPathItem.AddOperation(OperationType.Patch, factory.RenameFile(field));
+                
+                if (metadata.Api.EnableDel)
+                    fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
+                
+                document.Paths.AddDataDictionaryPath(filePathItem);
+                document.Paths.AddDataDictionaryPath(fileDetailPathItem);
+            }
+            
         }
     }
 }

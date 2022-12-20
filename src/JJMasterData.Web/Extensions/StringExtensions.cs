@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Html;
 
 namespace JJMasterData.Web.Extensions;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     /// <summary>
     /// Converts the current string to a renderable HTML string.

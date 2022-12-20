@@ -37,7 +37,7 @@ public class TextWriter : BaseWriter, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = new Factory(FieldManager.DataAccess);
+            var factory = FieldManager.Expression.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
@@ -80,12 +80,14 @@ public class TextWriter : BaseWriter, ITextWriter
                 var renderCell = OnRenderCell;
                 if (renderCell != null)
                 {
-                    var args = new GridCellEventArgs();
-                    args.Field = field;
-                    args.DataRow = row;
-                    args.Sender = new JJText(value);
-                    OnRenderCell.Invoke(this, args);
-                    value = args.ResultHtml;
+                    var args = new GridCellEventArgs
+                    {
+                        Field = field,
+                        DataRow = row,
+                        Sender = new JJText(value)
+                    };
+                    renderCell.Invoke(this, args);
+                    value = args.HtmlResult;
                 }
 
                 sw.Write(value);
@@ -99,7 +101,7 @@ public class TextWriter : BaseWriter, ITextWriter
         }
     }
 
-    private void GenerateHeader(StreamWriter sw)
+    private void GenerateHeader(System.IO.TextWriter sw)
     {
         bool isFirst = true;
         foreach (var field in Fields)

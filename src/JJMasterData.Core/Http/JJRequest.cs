@@ -1,4 +1,5 @@
-﻿#if NETFRAMEWORK
+﻿// ReSharper disable RedundantUsingDirective
+#if NETFRAMEWORK
 using System.Web;
 #endif
 
@@ -6,6 +7,7 @@ using System.Web;
 using System;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
+// ReSharper disable RedundantNameQualifier
 #endif
 namespace JJMasterData.Core.Http;
 
@@ -27,7 +29,7 @@ public class JJRequest
 #if NETFRAMEWORK
             return SystemWebCurrent.Request.UserHostAddress;
 #else
-            return AspNetCoreCurrent.Connection.RemoteIpAddress.ToString();
+            return AspNetCoreCurrent.Connection.RemoteIpAddress?.ToString();
 #endif
         }
 
@@ -125,7 +127,7 @@ public class JJRequest
         return SystemWebCurrent.Request.Form[key];
 #else
         if (AspNetCoreCurrent.Request.HasFormContentType)
-            return (string)AspNetCoreCurrent.Request.Form[key];
+            return AspNetCoreCurrent.Request.Form[key];
 
         return null;
 #endif

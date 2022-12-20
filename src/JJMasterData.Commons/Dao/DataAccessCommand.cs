@@ -33,15 +33,16 @@ public class DataAccessCommand
 
     public DataAccessCommand(string sql, List<DataAccessParameter> parameters)
     {
+        if (parameters == null)
+            throw new ArgumentNullException(nameof(parameters));
+        
         Sql = sql;
         Parameters = parameters;
         CmdType = CommandType.Text;
     }
 
-    public DataAccessCommand(string sql, List<DataAccessParameter> parameters, CommandType type)
+    public DataAccessCommand(string sql, List<DataAccessParameter> parameters, CommandType type) : this(sql,parameters)
     {
-        Sql = sql;
-        Parameters = parameters;
         CmdType = type;
     }
 }

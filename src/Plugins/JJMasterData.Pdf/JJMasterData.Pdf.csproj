@@ -30,4 +30,9 @@
       </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Fonts\fontawesome-webfont.ttf" />
+    <EmbeddedResource Include="Fonts\fontawesome-webfont.ttf" />
+  </ItemGroup>
+
 </Project>

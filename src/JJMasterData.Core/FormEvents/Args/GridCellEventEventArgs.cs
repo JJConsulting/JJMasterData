@@ -28,5 +28,5 @@ public class GridCellEventArgs : EventArgs
     /// <summary>
     /// Retorno esperado com o conteudo HTML renderizado
     /// </summary>
-    public string ResultHtml { get; set; }
+    public string HtmlResult { get; set; }
 }

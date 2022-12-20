@@ -12,7 +12,7 @@ namespace JJMasterData.Commons.Dao.Entity;
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
-public class ElementList : IEnumerable<ElementField>, IList<ElementField>, ICollection<ElementField>
+public class ElementList : IList<ElementField>
 {
     private readonly IList<ElementField> _list = new List<ElementField>();
 
@@ -55,7 +55,7 @@ public class ElementList : IEnumerable<ElementField>, IList<ElementField>, IColl
 
         int qtd = _list.Count(x => x.Name.Equals(item.Name));
         if (qtd > 0)
-            throw new DataDictionaryException(Translate.Key("Field [{0}] already exists in Element.Fields", item.Name));
+            throw new JJMasterDataException(Translate.Key("Field [{0}] already exists in Element.Fields", item.Name));
 
         _list.Add(item);
     }

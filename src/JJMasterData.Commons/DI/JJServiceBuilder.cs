@@ -1,95 +1,59 @@
 ﻿using System;
-using System.Linq;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Settings;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
 {
-    public IServiceCollection Services { get; internal set; }
+    public IServiceCollection Services { get; }
 
     public JJServiceBuilder(IServiceCollection services)
     {
         Services = services;
     }
+
+    public JJServiceBuilder ConfigureJJMasterDataOptions(IConfiguration configuration)
+    {
+        Services.Configure<JJMasterDataOptions>(configuration);
+        return this;
+    }
+    
+    public JJServiceBuilder ConfigureJJMasterDataOptions(Action<JJMasterDataOptions> configure)
+    {
+        Services.Configure(configure);
+        return this;
+    }
     
     public JJServiceBuilder AddDefaultServices()
     {
-        Services.AddSingleton<ISettings, JJMasterDataSettings>();
-        Services.AddScoped<IDataAccess, DataAccess>();
-        
+        Services.AddLocalization();
+        Services.AddLogging(builder =>
+        {
+            builder.AddDbLoggerProvider();
+            builder.AddFileLoggerProvider();
+        });
+        Services.AddTransient<IEntityRepository,Factory>();
+        Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
+        Services.AddTransient<IBackgroundTask, BackgroundTask>();
         return this;
     }
 
-    private void DeleteServiceIfExists<T>()
+    public JJServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
     {
-        var service = Services.First(s => s.ImplementationType == typeof(T));
-
-        Services.Remove(service);
-    }
-
-    public JJServiceBuilder WithSettings<T>() where T : ISettings
-    {
-        DeleteServiceIfExists<T>();
-
-        Services.AddSingleton(typeof(T));
-
+        Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
 
-    public JJServiceBuilder WithSettings(ISettings settings)
+    public JJServiceBuilder WithLocalizationProvider<T>() where T : class, ILocalizationProvider
     {
-        DeleteServiceIfExists<ISettings>();
-
-        Services.AddSingleton(settings);
-
-        return this;
-    }
-
-    public JJServiceBuilder WithSettings(Action<ISettings> configure)
-    {
-        DeleteServiceIfExists<ISettings>();
-
-        var settings = new JJMasterDataSettings();
-
-        configure(settings);
-
-        Services.AddSingleton(settings);
-
-        return this;
-    }
-
-    public JJServiceBuilder WithBackgroundTask<T>() where T : IBackgroundTask
-    {
-        Services.AddSingleton(typeof(T));
-
-        return this;
-    }
-
-    public JJServiceBuilder WithTranslator<T>() where T : ITranslator
-    {
-        Services.AddSingleton(typeof(T));
-
-        return this;
-    }
-
-    public JJServiceBuilder WithJJMasterDataLogger()
-    {
-        Services.AddSingleton(typeof(Logger));
-
-        return this;
-    }
-    
-    public JJServiceBuilder WithDataAccess<T>() where T : IDataAccess
-    {
-        DeleteServiceIfExists<IDataAccess>();
-        
-        Services.AddScoped(typeof(IDataAccess),typeof(T));
-
+        Services.Replace(ServiceDescriptor.Transient<ILocalizationProvider, T>());
         return this;
     }
 }

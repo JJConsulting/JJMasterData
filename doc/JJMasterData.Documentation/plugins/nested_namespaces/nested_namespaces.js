@@ -1,7 +1,7 @@
 var fs = require('fs');
 var yaml = require('js-yaml');
-var toc = yaml.load(fs.readFileSync('../../lib/toc.yml'));
-
+var path = '../../lib/toc.yml';
+var toc = yaml.load(fs.readFileSync(path));
 var namespaces = {};
 
 for (var i = 0; i < toc.length; i++) {
@@ -51,5 +51,5 @@ function recurse(obj, path = "") {
 
 var items = recurse(namespaces);
 
-fs.writeFileSync('../../lib/toc.yml', yaml.dump(items));
+fs.writeFileSync(path, yaml.dump(items));
 console.log("Node script successfully executed!");

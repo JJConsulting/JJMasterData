@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
@@ -11,17 +13,45 @@ namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseProcess : JJBaseView
 {
+    private string _keyProcess;
+    private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
     private FormManager _formManager;
-    private ProcessOptions _processOptions;
-    private string _keyProcess;
+    private ExpressionManager _expressionManager;
+    IEntityRepository _entityRepository;
+
+    internal ExpressionManager ExpressionManager
+    {
+        get
+        {
+            if (_expressionManager == null)
+                _expressionManager = new ExpressionManager(UserValues, EntityRepository);
+
+            return _expressionManager;
+        }
+    }
+
+    internal IEntityRepository EntityRepository
+    {
+        get
+        {
+            if (_entityRepository == null)
+                _entityRepository = JJService.EntityRepository;
+
+            return _entityRepository;
+        }
+        set
+        {
+            _entityRepository = value;
+        }
+    }
 
     internal string ProcessKey
     {
         get
         {
             if (string.IsNullOrEmpty(_keyProcess))
-                _keyProcess = BuildKeyProcess();
+                _keyProcess = BuildProcessKey();
 
             return _keyProcess;
         }
@@ -29,16 +59,8 @@ public abstract class JJBaseProcess : JJBaseView
 
     public ProcessOptions ProcessOptions
     {
-        get
-        {
-            if (_processOptions == null)
-                _processOptions = new ProcessOptions();
-            return _processOptions;
-        }
-        set
-        {
-            _processOptions = value;
-        }
+        get => _processOptions ??= new ProcessOptions();
+        set => _processOptions = value;
     }
 
     /// <summary>
@@ -46,17 +68,13 @@ public abstract class JJBaseProcess : JJBaseView
     /// </summary>
     public FormElement FormElement { get; set; }
 
-   
 
-    /// <summary>
-    /// Funções úteis para manipular campos no formulário
-    /// </summary>
     internal FieldManager FieldManager
     {
         get
         {
             if (_fieldManager == null)
-                _fieldManager = new FieldManager(this, FormElement);
+                _fieldManager = new FieldManager(FormElement, ExpressionManager);
 
             return _fieldManager;
         }
@@ -67,20 +85,14 @@ public abstract class JJBaseProcess : JJBaseView
         get
         {
             if (_formManager == null)
-                _formManager = new FormManager(FormElement, UserValues, DataAccess);
+                _formManager = new FormManager(FormElement, ExpressionManager);
 
             return _formManager;
         }
     }
 
-    internal IBackgroundTask BackgroundTask
-    {
-        get
-        {
-            return JJService.BackgroundTask;
-        }
-    }
-        
+    internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
+
     internal bool IsRunning()
     {
         return BackgroundTask.IsRunning(ProcessKey);
@@ -92,29 +104,40 @@ public abstract class JJBaseProcess : JJBaseView
     }
 
 
-    private string BuildKeyProcess()
+    private string BuildProcessKey()
     {
-        var keyprocess = new StringBuilder();
-        if (this is JJDataExp)
-            keyprocess.Append("Export/");
-        else if (this is JJDataImp)
-            keyprocess.Append("Import/");
+        var processKey = new StringBuilder();
 
-        keyprocess.Append(FormElement.Name);
-        if (ProcessOptions.Scope == ProcessScope.User)
+        switch (this)
         {
-            if (string.IsNullOrEmpty(UserId))
-            {
-                var error = new StringBuilder();
-                error.AppendLine(Translate.Key("User not found, contact system administrator."));
-                error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
-                Log.AddError(error.ToString());
-                throw new Exception(error.ToString());
-            }
-            keyprocess.AppendFormat("?userid={0}", UserId);
+            case JJDataExp:
+                processKey.Append("Export/");
+                break;
+            case JJDataImp:
+                processKey.Append("Import/");
+                break;
         }
-        
-        return keyprocess.ToString();
+
+        processKey.Append(FormElement.Name);
+
+        if (ProcessOptions.Scope != ProcessScope.User)
+            return processKey.ToString();
+
+        if (string.IsNullOrEmpty(UserId))
+        {
+            var error = new StringBuilder();
+            error.AppendLine(Translate.Key("User not found, contact system administrator."));
+            error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
+            
+            var exception = new JJMasterDataException(error.ToString());
+            Log.AddError(exception, exception.Message);
+            
+            throw exception;
+        }
+
+        processKey.Append($"?userid={UserId}");
+
+        return processKey.ToString();
     }
 
 }

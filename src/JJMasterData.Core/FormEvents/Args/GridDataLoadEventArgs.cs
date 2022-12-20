@@ -20,7 +20,7 @@ public class GridDataLoadEventArgs : EventArgs
     public string OrderBy { get; internal set; }
 
     /// <summary>
-    /// Registros por página
+    /// Records per page
     /// </summary>
     public int RegporPag { get; internal set; }
 

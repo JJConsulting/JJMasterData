@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;
 
@@ -9,48 +9,49 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
-    public ActionsService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ActionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository) 
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
     public bool DeleteAction(string elementName, string actionName, ActionOrigin context, string fieldName = null)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         DeleteAction(ref dicParser, actionName, context, fieldName);
-        DicDao.SetDictionary(dicParser);
+        DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
 
-    private void DeleteAction(ref DicParser dicParser, string originalName, ActionOrigin context, string fieldName = null)
+    private void DeleteAction(ref Metadata metadata, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (originalName == null)
             return;
 
         if (context == ActionOrigin.Field)
         {
-            var field = dicParser.GetFormElement().Fields[fieldName];
-            var ac = field.Actions.Get(originalName);
-            if (ac != null)
-                field.Actions.Remove(ac);
+            var field = metadata.GetFormElement().Fields[fieldName];
+            var action = field.Actions.Get(originalName);
+            if (action != null)
+                field.Actions.Remove(action);
         }
         else if (context == ActionOrigin.Grid)
         {
-            var ac = dicParser.UIOptions.GridActions.Get(originalName);
-            if (ac != null)
-                dicParser.UIOptions.GridActions.Remove(ac);
+            var action = metadata.UIOptions.GridActions.Get(originalName);
+            if (action != null)
+                metadata.UIOptions.GridActions.Remove(action);
         }
         else if (context == ActionOrigin.Toolbar)
         {
-            var ac = dicParser.UIOptions.ToolBarActions.Get(originalName);
-            if (ac != null)
-                dicParser.UIOptions.ToolBarActions.Remove(ac);
+            var action = metadata.UIOptions.ToolBarActions.Get(originalName);
+            if (action != null)
+                metadata.UIOptions.ToolBarActions.Remove(action);
         }
     }
 
     public bool SaveAction(string elementName, BasicAction action, ActionOrigin context, string originalName, string fieldName = null)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         ValidateActionName(dicParser, action.Name, originalName, context, fieldName);
         ValidateAction(dicParser, action);
 
@@ -93,48 +94,50 @@ public class ActionsService : BaseService
                 break;
         }
 
-        DicDao.SetDictionary(dicParser);
+        DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
 
-    private bool ValidateActionName(DicParser dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
+    private void ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
             AddError(nameof(actionName), Translate.Key("Required [Name] field"));
-            return false;
         }
 
         if (originalName != null && originalName.Equals(actionName))
-            return true;
-
-
+            return;
+        
         List<BasicAction> listAction = null;
-        if (context == ActionOrigin.Field)
+        switch (context)
         {
-            var field = dicParser.GetFormElement().Fields[fieldName];
-            listAction = field.Actions.GetAll();
-        }
-        else if (context == ActionOrigin.Grid)
-        {
-            listAction = dicParser.UIOptions.GridActions.GetAll();
-        }
-        else if (context == ActionOrigin.Toolbar)
-        {
-            listAction = dicParser.UIOptions.ToolBarActions.GetAll();
+            case ActionOrigin.Field:
+            {
+                var field = dicParser.GetFormElement().Fields[fieldName];
+                listAction = field.Actions.GetAll();
+                break;
+            }
+            case ActionOrigin.Grid:
+                listAction = dicParser.UIOptions.GridActions.GetAll();
+                break;
+            case ActionOrigin.Toolbar:
+                listAction = dicParser.UIOptions.ToolBarActions.GetAll();
+                break;
         }
 
+        if (listAction == null) 
+            return;
+        
         foreach (var a in listAction)
         {
             if (a.Name.Equals(actionName))
-                AddError(nameof(actionName), Translate.Key("Invalid[Name] field! There is already an action registered with that name."));
+                AddError(nameof(actionName),
+                    Translate.Key("Invalid[Name] field! There is already an action registered with that name."));
         }
-
-        return IsValid;
     }
 
-    private bool ValidateAction(DicParser dicParser, BasicAction action)
+    private void ValidateAction(Metadata dicParser, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
@@ -179,13 +182,11 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(internalAction.ElementRedirect.ElementNameRedirect))
                 AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), Translate.Key("Required [Entity Name] field"));
         }
-
-        return IsValid;
     }
 
     public bool SortActions(string elementName, string[] listAction, ActionOrigin actionContext, string fieldName)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -206,14 +207,14 @@ public class ActionsService : BaseService
             }
             action.Order = i + 1;
         }
-        DicDao.SetDictionary(dicParser);
+        DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
 
     public bool EnableDisable(string elementName, string actionName, ActionOrigin actionContext, bool visible)
     {
-        var dicParser = DicDao.GetDictionary(elementName);
+        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         BasicAction action = null;
         if (actionContext == ActionOrigin.Grid)
         {
@@ -225,7 +226,7 @@ public class ActionsService : BaseService
         }
 
         action.SetVisible(visible);
-        DicDao.SetDictionary(dicParser);
+        DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
@@ -238,7 +239,7 @@ public class ActionsService : BaseService
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var dataEntry = DicDao.GetDictionary(elementName);
+        var dataEntry = DataDictionaryRepository.GetMetadata(elementName);
         if (dataEntry == null)
             return dicFields;
 

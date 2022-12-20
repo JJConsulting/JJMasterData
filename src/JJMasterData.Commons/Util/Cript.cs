@@ -19,7 +19,7 @@ public class Cript
     /// <returns>Encrypted value.</returns>
     public static string Cript64(string valor)
     {
-        return Cript64(valor, JJService.Settings.SecretKey);
+        return Cript64(valor, JJService.Options.SecretKey);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class Cript
     /// <returns>Descrypted value.</returns>
     public static string Descript64(string valor)
     {
-        return Descript64(valor, JJService.Settings.SecretKey);
+        return Descript64(valor, JJService.Options.SecretKey);
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public class Cript
             short numP = (short)Convert.ToChar(secretKey.Substring(pos % secretKey.Length, 1));
             int charCode = (short)(numM - numP);
 
-            decryptRp += ((char)charCode);
+            decryptRp += (char)charCode;
             pos++;
         }
 

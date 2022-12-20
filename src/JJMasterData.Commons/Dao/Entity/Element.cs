@@ -24,7 +24,6 @@ public class Element
     /// </summary>
     [DataMember(Name = "info")]
     public string Info { get; set; }
-
     /// <summary>
     /// Field List
     /// </summary>

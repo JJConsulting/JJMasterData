@@ -1,31 +1,24 @@
-﻿using System.Collections;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Html;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.WebComponents;
 
 /// <summary>
-/// Representa um painel com as mensagens de erro
+/// Represents a <see cref="JJAlert"/> with error messages.
 /// </summary>
 /// <example>
-/// Exemplo de como utilizar JJValidationSummary
-/// [!code-cshtml[Example](../../../doc/JJMasterData.Sample/JJValidationSumaryExample.aspx)]
-/// [!code-cs[Example](../../../doc/JJMasterData.Sample/JJValidationSumaryExample.aspx.cs)]
-/// O Resultado html ficará parecido com esse:
+/// The result will look like this:
 /// <img src="../media/JJValidationSumaryExample.png"/>
 /// </example>
 public class JJValidationSummary : JJBaseView
 {
-    /// <summary>
-    /// Lista com as mensagens de erro
-    /// </summary>
     public List<string> Errors { get; set; }
 
     /// <summary>
-    /// Titulo do painel com as mensagens de erro. 
-    /// (Default = "Dados inválidos"
+    /// Panel title
+    /// (Default = "Invalid Data")
     /// </summary>
     public string MessageTitle { get; set; }
     
@@ -64,13 +57,9 @@ public class JJValidationSummary : JJBaseView
         Errors.Add(error);
     }
 
-    protected override string RenderHtml()
+    internal override HtmlBuilder RenderHtml()
     {
-
-        if (!Visible)
-            return "";
-
-        JJAlert alert = new JJAlert()
+        var alert = new JJAlert()
         {
             Color = PanelColor.Danger,
             Icon = IconType.ExclamationTriangle,
@@ -79,6 +68,6 @@ public class JJValidationSummary : JJBaseView
             Messages = Errors
         };
 
-        return alert.GetHtml();
+        return alert.RenderHtml();
     }
 }

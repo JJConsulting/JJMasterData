@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Html
-
-
-<div class="jjrelative">
+﻿<div class="jjrelative">
     <div class="bs-clipboard">
         <div class="btn-group">
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Copy to Clipboard")">
@@ -12,10 +9,6 @@
     </div>
     <pre><code>@ViewBag.ClassSourceCode</code></pre>
 </div>
-
-
-
-
 
 @section Scripts
 {

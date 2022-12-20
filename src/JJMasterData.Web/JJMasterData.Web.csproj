@@ -34,6 +34,11 @@
         <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="1.0.0" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <EmbeddedResource Include="Scripts\**\*" />
+    </ItemGroup>
+
+
     <ItemGroup>
         <ProjectReference Include="..\JJMasterData.Core\JJMasterData.Core.csproj" />
     </ItemGroup>

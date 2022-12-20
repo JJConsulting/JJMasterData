@@ -159,12 +159,7 @@ public abstract class BasicAction : IAction
     /// <summary>
     /// Verifica se o controle é visivel, porém não aplica a expressao
     /// </summary>
-    public bool IsVisible {
-        get
-        {
-            return !"val:0".Equals(VisibleExpression);
-        }
-    }
+    public bool IsVisible => !"val:0".Equals(VisibleExpression);
 
     /// <summary>
     /// Copy the actions of another action.

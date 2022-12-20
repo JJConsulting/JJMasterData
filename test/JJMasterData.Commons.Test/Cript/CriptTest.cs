@@ -23,7 +23,7 @@ public class CriptTest
 
 
     [Theory]
-    [InlineData("NENAgHjh/pnw7+Qa3mhGSg==")]
+    [InlineData("r9/COvUnoHgv6wLnbtj2Lg==")]
     public void Decript64Test(string content)
     {
         string descripted = Commons.Util.Cript.Descript64(content);
@@ -35,7 +35,7 @@ public class CriptTest
     public void Cript64Test(string content)
     {
         string encripted = Commons.Util.Cript.Cript64(content);
-        Assert.Equal("NENAgHjh/pnw7+Qa3mhGSg==", encripted);
+        Assert.Equal("r9/COvUnoHgv6wLnbtj2Lg==", encripted);
     }
 
 }

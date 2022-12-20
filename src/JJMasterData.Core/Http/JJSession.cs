@@ -1,9 +1,11 @@
-﻿#if NETFRAMEWORK
+﻿// ReSharper disable RedundantUsingDirective
+#if NETFRAMEWORK
 using System.Web;
 #endif
 using JJMasterData.Core.Extensions;
 #if NETCOREAPP || NETSTANDARD
 using Microsoft.AspNetCore.Http;
+// ReSharper disable RedundantNameQualifier
 #endif
 
 namespace JJMasterData.Core.Http;
@@ -28,7 +30,7 @@ public class JJSession
             return obj == null ? null : SystemWebCurrent.Session[key].ToString();
 
 #else
-            return AspNetCoreCurrent.Session?.GetString(key);
+            return AspNetCoreCurrent.Session.GetString(key);
 #endif
         }
         set
@@ -46,7 +48,7 @@ public class JJSession
 #if NETFRAMEWORK
         SystemWebCurrent.Session[key] = value;
 #else
-        AspNetCoreCurrent?.Session?.SetObject(key, value);
+        AspNetCoreCurrent?.Session.SetObject(key, value);
 #endif
     }
 

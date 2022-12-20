@@ -7,10 +7,7 @@ public class DataExpReporter : ProgressReporter
     private int _totalProcessed;
     public int TotalProcessed
     {
-        get
-        {
-            return _totalProcessed;
-        }
+        get => _totalProcessed;
         set
         {
             _totalProcessed = value;
@@ -21,10 +18,7 @@ public class DataExpReporter : ProgressReporter
     private int _totalRecords;
     public int TotalRecords
     {
-        get
-        {
-            return _totalRecords;
-        }
+        get => _totalRecords;
         set
         {
             _totalRecords = value;

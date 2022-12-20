@@ -128,7 +128,7 @@ public class UIGrid
     /// <para/>
     /// Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
     /// <para/>
-    /// Se a propriedade TotalReg for igual zero a paginação não será exibida.
+    /// Se a propriedade TotalRecords for igual zero a paginação não será exibida.
     /// </remarks>
     [DataMember(Name = "showPagging")]
     public bool ShowPagging { get; set; }

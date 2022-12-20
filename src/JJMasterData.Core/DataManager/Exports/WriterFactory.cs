@@ -17,22 +17,12 @@ public static class WriterFactory
 
     public static IExcelWriter GetExcelWriter()
     {
-        var writer = JJService.Provider.GetService<IExcelWriter>();
-
-        if (writer == null)
-            writer = new ExcelWriter();
-
-        return writer;
+        return JJService.Provider.GetService<IExcelWriter>();
     }
 
     public static ITextWriter GetTextWriter()
     {
-        var writer = JJService.Provider.GetService<ITextWriter>();
-
-        if (writer == null)
-            writer = new TextWriter();
-
-        return writer;
+        return JJService.Provider.GetService<ITextWriter>();
     }
 
     public static BaseWriter GetInstance(JJDataExp exporter)
@@ -68,7 +58,9 @@ public static class WriterFactory
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)pdfWriter;
+                // ReSharper disable once SuspiciousTypeConversion.Global;
+                // PdfWriter is dynamic loaded by plugin.
+                writer = pdfWriter as BaseWriter;
 
                 break;
             default:

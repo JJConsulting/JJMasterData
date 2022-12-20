@@ -10,10 +10,10 @@ public class ModelStateWrapper : IValidationDictionary
 
     public ModelStateWrapper(IActionContextAccessor actionContextAccessor)
     {
-        _modelState = actionContextAccessor!.ActionContext!.ModelState;
+        _modelState = actionContextAccessor.ActionContext!.ModelState;
     }
 
-    public IEnumerable<string>? Errors => 
+    public IEnumerable<string> Errors => 
         _modelState.Values.SelectMany(entry => entry.Errors.Select(e => e.ErrorMessage));
 
     public void AddError(string key, string errorMessage) => _modelState.AddModelError(key, errorMessage);

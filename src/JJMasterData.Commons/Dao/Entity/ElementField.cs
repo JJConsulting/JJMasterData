@@ -99,10 +99,10 @@ public class ElementField
     public FieldBehavior DataBehavior { get; set; }
     
     /// <summary>
-    /// For internal use of JJMasterData's table.
+    /// Apply this field on delete filter on procedure
     /// </summary>
     [JsonIgnore]
-    internal bool EnableOnDelete { get; set; } = true;
+    public bool EnableOnDelete { get; set; } = true;
 
     public ElementField()
     {

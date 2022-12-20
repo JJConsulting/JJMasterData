@@ -7,11 +7,11 @@ namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
 
 [CollectionDefinition("FieldController", DisableParallelization = true)]
 [Order(1)]
-public class FieldControllerTest : IClassFixture<JJMasterDataWebAppFactory<Program>>
+public class FieldControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory>
 {
     private readonly HttpClient _client;
 
-    public FieldControllerTest(JJMasterDataWebAppFactory<Program> factory)
+    public FieldControllerTest(JJMasterDataWebExampleAppFactory factory)
     {
         factory.EnsureServer();
         _client = factory.CreateClient();

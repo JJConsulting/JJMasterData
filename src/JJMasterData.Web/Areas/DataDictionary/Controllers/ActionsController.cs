@@ -1,8 +1,10 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿#nullable enable
+
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -19,62 +21,60 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dicParcer = _actionsService.DicDao.GetDictionary(dictionaryName);
+        var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
         ViewBag.ToolBarActions = dicParcer.UIOptions.ToolBarActions.GetAll();
         ViewBag.GridActions = dicParcer.UIOptions.GridActions.GetAll();
 
-        if ((string)Request.Query["selected_tab"] == null)
+        if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
 
         return View();
     }
 
-    public ActionResult Edit(string dictionaryName, string actionName, ActionOrigin context, string? fieldName)
+    public ActionResult Edit(string dictionaryName, string actionName, ActionOrigin context, string fieldName)
     {
         if (dictionaryName is null)
         {
             throw new ArgumentNullException(nameof(dictionaryName));
         }
 
-        var dicParcer = _actionsService.DicDao.GetDictionary(dictionaryName);
+        var metadata = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        BasicAction action = null;
+        BasicAction? action = null;
         switch (context)
         {
             case ActionOrigin.Grid:
-                action = dicParcer.UIOptions.GridActions.Get(actionName);
+                action = metadata.UIOptions.GridActions.Get(actionName);
                 break;
             case ActionOrigin.Toolbar:
-                action = dicParcer.UIOptions.ToolBarActions.Get(actionName);
+                action = metadata.UIOptions.ToolBarActions.Get(actionName);
                 break;
             case ActionOrigin.Field:
-                var formElement = dicParcer.GetFormElement();
+                var formElement = metadata.GetFormElement();
                 action = formElement.Fields[fieldName].Actions.Get(actionName);
                 break;
         }
 
-        PopulateViewBag(dictionaryName, action, context, fieldName);
-        return View(action.GetType().Name, action);
+  
+        PopulateViewBag(dictionaryName, action!, context, fieldName);
+        return View(action!.GetType().Name, action);
+        
     }
 
     public ActionResult Add(string dictionaryName, string actionType, ActionOrigin context, string? fieldName)
     {
-        BasicAction action = null;
-        if (typeof(ScriptAction).Name.Equals(actionType))
-            action = new ScriptAction();
-        else if (typeof(UrlRedirectAction).Name.Equals(actionType))
-            action = new UrlRedirectAction();
-        else if (typeof(InternalAction).Name.Equals(actionType))
-            action = new InternalAction();
-        else if (typeof(SqlCommandAction).Name.Equals(actionType))
-            action = new SqlCommandAction();
-        else if (typeof(PythonScriptAction).Name.Equals(actionType))
-            action = new PythonScriptAction();
-        else
-            throw new Exception("Invalid Action");
-            
+        BasicAction action = actionType switch
+        {
+            nameof(ScriptAction) => new ScriptAction(),
+            nameof(UrlRedirectAction) => new UrlRedirectAction(),
+            nameof(InternalAction) => new InternalAction(),
+            nameof(SqlCommandAction) => new SqlCommandAction(),
+            nameof(PythonScriptAction) => new PythonScriptAction(),
+            _ => throw new JJMasterDataException("Invalid Action")
+        };
+
         PopulateViewBag(dictionaryName, action, context, fieldName);
         return View(action.GetType().Name, action);
     }
@@ -347,32 +347,32 @@ public class ActionsController : DataDictionaryController
 
     private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionOrigin context, string? fieldName = null)
     {
-        if ((string)Request.Query["selected_tab"] != null)
+        if ((string?)Request.Query["selected_tab"] != null)
             ViewBag.Tab = Request.Query["selected_tab"];
         else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"];
+            ViewBag.Tab = TempData["selected_tab"]!;
 
-        if ((string)Request.Query["originalName"] != null)
+        if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Query["originalName"];
         else if (TempData["originalName"] != null)
-            ViewBag.OriginalName = TempData["originalName"];
+            ViewBag.OriginalName = TempData["originalName"]!;
         else
             ViewBag.OriginalName = basicAction.Name;
 
         if (TempData.ContainsKey("error"))
-            ViewBag.Error = TempData["error"];
+            ViewBag.Error = TempData["error"]!;
 
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.ContextAction = context;
         ViewBag.MenuId = "Actions";
-        ViewBag.FieldName = fieldName;
+        ViewBag.FieldName = fieldName!;
 
         switch (basicAction)
         {
-            case PythonScriptAction pythonScriptAction:
-            case SqlCommandAction sqlCommandAction:
-            case ImportAction importAction:
-            case ExportAction exportAction:
+            case PythonScriptAction _:
+            case SqlCommandAction _:
+            case ImportAction _:
+            case ExportAction _:
             {
                 var formElement = _actionsService.GetFormElement(dictionaryName);
                 ViewBag.HintDictionary = _actionsService.GetHintDictionary(formElement);

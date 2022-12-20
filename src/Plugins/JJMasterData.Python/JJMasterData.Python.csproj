@@ -24,10 +24,4 @@
     <ProjectReference Include="..\..\JJMasterData.Core\JJMasterData.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="jjmasterdata.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

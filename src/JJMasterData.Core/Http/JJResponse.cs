@@ -1,5 +1,9 @@
-﻿#if NETSTANDARD || NETCOREAPP
+﻿
+using System.Globalization;
+using JJMasterData.Commons.Util;
+#if NETSTANDARD || NETCOREAPP
 using Microsoft.AspNetCore.Http;
+// ReSharper disable RedundantNameQualifier
 #endif
 
 namespace JJMasterData.Core.Http;
@@ -11,18 +15,7 @@ public class JJResponse
 #if NETCOREAPP || NETSTANDARD
     private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
 #endif
-
-    public void SendFile(string path)
-    {
-#if NETFRAMEWORK
-        SystemWebCurrent.Response.BufferOutput = false;
-        SystemWebCurrent.Response.TransmitFile(path);
-        SystemWebCurrent.Response.End();
-#else
-        AspNetCoreCurrent.Response.SendFileAsync(path).GetAwaiter().GetResult();
-#endif
-
-    }
+    
 
     /// <summary>
     /// Ends the HttpResponse and sends the data to the client.
@@ -71,9 +64,9 @@ public class JJResponse
 
 
 #if NETFRAMEWORK
-    public void ResponseRedirect(string url) => SystemWebCurrent.Response.Redirect(url);
+    public void Redirect(string url) => SystemWebCurrent.Response.Redirect(url);
 #else
-    public void ResponseRedirect(string url) => AspNetCoreCurrent.Response.Redirect(url);
+    public void Redirect(string url) => AspNetCoreCurrent.Response.Redirect(url);
 #endif
 
 }
