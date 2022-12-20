@@ -59,6 +59,7 @@ public class ApiController : DataDictionaryController
             Fields = metadata.Table.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &
+                     x.DataType != FieldType.DateTime2 &
                      x.DataType != FieldType.Date
             )
         };

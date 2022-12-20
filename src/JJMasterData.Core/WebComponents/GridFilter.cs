@@ -320,7 +320,7 @@ internal class GridFilter
                 string sto = CurrentContext.Request.Form(name + "_to");
                 if (!string.IsNullOrEmpty(sto))
                 {
-                    if (f.DataType == FieldType.DateTime && f.Component == FormComponent.Date)
+                    if (f.DataType is FieldType.DateTime or FieldType.DateTime2 && f.Component == FormComponent.Date)
                     {
                         if (DateTime.TryParse(sto, out var dto))
                             sto = dto.ToShortDateString() + " " + DateTime.MaxValue.ToLongTimeString();

@@ -166,7 +166,7 @@ public class FieldManager
                     DateTime dVal = DateTime.Parse(sVal);
                     sVal = dVal == DateTime.MinValue ? "" : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
                 }
-                else if (type == FieldType.DateTime)
+                else if (type is FieldType.DateTime or FieldType.DateTime2)
                 {
                     DateTime dVal = DateTime.Parse(sVal);
                     sVal = dVal == DateTime.MinValue

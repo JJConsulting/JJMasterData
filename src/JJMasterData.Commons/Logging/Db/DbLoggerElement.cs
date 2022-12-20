@@ -24,7 +24,8 @@ public static class DbLoggerElement
                     Name = options.CreatedColumnName,
                     Label = "Created",
                     IsPk = true,
-                    DataType = FieldType.DateTime,
+                    DataType = FieldType.DateTime2,
+                    Size = 3,
                     Filter =
                     {
                         Type = FilterMode.Range

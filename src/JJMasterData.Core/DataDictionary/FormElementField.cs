@@ -265,6 +265,7 @@ public class FormElementField : ElementField
         {
             case FieldType.Date:
             case FieldType.DateTime:
+            case FieldType.DateTime2:
                 Component = FormComponent.Date;
                 break;
             case FieldType.Int:

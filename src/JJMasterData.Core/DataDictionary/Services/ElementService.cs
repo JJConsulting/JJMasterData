@@ -265,7 +265,7 @@ public class ElementService : BaseService
     {
         return dataTypeField switch
         {
-            FieldType.Date or FieldType.DateTime => "DateTime",
+            FieldType.Date or FieldType.DateTime or FieldType.DateTime2 => "DateTime",
             FieldType.Float => "double",
             FieldType.Int => "int",
             FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",

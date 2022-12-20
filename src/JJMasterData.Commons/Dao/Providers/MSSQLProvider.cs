@@ -56,8 +56,8 @@ internal class MSSQLProvider : BaseProvider
             sql.Append(f.Name);
             sql.Append("] ");
             sql.Append(f.DataType.ToString());
-            if (f.DataType == FieldType.Varchar ||
-                f.DataType == FieldType.NVarchar)
+
+            if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
                 sql.Append(" (");
                 sql.Append(f.Size);
@@ -254,8 +254,7 @@ internal class MSSQLProvider : BaseProvider
             sql.Append(f.Name);
             sql.Append(" ");
             sql.Append(f.DataType);
-            if (f.DataType == FieldType.Varchar ||
-                f.DataType == FieldType.NVarchar)
+            if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
                 sql.Append("(");
                 sql.Append(f.Size);
@@ -520,8 +519,7 @@ internal class MSSQLProvider : BaseProvider
                 sql.Append(f.Name);
                 sql.Append("_from ");
                 sql.Append(f.DataType.ToString());
-                if (f.DataType == FieldType.Varchar ||
-                    f.DataType == FieldType.NVarchar)
+                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
                     sql.Append(f.Size);
@@ -532,8 +530,7 @@ internal class MSSQLProvider : BaseProvider
                 sql.Append(f.Name);
                 sql.Append("_to ");
                 sql.Append(f.DataType.ToString());
-                if (f.DataType == FieldType.Varchar ||
-                    f.DataType == FieldType.NVarchar)
+                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
                     sql.Append(f.Size);
@@ -556,8 +553,7 @@ internal class MSSQLProvider : BaseProvider
                 sql.Append(f.Name);
                 sql.Append(" ");
                 sql.Append(f.DataType.ToString());
-                if (f.DataType == FieldType.Varchar ||
-                    f.DataType == FieldType.NVarchar)
+                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
                     sql.Append(f.Size);
@@ -664,7 +660,7 @@ internal class MSSQLProvider : BaseProvider
                     {
                         sql.AppendLine("");
 
-                        if (f.DataType is FieldType.Date or FieldType.DateTime)
+                        if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
                         {
                             sql.Append(Tab);
                             sql.Append("IF @");
@@ -796,7 +792,7 @@ internal class MSSQLProvider : BaseProvider
                                 sql.Append(f.Name);
                                 sql.AppendLine(")");
                             }
-                            else if (f.DataType == FieldType.Date || f.DataType == FieldType.DateTime)
+                            else if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
                             {
                                 sql.Append(" = ' + CHAR(39) + CAST(@");
                                 sql.Append(f.Name);
@@ -1097,6 +1093,7 @@ internal class MSSQLProvider : BaseProvider
                 t = DbType.Date;
                 break;
             case FieldType.DateTime:
+            case FieldType.DateTime2:
                 t = DbType.DateTime;
                 break;
             case FieldType.Float:
@@ -1142,6 +1139,9 @@ internal class MSSQLProvider : BaseProvider
 
         if (databaseType.Equals("datetime"))
             return FieldType.DateTime;
+        
+        if (databaseType.Equals("datetime2"))
+            return FieldType.DateTime2;
 
         if (databaseType.Equals("text"))
             return FieldType.Text;

@@ -148,6 +148,7 @@ internal class DataImpHelp
             case FieldType.Date:
                 return Translate.Key("Date");
             case FieldType.DateTime:
+            case FieldType.DateTime2:
                 return Translate.Key("Date and time");
             case FieldType.Int:
                 return Translate.Key("Integer number");

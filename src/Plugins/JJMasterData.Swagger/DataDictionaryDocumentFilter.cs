@@ -640,6 +640,7 @@ namespace JJMasterData.Swagger
                     itemSchema.format = "date";
                     break;
                 case FieldType.DateTime:
+                case FieldType.DateTime2:
                     itemSchema.type = "string";
                     itemSchema.format = "date-time";
                     break;
