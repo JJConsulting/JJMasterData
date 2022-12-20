@@ -26,7 +26,7 @@ public class LogController : Controller
     {
         EntityRepository = entityRepository;
         Options = options.Value;
-        LoggerElement = DbLoggerElement.GetInstance(options.Value);
+        LoggerElement = DbLoggerElement.GetInstance(Options);
     }
 
     public ActionResult Index()

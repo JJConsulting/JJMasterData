@@ -199,10 +199,10 @@ public class JJUploadArea : JJBaseView
     }
     private record UploadAreaDto
     {
-        [JsonProperty("jquery-upload-file-message")]
+        [JsonProperty("jquery-upload-file-message", NullValueHandling=NullValueHandling.Ignore)]
         public string Message { get; set; }
         
-        [JsonProperty("jquery-upload-file-error")]
+        [JsonProperty("jquery-upload-file-error", NullValueHandling=NullValueHandling.Ignore)]
         public string Error { get; set; }
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
