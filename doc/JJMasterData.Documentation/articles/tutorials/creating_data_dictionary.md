@@ -70,7 +70,7 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
 
 - General
     - Layout: É Maneira com que o painel será reinderizado.
-    - Expanded By Default: Está opção irá definir se o painel   criado será iniciado maximizado por minimizado por padrão.
+    - Expanded By Default: Está opção irá definir se o painel criado será iniciado maximizado por minimizado por padrão.
     - Available Field: Serão os itens que não serão exibidos como paineis.
     - Selected Fields: Ao mudar um item da sua tabela para o campo Selected fields, você verá que ao acessar sua tabela e tentar realizar alguma ação entre adicionar, editar e visualizar um item, ele irá ser exibido como painel.
 - Adavanced
@@ -87,21 +87,22 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
     - Delete: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Está opção irá deletar a linha de informações desejada.
 - Toolbar
-    - Insert:
-    - config:
-    - Export:
-    - Import:
-    - Refresh:
-    - Legend:
+    - Insert: Permite adicionar um novo dado na sua tabela.
+    - config: Permite que você acesse as configurações de layout para o usuário, por exemplo, records per page and show table border.
+    - Export: Permite selecionar a exportação dos dados presentes na tabela. Você poderá importar apenas os dados visíveis na tela ou todos os dados de sua tabela, é permitido que a exportação seja feita em arquivos pdf, csv, excel e txt. Caso a exportação seja feita em PDF, é necessário que seja habilitado o plugin de pdf (LINK PARA DOC PLUGIN PDF).
+    - Import: Este item será exibido como upload para o usuário, permitindo a importação de dados para sua tabela através de arquivos txt, csv e log. Você poderá clicar no botão Help Para visualizar a formatação de upload do arquivo.
+    - Refresh: A opção refresh irá atualizar sua tabela de dados, para caso haja alguma mudança para ser exibida.
+    - Legend: A legenda é utilizada para auxiliar a descrição do dado dentro de sua tabela, por exemplo, você poderá criar a legenda para uma coluna de sexo, em que é possível atribuir a descrição Woman, Man e na sequência associar com cores e ícones. Você pode ver uma descrição completa de como criar sua legenda através do link (LINK PARA DATA_ITEM_LEG)
     - Sort:
     - Filter:
     - Log:
 
 **API**
--Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST api.
 
-    -ApplyUseridOn:
+- Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST API.
+    - ApplyUseridOn:
+    - JsonFormat: Está opção irá definir e modificar a formatação do arquivo Json. Ao utilizar a opção default, ficará definido o padrão já escolhido pelo usuário, entretando a opção LowerCase irá formatar o arquivo para letras minúsculas.
+    - Sync:
 
-    -JsonFormat: Você poderá escolher dois formatos para seu arquivo Json. Ao selecionar o Default, será definido o padrão escolhido pelo usuário ou 
 
-    -Sync:
+

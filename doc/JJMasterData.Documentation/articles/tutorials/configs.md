@@ -13,7 +13,7 @@ EnableMultiSelectOFF.png
 **ShowRowStriped:**
 Ao ativar está opção, a grid da sua tabela será exibida de forma zebrada.
 
-CfgShowRowStripeON.png - Ver com o barrinho
+CfgShowRowStripeON.png - verificar a ativação da config
 CfgShowRowStripeOFF.png
 
 **ShowPagging:**
