@@ -145,7 +145,7 @@ public class DataAccess
     {
         _connection ??= GetFactory().CreateConnection();
 
-        if (_connection?.State == ConnectionState.Open)
+        if (_connection?.State is ConnectionState.Open or ConnectionState.Connecting)
             return _connection;
 
         try
@@ -165,7 +165,7 @@ public class DataAccess
     {
         _connection ??= GetFactory().CreateConnection();
 
-        if (_connection?.State == ConnectionState.Open)
+        if (_connection?.State is ConnectionState.Open or ConnectionState.Connecting)
             return _connection;
 
         try
@@ -215,17 +215,15 @@ public class DataAccess
     /// </returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        DbCommand dbCommand = null;
-        DbDataAdapter da = null;
         DataTable dt = new DataTable();
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            da = GetFactory().CreateDataAdapter();
-            da!.SelectCommand = dbCommand;
-            da.Fill(dt);
+            using var dataAdapter = GetFactory().CreateDataAdapter();
+            dataAdapter!.SelectCommand = dbCommand;
+            dataAdapter.Fill(dt);
 
             if (cmd.Parameters != null)
             {
@@ -242,8 +240,6 @@ public class DataAccess
         }
         finally
         {
-            da?.Dispose();
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -259,18 +255,15 @@ public class DataAccess
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
     {
-        DbCommand dbCommand = null;
-        DbDataAdapter da = null;
-
         var dt = new DataTable();
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
 
-            da = GetFactory().CreateDataAdapter();
-            da!.SelectCommand = dbCommand;
-            da.Fill(dt);
+            using var dataAdapter = GetFactory().CreateDataAdapter();
+            dataAdapter!.SelectCommand = dbCommand;
+            dataAdapter.Fill(dt);
 
             if (cmd.Parameters != null)
             {
@@ -287,8 +280,6 @@ public class DataAccess
         }
         finally
         {
-            da?.Dispose();
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -302,29 +293,22 @@ public class DataAccess
     /// <param name="sql">Script sql, never use with concat parameters</param>
     public DataTable GetDataTable(ref DbConnection sqlConn, string sql)
     {
-        DataTable dt = new DataTable();
-        DbCommand sqlCmd = null;
-        DbDataAdapter da = null;
+        var dt = new DataTable();
         try
         {
-            sqlCmd = GetFactory().CreateCommand();
-            sqlCmd!.CommandType = CommandType.Text;
-            sqlCmd.Connection = sqlConn;
-            sqlCmd.CommandText = sql;
-            sqlCmd.CommandTimeout = TimeOut;
+            using var dbCommand = GetFactory().CreateCommand();
+            dbCommand!.CommandType = CommandType.Text;
+            dbCommand.Connection = sqlConn;
+            dbCommand.CommandText = sql;
+            dbCommand.CommandTimeout = TimeOut;
 
-            da = GetFactory().CreateDataAdapter();
-            da!.SelectCommand = sqlCmd;
-            da.Fill(dt);
+            using var dataAdapter = GetFactory().CreateDataAdapter();
+            dataAdapter!.SelectCommand = dbCommand;
+            dataAdapter.Fill(dt);
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, sql);
-        }
-        finally
-        {
-            da?.Dispose();
-            sqlCmd?.Dispose();
         }
 
         return dt;
@@ -349,10 +333,9 @@ public class DataAccess
     public object GetResult(DataAccessCommand cmd)
     {
         object scalarResult;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
             scalarResult = dbCommand.ExecuteScalar();
 
@@ -368,7 +351,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -385,10 +367,9 @@ public class DataAccess
     public async Task<object> GetResultAsync(DataAccessCommand cmd)
     {
         object scalarResult;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
             scalarResult = await dbCommand.ExecuteScalarAsync();
 
@@ -404,7 +385,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -424,10 +404,9 @@ public class DataAccess
     public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         object scalarResult;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
             scalarResult = dbCommand.ExecuteScalar();
@@ -435,10 +414,6 @@ public class DataAccess
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            dbCommand?.Dispose();
         }
 
         return scalarResult;
@@ -450,10 +425,9 @@ public class DataAccess
     public int SetCommand(DataAccessCommand cmd)
     {
         int rowsAffected = 0;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
             rowsAffected += dbCommand.ExecuteNonQuery();
@@ -471,7 +445,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -482,10 +455,9 @@ public class DataAccess
     public async Task<int> SetCommandAsync(DataAccessCommand cmd)
     {
         int rowsAffected;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
 
             rowsAffected = await dbCommand.ExecuteNonQueryAsync();
@@ -502,7 +474,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -517,14 +488,13 @@ public class DataAccess
         int numberOfRowsAffected = 0;
         int index = 0;
 
-        DbCommand dbCommand = null;
         DbConnection connection = GetConnection();
-        DbTransaction sqlTras = connection.BeginTransaction();
+        using var sqlTras = connection.BeginTransaction();
         try
         {
-            foreach (DataAccessCommand cmd in commands)
+            foreach (var cmd in commands)
             {
-                dbCommand = CreateDbCommand(cmd);
+                using var dbCommand = CreateDbCommand(cmd);
                 dbCommand.Connection = connection;
                 dbCommand.Transaction = sqlTras;
 
@@ -542,8 +512,6 @@ public class DataAccess
         }
         finally
         {
-            sqlTras.Dispose();
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -555,33 +523,30 @@ public class DataAccess
         int numberOfRowsAffected = 0;
         int index = 0;
 
-        DbCommand dbCommand = null;
-        DbConnection connection = await GetConnectionAsync();
-        DbTransaction sqlTras = connection.BeginTransaction();
+        var connection = await GetConnectionAsync();
+        using var transaction = connection.BeginTransaction();
         try
         {
             foreach (DataAccessCommand cmd in commands)
             {
-                dbCommand = CreateDbCommand(cmd);
+                using var dbCommand = CreateDbCommand(cmd);
                 dbCommand.Connection = connection;
-                dbCommand.Transaction = sqlTras;
+                dbCommand.Transaction = transaction;
 
                 numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync();
                 index++;
             }
 
-            sqlTras.Commit();
+            transaction.Commit();
         }
         catch (Exception ex)
         {
-            sqlTras.Rollback();
+            transaction.Rollback();
             var cmd = commands[index];
             throw GetDataAccessException(ex, cmd);
         }
         finally
         {
-            sqlTras.Dispose();
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -643,10 +608,9 @@ public class DataAccess
     public int SetCommand(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
         int numberOfRowsAffected = 0;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
             dbCommand.Transaction = trans;
 
@@ -655,10 +619,6 @@ public class DataAccess
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            dbCommand?.Dispose();
         }
 
         return numberOfRowsAffected;
@@ -689,13 +649,12 @@ public class DataAccess
     public Hashtable GetFields(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            DbDataReader dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
+            using var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
 
             while (dr.Read())
             {
@@ -728,7 +687,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -739,10 +697,9 @@ public class DataAccess
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
     {
         Hashtable retCollection = null;
-        DbCommand dbCommand = null;
         try
         {
-            dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
             DbDataReader dr = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
             while (await dr.ReadAsync())
@@ -776,7 +733,6 @@ public class DataAccess
         }
         finally
         {
-            dbCommand?.Dispose();
             CloseConnection();
         }
 
@@ -811,7 +767,7 @@ public class DataAccess
         try
         {
             var ret = GetResult(GetTableExistsCommand(tableName));
-            result = (int)ret == 1;
+            result = ret as int? == 1;
         }
         finally
         {
@@ -1029,7 +985,6 @@ public class DataAccess
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
         var dbCommand = GetFactory().CreateCommand();
-
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
 
