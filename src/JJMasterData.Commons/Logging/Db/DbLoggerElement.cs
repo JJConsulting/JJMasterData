@@ -21,9 +21,17 @@ public static class DbLoggerElement
             {
                 new ElementField
                 {
+                    Name = "Id",
+                    Label = "Id",
+                    IsPk = true,
+                    AutoNum = true,
+                    DataType = FieldType.Int,
+                    Size = 5
+                },
+                new ElementField
+                {
                     Name = options.CreatedColumnName,
                     Label = "Created",
-                    IsPk = true,
                     DataType = FieldType.DateTime2,
                     Size = 5,
                     Filter =
