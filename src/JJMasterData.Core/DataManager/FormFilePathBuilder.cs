@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
 using System.IO;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -24,7 +25,7 @@ public class FormFilePathBuilder
         //Pks concat with  underline
         string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
         if (!Validate.ValidFileName(pkval))
-            throw new Exception(Translate.Key("Error rendering upload! Primary key value {0} contains invalid characters.",
+            throw new JJMasterDataException(Translate.Key("Error rendering upload! Primary key value {0} contains invalid characters.",
                 pkval));
 
         //Path configured in the dictionary

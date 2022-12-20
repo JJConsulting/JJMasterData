@@ -45,12 +45,12 @@ namespace JJMasterData.Core.DataManager
             var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
 
             if (elementPks == null || elementPks.Count == 0)
-                throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
+                throw new JJMasterDataException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
 
             foreach (var field in elementPks)
             {
                 if (!values.Contains(field.Name))
-                    throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));
+                    throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
 
                 primaryKeys.Add(field.Name, values[field.Name]);
             }
@@ -68,7 +68,7 @@ namespace JJMasterData.Core.DataManager
 
             var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
             if (values.Length != elementPks.Count)
-                throw new DataDictionaryException(Translate.Key("Invalid primary key"));
+                throw new JJMasterDataException(Translate.Key("Invalid primary key"));
             
             for (int i = 0; i < values.Length; i++)
             {
@@ -91,7 +91,7 @@ namespace JJMasterData.Core.DataManager
 
             var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (elementPks == null || elementPks.Count == 0)
-                throw new DataDictionaryException(Translate.Key("Primary key not defined for dictionary {0}", formElement.Name));
+                throw new JJMasterDataException(Translate.Key("Primary key not defined for dictionary {0}", formElement.Name));
             
             string name = string.Empty;
             foreach (var field in elementPks)
@@ -100,11 +100,11 @@ namespace JJMasterData.Core.DataManager
                     name += separator.ToString();
                 
                 if (!formValues.Contains(field.Name))
-                    throw new DataDictionaryException(Translate.Key("Primary key {0} not entered", field.Name));
+                    throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
                     
                 string value = formValues[field.Name].ToString();
                 if (value.Contains(separator))
-                    throw new Exception(Translate.Key("Primary key value {0} contains invalid characters.", value));
+                    throw new JJMasterDataException(Translate.Key("Primary key value {0} contains invalid characters.", value));
                 
                 name += value;
             }

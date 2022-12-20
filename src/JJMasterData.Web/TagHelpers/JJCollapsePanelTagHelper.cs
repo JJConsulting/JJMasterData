@@ -25,6 +25,9 @@ public class JJCollapsePanelTagHelper : TagHelper
     
     [HtmlAttributeName("expanded-by-default")]
     public bool ExpandedByDefault { get; set; }
+    
+    [HtmlAttributeName("configure")]
+    public Action<JJCollapsePanel>? Configure { get; set; }
 
     private RazorPartialRendererService RendererService { get; }
     
@@ -35,7 +38,6 @@ public class JJCollapsePanelTagHelper : TagHelper
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-
         AssertAttributes();
         
         var panel = new JJCollapsePanel
@@ -43,19 +45,28 @@ public class JJCollapsePanelTagHelper : TagHelper
             Name = Title!.ToLower().Replace(" ", "_"),
             Title = Title,
             ExpandedByDefault = ExpandedByDefault,
-            HtmlContent = await RendererService.ToStringAsync(Partial,Model),
             TitleIcon = new JJIcon(Icon)
         };
+
+        if (Partial == null)
+        {
+            var content = output.GetChildContentAsync().Result.GetContent();
+            panel.HtmlContent = content;
+        }
+        else
+        {
+            panel.HtmlContent = await RendererService.ToStringAsync(Partial, Model);
+        }
+        
+        Configure?.Invoke(panel);
+        
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(panel.GetHtml());
-        
     }
 
     private void AssertAttributes()
     {
         if (Title == null)
             throw new ArgumentNullException(nameof(Title));
-        if(Partial == null)
-            throw new ArgumentNullException(nameof(Partial));
     }
 }

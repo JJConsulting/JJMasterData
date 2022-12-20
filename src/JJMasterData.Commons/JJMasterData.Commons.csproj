@@ -2,20 +2,23 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>3.0.36</Version>
+		<Version>3.0.38</Version>
 		<Company>JJ Consulting</Company>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
 		<Product>JJMasterData.Commons - Mars Version</Product>
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<PackageVersion>3.0.36</PackageVersion>
-		<AssemblyVersion>3.0.36</AssemblyVersion>
+		<PackageVersion>3.0.38</PackageVersion>
+		<AssemblyVersion>3.0.38</AssemblyVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 		<LangVersion>10.0</LangVersion>
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Extensions\ServiceExtensions.cs" />
+	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\..\JJMasterData.png">
 			<Pack>True</Pack>
@@ -30,8 +33,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />

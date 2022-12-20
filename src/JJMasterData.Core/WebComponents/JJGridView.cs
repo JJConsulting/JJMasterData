@@ -148,7 +148,7 @@ public class JJGridView : JJBaseView
             if (_pkFields != null) return _pkFields;
 
             if (FormElement == null)
-                throw new Exception("FormElement inválido");
+                throw new ArgumentNullException(nameof(FormElement));
 
             _pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
 
@@ -163,7 +163,7 @@ public class JJGridView : JJBaseView
             if (_visibleFields != null) return _visibleFields;
 
             if (FormElement == null)
-                throw new Exception("FormElement inválido");
+                throw new ArgumentNullException(nameof(FormElement));
 
             _visibleFields = new List<FormElementField>();
             var defaultValues = DefaultValues;
@@ -354,7 +354,7 @@ public class JJGridView : JJBaseView
             if (_currentUI != null)
                 return _currentUI;
 
-            // Removing it from here when calling the GetDataTable() method outside the class does not respect pagination
+            // Removing it from here when calling the GetMetadataInfoList() method outside the class does not respect pagination
             var actionMap = CurrentActionMap;
             var action = GetCurrentAction(actionMap);
             if (action is ConfigAction)
@@ -634,6 +634,8 @@ public class JJGridView : JJBaseView
         return html;
     }
 
+    public string GetTableHtml() => GetTableHtmlBuilder().ToString();
+
     private HtmlBuilder GetTableHtmlBuilder()
     {
         AssertProperties();
@@ -701,7 +703,7 @@ public class JJGridView : JJBaseView
         return false;
     }
 
-    private IList<HtmlBuilder> GetHiddenInputs()
+    private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
         var elementList = new List<HtmlBuilder>();
         
@@ -842,7 +844,7 @@ public class JJGridView : JJBaseView
             throw new ArgumentNullException(nameof(FormElement));
 
         if (EnableMultSelect && PrimaryKeyFields.Count == 0)
-            throw new Exception(
+            throw new JJMasterDataException(
                 Translate.Key(
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
     }
@@ -1233,7 +1235,7 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    private List<Hashtable> GetGridValues(DataTable dt = null)
+    public List<Hashtable> GetGridValues(DataTable dt = null)
     {
         if (dt == null)
         {

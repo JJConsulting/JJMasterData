@@ -35,7 +35,7 @@ internal class DataPanelControl
         UISettings = dataPanel.UISettings;
         FieldManager = dataPanel.FieldManager;
         PageState = dataPanel.PageState;
-        Erros = dataPanel.Erros;
+        Erros = dataPanel.Errors;
         Values = dataPanel.Values;
         Name = dataPanel.Name;
     }
@@ -73,21 +73,21 @@ internal class DataPanelControl
         var html = new HtmlBuilder(HtmlTag.Div);
         int linegroup = int.MinValue;
         HtmlBuilder row = null;
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
             //visible expression
-            bool visible = FieldManager.IsVisible(f, PageState, Values);
+            bool visible = FieldManager.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
 
             //value
             object value = null;
-            if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(f, Values[f.Name]);
+            if (Values != null && Values.Contains(field.Name))
+                value = FieldManager.FormatVal(field, Values[field.Name]);
 
-            if (linegroup != f.LineGroup)
+            if (linegroup != field.LineGroup)
             {
-                linegroup = f.LineGroup;
+                linegroup = field.LineGroup;
                 row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("row");
                 html.AppendElement(row);
@@ -96,39 +96,39 @@ internal class DataPanelControl
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
-            row.AppendElement(htmlField);
+            row?.AppendElement(htmlField);
 
             string fieldClass;
-            if (FieldManager.IsRange(f, PageState))
+            if (FieldManager.IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
-            else if (!string.IsNullOrEmpty(f.CssClass))
+            else if (!string.IsNullOrEmpty(field.CssClass))
             {
-                fieldClass = f.CssClass;
+                fieldClass = field.CssClass;
             }
             else
             {
-                if (f.Component == FormComponent.TextArea | f.Component == FormComponent.CheckBox)
+                if (field.Component == FormComponent.TextArea | field.Component == FormComponent.CheckBox)
                     fieldClass = "col-sm-12";
                 else
                     fieldClass = colClass;
             }
             htmlField.WithCssClass(fieldClass);
 
-            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
+            if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(field.Name))
                 htmlField.WithCssClass("has-error");
 
             if (PageState == PageState.View && UISettings.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
 
-            if (f.Component != FormComponent.CheckBox)
-                htmlField.AppendElement(new JJLabel(f));
+            if (field.Component != FormComponent.CheckBox)
+                htmlField.AppendElement(new JJLabel(field));
 
             if (IsViewModeAsStatic)
-                htmlField.AppendElement(GetStaticField(f));
+                htmlField.AppendElement(GetStaticField(field));
             else
-                htmlField.AppendElement(GetControlField(f, value));
+                htmlField.AppendElement(GetControlField(field, value));
         }
 
         return html;
@@ -168,12 +168,7 @@ internal class DataPanelControl
             fullClass = "col-sm-8";
         }
 
-        if (BootstrapHelper.Version > 3)
-        {
-            labelClass += " d-flex justify-content-end align-items-center";
-            fieldClass += " d-flex justify-content-start align-items-center";
-        }
-
+  
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
@@ -181,6 +176,15 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var f in fields)
         {
+            if (!string.IsNullOrEmpty(f.CssClass))
+                fieldClass = f.CssClass;
+
+            if (BootstrapHelper.Version > 3)
+            {
+                labelClass += " d-flex justify-content-end align-items-center";
+                fieldClass += " d-flex justify-content-start align-items-center";
+            }
+
             //Visible expression
             bool visible = FieldManager.IsVisible(f, PageState, Values);
             if (!visible)
@@ -196,7 +200,7 @@ internal class DataPanelControl
                 CssClass = labelClass
             };
 
-            fldClass += string.IsNullOrEmpty(f.CssClass) ? "" : $" {f.CssClass}";
+            fldClass = string.Empty;
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
                 fldClass += " has-error";
 
@@ -289,6 +293,11 @@ internal class DataPanelControl
             }
             else if (field is JJComboBox comboBox)
             {
+                if (f.Filter.IsRequired || f.Filter.Type == FilterMode.MultValuesEqual || f.Filter.Type == FilterMode.MultValuesContain)
+                    comboBox.DataItem.FirstOption = FirstOptionMode.None;
+                else
+                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
+
                 if (f.Filter.Type == FilterMode.MultValuesEqual)
                     comboBox.MultiSelect = true;
             }

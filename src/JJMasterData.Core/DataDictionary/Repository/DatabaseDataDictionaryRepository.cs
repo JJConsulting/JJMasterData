@@ -7,20 +7,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DataDictionaryDao : IDataDictionaryRepository
+public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
-    public DataDictionaryDao(IEntityRepository entityRepository)
+    public DatabaseDataDictionaryRepository(IEntityRepository entityRepository)
     {
         _entityRepository = entityRepository;
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<Metadata> GetMetadataList(bool? sync)
+    public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
         var list = new List<Metadata>();
 
@@ -48,19 +49,19 @@ public class DataDictionaryDao : IDataDictionaryRepository
             string json = row["json"].ToString();
             if (row["type"].ToString().Equals("T"))
             {
-                currentParser.Table = JsonConvert.DeserializeObject<Element>(json);
+                currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
             }
             else if (row["type"].ToString().Equals("F"))
             {
-                currentParser.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+                currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
             }
             else if (row["type"].ToString().Equals("L"))
             {
-                currentParser.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+                currentParser!.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
             }
             else if (row["type"].ToString().Equals("A"))
             {
-                currentParser.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                currentParser!.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
             }
         }
 
@@ -216,9 +217,9 @@ public class DataDictionaryDao : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string tableName)
+    public bool Exists(string dictionaryName)
     {
-        return _entityRepository.TableExists(tableName);
+        return _entityRepository.TableExists(dictionaryName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
@@ -228,15 +229,14 @@ public class DataDictionaryDao : IDataDictionaryRepository
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetDataTable"/>
-    public DataTable GetDataTable(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
+    public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var element = DataDictionaryStructure.GetElement();
-
         var filters = filter.ToHashtable();
-        
         filters.Add("type","F");
-        
-        return _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
+
+        var dt = _entityRepository.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords); 
+        return dt.ToModelList<MetadataInfo>();
     }
 }

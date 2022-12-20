@@ -33,7 +33,6 @@ namespace JJMasterData.Core.WebComponents
             textGroup.Name = f.Name;
             textGroup.MinValue = f.MinValue;
             textGroup.MaxValue = f.MaxValue;
-            textGroup.CssClass = f.CssClass;
 
             SetDefaultAttrs(textGroup, f.Component);
 

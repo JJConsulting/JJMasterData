@@ -33,13 +33,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     public CultureInfo Culture { get; set; }
 
-    public FormElement FormElement
-    {
-        get
-        {
-            return FieldManager.FormElement;
-        }
-    }
+    public FormElement FormElement => FieldManager.FormElement;
 
     internal FieldManager FieldManager { get; private set; }
 
@@ -72,7 +66,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 currentProcess.StartDate = DateTime.Now;
                 currentProcess.UserId = UserId;
                 Reporter(currentProcess);
-                RunWorker(token, currentProcess);
+                RunWorker(currentProcess, token);
 
                 if (currentProcess.Error > 0)
                     currentProcess.Message = Translate.Key("File imported with errors!");
@@ -82,13 +76,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
             catch (Exception ex)
             {
                 currentProcess.HasError = true;
-                if (ex is OperationCanceledException ||
-                    ex is ThreadAbortException)
+                if (ex is OperationCanceledException or ThreadAbortException)
                 {
                     currentProcess.Message = Translate.Key("Process aborted by user");
                     currentProcess.AddError(currentProcess.Message);
                 }
-                else if (ex is DataDictionaryException)
+                else if (ex is JJMasterDataException)
                 {
                     currentProcess.Message = ex.Message;
                     currentProcess.AddError(currentProcess.Message);
@@ -114,11 +107,10 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     private void Reporter(DataImpReporter reporter)
     {
-        if (OnProgressChanged != null)
-            OnProgressChanged.Invoke(this, reporter);
+        OnProgressChanged?.Invoke(this, reporter);
     }
 
-    private void RunWorker(CancellationToken token, DataImpReporter currentProcess)
+    private void RunWorker(DataImpReporter currentProcess, CancellationToken token)
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
@@ -175,7 +167,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 currentProcess.AddError(error);
 
                 error += Translate.Key("Click on the [Help] link for more information regarding the file layout.");
-                throw new DataDictionaryException(error);
+                throw new JJMasterDataException(error);
             }
 
             //Analisa se ignora a primeira linha do arquivo

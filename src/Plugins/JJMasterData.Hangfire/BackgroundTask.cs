@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Hangfire;
 using Hangfire.States;
 using Hangfire.Storage;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
@@ -37,7 +38,7 @@ public sealed class BackgroundTask : IBackgroundTask
     public void Run(string key, IBackgroundTaskWorker worker)
     {
         if (IsRunning(key))
-            throw new Exception(Translate.Key("Background task is already running."));
+            throw new JJMasterDataException(Translate.Key("Background task is already running."));
 
         var taskWrapper = new TaskWrapper
         {

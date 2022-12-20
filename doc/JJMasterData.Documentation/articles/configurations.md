@@ -84,26 +84,10 @@ builder.Services.AddJJMasterDataWeb();
 You can change any of the [JJMasterDataOptions](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Options.JJMasterDataOptions.html) as seen above.
 <br>
 
-**Log**
+**Logging**
+[Read more](logging.md) about logging.
 
-```cs
-builder.Services.AddLogging(ILogger)
-```
-
-You can use any Log tool to implement the interface 
-Microsoft.Extensions.Logging.ILogger
-<br>
-If you need a basic log:
-
-```cs
-builder.Services.AddJJMasterDataWeb().WithJJMasterDataLogger();
-```
-
-This is a simple application log that can be written to a file, database, etc... 
-We use it for testing, because it is not async. To configure the log see [LoggerOptions](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Logging.LoggerOptions.html)
-
-
-**Internacionalization**
+**Internationalization**
 ```cs
 builder.Services.AddJJMasterDataWeb();
 builder.Services.AddUrlRequestCultureProvider(
@@ -111,7 +95,7 @@ builder.Services.AddUrlRequestCultureProvider(
     new CultureInfo("en-US")
 );
 ```
-[read more](internationalization.md) about internationalization.
+[Read more](internationalization.md) about internationalization.
 <br>
 
 

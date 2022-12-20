@@ -28,7 +28,7 @@ public static class StringManager
     /// Remove os acentos e caracteres especiais
     /// </summary>
     /// <param name="str">Valor</param>
-    public static string NoAccents(string str)
+    public static string GetStringWithoutAccents(string str)
     {
         //Troca os caracteres acentuados por não acentuados
         string[] acentos = { "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È", "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â", "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û" };
@@ -63,7 +63,7 @@ public static class StringManager
     {
         var now = DateTime.Now;
         string greeting;
-        if ((now.Hour > 0) && (DateTime.Now.Hour <= 12))
+        if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
             greeting = Translate.Key("Good Morning");
         else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
             greeting = Translate.Key("Good Afternoon");

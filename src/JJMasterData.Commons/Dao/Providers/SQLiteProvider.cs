@@ -20,10 +20,10 @@ internal class ProviderSQLite : BaseProvider
     public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         StringBuilder sSql = new StringBuilder();
 
@@ -238,27 +238,27 @@ internal class ProviderSQLite : BaseProvider
         return null;
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var isFirst = true;
         var sSql = new StringBuilder();
@@ -321,7 +321,7 @@ internal class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    public new DataTable GetDataTable(Element element, Hashtable filters, string orderby, int regporpag, int pag, ref int tot)
+    public new DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regporpag, int pag, ref int tot)
     {
         DataAccessParameter pTot = null;
         var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
@@ -338,7 +338,7 @@ internal class ProviderSQLite : BaseProvider
         return dt;
     }
 
-    private DataAccessCommand GetScriptInsert(Element element, Hashtable values, bool isReplace)
+    private DataAccessCommand GetScriptInsert(Element element, IDictionary values, bool isReplace)
     {
         var fields = element.Fields
             .ToList()
@@ -399,7 +399,7 @@ internal class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private DataAccessCommand GetScriptUpdate(Element element, Hashtable values)
+    private DataAccessCommand GetScriptUpdate(Element element, IDictionary values)
     {
         var fields = element.Fields
             .ToList()
@@ -471,7 +471,7 @@ internal class ProviderSQLite : BaseProvider
 
     }
 
-    private DataAccessCommand GetScriptDelete(Element element, Hashtable values)
+    private DataAccessCommand GetScriptDelete(Element element, IDictionary values)
     {
         var fields = element.Fields
             .ToList()
@@ -524,17 +524,14 @@ internal class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private object GetElementValue(ElementField f, Hashtable values)
+    private object GetElementValue(ElementField f, IDictionary values)
     {
         object value = DBNull.Value;
         if (values != null &&
-            values.ContainsKey(f.Name) &&
+            values.Contains(f.Name) &&
             values[f.Name] != null)
         {
-            if ((f.DataType == FieldType.Date ||
-                 f.DataType == FieldType.DateTime ||
-                 f.DataType == FieldType.Float ||
-                 f.DataType == FieldType.Int) &&
+            if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
                 values[f.Name].ToString().Trim().Length == 0)
             {
 
@@ -570,7 +567,7 @@ internal class ProviderSQLite : BaseProvider
         return t;
     }
 
-    private DataAccessCommand GetScriptCount(Element element, Hashtable filters)
+    private DataAccessCommand GetScriptCount(Element element, IDictionary filters)
     {
         var fields = element.Fields
             .ToList()

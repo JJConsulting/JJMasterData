@@ -54,7 +54,6 @@ public class OptionsService : BaseService
             await JJMasterDataWritableOptions!.UpdateAsync(options =>
             {
                 options.BootstrapVersion = model.Options!.BootstrapVersion;
-                options.Logger = model.Options.Logger;
             });
 
 

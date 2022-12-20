@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Commons.Exceptions;
 
-public class DataAccessException : JJBaseException
+public class DataAccessException : JJMasterDataException
 {
     public DataAccessException(string message) : base(message)
     {

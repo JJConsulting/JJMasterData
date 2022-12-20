@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
@@ -71,7 +72,7 @@ public class ActionsController : DataDictionaryController
             nameof(InternalAction) => new InternalAction(),
             nameof(SqlCommandAction) => new SqlCommandAction(),
             nameof(PythonScriptAction) => new PythonScriptAction(),
-            _ => throw new Exception("Invalid Action")
+            _ => throw new JJMasterDataException("Invalid Action")
         };
 
         PopulateViewBag(dictionaryName, action, context, fieldName);

@@ -83,7 +83,7 @@ public class JJDataPanel : JJBaseView
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public Hashtable Erros { get; set; }
+    public Hashtable Errors { get; set; }
 
     /// <summary>
     /// Field Values.
@@ -109,7 +109,7 @@ public class JJDataPanel : JJBaseView
     internal JJDataPanel()
     {
         Values = new Hashtable();
-        Erros = new Hashtable();
+        Errors = new Hashtable();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
@@ -124,10 +124,10 @@ public class JJDataPanel : JJBaseView
         DataPanelFactory.SetDataPanelParams(this, formElement);   
     }
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable erros, PageState pageState) : this(formElement)
+    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState) : this(formElement)
     {
         Values = values;
-        Erros = erros;
+        Errors = errors;
         PageState = pageState;
     }
 

@@ -6,6 +6,8 @@ using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using JJMasterData.Commons.Exceptions;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -176,7 +178,7 @@ public class JJUploadArea : JJBaseView
     private FormFileContent GetFile()
     {
         var fileData = CurrentContext.Request.GetFile("file");
-        var stream = new MemoryStream();
+        using var stream = new MemoryStream();
         string filename = fileData.FileName;
         
 #if NETFRAMEWORK
@@ -188,20 +190,29 @@ public class JJUploadArea : JJBaseView
         var content = new FormFileContent
         {
             FileName = filename,
-            FileStream = stream,
-            LastWriteTime = DateTime.Now,
-            SizeBytes = stream.Length
+            Bytes = stream.ToArray(),
+            Length = stream.Length,
+            LastWriteTime = DateTime.Now
         };
 
         return content;
-    }  
-
+    }
+    private record UploadAreaDto
+    {
+        [JsonProperty("jquery-upload-file-message")]
+        public string Message { get; set; }
+        
+        [JsonProperty("jquery-upload-file-error")]
+        public string Error { get; set; }
+        public string ToJson() => JsonConvert.SerializeObject(this);
+    }
     private void UploadFile()
     {
-        string data;
+        UploadAreaDto dto = new();
+        
         try
         {
-            string messageInfo = string.Empty;
+            string message = string.Empty;
             
             var file = GetFile();
             
@@ -214,27 +225,22 @@ public class JJUploadArea : JJBaseView
                 var errorMessage = args.ErrorMessage;
                 if (args.SuccessMessage != null)
                 {
-                    messageInfo = args.SuccessMessage;
-                    messageInfo = messageInfo.Replace("\\", "\\\\");
-                    messageInfo = messageInfo.Replace("\"", "'");
+                    message = args.SuccessMessage;
                 }
 
                 if (!string.IsNullOrEmpty(errorMessage))
-                    throw new Exception(errorMessage);
+                    throw new JJMasterDataException(errorMessage);
             }
 
-            data = "{\"jquery-upload-file-message\": \"" + messageInfo + "\"}";
+            dto.Message = message;
 
         }
         catch (Exception ex)
         {
-            string errMsg = ex.Message;
-            errMsg = errMsg.Replace("\\", "\\\\");
-            errMsg = errMsg.Replace("\"", "'");
-            data="{\"jquery-upload-file-error\": \"" + errMsg + "\"}";
+            dto.Error = ex.Message;
         }
 
-        CurrentContext.Response.SendResponse(data,"text/json");
+        CurrentContext.Response.SendResponse(dto.ToJson(),"text/json");
     }
     private void ValidateSystemFiles(string filename)
     {
@@ -295,7 +301,7 @@ public class JJUploadArea : JJBaseView
 
         string ext = FileIO.GetFileNameExtension(filename);
         if (list.Contains(ext))
-            throw new Exception(Translate.Key("You cannot upload system files"));
+            throw new JJMasterDataException(Translate.Key("You cannot upload system files"));
 
     }
     public bool IsPostAfterUploadAllFiles()

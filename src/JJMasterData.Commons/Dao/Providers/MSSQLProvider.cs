@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
@@ -26,10 +27,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptCreateTable(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
         var keys = new StringBuilder();
@@ -225,10 +226,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptWriteProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         StringBuilder sql = new StringBuilder();
 
@@ -490,10 +491,10 @@ internal class MSSQLProvider : BaseProvider
     public override string GetScriptReadProcedure(Element element)
     {
         if (element == null)
-            throw new Exception("Invalid element");
+            throw new ArgumentNullException(nameof(Element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new Exception("Invalid fields");
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         var fields = element.Fields
             .ToList()
@@ -902,27 +903,27 @@ internal class MSSQLProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
     {
         return GetCommandWrite(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
     {
         return GetCommandWrite(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, Hashtable filters)
+    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
     {
         return GetCommandWrite(DeleteInitial, element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, Hashtable values)
+    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, Hashtable filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var command = new DataAccessCommand
         {
@@ -942,7 +943,7 @@ internal class MSSQLProvider : BaseProvider
             {
                 object valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_from") &&
+                    filters.Contains(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
                 {
                     valueFrom = filters[field.Name + "_from"];
@@ -959,7 +960,7 @@ internal class MSSQLProvider : BaseProvider
 
                 object valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_to") &&
+                    filters.Contains(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)
                 {
                     valueTo = filters[field.Name + "_to"];
@@ -1000,7 +1001,7 @@ internal class MSSQLProvider : BaseProvider
     }
 
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, Hashtable values)
+    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
@@ -1035,11 +1036,11 @@ internal class MSSQLProvider : BaseProvider
     }
 
 
-    private object GetElementValue(ElementField f, Hashtable values)
+    private object GetElementValue(ElementField f, IDictionary values)
     {
         object value = DBNull.Value;
         if (values != null &&
-            values.ContainsKey(f.Name) &&
+            values.Contains(f.Name) &&
             values[f.Name] != null)
         {
             if ((f.DataType == FieldType.Date ||
@@ -1157,7 +1158,7 @@ internal class MSSQLProvider : BaseProvider
             throw new ArgumentNullException(nameof(tableName));
 
         if (!DataAccess.TableExists(tableName))
-            throw new Exception(Translate.Key("Table {0} not found", tableName));
+            throw new JJMasterDataException(Translate.Key("Table {0} not found", tableName));
 
         var element = new Element
         {

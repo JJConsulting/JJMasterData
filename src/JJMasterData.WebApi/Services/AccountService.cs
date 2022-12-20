@@ -52,7 +52,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Log.AddError(ex.Message);
+            Log.AddError(ex, ex.Message);
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
             ret.ErrorId = 100;

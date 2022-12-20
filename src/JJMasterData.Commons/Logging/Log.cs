@@ -1,10 +1,12 @@
-﻿using JJMasterData.Commons.DI;
+﻿using System;
+using JJMasterData.Commons.DI;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
 /// <summary>
 /// Static accessor to the ILogger interface.
+/// When possible, use ILogger via constructor injection.
 /// </summary>
 public static class Log
 {
@@ -15,40 +17,30 @@ public static class Log
         _logger = JJService.Logger;
     }
 
-
     public static void Configure(ILogger logger)
     {
         _logger = logger;
     }
     
-    public static void AddError(string value)
+
+    public static void AddError(string value, string source = "System")
     {
-        _logger.LogError(value);
+        _logger.LogError(value, new EventId(0, source));
     }
     
-    public static void AddError(string value, string source)
+    public static void AddError(Exception exception, string message)
     {
-        _logger.LogError(value, source, LoggerLevel.Error);
+        _logger.LogError(exception, message);
     }
     
-    public static void AddInfo(string value)
+    public static void AddInfo(string value, string source = "System")
     {
-        _logger.LogInformation(value);
+        _logger.LogInformation(value, new EventId(0, source));
     }
-    
-    public static void AddInfo(string value, string source)
+
+    public static void AddWarning(string value, string source = "System")
     {
-        _logger.LogInformation(value, source, LoggerLevel.Information);
-    }
-    
-    public static void AddWarning(string value)
-    {
-        _logger.LogWarning(value);
-    }
-    
-    public static void AddWarning(string value, string source)
-    {
-        _logger.LogWarning(value, source, LoggerLevel.Warning);
+        _logger.LogWarning(value, new EventId(0, source));
     }
 }
 

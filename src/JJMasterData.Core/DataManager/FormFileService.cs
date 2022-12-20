@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -18,23 +20,24 @@ internal class FormFileService
     public EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
 
     /// <summary>
-    /// Nome da variavél de sessão
+    /// Session variable name
     /// </summary>
     public string MemoryFilesSessionName { get; private set; }
 
     /// <summary>
-    /// Sempre aplica as alterações dos arquivos em disco, 
-    /// se for falso mantem na memoria
+    /// Always apply changes from files on disk,
+    /// if it is false, keep it in memory
     /// Default: true
     /// </summary>
     public bool AutoSave { get; set; }
 
     /// <summary>
-    /// Caminho Completo do Diretório.<para></para>
-    /// (Opcional) Se o caminho não for informado, todos os arquivos serão armazenado na sessão.
+    /// Full Directory Path.<para></para>
+    /// (Optional) If the path is not given, all files will be stored in the session.
     /// </summary>
     /// <remarks>
-    /// Exemplo: c:\temp\files\
+    /// The path is OS agnostic, you can use for example C:\Temp\Files\ or /home/gumbarros/Documents/Files,
+    /// but beware where you're deploying your application.
     /// </remarks>
     public string FolderPath { get; set; }
 
@@ -66,17 +69,17 @@ internal class FormFileService
             throw new ArgumentNullException(nameof(currentName));
 
         if (string.IsNullOrWhiteSpace(newName))
-            throw new Exception(Translate.Key("Required file name"));
+            throw new ArgumentNullException(Translate.Key("Required file name"));
 
         if (!Validate.ValidFileName(newName))
-            throw new Exception(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
+            throw new JJMasterDataException(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new Exception(Translate.Key("The file extension must remain the same"));
+            throw new JJMasterDataException(Translate.Key("The file extension must remain the same"));
 
         var files = GetFiles();
         if (files.Exists(x => x.Content.FileName.Equals(newName)))
-            throw new Exception(Translate.Key("A file with the name {0} already exists", newName));
+            throw new JJMasterDataException(Translate.Key("A file with the name {0} already exists", newName));
 
         if (OnBeforeRenameFile != null)
         {
@@ -84,7 +87,7 @@ internal class FormFileService
             OnBeforeRenameFile.Invoke(this, args);
 
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+                throw new JJMasterDataException(args.ErrorMessage);
         }
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
@@ -95,10 +98,10 @@ internal class FormFileService
         {
             var file = files.Find(x => x.Content.FileName.Equals(currentName));
             if (file == null)
-                throw new Exception(Translate.Key("file {0} not found!", currentName));
+                throw new JJMasterDataException(Translate.Key("file {0} not found!", currentName));
 
             file.Content.FileName = newName;
-            if (file.Content.FileStream == null & string.IsNullOrEmpty(file.OriginName))
+            if (file.Content.Bytes == null & string.IsNullOrEmpty(file.OriginName))
                 file.OriginName = currentName;
 
             MemoryFiles = files;
@@ -125,7 +128,12 @@ internal class FormFileService
             string errorMessage = evt.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
-                throw new Exception(errorMessage);
+            {
+                var exception = new JJMasterDataException(errorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
+                
         }
 
         if (replaceIfExists && CountFiles() > 0)
@@ -168,8 +176,13 @@ internal class FormFileService
             var args = new FormDeleteFileEventArgs(fileName);
             OnBeforeDeleteFile.Invoke(this, args);
 
+            
             if (!string.IsNullOrEmpty(args.ErrorMessage))
-                throw new Exception(args.ErrorMessage);
+            {
+                var exception = new JJMasterDataException(args.ErrorMessage);
+                Log.AddError(exception, exception.Message);
+                throw exception;
+            }
         }
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
@@ -234,7 +247,7 @@ internal class FormFileService
             {
                 File.Move(folderPath + file.OriginName, folderPath + fileName);
             }
-            else if (file.Content.FileStream != null && file.IsInMemory)
+            else if (file.Content.Bytes != null && file.IsInMemory)
             {
                 SavePhysicalFile(file.Content);
             }
@@ -249,16 +262,21 @@ internal class FormFileService
         if (string.IsNullOrEmpty(FolderPath))
             return formfiles;
 
-        var oDir = new DirectoryInfo(FolderPath);
-        if (oDir.Exists)
+        var directory = new DirectoryInfo(FolderPath);
+        if (directory.Exists)
         {
-            FileInfo[] files = oDir.GetFiles();
-            foreach (FileInfo oFile in files)
+            var files = directory.GetFiles();
+            foreach (var file in files)
             {
-                var formfile = new FormFileInfo();
-                formfile.Content.FileName = oFile.Name;
-                formfile.Content.SizeBytes = oFile.Length;
-                formfile.Content.LastWriteTime = oFile.LastWriteTime;
+                var formfile = new FormFileInfo
+                {
+                    Content =
+                    {
+                        FileName = file.Name,
+                        Length = file.Length,
+                        LastWriteTime = file.LastWriteTime,
+                    }
+                };
                 formfiles.Add(formfile);
             }
         }
@@ -277,7 +295,7 @@ internal class FormFileService
             Directory.CreateDirectory(FolderPath);
 
         string fileFullName = Path.Combine(FolderPath, file.FileName);
-        var ms = file.FileStream;
+        var ms = new MemoryStream(file.Bytes);
         var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);

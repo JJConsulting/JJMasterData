@@ -1,4 +1,7 @@
-﻿#if NETSTANDARD || NETCOREAPP
+﻿
+using System.Globalization;
+using JJMasterData.Commons.Util;
+#if NETSTANDARD || NETCOREAPP
 using Microsoft.AspNetCore.Http;
 // ReSharper disable RedundantNameQualifier
 #endif
@@ -12,18 +15,7 @@ public class JJResponse
 #if NETCOREAPP || NETSTANDARD
     private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
 #endif
-
-    public void SendFile(string path)
-    {
-#if NETFRAMEWORK
-        SystemWebCurrent.Response.BufferOutput = false;
-        SystemWebCurrent.Response.TransmitFile(path);
-        SystemWebCurrent.Response.End();
-#else
-        AspNetCoreCurrent.Response.SendFileAsync(path).GetAwaiter().GetResult();
-#endif
-
-    }
+    
 
     /// <summary>
     /// Ends the HttpResponse and sends the data to the client.
@@ -33,14 +25,18 @@ public class JJResponse
     public void SendResponse(string data, string contentType = null)
     {
         SystemWebCurrent.Response.ClearContent();
-        
+        #if NETFRAMEWORK
         if (contentType != null)
         {
             SystemWebCurrent.Response.ContentType = contentType;
         }
-
+        #else
+        if (!AspNetCoreCurrent.Response.HasStarted && contentType != null)
+        {
+            AspNetCoreCurrent.Response.ContentType = contentType;
+        }
+        #endif
         SystemWebCurrent.Response.Write(data);
-        
         SystemWebCurrent.Response.End();
     }
 
@@ -61,15 +57,16 @@ public class JJResponse
 #if NETFRAMEWORK
         SystemWebCurrent.Response.Headers.Add(key, value);
 #else
-        AspNetCoreCurrent.Response.Headers.Add(key, value);
+        if(!AspNetCoreCurrent.Response.HasStarted)
+            AspNetCoreCurrent.Response.Headers.Add(key, value);
 #endif
     }
 
 
 #if NETFRAMEWORK
-    public void ResponseRedirect(string url) => SystemWebCurrent.Response.Redirect(url);
+    public void Redirect(string url) => SystemWebCurrent.Response.Redirect(url);
 #else
-    public void ResponseRedirect(string url) => AspNetCoreCurrent.Response.Redirect(url);
+    public void Redirect(string url) => AspNetCoreCurrent.Response.Redirect(url);
 #endif
 
 }
