@@ -1,13 +1,14 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using Swashbuckle.Swagger;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
-using JJMasterData.Core.DI;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger
 {
@@ -15,7 +16,7 @@ namespace JJMasterData.Swagger
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
+            var dictionaryRepository = JJService.Provider.GetService<IDataDictionaryRepository>();
             var dictionaries = dictionaryRepository.GetMetadataList(null);
 
             foreach (Metadata metadata in dictionaries)

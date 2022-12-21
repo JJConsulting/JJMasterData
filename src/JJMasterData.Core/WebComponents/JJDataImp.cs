@@ -10,6 +10,11 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -53,18 +58,20 @@ public class JJDataImp : JJBaseProcess
 
     #region "Constructors"
 
-    public JJDataImp()
+    public JJDataImp(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
     {
         ExpandedByDefault = true;
         Name = "jjdataimp1";
     }
 
-    public JJDataImp(string elementName) 
+    [Obsolete("Please use DataImpFactory via constructor injection.")]
+    public JJDataImp(string elementName, IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
     {
-        WebComponentFactory.SetDataImpParams(this, elementName);
+        var factory = new DataImpFactory(entityRepository, dataDictionaryRepository, null);
+        factory.SetDataImpParams(this, elementName);
     }
 
-    public JJDataImp(FormElement formElement) : this()
+    public JJDataImp(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository,entityRepository)
     {
         FormElement = formElement;
     }
@@ -95,7 +102,7 @@ public class JJDataImp : JJBaseProcess
                 html = GetHtmlLogProcess();
                 break;
             case "process_help":
-                html = new DataImpHelp(this).GetHtmlHelp();
+                html = new DataImpHelp(this, EntityRepository).GetHtmlHelp();
                 break;
             case "posted_past_text":
             {

@@ -14,6 +14,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Core.DataDictionary.Repository;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -63,12 +65,12 @@ public class JJDataExp : JJBaseProcess
 
     #region "Constructors"
 
-    public JJDataExp()
+    public JJDataExp(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
     {
         Name = "JJDataExp1";
     }
 
-    public JJDataExp(FormElement formElement) : this()
+    public JJDataExp(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository,entityRepository)
     {
         FormElement = formElement;
     }

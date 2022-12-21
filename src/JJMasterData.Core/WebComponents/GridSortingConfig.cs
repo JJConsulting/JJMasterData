@@ -103,7 +103,7 @@ public class GridSortingConfig
         tbody.WithAttribute("id", $"sortable_{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 
-        var comboBox = new JJComboBox
+        var comboBox = new JJComboBox(null)
         {
             DataItem =
             {

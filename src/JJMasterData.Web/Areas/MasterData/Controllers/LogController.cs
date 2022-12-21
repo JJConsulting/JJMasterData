@@ -4,6 +4,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Authorization;
@@ -19,12 +20,13 @@ public class LogController : Controller
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }
-    
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
 
-    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository)
+    public LogController(IOptions<DbLoggerOptions> options, IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository)
     {
         EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
         Options = options.Value;
         LoggerElement = DbLoggerElement.GetInstance(Options);
     }
@@ -71,7 +73,7 @@ public class LogController : Controller
         logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
         
-        var gridView = new JJGridView(formElement)
+        var gridView = new JJGridView(formElement,DataDictionaryRepository, EntityRepository)
         {
             CurrentOrder = $"{Options.CreatedColumnName} DESC"
         };
@@ -90,6 +92,7 @@ public class LogController : Controller
 
         return gridView;
     }
+
     private void OnRenderCell(object? sender, GridCellEventArgs e)
     {
         string? message;

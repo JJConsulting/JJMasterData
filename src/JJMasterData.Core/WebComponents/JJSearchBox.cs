@@ -41,8 +41,7 @@ public class JJSearchBox : JJBaseControl
     private const string NumberOfItemsAttribute = "numberofitems";
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
-
-    private IEntityRepository _entityRepository;
+    
     private IList<DataItemValue> _values;
     private FormElementDataItem _dataItem;
     private string _selectedValue;
@@ -57,11 +56,7 @@ public class JJSearchBox : JJBaseControl
         get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
     } 
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
+    internal IEntityRepository EntityRepository { get; private set; }
 
     public new string Text
     {
@@ -189,8 +184,9 @@ public class JJSearchBox : JJBaseControl
 
     #region "Constructors"
 
-    public JJSearchBox()
+    public JJSearchBox(IEntityRepository entityRepository)
     {
+        EntityRepository = entityRepository;
         Enabled = true;
         TriggerLength = 1;
         PlaceHolder = Translate.Key("Search...");
@@ -201,14 +197,9 @@ public class JJSearchBox : JJBaseControl
         PageState = PageState.List;
     }
 
-    public JJSearchBox(IEntityRepository entityRepository) : this()
-    {
-        EntityRepository = entityRepository;
-    }
-
     internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
     {
-        var search = new JJSearchBox
+        var search = new JJSearchBox(expOptions.EntityRepository)
         {
             Name = f.Name,
             SelectedValue = (string)value,
@@ -217,7 +208,6 @@ public class JJSearchBox : JJBaseControl
             AutoReloadFormFields = false,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
-            EntityRepository = expOptions.EntityRepository,
             UserValues = expOptions.UserValues
         };
         search.Attributes.Add("pnlname", panelName);

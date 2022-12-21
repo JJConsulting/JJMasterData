@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Linq;
+using JJMasterData.Commons.Dao;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -14,14 +15,19 @@ public class JJLegendView : JJBaseView
 
     public bool ShowAsModal { get; set; }
 
+    private IEntityRepository EntityRepository { get; }
+    
     #region "Constructors"
 
-    public JJLegendView(FormElement formElement)
+    public JJLegendView(FormElement formElement, IEntityRepository entityRepository)
     {
         FormElement = formElement;
+        EntityRepository = entityRepository;
         Name = "iconLegend";
         ShowAsModal = false;
     }
+
+
 
     #endregion
     
@@ -42,7 +48,7 @@ public class JJLegendView : JJBaseView
 
         if (field != null)
         {
-            var cbo = new JJComboBox()
+            var cbo = new JJComboBox(EntityRepository)
             {
                 Name = field.Name,
                 DataItem = field.DataItem

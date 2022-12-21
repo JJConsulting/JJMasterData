@@ -11,7 +11,6 @@ using System;
 using System.Collections;
 using System.Text;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -23,16 +22,18 @@ internal class ActionManager
     public FormElement FormElement { get; private set; }
 
     public ExpressionManager Expression { get; private set; }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
 
     public string ComponentName { get; set; }
 
     internal IEntityRepository EntityRepository => Expression.EntityRepository; 
 
 
-    public ActionManager(FormElement formElement, ExpressionManager expression, string panelName)
+    public ActionManager(FormElement formElement, ExpressionManager expression, IDataDictionaryRepository dataDictionaryRepository, string panelName)
     {
         FormElement = formElement;
         Expression = expression;
+        DataDictionaryRepository = dataDictionaryRepository;
         ComponentName = panelName;   
     }
 
@@ -40,11 +41,10 @@ internal class ActionManager
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var dicParser = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
-        string popUpTitle = dicParser.Form.Title;
+        var metadata = DataDictionaryRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
+        string popUpTitle = metadata.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
-        string popup = "true";
+        const string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;
 
         var @params = new StringBuilder();

@@ -6,6 +6,8 @@ using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
 using System.Globalization;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -20,6 +22,8 @@ public class FieldManager
     /// </summary>
     public FormElement FormElement { get; set; }
 
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
@@ -29,9 +33,10 @@ public class FieldManager
 
     #region "Constructors"
 
-    public FieldManager(FormElement formElement, ExpressionManager expression)
+    public FieldManager(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, ExpressionManager expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        DataDictionaryRepository = dataDictionaryRepository;
         Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         Name = "jjpainel_" + formElement.Name.ToLower();
     }
@@ -85,33 +90,37 @@ public class FieldManager
             return "";
 
         string sVal;
-        if (field.Component == FormComponent.ComboBox
-            && field.DataItem != null
-            && (field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend))
+        switch (field.Component)
         {
-            var cbo = (JJComboBox)GetField(field, PageState.List, values, value);
-            sVal = cbo.GetDescription() ?? value.ToString();
-        }
-        else if (field.Component == FormComponent.Lookup
-                 && field.DataItem is { ReplaceTextOnGrid: true })
-        {
-            var lookup = (JJLookup)GetField(field, PageState.List, values, value);
-            sVal = lookup.GetDescription() ?? value.ToString();
-        }
-        else if (field.Component == FormComponent.CheckBox)
-        {
-            sVal = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
-        }
-        else if (field.Component == FormComponent.Search
-                 && field.DataItem is { ReplaceTextOnGrid: true })
-        {
-            var search = (JJSearchBox)GetField(field, PageState.List, values, value);
-            search.AutoReloadFormFields = false;
-            sVal = search.GetDescription(value.ToString()) ?? value.ToString();
-        }
-        else
-        {
-            sVal = FormatVal(field, value);
+            case FormComponent.ComboBox 
+            when field.DataItem != null 
+                 && (field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend):
+            {
+                var cbo = (JJComboBox)GetField(field, PageState.List, values, value);
+                sVal = cbo.GetDescription() ?? value.ToString();
+                break;
+            }
+            case FormComponent.Lookup 
+                 when field.DataItem is { ReplaceTextOnGrid: true }:
+            {
+                var lookup = (JJLookup)GetField(field, PageState.List, values, value);
+                sVal = lookup.GetDescription() ?? value.ToString();
+                break;
+            }
+            case FormComponent.CheckBox:
+                sVal = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
+                break;
+            case FormComponent.Search 
+                 when field.DataItem is { ReplaceTextOnGrid: true }:
+            {
+                var search = (JJSearchBox)GetField(field, PageState.List, values, value);
+                search.AutoReloadFormFields = false;
+                sVal = search.GetDescription(value.ToString()) ?? value.ToString();
+                break;
+            }
+            default:
+                sVal = FormatVal(field, value);
+                break;
         }
 
         return sVal ?? "";
@@ -193,7 +202,7 @@ public class FieldManager
         }
         
         var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
-        var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
+        var controlFactory = new WebControlFactory(FormElement,Expression.EntityRepository,DataDictionaryRepository, Expression, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);
     }

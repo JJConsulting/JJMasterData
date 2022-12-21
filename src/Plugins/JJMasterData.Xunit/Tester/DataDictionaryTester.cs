@@ -3,10 +3,8 @@ using System.Data;
 using AutoFixture;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 
@@ -21,13 +19,13 @@ internal class DataDictionaryTester : IDataDictionaryTester
     public string DictionaryName { get; }
     public string? UserId { get; }
     
-    public DataDictionaryTester(Metadata metadata, string? userId = null)
+    public DataDictionaryTester(Metadata metadata, IEntityRepository entityRepository, IFormEventResolver formEventResolver, string? userId = null)
     {
         DictionaryName = metadata.Table.Name;
         UserId = userId;
         
-        _entityRepository = JJService.EntityRepository;
-        _formEventResolver = JJServiceCore.FormEventResolver;
+        _entityRepository = entityRepository;
+        _formEventResolver = formEventResolver;
         _formService = GetFormService(metadata);
     }
    

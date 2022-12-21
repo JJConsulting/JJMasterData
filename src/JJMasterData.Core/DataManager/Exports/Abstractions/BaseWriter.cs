@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
@@ -16,6 +17,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.WebComponents;
 
@@ -23,6 +25,8 @@ namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
 public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 {
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public IEntityRepository EntityRepository { get; }
 
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
@@ -60,12 +64,11 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            if (_fieldManager == null)
-            {
-                var expressionManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
-                _fieldManager = new FieldManager(FormElement, expressionManager);
-            }
-                
+            if (_fieldManager != null) 
+                return _fieldManager;
+            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository);
+            _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, expressionManager);
+
 
             return _fieldManager;
         }
@@ -136,8 +139,10 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     #endregion
 
 
-    public BaseWriter()
+    public BaseWriter(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository)
     {
+        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = entityRepository;
         CurrentFilter = new Hashtable();
     }
 
@@ -237,7 +242,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = new JJTextFile
+        var textFile = new JJTextFile(DataDictionaryRepository, EntityRepository)
         {
             FormElement = FormElement,
             ElementField = field,

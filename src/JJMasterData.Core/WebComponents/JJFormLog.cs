@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
+using JJMasterData.Core.DataDictionary.Repository;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -41,41 +42,30 @@ public class JJFormLog : JJBaseView
     /// </summary>
     internal JJDataPanel DataPainel
     {
-        get
-        {
-            if (_dataPainel == null)
+        get =>
+            _dataPainel ??= new JJDataPanel(FormElement, DataDictionaryRepository, EntityRepository)
             {
-                _dataPainel = new JJDataPanel(FormElement)
-                {
-                    Name = "jjpainellog_" + Name,
-                    EntityRepository = EntityRepository,
-                };
-            }
-
-            return _dataPainel;
-        }
-        set { _dataPainel = value; }
+                Name = "jjpainellog_" + Name
+            };
+        set => _dataPainel = value;
     }
+
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
 
     public FormElement FormElement { get; private set; }
 
     internal IEntityRepository EntityRepository { get; private set; }
 
-    private JJFormLog()
+    private JJFormLog(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository)
     {
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
         Name = "loghistory";
     }
 
-    public JJFormLog(FormElement formElement, IEntityRepository entityRepository) : this()
+    public JJFormLog(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(entityRepository, dataDictionaryRepository)
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        if (entityRepository == null)
-            throw new ArgumentNullException(nameof(entityRepository));
-
-        FormElement = formElement;
-        EntityRepository = entityRepository;
+        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -240,7 +230,7 @@ public class JJFormLog : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(Service.GetFormElement());
+        var grid = new JJGridView(Service.GetFormElement(), DataDictionaryRepository, EntityRepository);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(AuditLogService.DIC_NAME, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DIC_MODIFIED + " DESC";

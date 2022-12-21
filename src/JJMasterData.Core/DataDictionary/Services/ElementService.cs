@@ -21,6 +21,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ElementService : BaseService
 {
     private readonly IEntityRepository _entityRepository;
+
     public ElementService(IValidationDictionary validationDictionary, 
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
@@ -118,8 +119,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var dataAccess = JJService.EntityRepository;
-            if (!dataAccess.TableExists(tableName))
+            if (!_entityRepository.TableExists(tableName))
                 AddError("Name", Translate.Key("Table not found"));
 
         }
@@ -198,17 +198,17 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
         
-        var gridView = new JJGridView(formElement)
+        var gridView = new JJGridView(formElement,DataDictionaryRepository,_entityRepository)
         {
             Name = "List",
             FilterAction =
             {
                 ExpandedByDefault = true
-            }
+            },
+            MaintainValuesOnLoad = true,
+            EnableMultSelect = true
         };
-        
-        gridView.MaintainValuesOnLoad = true;
-        gridView.EnableMultSelect = true;
+
         gridView.ExportAction.SetVisible(false);
         
         if (!gridView.CurrentFilter.ContainsKey("type"))

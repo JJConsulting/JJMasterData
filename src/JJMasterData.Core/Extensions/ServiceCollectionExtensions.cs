@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using JJMasterData.Commons.Options;
+using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.Extensions;
 
@@ -39,8 +41,18 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(this IServiceCollection services)
     {
+        services.AddFactories();
         services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+    }
+
+    private static void AddFactories(this IServiceCollection services)
+    {
+        services.AddTransient<DataImpFactory>();
+        services.AddTransient<DataPanelFactory>();
+        services.AddTransient<FormViewFactory>();
+        services.AddTransient<GridViewFactory>();
+        services.AddTransient<WebComponentFactory>();
     }
 }

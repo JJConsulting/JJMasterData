@@ -7,16 +7,19 @@ using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JJMasterData.Commons.Dao;
 
 namespace JJMasterData.Core.WebComponents;
 
 internal class DataImpHelp
 {
     public JJDataImp DataImp { get; private set; }
+    public IEntityRepository EntityRepository { get; }
 
-    internal DataImpHelp(JJDataImp dataImp)
+    internal DataImpHelp(JJDataImp dataImp, IEntityRepository entityRepository)
     {
         DataImp = dataImp;
+        EntityRepository = entityRepository;
     }
 
     public HtmlBuilder GetHtmlHelp()
@@ -249,7 +252,7 @@ internal class DataImpHelp
         var userValues = DataImp.ExpressionManager.UserValues;
         var entityrepository = DataImp.ExpressionManager.EntityRepository;
         var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
-        var cbo = JJComboBox.GetInstance(f, expOptions, null);
+        var cbo = JJComboBox.GetInstance(f,EntityRepository, expOptions, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)
             return string.Empty;

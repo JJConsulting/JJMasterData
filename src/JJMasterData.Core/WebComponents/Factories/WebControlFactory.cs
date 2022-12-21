@@ -1,35 +1,21 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents.Args;
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.FormEvents.Args;
 
-namespace JJMasterData.Core.WebComponents;
+namespace JJMasterData.Core.WebComponents.Factories;
 
 internal class WebControlFactory
 {
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
 
-    private ActionManager _actionManager;
-
-    internal ActionManager ActionManager
-    {
-        get
-        {
-            if (_actionManager != null) 
-                return _actionManager;
-            
-            var expManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
-            _actionManager = new ActionManager(FormElement, expManager, PanelName);
-
-            return _actionManager;
-        }
-        private set => _actionManager = value;
-    }
+    internal ActionManager ActionManager { get; }
 
     public string PanelName { get; private set; }
 
@@ -37,19 +23,43 @@ internal class WebControlFactory
 
     public FormElement FormElement { get; set; }
 
-    public WebControlFactory(JJDataPanel dataPanel)
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public IEntityRepository EntityRepository { get; }
+    
+    public WebControlTextFactory WebControlTextFactory { get; }
+    
+    public WebControlFactory(
+        JJDataPanel dataPanel, 
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository)
     {
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
+        ActionManager = new ActionManager(dataPanel.FormElement,
+            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository), dataDictionaryRepository,
+            dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
         PanelName = dataPanel.Name;
-        ExpressionOptions = new ExpressionOptions(dataPanel.UserValues, dataPanel.Values, dataPanel.PageState, dataPanel.EntityRepository);
+        WebControlTextFactory = new WebControlTextFactory();
+        ExpressionOptions = new ExpressionOptions(dataPanel.UserValues, dataPanel.Values, dataPanel.PageState,
+            dataPanel.EntityRepository);
     }
 
-    public WebControlFactory(FormElement formElement, ExpressionOptions expressionOptions, string panelName)
+    public WebControlFactory(
+        FormElement formElement, 
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        ExpressionManager expressionManager,
+        ExpressionOptions expressionOptions, string panelName)
     {
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
         FormElement = formElement;
         ExpressionOptions = expressionOptions;
         PanelName = panelName;
+        WebControlTextFactory = new WebControlTextFactory();
+        ActionManager = new ActionManager(FormElement, expressionManager, dataDictionaryRepository, panelName);
     }
 
     public JJBaseControl CreateControl(FormElementField f, object value)
@@ -61,13 +71,13 @@ internal class WebControlFactory
         switch (f.Component)
         {
             case FormComponent.ComboBox:
-                baseView = JJComboBox.GetInstance(f, ExpressionOptions, value);
+                baseView = JJComboBox.GetInstance(f,EntityRepository, ExpressionOptions, value);
                 break;
             case FormComponent.Search:
                 baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.Lookup:
-                baseView = JJLookup.GetInstance(f, ExpressionOptions, value, PanelName);
+                baseView = JJLookup.GetInstance(f, DataDictionaryRepository, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.CheckBox:
                 baseView = JJCheckBox.GetInstance(f, value);
@@ -89,12 +99,13 @@ internal class WebControlFactory
                 }
                 else
                 {
-                    var textFile = JJTextFile.GetInstance(FormElement, f, ExpressionOptions, value, PanelName);
+                    var textFile = JJTextFile.GetInstance(FormElement, f, DataDictionaryRepository, ExpressionOptions, value, PanelName);
                     baseView = textFile;
                 }
+
                 break;
             default:
-                var textGroup = WebControlTextFactory.CreateTextGroup(f,  value);
+                var textGroup = WebControlTextFactory.CreateTextGroup(f, value);
 
 
                 if (ExpressionOptions.PageState == PageState.Filter)
@@ -120,20 +131,19 @@ internal class WebControlFactory
     private void AddUserActions(JJTextGroup textGroup, FormElementField f)
     {
         var actions = f.Actions.GetAll().FindAll(x => x.IsVisible);
-        foreach (BasicAction action in actions)
+        foreach (var action in actions)
         {
-            var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState, PanelName);
+            var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState,
+                PanelName);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
                 var args = new ActionEventArgs(action, link, ExpressionOptions.FormValues);
                 onRender.Invoke(this, args);
             }
+
             if (link != null)
                 textGroup.Actions.Add(link);
         }
     }
-
 }
-
-

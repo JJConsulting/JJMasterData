@@ -6,6 +6,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -15,64 +16,65 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 [Area("MasterData")]
 public class InternalRedirectController : MasterDataController
 {
+    public WebComponentFactory ComponentFactory { get; }
     private string? _dictionaryName;
     private RelationType _relationType;
     private Hashtable? _relationValues;
+
+    public InternalRedirectController(WebComponentFactory componentFactory)
+    {
+        ComponentFactory = componentFactory;
+    }
 
     public ActionResult Index(string parameters)
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
         bool isAjax = HttpContext.Request.Query.ContainsKey("uploadValues");
-        
+
         InternalRedirectViewModel model;
-        
+
         switch (_relationType)
         {
             case RelationType.List:
+            {
+                var form = ComponentFactory.CreateFormView(_dictionaryName);
+                form.RelationValues = _relationValues;
+
+                if (userId != null)
                 {
-                    var form = new JJFormView(_dictionaryName)
-                    {
-                        RelationValues = _relationValues
-                    };
-
-                    if (userId != null)
-                    {
-                        form.SetUserValues("USERID", userId);
-                        form.SetCurrentFilter("USERID", userId);
-                    }
-
-                    model = new(form.GetHtml(), false);
-                    break;
+                    form.SetUserValues("USERID", userId);
+                    form.SetCurrentFilter("USERID", userId);
                 }
+
+                model = new(form.GetHtml(), false);
+                break;
+            }
             case RelationType.View:
-                {
-                    var panel = new JJDataPanel(_dictionaryName)
-                    {
-                        PageState = PageState.View
-                    };
-                    if (userId != null)
-                        panel.SetUserValues("USERID", userId);
+            {
+                var panel = ComponentFactory.CreateDataPanel(_dictionaryName);
+                panel.PageState = PageState.View;
+                
+                if (userId != null)
+                    panel.SetUserValues("USERID", userId);
 
-                    panel.LoadValuesFromPK(_relationValues);
+                panel.LoadValuesFromPK(_relationValues);
 
-                    model = new(panel.GetHtml(), false);
-                    break;
-                }
+                model = new InternalRedirectViewModel(panel.GetHtml(), false);
+                break;
+            }
             case RelationType.Update:
-                {
-                    var panel = new JJDataPanel(_dictionaryName)
-                    {
-                        PageState = PageState.Update
-                    };
-                    if (userId != null)
-                        panel.SetUserValues("USERID", userId);
+            {
+                var panel = ComponentFactory.CreateDataPanel(_dictionaryName);
+                panel.PageState = PageState.Update;
+                if (userId != null)
+                    panel.SetUserValues("USERID", userId);
 
-                    panel.LoadValuesFromPK(_relationValues);
+                panel.LoadValuesFromPK(_relationValues);
 
-                    model = new(panel.GetHtml(), !isAjax);
-                    break;
-                }
+                model = new(panel.GetHtml(), !isAjax);
+                break;
+            }
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -87,10 +89,8 @@ public class InternalRedirectController : MasterDataController
 
         var userId = HttpContext.GetUserId();
 
-        var panel = new JJDataPanel(_dictionaryName)
-        {
-            PageState = PageState.Update
-        };
+        var panel = ComponentFactory.CreateDataPanel(_dictionaryName);
+        panel.PageState = PageState.Update;
 
         panel.LoadValuesFromPK(_relationValues);
         if (userId != null)

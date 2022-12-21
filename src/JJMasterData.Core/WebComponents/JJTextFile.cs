@@ -8,7 +8,9 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Web;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary.Repository;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -17,7 +19,13 @@ public class JJTextFile : JJBaseControl
     private const string UploadFormParameterName = "jjuploadform_";
     private Hashtable _formValues;
     private FormFilePathBuilder _pathBuiler;
-    
+
+    public JJTextFile(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepositoryRepository)
+    {
+        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = entityRepositoryRepository;
+    }
+
     public Hashtable FormValues
     {
         get => _formValues ??= new Hashtable();
@@ -46,9 +54,12 @@ public class JJTextFile : JJBaseControl
             return _pathBuiler;
         }
     }
+    
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public IEntityRepository EntityRepository { get; }
 
     internal static JJTextFile GetInstance(FormElement formElement,
-        FormElementField field, ExpressionOptions expOptions, object value, string panelName)
+        FormElementField field,IDataDictionaryRepository dataDictionaryRepository, ExpressionOptions expOptions, object value, string panelName)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -56,7 +67,7 @@ public class JJTextFile : JJBaseControl
         if (field.DataFile == null)
             throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
 
-        var text = new JJTextFile
+        var text = new JJTextFile(dataDictionaryRepository,expOptions.EntityRepository)
         {
             ElementField = field,
             PageState = expOptions.PageState,
@@ -206,7 +217,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload();
+        var form = new JJFormUpload(DataDictionaryRepository, EntityRepository);
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -227,6 +238,7 @@ public class JJTextFile : JJBaseControl
 
         return form;
     }
+
 
     private bool HasPk()
     {

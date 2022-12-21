@@ -7,6 +7,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.WebComponents;
@@ -18,7 +19,12 @@ public abstract class JJBaseProcess : JJBaseView
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private ExpressionManager _expressionManager;
-    IEntityRepository _entityRepository;
+
+    protected JJBaseProcess(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    {
+        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = entityRepository;
+    }
 
     internal ExpressionManager ExpressionManager
     {
@@ -31,20 +37,8 @@ public abstract class JJBaseProcess : JJBaseView
         }
     }
 
-    internal IEntityRepository EntityRepository
-    {
-        get
-        {
-            if (_entityRepository == null)
-                _entityRepository = JJService.EntityRepository;
-
-            return _entityRepository;
-        }
-        set
-        {
-            _entityRepository = value;
-        }
-    }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IEntityRepository EntityRepository { get; }
 
     internal string ProcessKey
     {
@@ -69,16 +63,8 @@ public abstract class JJBaseProcess : JJBaseView
     public FormElement FormElement { get; set; }
 
 
-    internal FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement, ExpressionManager);
-
-            return _fieldManager;
-        }
-    }
+    internal FieldManager FieldManager =>
+        _fieldManager ??= new FieldManager(FormElement, DataDictionaryRepository, ExpressionManager);
 
     internal FormManager FormManager
     {
@@ -128,10 +114,10 @@ public abstract class JJBaseProcess : JJBaseView
             var error = new StringBuilder();
             error.AppendLine(Translate.Key("User not found, contact system administrator."));
             error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
-            
+
             var exception = new JJMasterDataException(error.ToString());
             Log.AddError(exception, exception.Message);
-            
+
             throw exception;
         }
 
@@ -139,5 +125,4 @@ public abstract class JJBaseProcess : JJBaseView
 
         return processKey.ToString();
     }
-
 }

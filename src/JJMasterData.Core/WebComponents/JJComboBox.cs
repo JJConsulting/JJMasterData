@@ -20,16 +20,9 @@ public class JJComboBox : JJBaseControl
     private IList<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
-    private IEntityRepository _entityRepository;
-
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
-
+    
+    internal IEntityRepository EntityRepository { get; private set; }
     internal Hashtable FormValues { get; private set; }
-
     internal PageState PageState { get; set; }
 
     public bool EnableSearch { get; set; }
@@ -59,20 +52,21 @@ public class JJComboBox : JJBaseControl
         set => _selectedValue = value;
     }
 
-    public JJComboBox()
+    public JJComboBox(IEntityRepository entityRepository)
     {
+        EntityRepository = entityRepository;
         Enabled = true;
         MultiSelect = false;
     }
 
 
-    internal static JJComboBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value)
+    internal static JJComboBox GetInstance(FormElementField field,IEntityRepository repository,  ExpressionOptions expOptions, object value)
     {
-        var cbo = new JJComboBox
+        var cbo = new JJComboBox(repository)
         {
-            Name = f.Name,
+            Name = field.Name,
             Visible = true,
-            DataItem = f.DataItem,
+            DataItem = field.DataItem,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
             UserValues = expOptions.UserValues,
@@ -102,12 +96,8 @@ public class JJComboBox : JJBaseControl
             combobox.AppendRange(GetReadOnlyInputs(values));
             return combobox;
         }
-        else
-        {
-            return GetSelectElement(values);
-        }
 
-
+        return GetSelectElement(values);
     }
 
     private HtmlBuilder GetSelectElement(IEnumerable<DataItemValue> values)

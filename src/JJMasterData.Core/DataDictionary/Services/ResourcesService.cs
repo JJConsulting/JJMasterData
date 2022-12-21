@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    public FormViewFactory FormViewFactory { get; }
+
+    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, FormViewFactory formViewFactory)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        FormViewFactory = formViewFactory;
     }
 
     public JJFormView GetFormView(IList<CultureInfo> supportedCultures)
@@ -27,7 +32,7 @@ public class ResourcesService : BaseService
             SubTitle = "Languages"
         };
 
-        var formView = new JJFormView(formElement);
+        var formView = FormViewFactory.CreateFormView(formElement);
         
         formView.ImportAction.SetVisible(true);
         formView.ViewAction.SetVisible(false);

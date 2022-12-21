@@ -7,9 +7,12 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -29,23 +32,18 @@ public class JJDataPanel : JJBaseView
 
     private FieldManager _fieldManager;
     private UIForm _uiFormSettings;
-    private IEntityRepository _entityRepository;
-
-    public IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        set => _entityRepository = value;
-    }
-
+    public IEntityRepository EntityRepository { get; }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
     internal FieldManager FieldManager
     {
         get
         {
-            if (_fieldManager == null)
-            {
-                var expression = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement, expression);
-            }
+            if (_fieldManager != null) 
+                return _fieldManager;
+            
+            var expression = new ExpressionManager(UserValues, EntityRepository);
+            
+            _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, expression);
             return _fieldManager;
         }
     }
@@ -56,17 +54,8 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public UIForm UISettings
     {
-        get
-        {
-            if (_uiFormSettings == null)
-                _uiFormSettings = new UIForm();
-
-            return _uiFormSettings;
-        }
-        internal set
-        {
-            _uiFormSettings = value;
-        }
+        get => _uiFormSettings ??= new UIForm();
+        internal set => _uiFormSettings = value;
     }
 
     /// <summary>
@@ -106,25 +95,33 @@ public class JJDataPanel : JJBaseView
 
     #region "Constructors"
 
-    internal JJDataPanel()
+    internal JJDataPanel(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
     {
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
         Values = new Hashtable();
         Errors = new Hashtable();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
 
-    public JJDataPanel(string elementName) : this()
+
+    [Obsolete("Please use DataPanelFactory by constructor injection.")]
+    public JJDataPanel(string elementName)
     {
-        DataPanelFactory.SetDataPanelParams(this, elementName);
+        var factory = JJService.Provider.GetRequiredService<DataPanelFactory>();
+        factory.SetDataPanelParams(this, elementName);
     }
 
-    public JJDataPanel(FormElement formElement) : this()
+    public JJDataPanel(FormElement formElement, IDataDictionaryRepository dataDictionaryRepository,
+        IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
     {
-        DataPanelFactory.SetDataPanelParams(this, formElement);   
+        var factory = new DataPanelFactory(DataDictionaryRepository, EntityRepository);
+        factory.SetDataPanelParams(this, formElement);   
     }
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState) : this(formElement)
+    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState,
+        IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(formElement, dataDictionaryRepository, entityRepository)
     {
         Values = values;
         Errors = errors;

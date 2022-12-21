@@ -15,14 +15,7 @@ public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
-    public static IEntityRepository EntityRepository
-    {
-        get
-        {
-            using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<IEntityRepository>();
-        }
-    }
+
     
     public static JJMasterDataOptions Options
     {

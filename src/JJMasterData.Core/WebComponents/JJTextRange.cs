@@ -4,6 +4,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -27,7 +28,7 @@ public class JJTextRange : JJBaseControl
         
         var range = new JJTextRange();
         range.FieldType = field.DataType;
-        range.FromField = WebControlTextFactory.CreateTextGroup(field);
+        range.FromField = new WebControlTextFactory().CreateTextGroup(field);
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = Translate.Key("From");
@@ -38,7 +39,7 @@ public class JJTextRange : JJBaseControl
             valueTo = values[field.Name + "_to"].ToString();
         }
         
-        range.ToField = WebControlTextFactory.CreateTextGroup(field);
+        range.ToField = new WebControlTextFactory().CreateTextGroup(field);
         range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
         range.ToField.PlaceHolder = Translate.Key("To");

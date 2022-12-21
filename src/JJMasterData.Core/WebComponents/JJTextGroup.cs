@@ -2,6 +2,7 @@
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -28,7 +29,7 @@ public class JJTextGroup : JJTextBox
 
     public static JJTextGroup GetInstance(FormElementField f, string name = null)
     {
-        return WebControlTextFactory.CreateTextGroup(f, name);
+        return new WebControlTextFactory().CreateTextGroup(f, name);
     }
 
     internal override HtmlBuilder RenderHtml()

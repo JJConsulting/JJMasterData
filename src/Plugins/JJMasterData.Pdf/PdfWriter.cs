@@ -16,9 +16,12 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
@@ -35,6 +38,10 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
+    public PdfWriter(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
+    {
+    }
+    
     public override void GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
@@ -304,5 +311,4 @@ public class PdfWriter : BaseWriter, IPdfWriter
         resFilestream.Read(ba, 0, ba.Length);
         return ba;
     }
-    
 }

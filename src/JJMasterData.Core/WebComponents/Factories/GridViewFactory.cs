@@ -1,27 +1,34 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using System;
+using JJMasterData.Commons.Dao;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Http;
-using System;
-using JJMasterData.Core.DI;
 
-namespace JJMasterData.Core.WebComponents
+namespace JJMasterData.Core.WebComponents.Factories
 {
-    internal static class GridViewFactory
+    public class GridViewFactory
     {
-        public static JJGridView CreateGridView(string elementName)
+        public IDataDictionaryRepository DataDictionaryRepository { get; }
+        public IEntityRepository EntityRepository { get; }
+
+        public GridViewFactory(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
         {
-            var grid = new JJGridView();
+            DataDictionaryRepository = dataDictionaryRepository;
+            EntityRepository = entityRepository;
+        }
+        public JJGridView CreateGridView(string elementName)
+        {
+            var grid = new JJGridView(DataDictionaryRepository, EntityRepository);
             SetGridViewParams(grid, elementName);
             return grid;
         }
 
-        internal static void SetGridViewParams(JJGridView grid, string elementName)
+        internal void SetGridViewParams(JJGridView grid, string elementName)
         {
             if (string.IsNullOrEmpty(elementName))
-                throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
+                throw new ArgumentNullException(nameof(elementName), "elementName cannot be null.");
 
-            var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
-            var metadata = dictionaryRepository.GetMetadata(elementName);
+            var metadata = DataDictionaryRepository.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = metadata.GetFormElement();
             SetGridOptions(grid, metadata.UIOptions.Grid);

@@ -1,7 +1,9 @@
 using AutoFixture;
-using JJMasterData.Xunit.Assertions;
 using System.Collections;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Xunit.Validators;
 
 namespace JJMasterData.Xunit.Test;
 
@@ -9,16 +11,19 @@ public class AssertTest
 {
     private readonly IDataDictionaryRepository _dictionaryRepository;
 
-    public AssertTest(IDataDictionaryRepository dictionaryRepository)
+    private readonly MetadataValidator _validator;
+    
+    public AssertTest(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository, IFormEventResolver formEventResolver)
     {
         _dictionaryRepository = dictionaryRepository;
+        _validator = new MetadataValidator(entityRepository, formEventResolver);
     }
 
     [Fact]
     public void AssertDataDictionaryWithDefaultValuesTest()
     {
         var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
-        metadata.AssertAllOperations();
+        _validator.AssertAllOperations(metadata);
     }
     
     [Fact]
@@ -27,7 +32,7 @@ public class AssertTest
         var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
         var id = new Fixture().Create<int>();
 
-        metadata.AssertAllOperations(options =>
+        _validator.AssertAllOperations(metadata, options =>
         {
             options.InsertValues = new Hashtable
             {

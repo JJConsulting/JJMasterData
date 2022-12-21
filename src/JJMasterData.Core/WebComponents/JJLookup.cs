@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -12,7 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Core.DI;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -26,14 +24,8 @@ public class JJLookup : JJBaseControl
     private string _text;
     private FormElementDataItem _dataItem;
     private ExpressionManager _expressionManager;
-    private IEntityRepository _entityRepository;
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
-
+    internal IEntityRepository EntityRepository { get; private set; }
     internal ExpressionManager ExpressionManager
     {
         get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
@@ -105,8 +97,11 @@ public class JJLookup : JJBaseControl
 
     #region "Constructors"
 
-    public JJLookup()
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    
+    public JJLookup(IDataDictionaryRepository dataDictionaryRepository)
     {
+        DataDictionaryRepository = dataDictionaryRepository;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
@@ -115,9 +110,9 @@ public class JJLookup : JJBaseControl
         PopTitle = "Search";
     }
 
-    internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
+    internal static JJLookup GetInstance(FormElementField f,IDataDictionaryRepository repository,  ExpressionOptions expOptions, object value, string panelName)
     {
-        var search = new JJLookup();
+        var search = new JJLookup(repository);
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
         search.SelectedValue = value?.ToString();
@@ -306,11 +301,11 @@ public class JJLookup : JJBaseControl
 
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(searchId));
 
-        var dicDao = JJServiceCore.DataDictionaryRepository;
         Hashtable fields;
         try
         {
-            var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
+            IDataDictionaryRepository repository = DataDictionaryRepository;
+            var dictionary = repository.GetMetadata(DataItem.ElementMap.ElementName);
             var entityRepository = ExpressionManager.EntityRepository;
             fields = entityRepository.GetFields(dictionary.Table, filters);
         }

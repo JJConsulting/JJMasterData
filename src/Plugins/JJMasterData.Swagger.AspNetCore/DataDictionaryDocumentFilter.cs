@@ -3,9 +3,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
@@ -16,7 +14,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
     public DataDictionaryDocumentFilter()
     {
-        _dataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
+        _dataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
     }
 
     public void Apply(OpenApiDocument document, DocumentFilterContext context)

@@ -3,9 +3,11 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
@@ -171,5 +173,9 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             sw.WriteLine("</td>");
         }
         sw.WriteLine("\t\t\t</tr>");
+    }
+
+    public ExcelWriter(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
+    {
     }
 }

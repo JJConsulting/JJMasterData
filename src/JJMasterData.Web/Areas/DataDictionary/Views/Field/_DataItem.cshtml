@@ -1,5 +1,6 @@
-﻿@model FormElementField
-
+﻿@using JJMasterData.Commons.Dao
+@model FormElementField
+@inject IEntityRepository EntityRepository
 
 @{
     bool showImage = Model.DataItem.ShowImageLegend;
@@ -203,14 +204,14 @@
                         <td>
                             @{
                                 var iconId = "DataItem.Items[" + i + "].Icon";
-                                var searchBox = new JJSearchBox
+                                var searchBox = new JJSearchBox(EntityRepository)
                                 {
                                     DataItem =
                                     {
                                         ShowImageLegend = true,
                                         Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
                                     },
-                                    SelectedValue = (Model.DataItem.Items[i].Id).ToString(),
+                                    SelectedValue = Model.DataItem.Items[i].Id,
                                     Name = iconId
                                 };
                             }

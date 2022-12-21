@@ -21,7 +21,6 @@ public class ExpressionManager
     #region "Properties"
 
     private JJHttpContext _currentContext;
-    private IEntityRepository _entityRepository;
 
     internal JJHttpContext CurrentContext
     {
@@ -29,11 +28,7 @@ public class ExpressionManager
         set => _currentContext = value;
     } 
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        set => _entityRepository = value;
-    }
+    internal IEntityRepository EntityRepository { get; }
 
     public Hashtable UserValues { get; set; }
 

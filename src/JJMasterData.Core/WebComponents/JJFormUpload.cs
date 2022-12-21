@@ -15,8 +15,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Core.DataDictionary.Repository;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -30,6 +32,8 @@ namespace JJMasterData.Core.WebComponents;
 /// <seealso cref="JJUploadArea"/>
 public class JJFormUpload : JJBaseView
 {
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public IEntityRepository EntityRepository { get; }
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
     private const string Size = "Size";
@@ -108,7 +112,7 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView
+            _gridView = new JJGridView(DataDictionaryRepository, EntityRepository)
             {
                 Name = Name + "_gridview",
                 UserValues = UserValues,
@@ -203,8 +207,10 @@ public class JJFormUpload : JJBaseView
         }
     }
 
-    public JJFormUpload()
+    public JJFormUpload(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
     {
+        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = entityRepository;
         Name = "jjuploadform1";
         ShowAddFile = true;
         ExpandedByDefault = true;

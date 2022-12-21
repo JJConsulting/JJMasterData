@@ -1,7 +1,8 @@
 ﻿
 @using JJMasterData.Web.Extensions
+@using JJMasterData.Commons.Dao
 @model JJMasterData.Core.DataDictionary.Action.BasicAction
-
+@inject IEntityRepository EntityRepository
 
 <script lang="javascript" type="text/javascript">
         function setIconValue(fieldid, cod, description) {
@@ -24,7 +25,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
         @{
-            var searchBox = new JJSearchBox
+            var searchBox = new JJSearchBox(EntityRepository)
             {
                 DataItem =
                 {
