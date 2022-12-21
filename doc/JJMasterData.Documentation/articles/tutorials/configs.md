@@ -1,64 +1,63 @@
-**ShowTitle:** Show title in page header
+# Options
+
+## **ShowTitle:** Show title in page header
 A ativação dessa configuração permitirá a exibição do título e subtítulo preenchidos dentro da aba Entity
 
-ShowTitleON.png
-ShowTitleOFF.png
+![ShowTitleOn](../../media/ShowTitleON.png)
+![ShowTitleOFF](../../media/ShowTitleOFF.png)
 
-**Enable MultiSelect:**
+## **Enable MultiSelect:**
 Nesta opção será necessário que você selecione uma Chave primária para utiliza-lo.
 
-EnableMultiSelectON.png
-EnableMultiSelectOFF.png
+![EnableMultiSelectON.png](../../media/EnableMultiSelectON.png)
+![EnableMultiSelectOFF.png](../../media/EnableMultiSelectOFF.png)
 
-**ShowRowStriped:**
+## **ShowRowStriped:**
 Ao ativar está opção, a grid da sua tabela será exibida de forma zebrada.
 
-CfgShowRowStripeON.png - verificar a ativação da config
-CfgShowRowStripeOFF.png
+![ShowRowStripeON.png](../../media/ShowRowStripedON.png)
+![ShowRowStripeOFF.png](../../media/ShowRowStripedOFF.png)
 
-**ShowPagging:**
+## **ShowPagging:**
 Dentro das configurações para sua tabela, Irá habilitar a opção para mudar a quantidade de itens a serem exibidos.
 
-ShowPaggingON.png
-ShowPaggingOFF.png
+![ShowPaggingON.png](../../media/ShowPaggingON.png)
+![ShowPaggingOFF.png](../../media/ShowPaggingOFF.png)
 
-**ShowHeaderWhenEmpty:**
+## **ShowHeaderWhenEmpty:**
 Define se será exibido o cabeçalho quando não há resposta de nenhum item dentro da tabela
 
-ShowHeaderWhenEmptyON.png
-ShowHeaderWhenEmptyOFF.png 
+![ShowHeaderWhenEmptyON.png](../../media/ShowHeaderWhenEmptyON.png)
+![ShowHeaderWhenEmptyOFF.png](../../media/ShowHeaderWhenEmptyOFF.png)
 
-**Header Fixed:**
+## **Header Fixed:**
 Irá manter o cabeçalho fixo ao visualizar os itens mais abaixos
 
-Aguardar corrigir o problema de upload para testar
+Verificar e publicar
 
-**EnableAjax:**
+## **EnableAjax:**
 
 //
 
-**MaintainValuesOnLoad:**
-Essa opção irá garantir que a sua busca através do filtro seja salva ao recarregar a página.
+## **MaintainValuesOnLoad:**
+Essa opção irá garantir que a sua busca através do filtro seja salva ao recarregar a página, sendo busca de filtros ou opções de configurações.
 
-MaintainValuesOnLoadON.png
+![MaintainValuesOnLoadON.png](../../media/MaintainValuesOnLoadON.png)
 
-**ShowBorder:**
+## **ShowBorder:**
 Está configuração será utilizada para  exibir a delimitação em volta dos itens presentes na tabela.
 
-Dúvida: Configurações que possuem ativação interna e via preview, qual deve ser respeita? Uma irá influenciar na outra?
+![ShowBorderON.png](../../media/ShowBorderON.png)
+![ShowBorderOFF.png](../../media/ShowBorderOFF.png)
 
-ShowBorderON.png
-ShowBorderOFF.png
+## **EnableSorting:**
+Está configuração irá permitir que os itens da sua tabela sejam ordenados de crescente ou descrecente.
 
-**EnableSorting:**
-Está configuração irá permitir que o título seja exibido para maior organização e ordenação.
+![EnableSortingON.png](../../media/EnableSortingON.png)
+![EnableSortingOFF.png](../../media/EnableSortingOFF.png)
 
-Verificar a funcionalidade se está 100% - precisará refazer a imagens ON
-EnableSortingON.png
-EnableSortingOFF.png
+## **ShowToolbar:**
+A ativação da configuração de ShowToolbar irá habilitar o menu de opções na parte superior da sua tabela. Os itens a serem adicionados ou removidos podem ser visualizados dentro de aba *Action* e em seguida *Toolbar*
 
-**ShowToolbar:**
-A ativação da configuração de ShowToolbar irá habilitar o menu de opções na parte superior da sua tabela. Os itens a serem adicionados e removidos serão refresh, import, export e options.
-
-ShowToolbarON.png
-ShowToolbarOFF.png
+![ShowToolbarON.png](../../media/ShowToolbarON.png)
+![ShowToolbarOFF.png](../../media/ShowToolbarOFF.png)

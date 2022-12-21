@@ -11,37 +11,35 @@ O ícone New irá permitir que você faça a criação das suas tabelas de acord
 
 Com o JJMasterData será possível fazer a importação ou criação da sua tabela e a organização da mesma para dicionários e posteriormente exibidos em metadados.
 
-TUTORIAL SEM TABELA
-
 Para a criação da estrutura de dados direto pelo JJMasterData será necessário deixar o campo “import field” desmarcado, inserir o nome da tabela a ser criada e clicar em Next. Preenchido o campo Table Name e clicado em Next, você irá acessar a janela de Entidade. Aqui você irá encontra os seguintes itens:
 
-**Entity**
+## **Entity**
 
-- *Dictionary name:*  Será o nome que irá representar o seu metadado.
+- Dictionary name:  Será o nome que irá representar o seu metadado.
 	
-- *Table Name:* Nome da tabela onde seus dados ficarão armazenados.
+- Table Name: Nome da tabela onde seus dados ficarão armazenados.
 
-- *Get procedure Name:*  Nome da procedure que Irá realizar a leitura dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Get Procedure*.
+- Get procedure Name: Nome da procedure que Irá realizar a leitura dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Get Procedure*.
 
-- *Set Procedure Name:* Nome da procedure que Irá realizar aescrita dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Set Procedure*.
+- Set Procedure Name: Nome da procedure que Irá realizar aescrita dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Set Procedure*.
 
-- *Title:*  Aqui você irá preencher com o título que será exibido dentro do Form. Será possível habilitar ou não a visualização do título através das configurações internas.
+- Title:  Aqui você irá preencher com o título que será exibido dentro do Form. Será possível habilitar ou não a visualização do título através das configurações internas.
 
-- *Subtitle:* Aqui você irá preencher com o subtítulo que será exibido dentro do Form. Da mesma forma que o title, o subtitle também poderá ser habilitado ou não.
+- Subtitle: Aqui você irá preencher com o subtítulo que será exibido dentro do Form. Da mesma forma que o title, o subtitle também poderá ser habilitado ou não.
 
-- *Info:* Informações fixas que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
+- Info: Informações fixas que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
 
-**Fields**
+## **Fields**
 
 O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os dados que irão ser exibidos na criação da nova tabela a partir dos metadados. É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
 
-- *FieldName:* Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
+- FieldName: Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
 
-- *Label:* Este campo deve ser preenchido de acordo com o nome que deseja ser exibido no título da coluna, por exemplo, caso seja uma coluna de emails, o título deverá conter esse nome ou algo que tenha relação.
+- Label: Este campo deve ser preenchido de acordo com o nome que deseja ser exibido no título da coluna, por exemplo, caso seja uma coluna de emails, o título deverá conter esse nome ou algo que tenha relação.
 
-- *DafaultValue:* Uma expressão que irá retornar um valor padrão caso o valor dentro do banco de dados seja nulo.
+- DafaultValue: Uma expressão que irá retornar um valor padrão caso o valor dentro do banco de dados seja nulo.
 
-- *Filter:* Campo que indica um tipo de filtro que será executado na procedure de get
+- Filter: Campo que indica um tipo de filtro que será executado na procedure de get
 
 - *DataBehavior:* Comportamento de dados
 
@@ -65,7 +63,7 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
 
-**Panels**
+## **Panels**
      Permite separar os campos do dicionários em paineis. Mas somente para as ações de adicionar, editar e visualizar.
 
 - General
@@ -78,10 +76,10 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Enable Expression: seeref
     - CssClass: Classe Css do campo.
 
-**Indexes and Relationships**
+## **Indexes and Relationships**
 -Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
 
-**Actions**
+## **Actions**
 - Grid
     - View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
     - Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
@@ -97,12 +95,12 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
     - Filter: Mostra todas as opções de filtro para busca de itens dentro da tabela.
     - Log: Registra e exibe as ações feitas dentro da tabela, sendo adicionar, editar e deletar.
 
-**API**
+## **API**
 
 - Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST API.
-    - ApplyUseridOn:
+    - ApplyUseridOn: Nome do campo em que o filtro de ID do usuário será aplicado.
     - JsonFormat: Está opção irá definir e modificar a formatação do arquivo Json. Ao utilizar a opção default, ficará definido o padrão já escolhido pelo usuário, entretando a opção LowerCase irá formatar o arquivo para letras minúsculas.
-    - Sync:
+    - Sync: Está opção habilita ou desabilita o dicionário da REST API.
 
 
 
