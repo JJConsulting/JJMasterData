@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
@@ -7,12 +8,15 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
 internal class WebControlFactory
 {
+    public CoreServicesFacade CoreServicesFacade { get; }
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
 
     internal ActionManager ActionManager { get; }
@@ -22,21 +26,26 @@ internal class WebControlFactory
     public ExpressionOptions ExpressionOptions { get; private set; }
 
     public FormElement FormElement { get; set; }
+    internal RepositoryServicesFacade RepositoryServicesFacade { get; }
 
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    public IEntityRepository EntityRepository { get; }
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IEnumerable<IWriter> ExportationWriters { get; }
+    internal IEntityRepository EntityRepository { get; }
     
     public WebControlTextFactory WebControlTextFactory { get; }
     
+    
     public WebControlFactory(
         JJDataPanel dataPanel, 
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository)
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        CoreServicesFacade = coreServicesFacade;
+        RepositoryServicesFacade = repositoryServicesFacade;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        ExportationWriters = coreServicesFacade.ExportationWriters;
         ActionManager = new ActionManager(dataPanel.FormElement,
-            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository), dataDictionaryRepository,
+            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository), repositoryServicesFacade.DataDictionaryRepository,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
@@ -48,18 +57,18 @@ internal class WebControlFactory
 
     public WebControlFactory(
         FormElement formElement, 
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        RepositoryServicesFacade repositoryServicesFacade,
         ExpressionManager expressionManager,
         ExpressionOptions expressionOptions, string panelName)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         FormElement = formElement;
+        RepositoryServicesFacade = repositoryServicesFacade;
         ExpressionOptions = expressionOptions;
         PanelName = panelName;
         WebControlTextFactory = new WebControlTextFactory();
-        ActionManager = new ActionManager(FormElement, expressionManager, dataDictionaryRepository, panelName);
+        ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository, panelName);
     }
 
     public JJBaseControl CreateControl(FormElementField f, object value)
@@ -77,7 +86,7 @@ internal class WebControlFactory
                 baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.Lookup:
-                baseView = JJLookup.GetInstance(f, DataDictionaryRepository, ExpressionOptions, value, PanelName);
+                baseView = JJLookup.GetInstance(f, DataDictionaryRepository,CoreServicesFacade, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.CheckBox:
                 baseView = JJCheckBox.GetInstance(f, value);
@@ -99,7 +108,7 @@ internal class WebControlFactory
                 }
                 else
                 {
-                    var textFile = JJTextFile.GetInstance(FormElement, f, DataDictionaryRepository, ExpressionOptions, value, PanelName);
+                    var textFile = JJTextFile.GetInstance(FormElement, f, RepositoryServicesFacade, CoreServicesFacade,  ExpressionOptions,value, PanelName);
                     baseView = textFile;
                 }
 

@@ -15,7 +15,7 @@ Console.WriteLine("Starting Process...\n");
 
 DateTime start = DateTime.Now;
 IEntityRepository entityRepository = new Factory();
-var dicDao = new DatabaseDataDictionaryRepository(entityRepository);
+var dicDao = new DatabaseDataDictionaryRepository(entityRepository, "");
 var databaseDictionaries = dicDao.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 

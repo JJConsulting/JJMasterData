@@ -2,6 +2,7 @@ using System;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 
@@ -9,20 +10,18 @@ namespace JJMasterData.Core.WebComponents.Factories;
 
 public class DataImpFactory
 {
-    public IEntityRepository EntityRepository { get; }
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    public IFormEventResolver FormEventResolver { get; }
+    public RepositoryServicesFacade RepositoryServicesFacade { get; }
+    public CoreServicesFacade CoreServicesFacade { get; }
 
-    public DataImpFactory(IEntityRepository entityRepository,IDataDictionaryRepository dataDictionaryRepository,IFormEventResolver formEventResolver)
+    public DataImpFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        FormEventResolver = formEventResolver;
+        RepositoryServicesFacade = repositoryServicesFacade;
+        CoreServicesFacade = coreServicesFacade;
     }
     
     public JJDataImp CreateDataImp(string elementName)
     {
-        var dataImp = new JJDataImp(DataDictionaryRepository, EntityRepository);
+        var dataImp = new JJDataImp(RepositoryServicesFacade, CoreServicesFacade);
         
         SetDataImpParams(dataImp, elementName);
 
@@ -34,11 +33,11 @@ public class DataImpFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
         
-        var metadata = DataDictionaryRepository.GetMetadata(elementName);
+        var metadata = RepositoryServicesFacade.DataDictionaryRepository.GetMetadata(elementName);
             
         var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
             
-        var formEvent = FormEventResolver?.GetFormEvent(elementName);
+        var formEvent = CoreServicesFacade.FormEventResolver?.GetFormEvent(elementName);
         formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
             
         dataImp.FormElement = metadata.GetFormElement();

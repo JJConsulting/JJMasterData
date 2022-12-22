@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Options;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Web.Areas.MasterData.Models.ViewModels;
@@ -7,7 +8,7 @@ namespace JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 public class OptionsViewModel
 {
     public ConnectionString ConnectionString { get; set; }
-    public JJMasterDataOptions? Options { get; set; } 
+    public JJMasterDataCoreOptions? Options { get; set; } 
     public bool IsFullscreen { get; set; }
     public string? FilePath { get; set; }
     public DataAccessProviderType ConnectionProvider { get; set; }

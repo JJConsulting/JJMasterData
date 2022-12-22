@@ -2,7 +2,9 @@
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Xunit.Tester;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace JJMasterData.Xunit.Validators;
@@ -11,16 +13,18 @@ public class MetadataValidator
 {
     public IEntityRepository Repository { get; }
     public IFormEventResolver FormEventResolver { get; }
+    public IOptions<JJMasterDataCoreOptions> Options { get; }
 
-    public MetadataValidator(IEntityRepository repository, IFormEventResolver formEventResolver)
+    public MetadataValidator(IEntityRepository repository, IFormEventResolver formEventResolver, IOptions<JJMasterDataCoreOptions> options)
     {
         Repository = repository;
         FormEventResolver = formEventResolver;
+        Options = options;
     }
     
     public Metadata AssertAllOperations(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.AllOperations(values);
         Assert.True(result.IsValid);
         return metadata;
@@ -28,7 +32,7 @@ public class MetadataValidator
     
     public Metadata AssertAllOperations(Metadata metadata, Action<DataDictionaryTesterValues> configure)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.AllOperations(configure);
         Assert.True(result.IsValid);
         return metadata;
@@ -36,7 +40,7 @@ public class MetadataValidator
     
     public Metadata AssertInsert(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.Insert(values);
         Assert.True(result.IsValid);
         return metadata;
@@ -44,7 +48,7 @@ public class MetadataValidator
     
     public Metadata AssertUpdate(Metadata metadata, Hashtable values)
     {
-        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.Update(values);
         Assert.True(result.IsValid);
         return metadata;
@@ -52,7 +56,7 @@ public class MetadataValidator
     
     public Metadata AssertRead(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.Read(values);
         Assert.True(result.IsValid);
         return metadata;
@@ -60,7 +64,7 @@ public class MetadataValidator
     
     public Metadata AssertDelete(Metadata metadata, Hashtable values)
     {
-        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver);
+        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
         var result = tester.Delete(values);
         Assert.True(result.IsValid);
         return metadata;

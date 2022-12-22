@@ -35,7 +35,7 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
     
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataOptions> configure)
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure)
     {
         var builder = new JJServiceBuilder(services);
         

@@ -6,8 +6,10 @@ using System.Threading;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 
@@ -18,7 +20,17 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
+    
+    /// <summary>
+    /// Configurações pré-definidas do formulário
+    /// </summary>
+    public FormElement FormElement { get; set; }
 
+
+    public TextWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+    {
+    }
+    
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -117,9 +129,5 @@ public class TextWriter : BaseWriter, ITextWriter
         }
         sw.WriteLine("");
         sw.Flush();
-    }
-
-    public TextWriter(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
-    {
     }
 }

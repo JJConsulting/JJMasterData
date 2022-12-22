@@ -13,6 +13,8 @@ using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +22,8 @@ namespace JJMasterData.Core.WebComponents;
 
 public class JJDataImp : JJBaseProcess
 {
+
+
     #region "Events"
 
     internal EventHandler<FormAfterActionEventArgs> OnAfterDelete;
@@ -32,6 +36,9 @@ public class JJDataImp : JJBaseProcess
     #endregion
 
     #region "Properties"
+    
+    private RepositoryServicesFacade RepositoryServicesFacade { get; }
+    private CoreServicesFacade CoreServicesFacade { get; }
 
     private JJUploadArea _upload;
     
@@ -53,25 +60,32 @@ public class JJDataImp : JJBaseProcess
     /// Default: true (panel is open by default)
     /// </summary>
     public bool ExpandedByDefault { get; set; }
+    
+    public AuditLogService AuditLogService { get; }
 
     #endregion
 
     #region "Constructors"
 
-    public JJDataImp(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
+    public JJDataImp(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade,coreServicesFacade)
     {
+        RepositoryServicesFacade = repositoryServicesFacade;
+        CoreServicesFacade = coreServicesFacade;
+        AuditLogService = CoreServicesFacade.AuditLogService;
         ExpandedByDefault = true;
         Name = "jjdataimp1";
     }
-
-    [Obsolete("Please use DataImpFactory via constructor injection.")]
-    public JJDataImp(string elementName, IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
+    
+    public JJDataImp(string elementName, 
+       RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
-        var factory = new DataImpFactory(entityRepository, dataDictionaryRepository, null);
+        var factory = new DataImpFactory(RepositoryServicesFacade, CoreServicesFacade);
         factory.SetDataImpParams(this, elementName);
     }
 
-    public JJDataImp(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository,entityRepository)
+    public JJDataImp(
+        FormElement formElement,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement;
     }
@@ -270,7 +284,7 @@ public class JJDataImp : JJBaseProcess
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
         var dataContext = new DataContext(DataContextSource.Upload, UserId);
-        var formService = new FormService(FormManager, dataContext)
+        var formService = new FormService(FormManager, dataContext, AuditLogService)
         {
             EnableErrorLink = false,
             EnableHistoryLog = EnableHistoryLog,

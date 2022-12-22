@@ -5,8 +5,11 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Xunit.Tester;
 
@@ -17,11 +20,13 @@ internal class DataDictionaryTester : IDataDictionaryTester
     private readonly FormService _formService;
  
     public string DictionaryName { get; }
+    public IOptions<JJMasterDataCoreOptions> Options { get; }
     public string? UserId { get; }
     
-    public DataDictionaryTester(Metadata metadata, IEntityRepository entityRepository, IFormEventResolver formEventResolver, string? userId = null)
+    public DataDictionaryTester(Metadata metadata, IEntityRepository entityRepository, IFormEventResolver formEventResolver, IOptions<JJMasterDataCoreOptions> options, string? userId = null)
     {
         DictionaryName = metadata.Table.Name;
+        Options = options;
         UserId = userId;
         
         _entityRepository = entityRepository;
@@ -44,7 +49,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
         var formElement = metadata.GetFormElement();
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext)
+        var service = new FormService(formManager, dataContext, new AuditLogService(_entityRepository, Options))
         {
             EnableHistoryLog = logActionIsVisible
         };

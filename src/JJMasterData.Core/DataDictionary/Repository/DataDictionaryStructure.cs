@@ -23,9 +23,9 @@ public class DataDictionaryStructure
     public const string LastModifiedTo = "modified_to";
     public const string Json = "json";
     
-    public static Element GetElement()
+    public static Element GetElement(string tableName)
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        var element = new Element(tableName, "Data Dictionaries");
             
         element.Fields.AddPK(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;

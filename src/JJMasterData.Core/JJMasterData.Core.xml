@@ -2077,7 +2077,7 @@
             Configurações do usuário
             </param>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJFormLog.DataPainel">
+        <member name="P:JJMasterData.Core.WebComponents.JJAuditLogForm.DataPainel">
             <summary>
             Configuração do painel com os campos do formulário
             </summary>

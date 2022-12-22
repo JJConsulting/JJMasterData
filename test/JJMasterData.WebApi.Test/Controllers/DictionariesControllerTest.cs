@@ -2,7 +2,6 @@ using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Services;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using Xunit.Extensions.Ordering;

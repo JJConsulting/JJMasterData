@@ -19,12 +19,18 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
+public abstract class BaseWriter :  IWriter
 {
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    private readonly CoreServicesFacade _coreServicesFacade;
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     public IEntityRepository EntityRepository { get; }
 
@@ -67,7 +73,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
             if (_fieldManager != null) 
                 return _fieldManager;
             var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository);
-            _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, expressionManager);
+            _fieldManager = new FieldManager(FormElement,_repositoryServicesFacade,_coreServicesFacade, expressionManager);
 
 
             return _fieldManager;
@@ -103,7 +109,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     /// utilizando a proc informada no FormElement;
     /// </remarks>
     public DataTable DataSource { get; set; }
-
+    
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
@@ -116,7 +122,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = Path.Combine(JJService.Options.ExportationFolderPath, FormElement.Name);
+            string folderPath = Path.Combine(ExportationFolderPath, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {
@@ -129,21 +135,29 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
             return folderPath;
         }
     }
+    
+    public string ExportationFolderPath { get; }
 
     public string UserId { get; set; }
-    public HttpContext CurrentContext { get; internal set; }
+    public HttpContext CurrentContext { get; set; }
 
     //We need this property because Current.Context.Request is disposed inside a thread.
     public string AbsoluteUri { get; set; }
+    
+    public ILogger<BaseWriter> Logger { get; }
 
     #endregion
 
 
-    public BaseWriter(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository)
+    public BaseWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
+        Logger = coreServicesFacade.LoggerFactory.CreateLogger<BaseWriter>();
         CurrentFilter = new Hashtable();
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
@@ -242,7 +256,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = new JJTextFile(DataDictionaryRepository, EntityRepository)
+        var textFile = new JJTextFile(_repositoryServicesFacade,_coreServicesFacade)
         {
             FormElement = FormElement,
             ElementField = field,

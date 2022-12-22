@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -10,24 +11,26 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 [Area("MasterData")]
 public class ResourcesController : MasterDataController
 {
+    public readonly JJMasterDataCommonsOptions OnMasterDataCommonsOptions;
     private readonly ResourcesService _resourcesService;
-    private readonly RequestLocalizationOptions _options;
-    public ResourcesController(ResourcesService resourcesService, IOptions<RequestLocalizationOptions> options)
+    private readonly RequestLocalizationOptions _requestOptions;
+    public ResourcesController(ResourcesService resourcesService, IOptions<RequestLocalizationOptions> options, IOptions<JJMasterDataCommonsOptions> masterDataOptions)
     {
+        OnMasterDataCommonsOptions = masterDataOptions.Value;
         _resourcesService = resourcesService;
-        _options = options.Value;
+        _requestOptions = options.Value;
     }
 
     public ActionResult Index()
     {
-        string tablename = JJService.Options.ResourcesTableName;
+        string tablename = OnMasterDataCommonsOptions.ResourcesTableName;
         
         if (string.IsNullOrEmpty(tablename))
         {
             throw new JJMasterDataException("Resources table not found.");
         }
         
-        var formView = _resourcesService.GetFormView(_options.SupportedCultures);
+        var formView = _resourcesService.GetFormView(_requestOptions.SupportedCultures);
         
         return View(formView);
     }

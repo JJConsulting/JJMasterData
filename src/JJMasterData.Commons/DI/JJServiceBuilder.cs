@@ -21,11 +21,11 @@ public class JJServiceBuilder
 
     public JJServiceBuilder ConfigureJJMasterDataOptions(IConfiguration configuration)
     {
-        Services.Configure<JJMasterDataOptions>(configuration);
+        Services.Configure<JJMasterDataCommonsOptions>(configuration);
         return this;
     }
     
-    public JJServiceBuilder ConfigureJJMasterDataOptions(Action<JJMasterDataOptions> configure)
+    public JJServiceBuilder ConfigureJJMasterDataOptions(Action<JJMasterDataCommonsOptions> configure)
     {
         Services.Configure(configure);
         return this;

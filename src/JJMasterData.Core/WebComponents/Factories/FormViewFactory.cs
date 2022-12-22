@@ -1,9 +1,11 @@
 ﻿using System;
-using JJMasterData.Commons.Dao;
+using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 
@@ -11,34 +13,28 @@ namespace JJMasterData.Core.WebComponents.Factories;
 
 public class FormViewFactory
 {
-    public IEntityRepository EntityRepository { get; }
-
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    public IFormEventResolver FormEventResolver { get; }
+    
     public GridViewFactory GridViewFactory { get; }
+    public RepositoryServicesFacade RepositoryServicesFacade { get; }
+    public CoreServicesFacade CoreServicesFacade { get; }
 
-    public FormViewFactory(
-        IDataDictionaryRepository dataDictionaryRepository, 
-        IEntityRepository entityRepository,
-        IFormEventResolver formEventResolver,
-        GridViewFactory gridViewFactory)
+    public FormViewFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, GridViewFactory gridViewFactory)
     {
-        DataDictionaryRepository = dataDictionaryRepository;
-        FormEventResolver = formEventResolver;
+        RepositoryServicesFacade = repositoryServicesFacade;
+        CoreServicesFacade = coreServicesFacade;
         GridViewFactory = gridViewFactory;
-        EntityRepository = entityRepository;
     }
 
     public JJFormView CreateFormView(string elementName)
     {
-        var form = new JJFormView(DataDictionaryRepository, EntityRepository, FormEventResolver, this);
+        var form = new JJFormView(RepositoryServicesFacade, CoreServicesFacade, this);
         SetFormViewParams(form, elementName);
         return form;
     }
     
     public JJFormView CreateFormView(FormElement formElement)
     {
-        return new JJFormView(formElement, DataDictionaryRepository, EntityRepository, FormEventResolver, this);
+        return new JJFormView(formElement, RepositoryServicesFacade, CoreServicesFacade, this);
     }
 
 
@@ -47,7 +43,7 @@ public class FormViewFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), Translate.Key("Dictionary name cannot be empty"));
 
-        var formEvent = FormEventResolver?.GetFormEvent(elementName);
+        var formEvent = CoreServicesFacade.FormEventResolver?.GetFormEvent(elementName);
         if (formEvent != null)
         {
             AddFormEvent(form, formEvent);
@@ -55,7 +51,7 @@ public class FormViewFactory
 
         form.Name = "jjview" + elementName.ToLower();
 
-        var metadata = DataDictionaryRepository.GetMetadata(elementName);
+        var metadata = RepositoryServicesFacade.DataDictionaryRepository.GetMetadata(elementName);
 
         var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
         formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));

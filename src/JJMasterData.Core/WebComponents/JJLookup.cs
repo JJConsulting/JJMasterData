@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.Facades;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -18,6 +19,8 @@ namespace JJMasterData.Core.WebComponents;
 //Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
+    private readonly CoreServicesFacade _coreServicesFacade;
+
     #region "Properties"
 
     private string _selectedValue;
@@ -99,8 +102,9 @@ public class JJLookup : JJBaseControl
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     
-    public JJLookup(IDataDictionaryRepository dataDictionaryRepository)
+    public JJLookup(IDataDictionaryRepository dataDictionaryRepository, CoreServicesFacade coreServicesFacade)
     {
+        _coreServicesFacade = coreServicesFacade;
         DataDictionaryRepository = dataDictionaryRepository;
         Enabled = true;
         AutoReloadFormFields = true;
@@ -110,9 +114,9 @@ public class JJLookup : JJBaseControl
         PopTitle = "Search";
     }
 
-    internal static JJLookup GetInstance(FormElementField f,IDataDictionaryRepository repository,  ExpressionOptions expOptions, object value, string panelName)
+    internal static JJLookup GetInstance(FormElementField f,IDataDictionaryRepository repository, CoreServicesFacade coreServicesFacade,  ExpressionOptions expOptions, object value, string panelName)
     {
-        var search = new JJLookup(repository);
+        var search = new JJLookup(repository, coreServicesFacade);
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
         search.SelectedValue = value?.ToString();
@@ -243,7 +247,7 @@ public class JJLookup : JJBaseControl
             }
         }
         
-        string url = $"{ConfigurationHelper.GetUrlMasterData()}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
+        string url = $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var dto = new LookupUrlDto(url);
         

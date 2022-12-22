@@ -7,16 +7,23 @@ using System;
 using System.Collections;
 using System.Globalization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FieldManager
 {
+
+
     #region "Properties"
 
     private string Name { get; set; }
     
+    private RepositoryServicesFacade _repositoryServicesFacade;
+    private CoreServicesFacade _coreServicesFacade;
+    
+
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
@@ -33,10 +40,12 @@ public class FieldManager
 
     #region "Constructors"
 
-    public FieldManager(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, ExpressionManager expression)
+    public FieldManager(FormElement formElement, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionManager expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        DataDictionaryRepository = dataDictionaryRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
         Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         Name = "jjpainel_" + formElement.Name.ToLower();
     }
@@ -202,7 +211,7 @@ public class FieldManager
         }
         
         var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
-        var controlFactory = new WebControlFactory(FormElement,Expression.EntityRepository,DataDictionaryRepository, Expression, expOptions, Name);
+        var controlFactory = new WebControlFactory(FormElement, _repositoryServicesFacade, Expression, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);
     }

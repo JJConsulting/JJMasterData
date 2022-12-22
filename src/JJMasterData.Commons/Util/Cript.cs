@@ -19,7 +19,7 @@ public class Cript
     /// <returns>Encrypted value.</returns>
     public static string Cript64(string valor)
     {
-        return Cript64(valor, JJService.Options.SecretKey);
+        return Cript64(valor, JJService.CommonsOptions.SecretKey);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class Cript
     /// <returns>Descrypted value.</returns>
     public static string Descript64(string valor)
     {
-        return Descript64(valor, JJService.Options.SecretKey);
+        return Descript64(valor, JJService.CommonsOptions.SecretKey);
     }
 
     /// <summary>

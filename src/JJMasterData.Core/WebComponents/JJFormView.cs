@@ -9,12 +9,15 @@ using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +34,6 @@ namespace JJMasterData.Core.WebComponents;
 /// </example>
 public class JJFormView : JJGridView
 {
-    public IFormEventResolver FormEventResolver { get; }
-    public FormViewFactory FormViewFactory { get; }
 
     #region "Events"
 
@@ -49,12 +50,13 @@ public class JJFormView : JJGridView
 
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
-    private JJFormLog _logHistory;
+    private JJAuditLogForm _auditLogForm;
     private FormService _service;
 
 
-    internal JJFormLog FormLog =>
-        _logHistory ??= new JJFormLog(FormElement, DataDictionaryRepository, EntityRepository);
+    internal JJAuditLogForm AuditLogForm =>
+        _auditLogForm ??=
+            new JJAuditLogForm(FormElement, _repositoryServicesFacade, OnCoreServicesFacade);
 
 
     /// <summary>
@@ -132,33 +134,35 @@ public class JJFormView : JJGridView
         }
     }
 
+    private AuditLogService AuditLogService { get; }
 
     private FormService Service
     {
         get
         {
-            if (_service == null)
+            if (_service != null) return _service;
+            var dataContext = new DataContext(DataContextSource.Form, UserId);
+            _service = new FormService(FormManager, dataContext, AuditLogService)
             {
-                var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext)
-                {
-                    EnableErrorLink = true,
-                    EnableHistoryLog = LogAction.IsVisible
-                };
+                EnableErrorLink = true,
+                EnableHistoryLog = LogAction.IsVisible
+            };
 
-                _service.OnBeforeInsert += OnBeforeInsert;
-                _service.OnBeforeUpdate += OnBeforeUpdate;
-                _service.OnBeforeDelete += OnBeforeDelete;
+            _service.OnBeforeInsert += OnBeforeInsert;
+            _service.OnBeforeUpdate += OnBeforeUpdate;
+            _service.OnBeforeDelete += OnBeforeDelete;
 
-                _service.OnAfterDelete += OnAfterDelete;
-                _service.OnAfterUpdate += OnAfterUpdate;
-                _service.OnAfterInsert += OnAfterInsert;
-            }
+            _service.OnAfterDelete += OnAfterDelete;
+            _service.OnAfterUpdate += OnAfterUpdate;
+            _service.OnAfterInsert += OnAfterInsert;
 
             return _service;
         }
     }
 
+    private IFormEventResolver FormEventResolver { get; }
+    private FormViewFactory FormViewFactory { get; }
+    
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
         => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
 
@@ -171,16 +175,21 @@ public class JJFormView : JJGridView
     public ViewAction ViewAction => (ViewAction)GridActions.Find(x => x is ViewAction);
 
     public LogAction LogAction => (LogAction)ToolBarActions.Find(x => x is LogAction);
+    
+
 
     #endregion
 
     #region "Constructors"
 
-    internal JJFormView(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository,
-        IFormEventResolver formEventResolver, FormViewFactory formViewFactory) : base(dataDictionaryRepository,
-        entityRepository)
+    internal JJFormView(
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        FormViewFactory formViewFactory)
+        : base(repositoryServicesFacade, coreServicesFacade)
     {
-        FormEventResolver = formEventResolver;
+        FormEventResolver = coreServicesFacade.FormEventResolver;
+        AuditLogService = coreServicesFacade.AuditLogService;
         FormViewFactory = formViewFactory;
         ShowTitle = true;
         ToolBarActions.Add(new InsertAction());
@@ -191,16 +200,32 @@ public class JJFormView : JJGridView
         GridActions.Add(new DeleteAction());
     }
 
-    [Obsolete("Please use FormViewFactory.")]
+    [Obsolete("Please use FormViewFactory by dependency injection.")]
     public JJFormView(string elementName) : base()
     {
+        var formServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
+        var formViewFactory = JJService.Provider.GetRequiredService<FormViewFactory>();
+        
+        FormEventResolver = formServicesFacade.FormEventResolver;
+        AuditLogService = formServicesFacade.AuditLogService;
+        FormViewFactory = formViewFactory;
+        ShowTitle = true;
+        ToolBarActions.Add(new InsertAction());
+        ToolBarActions.Add(new DeleteSelectedRowsAction());
+        ToolBarActions.Add(new LogAction());
+        GridActions.Add(new ViewAction());
+        GridActions.Add(new EditAction());
+        GridActions.Add(new DeleteAction());
+        
         JJService.Provider.GetRequiredService<FormViewFactory>().SetFormViewParams(this, elementName);
     }
 
-    public JJFormView(FormElement formElement,
-        IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository,
-        IFormEventResolver formEventResolver, FormViewFactory formViewFactory) : this(dataDictionaryRepository,
-        entityRepository, formEventResolver, formViewFactory)
+    public JJFormView(
+        FormElement formElement,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        FormViewFactory formViewFactory)
+        : this(repositoryServicesFacade, coreServicesFacade, formViewFactory)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
@@ -487,8 +512,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var dicParser = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(), DataDictionaryRepository, EntityRepository,
-            FormEventResolver, FormViewFactory)
+        var formsel = new JJFormView(dicParser.GetFormElement(), _repositoryServicesFacade, OnCoreServicesFacade,FormViewFactory)
         {
             UserValues = UserValues,
             Name = action.ElementNameToSelect
@@ -708,16 +732,16 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
+            var html = AuditLogForm.GetDetailLog(actionMap.PKFieldValues);
             html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
 
-        FormLog.GridView.AddToolBarAction(goBackAction);
-        FormLog.DataPainel = DataPanel;
+        AuditLogForm.GridView.AddToolBarAction(goBackAction);
+        AuditLogForm.DataPainel = DataPanel;
         pageState = PageState.Log;
-        return FormLog.GetHtmlBuilder();
+        return AuditLogForm.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlDataImp(ref PageState pageState)
@@ -825,8 +849,8 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var childGrid = new JJFormView(childElement, DataDictionaryRepository, EntityRepository,
-                    FormEventResolver, FormViewFactory)
+                var childGrid = new JJFormView(childElement, _repositoryServicesFacade,
+                    OnCoreServicesFacade, FormViewFactory)
                 {
                     UserValues = UserValues,
                     FilterAction =

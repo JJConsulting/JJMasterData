@@ -1,6 +1,6 @@
 ﻿@using JJMasterData.Commons.Options
 @using Microsoft.Extensions.Options
-@inject IOptions<JJMasterDataOptions> Options
+@inject IOptions<JJMasterDataCommonsOptions> Options
 @{
     Layout = string.IsNullOrEmpty(Options.Value.LayoutPath) ? "_MasterDataLayout" : Options.Value.LayoutPath;
 }

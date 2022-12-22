@@ -66,7 +66,7 @@ internal class ActionManager
         }
 
         string url =
-            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+            $"{MasterDataUrlHelper.GetUrl()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");

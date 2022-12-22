@@ -15,19 +15,26 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
+    public CoreServicesFacade CoreServicesFacade { get; }
     private readonly IEntityRepository _entityRepository;
+    private readonly string _dataDictionaryTableName;
 
     public ElementService(IValidationDictionary validationDictionary, 
                           IEntityRepository entityRepository, 
-                          IDataDictionaryRepository dataDictionaryRepository) 
+                          IDataDictionaryRepository dataDictionaryRepository, CoreServicesFacade coreServicesFacade, IOptions<JJMasterDataCoreOptions> options) 
         : base(validationDictionary, dataDictionaryRepository)
     {
+        CoreServicesFacade = coreServicesFacade;
         _entityRepository = entityRepository;
+        _dataDictionaryTableName = options.Value.DataDictionaryTableName;
     }
 
     #region Exec Scripts GET/SET/TABLE
@@ -91,8 +98,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
-                CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
-                CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
+                CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
             };
         }
         
@@ -183,7 +190,7 @@ public class ElementService : BaseService
 
     public JJGridView GetFormView()
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        var element = new Element(_dataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
         element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
         element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
@@ -198,7 +205,7 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
         
-        var gridView = new JJGridView(formElement,DataDictionaryRepository,_entityRepository)
+        var gridView = new JJGridView(formElement, new RepositoryServicesFacade(DataDictionaryRepository, _entityRepository),CoreServicesFacade)
         {
             Name = "List",
             FilterAction =

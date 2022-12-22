@@ -9,31 +9,23 @@ using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 
 namespace JJMasterData.Core.WebComponents;
 
-public class JJFormLog : JJBaseView
+public class JJAuditLogForm : JJBaseView
 {
-    private AuditLogService _auditLog;
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    private readonly CoreServicesFacade _coreServicesFacade;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
    
-    public AuditLogService Service
-    {
-        get 
-        {
-            if (_auditLog == null)
-            {
-                var context = new DataContext(DataContextSource.Form, UserId);
-                _auditLog = new AuditLogService(context, EntityRepository);
-            }
-
-            return _auditLog;
-        }
-    }
+    public AuditLogService Service { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
@@ -55,17 +47,29 @@ public class JJFormLog : JJBaseView
     public FormElement FormElement { get; private set; }
 
     internal IEntityRepository EntityRepository { get; private set; }
+    
+    public IEnumerable<IWriter> ExportationWriters { get; }
 
-    private JJFormLog(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository)
+    
+    private JJAuditLogForm(
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        ExportationWriters = coreServicesFacade.ExportationWriters;
+        Service = coreServicesFacade.AuditLogService;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
         Name = "loghistory";
     }
 
-    public JJFormLog(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(entityRepository, dataDictionaryRepository)
+    public JJAuditLogForm(
+        FormElement formElement,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -230,8 +234,13 @@ public class JJFormLog : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(Service.GetFormElement(), DataDictionaryRepository, EntityRepository);
-        grid.FormElement.Title = FormElement.Title;
+        var grid = new JJGridView(Service.GetFormElement(), _repositoryServicesFacade, _coreServicesFacade)
+            {
+                FormElement =
+                {
+                    Title = FormElement.Title
+                }
+            };
         grid.SetCurrentFilter(AuditLogService.DIC_NAME, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DIC_MODIFIED + " DESC";
 

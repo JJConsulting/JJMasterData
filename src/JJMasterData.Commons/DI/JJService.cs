@@ -15,14 +15,12 @@ public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
 
-
-    
-    public static JJMasterDataOptions Options
+    public static JJMasterDataCommonsOptions CommonsOptions
     {
         get
         {
             using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataOptions>>()!.Value;
+            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataCommonsOptions>>()!.Value;
         }
     }
 
@@ -35,6 +33,4 @@ public static class JJService
             return scope.ServiceProvider.GetService<ILocalizationProvider>()!;
         }
     }
-
-    public static ILogger Logger => Provider.GetRequiredService<ILogger<JJServiceBuilder>>();
 }

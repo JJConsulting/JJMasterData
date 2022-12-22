@@ -7,7 +7,11 @@ public class WebComponentFactory
     private DataPanelFactory DataPanelFactory { get; }
     public DataImpFactory DataImpFactory { get; }
 
-    public WebComponentFactory(FormViewFactory formViewFactory, GridViewFactory gridViewFactory, DataPanelFactory dataPanelFactory,DataImpFactory dataImpFactory)
+    public WebComponentFactory(
+        FormViewFactory formViewFactory,
+        GridViewFactory gridViewFactory,
+        DataPanelFactory dataPanelFactory,
+        DataImpFactory dataImpFactory)
     {
         FormViewFactory = formViewFactory;
         GridViewFactory = gridViewFactory;

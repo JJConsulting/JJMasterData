@@ -15,7 +15,9 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
@@ -36,6 +38,9 @@ namespace JJMasterData.Core.WebComponents;
 /// </example>
 public class JJGridView : JJBaseView
 {
+    protected readonly RepositoryServicesFacade _repositoryServicesFacade;
+    protected readonly CoreServicesFacade OnCoreServicesFacade;
+
     #region "Events"
 
     public event EventHandler<GridCellEventArgs> OnRenderCell;
@@ -84,7 +89,7 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-    
+
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEntityRepository EntityRepository { get; }
 
@@ -97,6 +102,7 @@ public class JJGridView : JJBaseView
                 var expManager = new ExpressionManager(UserValues, EntityRepository);
                 _formManager = new FormManager(FormElement, expManager);
             }
+
             return _formManager;
         }
     }
@@ -107,7 +113,7 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement, DataDictionaryRepository, EntityRepository)
+            _dataImp = new JJDataImp(FormElement, _repositoryServicesFacade, OnCoreServicesFacade)
             {
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
@@ -122,10 +128,10 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_dataExp != null) 
+            if (_dataExp != null)
                 return _dataExp;
-            
-            _dataExp = new JJDataExp(FormElement, DataDictionaryRepository, EntityRepository)
+
+            _dataExp = new JJDataExp(FormElement, _repositoryServicesFacade, OnCoreServicesFacade)
             {
                 Name = Name,
                 ExportOptions = CurrentExportConfig,
@@ -181,7 +187,8 @@ public class JJGridView : JJBaseView
         get
         {
             if (_actionManager == null)
-                _actionManager = new ActionManager(FormElement, FieldManager.Expression,DataDictionaryRepository, Name);
+                _actionManager =
+                    new ActionManager(FormElement, FieldManager.Expression, DataDictionaryRepository, Name);
 
             return _actionManager;
         }
@@ -194,8 +201,9 @@ public class JJGridView : JJBaseView
             if (_fieldManager == null)
             {
                 var exp = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement,DataDictionaryRepository, exp);
+                _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, exp);
             }
+
             return _fieldManager;
         }
     }
@@ -385,14 +393,14 @@ public class JJGridView : JJBaseView
     }
 
     internal GridFilter Filter => _filter ??= new GridFilter(this);
-    
+
     internal GridTable Table
     {
         get
         {
-            if (_table != null) 
+            if (_table != null)
                 return _table;
-            
+
             _table = new GridTable(this)
             {
                 Body =
@@ -567,6 +575,8 @@ public class JJGridView : JJBaseView
         set => _selectedRowsId = value ?? "";
     }
 
+    public IEnumerable<IWriter> ExportationWriters { get; }
+
     #endregion
 
     #region "Constructors"
@@ -588,9 +598,14 @@ public class JJGridView : JJBaseView
         TitleSize = HeadingSize.H1;
         EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+        ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IWriter>>();
+        
+        
+        _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
+        OnCoreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
     }
-    
-    public JJGridView(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository)
+
+    public JJGridView(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
         Name = "jjview";
         ShowTitle = true;
@@ -604,32 +619,41 @@ public class JJGridView : JJBaseView
         AutoReloadFormFields = true;
         RelationValues = new Hashtable();
         TitleSize = HeadingSize.H1;
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        ExportationWriters = coreServicesFacade.ExportationWriters;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        
+        _repositoryServicesFacade = repositoryServicesFacade;
+        OnCoreServicesFacade = coreServicesFacade;
     }
 
-    public JJGridView(DataTable table, IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
+    public JJGridView(DataTable table, 
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = new FormElement(table);
         DataSource = table;
     }
-    
-    public JJGridView(string elementName, IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
+
+    public JJGridView(string elementName, 
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
         JJService.Provider.GetRequiredService<GridViewFactory>().SetGridViewParams(this, elementName);
     }
 
-    public JJGridView(FormElement formElement, IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository,entityRepository)
+    public JJGridView(
+        FormElement formElement,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
     }
 
-    [Obsolete("Please use GridViewFactory.")]
+    [Obsolete("Please use GridViewFactory by dependency injection.")]
     public JJGridView(string elementName) : this()
     {
         JJService.Provider.GetRequiredService<GridViewFactory>().SetGridViewParams(this, elementName);
     }
+
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -641,7 +665,7 @@ public class JJGridView : JJBaseView
             return GetLookupHtml(lookupRoute);
 
         html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
-        html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtmlBuilder);
+        html.AppendElementIf(FilterAction.IsVisible, Filter.GetFilterHtmlBuilder);
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
         html.AppendElement(GetTableHtmlBuilder());
@@ -654,24 +678,24 @@ public class JJGridView : JJBaseView
     private HtmlBuilder GetTableHtmlBuilder()
     {
         AssertProperties();
-        
+
         string requestType = CurrentContext.Request.QueryString("t");
 
-        if (CheckForExportation(requestType)) 
+        if (CheckForExportation(requestType))
             return null;
-        
-        if (CheckForTableRow(requestType, Table)) 
+
+        if (CheckForTableRow(requestType, Table))
             return null;
-        
-        if (CheckForSelectAllRows(requestType)) 
+
+        if (CheckForSelectAllRows(requestType))
             return null;
-        
+
         GetDataTable();
-        
+
         var html = new HtmlBuilder(HtmlTag.Div);
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
-        
+
         html.AppendText(GetHtmlScript());
         html.AppendRange(GetHiddenInputs());
 
@@ -681,7 +705,7 @@ public class JJGridView : JJBaseView
         {
             html.AppendElement(GetNoRecordsAlert());
         }
-        
+
         var gridPagination = new GridPagination(this);
 
         html.AppendElement(gridPagination.GetHtmlElement());
@@ -689,18 +713,15 @@ public class JJGridView : JJBaseView
         if (ShowToolbar)
         {
             html.AppendElement(GetSettingsHtml());
-            
+
             html.AppendElement(GetExportHtml());
 
             html.AppendElement(GetLegendHtml());
         }
-        
-        html.AppendElement(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("clearfix");
-        });
 
-        if (CheckForAjaxResponse(requestType, html)) 
+        html.AppendElement(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
+
+        if (CheckForAjaxResponse(requestType, html))
             return null;
 
         return html;
@@ -721,8 +742,8 @@ public class JJGridView : JJBaseView
     private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
         var elementList = new List<HtmlBuilder>();
-        
-        var (error,currentAction  ) = GetAndExecuteCurrentAction();
+
+        var (error, currentAction) = GetAndExecuteCurrentAction();
 
         if (!string.IsNullOrEmpty(error))
         {
@@ -829,7 +850,7 @@ public class JJGridView : JJBaseView
 
     public string GetTitleHtml() => GetTitle().GetHtml();
 
-    private (string currentAction,string error) GetAndExecuteCurrentAction()
+    private (string currentAction, string error) GetAndExecuteCurrentAction()
     {
         string error = string.Empty;
         string currentAction = CurrentContext.Request["current_tableaction_" + Name];
@@ -1092,7 +1113,6 @@ public class JJGridView : JJBaseView
         return name;
     }
 
-    
 
     public Hashtable GetSelectedRowId()
     {
@@ -1398,7 +1418,7 @@ public class JJGridView : JJBaseView
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
-    
+
     public void AddToolBarAction(SubmitAction action)
     {
         ValidateAction(action);

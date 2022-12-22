@@ -20,14 +20,8 @@ public class FormManager
 
     public FormManager(FormElement formElement, ExpressionManager expression)
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        if (expression == null)
-            throw new ArgumentNullException(nameof(expression));
-
-        FormElement = formElement;
-        Expression = expression;
+        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
     }
 
     /// <summary>
@@ -195,7 +189,6 @@ public class FormManager
 
         return val;
     }
-
     public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)

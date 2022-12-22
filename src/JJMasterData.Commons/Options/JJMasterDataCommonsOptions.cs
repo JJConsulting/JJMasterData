@@ -28,29 +28,13 @@ namespace JJMasterData.Commons.Options;
 /// </code>
 /// </example>
 /// </summary>
-public sealed class JJMasterDataOptions
+public sealed class JJMasterDataCommonsOptions
 {
-    /// <summary>
-    /// Default value: 5 <br></br>
-    /// </summary>
-    [Range(3, 5)]
-    public int BootstrapVersion { get; set; } = 5;
-
-    /// <summary>
-    /// Default value: JJMasterData <br></br>
-    /// </summary>
-    public string TableName { get; set; }
-
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
     public string ResourcesTableName { get; set; }
-
-    /// <summary>
-    /// Default value: JJMasterDataAuditLog <br></br>
-    /// </summary>
-    public string AuditLogTableName { get; set; }
-
+    
     /// <summary>
     /// Default value: {tablename}Get <br></br>
     /// </summary>
@@ -60,23 +44,6 @@ public sealed class JJMasterDataOptions
     /// Default value: {tablename}Set <br></br>
     /// </summary>
     public string PrefixSetProc { get; set; }
-
-    /// <summary>
-    /// Default value: null <br></br>
-    /// </summary>
-    public string? JJMasterDataUrl { get; set; }
-
-    /// <summary>
-    /// Default value: _MasterDataLayout <br></br>
-    /// </summary>
-    public string? LayoutPath { get; set; }
-
-    /// <summary>
-    /// Default value:_MasterDataLayout.Popup <br></br>
-    /// </summary>
-    public string? PopUpLayoutPath { get; set; }
-    
-    public string ExportationFolderPath { get; set; }
 
     /// <summary>
     /// Default value: "ChangeMe" <br></br>
@@ -94,16 +61,11 @@ public sealed class JJMasterDataOptions
         }
     }
 
-    public JJMasterDataOptions()
+    public JJMasterDataCommonsOptions()
     {
-        TableName = "JJMasterData";
         ResourcesTableName = "JJMasterDataResources";
-        AuditLogTableName = "JJMasterDataAuditLog";
         PrefixGetProc = "{tablename}Get";
         PrefixSetProc = "{tablename}Set";
-        LayoutPath = "_MasterDataLayout";
-        PopUpLayoutPath = "_MasterDataLayout.PopUp";
-        ExportationFolderPath = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
         SecretKey = "ChangeMe";
     }
 
@@ -131,7 +93,7 @@ public sealed class JJMasterDataOptions
             return element.CustomProcNameGet;
 
         string tableName = element.TableName;
-        string pattern = JJService.Options.PrefixGetProc;
+        string pattern = JJService.CommonsOptions.PrefixGetProc;
 
         return pattern.Replace("{tablename}", tableName);
     }
@@ -142,7 +104,7 @@ public sealed class JJMasterDataOptions
             return element.CustomProcNameSet;
 
         string tableName = element.TableName;
-        string pattern = JJService.Options.PrefixSetProc;
+        string pattern = JJService.CommonsOptions.PrefixSetProc;
 
         return pattern.Replace("{tablename}", tableName);
     }
@@ -150,7 +112,7 @@ public sealed class JJMasterDataOptions
     public static string GetReadProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.Options.PrefixGetProc;
+        var pattern = JJService.CommonsOptions.PrefixGetProc;
 
         return pattern.Replace("{tablename}", dicName);
     }
@@ -158,7 +120,7 @@ public sealed class JJMasterDataOptions
     public static string GetWriteProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.Options.PrefixSetProc;
+        var pattern = JJService.CommonsOptions.PrefixSetProc;
 
         return pattern.Replace("{tablename}", dicName);
     }

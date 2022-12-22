@@ -9,6 +9,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -16,6 +17,8 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -60,17 +63,22 @@ public class JJDataExp : JJBaseProcess
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
+    
+    public string ExportationFolderPath { get; }
 
+    public IEnumerable<IWriter> Writers { get; }
     #endregion
 
     #region "Constructors"
 
-    public JJDataExp(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
+    public JJDataExp(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
     {
+        Writers = coreServicesFacade.ExportationWriters;
+        ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
     }
 
-    public JJDataExp(FormElement formElement,IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(dataDictionaryRepository,entityRepository)
+    public JJDataExp(FormElement formElement,RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade,coreServicesFacade)
     {
         FormElement = formElement;
     }
@@ -197,24 +205,24 @@ public class JJDataExp : JJBaseProcess
         return alert.GetHtml();
     }
 
-    private BaseWriter CreateWriter()
+    private IWriter CreateWriter()
     {
-        return WriterFactory.GetInstance(this);
+        return WriterFactory.ConfigureWriter(this, Writers);
     }
 
     public void DoExport(DataTable dt)
     {
-        var exporter = CreateWriter();
+        var writer = CreateWriter();
 
-        exporter.DataSource = dt;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
+        writer.DataSource = dt;
+        writer.CurrentContext = HttpContext.Current;
+        writer.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
         
-        Task.Run(async () => await exporter.RunWorkerAsync(CancellationToken.None));
+        Task.Run(async () => await writer.RunWorkerAsync(CancellationToken.None));
 
         var download = new JJDownloadFile
         {
-            FilePath = exporter.FolderPath
+            FilePath = writer.FolderPath
         };
 
         download.DirectDownload();
@@ -222,14 +230,14 @@ public class JJDataExp : JJBaseProcess
 
     internal void ExportFileInBackground(Hashtable filter, string order)
     {
-        var exporter = CreateWriter();
+        var writer = CreateWriter();
 
-        exporter.CurrentFilter = filter;
-        exporter.CurrentOrder = order;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
+        writer.CurrentFilter = filter;
+        writer.CurrentOrder = order;
+        writer.CurrentContext = HttpContext.Current;
+        writer.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
         
-        BackgroundTask.Run(ProcessKey, exporter);
+        BackgroundTask.Run(ProcessKey, writer);
     }
 
     internal DataExpDto GetCurrentProcess()

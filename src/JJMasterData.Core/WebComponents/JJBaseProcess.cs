@@ -9,6 +9,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Facades;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -19,23 +20,17 @@ public abstract class JJBaseProcess : JJBaseView
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private ExpressionManager _expressionManager;
-
-    protected JJBaseProcess(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    private readonly CoreServicesFacade _coreServicesFacade;
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    protected JJBaseProcess(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        _coreServicesFacade = coreServicesFacade;
+        _repositoryServicesFacade = repositoryServicesFacade;
     }
 
-    internal ExpressionManager ExpressionManager
-    {
-        get
-        {
-            if (_expressionManager == null)
-                _expressionManager = new ExpressionManager(UserValues, EntityRepository);
-
-            return _expressionManager;
-        }
-    }
+    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -64,7 +59,7 @@ public abstract class JJBaseProcess : JJBaseView
 
 
     internal FieldManager FieldManager =>
-        _fieldManager ??= new FieldManager(FormElement, DataDictionaryRepository, ExpressionManager);
+        _fieldManager ??= new FieldManager(FormElement, _repositoryServicesFacade,_coreServicesFacade, ExpressionManager);
 
     internal FormManager FormManager
     {

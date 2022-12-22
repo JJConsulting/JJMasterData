@@ -9,6 +9,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 
@@ -24,12 +25,21 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = false)
     /// </summary>
     public bool ShowBorder { get; set; }
+    
+    /// <summary>
+    /// Configurações pré-definidas do formulário
+    /// </summary>
+    public FormElement FormElement { get; set; }
 
     /// <summary>
     /// Exibir colunas zebradas 
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
+    
+    public ExcelWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+    {
+    }
 
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -173,9 +183,5 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             sw.WriteLine("</td>");
         }
         sw.WriteLine("\t\t\t</tr>");
-    }
-
-    public ExcelWriter(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : base(dataDictionaryRepository, entityRepository)
-    {
     }
 }

@@ -14,9 +14,7 @@ namespace JJMasterData.Core.DataManager;
 public class FormService
 {
     #region Properties
-
-    private AuditLogService _auditLog;
-
+    
     private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
     public FormElement FormElement => FormManager.FormElement;
@@ -25,11 +23,7 @@ public class FormService
 
     public DataContext DataContext { get; private set; }
     
-    public AuditLogService AuditLog
-    {
-        get => _auditLog ??= new AuditLogService(DataContext, EntityRepository);
-        internal set => _auditLog = value;
-    }
+    public AuditLogService AuditLogService { get; }
 
     public bool EnableErrorLink { get; set; }
 
@@ -51,10 +45,11 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext)
+    public FormService(FormManager formManager, DataContext dataContext, AuditLogService auditLogService)
     {
         FormManager = formManager;
         DataContext = dataContext;
+        AuditLogService = auditLogService;
     }
 
     #endregion
@@ -89,7 +84,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Update);
+            AuditLogService.AddLog(FormElement, DataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -124,7 +119,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Insert);
+            AuditLogService.AddLog(FormElement,DataContext,  values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -160,7 +155,7 @@ public class FormService
             return result;
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, result.Result);
+            AuditLogService.AddLog(FormElement,DataContext,  values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -214,7 +209,7 @@ public class FormService
             FormFileService.DeleteFiles(FormElement, primaryKeys);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, primaryKeys, CommandOperation.Delete);
+            AuditLogService.AddLog(FormElement,DataContext,  primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {

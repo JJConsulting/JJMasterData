@@ -6,11 +6,14 @@ using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -19,12 +22,6 @@ public class JJTextFile : JJBaseControl
     private const string UploadFormParameterName = "jjuploadform_";
     private Hashtable _formValues;
     private FormFilePathBuilder _pathBuiler;
-
-    public JJTextFile(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepositoryRepository)
-    {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepositoryRepository;
-    }
 
     public Hashtable FormValues
     {
@@ -58,8 +55,25 @@ public class JJTextFile : JJBaseControl
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     public IEntityRepository EntityRepository { get; }
 
+    public IEnumerable<IWriter> ExportationWriters { get; }
+    
+    public CoreServicesFacade CoreServicesFacade { get; }
+
+    public RepositoryServicesFacade RepositoryServicesFacade { get; }
+
+    
+    public JJTextFile(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    {
+        CoreServicesFacade = coreServicesFacade;
+        RepositoryServicesFacade = repositoryServicesFacade;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        ExportationWriters = coreServicesFacade.ExportationWriters;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+    }
+    
     internal static JJTextFile GetInstance(FormElement formElement,
-        FormElementField field,IDataDictionaryRepository dataDictionaryRepository, ExpressionOptions expOptions, object value, string panelName)
+        FormElementField field,  RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionOptions expOptions,
+        object value, string panelName)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -67,7 +81,7 @@ public class JJTextFile : JJBaseControl
         if (field.DataFile == null)
             throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
 
-        var text = new JJTextFile(dataDictionaryRepository,expOptions.EntityRepository)
+        var text = new JJTextFile(repositoryServicesFacade,coreServicesFacade)
         {
             ElementField = field,
             PageState = expOptions.PageState,
@@ -84,6 +98,8 @@ public class JJTextFile : JJBaseControl
 
         return text;
     }
+    
+
 
     internal override HtmlBuilder RenderHtml()
     {
@@ -112,19 +128,23 @@ public class JJTextFile : JJBaseControl
         if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var textGroup = new JJTextGroup();
-        textGroup.CssClass = CssClass;
-        textGroup.ReadOnly = true;
-        textGroup.Name = $"v_{Name}";
-        textGroup.ToolTip = ToolTip;
-        textGroup.Attributes = Attributes;
-        textGroup.Text = GetPresentationText(formUpload);
+        var textGroup = new JJTextGroup
+        {
+            CssClass = CssClass,
+            ReadOnly = true,
+            Name = $"v_{Name}",
+            ToolTip = ToolTip,
+            Attributes = Attributes,
+            Text = GetPresentationText(formUpload)
+        };
 
-        var btn = new JJLinkButton();
-        btn.ShowAsButton = true;
-        btn.OnClientClick = GetOpenUploadFormAction();
-        btn.ToolTip = "Manage Files";
-        btn.IconClass = IconType.Paperclip.GetCssClass();
+        var btn = new JJLinkButton
+        {
+            ShowAsButton = true,
+            OnClientClick = GetOpenUploadFormAction(),
+            ToolTip = "Manage Files",
+            IconClass = IconType.Paperclip.GetCssClass()
+        };
         textGroup.Actions.Add(btn);
 
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -217,7 +237,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload(DataDictionaryRepository, EntityRepository);
+        var form = new JJFormUpload(RepositoryServicesFacade,CoreServicesFacade);
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -238,8 +258,6 @@ public class JJTextFile : JJBaseControl
 
         return form;
     }
-
-
     private bool HasPk()
     {
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);

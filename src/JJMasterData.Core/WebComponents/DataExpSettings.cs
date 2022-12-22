@@ -6,6 +6,7 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Html;
 
@@ -130,7 +131,7 @@ internal class DataExpSettings
                         option.WithAttribute("selected", "selected");
                         option.AppendText("Excel");
                     });
-                    if (PdfWriterExists())
+                    if (PdfWriterExists(_dataExp.Writers))
                     {
                         select.AppendElement(HtmlTag.Option, option =>
                         {
@@ -360,7 +361,7 @@ internal class DataExpSettings
     {
         var list = new List<FileInfo>();
 
-        var oDir = new DirectoryInfo(JJService.Options.ExportationFolderPath);
+        var oDir = new DirectoryInfo(_dataExp.ExportationFolderPath);
 
         if (oDir.Exists)
             list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));
@@ -368,5 +369,5 @@ internal class DataExpSettings
         return list.OrderByDescending(f => f.CreationTime).ToList();
     }
 
-    private bool PdfWriterExists() => WriterFactory.GetPdfWriter() != null;
+    private bool PdfWriterExists(IEnumerable<IWriter> writers) => WriterFactory.GetPdfWriter(writers) != null;
 }

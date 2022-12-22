@@ -1,24 +1,23 @@
 ﻿using System;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents.Factories
 {
     public class GridViewFactory
     {
-        public IDataDictionaryRepository DataDictionaryRepository { get; }
-        public IEntityRepository EntityRepository { get; }
+        public RepositoryServicesFacade RepositoryServicesFacade { get; }
+        public CoreServicesFacade CoreServicesFacade { get; }
 
-        public GridViewFactory(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+        public GridViewFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
         {
-            DataDictionaryRepository = dataDictionaryRepository;
-            EntityRepository = entityRepository;
+            RepositoryServicesFacade = repositoryServicesFacade;
+            CoreServicesFacade = coreServicesFacade;
         }
         public JJGridView CreateGridView(string elementName)
         {
-            var grid = new JJGridView(DataDictionaryRepository, EntityRepository);
+            var grid = new JJGridView(RepositoryServicesFacade, CoreServicesFacade);
             SetGridViewParams(grid, elementName);
             return grid;
         }
@@ -28,7 +27,7 @@ namespace JJMasterData.Core.WebComponents.Factories
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName), "elementName cannot be null.");
 
-            var metadata = DataDictionaryRepository.GetMetadata(elementName);
+            var metadata = RepositoryServicesFacade.DataDictionaryRepository.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = metadata.GetFormElement();
             SetGridOptions(grid, metadata.UIOptions.Grid);

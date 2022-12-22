@@ -6,6 +6,8 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.AuditLog;
@@ -25,28 +27,28 @@ public class AuditLogService
 
     private static bool _hasAuditLogTable;
 
-    public DataContext Data { get; private set; }
-
     public IEntityRepository EntityRepository { get; private set; }
+    
+    private string TableName { get; }
 
-    public AuditLogService(DataContext data, IEntityRepository entityRepository)
+    public AuditLogService(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
     {
-        Data = data;
         EntityRepository = entityRepository;
+        TableName = options.Value.AuditLogTableName;
     }
 
-    public void AddLog(Element element, Hashtable formValues, CommandOperation action)
+    public void AddLog(Element element, DataContext context, Hashtable formValues, CommandOperation action)
     {
         var values = new Hashtable
         {
             { DIC_NAME, element.Name },
             { DIC_KEY, GetKey(element, formValues) },
             { DIC_ACTION, (int)action },
-            { DIC_ORIGIN, (int)Data.Source },
+            { DIC_ORIGIN, (int)context.Source },
             { DIC_MODIFIED, DateTime.Now },
-            { DIC_USERID, Data.UserId },
-            { DIC_IP, Data.IpAddress },
-            { DIC_BROWSER, Data.BrowserInfo },
+            { DIC_USERID, context.UserId },
+            { DIC_IP, context.IpAddress },
+            { DIC_BROWSER, context.BrowserInfo },
             { DIC_JSON, GetJsonFields(formValues) }
         };
 
@@ -96,11 +98,10 @@ public class AuditLogService
 
     public Element GetElement()
     {
-        string tableName = ConfigurationHelper.GetMasterDataAuditLog();
-        var element = new Element(tableName, "Log")
+        var element = new Element(TableName, "Log")
         {
-            CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
-            CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
+            CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(TableName),
+            CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(TableName)
         };
         element.Fields.AddPK(DIC_ID, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DIC_NAME, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);

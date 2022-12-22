@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
@@ -10,46 +13,46 @@ namespace JJMasterData.Core.DataManager.Exports;
 public static class WriterFactory
 {
 
-    public static IPdfWriter GetPdfWriter()
+    public static IPdfWriter GetPdfWriter(IEnumerable<IWriter> writers)
     {
-        return JJService.Provider.GetService<IPdfWriter>();
+        return (IPdfWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(IPdfWriter));
     }
 
-    public static IExcelWriter GetExcelWriter()
+    public static IExcelWriter GetExcelWriter(IEnumerable<IWriter> writers)
     {
-        return JJService.Provider.GetService<IExcelWriter>();
+        return (IExcelWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(IExcelWriter));
     }
 
-    public static ITextWriter GetTextWriter()
+    public static ITextWriter GetTextWriter(IEnumerable<IWriter> writers)
     {
-        return JJService.Provider.GetService<ITextWriter>();
+        return (ITextWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(ITextWriter));
     }
 
-    public static BaseWriter GetInstance(JJDataExp exporter)
+    public static IWriter ConfigureWriter(JJDataExp exporter, IEnumerable<IWriter> writers)
     {
-        BaseWriter writer;
+        IWriter writer;
         switch (exporter.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
             case ExportFileExtension.TXT:
-                var textWriter = GetTextWriter();
+                var textWriter = GetTextWriter(writers);
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)textWriter;
+                writer = textWriter;
                 break;
 
             case ExportFileExtension.XLS:
-                var excelWriter = GetExcelWriter();
+                var excelWriter = GetExcelWriter(writers);
                 excelWriter.ShowRowStriped = exporter.ShowRowStriped;
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)excelWriter;
+                writer = excelWriter;
 
                 break;
             case ExportFileExtension.PDF:
-                var pdfWriter = GetPdfWriter();
+                var pdfWriter = GetPdfWriter(writers);
 
                 if (pdfWriter == null)
                     throw new NotImplementedException("Please implement IPdfWriter in your application services.");
@@ -57,10 +60,8 @@ public static class WriterFactory
                 pdfWriter.ShowRowStriped = exporter.ShowRowStriped;
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
-
-                // ReSharper disable once SuspiciousTypeConversion.Global;
-                // PdfWriter is dynamic loaded by plugin.
-                writer = pdfWriter as BaseWriter;
+                
+                writer = pdfWriter;
 
                 break;
             default:
@@ -72,7 +73,7 @@ public static class WriterFactory
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExp exporter, BaseWriter writer)
+    private static void ConfigureWriter(JJDataExp exporter, IWriter writer)
     {
         writer.FormElement = exporter.FormElement;
         writer.FieldManager = exporter.FieldManager;

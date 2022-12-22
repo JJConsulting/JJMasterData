@@ -19,6 +19,8 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -93,18 +95,14 @@ public class JJFormUpload : JJBaseView
     /// Example: c:\temp\files\
     /// </remarks>
     public string FolderPath { get; set; }
-
-    public JJUploadArea Upload
-    {
-        get
-        {
-            if (_upload == null)
-                _upload = new JJUploadArea();
-
-            return _upload;
-        }
-    }
     
+    public IEnumerable<IWriter> ExportationWriters { get; }
+    public JJUploadArea Upload => _upload ??= new JJUploadArea();
+    
+    public CoreServicesFacade CoreServicesFacade {get;}
+
+    public RepositoryServicesFacade RepositoryServicesFacade { get; }
+
     public JJGridView GridView
     {
         get
@@ -112,7 +110,7 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView(DataDictionaryRepository, EntityRepository)
+            _gridView = new JJGridView(RepositoryServicesFacade, CoreServicesFacade)
             {
                 Name = Name + "_gridview",
                 UserValues = UserValues,
@@ -207,10 +205,10 @@ public class JJFormUpload : JJBaseView
         }
     }
 
-    public JJFormUpload(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    public JJFormUpload(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
+        RepositoryServicesFacade = repositoryServicesFacade;
+        CoreServicesFacade = coreServicesFacade;
         Name = "jjuploadform1";
         ShowAddFile = true;
         ExpandedByDefault = true;
