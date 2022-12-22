@@ -31,6 +31,8 @@ Para a criação da estrutura de dados direto pelo JJMasterData será necessári
 
 ## **Fields**
 
+### General
+
 O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os dados que irão ser exibidos na criação da nova tabela a partir dos metadados. É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
 
 - FieldName: Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
@@ -63,44 +65,87 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
 
-## **Panels**
-     Permite separar os campos do dicionários em paineis. Mas somente para as ações de adicionar, editar e visualizar.
+### Component (completar)
 
-- General
-    - Layout: É Maneira com que o painel será reinderizado.
-    - Expanded By Default: Está opção irá definir se o painel criado será iniciado maximizado por minimizado por padrão.
-    - Available Field: Serão os itens que não serão exibidos como paineis.
-    - Selected Fields: Ao mudar um item da sua tabela para o campo Selected fields, você verá que ao acessar sua tabela e tentar realizar alguma ação entre adicionar, editar e visualizar um item, ele irá ser exibido como painel.
-- Adavanced
-    - Visible Expression: seeref
-    - Enable Expression: seeref
-    - CssClass: Classe Css do campo.
+- Component:
+
+- AutoPostBack:
+
+- Placeholder:
+
+### Advanced (completar)
+
+- Visible Expression:
+
+- Enable Expression:
+
+- Trigger Expression:
+
+- CssClass: (?manter?)
+
+
+## **Panels**
+Permite separar os campos do dicionário em paineis. Mas somente para as ações de adicionar, editar e visualizar.
+
+### General
+- Layout: É Maneira com que o painel será reinderizado.
+
+- Expanded By Default: Está opção irá definir se o painel criado será iniciado maximizado por minimizado por padrão.
+
+- Available Field: Serão os itens que não serão exibidos como paineis.
+
+- Selected Fields: Ao mudar um item da sua tabela para o campo Selected fields, você verá que ao acessar sua tabela e tentar realizar alguma ação entre adicionar, editar e visualizar um item ele irá ser exibido como painel.
+
+### Adavanced
+- Visible Expression: seeref.
+
+- Enable Expression: seeref.
+
+- CssClass: Classe Css do campo.
 
 ## **Indexes and Relationships**
--Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
+Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
 
 ## **Actions**
-- Grid
-    - View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
-    - Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
-    - Delete: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Está opção irá deletar a linha de informações desejada.
-- Toolbar
-    - Insert: Permite adicionar um novo dado na sua tabela.
-    - config: Permite que você acesse as configurações de layout para o usuário, por exemplo, records per page and show table border.
-    - Export: Permite selecionar a exportação dos dados presentes na tabela. Você poderá importar apenas os dados visíveis na tela ou todos os dados de sua tabela, é permitido que a exportação seja feita em arquivos pdf, csv, excel e txt. Caso a exportação seja feita em PDF, é necessário que seja habilitado o plugin de pdf (LINK PARA DOC PLUGIN PDF).
-    - Import: Este item será exibido como upload para o usuário, permitindo a importação de dados para sua tabela através de arquivos txt, csv e log. Você poderá clicar no botão Help Para visualizar a formatação de upload do arquivo.
-    - Refresh: A opção refresh irá atualizar sua tabela de dados, para caso haja alguma mudança para ser exibida.
-    - Legend: A legenda é utilizada para auxiliar a descrição do dado dentro de sua tabela, por exemplo, você poderá criar a legenda para uma coluna de sexo, em que é possível atribuir a descrição Woman, Man e na sequência associar com cores e ícones. Você pode ver uma descrição completa de como criar sua legenda através do link (LINK PARA DATA_ITEM_LEG)
-    - Sort: Permite que o usuário ordenar a busca pelos itens, por exemplo, em ordem alfabética.
-    - Filter: Mostra todas as opções de filtro para busca de itens dentro da tabela.
-    - Log: Registra e exibe as ações feitas dentro da tabela, sendo adicionar, editar e deletar.
+
+Dentro da aba Actions você poderá configurar a exibição de ícones para editar sua tabela. O campo Actions é dividido em dois, Grid e Toolbar. 
+
+### Grid
+- View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
+
+- Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
+
+- Delete: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Está opção irá deletar a linha de informações desejada.
+
+### Toolbar
+
+- Insert: Permite adicionar um novo dado na sua tabela.
+
+- config: Permite que você acesse as configurações de layout para o usuário, por exemplo, records per page and show table border.
+
+- Export: Permite selecionar a exportação dos dados presentes na tabela. Você poderá importar apenas os dados visíveis na tela ou todos os dados de sua tabela, é permitido que a exportação seja feita em arquivos pdf, csv, excel e txt. Caso a exportação seja feita em PDF, é necessário que seja habilitado o plugin de pdf (LINK PARA DOC PLUGIN PDF).
+
+- Import: Este item será exibido como upload para o usuário, permitindo a importação de dados para sua tabela através de arquivos txt, csv e log. Você poderá clicar no botão Help Para visualizar a formatação de upload do arquivo.
+
+- Refresh: A opção refresh irá atualizar sua tabela de dados, para caso haja alguma mudança para ser exibida.
+
+- Legend: A legenda é utilizada para auxiliar a descrição do dado dentro de sua tabela, por exemplo, você poderá criar a legenda para uma coluna de sexo, em que é possível atribuir a descrição Woman, Man e na sequência associar com cores e ícones. Você pode ver uma descrição completa de como criar sua legenda através do link (LINK PARA DATA_ITEM_LEG).
+
+- Sort: Permite que o usuário ordenar a busca pelos itens, por exemplo, em ordem alfabética.
+
+- Filter: Mostra todas as opções de filtro para busca de itens dentro da tabela.
+
+- Log: Registra e exibe as ações feitas dentro da tabela, sendo adicionar, editar e deletar.
 
 ## **API**
 
-- Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST API.
-    - ApplyUseridOn: Nome do campo em que o filtro de ID do usuário será aplicado.
-    - JsonFormat: Está opção irá definir e modificar a formatação do arquivo Json. Ao utilizar a opção default, ficará definido o padrão já escolhido pelo usuário, entretando a opção LowerCase irá formatar o arquivo para letras minúsculas.
-    - Sync: Está opção habilita ou desabilita o dicionário da REST API.
+Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST API.
+
+- ApplyUseridOn: Nome do campo em que o filtro de ID do usuário será aplicado.
+
+- JsonFormat: Está opção irá definir e modificar a formatação do arquivo Json. Ao utilizar a opção default, ficará definido o padrão já escolhido pelo usuário, entretando a opção LowerCase irá formatar o arquivo para letras minúsculas.
+
+- Sync: Está opção habilita ou desabilita o dicionário da REST API.
 
 
 
