@@ -3,7 +3,9 @@ using System.Collections;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Xunit.Validators;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Xunit.Test;
 
@@ -12,11 +14,12 @@ public class AssertTest
     private readonly IDataDictionaryRepository _dictionaryRepository;
 
     private readonly MetadataValidator _validator;
-    
-    public AssertTest(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository, IFormEventResolver formEventResolver)
+
+    public AssertTest(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository,
+        IFormEventResolver formEventResolver, IOptions<JJMasterDataCoreOptions> options)
     {
         _dictionaryRepository = dictionaryRepository;
-        _validator = new MetadataValidator(entityRepository, formEventResolver);
+        _validator = new MetadataValidator(entityRepository, formEventResolver, options);
     }
 
     [Fact]
@@ -25,7 +28,7 @@ public class AssertTest
         var metadata = _dictionaryRepository.GetMetadata("AssertDataDictionary");
         _validator.AssertAllOperations(metadata);
     }
-    
+
     [Fact]
     public void AssertDataDictionaryWithConfiguredValuesTest()
     {

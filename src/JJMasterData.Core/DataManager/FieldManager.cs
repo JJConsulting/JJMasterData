@@ -20,8 +20,8 @@ public class FieldManager
 
     private string Name { get; set; }
     
-    private RepositoryServicesFacade _repositoryServicesFacade;
-    private CoreServicesFacade _coreServicesFacade;
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    private readonly CoreServicesFacade _coreServicesFacade;
     
 
     /// <summary>
@@ -211,7 +211,7 @@ public class FieldManager
         }
         
         var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
-        var controlFactory = new WebControlFactory(FormElement, _repositoryServicesFacade, Expression, expOptions, Name);
+        var controlFactory = new WebControlFactory(FormElement, _repositoryServicesFacade,_coreServicesFacade, Expression, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);
     }

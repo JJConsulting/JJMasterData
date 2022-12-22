@@ -2,24 +2,24 @@
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
 public class DataPanelFactory
 {
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-        
-    public IEntityRepository EntityRepository { get; }
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    private readonly CoreServicesFacade _coreServicesFacade;
 
-    public DataPanelFactory(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    public DataPanelFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
     }
         
     public JJDataPanel CreateDataPanel(string elementName)
     {
-        var dataPanel = new JJDataPanel(DataDictionaryRepository, EntityRepository);
+        var dataPanel = new JJDataPanel(_repositoryServicesFacade, _coreServicesFacade);
             
         SetDataPanelParams(dataPanel, elementName);
             
@@ -33,7 +33,7 @@ public class DataPanelFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
             
-        var metadata = DataDictionaryRepository.GetMetadata(elementName);
+        var metadata = _repositoryServicesFacade.DataDictionaryRepository.GetMetadata(elementName);
         var formElement = metadata.GetFormElement();
 
         SetDataPanelParams(dataPanel, formElement);

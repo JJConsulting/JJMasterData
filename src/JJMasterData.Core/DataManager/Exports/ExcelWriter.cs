@@ -26,10 +26,6 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// </summary>
     public bool ShowBorder { get; set; }
     
-    /// <summary>
-    /// Configurações pré-definidas do formulário
-    /// </summary>
-    public FormElement FormElement { get; set; }
 
     /// <summary>
     /// Exibir colunas zebradas 

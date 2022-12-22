@@ -15,12 +15,17 @@ namespace JJMasterData.Core.WebComponents.Factories
             RepositoryServicesFacade = repositoryServicesFacade;
             CoreServicesFacade = coreServicesFacade;
         }
+
         public JJGridView CreateGridView(string elementName)
         {
             var grid = new JJGridView(RepositoryServicesFacade, CoreServicesFacade);
             SetGridViewParams(grid, elementName);
             return grid;
         }
+
+        public JJGridView CreateGridView(FormElement formElement) =>
+            new(formElement, RepositoryServicesFacade, CoreServicesFacade);
+
 
         internal void SetGridViewParams(JJGridView grid, string elementName)
         {
@@ -68,6 +73,5 @@ namespace JJMasterData.Core.WebComponents.Factories
             grid.ShowHeaderWhenEmpty = options.ShowHeaderWhenEmpty;
             grid.EmptyDataText = options.EmptyDataText;
         }
-
     }
 }

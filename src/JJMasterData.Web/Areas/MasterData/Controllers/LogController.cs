@@ -5,8 +5,10 @@ using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,13 +22,15 @@ public class LogController : Controller
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IEntityRepository EntityRepository { get; }
 
-    public LogController(IOptions<DbLoggerOptions> options, IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository)
+    private IEntityRepository EntityRepository { get; }
+    private GridViewFactory GridViewFactory { get; }
+
+    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository, GridViewFactory gridViewFactory)
     {
         EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        GridViewFactory = gridViewFactory;
+
         Options = options.Value;
         LoggerElement = DbLoggerElement.GetInstance(Options);
     }
@@ -72,11 +76,9 @@ public class LogController : Controller
         logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
-        
-        var gridView = new JJGridView(formElement,DataDictionaryRepository, EntityRepository)
-        {
-            CurrentOrder = $"{Options.CreatedColumnName} DESC"
-        };
+
+        var gridView = GridViewFactory.CreateGridView(formElement);
+        gridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
 
         var btnClearAll = new UrlRedirectAction
         {

@@ -8,6 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using JJMasterData.Commons.Options;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Core.WebComponents.Factories;
 
@@ -22,19 +27,27 @@ public static class ServiceCollectionExtensions
         .AddJsonFile(filePath, optional: false, reloadOnChange: true)
         .Build();
 
+        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        
         services.AddDefaultServices();
-        return services.AddJJMasterDataCommons(configuration);
+        
+        return services.AddJJMasterDataCommons(configuration.GetJJMasterData());
     }
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<JJMasterDataCommonsOptions> configure)
+        Action<JJMasterDataCoreOptions> configureCore,
+        Action<JJMasterDataCommonsOptions> configureCommons)
     {
+        services.Configure(configureCore);
+        
         services.AddDefaultServices();
-        return services.AddJJMasterDataCommons(configure);
+        return services.AddJJMasterDataCommons(configureCommons);
     }
 
-    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
+    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfigurationSection configuration)
     {
+        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        
         services.AddDefaultServices();
         return services.AddJJMasterDataCommons(configuration);
     }
@@ -42,9 +55,15 @@ public static class ServiceCollectionExtensions
     private static void AddDefaultServices(this IServiceCollection services)
     {
         services.AddFactories();
+        
+        services.AddTransient<IFormEventResolver,FormEventResolver>();
+        services.AddTransient<AuditLogService>();
         services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
+        
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+        
+        services.AddServicesFacades();
     }
 
     private static void AddFactories(this IServiceCollection services)
@@ -54,5 +73,11 @@ public static class ServiceCollectionExtensions
         services.AddTransient<FormViewFactory>();
         services.AddTransient<GridViewFactory>();
         services.AddTransient<WebComponentFactory>();
+    }
+
+    private static void AddServicesFacades(this IServiceCollection services)
+    {
+        services.AddTransient<RepositoryServicesFacade>();
+        services.AddTransient<CoreServicesFacade>();
     }
 }

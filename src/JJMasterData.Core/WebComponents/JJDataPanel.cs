@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.WebComponents.Factories;
@@ -22,6 +23,9 @@ namespace JJMasterData.Core.WebComponents;
 /// </summary>
 public class JJDataPanel : JJBaseView
 {
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    private readonly CoreServicesFacade _coreServicesFacade;
+
     #region "Events"
 
     public EventHandler<ActionEventArgs> OnRenderAction;
@@ -34,16 +38,17 @@ public class JJDataPanel : JJBaseView
     private UIForm _uiFormSettings;
     public IEntityRepository EntityRepository { get; }
     public IDataDictionaryRepository DataDictionaryRepository { get; }
+
     internal FieldManager FieldManager
     {
         get
         {
-            if (_fieldManager != null) 
+            if (_fieldManager != null)
                 return _fieldManager;
-            
+
             var expression = new ExpressionManager(UserValues, EntityRepository);
-            
-            _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, expression);
+
+            _fieldManager = new FieldManager(FormElement, _repositoryServicesFacade, _coreServicesFacade, expression);
             return _fieldManager;
         }
     }
@@ -95,33 +100,48 @@ public class JJDataPanel : JJBaseView
 
     #region "Constructors"
 
-    internal JJDataPanel(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    internal JJDataPanel(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         Values = new Hashtable();
         Errors = new Hashtable();
         AutoReloadFormFields = true;
         PageState = PageState.View;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
     }
 
+    [Obsolete("Please use DataPanelFactory by constructor injection.")]
+    internal JJDataPanel()
+    {
+        EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
+        DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+        Values = new Hashtable();
+        Errors = new Hashtable();
+        AutoReloadFormFields = true;
+        PageState = PageState.View;
+        _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
+        _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
+    }
 
     [Obsolete("Please use DataPanelFactory by constructor injection.")]
-    public JJDataPanel(string elementName)
+    public JJDataPanel(string elementName) : this()
     {
         var factory = JJService.Provider.GetRequiredService<DataPanelFactory>();
         factory.SetDataPanelParams(this, elementName);
     }
 
-    public JJDataPanel(FormElement formElement, IDataDictionaryRepository dataDictionaryRepository,
-        IEntityRepository entityRepository) : this(dataDictionaryRepository, entityRepository)
+    public JJDataPanel(FormElement formElement, RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
     {
-        var factory = new DataPanelFactory(DataDictionaryRepository, EntityRepository);
-        factory.SetDataPanelParams(this, formElement);   
+        var factory = new DataPanelFactory(repositoryServicesFacade, coreServicesFacade);
+        factory.SetDataPanelParams(this, formElement);
     }
 
     public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState,
-        IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository) : this(formElement, dataDictionaryRepository, entityRepository)
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement,
+        repositoryServicesFacade, coreServicesFacade)
     {
         Values = values;
         Errors = errors;
@@ -148,7 +168,7 @@ public class JJDataPanel : JJBaseView
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
             return JJDownloadFile.ResponseRoute(this);
-            
+
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
             CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
@@ -166,6 +186,7 @@ public class JJDataPanel : JJBaseView
                     jjSearchBox.GetHtml();
                 }
             }
+
             return null;
         }
 
@@ -240,10 +261,10 @@ public class JJDataPanel : JJBaseView
                 string parsedPkval = Cript.Descript64(criptPkval);
                 var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
                 var entityRepository = FieldManager.Expression.EntityRepository;
-                tempvalues =entityRepository.GetFields(FormElement, filters);
+                tempvalues = entityRepository.GetFields(FormElement, filters);
             }
         }
-        
+
         tempvalues ??= new Hashtable();
 
         DataHelper.CopyIntoHash(ref tempvalues, Values, true);
@@ -312,5 +333,4 @@ public class JJDataPanel : JJBaseView
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
         }
     }
-
 }

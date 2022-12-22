@@ -8,6 +8,7 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace JJMasterData.WebApi.Test.Controllers;
 public class MasterApiControllerTest
 {
     private readonly MasterApiController _controller;
-    public MasterApiControllerTest()
+    public MasterApiControllerTest(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
         var accessor = new HttpContextAccessor
         {
@@ -35,10 +36,8 @@ public class MasterApiControllerTest
                 Session = new DefaultSessionFeature().Session
             }
         };
-
-        IEntityRepository entityRepository = new Factory(); 
-        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository);
-        var masterApiService = new MasterApiService(accessor, entityRepository, dataDictionaryRepository, null);
+        
+        var masterApiService = new MasterApiService(accessor, repositoryServicesFacade, coreServicesFacade);
         _controller = new MasterApiController(masterApiService);
     }
     

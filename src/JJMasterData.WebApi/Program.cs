@@ -62,7 +62,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddJJMasterDataApi();
-builder.Services.AddJJMasterDataCore().WithFormEventResolver();
+builder.Services.AddJJMasterDataCore();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();

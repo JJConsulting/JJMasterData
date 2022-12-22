@@ -35,7 +35,7 @@ public class JJAuditLogForm : JJBaseView
     internal JJDataPanel DataPainel
     {
         get =>
-            _dataPainel ??= new JJDataPanel(FormElement, DataDictionaryRepository, EntityRepository)
+            _dataPainel ??= new JJDataPanel(FormElement, _repositoryServicesFacade,_coreServicesFacade)
             {
                 Name = "jjpainellog_" + Name
             };

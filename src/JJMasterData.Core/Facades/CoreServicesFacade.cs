@@ -16,6 +16,10 @@ public class CoreServicesFacade
     public IOptions<JJMasterDataCoreOptions> Options { get; }
     public ILoggerFactory LoggerFactory { get; }
 
+    //Coming soon...
+    //IHttpContext
+    //BootstrapHelper
+    
     public CoreServicesFacade(
         IEnumerable<IWriter> exportationWriters,
         IFormEventResolver formEventResolver,

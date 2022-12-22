@@ -56,7 +56,7 @@ public class JJFormView : JJGridView
 
     internal JJAuditLogForm AuditLogForm =>
         _auditLogForm ??=
-            new JJAuditLogForm(FormElement, _repositoryServicesFacade, OnCoreServicesFacade);
+            new JJAuditLogForm(FormElement, _repositoryServicesFacade, _coreServicesFacade);
 
 
     /// <summary>
@@ -89,7 +89,7 @@ public class JJFormView : JJGridView
         {
             if (_dataPanel == null)
             {
-                _dataPanel = new JJDataPanel(FormElement, DataDictionaryRepository, EntityRepository)
+                _dataPanel = new JJDataPanel(FormElement, _repositoryServicesFacade, _coreServicesFacade)
                 {
                     Name = "jjpainel_" + FormElement.Name.ToLower(),
                     UserValues = UserValues,
@@ -512,7 +512,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var dicParser = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(), _repositoryServicesFacade, OnCoreServicesFacade,FormViewFactory)
+        var formsel = new JJFormView(dicParser.GetFormElement(), _repositoryServicesFacade, _coreServicesFacade,FormViewFactory)
         {
             UserValues = UserValues,
             Name = action.ElementNameToSelect
@@ -832,7 +832,7 @@ public class JJFormView : JJGridView
             if (relation.ViewType == RelationType.View)
             {
                 var childvalues = EntityRepository.GetFields(childElement, filter);
-                var chieldView = new JJDataPanel(childElement, DataDictionaryRepository, EntityRepository)
+                var chieldView = new JJDataPanel(childElement, _repositoryServicesFacade, _coreServicesFacade)
                 {
                     PageState = PageState.View,
                     UserValues = UserValues,
@@ -850,7 +850,7 @@ public class JJFormView : JJGridView
             else if (relation.ViewType == RelationType.List)
             {
                 var childGrid = new JJFormView(childElement, _repositoryServicesFacade,
-                    OnCoreServicesFacade, FormViewFactory)
+                    _coreServicesFacade, FormViewFactory)
                 {
                     UserValues = UserValues,
                     FilterAction =

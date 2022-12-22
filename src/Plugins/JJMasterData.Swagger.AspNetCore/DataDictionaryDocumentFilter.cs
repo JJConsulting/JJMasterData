@@ -14,7 +14,8 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
     public DataDictionaryDocumentFilter()
     {
-        _dataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+        var scope = JJService.Provider.CreateScope();
+        _dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
     }
 
     public void Apply(OpenApiDocument document, DocumentFilterContext context)

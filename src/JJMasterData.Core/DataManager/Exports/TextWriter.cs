@@ -21,12 +21,6 @@ public class TextWriter : BaseWriter, ITextWriter
 
     public string Delimiter { get; set; }
     
-    /// <summary>
-    /// Configurações pré-definidas do formulário
-    /// </summary>
-    public FormElement FormElement { get; set; }
-
-
     public TextWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
     {
     }

@@ -11,6 +11,8 @@ using System;
 using System.Collections;
 using System.Text;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -29,14 +31,21 @@ internal class ActionManager
     internal IEntityRepository EntityRepository => Expression.EntityRepository; 
 
 
-    public ActionManager(FormElement formElement, ExpressionManager expression, IDataDictionaryRepository dataDictionaryRepository, string panelName)
+    public ActionManager(
+        FormElement formElement,
+        ExpressionManager expression,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IOptions<JJMasterDataCoreOptions> options,
+        string panelName)
     {
         FormElement = formElement;
         Expression = expression;
+        JJMasterDataUrl = options.Value.JJMasterDataUrl;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentName = panelName;   
     }
 
+    private string JJMasterDataUrl { get; set; }
 
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
@@ -66,7 +75,7 @@ internal class ActionManager
         }
 
         string url =
-            $"{MasterDataUrlHelper.GetUrl()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+            $"{MasterDataUrlHelper.GetUrl(JJMasterDataUrl)}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -332,7 +341,7 @@ internal class ActionManager
                     var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
-                scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+                scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
             }
         }
         catch (Exception ex)

@@ -8,7 +8,7 @@ public interface IPdfWriter : IWriter
 {
     event EventHandler<GridCellEventArgs> OnRenderCell;
 
-    public FormElement FormElement { get; set; }
+
 
     public bool ShowBorder { get; set; }
 

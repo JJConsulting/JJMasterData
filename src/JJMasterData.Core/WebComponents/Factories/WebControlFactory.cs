@@ -16,7 +16,7 @@ namespace JJMasterData.Core.WebComponents.Factories;
 
 internal class WebControlFactory
 {
-    public CoreServicesFacade CoreServicesFacade { get; }
+
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
 
     internal ActionManager ActionManager { get; }
@@ -27,11 +27,10 @@ internal class WebControlFactory
 
     public FormElement FormElement { get; set; }
     internal RepositoryServicesFacade RepositoryServicesFacade { get; }
-
+    internal CoreServicesFacade CoreServicesFacade { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEnumerable<IWriter> ExportationWriters { get; }
     internal IEntityRepository EntityRepository { get; }
-    
     public WebControlTextFactory WebControlTextFactory { get; }
     
     
@@ -46,6 +45,7 @@ internal class WebControlFactory
         ExportationWriters = coreServicesFacade.ExportationWriters;
         ActionManager = new ActionManager(dataPanel.FormElement,
             new ExpressionManager(new Hashtable(), dataPanel.EntityRepository), repositoryServicesFacade.DataDictionaryRepository,
+            coreServicesFacade.Options,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
@@ -58,6 +58,7 @@ internal class WebControlFactory
     public WebControlFactory(
         FormElement formElement, 
         RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
         ExpressionManager expressionManager,
         ExpressionOptions expressionOptions, string panelName)
     {
@@ -65,10 +66,11 @@ internal class WebControlFactory
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         FormElement = formElement;
         RepositoryServicesFacade = repositoryServicesFacade;
+        CoreServicesFacade = coreServicesFacade;
         ExpressionOptions = expressionOptions;
         PanelName = panelName;
         WebControlTextFactory = new WebControlTextFactory();
-        ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository, panelName);
+        ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository,coreServicesFacade.Options, panelName);
     }
 
     public JJBaseControl CreateControl(FormElementField f, object value)

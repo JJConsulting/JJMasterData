@@ -12,14 +12,4 @@ public static class ConfigurationExtensions
     {
         return configuration.GetJJMasterData().GetSection(key)?.Value;
     }
-
-    public static IConfigurationSection GetJJMasterDataLogger(this IConfiguration configuration)
-    {
-        return configuration.GetJJMasterData().GetSection("Logger");
-    }
-
-    public static string GetJJMasterDataLogger(this IConfiguration configuration, string key)
-    {
-        return configuration.GetJJMasterDataLogger().GetSection(key)?.Value;
-    }
 }

@@ -9,6 +9,8 @@ using JJMasterData.Core.DataManager;
 using System.Collections;
 using System.Diagnostics;
 using System.Net;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.Facades;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
@@ -21,14 +23,17 @@ public class MasterApiService
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
+    private readonly AuditLogService _auditLogService;
+
     public MasterApiService(IHttpContextAccessor httpContextAccessor, 
-                            IEntityRepository entityRepository, 
-                            IDataDictionaryRepository dataDictionaryRepository, IFormEventResolver? formEventResolver)
+                            RepositoryServicesFacade repositoryServicesFacade,
+                            CoreServicesFacade coreServicesFacade)
     {
         _httpContext = httpContextAccessor.HttpContext;
-        _entityRepository = entityRepository;
-        _dataDictionaryRepository = dataDictionaryRepository;
-        _formEventResolver = formEventResolver;
+        _entityRepository = repositoryServicesFacade.EntityRepository;
+        _dataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        _formEventResolver = coreServicesFacade.FormEventResolver;
+        _auditLogService = coreServicesFacade.AuditLogService;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
@@ -433,7 +438,7 @@ public class MasterApiService
         var formElement = metadata.GetFormElement();
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext)
+        var service = new FormService(formManager, dataContext, _auditLogService)
         {
             EnableHistoryLog = logActionIsVisible
         };

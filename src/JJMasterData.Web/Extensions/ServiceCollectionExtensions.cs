@@ -18,6 +18,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using JJMasterData.Core.Options;
+using JJMasterData.Web.Options;
 
 namespace JJMasterData.Web.Extensions;
 
@@ -31,7 +33,8 @@ public static class ServiceCollectionExtensions
     /// <param name="filePath">
     /// Path relative to the base path stored in IConfigurationBuilder.Properties.
     /// </param>
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
+    public static JJServiceBuilder AddJJMasterDataWeb(
+        this IServiceCollection services,
         string filePath = "appsettings.json")
     {
         var configuration = new ConfigurationBuilder()
@@ -40,18 +43,23 @@ public static class ServiceCollectionExtensions
             .Build();
 
         AddDefaultServices(services);
-
+        
         services.ConfigureWritableOptions<JJMasterDataCommonsOptions>(
+            configuration.GetSection("JJMasterData"), filePath);
+        services.ConfigureWritableOptions<JJMasterDataCoreOptions>(
+            configuration.GetSection("JJMasterData"), filePath);
+        services.ConfigureWritableOptions<JJMasterDataWebOptions>(
             configuration.GetSection("JJMasterData"), filePath);
         services.ConfigureWritableOptions<ConnectionStrings>(
             configuration.GetSection("ConnectionStrings"), filePath);
         services.ConfigureWritableOptions<ConnectionProviders>(
             configuration.GetSection("ConnectionProviders"), filePath);
 
-        return services.AddJJMasterDataCore(configuration);
+        
+        return services.AddJJMasterDataCore(configuration.GetJJMasterData());
     }
 
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfigurationSection configuration)
     {
         AddDefaultServices(services);
 
@@ -68,13 +76,30 @@ public static class ServiceCollectionExtensions
 
         configureOptions(wrapper);
 
-        void ConfigureMasterDataCommonsOptions(JJMasterDataCommonsOptions options)
+        void ConfigureJJMasterDataCommonsOptions(JJMasterDataCommonsOptions options)
         {
             var wrapperOptions = wrapper.JJMasterDataCommons;
             options.SecretKey = wrapperOptions.SecretKey;
             options.PrefixGetProc = wrapperOptions.PrefixGetProc;
             options.PrefixSetProc = wrapperOptions.PrefixSetProc;
             options.ResourcesTableName = wrapperOptions.ResourcesTableName;
+        }
+        
+        void ConfigureJJMasterDataCoreOptions(JJMasterDataCoreOptions options)
+        {
+            var wrapperOptions = wrapper.JJMasterDataCore;
+            options.ExportationFolderPath = wrapperOptions.ExportationFolderPath;
+            options.BootstrapVersion = wrapperOptions.BootstrapVersion;
+            options.AuditLogTableName = wrapperOptions.AuditLogTableName;
+            options.DataDictionaryTableName = wrapperOptions.DataDictionaryTableName;
+            options.JJMasterDataUrl = wrapperOptions.JJMasterDataUrl;
+        }
+        
+        void ConfigureJJMasterDataWebOptions(JJMasterDataWebOptions options)
+        {
+            var wrapperOptions = wrapper.JJMasterDataWeb;
+            options.LayoutPath = wrapperOptions.LayoutPath;
+            options.PopUpLayoutPath = wrapperOptions.PopUpLayoutPath;
         }
 
         void ConfigureConnectionStrings(ConnectionStrings options)
@@ -87,13 +112,15 @@ public static class ServiceCollectionExtensions
             options.ConnectionString = wrapper.ConnectionProviders.ConnectionString;
         }
 
-        services.Configure((Action<JJMasterDataCommonsOptions>)ConfigureMasterDataCommonsOptions);
+        services.Configure((Action<JJMasterDataCommonsOptions>)ConfigureJJMasterDataCommonsOptions);
+        services.Configure((Action<JJMasterDataCoreOptions>)ConfigureJJMasterDataCoreOptions);
+        services.Configure((Action<JJMasterDataWebOptions>)ConfigureJJMasterDataWebOptions);
         services.Configure((Action<ConnectionStrings>)ConfigureConnectionStrings);
         services.Configure((Action<ConnectionProviders>)ConfigureConnectionProviders);
 
         AddDefaultServices(services);
 
-        return services.AddJJMasterDataCore(ConfigureMasterDataCommonsOptions);
+        return services.AddJJMasterDataCore(ConfigureJJMasterDataCoreOptions, ConfigureJJMasterDataCommonsOptions);
     }
 
     private static void AddDefaultServices(IServiceCollection services)

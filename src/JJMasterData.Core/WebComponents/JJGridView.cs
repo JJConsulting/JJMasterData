@@ -39,7 +39,7 @@ namespace JJMasterData.Core.WebComponents;
 public class JJGridView : JJBaseView
 {
     protected readonly RepositoryServicesFacade _repositoryServicesFacade;
-    protected readonly CoreServicesFacade OnCoreServicesFacade;
+    protected readonly CoreServicesFacade _coreServicesFacade;
 
     #region "Events"
 
@@ -113,7 +113,7 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement, _repositoryServicesFacade, OnCoreServicesFacade)
+            _dataImp = new JJDataImp(FormElement, _repositoryServicesFacade, _coreServicesFacade)
             {
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
@@ -131,7 +131,7 @@ public class JJGridView : JJBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = new JJDataExp(FormElement, _repositoryServicesFacade, OnCoreServicesFacade)
+            _dataExp = new JJDataExp(FormElement, _repositoryServicesFacade, _coreServicesFacade)
             {
                 Name = Name,
                 ExportOptions = CurrentExportConfig,
@@ -182,17 +182,13 @@ public class JJGridView : JJBaseView
         }
     }
 
-    internal ActionManager ActionManager
-    {
-        get
-        {
-            if (_actionManager == null)
-                _actionManager =
-                    new ActionManager(FormElement, FieldManager.Expression, DataDictionaryRepository, Name);
-
-            return _actionManager;
-        }
-    }
+    internal ActionManager ActionManager =>
+        _actionManager ??= new ActionManager(
+            FormElement, 
+            FieldManager.Expression,
+            DataDictionaryRepository,
+            _coreServicesFacade.Options,
+            Name);
 
     internal FieldManager FieldManager
     {
@@ -201,7 +197,7 @@ public class JJGridView : JJBaseView
             if (_fieldManager == null)
             {
                 var exp = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement, DataDictionaryRepository, exp);
+                _fieldManager = new FieldManager(FormElement, _repositoryServicesFacade, _coreServicesFacade, exp);
             }
 
             return _fieldManager;
@@ -602,7 +598,7 @@ public class JJGridView : JJBaseView
         
         
         _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
-        OnCoreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
+        _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
     }
 
     public JJGridView(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
@@ -624,7 +620,7 @@ public class JJGridView : JJBaseView
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         
         _repositoryServicesFacade = repositoryServicesFacade;
-        OnCoreServicesFacade = coreServicesFacade;
+        _coreServicesFacade = coreServicesFacade;
     }
 
     public JJGridView(DataTable table, 
