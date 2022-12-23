@@ -43,7 +43,7 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
 - Filter: Campo que indica um tipo de filtro que será executado na procedure de get
 
-- *DataBehavior:* Comportamento de dados
+- DataBehavior: Comportamento de dados
 
     - Real: Será usado em Get e Set;
 
@@ -51,43 +51,56 @@ O próximo passo é acessar o campo Fields, local aonde você poderá preencher 
 
     - ViewOnly: Será usado somente em Get.
 
-- *DataType:* Tipo dos dados que serão recebidos para tabela.
+- DataType: Tipo dos dados que serão recebidos para tabela.
 
-- *Size:* Quantidade caracteres e quando utilizado como Varchar será o tamanho a ser reservado dentro do banco de dados.
+- Size: Quantidade caracteres e quando utilizado como Varchar será o tamanho a ser reservado dentro do banco de dados.
 
-- *Required:* Irá definir a obrigatoriedade do preenchimento do campo.
+- Required: Irá definir a obrigatoriedade do preenchimento do campo.
 
-- *PK:* Definir se é ou não a chave primária, é importante que você preencha um dos itens da sua tabela como chave primária.
+- PK: Definir se é ou não a chave primária, é importante que você preencha um dos itens da sua tabela como chave primária.
 
-- *Identity:*  Se o campo será auto incremento, por exemplo, se ele irá retornar um campo de forma automática de dentro do banco de dados. 
+- Identity:  Se o campo será auto incremento, por exemplo, se ele irá retornar um campo de forma automática de dentro do banco de dados. 
 
-- *Help Description:* Mensagem a ser exibida para o usuário com a finalidade auxilia-lo.
+- Help Description: Mensagem a ser exibida para o usuário com a finalidade auxilia-lo.
 
 Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
 
 ### Component (completar)
 
-- Component:
+- Component: Componente utilizado para reinderização de uma coluna específica dentro de sua tabela.
 
-- AutoPostBack:
+- AutoPostBack: Ele irá definir se o Form será enviado para o servidor toda vez que haja uma alteração dentro dele.
 
-- Placeholder:
+- Placeholder: Irá mostrar uma observação para o componente quando não houver nenhum dado incluso.
 
 ### Advanced (completar)
 
-- Visible Expression:
+#### Expressions
 
-- Enable Expression:
+[!include[expressions](../expressions.md)
 
-- Trigger Expression:
+#### CssClass
 
-- CssClass: (?manter?)
+É possível inserir várias classes Css e criar layouts responsivos utilizando o sistema de grid do Bootstrap. Por exemplo, dois campos com a classe `col-sm-6` no formulário ficarão na mesma linha.
 
+#### Line Group
+
+É a linha do campo dentro do sistema de grid.
+
+#### Export
+
+Você poderá definir se ele irá ou não dentro da exportação.
+
+
+#### Validade Request
+
+Em sistemas .NET Framework 4.8 o campo irá validar valores perigosos, como tags Html e comandos SQL.
 
 ## **Panels**
 Permite separar os campos do dicionário em paineis. Mas somente para as ações de adicionar, editar e visualizar.
 
 ### General
+
 - Layout: É Maneira com que o painel será reinderizado.
 
 - Expanded By Default: Está opção irá definir se o painel criado será iniciado maximizado por minimizado por padrão.
@@ -104,6 +117,7 @@ Permite separar os campos do dicionário em paineis. Mas somente para as ações
 - CssClass: Classe Css do campo.
 
 ## **Indexes and Relationships**
+
 Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
 
 ## **Actions**
@@ -111,6 +125,7 @@ Ambos os itens serão utilizados para gerar informações dos seus metadados. Vo
 Dentro da aba Actions você poderá configurar a exibição de ícones para editar sua tabela. O campo Actions é dividido em dois, Grid e Toolbar. 
 
 ### Grid
+
 - View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
 
 - Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
