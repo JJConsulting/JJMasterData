@@ -11,6 +11,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataManager.Exports;
@@ -20,11 +21,14 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-    
-    public TextWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+
+    public TextWriter(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
     }
-    
+
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -100,6 +104,7 @@ public class TextWriter : BaseWriter, ITextWriter
 
                 sw.Write(value);
             }
+
             sw.WriteLine("");
             sw.Flush();
 
@@ -121,6 +126,7 @@ public class TextWriter : BaseWriter, ITextWriter
 
             sw.Write(field.GetTranslatedLabel());
         }
+
         sw.WriteLine("");
         sw.Flush();
     }

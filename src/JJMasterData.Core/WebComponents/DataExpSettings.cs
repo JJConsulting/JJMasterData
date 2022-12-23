@@ -9,6 +9,7 @@ using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -20,7 +21,8 @@ internal class DataExpSettings
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
-
+    
+    
     public DataExpSettings(JJDataExp dataExp)
     {
         _dataExp = dataExp;
@@ -314,7 +316,7 @@ internal class DataExpSettings
     private JJCollapsePanel GetFilesPanelHtmlElement()
     {
         var files = GetGeneratedFiles();
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(_dataExp.HttpContext)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
@@ -338,7 +340,7 @@ internal class DataExpSettings
                 continue;
 
             var icon = _dataExp.GetFileIcon(file.Extension);
-            string url = JJDataExp.GetDownloadUrl(file.FullName);
+            string url = JJDataExp.GetDownloadUrl(file.FullName, _dataExp.HttpContext);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");

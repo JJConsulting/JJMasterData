@@ -6,8 +6,10 @@ using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Web;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.DataManager;
@@ -35,18 +37,24 @@ public class FieldManager
     /// Objeto responsável por parsear expressoões
     /// </summary>
     public ExpressionManager Expression { get; private set; }
+    
+    internal IHttpContext HttpContext { get; }
+
 
     #endregion
 
     #region "Constructors"
 
-    public FieldManager(FormElement formElement, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionManager expression)
+    public FieldManager(FormElement formElement, IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade,
+        ExpressionManager expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
         Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+        HttpContext = httpContext;
         Name = "jjpainel_" + formElement.Name.ToLower();
     }
 
@@ -207,14 +215,15 @@ public class FieldManager
     {
         if (pageState == PageState.Filter & f.Filter.Type == FilterMode.Range)
         {
-            return JJTextRange.GetInstance(f, formValues);
+            return JJTextRange.GetInstance(f, formValues, HttpContext);
         }
         
         var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
-        var controlFactory = new WebControlFactory(FormElement, _repositoryServicesFacade,_coreServicesFacade, Expression, expOptions, Name);
+        var controlFactory = new FormElementControlFactory(FormElement, HttpContext, _repositoryServicesFacade,_coreServicesFacade, Expression, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);
     }
+
 
     public bool IsRange(FormElementField field, PageState pageState)
     {

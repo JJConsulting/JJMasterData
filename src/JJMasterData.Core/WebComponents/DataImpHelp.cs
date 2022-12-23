@@ -24,7 +24,7 @@ internal class DataImpHelp
 
     public HtmlBuilder GetHtmlHelp()
     {
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(DataImp.HttpContext)
         {
             Title = "Import File - Help",
             TitleIcon = new JJIcon(IconType.QuestionCircle),
@@ -252,7 +252,7 @@ internal class DataImpHelp
         var userValues = DataImp.ExpressionManager.UserValues;
         var entityrepository = DataImp.ExpressionManager.EntityRepository;
         var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
-        var cbo = JJComboBox.GetInstance(f,EntityRepository, expOptions, null);
+        var cbo = JJComboBox.GetInstance(f,DataImp.HttpContext,EntityRepository, expOptions, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)
             return string.Empty;

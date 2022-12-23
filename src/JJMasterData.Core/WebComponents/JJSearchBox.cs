@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -51,10 +52,7 @@ public class JJSearchBox : JJBaseControl
 
     internal PageState PageState { get; set; }
 
-    internal string Id
-    {
-        get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-    } 
+    internal string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
     internal IEntityRepository EntityRepository { get; private set; }
 
@@ -62,9 +60,9 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && _text == null && HttpContext.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = HttpContext.Request[Name];
             }
 
             return _text;
@@ -147,9 +145,9 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && HttpContext.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = HttpContext.Request[Name];
             }
 
             if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
@@ -184,7 +182,7 @@ public class JJSearchBox : JJBaseControl
 
     #region "Constructors"
 
-    public JJSearchBox(IEntityRepository entityRepository)
+    public JJSearchBox(IHttpContext httpContext, IEntityRepository entityRepository) : base(httpContext)
     {
         EntityRepository = entityRepository;
         Enabled = true;
@@ -197,9 +195,9 @@ public class JJSearchBox : JJBaseControl
         PageState = PageState.List;
     }
 
-    internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
+    internal static JJSearchBox GetInstance(FormElementField f,IHttpContext httpContext, ExpressionOptions expOptions, object value, string panelName)
     {
-        var search = new JJSearchBox(expOptions.EntityRepository)
+        var search = new JJSearchBox(httpContext,expOptions.EntityRepository)
         {
             Name = f.Name,
             SelectedValue = (string)value,
@@ -220,14 +218,14 @@ public class JJSearchBox : JJBaseControl
     internal override HtmlBuilder RenderHtml()
     {
         var html = new HtmlBuilder();
-        if ("jjsearchbox".Equals(CurrentContext.Request.QueryString("t")))
+        if ("jjsearchbox".Equals(HttpContext.Request.QueryString("t")))
         {
-            if (Id.Equals(CurrentContext.Request.QueryString("objname")))
+            if (Id.Equals(HttpContext.Request.QueryString("objname")))
             {
-                string textSearch = CurrentContext.Request[Name + "_text"];
+                string textSearch = HttpContext.Request[Name + "_text"];
                 string json = GetJsonValues(textSearch);
 
-                CurrentContext.Response.SendResponse(json, "application/json");
+                HttpContext.Response.SendResponse(json, "application/json");
             }
         }
         else
@@ -352,17 +350,19 @@ public class JJSearchBox : JJBaseControl
                         UserValues.Add("search_text", StringManager.ClearText(searchText));
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 
 
-            DataTable dt = EntityRepository.GetDataTable(sql);
+            var dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
-                var item = new DataItemValue();
-                item.Id = row[0].ToString();
-                item.Description = row[1].ToString().Trim();
+                var item = new DataItemValue
+                {
+                    Id = row[0].ToString(),
+                    Description = row[1].ToString().Trim()
+                };
                 if (DataItem.ShowImageLegend)
                 {
                     item.Icon = (IconType)int.Parse(row[2].ToString());

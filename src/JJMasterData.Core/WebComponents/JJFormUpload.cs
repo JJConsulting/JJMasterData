@@ -21,6 +21,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -34,8 +35,6 @@ namespace JJMasterData.Core.WebComponents;
 /// <seealso cref="JJUploadArea"/>
 public class JJFormUpload : JJBaseView
 {
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    public IEntityRepository EntityRepository { get; }
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
     private const string Size = "Size";
@@ -97,7 +96,7 @@ public class JJFormUpload : JJBaseView
     public string FolderPath { get; set; }
     
     public IEnumerable<IWriter> ExportationWriters { get; }
-    public JJUploadArea Upload => _upload ??= new JJUploadArea();
+    public JJUploadArea Upload => _upload ??= new JJUploadArea(HttpContext);
     
     public CoreServicesFacade CoreServicesFacade {get;}
 
@@ -110,7 +109,7 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView(RepositoryServicesFacade, CoreServicesFacade)
+            _gridView = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade)
             {
                 Name = Name + "_gridview",
                 UserValues = UserValues,
@@ -128,7 +127,9 @@ public class JJFormUpload : JJBaseView
             return _gridView;
         }
     }
-    
+
+    public IHttpContext HttpContext { get; }
+
     public ScriptAction DownloadAction
     {
         get
@@ -192,7 +193,7 @@ public class JJFormUpload : JJBaseView
         {
             if (_service == null)
             {
-                _service = new FormFileService(Name)
+                _service = new FormFileService(Name, HttpContext)
                 {
                     OnBeforeCreateFile = OnBeforeCreateFile,
                     OnBeforeDeleteFile = OnBeforeDeleteFile,
@@ -205,10 +206,15 @@ public class JJFormUpload : JJBaseView
         }
     }
 
-    public JJFormUpload(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    public JJFormUpload(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade)
     {
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
+        ExportationWriters = coreServicesFacade.ExportationWriters;
+        HttpContext = httpContext;
         Name = "jjuploadform1";
         ShowAddFile = true;
         ExpandedByDefault = true;
@@ -217,17 +223,17 @@ public class JJFormUpload : JJBaseView
     internal override HtmlBuilder RenderHtml()
     {
         Upload.OnPostFile += UploadOnPostFile;
-        string previewImage = CurrentContext.Request["previewImage"];
+        string previewImage = HttpContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
             return GetHtmlPreviewImage(previewImage);
 
-        string previewVideo = CurrentContext.Request["previewVideo"];
+        string previewVideo = HttpContext.Request["previewVideo"];
         if (!string.IsNullOrEmpty(previewVideo))
             return GetHtmlPreviewVideo(previewVideo);
 
         var html = new HtmlBuilder();
 
-        string uploadAction = CurrentContext.Request["uploadaction_" + Name];
+        string uploadAction = HttpContext.Request["uploadaction_" + Name];
         if (!string.IsNullOrEmpty(uploadAction))
             html.AppendElement(GetResponseAction(uploadAction));
 
@@ -289,7 +295,7 @@ public class JJFormUpload : JJBaseView
         else
         {
             var filePath = Path.Combine(Service.FolderPath, fileName);
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            src = JJDownloadFile.GetDownloadUrl(filePath, HttpContext);
         }
 
         const string script = """
@@ -311,13 +317,13 @@ public class JJFormUpload : JJBaseView
                    .WithCssClass("img-responsive");
             });
         });
-        html.AppendScript(script.ToString());
+        html.AppendScript(script);
         return html;
     }
 
     private HtmlBuilder GetResponseAction(string uploadAction)
     {
-        string fileName = CurrentContext.Request.Form("filename_" + Name);
+        string fileName = HttpContext.Request.Form("filename_" + Name);
         try
         {
             if ("DELFILE".Equals(uploadAction))
@@ -344,7 +350,7 @@ public class JJFormUpload : JJBaseView
         if (!ShowAddFile)
             return html;
 
-        html.AppendElement(new JJCollapsePanel
+        html.AppendElement(new JJCollapsePanel(HttpContext)
         {
             Title = "New File",
             ExpandedByDefault = ExpandedByDefault,
@@ -521,7 +527,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
         var file = Service.GetFile(fileName);
-        var url = CurrentContext.Request.AbsoluteUri;
+        var url = HttpContext.Request.AbsoluteUri;
 
         string src;
         string filePath = Path.Combine(Service.FolderPath, fileName);
@@ -533,7 +539,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            src = JJDownloadFile.GetDownloadUrl(filePath,HttpContext);
         }
 
         if (url.Contains('?'))
@@ -560,7 +566,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlVideoBox(string fileName)
     {
-        string videoUrl = CurrentContext.Request.AbsoluteUri;
+        string videoUrl = HttpContext.Request.AbsoluteUri;
 
         if (videoUrl.Contains('?'))
             videoUrl += "&";
@@ -605,7 +611,7 @@ public class JJFormUpload : JJBaseView
                        LabelFor = $"preview_filename_{Upload.Name}",
                        Text = "File name"
                    })
-                   .AppendElement(new JJTextGroup
+                   .AppendElement(new JJTextGroup(HttpContext)
                    {
                        Name = $"preview_filename_{Upload.Name}",
                        Addons = new InputAddons(".png"),
@@ -740,7 +746,7 @@ public class JJFormUpload : JJBaseView
             }
         }
 
-        var download = new JJDownloadFile(fileName);
+        var download = new JJDownloadFile(fileName,HttpContext);
         download.DirectDownload();
     }
 

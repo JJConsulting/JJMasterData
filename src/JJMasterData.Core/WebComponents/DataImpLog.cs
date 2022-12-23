@@ -5,15 +5,18 @@ using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.Html;
 using System;
 using System.Globalization;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 internal class DataImpLog
 {
+    private readonly IHttpContext _httpContext;
     public DataImpReporter reporter { get; private set; }
 
     internal DataImpLog(JJDataImp dataImp)
     {
+        _httpContext = dataImp.HttpContext;
         reporter = dataImp.GetCurrentReporter();
     }
 
@@ -111,24 +114,26 @@ internal class DataImpLog
 
     private HtmlBuilder GetHtmlLogDetails()
     {
-        var panel = new JJCollapsePanel();
-        panel.Title = "(Click here for more details)";
-        panel.TitleIcon = new JJIcon(IconType.Film);
-        panel.ExpandedByDefault = false;
-        panel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Label, label =>
-            {
-                label.AppendText(Translate.Key("Date:"));
-            })
-            .AppendText("&nbsp;")
-            .AppendText(Translate.Key("start"))
-            .AppendText("&nbsp;")
-            .AppendText(reporter.StartDate.ToString(CultureInfo.CurrentCulture))
-            .AppendText("&nbsp;")
-            .AppendText(Translate.Key("end"))
-            .AppendText("&nbsp;")
-            .AppendText(reporter.EndDate.ToString(CultureInfo.CurrentCulture))
-            .AppendElement(HtmlTag.Br);
+        var panel = new JJCollapsePanel(_httpContext)
+        {
+            Title = "(Click here for more details)",
+            TitleIcon = new JJIcon(IconType.Film),
+            ExpandedByDefault = false,
+            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
+                .AppendElement(HtmlTag.Label, label =>
+                {
+                    label.AppendText(Translate.Key("Date:"));
+                })
+                .AppendText("&nbsp;")
+                .AppendText(Translate.Key("start"))
+                .AppendText("&nbsp;")
+                .AppendText(reporter.StartDate.ToString(CultureInfo.CurrentCulture))
+                .AppendText("&nbsp;")
+                .AppendText(Translate.Key("end"))
+                .AppendText("&nbsp;")
+                .AppendText(reporter.EndDate.ToString(CultureInfo.CurrentCulture))
+                .AppendElement(HtmlTag.Br)
+        };
 
         if (!string.IsNullOrEmpty(reporter.UserId))
         {

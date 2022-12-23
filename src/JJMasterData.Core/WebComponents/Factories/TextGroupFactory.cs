@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
-internal class WebControlTextFactory
+internal class TextGroupFactory
 {
+    private IHttpContext HttpContext { get; }
+
+    public TextGroupFactory(IHttpContext httpContext)
+    {
+        HttpContext = httpContext;
+    }
     internal JJTextGroup CreateTextGroup(FormElementField f, object value)
     {
             
@@ -26,7 +33,7 @@ internal class WebControlTextFactory
         if (f == null)
             throw new ArgumentNullException(nameof(FormElementField));
             
-        var textGroup = new JJTextGroup();
+        var textGroup = new JJTextGroup(HttpContext);
         textGroup.SetAttr(f.Attributes);
         textGroup.MaxLength = f.Size;
         textGroup.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;

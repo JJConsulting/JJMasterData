@@ -4,26 +4,22 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Facades;
-using JJMasterData.Core.Options;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
@@ -66,14 +62,16 @@ public abstract class BaseWriter :  IWriter
 
     public ExportOptions Configuration { get; set; }
 
+    public IHttpContext HttpContext { get; }
+    
     public FieldManager FieldManager
     {
         get
         {
             if (_fieldManager != null) 
                 return _fieldManager;
-            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository);
-            _fieldManager = new FieldManager(FormElement,_repositoryServicesFacade,_coreServicesFacade, expressionManager);
+            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository, HttpContext);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade,_coreServicesFacade, expressionManager);
 
 
             return _fieldManager;
@@ -139,7 +137,7 @@ public abstract class BaseWriter :  IWriter
     public string ExportationFolderPath { get; }
 
     public string UserId { get; set; }
-    public HttpContext CurrentContext { get; set; }
+    public IHttpContext CurrentContext { get; set; }
 
     //We need this property because Current.Context.Request is disposed inside a thread.
     public string AbsoluteUri { get; set; }
@@ -149,7 +147,8 @@ public abstract class BaseWriter :  IWriter
     #endregion
 
 
-    public BaseWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    public BaseWriter(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade)
     {
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         EntityRepository = repositoryServicesFacade.EntityRepository;
@@ -158,6 +157,7 @@ public abstract class BaseWriter :  IWriter
         CurrentFilter = new Hashtable();
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
+        HttpContext = httpContext;
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
@@ -167,9 +167,6 @@ public abstract class BaseWriter :  IWriter
 
         await Task.Run(() =>
             {
-#if NETFRAMEWORK
-                HttpContext.Current = CurrentContext;
-#endif
                 try
                 {
                     _processReporter = new DataExpReporter();
@@ -256,7 +253,7 @@ public abstract class BaseWriter :  IWriter
         }
 
         string fileName = value;
-        var textFile = new JJTextFile(_repositoryServicesFacade,_coreServicesFacade)
+        var textFile = new JJTextFile(HttpContext, _repositoryServicesFacade,_coreServicesFacade)
         {
             FormElement = FormElement,
             ElementField = field,
@@ -289,7 +286,7 @@ public abstract class BaseWriter :  IWriter
             title = title.Replace(@char, string.Empty);
         }
 
-        title = HttpUtility.UrlEncode(title, Encoding.UTF8);
+        title = WebUtility.UrlEncode(title);
         string ext = Configuration.FileExtension.ToString().ToLower();
 
         return $"{title}_{DateTime.Now:yyyMMdd_HHmmss}.{ext}";

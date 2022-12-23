@@ -18,6 +18,7 @@ using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 
 namespace JJMasterData.Core.WebComponents;
@@ -63,22 +64,31 @@ public class JJDataExp : JJBaseProcess
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
-    
+
     public string ExportationFolderPath { get; }
 
     public IEnumerable<IWriter> Writers { get; }
+
     #endregion
 
     #region "Constructors"
 
-    public JJDataExp(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+    public JJDataExp(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
         Writers = coreServicesFacade.ExportationWriters;
         ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
     }
 
-    public JJDataExp(FormElement formElement,RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade,coreServicesFacade)
+    public JJDataExp(
+        FormElement formElement, 
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : this(httpContext,
+        repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement;
     }
@@ -99,16 +109,16 @@ public class JJDataExp : JJBaseProcess
         return new JJIcon(IconType.FileTextO);
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext)
     {
-        return JJDownloadFile.GetDownloadUrl(filePath);
+        return JJDownloadFile.GetDownloadUrl(filePath, httpContext);
     }
 
     private string GetFinishedMessageHtml(DataExpReporter reporter)
     {
         if (!reporter.HasError)
         {
-            string url = GetDownloadUrl(reporter.FilePath);
+            string url = GetDownloadUrl(reporter.FilePath, HttpContext);
             var html = new HtmlBuilder(HtmlTag.Div);
 
             if (reporter.HasError)
@@ -195,7 +205,7 @@ public class JJDataExp : JJBaseProcess
             return html.ToString();
         }
 
-        var alert = new JJAlert()
+        var alert = new JJAlert
         {
             Title = reporter.Message,
             Icon = IconType.Warning,
@@ -215,12 +225,12 @@ public class JJDataExp : JJBaseProcess
         var writer = CreateWriter();
 
         writer.DataSource = dt;
-        writer.CurrentContext = HttpContext.Current;
-        writer.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
+        writer.CurrentContext = HttpContext;
+        writer.AbsoluteUri = HttpContext.Request.AbsoluteUri;
+
         Task.Run(async () => await writer.RunWorkerAsync(CancellationToken.None));
 
-        var download = new JJDownloadFile
+        var download = new JJDownloadFile(HttpContext)
         {
             FilePath = writer.FolderPath
         };
@@ -234,9 +244,9 @@ public class JJDataExp : JJBaseProcess
 
         writer.CurrentFilter = filter;
         writer.CurrentOrder = order;
-        writer.CurrentContext = HttpContext.Current;
-        writer.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
+        writer.CurrentContext = HttpContext;
+        writer.AbsoluteUri = HttpContext.Request.AbsoluteUri;
+
         BackgroundTask.Run(ProcessKey, writer);
     }
 

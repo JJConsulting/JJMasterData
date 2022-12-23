@@ -81,7 +81,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+            FormFileService.SaveFormMemoryFiles(FormElement, values, DataContext.HttpContext);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement, DataContext, values, CommandOperation.Update);
@@ -116,7 +116,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+            FormFileService.SaveFormMemoryFiles(FormElement, values,DataContext.HttpContext);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement,DataContext,  values, CommandOperation.Insert);
@@ -206,7 +206,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(FormElement, primaryKeys);
+            FormFileService.DeleteFiles(FormElement, DataContext.HttpContext);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement,DataContext,  primaryKeys, CommandOperation.Delete);

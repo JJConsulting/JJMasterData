@@ -6,7 +6,9 @@ using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.Http.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -89,11 +91,14 @@ public class JJUploadArea : JJBaseView
     
     public bool AutoSubmitAfterUploadAll { get; set; }
     
-    public JJUploadArea()
+    internal IHttpContext HttpContext { get; }
+    
+    public JJUploadArea(IHttpContext httpContext)
     {
         AllowedTypes = "*";
         Name = "uploadFile1";
         Multiple = true;
+        HttpContext = httpContext;
         EnableDragDrop = true;
         EnableCopyPaste = true;
         ShowFileSize = true;
@@ -111,7 +116,7 @@ public class JJUploadArea : JJBaseView
     
     internal override HtmlBuilder RenderHtml()
     {
-        string requestType = CurrentContext.Request.QueryString("t");
+        string requestType = HttpContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
         {
             UploadFile();
@@ -177,7 +182,7 @@ public class JJUploadArea : JJBaseView
     /// </summary>
     private FormFileContent GetFile()
     {
-        var fileData = CurrentContext.Request.GetFile("file");
+        var fileData = HttpContext.Request.GetFile("file");
         using var stream = new MemoryStream();
         string filename = fileData.FileName;
         
@@ -240,7 +245,7 @@ public class JJUploadArea : JJBaseView
             dto.Error = ex.Message;
         }
 
-        CurrentContext.Response.SendResponse(dto.ToJson(),"text/json");
+        HttpContext.Response.SendResponse(dto.ToJson(),"text/json");
     }
     private void ValidateSystemFiles(string filename)
     {
@@ -307,7 +312,7 @@ public class JJUploadArea : JJBaseView
     public bool IsPostAfterUploadAllFiles()
     {
         string nameField = $"uploadaction_{Name}";
-        string action = CurrentContext.Request[nameField];
+        string action = HttpContext.Request[nameField];
         return "afteruploadall".Equals(action);
     }
 

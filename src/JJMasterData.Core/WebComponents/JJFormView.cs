@@ -9,16 +9,13 @@ using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.AuditLog;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -53,10 +50,12 @@ public class JJFormView : JJGridView
     private JJAuditLogForm _auditLogForm;
     private FormService _service;
 
-
+    private string _userId;
+    
+    public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
     internal JJAuditLogForm AuditLogForm =>
         _auditLogForm ??=
-            new JJAuditLogForm(FormElement, _repositoryServicesFacade, _coreServicesFacade);
+            new JJAuditLogForm(FormElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade);
 
 
     /// <summary>
@@ -89,7 +88,7 @@ public class JJFormView : JJGridView
         {
             if (_dataPanel == null)
             {
-                _dataPanel = new JJDataPanel(FormElement, _repositoryServicesFacade, _coreServicesFacade)
+                _dataPanel = new JJDataPanel(FormElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade)
                 {
                     Name = "jjpainel_" + FormElement.Name.ToLower(),
                     UserValues = UserValues,
@@ -111,8 +110,8 @@ public class JJFormView : JJGridView
         get
         {
             PageState pageState = PageState.List;
-            if (CurrentContext.Request["current_pagestate_" + Name] != null)
-                pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
+            if (HttpContext.Request["current_pagestate_" + Name] != null)
+                pageState = (PageState)int.Parse(HttpContext.Request["current_pagestate_" + Name]);
 
             return pageState;
         }
@@ -124,7 +123,7 @@ public class JJFormView : JJGridView
         {
             if (_currentActionMap != null) return _currentActionMap;
 
-            string criptMap = CurrentContext.Request["current_formaction_" + Name];
+            string criptMap = HttpContext.Request["current_formaction_" + Name];
             if (string.IsNullOrEmpty(criptMap))
                 return null;
 
@@ -141,7 +140,7 @@ public class JJFormView : JJGridView
         get
         {
             if (_service != null) return _service;
-            var dataContext = new DataContext(DataContextSource.Form, UserId);
+            var dataContext = new DataContext(HttpContext, DataContextSource.Form, UserId);
             _service = new FormService(FormManager, dataContext, AuditLogService)
             {
                 EnableErrorLink = true,
@@ -183,10 +182,11 @@ public class JJFormView : JJGridView
     #region "Constructors"
 
     internal JJFormView(
+        IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
         FormViewFactory formViewFactory)
-        : base(repositoryServicesFacade, coreServicesFacade)
+        : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
         FormEventResolver = coreServicesFacade.FormEventResolver;
         AuditLogService = coreServicesFacade.AuditLogService;
@@ -222,10 +222,11 @@ public class JJFormView : JJGridView
 
     public JJFormView(
         FormElement formElement,
+        IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
         FormViewFactory formViewFactory)
-        : this(repositoryServicesFacade, coreServicesFacade, formViewFactory)
+        : this(httpContext,repositoryServicesFacade, coreServicesFacade, formViewFactory)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
@@ -235,22 +236,22 @@ public class JJFormView : JJGridView
 
     internal override HtmlBuilder RenderHtml()
     {
-        string requestType = CurrentContext.Request.QueryString("t");
-        string objName = CurrentContext.Request.QueryString("objname");
+        string requestType = HttpContext.Request.QueryString("t");
+        string objName = HttpContext.Request.QueryString("objname");
         var dataPanel = DataPanel;
 
-        if (JJLookup.IsLookupRoute(this))
+        if (JJLookup.IsLookupRoute(HttpContext,this))
             return new HtmlBuilder(dataPanel.GetHtml());
 
-        if (JJTextFile.IsFormUploadRoute(this))
+        if (JJTextFile.IsFormUploadRoute(HttpContext,this))
             return new HtmlBuilder(dataPanel.GetHtml());
 
-        if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+        if (JJDownloadFile.IsDownloadRoute(HttpContext))
+            return JJDownloadFile.ResponseRoute(HttpContext);
 
         if ("jjsearchbox".Equals(requestType))
         {
-            string pnlname = CurrentContext.Request.QueryString("pnlname");
+            string pnlname = HttpContext.Request.QueryString("pnlname");
             if (dataPanel.Name.Equals(pnlname))
             {
                 dataPanel.GetHtml();
@@ -273,7 +274,7 @@ public class JJFormView : JJGridView
                 values = EntityRepository.GetFields(FormElement, filter);
 
             string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
-            CurrentContext.Response.SendResponse(htmlPanel);
+            HttpContext.Response.SendResponse(htmlPanel);
             return null;
         }
         else if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
@@ -295,7 +296,7 @@ public class JJFormView : JJGridView
 
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(htmlForm.ToString());
+            HttpContext.Response.SendResponse(htmlForm.ToString());
             return null;
         }
 
@@ -361,8 +362,8 @@ public class JJFormView : JJGridView
     {
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (HttpContext.Request["current_painelaction_" + Name] != null)
+            formAction = HttpContext.Request["current_painelaction_" + Name];
 
         if ("OK".Equals(formAction))
         {
@@ -373,7 +374,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
+                    HttpContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -388,7 +389,7 @@ public class JJFormView : JJGridView
         if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
-            CurrentContext.Response.Redirect(CurrentContext.Request.AbsoluteUri);
+            HttpContext.Response.Redirect(HttpContext.Request.AbsoluteUri);
             return null;
         }
 
@@ -429,8 +430,8 @@ public class JJFormView : JJGridView
 
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (HttpContext.Request["current_painelaction_" + Name] != null)
+            formAction = HttpContext.Request["current_painelaction_" + Name];
 
         if (formAction.Equals("OK"))
         {
@@ -441,7 +442,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
+                    HttpContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -512,7 +513,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var dicParser = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(), _repositoryServicesFacade, _coreServicesFacade,FormViewFactory)
+        var formsel = new JJFormView(dicParser.GetFormElement(),HttpContext, _repositoryServicesFacade, _coreServicesFacade,FormViewFactory)
         {
             UserValues = UserValues,
             Name = action.ElementNameToSelect
@@ -552,7 +553,7 @@ public class JJFormView : JJGridView
 
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
-        string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
+        string criptMap = HttpContext.Request.Form("current_selaction_" + Name);
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -635,7 +636,7 @@ public class JJFormView : JJGridView
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
-            CurrentContext.Response.Redirect(UrlRedirect);
+            HttpContext.Response.Redirect(UrlRedirect);
             return null;
         }
 
@@ -808,7 +809,7 @@ public class JJFormView : JJGridView
             sPainel.AppendElement(GetFormBottombar(pageState, values));
             sPainel.AppendHiddenInput($"current_painelaction_{Name}");
 
-            var collapse = new JJCollapsePanel
+            var collapse = new JJCollapsePanel(HttpContext)
             {
                 Name = "collapse_" + Name,
                 Title = FormElement.Title,
@@ -832,7 +833,7 @@ public class JJFormView : JJGridView
             if (relation.ViewType == RelationType.View)
             {
                 var childvalues = EntityRepository.GetFields(childElement, filter);
-                var chieldView = new JJDataPanel(childElement, _repositoryServicesFacade, _coreServicesFacade)
+                var chieldView = new JJDataPanel(childElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade)
                 {
                     PageState = PageState.View,
                     UserValues = UserValues,
@@ -849,7 +850,7 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var childGrid = new JJFormView(childElement, _repositoryServicesFacade,
+                var childGrid = new JJFormView(childElement,HttpContext, _repositoryServicesFacade,
                     _coreServicesFacade, FormViewFactory)
                 {
                     UserValues = UserValues,
@@ -868,7 +869,7 @@ public class JJFormView : JJGridView
 
                 childGrid.ShowTitle = false;
 
-                var collapse = new JJCollapsePanel
+                var collapse = new JJCollapsePanel(HttpContext)
                 {
                     Name = "collapse_" + childGrid.Name,
                     Title = childElement.Title,
@@ -993,8 +994,8 @@ public class JJFormView : JJGridView
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}_formupload_jjfiles";
-            if (CurrentContext?.Session[sessionName] != null)
-                CurrentContext.Session[sessionName] = null;
+            if (HttpContext?.Session[sessionName] != null)
+                HttpContext.Session[sessionName] = null;
         }
     }
 

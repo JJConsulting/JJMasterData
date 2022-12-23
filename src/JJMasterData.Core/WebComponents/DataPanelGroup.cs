@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -18,6 +19,7 @@ internal class DataPanelGroup
     public FormElement FormElement { private get; set; }
 
     public DataPanelControl DataPanelControl { get; set; }
+    private readonly IHttpContext _httpContext;
 
     public DataPanelGroup(JJDataPanel dataPanel)
     {
@@ -25,6 +27,7 @@ internal class DataPanelGroup
         RenderPanelGroup = dataPanel.RenderPanelGroup;
         FormElement = dataPanel.FormElement;
         Name = dataPanel.Name;
+        _httpContext = dataPanel.HttpContext;
     }
 
     public List<HtmlBuilder> GetHtmlPanelList()
@@ -92,7 +95,7 @@ internal class DataPanelGroup
 
     private JJTabNav GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav
+        var navTab = new JJTabNav(_httpContext)
         {
             Name = "nav_" + Name
         };
@@ -120,7 +123,7 @@ internal class DataPanelGroup
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel
+            var collapse = new JJCollapsePanel(_httpContext)
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,

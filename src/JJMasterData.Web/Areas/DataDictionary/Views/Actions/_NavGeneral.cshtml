@@ -1,7 +1,9 @@
 ﻿
 @using JJMasterData.Web.Extensions
 @using JJMasterData.Commons.Dao
+@using JJMasterData.Core.Http.Abstractions
 @model JJMasterData.Core.DataDictionary.Action.BasicAction
+@inject IHttpContext HttpContext
 @inject IEntityRepository EntityRepository
 
 <script lang="javascript" type="text/javascript">
@@ -25,7 +27,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
         @{
-            var searchBox = new JJSearchBox(EntityRepository)
+            var searchBox = new JJSearchBox(HttpContext, EntityRepository)
             {
                 DataItem =
                 {

@@ -6,35 +6,6 @@
 
 <partial name="_Menu"/>
 
-@{
-    var dataDictionaryPanel = new JJCollapsePanel
-    {
-        Name = "dataDictionaryPanel",
-        Title = Translate.Key("Data Dictionary"),
-        HtmlContent = await RendererService.ToStringAsync("_DataDictionaryPanel", Model),
-        ExpandedByDefault = true
-    };
-}
-
-@{
-    var formPanel = new JJCollapsePanel
-    {
-        Name = "formPanel",
-        Title = Translate.Key("Form"),
-        HtmlContent = await RendererService.ToStringAsync("_FormPanel", Model),
-        ExpandedByDefault = true
-    };
-}
-
-@{
-    var eventsPanel = new JJCollapsePanel
-    {
-        Name = "eventsPanel",
-        Title = Translate.Key("Events"),
-        HtmlContent = await RendererService.ToStringAsync("_EventsPanel", Model),
-        ExpandedByDefault = true
-    };
-}
 
 @using (Html.BeginForm())
 {
@@ -48,13 +19,26 @@
     </div>
 
     <br/>
-
-    @Html.Raw(dataDictionaryPanel.GetHtml())
-
-    @Html.Raw(formPanel.GetHtml())
+    
+    <jj-collapse-panel title="@Translate.Key("Data Dictionary")"
+                       partial="_DataDictionaryPanel" 
+                       expanded-by-default="true" 
+                       icon="Book"
+                       model="Model"/>
+    
+    <jj-collapse-panel title="@Translate.Key("Form")"
+                       partial="_FormPanel" 
+                       model="Model"
+                       icon="FileO"
+                       expanded-by-default="true"/>
+    
 
     if (Model.FormEvent != null)
     {
-        @Html.Raw(eventsPanel.GetHtml())
+        <jj-collapse-panel title="@Translate.Key("Events")"
+                           partial="_EventsPanel" 
+                           model="Model"
+                           icon="Drupal"
+                           expanded-by-default="true"/>
     }
 }

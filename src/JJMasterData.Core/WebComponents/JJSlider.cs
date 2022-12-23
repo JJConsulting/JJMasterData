@@ -1,6 +1,7 @@
 using System.Globalization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -11,18 +12,18 @@ public class JJSlider : JJBaseControl
     public int? Value { get; set; }
     public bool ShowInput { get; set; } = true;
 
-    public JJSlider(float minValue = 0, float maxValue = 100)
+    public JJSlider(IHttpContext httpContext, float minValue = 0, float maxValue = 100) : base(httpContext)
     {
         MinValue = minValue;
         MaxValue = maxValue;
     }
     
-    public static JJBaseControl GetInstance(FormElementField field, object value)
+    public static JJBaseControl GetInstance(FormElementField field, object value, IHttpContext httpContext)
     {
-        var slider = new JJSlider(field.MinValue ?? 0f, field.MaxValue ?? 100)
+        var slider = new JJSlider(httpContext, field.MinValue ?? 0f, field.MaxValue ?? 100)
         {
             Name =  field.Name,
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null
+            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString() ?? string.Empty) : null
         };
         return slider;
     }
@@ -40,7 +41,7 @@ public class JJSlider : JJBaseControl
 
         if (ShowInput)
         {
-            var number = new JJTextBox
+            var number = new JJTextBox(HttpContext)
             {
                 InputType = InputType.Number,
                 Name = $"{Name}-value",

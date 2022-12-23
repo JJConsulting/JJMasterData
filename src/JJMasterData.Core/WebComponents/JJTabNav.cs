@@ -1,11 +1,13 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJTabNav : JJBaseView
 {
+    internal IHttpContext HttpContext { get; }
     private int? _selectedTabIndex;
     public int SelectedTabIndex
     {
@@ -22,8 +24,9 @@ public class JJTabNav : JJBaseView
 
     public List<NavContent> ListTab { get; set; }
 
-    public JJTabNav()
+    public JJTabNav(IHttpContext httpContext)
     {
+        HttpContext = httpContext;
         Name = "nav1";
         ListTab = new List<NavContent>();
     }
@@ -104,7 +107,7 @@ public class JJTabNav : JJBaseView
 
     private int RequestSelectedTabIndex()
     {
-        string tabIndex = CurrentContext.Request[InputHiddenSelectedTabName];
+        string tabIndex = HttpContext.Request[InputHiddenSelectedTabName];
         return int.TryParse(tabIndex, out var nIndex) ? nIndex : 0;
     }
 

@@ -10,39 +10,50 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseProcess : JJBaseView
 {
-    private string _keyProcess;
+    private string _processKey;
     private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private ExpressionManager _expressionManager;
+    private string _userId;
+    
+    public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
+    
     private readonly CoreServicesFacade _coreServicesFacade;
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    protected JJBaseProcess(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    protected JJBaseProcess(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade)
     {
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         EntityRepository = repositoryServicesFacade.EntityRepository;
         _coreServicesFacade = coreServicesFacade;
+        HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
     }
 
-    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
+    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext);
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEntityRepository EntityRepository { get; }
+    
+    internal IHttpContext HttpContext { get; }
 
     internal string ProcessKey
     {
         get
         {
-            if (string.IsNullOrEmpty(_keyProcess))
-                _keyProcess = BuildProcessKey();
+            if (string.IsNullOrEmpty(_processKey))
+                _processKey = BuildProcessKey();
 
-            return _keyProcess;
+            return _processKey;
         }
     }
 
@@ -59,7 +70,7 @@ public abstract class JJBaseProcess : JJBaseView
 
 
     internal FieldManager FieldManager =>
-        _fieldManager ??= new FieldManager(FormElement, _repositoryServicesFacade,_coreServicesFacade, ExpressionManager);
+        _fieldManager ??= new FieldManager(FormElement,HttpContext, _repositoryServicesFacade,_coreServicesFacade, ExpressionManager);
 
     internal FormManager FormManager
     {
@@ -104,7 +115,7 @@ public abstract class JJBaseProcess : JJBaseView
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();
 
-        if (string.IsNullOrEmpty(UserId))
+        if (string.IsNullOrEmpty(DataHelper.GetCurrentUserId(HttpContext, UserValues)))
         {
             var error = new StringBuilder();
             error.AppendLine(Translate.Key("User not found, contact system administrator."));

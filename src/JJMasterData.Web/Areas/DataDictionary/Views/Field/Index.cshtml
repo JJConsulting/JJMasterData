@@ -1,4 +1,6 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.Http.Abstractions
+@inject IHttpContext HttpContext
 @model FormElementField
 
 
@@ -123,7 +125,7 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
 @{
-    var fieldSearchBox = new JJTextGroup
+    var fieldSearchBox = new JJTextGroup(HttpContext)
     {
        Name = "txtFilter",
        PlaceHolder = Translate.Key("Search..."),

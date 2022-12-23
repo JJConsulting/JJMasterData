@@ -8,6 +8,7 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
@@ -15,11 +16,17 @@ public class FormViewFactory
 {
     
     public GridViewFactory GridViewFactory { get; }
+    public IHttpContext HttpContext { get; }
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
     public CoreServicesFacade CoreServicesFacade { get; }
 
-    public FormViewFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, GridViewFactory gridViewFactory)
+    public FormViewFactory(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade, 
+        CoreServicesFacade coreServicesFacade, 
+        GridViewFactory gridViewFactory)
     {
+        HttpContext = httpContext;
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
         GridViewFactory = gridViewFactory;
@@ -27,14 +34,14 @@ public class FormViewFactory
 
     public JJFormView CreateFormView(string elementName)
     {
-        var form = new JJFormView(RepositoryServicesFacade, CoreServicesFacade, this);
+        var form = new JJFormView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, this);
         SetFormViewParams(form, elementName);
         return form;
     }
     
     public JJFormView CreateFormView(FormElement formElement)
     {
-        return new JJFormView(formElement, RepositoryServicesFacade, CoreServicesFacade, this);
+        return new JJFormView(formElement,HttpContext,  RepositoryServicesFacade, CoreServicesFacade, this);
     }
 
 
@@ -53,7 +60,7 @@ public class FormViewFactory
 
         var metadata = RepositoryServicesFacade.DataDictionaryRepository.GetMetadata(elementName);
 
-        var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
+        var dataContext = new DataContext(HttpContext,DataContextSource.Form, DataHelper.GetCurrentUserId(HttpContext, null));
         formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
 
         form.FormElement = metadata.GetFormElement();

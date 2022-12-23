@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -35,13 +36,16 @@ public class JJCollapsePanel : JJBaseView
     {
         get
         {
-            var collapseMode = CurrentContext.Request["collapse_mode_" + Name];
+            var collapseMode = HttpContext.Request["collapse_mode_" + Name];
             return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
         }
     }
 
-    public JJCollapsePanel()
+    internal IHttpContext HttpContext { get; }
+
+    public JJCollapsePanel(IHttpContext httpContext)
     {
+        HttpContext = httpContext;
         ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = new List<JJLinkButton>();

@@ -15,6 +15,7 @@ using System.Linq;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -24,7 +25,7 @@ public class JJAuditLogForm : JJBaseView
     private readonly CoreServicesFacade _coreServicesFacade;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
-   
+
     public AuditLogService Service { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
@@ -35,7 +36,7 @@ public class JJAuditLogForm : JJBaseView
     internal JJDataPanel DataPainel
     {
         get =>
-            _dataPainel ??= new JJDataPanel(FormElement, _repositoryServicesFacade,_coreServicesFacade)
+            _dataPainel ??= new JJDataPanel(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade)
             {
                 Name = "jjpainellog_" + Name
             };
@@ -47,17 +48,19 @@ public class JJAuditLogForm : JJBaseView
     public FormElement FormElement { get; private set; }
 
     internal IEntityRepository EntityRepository { get; private set; }
-    
+
     public IEnumerable<IWriter> ExportationWriters { get; }
 
-    
-    private JJAuditLogForm(
+    public IHttpContext HttpContext { get; }
+
+    private JJAuditLogForm(IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = coreServicesFacade.ExportationWriters;
         Service = coreServicesFacade.AuditLogService;
+        HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
         Name = "loghistory";
@@ -65,9 +68,12 @@ public class JJAuditLogForm : JJBaseView
 
     public JJAuditLogForm(
         FormElement formElement,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext,
+        repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
     }
@@ -75,8 +81,8 @@ public class JJAuditLogForm : JJBaseView
     internal override HtmlBuilder RenderHtml()
     {
         Service.CreateTableIfNotExist();
-        string ajax = CurrentContext.Request.QueryString("t");
-        string viewId = CurrentContext.Request.Form("viewid_" + Name);
+        string ajax = HttpContext.Request.QueryString("t");
+        string viewId = HttpContext.Request.Form("viewid_" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(viewId))
@@ -88,7 +94,7 @@ public class JJAuditLogForm : JJBaseView
             if ("ajax".Equals(ajax))
             {
                 var panel = GetDetailPanel(viewId);
-                CurrentContext.Response.SendResponse(panel.GetHtml());
+                HttpContext.Response.SendResponse(panel.GetHtml());
                 return null;
             }
 
@@ -169,13 +175,12 @@ public class JJAuditLogForm : JJBaseView
                 div.AppendElement(HtmlTag.Div, divFields =>
                 {
                     divFields.WithCssClass("listField")
-                      .AppendElement(HtmlTag.P, p =>
-                      {
-                          p.AppendElement(HtmlTag.B, b =>
-                          {
-                              b.AppendText($"{Translate.Key("Change History")}:");
-                          });
-                      });
+                        .AppendElement(HtmlTag.P,
+                            p =>
+                            {
+                                p.AppendElement(HtmlTag.B,
+                                    b => { b.AppendText($"{Translate.Key("Change History")}:"); });
+                            });
                     divFields.AppendElement(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable_grid");
@@ -195,13 +200,12 @@ public class JJAuditLogForm : JJBaseView
                 div.AppendElement(HtmlTag.Div, divDetail =>
                 {
                     divDetail.WithCssClass("fieldDetail")
-                      .AppendElement(HtmlTag.P, p =>
-                      {
-                          p.AppendElement(HtmlTag.B, b =>
-                          {
-                              b.AppendText($"{Translate.Key("Snapshot Record")}:");
-                          });
-                      });
+                        .AppendElement(HtmlTag.P,
+                            p =>
+                            {
+                                p.AppendElement(HtmlTag.B,
+                                    b => { b.AppendText($"{Translate.Key("Snapshot Record")}:"); });
+                            });
                     divDetail.AppendElement(panel);
                 });
             });
@@ -234,13 +238,13 @@ public class JJAuditLogForm : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(Service.GetFormElement(), _repositoryServicesFacade, _coreServicesFacade)
+        var grid = new JJGridView(Service.GetFormElement(), HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+        {
+            FormElement =
             {
-                FormElement =
-                {
-                    Title = FormElement.Title
-                }
-            };
+                Title = FormElement.Title
+            }
+        };
         grid.SetCurrentFilter(AuditLogService.DIC_NAME, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DIC_MODIFIED + " DESC";
 
@@ -312,7 +316,6 @@ public class JJAuditLogForm : JJBaseView
                 icon = "fa fa-plus fa-lg fa-fw";
                 color = "#387c44;";
                 action = Translate.Key("Added");
-
             }
             else if (row["actionType"].Equals((int)CommandOperation.Delete))
             {
@@ -347,10 +350,7 @@ public class JJAuditLogForm : JJBaseView
                         span.WithAttribute("style", $"color:{color};");
                         span.WithToolTip(action);
                     });
-                    div.AppendElement(HtmlTag.B, b =>
-                    {
-                        b.AppendText(message);
-                    });
+                    div.AppendElement(HtmlTag.B, b => { b.AppendText(message); });
                     div.AppendElement(HtmlTag.Span, span =>
                     {
                         span.WithAttribute("style", "float:right");
@@ -362,15 +362,9 @@ public class JJAuditLogForm : JJBaseView
                         span.AppendElement(icon);
                     });
                     div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.B, b =>
-                    {
-                        b.AppendText(row["modified"].ToString());
-                    });
+                    div.AppendElement(HtmlTag.B, b => { b.AppendText(row["modified"].ToString()); });
                     div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.B, b =>
-                    {
-                        b.AppendText("IP: " + row["ip"]);
-                    });
+                    div.AppendElement(HtmlTag.B, b => { b.AppendText("IP: " + row["ip"]); });
                 });
             });
         }

@@ -3,6 +3,7 @@ using JJMasterData.Core.Html;
 using JJMasterData.Core.Http;
 using System;
 using System.Collections;
+using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -16,8 +17,7 @@ public abstract class JJBaseView
 
     private Hashtable _userValues;
     private Hashtable _attributes;
-    private string _userId;
-    
+ 
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
@@ -27,8 +27,6 @@ public abstract class JJBaseView
         get => _userValues ??= new Hashtable();
         set => _userValues = value;
     }
-
-    internal JJHttpContext CurrentContext => JJHttpContext.GetInstance();
 
     public bool Visible { get; set; } = true;
 
@@ -47,25 +45,7 @@ public abstract class JJBaseView
     }
 
     public string CssClass { get; set; }
-
-
-    /// <summary>
-    /// Id do usuário Atual
-    /// </summary>
-    /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
-    /// </remarks>
-    internal string UserId
-    {
-        get
-        {
-            if (_userId == null)
-                _userId = DataHelper.GetCurrentUserId(UserValues);
-
-            return _userId;
-        }
-    }
+    
 
     #endregion
 

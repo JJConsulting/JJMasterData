@@ -1512,7 +1512,7 @@
             Configurações pré-definidas do formulário
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.FieldManager.IsPostBack">
+        <member name="P:JJMasterData.Core.WebComponents.FieldManager.IsPost">
             <summary>
             Indica se a pagina esta sendo renderizada pela primeira vez
             </summary>
@@ -1672,7 +1672,7 @@
             Todos os controles herdam dessa classe.
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJBaseView.IsPostBack">
+        <member name="P:JJMasterData.Core.WebComponents.JJBaseView.IsPost">
             <summary>
             Indica se a pagina esta sendo renderizada pela primeira vez
             </summary>

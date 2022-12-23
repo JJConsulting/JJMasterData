@@ -11,13 +11,13 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
 public class ExcelWriter : BaseWriter, IExcelWriter
 {
-
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     /// <summary>
@@ -25,15 +25,18 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = false)
     /// </summary>
     public bool ShowBorder { get; set; }
-    
+
 
     /// <summary>
     /// Exibir colunas zebradas 
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    
-    public ExcelWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+
+    public ExcelWriter(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
     }
 
@@ -174,10 +177,12 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             {
                 thStyle = " style=\"text-align:right;\" ";
             }
+
             sw.Write("\t\t\t\t<td" + thStyle + ">");
             sw.Write(field.GetTranslatedLabel());
             sw.WriteLine("</td>");
         }
+
         sw.WriteLine("\t\t\t</tr>");
     }
 }

@@ -3,6 +3,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Http;
 using System;
 using System.Collections;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -12,8 +13,7 @@ internal class FormValues
     private FormManager _formManager;
 
     private FormElement FormElement => FieldManager.FormElement;
-    private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-
+    private IHttpContext CurrentContext => FieldManager.HttpContext;
     public FieldManager FieldManager { get; private set; }
 
     public FormValues(FieldManager fieldManager)
@@ -25,9 +25,6 @@ internal class FormValues
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
-
-        if (CurrentContext == null || !CurrentContext.HasContext())
-            throw new ArgumentNullException(nameof(CurrentContext));
 
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         string objname;
@@ -90,7 +87,7 @@ internal class FormValues
         var newvalues = new Hashtable();
         DataHelper.CopyIntoHash(ref newvalues, values, true);
         
-        if (CurrentContext.IsPostBack && autoReloadFormFields)
+        if (CurrentContext.IsPost && autoReloadFormFields)
         {
             _formValues ??= new FormValues(FieldManager);
             var requestedValues = _formValues.RequestFormValues(state, prefix);
@@ -98,7 +95,7 @@ internal class FormValues
         }
         
         _formManager ??= new FormManager(FormElement, FieldManager.Expression);
-        return _formManager.MergeWithExpressionValues(newvalues, state, !CurrentContext.IsPostBack);
+        return _formManager.MergeWithExpressionValues(newvalues, state, !CurrentContext.IsPost);
     }
 
 }

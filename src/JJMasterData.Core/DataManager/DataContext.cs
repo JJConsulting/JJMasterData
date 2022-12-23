@@ -1,11 +1,13 @@
 ﻿#nullable enable
 
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 public class DataContext
 {
+    public IHttpContext HttpContext { get; }
     public DataContextSource Source { get; private set; }
 
     public string? UserId { get; private set; }
@@ -14,18 +16,13 @@ public class DataContext
     
     public string? BrowserInfo { get; internal set; }
     
-    public DataContext(DataContextSource source, string? userId)
+    public DataContext(IHttpContext httpContext, DataContextSource source, string? userId)
     {
+        HttpContext = httpContext;
         Source = source;
         UserId = userId;
-
-        var context = JJHttpContext.GetInstance();
-        if (context.HasContext())
-        {
-            IpAddress = context.Request.UserHostAddress;
-            BrowserInfo = context.Request.UserAgent;
-        }
-
+        IpAddress = httpContext.Request.UserHostAddress;
+        BrowserInfo = httpContext.Request.UserAgent;
     }
 
 }

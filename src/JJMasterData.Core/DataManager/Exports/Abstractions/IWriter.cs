@@ -5,6 +5,7 @@ using System.Threading;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
@@ -22,7 +23,7 @@ public interface IWriter : IBackgroundTaskWorker
     
     public DataTable DataSource { get; set; }
     
-    public System.Web.HttpContext CurrentContext { get; internal set; }
+    public IHttpContext CurrentContext { get; internal set; }
     
     public string AbsoluteUri { get; set; }
     

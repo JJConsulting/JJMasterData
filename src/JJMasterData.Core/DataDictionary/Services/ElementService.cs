@@ -16,6 +16,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 
@@ -23,15 +25,18 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
+    public IHttpContext HttpContext { get; }
     public CoreServicesFacade CoreServicesFacade { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly string _dataDictionaryTableName;
 
     public ElementService(IValidationDictionary validationDictionary, 
                           IEntityRepository entityRepository, 
+                          IHttpContext httpContext,
                           IDataDictionaryRepository dataDictionaryRepository, CoreServicesFacade coreServicesFacade, IOptions<JJMasterDataCoreOptions> options) 
         : base(validationDictionary, dataDictionaryRepository)
     {
+        HttpContext = httpContext;
         CoreServicesFacade = coreServicesFacade;
         _entityRepository = entityRepository;
         _dataDictionaryTableName = options.Value.DataDictionaryTableName;
@@ -205,7 +210,7 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
         
-        var gridView = new JJGridView(formElement, new RepositoryServicesFacade(DataDictionaryRepository, _entityRepository),CoreServicesFacade)
+        var gridView = new JJGridView(formElement, HttpContext, new RepositoryServicesFacade(DataDictionaryRepository, _entityRepository),CoreServicesFacade)
         {
             Name = "List",
             FilterAction =

@@ -15,6 +15,7 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -62,12 +63,13 @@ public class JJDataImp : JJBaseProcess
     public bool ExpandedByDefault { get; set; }
     
     public AuditLogService AuditLogService { get; }
+    
 
     #endregion
 
     #region "Constructors"
 
-    public JJDataImp(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade,coreServicesFacade)
+    public JJDataImp(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(httpContext,repositoryServicesFacade,coreServicesFacade)
     {
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
@@ -76,16 +78,16 @@ public class JJDataImp : JJBaseProcess
         Name = "jjdataimp1";
     }
     
-    public JJDataImp(string elementName, 
-       RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
+    public JJDataImp(string elementName, IHttpContext httpContext,
+       RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade )
     {
-        var factory = new DataImpFactory(RepositoryServicesFacade, CoreServicesFacade);
+        var factory = new DataImpFactory(httpContext, RepositoryServicesFacade, CoreServicesFacade);
         factory.SetDataImpParams(this, elementName);
     }
 
     public JJDataImp(
-        FormElement formElement,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
+        FormElement formElement,IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
         FormElement = formElement;
     }
@@ -97,7 +99,7 @@ public class JJDataImp : JJBaseProcess
         HtmlBuilder html = null;
         Upload.OnPostFile += OnPostFile;
 
-        string action = CurrentContext.Request["current_uploadaction"];
+        string action = HttpContext.Request["current_uploadaction"];
 
         switch (action)
         {
@@ -105,12 +107,12 @@ public class JJDataImp : JJBaseProcess
             {
                 var reporterProgress = GetCurrentProcess();
                 string json = JsonConvert.SerializeObject(reporterProgress);
-                CurrentContext.Response.SendResponse(json, "text/json");
+                HttpContext.Response.SendResponse(json, "text/json");
                 break;
             }
             case "process_stop":
                 AbortProcess();
-                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
+                HttpContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
                 break;
             case "process_finished":
                 html = GetHtmlLogProcess();
@@ -123,7 +125,7 @@ public class JJDataImp : JJBaseProcess
                 //Process de text from clipboard
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.Form("pasteValue");
+                    string pasteValue = HttpContext.Request.Form("pasteValue");
                     ImportInBackground(pasteValue);
                 }
                 html = GetHtmlWaitProcess();
@@ -230,16 +232,18 @@ public class JJDataImp : JJBaseProcess
             });
             
 
-        var collapsePanel = new JJCollapsePanel();
-        collapsePanel.TitleIcon = new JJIcon(IconType.FolderOpenO);
-        collapsePanel.Title = "Import File";
-        collapsePanel.ExpandedByDefault = ExpandedByDefault;
-        collapsePanel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Label, label =>
-            {
-                label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));
-            })
-            .AppendElement(Upload);
+        var collapsePanel = new JJCollapsePanel(HttpContext)
+        {
+            TitleIcon = new JJIcon(IconType.FolderOpenO),
+            Title = "Import File",
+            ExpandedByDefault = ExpandedByDefault,
+            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
+                .AppendElement(HtmlTag.Label, label =>
+                {
+                    label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));
+                })
+                .AppendElement(Upload)
+        };
 
         html.AppendElement(collapsePanel);
         html.AppendElement(HtmlTag.Div, row =>
@@ -283,7 +287,7 @@ public class JJDataImp : JJBaseProcess
 
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
-        var dataContext = new DataContext(DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(HttpContext, DataContextSource.Upload, UserId);
         var formService = new FormService(FormManager, dataContext, AuditLogService)
         {
             EnableErrorLink = false,
@@ -379,7 +383,7 @@ public class JJDataImp : JJBaseProcess
 
     private JJUploadArea GetUploadArea()
     {
-        return new JJUploadArea
+        return new JJUploadArea(HttpContext)
         {
             Multiple = false,
             EnableCopyPaste = false,

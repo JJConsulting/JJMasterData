@@ -95,10 +95,10 @@ internal class DataPanelScript
                 //Valor customizado pelo usuário
                 val = $"'{DataPanel.UserValues[fieldName]}'";
             }
-            else if (DataPanel.CurrentContext.Session[fieldName] != null)
+            else if (DataPanel.HttpContext.Session[fieldName] != null)
             {
                 //Valor da Sessão
-                val = $"'{DataPanel.CurrentContext.Session[fieldName]}'";
+                val = $"'{DataPanel.HttpContext.Session[fieldName]}'";
             }
             else if (DataPanel.Values.Contains(fieldName))
             {

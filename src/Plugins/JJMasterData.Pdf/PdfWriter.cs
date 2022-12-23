@@ -25,6 +25,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Pdf;
@@ -39,7 +40,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
-    public PdfWriter(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(repositoryServicesFacade, coreServicesFacade)
+    public PdfWriter(IHttpContext httpContext,RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
     }
     

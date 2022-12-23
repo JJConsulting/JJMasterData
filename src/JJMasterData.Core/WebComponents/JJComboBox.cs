@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -42,9 +43,9 @@ public class JJComboBox : JJBaseControl
     {
         get
         {
-            if (_selectedValue == null && CurrentContext.IsPostBack)
+            if (_selectedValue == null && HttpContext.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = HttpContext.Request[Name];
             }
 
             return _selectedValue;
@@ -52,7 +53,7 @@ public class JJComboBox : JJBaseControl
         set => _selectedValue = value;
     }
 
-    public JJComboBox(IEntityRepository entityRepository)
+    public JJComboBox(IHttpContext httpContext, IEntityRepository entityRepository) : base(httpContext)
     {
         EntityRepository = entityRepository;
         Enabled = true;
@@ -60,9 +61,9 @@ public class JJComboBox : JJBaseControl
     }
 
 
-    internal static JJComboBox GetInstance(FormElementField field,IEntityRepository repository,  ExpressionOptions expOptions, object value)
+    internal static JJComboBox GetInstance(FormElementField field,IHttpContext httpContext, IEntityRepository repository, ExpressionOptions expOptions, object value)
     {
-        var cbo = new JJComboBox(repository)
+        var cbo = new JJComboBox(httpContext, repository)
         {
             Name = field.Name,
             Visible = true,
@@ -280,7 +281,7 @@ public class JJComboBox : JJBaseControl
                         UserValues.Add("search_id", null);
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 

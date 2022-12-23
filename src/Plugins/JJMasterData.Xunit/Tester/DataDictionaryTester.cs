@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Data;
+using System.Web;
 using AutoFixture;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
@@ -8,6 +9,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 
@@ -23,11 +25,19 @@ internal class DataDictionaryTester : IDataDictionaryTester
     public IOptions<JJMasterDataCoreOptions> Options { get; }
     public string? UserId { get; }
     
-    public DataDictionaryTester(Metadata metadata, IEntityRepository entityRepository, IFormEventResolver formEventResolver, IOptions<JJMasterDataCoreOptions> options, string? userId = null)
+    internal IHttpContext HttpContext { get; }
+    
+    public DataDictionaryTester(
+        Metadata metadata, 
+        IEntityRepository entityRepository,
+        IFormEventResolver formEventResolver,
+        IHttpContext httpContext,
+        IOptions<JJMasterDataCoreOptions> options, string? userId = null)
     {
         DictionaryName = metadata.Table.Name;
         Options = options;
         UserId = userId;
+        HttpContext = httpContext;
         
         _entityRepository = entityRepository;
         _formEventResolver = formEventResolver;
@@ -42,12 +52,12 @@ internal class DataDictionaryTester : IDataDictionaryTester
             { "USERID", UserId }
         };
         
-        var dataContext = new DataContext(DataContextSource.Form, UserId);
+        var dataContext = new DataContext(HttpContext,DataContextSource.Form, UserId);
         var formEvent = _formEventResolver.GetFormEvent(metadata.Table.Name);
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        var expManager = new ExpressionManager(userValues, _entityRepository);
+        var expManager = new ExpressionManager(userValues, _entityRepository,HttpContext);
         var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext, new AuditLogService(_entityRepository, Options))
         {

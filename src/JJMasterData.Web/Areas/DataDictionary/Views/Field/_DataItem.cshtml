@@ -1,5 +1,7 @@
 ﻿@using JJMasterData.Commons.Dao
+@using JJMasterData.Core.Http.Abstractions
 @model FormElementField
+@inject IHttpContext HttpContext
 @inject IEntityRepository EntityRepository
 
 @{
@@ -204,7 +206,7 @@
                         <td>
                             @{
                                 var iconId = "DataItem.Items[" + i + "].Icon";
-                                var searchBox = new JJSearchBox(EntityRepository)
+                                var searchBox = new JJSearchBox(HttpContext,EntityRepository)
                                 {
                                     DataItem =
                                     {

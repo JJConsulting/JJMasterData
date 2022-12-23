@@ -7,23 +7,22 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager
 {
     public static class DataHelper
     {
-        public static string GetCurrentUserId(Hashtable userValues)
+        public static string GetCurrentUserId(IHttpContext httpContext,Hashtable userValues)
         {
             if (userValues != null && userValues.Contains("USERID"))
             {
                 return userValues["USERID"].ToString();
             }
-
-            var currentContext = JJHttpContext.GetInstance();
-            if (currentContext.HasContext() &&
-                currentContext.Session?["USERID"] != null)
+            
+            if (httpContext.Session?["USERID"] != null)
             {
-                return currentContext.Session["USERID"];
+                return httpContext.Session["USERID"];
             }
 
             return null;

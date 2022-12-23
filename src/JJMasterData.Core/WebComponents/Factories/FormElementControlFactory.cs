@@ -11,10 +11,11 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
-internal class WebControlFactory
+internal class FormElementControlFactory
 {
 
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
@@ -26,16 +27,18 @@ internal class WebControlFactory
     public ExpressionOptions ExpressionOptions { get; private set; }
 
     public FormElement FormElement { get; set; }
+    public IHttpContext HttpContext { get; }
     internal RepositoryServicesFacade RepositoryServicesFacade { get; }
     internal CoreServicesFacade CoreServicesFacade { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEnumerable<IWriter> ExportationWriters { get; }
     internal IEntityRepository EntityRepository { get; }
-    public WebControlTextFactory WebControlTextFactory { get; }
+    public TextGroupFactory TextGroupFactory { get; }
     
     
-    public WebControlFactory(
+    public FormElementControlFactory(
         JJDataPanel dataPanel, 
+        IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
         CoreServicesFacade = coreServicesFacade;
@@ -44,79 +47,83 @@ internal class WebControlFactory
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = coreServicesFacade.ExportationWriters;
         ActionManager = new ActionManager(dataPanel.FormElement,
-            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository), repositoryServicesFacade.DataDictionaryRepository,
+            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext), repositoryServicesFacade.DataDictionaryRepository,
             coreServicesFacade.Options,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
         PanelName = dataPanel.Name;
-        WebControlTextFactory = new WebControlTextFactory();
+        HttpContext = httpContext;
+        TextGroupFactory = new TextGroupFactory(HttpContext);
         ExpressionOptions = new ExpressionOptions(dataPanel.UserValues, dataPanel.Values, dataPanel.PageState,
             dataPanel.EntityRepository);
     }
 
-    public WebControlFactory(
+    public FormElementControlFactory(
         FormElement formElement, 
+        IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
         ExpressionManager expressionManager,
-        ExpressionOptions expressionOptions, string panelName)
+        ExpressionOptions expressionOptions,
+        string panelName)
     {
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         FormElement = formElement;
+        HttpContext = httpContext;
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
         ExpressionOptions = expressionOptions;
         PanelName = panelName;
-        WebControlTextFactory = new WebControlTextFactory();
+        TextGroupFactory = new TextGroupFactory(HttpContext);
         ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository,coreServicesFacade.Options, panelName);
     }
 
-    public JJBaseControl CreateControl(FormElementField f, object value)
+    public JJBaseControl CreateControl(FormElementField field, object value)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
         JJBaseControl baseView;
-        switch (f.Component)
+        switch (field.Component)
         {
             case FormComponent.ComboBox:
-                baseView = JJComboBox.GetInstance(f,EntityRepository, ExpressionOptions, value);
+                baseView = JJComboBox.GetInstance(field,HttpContext, EntityRepository, ExpressionOptions, value);
                 break;
             case FormComponent.Search:
-                baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, PanelName);
+                baseView = JJSearchBox.GetInstance(field,HttpContext, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.Lookup:
-                baseView = JJLookup.GetInstance(f, DataDictionaryRepository,CoreServicesFacade, ExpressionOptions, value, PanelName);
+                baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository,CoreServicesFacade, ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.CheckBox:
-                baseView = JJCheckBox.GetInstance(f, value);
+                baseView = JJCheckBox.GetInstance(field, HttpContext, value);
 
                 if (ExpressionOptions.PageState != PageState.List)
-                    baseView.Text = string.IsNullOrEmpty(f.Label) ? f.Name : f.Label;
+                    baseView.Text = string.IsNullOrEmpty(field.Label) ? field.Name : field.Label;
 
                 break;
             case FormComponent.TextArea:
-                baseView = JJTextArea.GetInstance(f, value);
+                baseView = JJTextArea.GetInstance(field, value,HttpContext);
                 break;
             case FormComponent.Slider:
-                baseView = JJSlider.GetInstance(f, value);
+                baseView = JJSlider.GetInstance(field, value,HttpContext);
                 break;
             case FormComponent.File:
                 if (ExpressionOptions.PageState == PageState.Filter)
                 {
-                    baseView = WebControlTextFactory.CreateTextGroup(f, value);
+                    baseView = TextGroupFactory.CreateTextGroup(field, value);
                 }
                 else
                 {
-                    var textFile = JJTextFile.GetInstance(FormElement, f, RepositoryServicesFacade, CoreServicesFacade,  ExpressionOptions,value, PanelName);
+                    var textFile = JJTextFile.GetInstance(FormElement, field,HttpContext, RepositoryServicesFacade, CoreServicesFacade,  ExpressionOptions,value, PanelName);
                     baseView = textFile;
                 }
 
                 break;
             default:
-                var textGroup = WebControlTextFactory.CreateTextGroup(f, value);
+                var textGroup = TextGroupFactory.CreateTextGroup(field, value);
 
 
                 if (ExpressionOptions.PageState == PageState.Filter)
@@ -125,7 +132,7 @@ internal class WebControlFactory
                 }
                 else
                 {
-                    AddUserActions(textGroup, f);
+                    AddUserActions(textGroup, field);
                 }
 
                 baseView = textGroup;
@@ -133,7 +140,7 @@ internal class WebControlFactory
                 break;
         }
 
-        baseView.ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
+        baseView.ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
 
 
         return baseView;

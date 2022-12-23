@@ -312,7 +312,7 @@ internal class GridTableBody
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
-        var checkBox = new JJCheckBox
+        var checkBox = new JJCheckBox(GridView.HttpContext)
         {
             Name = "jjchk_" + index,
             Value = Cript.Cript64(pkValues),

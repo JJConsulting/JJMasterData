@@ -1,10 +1,11 @@
-﻿namespace JJMasterData.Core.WebComponents;
+﻿using JJMasterData.Core.Http.Abstractions;
+
+namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseControl : JJBaseView
 {
+    internal IHttpContext HttpContext { get; }
     private string _text;
-
-
     /// <summary>
     /// Obtém ou define um valor que indica se o controle está habilitado.
     /// (Default = true)
@@ -38,14 +39,17 @@ public abstract class JJBaseControl : JJBaseView
     {
         get
         {
-            if (_text == null && CurrentContext.IsPostBack)
+            if (_text == null && HttpContext.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = HttpContext.Request[Name];
             }
             return _text;
         }
         set => _text = value;
     }
 
-
+    protected JJBaseControl(IHttpContext httpContext)
+    {
+        HttpContext = httpContext;
+    }
 }

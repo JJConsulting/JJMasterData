@@ -12,6 +12,8 @@ using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Core.WebComponents.Factories;
@@ -54,6 +56,14 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(this IServiceCollection services)
     {
+#if NET
+        services.AddHttpContextAccessor();
+#endif
+        services.AddScoped<IHttpSession, JJSession>();
+        services.AddScoped<IHttpRequest, JJRequest>();
+        services.AddScoped<IHttpResponse, JJResponse>();
+        services.AddScoped<IHttpContext, JJHttpContext>();
+        
         services.AddFactories();
         
         services.AddTransient<IFormEventResolver,FormEventResolver>();
@@ -73,6 +83,9 @@ public static class ServiceCollectionExtensions
         services.AddTransient<FormViewFactory>();
         services.AddTransient<GridViewFactory>();
         services.AddTransient<WebComponentFactory>();
+        services.AddTransient<SearchBoxFactory>();
+        services.AddTransient<CollapsePanelFactory>();
+        services.AddTransient<UploadAreaFactory>();
     }
 
     private static void AddServicesFacades(this IServiceCollection services)

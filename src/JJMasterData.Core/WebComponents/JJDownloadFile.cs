@@ -9,6 +9,7 @@ using System.IO;
 using System.Web;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -17,15 +18,7 @@ public class JJDownloadFile : JJBaseView
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
     
-    public JJDownloadFile()
-    {
-
-    }
-
-    public JJDownloadFile(string filePath)
-    {
-        FilePath = filePath;
-    }
+    internal IHttpContext HttpContext { get; }
 
     public string FilePath { get; set; }
 
@@ -43,6 +36,17 @@ public class JJDownloadFile : JJBaseView
     
         return null;
     }
+    
+    public JJDownloadFile(IHttpContext httpContext)
+    {
+        HttpContext = httpContext;
+    }
+
+    public JJDownloadFile(string filePath, IHttpContext httpContext)
+    {
+        FilePath = filePath;
+        HttpContext = httpContext;
+    }
 
     private HtmlBuilder GetDownloadHtmlElement()
     {
@@ -50,7 +54,7 @@ public class JJDownloadFile : JJBaseView
         string fileName = file.Name;
         string size = Format.FormatFileSize(file.Length);
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
-        string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
+        string url = HttpContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
@@ -111,13 +115,12 @@ public class JJDownloadFile : JJBaseView
 
     internal void DirectDownload(string filePath)
     {
-        var context = JJHttpContext.GetInstance();
-        context.Response.Redirect(GetDownloadUrl(filePath));
+        HttpContext.Response.Redirect(GetDownloadUrl(filePath,HttpContext));
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext)
     {
-        var appPath = HttpContext.Current!.Request.ApplicationPath;
+        var appPath = httpContext.Request.ApplicationPath;
 
         if (!appPath.EndsWith("/"))
             appPath += "/";
@@ -126,22 +129,22 @@ public class JJDownloadFile : JJBaseView
         return $"{appPath}{culture}MasterData/File/Download?filePath={Cript.Cript64(filePath)}";
     }
 
-    public static bool IsDownloadRoute(JJBaseView view)
+    public static bool IsDownloadRoute(IHttpContext httpContext)
     {
-        if (view.CurrentContext.Request.QueryString(DirectDownloadParameter) != null)
+        if (httpContext.Request.QueryString(DirectDownloadParameter) != null)
             return true;
-        if (view.CurrentContext.Request.QueryString(DownloadParameter) != null)
+        if (httpContext.Request.QueryString(DownloadParameter) != null)
             return true;
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(JJBaseView view)
+    public static HtmlBuilder ResponseRoute(IHttpContext httpContext)
     {
         bool isExternalLink = false;
-        string criptFilePath = view.CurrentContext.Request.QueryString(DownloadParameter);
+        string criptFilePath = httpContext.Request.QueryString(DownloadParameter);
         if (criptFilePath == null)
         {
-            criptFilePath = view.CurrentContext.Request.QueryString(DirectDownloadParameter);
+            criptFilePath = httpContext.Request.QueryString(DirectDownloadParameter);
             isExternalLink = true;
         }
 
@@ -152,7 +155,7 @@ public class JJDownloadFile : JJBaseView
         if (filePath == null)
             throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
-        var download = new JJDownloadFile
+        var download = new JJDownloadFile(httpContext)
         {
             FilePath = filePath,
             IsExternalLink = isExternalLink

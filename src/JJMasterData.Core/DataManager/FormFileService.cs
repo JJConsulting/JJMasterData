@@ -10,11 +10,13 @@ using System.IO;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 internal class FormFileService
 {
+
     public EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
@@ -40,15 +42,17 @@ internal class FormFileService
     /// but beware where you're deploying your application.
     /// </remarks>
     public string FolderPath { get; set; }
-
+    internal IHttpContext HttpContext { get; }
+    
     public List<FormFileInfo> MemoryFiles
     {
-        get => JJSession.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
+        get => HttpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
+        set => HttpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
     }
 
-    public FormFileService(string memoryFilesSessionName)
+    public FormFileService(string memoryFilesSessionName, IHttpContext httpContext)
     {
+        HttpContext = httpContext;
         MemoryFilesSessionName = $"{memoryFilesSessionName}_files";
         AutoSave = true;
     }
@@ -302,7 +306,7 @@ internal class FormFileService
         fileStream.Close();
     }
 
-    internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys)
+    internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys, IHttpContext httpContext)
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -312,12 +316,12 @@ internal class FormFileService
         foreach (var field in uploadFields)
         {
             string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var fileService = new FormFileService(field.Name + "_formupload");
+            var fileService = new FormFileService(field.Name + "_formupload", httpContext);
             fileService.SaveMemoryFiles(folderPath);
         }
     }
 
-    internal static void DeleteFiles(FormElement FormElement, Hashtable primaryKeys)
+    internal static void DeleteFiles(FormElement FormElement, IHttpContext httpContext)
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -325,7 +329,7 @@ internal class FormFileService
         
         foreach (var field in uploadFields)
         {
-            var fileService = new FormFileService(field.Name + "_formupload");
+            var fileService = new FormFileService(field.Name + "_formupload", httpContext);
             fileService.DeleteAll();
         }
     }

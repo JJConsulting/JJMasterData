@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
@@ -12,6 +13,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -46,9 +48,9 @@ public class JJDataPanel : JJBaseView
             if (_fieldManager != null)
                 return _fieldManager;
 
-            var expression = new ExpressionManager(UserValues, EntityRepository);
+            var expression = new ExpressionManager(UserValues, EntityRepository, HttpContext);
 
-            _fieldManager = new FieldManager(FormElement, _repositoryServicesFacade, _coreServicesFacade, expression);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade, expression);
             return _fieldManager;
         }
     }
@@ -95,14 +97,17 @@ public class JJDataPanel : JJBaseView
     /// Render field grouping
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
+    
+    internal IHttpContext HttpContext { get; set; }
 
     #endregion
 
     #region "Constructors"
 
-    internal JJDataPanel(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    internal JJDataPanel(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
     {
         EntityRepository = repositoryServicesFacade.EntityRepository;
+        HttpContext = httpContext;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         Values = new Hashtable();
         Errors = new Hashtable();
@@ -116,6 +121,7 @@ public class JJDataPanel : JJBaseView
     internal JJDataPanel()
     {
         EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
+        HttpContext = JJService.Provider.GetRequiredService<IHttpContext>();
         DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
         Values = new Hashtable();
         Errors = new Hashtable();
@@ -132,15 +138,15 @@ public class JJDataPanel : JJBaseView
         factory.SetDataPanelParams(this, elementName);
     }
 
-    public JJDataPanel(FormElement formElement, RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : this(repositoryServicesFacade, coreServicesFacade)
+    public JJDataPanel(FormElement formElement, IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : this(httpContext,repositoryServicesFacade, coreServicesFacade)
     {
-        var factory = new DataPanelFactory(repositoryServicesFacade, coreServicesFacade);
+        var factory = new DataPanelFactory(httpContext, repositoryServicesFacade, coreServicesFacade);
         factory.SetDataPanelParams(this, formElement);
     }
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement,
+    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState,IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement,httpContext,
         repositoryServicesFacade, coreServicesFacade)
     {
         Values = values;
@@ -153,25 +159,25 @@ public class JJDataPanel : JJBaseView
     internal override HtmlBuilder RenderHtml()
     {
         Values = GetFormValues();
-        string requestType = CurrentContext.Request.QueryString("t");
-        string objname = CurrentContext.Request.QueryString("objname");
-        string pnlname = CurrentContext.Request.QueryString("pnlname");
+        string requestType = HttpContext.Request.QueryString("t");
+        string objname = HttpContext.Request.QueryString("objname");
+        string pnlname = HttpContext.Request.QueryString("pnlname");
 
         //Lookup Route
-        if (JJLookup.IsLookupRoute(this))
+        if (JJLookup.IsLookupRoute(HttpContext,this))
             return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
-        if (JJTextFile.IsFormUploadRoute(this))
+        if (JJTextFile.IsFormUploadRoute(HttpContext, this))
             return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route
-        if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+        if (JJDownloadFile.IsDownloadRoute(HttpContext))
+            return JJDownloadFile.ResponseRoute(HttpContext);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
+            HttpContext.Response.SendResponse(GetHtmlPanel().ToString());
             return null;
         }
 
@@ -253,17 +259,16 @@ public class JJDataPanel : JJBaseView
     {
         Hashtable tempvalues = null;
 
-        if (CurrentContext.HasContext())
+
+        string criptPkval = HttpContext.Request["jjform_pkval_" + Name];
+        if (!string.IsNullOrEmpty(criptPkval))
         {
-            string criptPkval = CurrentContext.Request["jjform_pkval_" + Name];
-            if (!string.IsNullOrEmpty(criptPkval))
-            {
-                string parsedPkval = Cript.Descript64(criptPkval);
-                var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
-                var entityRepository = FieldManager.Expression.EntityRepository;
-                tempvalues = entityRepository.GetFields(FormElement, filters);
-            }
+            string parsedPkval = Cript.Descript64(criptPkval);
+            var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
+            var entityRepository = FieldManager.Expression.EntityRepository;
+            tempvalues = entityRepository.GetFields(FormElement, filters);
         }
+        
 
         tempvalues ??= new Hashtable();
 
@@ -309,10 +314,10 @@ public class JJDataPanel : JJBaseView
 
     internal void ResponseUrlAction()
     {
-        if (!Name.Equals(CurrentContext.Request["objname"]))
+        if (!Name.Equals(HttpContext.Request["objname"]))
             return;
 
-        string criptMap = CurrentContext.Request["criptid"];
+        string criptMap = HttpContext.Request["criptid"];
         if (string.IsNullOrEmpty(criptMap))
             return;
 
@@ -330,7 +335,7 @@ public class JJDataPanel : JJBaseView
             result.Add("TitlePopUp", urlAction.TitlePopUp);
             result.Add("UrlRedirect", parsedUrl);
 
-            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
+            HttpContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
         }
     }
 }

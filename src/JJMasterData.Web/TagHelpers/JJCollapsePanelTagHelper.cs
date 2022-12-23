@@ -1,5 +1,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -29,25 +30,25 @@ public class JJCollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("configure")]
     public Action<JJCollapsePanel>? Configure { get; set; }
 
+    private CollapsePanelFactory CollapsePanelFactory { get; }
     private RazorPartialRendererService RendererService { get; }
     
-    public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService)
+    public JJCollapsePanelTagHelper(CollapsePanelFactory collapsePanelFactory, RazorPartialRendererService rendererService)
     {
+        CollapsePanelFactory = collapsePanelFactory;
         RendererService = rendererService;
     }
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         AssertAttributes();
-        
-        var panel = new JJCollapsePanel
-        {
-            Name = Title!.ToLower().Replace(" ", "_"),
-            Title = Title,
-            ExpandedByDefault = ExpandedByDefault,
-            TitleIcon = new JJIcon(Icon)
-        };
 
+        var panel = CollapsePanelFactory.CreateCollapsePanel();
+        panel.Name = Title!.ToLower().Replace(" ", "_");
+        panel.Title = Title;
+        panel.ExpandedByDefault = ExpandedByDefault;
+        panel.TitleIcon = new JJIcon(Icon);
+        
         if (Partial == null)
         {
             var content = output.GetChildContentAsync().Result.GetContent();

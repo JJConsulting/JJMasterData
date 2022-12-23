@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -15,6 +17,8 @@ public class GridSortingConfig
 
     public string Name { get; set; }
 
+    private readonly IEntityRepository _entityRepository;
+    private readonly IHttpContext _httpContext;
     public GridSortingConfig(JJGridView grid)
     {
         if (grid == null)
@@ -23,6 +27,8 @@ public class GridSortingConfig
         CurrentOrder = grid.CurrentOrder;
         FormElement = grid.FormElement;
         Name = grid.Name;
+        _httpContext = grid.HttpContext;
+        _entityRepository = grid.EntityRepository;
     }
 
     public HtmlBuilder GetHtmlElement()
@@ -103,7 +109,7 @@ public class GridSortingConfig
         tbody.WithAttribute("id", $"sortable_{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 
-        var comboBox = new JJComboBox(null)
+        var comboBox = new JJComboBox(_httpContext,_entityRepository)
         {
             DataItem =
             {

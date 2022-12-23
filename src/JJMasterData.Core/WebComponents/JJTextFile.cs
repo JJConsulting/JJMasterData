@@ -14,6 +14,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -60,9 +61,10 @@ public class JJTextFile : JJBaseControl
     public CoreServicesFacade CoreServicesFacade { get; }
 
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
-
     
-    public JJTextFile(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    
+    public JJTextFile(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade) : base(httpContext)
     {
         CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
@@ -72,7 +74,7 @@ public class JJTextFile : JJBaseControl
     }
     
     internal static JJTextFile GetInstance(FormElement formElement,
-        FormElementField field,  RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionOptions expOptions,
+        FormElementField field,IHttpContext httpContext,  RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionOptions expOptions,
         object value, string panelName)
     {
         if (field == null)
@@ -81,7 +83,7 @@ public class JJTextFile : JJBaseControl
         if (field.DataFile == null)
             throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
 
-        var text = new JJTextFile(repositoryServicesFacade,coreServicesFacade)
+        var text = new JJTextFile(httpContext, repositoryServicesFacade,coreServicesFacade)
         {
             ElementField = field,
             PageState = expOptions.PageState,
@@ -128,7 +130,7 @@ public class JJTextFile : JJBaseControl
         if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var textGroup = new JJTextGroup
+        var textGroup = new JJTextGroup(HttpContext)
         {
             CssClass = CssClass,
             ReadOnly = true,
@@ -195,7 +197,7 @@ public class JJTextFile : JJBaseControl
 
     private void LoadDirectValues()
     {
-        string uploadvalues = CurrentContext.Request.QueryString("uploadvalues");
+        string uploadvalues = HttpContext.Request.QueryString("uploadvalues");
         if (string.IsNullOrEmpty(uploadvalues))
             throw new ArgumentNullException(nameof(uploadvalues));
 
@@ -237,7 +239,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload(RepositoryServicesFacade,CoreServicesFacade);
+        var form = new JJFormUpload(HttpContext, RepositoryServicesFacade,CoreServicesFacade);
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -258,6 +260,7 @@ public class JJTextFile : JJBaseControl
 
         return form;
     }
+    
     private bool HasPk()
     {
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -361,7 +364,7 @@ public class JJTextFile : JJBaseControl
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = absoluteUri ?? HttpContext.Current.Request.Url.AbsoluteUri;
+        string url = absoluteUri ?? HttpContext.Request.AbsoluteUri;
         if (url.Contains('?'))
             url += "&";
         else
@@ -381,11 +384,11 @@ public class JJTextFile : JJBaseControl
     private bool IsFormUploadRoute()
     {
         string pnlName = GetPanelName();
-        string lookupRoute = CurrentContext.Request.QueryString(UploadFormParameterName + pnlName);
+        string lookupRoute = HttpContext.Request.QueryString(UploadFormParameterName + pnlName);
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsFormUploadRoute(JJBaseView view)
+    public static bool IsFormUploadRoute(IHttpContext httpContext,JJBaseView view)
     {
         string dataPanelName;
         if (view is JJFormView formView)
@@ -395,12 +398,12 @@ public class JJTextFile : JJBaseControl
         else
             dataPanelName = string.Empty;
 
-        return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
+        return httpContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
 
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
-        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
+        string uploadFormRoute = view.HttpContext.Request.QueryString(UploadFormParameterName + view.Name);
 
         if (uploadFormRoute == null) return null;
 

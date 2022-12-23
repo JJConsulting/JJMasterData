@@ -4,13 +4,13 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJTextRange : JJBaseControl
 {
-
     private JJBaseControl FromField { get; set; }
     private JJBaseControl ToField { get; set; }
 
@@ -18,7 +18,13 @@ public class JJTextRange : JJBaseControl
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    internal static JJBaseControl GetInstance(FormElementField field, Hashtable values)
+
+    public JJTextRange(IHttpContext httpContext) : base(httpContext)
+    {
+        
+    }
+
+    internal static JJBaseControl GetInstance(FormElementField field, Hashtable values, IHttpContext httpContext)
     {
         string valueFrom = "";
         if (values != null && values.Contains(field.Name + "_from"))
@@ -26,9 +32,9 @@ public class JJTextRange : JJBaseControl
             valueFrom = values[field.Name + "_from"].ToString();
         }
         
-        var range = new JJTextRange();
+        var range = new JJTextRange(httpContext);
         range.FieldType = field.DataType;
-        range.FromField = new WebControlTextFactory().CreateTextGroup(field);
+        range.FromField = new TextGroupFactory(httpContext).CreateTextGroup(field);
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = Translate.Key("From");
@@ -39,7 +45,7 @@ public class JJTextRange : JJBaseControl
             valueTo = values[field.Name + "_to"].ToString();
         }
         
-        range.ToField = new WebControlTextFactory().CreateTextGroup(field);
+        range.ToField = new TextGroupFactory(httpContext).CreateTextGroup(field);
         range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
         range.ToField.PlaceHolder = Translate.Key("To");

@@ -3,6 +3,8 @@
 }
 
 @using JJMasterData.Commons.Dao
+@using JJMasterData.Core.Http.Abstractions
+@inject IHttpContext HttpContext
 @model  JJMasterData.Core.DataDictionary.Action.InsertAction
 
 
@@ -76,7 +78,7 @@
 @functions {
     private JJSearchBox BuildElementToSelect()
     {
-        var cbo = new JJSearchBox(EntityRepository)
+        var cbo = new JJSearchBox(HttpContext,EntityRepository)
         {
             Name = "ElementNameToSelect"
         };

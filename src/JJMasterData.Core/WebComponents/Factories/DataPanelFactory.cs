@@ -3,23 +3,29 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
 public class DataPanelFactory
 {
+    public IHttpContext HttpContext { get; }
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
     private readonly CoreServicesFacade _coreServicesFacade;
 
-    public DataPanelFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    public DataPanelFactory(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade)
     {
+        HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
     }
         
     public JJDataPanel CreateDataPanel(string elementName)
     {
-        var dataPanel = new JJDataPanel(_repositoryServicesFacade, _coreServicesFacade);
+        var dataPanel = new JJDataPanel(HttpContext, _repositoryServicesFacade, _coreServicesFacade);
             
         SetDataPanelParams(dataPanel, elementName);
             

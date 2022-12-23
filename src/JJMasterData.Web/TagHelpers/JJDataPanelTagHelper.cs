@@ -1,10 +1,13 @@
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
 public class JJDataPanelTagHelper : TagHelper
 {
+    private DataPanelFactory Factory { get; }
+
     [HtmlAttributeName("name")] 
     public string? Name { get; set; }
     
@@ -13,10 +16,15 @@ public class JJDataPanelTagHelper : TagHelper
     
     [HtmlAttributeName("configure")] 
     public Action<JJDataPanel>? Configure { get; set; }
+
+    public JJDataPanelTagHelper(DataPanelFactory factory)
+    {
+        Factory = factory;
+    }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var form = new JJDataPanel(ElementName ?? throw new ArgumentNullException(nameof(ElementName)));
+        var form = Factory.CreateDataPanel(ElementName);
 
         if (!string.IsNullOrEmpty(Name))
         {

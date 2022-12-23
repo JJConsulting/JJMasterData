@@ -2,11 +2,13 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJCheckBox : JJBaseControl
 {
+
     private bool? _isChecked;
 
     /// <remarks>
@@ -18,24 +20,24 @@ public class JJCheckBox : JJBaseControl
     {
         get
         {
-            if (_isChecked == null && CurrentContext.IsPostBack)
-                _isChecked = Value.Equals(CurrentContext.Request[Name]);
+            if (_isChecked == null && HttpContext.IsPost)
+                _isChecked = Value.Equals(HttpContext.Request[Name]);
 
             return _isChecked ?? false;
         }
         set => _isChecked = value;
     }
 
-    public JJCheckBox()
+    public JJCheckBox(IHttpContext httpContext) : base(httpContext)
     {
         Visible = true;
         Enabled = true;
         Value = "1";
     }
 
-    internal static JJCheckBox GetInstance(FormElementField field, object value)
+    internal static JJCheckBox GetInstance(FormElementField field, IHttpContext httpContext, object value)
     {
-        var check = new JJCheckBox
+        var check = new JJCheckBox(httpContext)
         {
             Name = field.Name,
             IsChecked = ExpressionManager.ParseBool(value),

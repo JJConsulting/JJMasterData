@@ -1,4 +1,6 @@
 ﻿@using JJMasterData.Commons.Language
+@using JJMasterData.Core.Http.Abstractions
+@inject IHttpContext HttpContext
 
 @model ErrorViewModel
 
@@ -18,7 +20,7 @@
 
 
 @{
-    var stacktracePanel = new JJCollapsePanel
+    var stacktracePanel = new JJCollapsePanel(HttpContext)
     {
         Name = "stacktrace",
         Title = "Stacktrace",

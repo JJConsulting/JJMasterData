@@ -1,30 +1,35 @@
 ﻿using System;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Facades;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents.Factories
 {
     public class GridViewFactory
     {
+        public IHttpContext HttpContext { get; }
         public RepositoryServicesFacade RepositoryServicesFacade { get; }
         public CoreServicesFacade CoreServicesFacade { get; }
 
-        public GridViewFactory(RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+        public GridViewFactory(
+            IHttpContext httpContext, 
+            RepositoryServicesFacade repositoryServicesFacade, 
+            CoreServicesFacade coreServicesFacade)
         {
+            HttpContext = httpContext;
             RepositoryServicesFacade = repositoryServicesFacade;
             CoreServicesFacade = coreServicesFacade;
         }
 
         public JJGridView CreateGridView(string elementName)
         {
-            var grid = new JJGridView(RepositoryServicesFacade, CoreServicesFacade);
+            var grid = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade);
             SetGridViewParams(grid, elementName);
             return grid;
         }
 
         public JJGridView CreateGridView(FormElement formElement) =>
-            new(formElement, RepositoryServicesFacade, CoreServicesFacade);
+            new(formElement, HttpContext, RepositoryServicesFacade,CoreServicesFacade);
 
 
         internal void SetGridViewParams(JJGridView grid, string elementName)
@@ -50,11 +55,11 @@ namespace JJMasterData.Core.WebComponents.Factories
             grid.ShowPagging = options.ShowPagging;
             grid.ShowToolbar = options.ShowToolBar;
 
-            if (!GridUI.HasFormValues(grid.CurrentContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
+            if (!GridUI.HasFormValues(grid.HttpContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
             {
                 GridUI ui = null;
                 if (grid.MaintainValuesOnLoad && grid.FormElement != null)
-                    ui = JJSession.GetSessionValue<GridUI>($"jjcurrentui_{grid.FormElement.Name}");
+                    ui = grid.HttpContext.Session.GetSessionValue<GridUI>($"jjcurrentui_{grid.FormElement.Name}");
 
                 if (ui == null)
                 {

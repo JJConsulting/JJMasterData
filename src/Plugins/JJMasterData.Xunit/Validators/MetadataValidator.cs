@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Xunit.Tester;
 using Microsoft.Extensions.Options;
@@ -15,56 +16,63 @@ public class MetadataValidator
     public IFormEventResolver FormEventResolver { get; }
     public IOptions<JJMasterDataCoreOptions> Options { get; }
 
-    public MetadataValidator(IEntityRepository repository, IFormEventResolver formEventResolver, IOptions<JJMasterDataCoreOptions> options)
+    public IHttpContext HttpContext { get; }
+
+    public MetadataValidator(
+        IEntityRepository repository,
+        IFormEventResolver formEventResolver,
+        IHttpContext httpContext,
+        IOptions<JJMasterDataCoreOptions> options)
     {
         Repository = repository;
         FormEventResolver = formEventResolver;
+        HttpContext = httpContext;
         Options = options;
     }
-    
+
     public Metadata AssertAllOperations(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.AllOperations(values);
         Assert.True(result.IsValid);
         return metadata;
     }
-    
+
     public Metadata AssertAllOperations(Metadata metadata, Action<DataDictionaryTesterValues> configure)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.AllOperations(configure);
         Assert.True(result.IsValid);
         return metadata;
     }
-    
+
     public Metadata AssertInsert(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.Insert(values);
         Assert.True(result.IsValid);
         return metadata;
     }
-    
+
     public Metadata AssertUpdate(Metadata metadata, Hashtable values)
     {
-        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.Update(values);
         Assert.True(result.IsValid);
         return metadata;
     }
-    
+
     public Metadata AssertRead(Metadata metadata, Hashtable? values = null)
     {
-        var tester = new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.Read(values);
         Assert.True(result.IsValid);
         return metadata;
     }
-    
+
     public Metadata AssertDelete(Metadata metadata, Hashtable values)
     {
-        var tester =  new DataDictionaryTester(metadata,Repository,FormEventResolver, Options);
+        var tester = new DataDictionaryTester(metadata, Repository, FormEventResolver, HttpContext, Options);
         var result = tester.Delete(values);
         Assert.True(result.IsValid);
         return metadata;

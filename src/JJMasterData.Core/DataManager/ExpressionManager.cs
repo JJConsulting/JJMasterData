@@ -13,20 +13,15 @@ using JJMasterData.Commons.Protheus;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 public class ExpressionManager
 {
     #region "Properties"
-
-    private JJHttpContext _currentContext;
-
-    internal JJHttpContext CurrentContext
-    {
-        get => _currentContext ??= JJHttpContext.GetInstance();
-        set => _currentContext = value;
-    } 
+    
+    internal IHttpContext CurrentContext { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
@@ -36,10 +31,11 @@ public class ExpressionManager
 
     #region "Constructors"
 
-    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository)
+    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository, IHttpContext currentContext)
     {
         UserValues = userValues;
         EntityRepository = entityRepository;
+        CurrentContext = currentContext;
     }
 
     #endregion
@@ -78,14 +74,9 @@ public class ExpressionManager
             }
             else if ("objname".Equals(field.ToLower()))
             {
-                if (CurrentContext.HasContext())
-                {
-                    val = $"{CurrentContext.Request["objname"]}";
-                }
+                val = $"{CurrentContext.Request["objname"]}";
             }
-            else if (CurrentContext.HasContext() &&
-                     CurrentContext.Session != null &&
-                     CurrentContext.Session[field] != null)
+            else if (CurrentContext.Session?[field] != null)
             {
                 val = $"{CurrentContext.Session[field]}";
             }
