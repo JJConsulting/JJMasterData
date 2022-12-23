@@ -1,13 +1,10 @@
 ﻿@using JJMasterData.Commons.Language
-@using JJMasterData.Core.Http.Abstractions
-@inject IHttpContext HttpContext
 
 @model ErrorViewModel
 
 @{
     Layout = "_Layout";
 }
-
 
 <style>
     .jj-gap {
@@ -18,17 +15,6 @@
     } 
 </style>
 
-
-@{
-    var stacktracePanel = new JJCollapsePanel(HttpContext)
-    {
-        Name = "stacktrace",
-        Title = "Stacktrace",
-        ExpandedByDefault = false,
-        HtmlContent = $"<pre>{Model.StackTrace}</pre>"
-    };
-}
-
 @if (BootstrapHelper.Version >= 4)
 {
     <div class="d-flex align-items-center justify-content-center vh-100">
@@ -38,14 +24,17 @@
             <p class="fs-3">
                 <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
             </p>
-            <p class="lead">
-                @Model.Exception
-            </p>
             @if (!Model.IsProduction)
             {
+                <p class="lead">
+                    @Model.Exception
+                </p>
+       
                 <div class="container">
                     <div class="col-sm-12">
-                        @Html.Raw(stacktracePanel.GetHtml())
+                        <jj-collapse-panel title="StackTrace" expanded-by-default="false">
+                            <pre>{Model.StackTrace}</pre>
+                        </jj-collapse-panel>
                     </div>
                 </div>
                 <br/>
@@ -55,11 +44,6 @@
                     <div class="col-sm-4">
                         <a onclick="history.back()" class="@BootstrapHelper.DefaultButton">
                             <span class="fa fa-backward"></span>&nbsp; @Translate.Key("Back")
-                        </a>
-                    </div>
-                    <div class="col-sm-4">
-                        <a href="/en-us/DataDictionary/" class="@BootstrapHelper.DefaultButton">
-                            <span class="fa fa-home"></span>&nbsp; @Translate.Key("Home")
                         </a>
                     </div>
                 </div>

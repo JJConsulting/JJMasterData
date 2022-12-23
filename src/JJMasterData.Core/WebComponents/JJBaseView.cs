@@ -68,7 +68,8 @@ public abstract class JJBaseView
     /// </returns>
     public string GetHtml()
     {
-        return Visible ? RenderHtml()?.ToString(true) : string.Empty;
+        var builder = RenderHtml();
+        return Visible ? builder?.ToString(true) : string.Empty;
     }
 
 

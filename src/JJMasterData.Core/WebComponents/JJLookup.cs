@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -96,6 +97,8 @@ public class JJLookup : JJBaseControl
         get => _dataItem ??= new FormElementDataItem();
         set => _dataItem = value;
     }
+    
+    internal ILogger<JJLookup> Logger { get; }
 
     #endregion
 
@@ -113,14 +116,21 @@ public class JJLookup : JJBaseControl
         PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";
+        Logger = coreServicesFacade.LoggerFactory.CreateLogger<JJLookup>();
     }
 
-    internal static JJLookup GetInstance(FormElementField f,IHttpContext httpContext,IDataDictionaryRepository repository, CoreServicesFacade coreServicesFacade,  ExpressionOptions expOptions, object value, string panelName)
+    internal static JJLookup GetInstance(
+        FormElementField f,
+        IHttpContext httpContext,
+        IDataDictionaryRepository repository, 
+        CoreServicesFacade coreServicesFacade, 
+        ExpressionOptions expOptions,
+        object value,
+        string panelName)
     {
         var search = new JJLookup(httpContext, repository, coreServicesFacade);
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
-        search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
         search.AutoReloadFormFields = false;
@@ -266,7 +276,7 @@ public class JJLookup : JJBaseControl
         }
         catch (Exception ex)
         {
-            Log.AddError(ex, ex.Message);
+            Logger.LogError(ex, ex.Message);
         }
 
         HttpContext.Response.SendResponse(dto?.ToJson(), "application/json");
@@ -309,7 +319,7 @@ public class JJLookup : JJBaseControl
         Hashtable fields;
         try
         {
-            IDataDictionaryRepository repository = DataDictionaryRepository;
+            var repository = DataDictionaryRepository;
             var dictionary = repository.GetMetadata(DataItem.ElementMap.ElementName);
             var entityRepository = ExpressionManager.EntityRepository;
             fields = entityRepository.GetFields(dictionary.Table, filters);

@@ -5,11 +5,11 @@ namespace JJMasterData.Core.WebComponents;
 
 internal class JJToolbar : JJBaseView
 {
-    public List<HtmlBuilder> ListElement { get; set; }
+    public List<HtmlBuilder> ElementList { get; set; }
 
     public JJToolbar()
     {
-        ListElement = new List<HtmlBuilder>();
+        ElementList = new List<HtmlBuilder>();
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -32,11 +32,10 @@ internal class JJToolbar : JJBaseView
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("col-sm-12");
-
-        int totElement = ListElement.Count;
-        for (int i = 0; i < totElement; i++)
+        
+        for (int i = 0; i < ElementList.Count; i++)
         {
-            var element = ListElement[i];
+            var element = ElementList[i];
             if (element == null)
                 continue;
 

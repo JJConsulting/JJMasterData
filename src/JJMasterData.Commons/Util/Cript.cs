@@ -15,24 +15,24 @@ public class Cript
     /// <summary>
     /// Encrypts a text.
     /// </summary>
-    /// <param name="valor">Value to be encrypted.</param>
+    /// <param name="value">Value to be encrypted.</param>
     /// <returns>Encrypted value.</returns>
-    public static string Cript64(string valor)
+    public static string Cript64(string value)
     {
-        return Cript64(valor, JJService.CommonsOptions.SecretKey);
+        return Cript64(value, JJService.CommonsOptions.SecretKey);
     }
 
     /// <summary>
     /// Encrypts a text.
     /// </summary>
-    /// <param name="valor">Value to be encrypted.</param>
+    /// <param name="value">Value to be encrypted.</param>
     /// <param name="secretKey">Secret key.</param>
     /// <returns>Encrypted value.</returns>
-    public static string Cript64(string valor, string secretKey)
+    public static string Cript64(string value, string secretKey)
     {
         var des = new DESCryptoServiceProvider();
         var ms = new MemoryStream();
-        var input = Encoding.UTF8.GetBytes(valor); _chave = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
+        var input = Encoding.UTF8.GetBytes(value); _chave = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
         var cs = new CryptoStream(ms, des.CreateEncryptor(_chave, Iv), CryptoStreamMode.Write);
         cs.Write(input, 0, input.Length);
         cs.FlushFinalBlock();
@@ -43,22 +43,22 @@ public class Cript
     /// <summary>
     /// Descripts a text
     /// </summary>
-    /// <param name="valor">Value to be descrypted.</param>
+    /// <param name="value">Value to be descrypted.</param>
     /// <returns>Descrypted value.</returns>
-    public static string Descript64(string valor)
+    public static string Descript64(string value)
     {
-        return Descript64(valor, JJService.CommonsOptions.SecretKey);
+        return Descript64(value, JJService.CommonsOptions.SecretKey);
     }
 
     /// <summary>
     /// Descripts a text
     /// </summary>
-    /// <param name="valor">Value to be descrypted.</param>
+    /// <param name="value">Value to be descrypted.</param>
     /// <param name="secretKey">Secret key.</param>
     /// <returns>Descrypted value.</returns>
-    public static string Descript64(string valor, string secretKey)
+    public static string Descript64(string value, string secretKey)
     {
-        if (valor == null)
+        if (value == null)
             return null;
 
         try
@@ -66,7 +66,7 @@ public class Cript
             var des = new DESCryptoServiceProvider();
             var ms = new MemoryStream();
             
-            var input = Convert.FromBase64String(valor.Replace(" ", "+"));
+            var input = Convert.FromBase64String(value.Replace(" ", "+"));
 
             _chave = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
 
@@ -89,17 +89,17 @@ public class Cript
     /// <remarks>Kleberton 2012-08-28</remarks>
     public static string CriptPwdProtheus(string password)
     {
-        string senhaCript = "";
+        string protheusPassword = "";
 
-        int[] impar = { 1, 3, 5, 7, 9, 11 };
-        int[] par = { 0, 2, 4, 6, 8, 10 };
+        int[] odd = { 1, 3, 5, 7, 9, 11 };
+        int[] even = { 0, 2, 4, 6, 8, 10 };
 
         //Caracters pares
         for (int i = 0; i < password.Length; i++)
         {
-            if (impar[i] < password.Length)
+            if (odd[i] < password.Length)
             {
-                senhaCript += password.ToCharArray()[impar[i]];
+                protheusPassword += password.ToCharArray()[odd[i]];
             }
             else
             {
@@ -110,16 +110,16 @@ public class Cript
         // Caracters impares
         for (int i = 0; i < password.Length; i++)
         {
-            if (par[i] < password.Length)
+            if (even[i] < password.Length)
             {
-                senhaCript += password.ToCharArray()[par[i]];
+                protheusPassword += password.ToCharArray()[even[i]];
             }
             else
             {
                 break;
             }
         }
-        return senhaCript;
+        return protheusPassword;
     }
 
     /// <summary>
@@ -129,36 +129,36 @@ public class Cript
     /// <remarks>Lucio Pelinson 2012-09-21</remarks>
     public static string DeCriptPwdProtheus(string password)
     {
-        string senhaDeCript = "";
-        var aPar = new List<char>();
-        var aImpar = new List<char>();
+        string protheusPassword = "";
+        var evenList = new List<char>();
+        var oddList = new List<char>();
         char[] aSenha = password.ToCharArray();
-        int nQtd = password.Length / 2;
+        int passwordLengthByHalf = password.Length / 2;
 
         for (int i = 0; i < password.Length; i++)
         {
-            if (i < nQtd)
-                aPar.Add(aSenha[i]);
+            if (i < passwordLengthByHalf)
+                evenList.Add(aSenha[i]);
             else
-                aImpar.Add(aSenha[i]);
+                oddList.Add(aSenha[i]);
         }
 
 
-        int nQtdChar = aPar.Count >= aImpar.Count ? aPar.Count : aImpar.Count;
-        for (int i = 0; i < nQtdChar; i++)
+        int charCount = evenList.Count >= oddList.Count ? evenList.Count : oddList.Count;
+        for (int i = 0; i < charCount; i++)
         {
-            if (i < aImpar.Count)
+            if (i < oddList.Count)
             {
-                senhaDeCript += aImpar[i];
+                protheusPassword += oddList[i];
             }
 
-            if (i < aPar.Count)
+            if (i < evenList.Count)
             {
-                senhaDeCript += aPar[i];
+                protheusPassword += evenList[i];
             }
         }
 
-        return senhaDeCript;
+        return protheusPassword;
     }
 
     /// <summary>
@@ -194,18 +194,6 @@ public class Cript
     }
 
     /// <summary>
-    /// Cript a ReportPortal message
-    /// </summary>
-    /// <param name="message">Text to be criptografed.</param>
-    /// <remarks>
-    /// See dbo.EnigmaEncrypt function in SQLServer
-    /// </remarks>
-    public static string EnigmaEncryptRP(string message)
-    {
-        return EnigmaEncryptRP(message, "Secret");
-    }
-
-    /// <summary>
     /// Descripts a message from ReportPortal
     /// </summary>
     /// <param name="message">Text to be encrypted.</param>
@@ -213,7 +201,7 @@ public class Cript
     /// <remarks>
     /// See dbo.EnigmaEncrypt function in SQLServer
     /// </remarks>
-    public static string EnigmaEncryptRP(string message, string secretKey)
+    public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
     {
         string encryptRp = "";
         if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(secretKey))
@@ -225,11 +213,11 @@ public class Cript
         int pos = 1;
         while (pos <= message.Length)
         {
-            char c = message.Substring(pos - 1, 1).ToCharArray()[0];
-            int num = c;
+            char @char = message.Substring(pos - 1, 1).ToCharArray()[0];
+            int num = @char;
 
-            c = secretKey.Substring(pos % tam, 1).ToCharArray()[0];
-            int num3 = c;
+            @char = secretKey.Substring(pos % tam, 1).ToCharArray()[0];
+            int num3 = @char;
 
             int number = num + num3;
             if (number > 255)
@@ -247,21 +235,9 @@ public class Cript
     /// <summary>
     /// Descripts a message from ReportPortal
     /// </summary>
-    /// <param name="message">Text to be encrypted.</param>
-    /// <remarks>
-    /// Veja a função dbo.EnigmaEncrypt no SQLServer
-    /// </remarks>
-    public static string EnigmaDecryptRP(string message)
-    {
-        return EnigmaDecryptRP(message, "Secret");
-    }
-
-    /// <summary>
-    /// Descripts a message from ReportPortal
-    /// </summary>
     /// <param name="message">Text to be descrypted.</param>
     /// <param name="secretKey">Chave secreta</param>
-    public static string EnigmaDecryptRP(string message, string secretKey)
+    public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
     {
         if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(secretKey))
             return null;

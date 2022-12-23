@@ -18,8 +18,11 @@ public class PanelService : BaseService
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var formElement = dictionary.GetFormElement();
 
-        if(selectedFields?.Length == 0){}
+        if (selectedFields?.Length == 0)
+        {
             AddError(nameof(selectedFields), "No fields selected for this panel.");
+        }
+            
         
         if (!ValidatePanel(panel))
             return;

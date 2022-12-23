@@ -119,15 +119,13 @@ public class JJComboBox : JJBaseControl
 
     private IEnumerable<HtmlBuilder> GetOptions(IEnumerable<DataItemValue> values)
     {
-        var options = new List<HtmlBuilder>();
-
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, Translate.Key("(All)"))
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, Translate.Key("(Choose)"));
 
         if (DataItem.FirstOption != FirstOptionMode.None)
-            options.Add(firstOption);
+            yield return firstOption;
 
         foreach (var value in values)
         {
@@ -139,22 +137,18 @@ public class JJComboBox : JJBaseControl
                 .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
                 .AppendText(label);
 
-            options.Add(option);
+            yield return option;
         }
-
-        return options;
     }
 
     private IEnumerable<HtmlBuilder> GetReadOnlyInputs(IEnumerable<DataItemValue> values)
     {
-        var inputs = new List<HtmlBuilder>();
-
         var hiddenInput = new HtmlBuilder(HtmlTag.Input)
             .WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithValue(SelectedValue);
 
-        inputs.Add(hiddenInput);
+        yield return hiddenInput;
 
         var selectedText = GetSelectedText(values);
 
@@ -166,9 +160,7 @@ public class JJComboBox : JJBaseControl
             .WithAttributes(Attributes)
             .WithAttribute("readonly", "readonly");
 
-        inputs.Add(readonlyInput);
-
-        return inputs;
+        yield return readonlyInput;
     }
 
     private string GetSelectedText(IEnumerable<DataItemValue> list)

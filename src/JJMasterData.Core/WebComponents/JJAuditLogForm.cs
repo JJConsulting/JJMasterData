@@ -294,7 +294,7 @@ public class JJAuditLogForm : JJBaseView
         btn.Text = "Back";
 
         var toolbar = new JJToolbar();
-        toolbar.ListElement.Add(btn.GetHtmlBuilder());
+        toolbar.ElementList.Add(btn.GetHtmlBuilder());
         return toolbar;
     }
 

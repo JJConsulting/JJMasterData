@@ -25,30 +25,34 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Remove os acentos e caracteres especiais
+    /// Remove accents and special characters
     /// </summary>
     /// <param name="str">Valor</param>
     public static string GetStringWithoutAccents(string str)
     {
-        //Troca os caracteres acentuados por não acentuados
-        string[] acentos = { "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È", "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â", "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û" };
-        string[] semAcento = { "c", "C", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "Y", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "a", "o", "n", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "A", "O", "N", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U" };
+        string[] acentos =
+        {
+            "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È",
+            "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â",
+            "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û"
+        };
+        string[] semAcento =
+        {
+            "c", "C", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "Y", "a", "e", "i", "o", "u", "A", "E",
+            "I", "O", "U", "a", "o", "n", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "A", "O", "N", "a",
+            "e", "i", "o", "u", "A", "E", "I", "O", "U"
+        };
         for (int i = 0; i < acentos.Length; i++)
         {
             str = str.Replace(acentos[i], semAcento[i]);
         }
-        //Troca os caracteres especiais da string por "" 
-        //string[] caracteresEspeciais = { "\\.", ",", "-", ":", "\\(", "\\)", "ª", "\\|", "\\\\", "°" };
+
         string[] caracteresEspeciais = { "ª", "\\|", "°" };
-        for (int i = 0; i < caracteresEspeciais.Length; i++)
-        {
-            str = str.Replace(caracteresEspeciais[i], "");
-        }
-        //Troca os espaços no início por "" 
+        
+        str = caracteresEspeciais.Aggregate(str, (current, t) => current.Replace(t, ""));
+
         str = str.Replace("^\\s+", "");
-        // Troca os espaços no início por "" 
         str = str.Replace("\\s+$", "");
-        // Troca os espaços duplicados, tabulações e etc por  " " 
         str = str.Replace("\\s+", " ");
         return str;
     }
@@ -65,7 +69,7 @@ public static class StringManager
         string greeting;
         if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
             greeting = Translate.Key("Good Morning");
-        else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
+        else if (DateTime.Now.Hour is > 12 and <= 18)
             greeting = Translate.Key("Good Afternoon");
         else
             greeting = Translate.Key("Good Night");
@@ -419,7 +423,7 @@ public static class StringManager
     /// <returns>Lista com as strings localizadas</returns>
     public static List<string> FindValuesByInterval(string text, char begin, char end)
     {
-        List<string> list = new List<string>();
+        var list = new List<string>();
         char[] arr = text.ToCharArray();
         string value = "";
         bool isReading = false;
@@ -453,7 +457,7 @@ public static class StringManager
 
     public static string Soma1(string baseVal)
     {
-        if (String.IsNullOrEmpty(baseVal))
+        if (string.IsNullOrEmpty(baseVal))
         {
             return "0";
         }
@@ -462,8 +466,7 @@ public static class StringManager
 
     private static string Soma1(string baseVal, int size)
     {
-        long nAux;
-        if (long.TryParse(baseVal, out nAux))
+        if (long.TryParse(baseVal, out var nAux))
         {
             nAux++;
             string sRet = nAux.ToString().PadLeft(size, '0');

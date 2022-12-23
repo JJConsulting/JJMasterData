@@ -20,12 +20,12 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Insert a list of HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> listelement)
+        public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> builders)
         {
-            if (listelement == null) 
+            if (builders == null) 
                 return this;
             
-            foreach (var item in listelement)
+            foreach (var item in builders)
                 AppendElement(item);
 
             return this;
@@ -34,10 +34,10 @@ namespace JJMasterData.Core.Html
         /// <summary>
         /// Insert a HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlBuilder AppendElement(HtmlTag tag, Action<HtmlBuilder> elementAction = null)
+        public HtmlBuilder AppendElement(HtmlTag tag, Action<HtmlBuilder> builderAction = null)
         {
             var childElement = new HtmlBuilder(tag);
-            elementAction?.Invoke(childElement);
+            builderAction?.Invoke(childElement);
             AppendElement(childElement);
             return this;
         }

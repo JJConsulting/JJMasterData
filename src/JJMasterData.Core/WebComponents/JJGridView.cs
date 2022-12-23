@@ -762,26 +762,22 @@ public class JJGridView : JJBaseView
 
     private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
-        var elementList = new List<HtmlBuilder>();
-
         var (error, currentAction) = GetAndExecuteCurrentAction();
 
         if (!string.IsNullOrEmpty(error))
         {
-            elementList.Add(new HtmlBuilder(error));
+            yield return new HtmlBuilder(error);
         }
 
-        elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
-        elementList.Add(GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString()));
-        elementList.Add(GetHiddenInput($"current_tableaction_{Name}", currentAction));
-        elementList.Add(GetHiddenInput($"current_tablerow_{Name}", string.Empty));
+        yield return GetHiddenInput($"current_tableorder_{Name}", CurrentOrder);
+        yield return GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString());
+        yield return GetHiddenInput($"current_tableaction_{Name}", currentAction);
+        yield return GetHiddenInput($"current_tablerow_{Name}", string.Empty);
 
         if (EnableMultSelect)
         {
-            elementList.Add(GetHiddenInput($"selectedrows_{Name}", SelectedRowsId));
+            yield return GetHiddenInput($"selectedrows_{Name}", SelectedRowsId);
         }
-
-        return elementList;
     }
 
     private HtmlBuilder GetHiddenInput(string name, string value)

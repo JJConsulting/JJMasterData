@@ -93,9 +93,9 @@ namespace JJMasterData.Core.Html
         /// </summary>
         internal HtmlBuilder WithAttributes(Hashtable attributes)
         {
-            foreach (DictionaryEntry v in attributes)
+            foreach (DictionaryEntry entry in attributes)
             {
-                _attributes.Add(v.Key.ToString(), v.Value.ToString());
+                _attributes.Add(entry.Key.ToString(), entry.Value.ToString());
             }
 
             return this;

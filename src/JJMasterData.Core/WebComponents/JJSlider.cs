@@ -47,6 +47,7 @@ public class JJSlider : JJBaseControl
                 Name = $"{Name}-value",
                 MinValue = MinValue,
                 MaxValue = MaxValue,
+                Text = Value?.ToString(),
                 CssClass = "jjslider-value"
             };
 

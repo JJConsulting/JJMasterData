@@ -362,11 +362,13 @@ public class JJTextFile : JJBaseControl
 
     private JJLinkButton GetLinkButton(string filename)
     {
-        var btn = new JJLinkButton();
-        btn.IconClass = IconType.CloudDownload.GetCssClass();
-        btn.Text = filename;
-        btn.UrlAction = GetDownloadLink(filename);
-        btn.IsGroup = true;
+        var btn = new JJLinkButton
+        {
+            IconClass = IconType.CloudDownload.GetCssClass(),
+            Text = filename,
+            UrlAction = GetDownloadLink(filename),
+            IsGroup = true
+        };
 
         return btn;
     }
@@ -375,21 +377,26 @@ public class JJTextFile : JJBaseControl
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = absoluteUri ?? HttpContext.Request.AbsoluteUri;
-        if (url.Contains('?'))
-            url += "&";
-        else
-            url += "?";
-
         if (isExternalLink)
+        {
+  
+            string url = absoluteUri ?? HttpContext.Request.AbsoluteUri;
+            if (url.Contains('?'))
+                url += "&";
+            else
+                url += "?";
+
+   
             url += JJDownloadFile.DirectDownloadParameter;
-        else
-            url += JJDownloadFile.DownloadParameter;
 
-        url += "=";
-        url += Cript.Cript64(filePath);
 
-        return url;
+            url += "=";
+            url += Cript.Cript64(filePath);
+
+            return url;
+        }
+
+        return JJDownloadFile.GetDownloadUrl(filePath, HttpContext);
     }
 
     private bool IsFormUploadRoute()

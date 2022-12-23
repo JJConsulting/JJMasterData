@@ -9,8 +9,7 @@ public class FileController : MasterDataController
     public IActionResult Download(string filePath)
     {
         var descriptedPath = Cript.Descript64(filePath);
-        var file = System.IO.File.Open(descriptedPath, FileMode.Open);
-        
-        return File(file, "application/octet-stream", Path.GetFileName(descriptedPath));
+        var fileStream = System.IO.File.Open(descriptedPath, FileMode.Open);
+        return File(fileStream, "application/octet-stream", Path.GetFileName(descriptedPath));
     }
 }

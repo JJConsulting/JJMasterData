@@ -26,12 +26,10 @@ internal class FormValues
             throw new ArgumentNullException(nameof(FormElement));
 
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        string objname;
-        object val;
         foreach (var f in FormElement.Fields)
         {
-            objname = (prefix == null ? prefix : string.Empty) + f.Name;
-            val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
+            var objname = (prefix == null ? prefix : string.Empty) + f.Name;
+            var val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
 
             if (f.Component == FormComponent.Search)
             {
