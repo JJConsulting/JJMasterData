@@ -29,8 +29,7 @@ internal class ActionManager
     public string ComponentName { get; set; }
 
     internal IEntityRepository EntityRepository => Expression.EntityRepository; 
-
-
+    
     public ActionManager(
         FormElement formElement,
         ExpressionManager expression,
@@ -95,8 +94,10 @@ internal class ActionManager
 
     private string GetUrlRedirectScript(UrlRedirectAction action, Hashtable formValues, PageState pageState, ActionOrigin contextAction, string fieldName)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        actionMap.FieldName = fieldName;
+        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name)
+        {
+            FieldName = fieldName
+        };
         string criptMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 

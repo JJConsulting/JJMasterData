@@ -134,7 +134,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         {
             if (DataSource.Columns.Contains(field.Name))
             {
-                value = FieldManager.FormatVal(field, row[field.Name]);
+                value = FieldManager.FormatValue(field, row[field.Name]);
             }
         }
 

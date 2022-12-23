@@ -27,6 +27,9 @@ public class JJCollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("expanded-by-default")]
     public bool ExpandedByDefault { get; set; }
     
+    [HtmlAttributeName("color")]
+    public PanelColor Color { get; set; }
+    
     [HtmlAttributeName("configure")]
     public Action<JJCollapsePanel>? Configure { get; set; }
 
@@ -46,6 +49,7 @@ public class JJCollapsePanelTagHelper : TagHelper
         var panel = CollapsePanelFactory.CreateCollapsePanel();
         panel.Name = Title!.ToLower().Replace(" ", "_");
         panel.Title = Title;
+        panel.Color = Color;
         panel.ExpandedByDefault = ExpandedByDefault;
         panel.TitleIcon = new JJIcon(Icon);
         
