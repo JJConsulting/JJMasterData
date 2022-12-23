@@ -4,7 +4,7 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.Options;
 
-public class JJMasterDataCoreOptions
+public record JJMasterDataCoreOptions
 {
     public string DataDictionaryTableName { get; set; } = "tb_masterdata";
     

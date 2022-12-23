@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Http;
 using System;
 using System.Collections;
 using System.Collections.Generic;

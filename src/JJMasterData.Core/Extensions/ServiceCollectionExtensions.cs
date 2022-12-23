@@ -15,7 +15,6 @@ using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.WebComponents;
 using JJMasterData.Core.WebComponents.Factories;
 
 namespace JJMasterData.Core.Extensions;
@@ -70,8 +69,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<AuditLogService>();
         services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
         
-        services.AddTransient<IExcelWriter, ExcelWriter>();
-        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+        services.AddTransient<IExportationWriter, ExcelWriter>();
+        services.AddTransient<IExportationWriter, DataManager.Exports.TextWriter>();
         
         services.AddServicesFacades();
     }

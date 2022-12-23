@@ -6,7 +6,6 @@ using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http.Abstractions;
 using Newtonsoft.Json;

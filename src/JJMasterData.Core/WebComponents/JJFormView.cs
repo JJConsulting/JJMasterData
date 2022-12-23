@@ -9,10 +9,12 @@ using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
@@ -55,7 +57,7 @@ public class JJFormView : JJGridView
     public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
     internal JJAuditLogForm AuditLogForm =>
         _auditLogForm ??=
-            new JJAuditLogForm(FormElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade);
+            new JJAuditLogForm(FormElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade, ExportationWriters);
 
 
     /// <summary>
@@ -185,8 +187,9 @@ public class JJFormView : JJGridView
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters,
         FormViewFactory formViewFactory)
-        : base(httpContext, repositoryServicesFacade, coreServicesFacade)
+        : base(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormEventResolver = coreServicesFacade.FormEventResolver;
         AuditLogService = coreServicesFacade.AuditLogService;
@@ -225,8 +228,9 @@ public class JJFormView : JJGridView
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters,
         FormViewFactory formViewFactory)
-        : this(httpContext,repositoryServicesFacade, coreServicesFacade, formViewFactory)
+        : this(httpContext,repositoryServicesFacade, coreServicesFacade,exportationWriters, formViewFactory)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
@@ -513,7 +517,7 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var dicParser = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement(),HttpContext, _repositoryServicesFacade, _coreServicesFacade,FormViewFactory)
+        var formsel = new JJFormView(dicParser.GetFormElement(),HttpContext, _repositoryServicesFacade, _coreServicesFacade, ExportationWriters,FormViewFactory)
         {
             UserValues = UserValues,
             Name = action.ElementNameToSelect
@@ -850,8 +854,13 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var childGrid = new JJFormView(childElement,HttpContext, _repositoryServicesFacade,
-                    _coreServicesFacade, FormViewFactory)
+                var childGrid = new JJFormView(
+                    childElement,
+                    HttpContext,
+                    _repositoryServicesFacade,
+                    _coreServicesFacade,
+                    ExportationWriters,
+                    FormViewFactory)
                 {
                     UserValues = UserValues,
                     FilterAction =

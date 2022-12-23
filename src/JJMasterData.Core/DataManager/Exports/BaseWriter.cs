@@ -10,23 +10,22 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.DataManager.Exports.Abstractions;
+namespace JJMasterData.Core.DataManager.Exports;
 
-public abstract class BaseWriter :  IWriter
+public abstract class BaseWriter :  IExportationWriter
 {
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    private readonly CoreServicesFacade _coreServicesFacade;
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     public IEntityRepository EntityRepository { get; }
 
@@ -44,13 +43,13 @@ public abstract class BaseWriter :  IWriter
     {
         get
         {
-            if (_fields == null)
-            {
-                if (Configuration.ExportAllFields)
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
-                else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
-            }
+            if (_fields != null) 
+                return _fields;
+            
+            if (Configuration.ExportAllFields)
+                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+            else
+                _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
 
             return _fields;
         }
@@ -144,10 +143,14 @@ public abstract class BaseWriter :  IWriter
     
     public ILogger<BaseWriter> Logger { get; }
 
+    private readonly CoreServicesFacade _coreServicesFacade;
+    
     #endregion
 
 
-    public BaseWriter(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
+    protected BaseWriter(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade)
     {
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
@@ -214,7 +217,7 @@ public abstract class BaseWriter :  IWriter
                         default:
                             ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Log.AddError(ex, ex.Message);
+                            Logger.LogError(ex, ex.Message);
                             break;
                     }
                 }
@@ -252,8 +255,7 @@ public abstract class BaseWriter :  IWriter
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
         }
 
-        string fileName = value;
-        var textFile = new JJTextFile(HttpContext, _repositoryServicesFacade,_coreServicesFacade)
+        var textFile = new JJTextFile(HttpContext, _repositoryServicesFacade,_coreServicesFacade , null)
         {
             FormElement = FormElement,
             ElementField = field,
@@ -263,7 +265,7 @@ public abstract class BaseWriter :  IWriter
             Name = field.Name
         };
 
-        return textFile.GetDownloadLink(fileName, true, AbsoluteUri);
+        return textFile.GetDownloadLink(value, true, AbsoluteUri);
     }
 
 

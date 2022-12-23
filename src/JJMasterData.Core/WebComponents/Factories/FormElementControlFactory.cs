@@ -5,7 +5,6 @@ using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -31,7 +30,7 @@ internal class FormElementControlFactory
     internal RepositoryServicesFacade RepositoryServicesFacade { get; }
     internal CoreServicesFacade CoreServicesFacade { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IEnumerable<IWriter> ExportationWriters { get; }
+    internal IEnumerable<IExportationWriter> ExportationWriters { get; }
     internal IEntityRepository EntityRepository { get; }
     public TextGroupFactory TextGroupFactory { get; }
     
@@ -39,13 +38,16 @@ internal class FormElementControlFactory
     public FormElementControlFactory(
         JJDataPanel dataPanel, 
         IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+        )
     {
         CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        ExportationWriters = coreServicesFacade.ExportationWriters;
+        ExportationWriters = exportationWriters;
         ActionManager = new ActionManager(dataPanel.FormElement,
             new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext), repositoryServicesFacade.DataDictionaryRepository,
             coreServicesFacade.Options,
@@ -117,7 +119,14 @@ internal class FormElementControlFactory
                 }
                 else
                 {
-                    var textFile = JJTextFile.GetInstance(FormElement, field,HttpContext, RepositoryServicesFacade, CoreServicesFacade,  ExpressionOptions,value, PanelName);
+                    var textFile = JJTextFile.GetInstance(
+                        FormElement,
+                        field,
+                        HttpContext, 
+                        RepositoryServicesFacade, 
+                        CoreServicesFacade, 
+                        ExportationWriters,
+                        ExpressionOptions,value, PanelName);
                     baseView = textFile;
                 }
 

@@ -14,11 +14,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
@@ -95,7 +92,7 @@ public class JJFormUpload : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
     
-    public IEnumerable<IWriter> ExportationWriters { get; }
+    public IEnumerable<IExportationWriter> ExportationWriters { get; }
     public JJUploadArea Upload => _upload ??= new JJUploadArea(HttpContext);
     
     public CoreServicesFacade CoreServicesFacade {get;}
@@ -109,7 +106,7 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade)
+            _gridView = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, ExportationWriters)
             {
                 Name = Name + "_gridview",
                 UserValues = UserValues,
@@ -209,11 +206,12 @@ public class JJFormUpload : JJBaseView
     public JJFormUpload(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade)
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters)
     {
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
-        ExportationWriters = coreServicesFacade.ExportationWriters;
+        ExportationWriters = exportationWriters;
         HttpContext = httpContext;
         Name = "jjuploadform1";
         ShowAddFile = true;

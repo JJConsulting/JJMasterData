@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
@@ -15,29 +14,26 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using JJMasterData.Core.Facades;
-using JJMasterData.Core.Http;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
-    public IHttpContext HttpContext { get; }
-    public CoreServicesFacade CoreServicesFacade { get; }
+    private GridViewFactory GridViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly string _dataDictionaryTableName;
 
     public ElementService(IValidationDictionary validationDictionary, 
-                          IEntityRepository entityRepository, 
-                          IHttpContext httpContext,
-                          IDataDictionaryRepository dataDictionaryRepository, CoreServicesFacade coreServicesFacade, IOptions<JJMasterDataCoreOptions> options) 
+                          IEntityRepository entityRepository,
+                          IDataDictionaryRepository dataDictionaryRepository,
+                          GridViewFactory gridViewFactory, 
+                          IOptions<JJMasterDataCoreOptions> options) 
         : base(validationDictionary, dataDictionaryRepository)
     {
-        HttpContext = httpContext;
-        CoreServicesFacade = coreServicesFacade;
+        GridViewFactory = gridViewFactory;
         _entityRepository = entityRepository;
         _dataDictionaryTableName = options.Value.DataDictionaryTableName;
     }
@@ -209,18 +205,13 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("0", "No"));
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
-        
-        var gridView = new JJGridView(formElement, HttpContext, new RepositoryServicesFacade(DataDictionaryRepository, _entityRepository),CoreServicesFacade)
-        {
-            Name = "List",
-            FilterAction =
-            {
-                ExpandedByDefault = true
-            },
-            MaintainValuesOnLoad = true,
-            EnableMultSelect = true
-        };
 
+
+        var gridView = GridViewFactory.CreateGridView(formElement);
+        gridView.Name = "List";
+        gridView.FilterAction.ExpandedByDefault = true;
+        gridView.MaintainValuesOnLoad = true;
+        gridView.EnableMultSelect = true;
         gridView.ExportAction.SetVisible(false);
         
         if (!gridView.CurrentFilter.ContainsKey("type"))

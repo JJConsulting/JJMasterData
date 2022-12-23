@@ -5,14 +5,12 @@ using System.Data;
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Protheus;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;

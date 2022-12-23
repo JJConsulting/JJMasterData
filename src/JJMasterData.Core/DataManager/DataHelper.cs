@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Http;
 using System;
 using System.Collections;
 using System.Data;

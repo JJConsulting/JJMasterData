@@ -1,36 +1,33 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.WebComponents;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
 public static class WriterFactory
 {
 
-    public static IPdfWriter GetPdfWriter(IEnumerable<IWriter> writers)
+    public static IPdfWriter GetPdfWriter(IEnumerable<IExportationWriter> writers)
     {
         return (IPdfWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(IPdfWriter));
     }
 
-    public static IExcelWriter GetExcelWriter(IEnumerable<IWriter> writers)
+    public static IExcelWriter GetExcelWriter(IEnumerable<IExportationWriter> writers)
     {
-        return (IExcelWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(IExcelWriter));
+        return (IExcelWriter)writers.FirstOrDefault(writer=> writer.GetType().GetInterface("IExcelWriter") == typeof(IExcelWriter));
     }
 
-    public static ITextWriter GetTextWriter(IEnumerable<IWriter> writers)
+    public static ITextWriter GetTextWriter(IEnumerable<IExportationWriter> writers)
     {
-        return (ITextWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(ITextWriter));
+        return (ITextWriter)writers.FirstOrDefault(writer=> writer.GetType().GetInterface("ITextWriter") == typeof(ITextWriter));
     }
 
-    public static IWriter ConfigureWriter(JJDataExp exporter, IEnumerable<IWriter> writers)
+    public static IExportationWriter ConfigureWriter(JJDataExp exporter, IEnumerable<IExportationWriter> writers)
     {
-        IWriter writer;
+        IExportationWriter exportationWriter;
         switch (exporter.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
@@ -39,7 +36,7 @@ public static class WriterFactory
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = textWriter;
+                exportationWriter = textWriter;
                 break;
 
             case ExportFileExtension.XLS:
@@ -48,7 +45,7 @@ public static class WriterFactory
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = excelWriter;
+                exportationWriter = excelWriter;
 
                 break;
             case ExportFileExtension.PDF:
@@ -61,24 +58,24 @@ public static class WriterFactory
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
                 
-                writer = pdfWriter;
+                exportationWriter = pdfWriter;
 
                 break;
             default:
                 throw new NotImplementedException();
         }
 
-        ConfigureWriter(exporter, writer);
+        ConfigureWriter(exporter, exportationWriter);
 
-        return writer;
+        return exportationWriter;
     }
 
-    private static void ConfigureWriter(JJDataExp exporter, IWriter writer)
+    private static void ConfigureWriter(JJDataExp exporter, IExportationWriter exportationWriter)
     {
-        writer.FormElement = exporter.FormElement;
-        writer.FieldManager = exporter.FieldManager;
-        writer.Configuration = exporter.ExportOptions;
-        writer.UserId = exporter.UserId;
-        writer.ProcessOptions = exporter.ProcessOptions;
+        exportationWriter.FormElement = exporter.FormElement;
+        exportationWriter.FieldManager = exporter.FieldManager;
+        exportationWriter.Configuration = exporter.ExportOptions;
+        exportationWriter.UserId = exporter.UserId;
+        exportationWriter.ProcessOptions = exporter.ProcessOptions;
     }
 }

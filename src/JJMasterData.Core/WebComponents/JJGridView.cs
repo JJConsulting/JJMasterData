@@ -20,7 +20,6 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,7 +99,7 @@ public class JJGridView : JJBaseView
         {
             if (_formManager == null)
             {
-                var expManager = new ExpressionManager(UserValues, EntityRepository,HttpContext);
+                var expManager = new ExpressionManager(UserValues, EntityRepository, HttpContext);
                 _formManager = new FormManager(FormElement, expManager);
             }
 
@@ -114,7 +113,7 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement,HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+            _dataImp = new JJDataImp(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade)
             {
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
@@ -132,7 +131,8 @@ public class JJGridView : JJBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = new JJDataExp(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+            _dataExp = new JJDataExp(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade,
+                ExportationWriters)
             {
                 Name = Name,
                 ExportOptions = CurrentExportConfig,
@@ -185,7 +185,7 @@ public class JJGridView : JJBaseView
 
     internal ActionManager ActionManager =>
         _actionManager ??= new ActionManager(
-            FormElement, 
+            FormElement,
             FieldManager.Expression,
             DataDictionaryRepository,
             _coreServicesFacade.Options,
@@ -195,11 +195,12 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_fieldManager != null) 
+            if (_fieldManager != null)
                 return _fieldManager;
-            
+
             var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
-            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade, exp);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade,
+                exp);
 
             return _fieldManager;
         }
@@ -572,8 +573,8 @@ public class JJGridView : JJBaseView
         set => _selectedRowsId = value ?? "";
     }
 
-    public IEnumerable<IWriter> ExportationWriters { get; }
-    
+    public IEnumerable<IExportationWriter> ExportationWriters { get; }
+
     internal IHttpContext HttpContext { get; }
 
     #endregion
@@ -598,15 +599,19 @@ public class JJGridView : JJBaseView
         TitleSize = HeadingSize.H1;
         EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
-        ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IWriter>>();
-        
-        
+        ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IExportationWriter>>();
+
+
         _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
     }
 
-    public JJGridView(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade)
+    public JJGridView(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+    )
     {
         Name = "jjview";
         ShowTitle = true;
@@ -621,16 +626,21 @@ public class JJGridView : JJBaseView
         RelationValues = new Hashtable();
         TitleSize = HeadingSize.H1;
         EntityRepository = repositoryServicesFacade.EntityRepository;
-        ExportationWriters = coreServicesFacade.ExportationWriters;
+        ExportationWriters = exportationWriters;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        
+
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
     }
 
-    public JJGridView(IHttpContext httpContext, DataTable table,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
+    public JJGridView(
+        IHttpContext httpContext,
+        DataTable table,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormElement = new FormElement(table);
         DataSource = table;
@@ -638,15 +648,22 @@ public class JJGridView : JJBaseView
 
     public JJGridView(string elementName,
         IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
-        var factory = new GridViewFactory(httpContext,repositoryServicesFacade, coreServicesFacade);
+        var factory = new GridViewFactory(httpContext, repositoryServicesFacade, coreServicesFacade, ExportationWriters);
         factory.SetGridViewParams(this, elementName);
     }
 
-    public JJGridView(FormElement formElement,
+    public JJGridView(
+        FormElement formElement,
         IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();

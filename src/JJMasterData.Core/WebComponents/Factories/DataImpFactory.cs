@@ -1,9 +1,6 @@
 using System;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
-using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
 

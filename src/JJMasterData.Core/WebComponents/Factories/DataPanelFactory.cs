@@ -1,7 +1,5 @@
 ﻿using System;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 

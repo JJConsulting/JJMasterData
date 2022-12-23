@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 
@@ -11,26 +13,30 @@ namespace JJMasterData.Core.WebComponents.Factories
         public RepositoryServicesFacade RepositoryServicesFacade { get; }
         public CoreServicesFacade CoreServicesFacade { get; }
 
+        public IEnumerable<IExportationWriter> ExportationWriters { get;  }
+        
         public GridViewFactory(
             IHttpContext httpContext, 
             RepositoryServicesFacade repositoryServicesFacade, 
-            CoreServicesFacade coreServicesFacade)
+            CoreServicesFacade coreServicesFacade,
+            IEnumerable<IExportationWriter> exportationWriters
+            )
         {
             HttpContext = httpContext;
+            ExportationWriters = exportationWriters;
             RepositoryServicesFacade = repositoryServicesFacade;
             CoreServicesFacade = coreServicesFacade;
         }
 
         public JJGridView CreateGridView(string elementName)
         {
-            var grid = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade);
+            var grid = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, ExportationWriters);
             SetGridViewParams(grid, elementName);
             return grid;
         }
 
         public JJGridView CreateGridView(FormElement formElement) =>
-            new(formElement, HttpContext, RepositoryServicesFacade,CoreServicesFacade);
-
+            new(formElement, HttpContext, RepositoryServicesFacade,CoreServicesFacade, ExportationWriters);
 
         internal void SetGridViewParams(JJGridView grid, string elementName)
         {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -9,7 +8,6 @@ using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -371,5 +369,5 @@ internal class DataExpSettings
         return list.OrderByDescending(f => f.CreationTime).ToList();
     }
 
-    private bool PdfWriterExists(IEnumerable<IWriter> writers) => WriterFactory.GetPdfWriter(writers) != null;
+    private bool PdfWriterExists(IEnumerable<IExportationWriter> writers) => WriterFactory.GetPdfWriter(writers) != null;
 }

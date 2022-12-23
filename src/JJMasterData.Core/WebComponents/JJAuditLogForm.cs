@@ -49,16 +49,20 @@ public class JJAuditLogForm : JJBaseView
 
     internal IEntityRepository EntityRepository { get; private set; }
 
-    public IEnumerable<IWriter> ExportationWriters { get; }
+    public IEnumerable<IExportationWriter> ExportationWriters { get; }
 
     public IHttpContext HttpContext { get; }
 
-    private JJAuditLogForm(IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    private JJAuditLogForm(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+        )
     {
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        ExportationWriters = coreServicesFacade.ExportationWriters;
+        ExportationWriters = exportationWriters;
         Service = coreServicesFacade.AuditLogService;
         HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
@@ -69,8 +73,11 @@ public class JJAuditLogForm : JJBaseView
     public JJAuditLogForm(
         FormElement formElement,
         IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext,
-        repositoryServicesFacade, coreServicesFacade)
+        RepositoryServicesFacade repositoryServicesFacade, 
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+            ) : this(httpContext,
+        repositoryServicesFacade, coreServicesFacade,exportationWriters)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         HttpContext = httpContext;
@@ -238,7 +245,12 @@ public class JJAuditLogForm : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(Service.GetFormElement(), HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+        var grid = new JJGridView(
+            Service.GetFormElement(),
+            HttpContext,
+            _repositoryServicesFacade,
+            _coreServicesFacade, 
+            ExportationWriters)
         {
             FormElement =
             {

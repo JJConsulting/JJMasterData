@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;

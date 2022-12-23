@@ -4,7 +4,6 @@ using System.Web;
 using Microsoft.AspNetCore.Http;
 #endif
 using System.Threading;
-using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Core.DataDictionary;
 

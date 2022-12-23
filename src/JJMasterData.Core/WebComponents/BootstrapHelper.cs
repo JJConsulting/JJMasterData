@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

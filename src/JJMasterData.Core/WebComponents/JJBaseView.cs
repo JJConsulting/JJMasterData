@@ -1,9 +1,6 @@
-﻿using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Html;
-using JJMasterData.Core.Http;
+﻿using JJMasterData.Core.Html;
 using System;
 using System.Collections;
-using System.Web;
 
 namespace JJMasterData.Core.WebComponents;
 

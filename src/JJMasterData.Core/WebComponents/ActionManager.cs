@@ -369,7 +369,7 @@ internal class ActionManager
 
                 foreach (var row in selectedRows)
                 {
-                    string sql = this.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
                     listSql.Add(sql);
                 }
 

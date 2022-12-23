@@ -10,14 +10,10 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.WebComponents;
 

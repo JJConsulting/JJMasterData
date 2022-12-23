@@ -14,12 +14,8 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -67,28 +63,30 @@ public class JJDataExp : JJBaseProcess
 
     public string ExportationFolderPath { get; }
 
-    public IEnumerable<IWriter> Writers { get; }
+    public IEnumerable<IExportationWriter> Writers { get; }
 
     #endregion
 
     #region "Constructors"
 
     public JJDataExp(
-        IHttpContext httpContext, 
+        IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
-        Writers = coreServicesFacade.ExportationWriters;
+        Writers = exportationWriters;
         ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
     }
 
     public JJDataExp(
-        FormElement formElement, 
+        FormElement formElement,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : this(httpContext,
-        repositoryServicesFacade, coreServicesFacade)
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters) :
+        this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormElement = formElement;
     }
@@ -215,7 +213,7 @@ public class JJDataExp : JJBaseProcess
         return alert.GetHtml();
     }
 
-    private IWriter CreateWriter()
+    private IExportationWriter CreateWriter()
     {
         return WriterFactory.ConfigureWriter(this, Writers);
     }

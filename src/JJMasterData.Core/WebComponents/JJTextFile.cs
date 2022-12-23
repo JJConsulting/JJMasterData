@@ -8,7 +8,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -56,26 +55,38 @@ public class JJTextFile : JJBaseControl
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     public IEntityRepository EntityRepository { get; }
 
-    public IEnumerable<IWriter> ExportationWriters { get; }
+    public IEnumerable<IExportationWriter> ExportationWriters { get; }
     
     public CoreServicesFacade CoreServicesFacade { get; }
 
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
     
     
-    public JJTextFile(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : base(httpContext)
+    public JJTextFile(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters
+        ) : base(httpContext)
     {
         CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        ExportationWriters = coreServicesFacade.ExportationWriters;
+        ExportationWriters = exportationWriters;
         EntityRepository = repositoryServicesFacade.EntityRepository;
     }
     
-    internal static JJTextFile GetInstance(FormElement formElement,
-        FormElementField field,IHttpContext httpContext,  RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade, ExpressionOptions expOptions,
-        object value, string panelName)
+    internal static JJTextFile GetInstance(
+        FormElement formElement,
+        FormElementField field,
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        CoreServicesFacade coreServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters,
+        ExpressionOptions expOptions,
+        
+        object value,
+        string panelName)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -83,7 +94,7 @@ public class JJTextFile : JJBaseControl
         if (field.DataFile == null)
             throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
 
-        var text = new JJTextFile(httpContext, repositoryServicesFacade,coreServicesFacade)
+        var text = new JJTextFile(httpContext, repositoryServicesFacade,coreServicesFacade, exportationWriters)
         {
             ElementField = field,
             PageState = expOptions.PageState,
@@ -239,7 +250,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload(HttpContext, RepositoryServicesFacade,CoreServicesFacade);
+        var form = new JJFormUpload(HttpContext, RepositoryServicesFacade,CoreServicesFacade, ExportationWriters);
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";

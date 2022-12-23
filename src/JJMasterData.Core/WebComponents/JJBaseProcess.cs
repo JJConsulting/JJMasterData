@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
@@ -72,16 +71,7 @@ public abstract class JJBaseProcess : JJBaseView
     internal FieldManager FieldManager =>
         _fieldManager ??= new FieldManager(FormElement,HttpContext, _repositoryServicesFacade,_coreServicesFacade, ExpressionManager);
 
-    internal FormManager FormManager
-    {
-        get
-        {
-            if (_formManager == null)
-                _formManager = new FormManager(FormElement, ExpressionManager);
-
-            return _formManager;
-        }
-    }
+    internal FormManager FormManager => _formManager ??= new FormManager(FormElement, ExpressionManager);
 
     internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
 

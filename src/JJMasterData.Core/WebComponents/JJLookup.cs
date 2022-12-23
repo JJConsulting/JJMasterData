@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Core.Facades;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Newtonsoft.Json;
 

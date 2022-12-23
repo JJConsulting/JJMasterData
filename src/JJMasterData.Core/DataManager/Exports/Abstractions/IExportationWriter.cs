@@ -9,7 +9,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public interface IWriter : IBackgroundTaskWorker
+public interface IExportationWriter : IBackgroundTaskWorker
 {
     public FormElement FormElement { get; set; }
     

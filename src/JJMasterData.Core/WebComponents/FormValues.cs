@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http;
 using System;
 using System.Collections;
 using JJMasterData.Core.Http.Abstractions;
