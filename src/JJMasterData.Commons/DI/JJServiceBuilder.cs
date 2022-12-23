@@ -27,7 +27,7 @@ public class JJServiceBuilder
             builder.AddDbLoggerProvider();
             builder.AddFileLoggerProvider();
         });
-        Services.AddTransient<IEntityRepository,Factory>();
+        Services.AddScoped<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddTransient<IBackgroundTask, BackgroundTask>();
         return this;
