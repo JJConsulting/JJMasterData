@@ -41,6 +41,7 @@ public abstract class JJBaseProcess : JJBaseView
         EntityRepository = repositoryServicesFacade.EntityRepository;
         _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
+        BackgroundTask = coreServicesFacade.BackgroundTaskManager;
         _repositoryServicesFacade = repositoryServicesFacade;
         LoggerFactory = _coreServicesFacade.LoggerFactory;
         Logger = LoggerFactory.CreateLogger<JJBaseProcess>();
@@ -81,7 +82,7 @@ public abstract class JJBaseProcess : JJBaseView
 
     internal FormManager FormManager => _formManager ??= new FormManager(FormElement, ExpressionManager);
 
-    internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
+    internal IBackgroundTask BackgroundTask { get; }
 
     internal bool IsRunning()
     {

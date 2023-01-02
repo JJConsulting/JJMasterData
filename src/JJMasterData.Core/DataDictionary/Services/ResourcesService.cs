@@ -1,21 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
 using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
     public FormViewFactory FormViewFactory { get; }
-
-    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, FormViewFactory formViewFactory)
+    
+    private string ResourcesTableName { get; }
+    
+    public ResourcesService(
+        IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IOptions<JJMasterDataCommonsOptions> commonsOptions,
+        FormViewFactory formViewFactory)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        ResourcesTableName = commonsOptions.Value.ResourcesTableName;
         FormViewFactory = formViewFactory;
     }
 
@@ -23,7 +32,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataLocalizationProvider.GetElement();
+        var element = JJMasterDataLocalizationProvider.GetElement(ResourcesTableName);
         
         var formElement = new FormElement(element)
         {

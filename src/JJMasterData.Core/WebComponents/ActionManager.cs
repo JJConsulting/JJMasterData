@@ -311,7 +311,7 @@ internal class ActionManager
 
     public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
     {
-        var scriptManager = JJService.Provider.GetService(typeof(IPythonEngine)) as IPythonEngine;
+        var engine = gridView.PythonEngine;
 
         try
         {
@@ -325,7 +325,7 @@ internal class ActionManager
                 }
 
                 foreach (var row in selectedRows)
-                    scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
+                    engine?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
 
                 gridView.ClearSelectedGridValues();
             }
@@ -342,7 +342,7 @@ internal class ActionManager
                     var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
-                scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+                engine?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
             }
         }
         catch (Exception ex)

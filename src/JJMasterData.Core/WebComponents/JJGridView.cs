@@ -579,7 +579,10 @@ public class JJGridView : JJBaseView
     internal IHttpContext HttpContext { get; }
     
     private ILogger<JJGridView> Logger { get; }
+    
+    internal IPythonEngine PythonEngine { get; }
     internal ILoggerFactory LoggerFactory { get; }
+    
 
     #endregion
 
@@ -604,6 +607,8 @@ public class JJGridView : JJBaseView
         EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
         ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IExportationWriter>>();
+        PythonEngine = JJService.Provider.GetService<IPythonEngine>();
+        
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
         
@@ -633,7 +638,7 @@ public class JJGridView : JJBaseView
         EntityRepository = repositoryServicesFacade.EntityRepository;
         ExportationWriters = exportationWriters;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        
+        PythonEngine = coreServicesFacade.PythonEngine;
         LoggerFactory = coreServicesFacade.LoggerFactory;
         Logger = LoggerFactory.CreateLogger<JJGridView>();
         
