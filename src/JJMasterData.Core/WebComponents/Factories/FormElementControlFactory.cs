@@ -11,6 +11,7 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
@@ -34,6 +35,7 @@ internal class FormElementControlFactory
     internal IEntityRepository EntityRepository { get; }
     public TextGroupFactory TextGroupFactory { get; }
     
+    internal ILoggerFactory LoggerFactory { get; }
     
     public FormElementControlFactory(
         JJDataPanel dataPanel, 
@@ -48,8 +50,9 @@ internal class FormElementControlFactory
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = exportationWriters;
+        LoggerFactory = coreServicesFacade.LoggerFactory;
         ActionManager = new ActionManager(dataPanel.FormElement,
-            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext), repositoryServicesFacade.DataDictionaryRepository,
+            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext, LoggerFactory), repositoryServicesFacade.DataDictionaryRepository,
             coreServicesFacade.Options,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
@@ -77,6 +80,7 @@ internal class FormElementControlFactory
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
         ExpressionOptions = expressionOptions;
+        LoggerFactory = coreServicesFacade.LoggerFactory;
         PanelName = panelName;
         TextGroupFactory = new TextGroupFactory(HttpContext);
         ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository,coreServicesFacade.Options, panelName);
@@ -91,10 +95,10 @@ internal class FormElementControlFactory
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                baseView = JJComboBox.GetInstance(field,HttpContext, EntityRepository, ExpressionOptions, value);
+                baseView = JJComboBox.GetInstance(field,HttpContext, EntityRepository, ExpressionOptions,LoggerFactory, value);
                 break;
             case FormComponent.Search:
-                baseView = JJSearchBox.GetInstance(field,HttpContext, ExpressionOptions, value, PanelName);
+                baseView = JJSearchBox.GetInstance(field,HttpContext, ExpressionOptions,LoggerFactory, value, PanelName);
                 break;
             case FormComponent.Lookup:
                 baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository,CoreServicesFacade, ExpressionOptions, value, PanelName);

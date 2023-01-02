@@ -57,7 +57,7 @@ public class ResourcesService : BaseService
    
         formView.FormElement.Fields["resourceKey"].IsRequired = true;
         formView.FormElement.Fields["resourceOrigin"].VisibleExpression = "val:0";
-        formView.FormElement.Fields["resourceOrigin"].Export = false;
+        formView.FormElement.Fields["resourceOrigin"].EnableExportation = false;
 
         formView.OnBeforeInsert += ValidateEspecialChars;
         formView.OnBeforeUpdate += ValidateEspecialChars;

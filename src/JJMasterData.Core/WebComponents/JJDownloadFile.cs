@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -21,6 +22,8 @@ public class JJDownloadFile : JJBaseView
     public string FilePath { get; set; }
 
     public bool IsExternalLink { get; set; }
+    
+    private ILogger<JJDownloadFile> Logger { get; }
 
     internal override HtmlBuilder RenderHtml()
     {
@@ -35,15 +38,17 @@ public class JJDownloadFile : JJBaseView
         return null;
     }
     
-    public JJDownloadFile(IHttpContext httpContext)
+    public JJDownloadFile(IHttpContext httpContext, ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
+        Logger = loggerFactory.CreateLogger<JJDownloadFile>();
     }
 
-    public JJDownloadFile(string filePath, IHttpContext httpContext)
+    public JJDownloadFile(string filePath, IHttpContext httpContext, ILoggerFactory loggerFactory)
     {
         FilePath = filePath;
         HttpContext = httpContext;
+        Logger = loggerFactory.CreateLogger<JJDownloadFile>();
     }
 
     private HtmlBuilder GetDownloadHtmlElement()
@@ -104,7 +109,7 @@ public class JJDownloadFile : JJBaseView
         if (!File.Exists(FilePath))
         {
             var exception = new JJMasterDataException(Translate.Key("File {0} not found!", FilePath));
-            Log.AddError(exception, exception.Message);
+            Logger.LogCritical(exception, "Error while downloading file.");
             throw exception;
         }
 
@@ -136,7 +141,7 @@ public class JJDownloadFile : JJBaseView
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(IHttpContext httpContext)
+    public static HtmlBuilder ResponseRoute(IHttpContext httpContext, ILoggerFactory loggerFactory)
     {
         bool isExternalLink = false;
         string criptFilePath = httpContext.Request.QueryString(DownloadParameter);
@@ -153,7 +158,7 @@ public class JJDownloadFile : JJBaseView
         if (filePath == null)
             throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
-        var download = new JJDownloadFile(httpContext)
+        var download = new JJDownloadFile(httpContext, loggerFactory)
         {
             FilePath = filePath,
             IsExternalLink = isExternalLink

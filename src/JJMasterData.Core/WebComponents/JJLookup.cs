@@ -33,7 +33,7 @@ public class JJLookup : JJBaseControl
     internal IEntityRepository EntityRepository { get; private set; }
     internal ExpressionManager ExpressionManager
     {
-        get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext);
+        get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
         private set => _expressionManager = value;
     }
 
@@ -98,8 +98,8 @@ public class JJLookup : JJBaseControl
         set => _dataItem = value;
     }
     
-    internal ILogger<JJLookup> Logger { get; }
-
+    private ILogger<JJLookup> Logger { get; }
+    internal ILoggerFactory LoggerFactory { get; }
     #endregion
 
     #region "Constructors"
@@ -113,6 +113,7 @@ public class JJLookup : JJBaseControl
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
+        LoggerFactory = coreServicesFacade.LoggerFactory;
         PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";

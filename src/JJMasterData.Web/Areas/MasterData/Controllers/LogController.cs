@@ -26,7 +26,10 @@ public class LogController : Controller
     private IEntityRepository EntityRepository { get; }
     private GridViewFactory GridViewFactory { get; }
 
-    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository, GridViewFactory gridViewFactory)
+    public LogController(
+        IOptions<DbLoggerOptions> options,
+        IEntityRepository entityRepository,
+        GridViewFactory gridViewFactory)
     {
         EntityRepository = entityRepository;
         GridViewFactory = gridViewFactory;

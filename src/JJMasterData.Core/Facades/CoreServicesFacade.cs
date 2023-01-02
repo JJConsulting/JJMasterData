@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
@@ -13,16 +14,18 @@ public class CoreServicesFacade
     public IOptions<JJMasterDataCoreOptions> Options { get; }
     public ILoggerFactory LoggerFactory { get; }
     
+    public IBackgroundTask BackgroundTaskManager { get; }
     
-    public CoreServicesFacade(
-        IFormEventResolver formEventResolver,
-        AuditLogService auditLogService, 
-        IOptions<JJMasterDataCoreOptions> options, 
+    public CoreServicesFacade(IFormEventResolver formEventResolver,
+        AuditLogService auditLogService,
+        IBackgroundTask backgroundTaskManager,
+        IOptions<JJMasterDataCoreOptions> options,
         ILoggerFactory loggerFactory)
     {
         FormEventResolver = formEventResolver;
         AuditLogService = auditLogService;
         Options = options;
         LoggerFactory = loggerFactory;
+        BackgroundTaskManager = backgroundTaskManager;
     }
 }

@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -175,17 +177,22 @@ public class JJSearchBox : JJBaseControl
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
-
+    
+    
+    private ILogger<JJSearchBox> Logger { get; }
+    internal ILoggerFactory LoggerFactory { get; }
 
     #endregion
 
     #region "Constructors"
 
-    public JJSearchBox(IHttpContext httpContext, IEntityRepository entityRepository) : base(httpContext)
+    public JJSearchBox(IHttpContext httpContext, IEntityRepository entityRepository, ILoggerFactory loggerFactory) : base(httpContext)
     {
         EntityRepository = entityRepository;
         Enabled = true;
         TriggerLength = 1;
+        Logger = loggerFactory.CreateLogger<JJSearchBox>();
+        LoggerFactory = loggerFactory;
         PlaceHolder = Translate.Key("Search...");
         NumberOfItems = 10;
         ScrollBar = false;
@@ -194,9 +201,9 @@ public class JJSearchBox : JJBaseControl
         PageState = PageState.List;
     }
 
-    internal static JJSearchBox GetInstance(FormElementField f,IHttpContext httpContext, ExpressionOptions expOptions, object value, string panelName)
+    internal static JJSearchBox GetInstance(FormElementField f,IHttpContext httpContext, ExpressionOptions expOptions,ILoggerFactory loggerFactory, object value, string panelName)
     {
-        var search = new JJSearchBox(httpContext,expOptions.EntityRepository)
+        var search = new JJSearchBox(httpContext,expOptions.EntityRepository, loggerFactory)
         {
             Name = f.Name,
             SelectedValue = (string)value,
@@ -349,7 +356,7 @@ public class JJSearchBox : JJBaseControl
                         UserValues.Add("search_text", StringManager.ClearText(searchText));
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 
@@ -384,9 +391,9 @@ public class JJSearchBox : JJBaseControl
         var listValue = GetValues(textSearch);
         var listItem = new List<JJSearchBoxItem>();
 
-        string description;
         foreach (var i in listValue)
         {
+            string description;
             if (DataItem.ShowImageLegend)
                 description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}";
             else

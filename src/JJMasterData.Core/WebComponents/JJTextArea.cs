@@ -33,8 +33,6 @@ public class JJTextArea : JJBaseControl
 
     internal override HtmlBuilder RenderHtml()
     {
-        
-        
         var html = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)

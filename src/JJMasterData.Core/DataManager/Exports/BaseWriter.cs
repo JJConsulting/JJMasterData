@@ -47,9 +47,9 @@ public abstract class BaseWriter :  IExportationWriter
                 return _fields;
             
             if (Configuration.ExportAllFields)
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                _fields = FormElement.Fields.ToList().FindAll(x => x.EnableExportation);
             else
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
+                _fields = FormElement.Fields.ToList().FindAll(x => x.EnableExportation && FieldManager.IsVisible(x, PageState.List, null));
 
             return _fields;
         }
@@ -69,7 +69,7 @@ public abstract class BaseWriter :  IExportationWriter
         {
             if (_fieldManager != null) 
                 return _fieldManager;
-            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository, HttpContext);
+            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository, HttpContext, _coreServicesFacade.LoggerFactory);
             _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade,_coreServicesFacade, expressionManager);
 
 

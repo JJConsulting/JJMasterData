@@ -10,6 +10,7 @@ using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -42,16 +43,17 @@ internal class FormFileService
     /// </remarks>
     public string FolderPath { get; set; }
     internal IHttpContext HttpContext { get; }
-    
+    internal ILogger<FormFileService> Logger { get; }
     public List<FormFileInfo> MemoryFiles
     {
         get => HttpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
         set => HttpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
     }
 
-    public FormFileService(string memoryFilesSessionName, IHttpContext httpContext)
+    public FormFileService(string memoryFilesSessionName, IHttpContext httpContext, ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
+        Logger = loggerFactory.CreateLogger<FormFileService>();
         MemoryFilesSessionName = $"{memoryFilesSessionName}_files";
         AutoSave = true;
     }
@@ -133,7 +135,7 @@ internal class FormFileService
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 var exception = new JJMasterDataException(errorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception, "Error before creating file.");
                 throw exception;
             }
                 
@@ -183,7 +185,7 @@ internal class FormFileService
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception, "Error while deleting file.");
                 throw exception;
             }
         }
@@ -299,13 +301,17 @@ internal class FormFileService
 
         string fileFullName = Path.Combine(FolderPath, file.FileName);
         var ms = new MemoryStream(file.Bytes);
-        var fileStream = File.Create(fileFullName);
+        using var fileStream = File.Create(fileFullName);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fileStream);
-        fileStream.Close();
     }
 
-    internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys, IHttpContext httpContext)
+    internal static void SaveFormMemoryFiles(
+        FormElement FormElement, 
+        Hashtable primaryKeys,
+        IHttpContext httpContext,
+        ILoggerFactory loggerFactory
+        )
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -315,12 +321,12 @@ internal class FormFileService
         foreach (var field in uploadFields)
         {
             string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var fileService = new FormFileService(field.Name + "_formupload", httpContext);
+            var fileService = new FormFileService(field.Name + "_formupload", httpContext, loggerFactory);
             fileService.SaveMemoryFiles(folderPath);
         }
     }
 
-    internal static void DeleteFiles(FormElement FormElement, IHttpContext httpContext)
+    internal static void DeleteFiles(FormElement FormElement, IHttpContext httpContext, ILoggerFactory loggerFactory)
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -328,7 +334,7 @@ internal class FormFileService
         
         foreach (var field in uploadFields)
         {
-            var fileService = new FormFileService(field.Name + "_formupload", httpContext);
+            var fileService = new FormFileService(field.Name + "_formupload", httpContext, loggerFactory);
             fileService.DeleteAll();
         }
     }

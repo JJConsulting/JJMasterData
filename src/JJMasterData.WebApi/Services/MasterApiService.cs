@@ -25,7 +25,7 @@ public class MasterApiService
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
-    private readonly AuditLogService _auditLogService;
+    private readonly CoreServicesFacade _coreServicesFacade;
 
     public MasterApiService(IHttpContext httpContext, 
                             IHttpContextAccessor aspNetHttpContext,
@@ -37,7 +37,7 @@ public class MasterApiService
         _entityRepository = repositoryServicesFacade.EntityRepository;
         _dataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         _formEventResolver = coreServicesFacade.FormEventResolver;
-        _auditLogService = coreServicesFacade.AuditLogService;
+        _coreServicesFacade = coreServicesFacade;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
@@ -328,7 +328,7 @@ public class MasterApiService
             { "objname", objname }
         };
 
-        var expManager = new ExpressionManager(userValues, _entityRepository, _httpContext);
+        var expManager = new ExpressionManager(userValues, _entityRepository, _httpContext, _coreServicesFacade.LoggerFactory);
         var formManager = new FormManager(dictionary.GetFormElement(), expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
@@ -435,14 +435,14 @@ public class MasterApiService
             { "USERID", GetUserId() }
         };
         
-        var dataContext = new DataContext(_httpContext,DataContextSource.Api, userId);
+        var dataContext = new DataContext(_httpContext!,DataContextSource.Api, userId);
         var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        var expManager = new ExpressionManager(userValues, _entityRepository,_httpContext);
+        var expManager = new ExpressionManager(userValues, _entityRepository,_httpContext, _coreServicesFacade.LoggerFactory);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext, _auditLogService)
+        var service = new FormService(formManager, dataContext, _coreServicesFacade)
         {
             EnableHistoryLog = logActionIsVisible
         };

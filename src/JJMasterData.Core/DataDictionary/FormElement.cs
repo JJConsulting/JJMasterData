@@ -55,9 +55,9 @@ public class FormElement : Element
         SubTitle = element.Info;
         Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
-        foreach (var f in element.Fields)
+        foreach (var field in element.Fields)
         {
-            AddField(f);
+            AddField(field);
         }
     }
 

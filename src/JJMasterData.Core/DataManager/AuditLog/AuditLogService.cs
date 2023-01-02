@@ -88,7 +88,7 @@ public class AuditLogService
         foreach (var field in pks)
         {
             if (key.Length > 0)
-                key.Append(";");
+                key.Append(';');
 
             key.Append(values[field.Name]);
         }

@@ -10,6 +10,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -26,6 +27,11 @@ public abstract class JJBaseProcess : JJBaseView
     
     private readonly CoreServicesFacade _coreServicesFacade;
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    
+    private ILogger<JJBaseProcess> Logger { get; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
+    
     protected JJBaseProcess(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
@@ -36,9 +42,11 @@ public abstract class JJBaseProcess : JJBaseView
         _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
+        LoggerFactory = _coreServicesFacade.LoggerFactory;
+        Logger = LoggerFactory.CreateLogger<JJBaseProcess>();
     }
 
-    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext);
+    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -112,7 +120,7 @@ public abstract class JJBaseProcess : JJBaseView
             error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
 
             var exception = new JJMasterDataException(error.ToString());
-            Log.AddError(exception, exception.Message);
+            Logger.LogError(exception, "User not found.");
 
             throw exception;
         }

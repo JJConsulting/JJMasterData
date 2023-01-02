@@ -8,6 +8,8 @@ using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
 using System.Data.SqlClient;
+using JJMasterData.Core.Facades;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -28,6 +30,10 @@ public class FormService
     public bool EnableErrorLink { get; set; }
 
     public bool EnableHistoryLog { get; set; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
+    
+    private ILogger<FormService> Logger { get; }
 
     #endregion
 
@@ -45,11 +51,13 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext, AuditLogService auditLogService)
+    public FormService(FormManager formManager, DataContext dataContext, CoreServicesFacade coreServices)
     {
         FormManager = formManager;
         DataContext = dataContext;
-        AuditLogService = auditLogService;
+        LoggerFactory = coreServices.LoggerFactory;
+        Logger = LoggerFactory.CreateLogger<FormService>();
+        AuditLogService = coreServices.AuditLogService;
     }
 
     #endregion
@@ -81,7 +89,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values, DataContext.HttpContext);
+            FormFileService.SaveFormMemoryFiles(FormElement, values, DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement, DataContext, values, CommandOperation.Update);
@@ -116,7 +124,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values,DataContext.HttpContext);
+            FormFileService.SaveFormMemoryFiles(FormElement, values,DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement,DataContext,  values, CommandOperation.Insert);
@@ -206,7 +214,7 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(FormElement, DataContext.HttpContext);
+            FormFileService.DeleteFiles(FormElement, DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
             AuditLogService.AddLog(FormElement,DataContext,  primaryKeys, CommandOperation.Delete);
@@ -217,7 +225,6 @@ public class FormService
             OnAfterDelete.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
-
         return result;
     }
 

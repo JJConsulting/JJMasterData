@@ -421,9 +421,8 @@ public static class StringManager
     /// <param name="begin">Caracter Inicial</param>
     /// <param name="end">Caracter Final</param>
     /// <returns>Lista com as strings localizadas</returns>
-    public static List<string> FindValuesByInterval(string text, char begin, char end)
+    public static IEnumerable<string> FindValuesByInterval(string text, char begin, char end)
     {
-        var list = new List<string>();
         char[] arr = text.ToCharArray();
         string value = "";
         bool isReading = false;
@@ -433,7 +432,7 @@ public static class StringManager
             {
                 if (c.Equals(end))
                 {
-                    list.Add(value);
+                    yield return value;
                     value = "";
                     isReading = false;
                 }
@@ -451,8 +450,6 @@ public static class StringManager
                 }
             } 
         }
-            
-        return list;
     }
 
     public static string Soma1(string baseVal)

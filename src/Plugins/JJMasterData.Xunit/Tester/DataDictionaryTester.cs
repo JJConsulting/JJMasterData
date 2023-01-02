@@ -7,6 +7,7 @@ using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
@@ -18,6 +19,7 @@ namespace JJMasterData.Xunit.Tester;
 internal class DataDictionaryTester : IDataDictionaryTester
 {
     private readonly IEntityRepository _entityRepository;
+    private readonly CoreServicesFacade _coreServicesFacade;
     private readonly IFormEventResolver _formEventResolver;
     private readonly FormService _formService;
  
@@ -30,17 +32,17 @@ internal class DataDictionaryTester : IDataDictionaryTester
     public DataDictionaryTester(
         Metadata metadata, 
         IEntityRepository entityRepository,
-        IFormEventResolver formEventResolver,
         IHttpContext httpContext,
-        IOptions<JJMasterDataCoreOptions> options, string? userId = null)
+        CoreServicesFacade coreServicesFacade, string? userId = null)
     {
         DictionaryName = metadata.Table.Name;
-        Options = options;
+        Options = coreServicesFacade.Options;
         UserId = userId;
         HttpContext = httpContext;
         
         _entityRepository = entityRepository;
-        _formEventResolver = formEventResolver;
+        _coreServicesFacade = coreServicesFacade;
+        _formEventResolver = coreServicesFacade.FormEventResolver;
         _formService = GetFormService(metadata);
     }
    
@@ -57,9 +59,9 @@ internal class DataDictionaryTester : IDataDictionaryTester
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        var expManager = new ExpressionManager(userValues, _entityRepository,HttpContext);
+        var expManager = new ExpressionManager(userValues, _entityRepository,HttpContext, _coreServicesFacade.LoggerFactory);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext, new AuditLogService(_entityRepository, Options))
+        var service = new FormService(formManager, dataContext, _coreServicesFacade)
         {
             EnableHistoryLog = logActionIsVisible
         };

@@ -2,6 +2,7 @@ using AutoFixture;
 using System.Collections;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
@@ -17,10 +18,10 @@ public class AssertTest
     private readonly MetadataValidator _validator;
 
     public AssertTest(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository,
-        IFormEventResolver formEventResolver,IHttpContext httpContext, IOptions<JJMasterDataCoreOptions> options)
+       IHttpContext httpContext, CoreServicesFacade coreServicesFacade)
     {
         _dictionaryRepository = dictionaryRepository;
-        _validator = new MetadataValidator(entityRepository, formEventResolver,httpContext, options);
+        _validator = new MetadataValidator(entityRepository, httpContext, coreServicesFacade);
     }
 
     [Fact]

@@ -4,7 +4,9 @@
 
 @using JJMasterData.Commons.Dao
 @using JJMasterData.Core.Http.Abstractions
+@using Microsoft.Extensions.Logging
 @inject IHttpContext HttpContext
+@inject ILoggerFactory LoggerFactory
 @model  JJMasterData.Core.DataDictionary.Action.InsertAction
 
 
@@ -78,7 +80,7 @@
 @functions {
     private JJSearchBox BuildElementToSelect()
     {
-        var cbo = new JJSearchBox(HttpContext,EntityRepository)
+        var cbo = new JJSearchBox(HttpContext,EntityRepository, LoggerFactory)
         {
             Name = "ElementNameToSelect"
         };

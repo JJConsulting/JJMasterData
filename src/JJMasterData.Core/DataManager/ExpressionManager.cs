@@ -1,44 +1,52 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Protheus;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
 public class ExpressionManager
 {
     #region "Properties"
-    
+
     internal IHttpContext CurrentContext { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
     public Hashtable UserValues { get; set; }
 
+    private ILogger<ExpressionManager> Logger { get; }
+
     #endregion
 
     #region "Constructors"
 
-    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository, IHttpContext currentContext)
+    public ExpressionManager(
+        Hashtable userValues,
+        IEntityRepository entityRepository,
+        IHttpContext currentContext,
+        ILoggerFactory loggerFactory
+    )
     {
         UserValues = userValues;
+        Logger = loggerFactory.CreateLogger<ExpressionManager>();
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
     }
 
     #endregion
 
-    public string ParseExpression(string expression, PageState state, bool quotationMarks, Hashtable formValues, ExpressionManagerInterval interval = null)
+    public string ParseExpression(string expression, PageState state, bool quotationMarks, Hashtable formValues,
+        ExpressionManagerInterval interval = null)
     {
         if (expression == null)
             return null;
@@ -52,55 +60,53 @@ public class ExpressionManager
 
         interval ??= new ExpressionManagerInterval('{', '}');
 
-        List<string> list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
+        var list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
 
         foreach (string field in list)
         {
-            string val = null;
+            string value;
             if (UserValues.Contains(field))
             {
-                val = $"{UserValues[field]}";
+                value = $"{UserValues[field]}";
             }
             else if (formValues != null && formValues.Contains(field))
             {
                 var objVal = formValues[field];
-                val = objVal != null ? $"{objVal}" : "";
+                value = objVal != null ? $"{objVal}" : "";
             }
             else if ("pagestate".Equals(field.ToLower()))
             {
-                val = $"{state}";
+                value = $"{state}";
             }
             else if ("objname".Equals(field.ToLower()))
             {
-                val = $"{CurrentContext.Request["objname"]}";
+                value = $"{CurrentContext.Request["objname"]}";
             }
             else if (CurrentContext.Session?[field] != null)
             {
-                val = $"{CurrentContext.Session[field]}";
+                value = $"{CurrentContext.Session[field]}";
             }
             else if (CurrentContext.HasClaimsIdentity())
             {
-                val = CurrentContext.GetClaim(field) ?? string.Empty;
+                value = CurrentContext.GetClaim(field) ?? string.Empty;
             }
             else
             {
-                val = "";
+                value = "";
             }
 
-            if (val == null) continue;
-            
             if (quotationMarks)
-                val = "'" + val + "'";
+                value = "'" + value + "'";
 
             if (interval.Begin == '{' && interval.End == '}')
             {
-                parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
+                parsedExpression = parsedExpression.Replace($"{{{field}}}", value);
             }
             else
             {
-                parsedExpression = parsedExpression.Replace(string.Format($"{interval.Begin}{{0}}{interval.End}", field), val);
+                parsedExpression =
+                    parsedExpression.Replace(string.Format($"{interval.Begin}{{0}}{interval.End}", field), value);
             }
-
         }
 
         return parsedExpression;
@@ -118,7 +124,7 @@ public class ExpressionManager
     {
         if (string.IsNullOrEmpty(expression))
         {
-            string err = Translate.Key("Invalid expression for {0} field", actionName);
+            string err = $"Invalid expression for {actionName} field";
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -129,19 +135,20 @@ public class ExpressionManager
         }
         else if (expression.StartsWith("exp:"))
         {
-            string exp = "";
+            string parsedExpression = null;
             try
             {
-                exp = ParseExpression(expression, state, true, formValues);
+                parsedExpression = ParseExpression(expression, state, true, formValues);
                 var dt = new DataTable("temp");
-                result = (bool)dt.Compute(exp, "");
+                result = (bool)dt.Compute(parsedExpression, "");
                 dt.Dispose();
             }
             catch (Exception ex)
             {
-                string err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
-                err += " " + ex.Message;
-                throw new ArgumentException(err, nameof(expression));
+                Logger.LogError(ex, "Error executing expression {parsedExpression} for {actionName}", parsedExpression,
+                    actionName);
+
+                throw;
             }
         }
         else if (expression.StartsWith("sql:"))
@@ -159,21 +166,21 @@ public class ExpressionManager
         return result;
     }
 
-    public string GetTriggerValue(FormElementField f, PageState state, Hashtable formValues)
+    public string GetTriggerValue(FormElementField field, PageState state, Hashtable formValues)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
-        return GetValueExpression(f.TriggerExpression, f, state, formValues);
+        return GetValueExpression(field.TriggerExpression, field, state, formValues);
     }
 
-    private string GetValueExpression(string expression, ElementField f, PageState state, Hashtable formValues)
+    private string GetValueExpression(string expression, ElementField field, PageState state, Hashtable formValues)
     {
         if (string.IsNullOrEmpty(expression))
             return null;
 
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
         string retVal = null;
         try
@@ -184,14 +191,13 @@ public class ExpressionManager
                     retVal = ParseExpression(expression, state, false, formValues);
                 else
                     retVal = expression.Replace("val:", "").Trim();
-
             }
             else if (expression.StartsWith("exp:"))
             {
                 try
                 {
                     string exp = ParseExpression(expression, state, false, formValues);
-                    if (f.DataType == FieldType.Float)
+                    if (field.DataType == FieldType.Float)
                         exp = exp.Replace(".", "").Replace(",", ".");
 
                     retVal = exp; //When parse is string id
@@ -202,9 +208,8 @@ public class ExpressionManager
                 catch (Exception ex)
                 {
                     var message = new StringBuilder();
-                    message.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
                     message.Append(ex.Message);
-                    Log.AddError(ex, message.ToString());
+                    Logger.LogError(ex, "Error executing expression for field {field}.", field.Name);
                 }
             }
             else if (expression.StartsWith("sql:"))
@@ -235,7 +240,7 @@ public class ExpressionManager
                 errorMessage.Append(" [val, exp, sql or protheus]. ");
                 errorMessage.Append(Translate.Key("Field"));
                 errorMessage.Append(": ");
-                errorMessage.Append(f.Name);
+                errorMessage.Append(field.Name);
                 errorMessage.Append(Translate.Key("Content"));
                 errorMessage.Append(": ");
                 errorMessage.Append(expression);
@@ -245,31 +250,39 @@ public class ExpressionManager
         catch (ProtheusException ex)
         {
             var errorMessage = new StringBuilder();
-            errorMessage.Append(Translate.Key("Error retrieving expression in Protheus integration."));
-            errorMessage.Append(" ");
-            errorMessage.Append(Translate.Key("Field"));
+
+            const string message = "Error retrieving expression in Protheus integration.";
+
+            errorMessage.Append(message);
+            errorMessage.Append(' ');
+            errorMessage.Append("Field");
             errorMessage.Append(": ");
-            errorMessage.AppendLine(f.Name);
+            errorMessage.AppendLine(field.Name);
             errorMessage.Append(ex.Message);
             var exception = new JJMasterDataException(errorMessage.ToString(), ex);
-            Log.AddError(exception, exception.Message);
+
+            Logger.LogError(exception, message);
+
             throw exception;
         }
         catch (Exception ex)
         {
             var errorMessage = new StringBuilder();
-            errorMessage.AppendLine(Translate.Key("Error retrieving expression or trigger."));
-            errorMessage.Append(Translate.Key("Field"));
+
+            const string message = "Error while retriving value from expression.";
+
+            errorMessage.AppendLine(message);
+            errorMessage.Append("Field");
             errorMessage.Append(": ");
-            errorMessage.AppendLine(f.Name);
-        
+            errorMessage.AppendLine(field.Name);
+
             var exception = new JJMasterDataException(errorMessage.ToString(), ex);
-            
-            Log.AddError(exception, exception.Message);
+
+            Logger.LogError(exception, message);
 
             throw exception;
-
         }
+
         return retVal;
     }
 

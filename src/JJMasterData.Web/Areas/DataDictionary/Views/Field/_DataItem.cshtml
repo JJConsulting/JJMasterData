@@ -1,9 +1,10 @@
 ﻿@using JJMasterData.Commons.Dao
 @using JJMasterData.Core.Http.Abstractions
+@using Microsoft.Extensions.Logging
 @model FormElementField
 @inject IHttpContext HttpContext
 @inject IEntityRepository EntityRepository
-
+@inject ILoggerFactory LoggerFactory
 @{
     bool showImage = Model.DataItem.ShowImageLegend;
     bool isManualVal = Model.DataItem.DataItemType == DataItemType.Manual;
@@ -206,7 +207,7 @@
                         <td>
                             @{
                                 var iconId = "DataItem.Items[" + i + "].Icon";
-                                var searchBox = new JJSearchBox(HttpContext,EntityRepository)
+                                var searchBox = new JJSearchBox(HttpContext,EntityRepository, LoggerFactory)
                                 {
                                     DataItem =
                                     {

@@ -12,6 +12,7 @@ using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -51,18 +52,30 @@ public class JJComboBox : JJBaseControl
         }
         set => _selectedValue = value;
     }
+    
+    private ILogger<JJComboBox> Logger { get; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
 
-    public JJComboBox(IHttpContext httpContext, IEntityRepository entityRepository) : base(httpContext)
+    public JJComboBox(IHttpContext httpContext, IEntityRepository entityRepository, ILoggerFactory loggerFactory) : base(httpContext)
     {
         EntityRepository = entityRepository;
+        Logger = loggerFactory.CreateLogger<JJComboBox>();
+        LoggerFactory = loggerFactory;
         Enabled = true;
         MultiSelect = false;
     }
 
 
-    internal static JJComboBox GetInstance(FormElementField field,IHttpContext httpContext, IEntityRepository repository, ExpressionOptions expOptions, object value)
+    internal static JJComboBox GetInstance(
+        FormElementField field,
+        IHttpContext httpContext,
+        IEntityRepository repository,
+        ExpressionOptions expOptions,
+        ILoggerFactory loggerFactory,
+        object value)
     {
-        var cbo = new JJComboBox(httpContext, repository)
+        var cbo = new JJComboBox(httpContext, repository, loggerFactory)
         {
             Name = field.Name,
             Visible = true,
@@ -191,9 +204,8 @@ public class JJComboBox : JJBaseControl
         }
         catch (Exception ex)
         {
-            var exception = new JJMasterDataException(Translate.Key("Error loading data from JJComboBox {0}. Error Details: {1}", Name, ex.Message),ex);
-            Log.AddError(exception, exception.Message);
-            throw exception;
+            Logger.LogError(ex, "Error loading data from JJComboBox {Name}", Name);
+            throw;
         }
 
         return _values;
@@ -272,7 +284,7 @@ public class JJComboBox : JJBaseControl
                         UserValues.Add("search_id", null);
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 

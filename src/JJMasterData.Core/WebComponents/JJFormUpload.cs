@@ -19,6 +19,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -43,7 +44,6 @@ public class JJFormUpload : JJBaseView
     private JJGridView _gridView;
     private JJUploadArea _upload;
     private FormFileService _service;
-
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
@@ -190,7 +190,7 @@ public class JJFormUpload : JJBaseView
         {
             if (_service == null)
             {
-                _service = new FormFileService(Name, HttpContext)
+                _service = new FormFileService(Name, HttpContext, CoreServicesFacade.LoggerFactory)
                 {
                     OnBeforeCreateFile = OnBeforeCreateFile,
                     OnBeforeDeleteFile = OnBeforeDeleteFile,
@@ -203,6 +203,8 @@ public class JJFormUpload : JJBaseView
         }
     }
 
+    private ILogger<JJFormUpload> Logger { get; }
+    
     public JJFormUpload(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
@@ -214,6 +216,7 @@ public class JJFormUpload : JJBaseView
         ExportationWriters = exportationWriters;
         HttpContext = httpContext;
         Name = "jjuploadform1";
+        Logger = CoreServicesFacade.LoggerFactory.CreateLogger<JJFormUpload>();
         ShowAddFile = true;
         ExpandedByDefault = true;
     }
@@ -739,12 +742,12 @@ public class JJFormUpload : JJBaseView
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception, "Error before downloading file.");
                 throw exception;
             }
         }
 
-        var download = new JJDownloadFile(fileName,HttpContext);
+        var download = new JJDownloadFile(fileName,HttpContext, CoreServicesFacade.LoggerFactory);
         download.DirectDownload();
     }
 

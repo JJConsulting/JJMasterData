@@ -2,9 +2,12 @@
 @using JJMasterData.Web.Extensions
 @using JJMasterData.Commons.Dao
 @using JJMasterData.Core.Http.Abstractions
+@using Microsoft.Extensions.Logging
 @model JJMasterData.Core.DataDictionary.Action.BasicAction
+
 @inject IHttpContext HttpContext
 @inject IEntityRepository EntityRepository
+@inject ILoggerFactory LoggerFactory
 
 <script lang="javascript" type="text/javascript">
         function setIconValue(fieldid, cod, description) {
@@ -27,7 +30,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
         @{
-            var searchBox = new JJSearchBox(HttpContext, EntityRepository)
+            var searchBox = new JJSearchBox(HttpContext, EntityRepository, LoggerFactory)
             {
                 DataItem =
                 {

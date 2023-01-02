@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Dao;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -252,7 +253,7 @@ internal class DataImpHelp
         var userValues = DataImp.ExpressionManager.UserValues;
         var entityrepository = DataImp.ExpressionManager.EntityRepository;
         var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
-        var cbo = JJComboBox.GetInstance(f,DataImp.HttpContext,EntityRepository, expOptions, null);
+        var cbo = JJComboBox.GetInstance(f,DataImp.HttpContext,EntityRepository, expOptions,DataImp.LoggerFactory, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)
             return string.Empty;

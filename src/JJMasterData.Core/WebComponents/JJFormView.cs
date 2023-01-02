@@ -143,7 +143,7 @@ public class JJFormView : JJGridView
         {
             if (_service != null) return _service;
             var dataContext = new DataContext(HttpContext, DataContextSource.Form, UserId);
-            _service = new FormService(FormManager, dataContext, AuditLogService)
+            _service = new FormService(FormManager, dataContext, _coreServicesFacade)
             {
                 EnableErrorLink = true,
                 EnableHistoryLog = LogAction.IsVisible
@@ -251,7 +251,7 @@ public class JJFormView : JJGridView
             return new HtmlBuilder(dataPanel.GetHtml());
 
         if (JJDownloadFile.IsDownloadRoute(HttpContext))
-            return JJDownloadFile.ResponseRoute(HttpContext);
+            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.LoggerFactory);
 
         if ("jjsearchbox".Equals(requestType))
         {

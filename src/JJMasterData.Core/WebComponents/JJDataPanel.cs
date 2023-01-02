@@ -15,6 +15,7 @@ using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -47,7 +48,7 @@ public class JJDataPanel : JJBaseView
             if (_fieldManager != null)
                 return _fieldManager;
 
-            var expression = new ExpressionManager(UserValues, EntityRepository, HttpContext);
+            var expression = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
 
             _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade, expression);
             return _fieldManager;
@@ -99,6 +100,8 @@ public class JJDataPanel : JJBaseView
     
     internal IHttpContext HttpContext { get; set; }
 
+    internal ILoggerFactory LoggerFactory { get; }
+    
     #endregion
 
     #region "Constructors"
@@ -111,6 +114,7 @@ public class JJDataPanel : JJBaseView
         Values = new Hashtable();
         Errors = new Hashtable();
         AutoReloadFormFields = true;
+        LoggerFactory = coreServicesFacade.LoggerFactory;
         PageState = PageState.View;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
@@ -125,6 +129,7 @@ public class JJDataPanel : JJBaseView
         Values = new Hashtable();
         Errors = new Hashtable();
         AutoReloadFormFields = true;
+        LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         PageState = PageState.View;
         _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
@@ -172,7 +177,7 @@ public class JJDataPanel : JJBaseView
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(HttpContext))
-            return JJDownloadFile.ResponseRoute(HttpContext);
+            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.LoggerFactory);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {

@@ -190,9 +190,11 @@ public class DataAccess
             return;
 
         if (_connection.State == ConnectionState.Open)
+        { 
             _connection.Close();
-
-        _connection?.Dispose();
+            _connection?.Dispose();
+        }
+        
         _connection = null;
     }
 
@@ -215,7 +217,7 @@ public class DataAccess
     /// </returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        DataTable dt = new DataTable();
+        var dt = new DataTable();
         try
         {
             using var dbCommand = CreateDbCommand(cmd);

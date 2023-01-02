@@ -24,6 +24,8 @@ namespace JJMasterData.Core.WebComponents;
 /// </summary>
 public class JJDataExp : JJBaseProcess
 {
+    private readonly CoreServicesFacade _coreServicesFacade;
+
     #region "Events"
 
     /// <summary>
@@ -78,6 +80,7 @@ public class JJDataExp : JJBaseProcess
         Writers = exportationWriters;
         ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
+        _coreServicesFacade = coreServicesFacade;
     }
 
     public JJDataExp(
@@ -228,7 +231,7 @@ public class JJDataExp : JJBaseProcess
 
         Task.Run(async () => await writer.RunWorkerAsync(CancellationToken.None));
 
-        var download = new JJDownloadFile(HttpContext)
+        var download = new JJDownloadFile(HttpContext, _coreServicesFacade.LoggerFactory)
         {
             FilePath = writer.FolderPath
         };

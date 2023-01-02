@@ -23,6 +23,7 @@ using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -99,7 +100,7 @@ public class JJGridView : JJBaseView
         {
             if (_formManager == null)
             {
-                var expManager = new ExpressionManager(UserValues, EntityRepository, HttpContext);
+                var expManager = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 _formManager = new FormManager(FormElement, expManager);
             }
 
@@ -198,7 +199,7 @@ public class JJGridView : JJBaseView
             if (_fieldManager != null)
                 return _fieldManager;
 
-            var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext);
+            var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
             _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade,
                 exp);
 
@@ -576,6 +577,9 @@ public class JJGridView : JJBaseView
     public IEnumerable<IExportationWriter> ExportationWriters { get; }
 
     internal IHttpContext HttpContext { get; }
+    
+    private ILogger<JJGridView> Logger { get; }
+    internal ILoggerFactory LoggerFactory { get; }
 
     #endregion
 
@@ -600,8 +604,9 @@ public class JJGridView : JJBaseView
         EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
         ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IExportationWriter>>();
-
-
+        LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
+        Logger = LoggerFactory.CreateLogger<JJGridView>();
+        
         _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
     }
@@ -628,7 +633,10 @@ public class JJGridView : JJBaseView
         EntityRepository = repositoryServicesFacade.EntityRepository;
         ExportationWriters = exportationWriters;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-
+        
+        LoggerFactory = coreServicesFacade.LoggerFactory;
+        Logger = LoggerFactory.CreateLogger<JJGridView>();
+        
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
@@ -1103,7 +1111,7 @@ public class JJGridView : JJBaseView
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(FormElement, HttpContext, EntityRepository)
+        var legend = new JJLegendView(FormElement, HttpContext, EntityRepository, LoggerFactory)
         {
             ShowAsModal = true,
             Name = "iconlegend_modal_" + Name

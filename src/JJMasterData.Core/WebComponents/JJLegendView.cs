@@ -4,6 +4,7 @@ using JJMasterData.Core.Html;
 using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -20,18 +21,24 @@ public class JJLegendView : JJBaseView
 
     private IHttpContext HttpContext { get; }
     
+    private ILoggerFactory LoggerFactory { get; }
+    
     #region "Constructors"
 
-    public JJLegendView(FormElement formElement,IHttpContext httpContext, IEntityRepository entityRepository)
+    public JJLegendView(
+        FormElement formElement,
+        IHttpContext httpContext,
+        IEntityRepository entityRepository,
+        ILoggerFactory loggerFactory
+        )
     {
         FormElement = formElement;
         HttpContext = httpContext;
+        LoggerFactory = loggerFactory;
         EntityRepository = entityRepository;
         Name = "iconLegend";
         ShowAsModal = false;
     }
-
-
 
     #endregion
     
@@ -52,7 +59,7 @@ public class JJLegendView : JJBaseView
 
         if (field != null)
         {
-            var cbo = new JJComboBox(HttpContext,EntityRepository)
+            var cbo = new JJComboBox(HttpContext,EntityRepository, LoggerFactory)
             {
                 Name = field.Name,
                 DataItem = field.DataItem

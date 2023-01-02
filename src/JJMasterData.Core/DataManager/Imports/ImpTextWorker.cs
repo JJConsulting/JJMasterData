@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -42,6 +43,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
     public string PostedText { get; private set; }
 
     public char SplitChar { get; private set; }
+    
+    private  ILogger<ImpTextWorker> Logger { get; }
 
 
     public ImpTextWorker(FieldManager fieldManager,
@@ -53,6 +56,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         FormService = formservice;
         PostedText = postedText;
         SplitChar = splitChar;
+        Logger = FormService.LoggerFactory.CreateLogger<ImpTextWorker>();
         Culture = Thread.CurrentThread.CurrentUICulture;
     }
 
@@ -92,7 +96,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                     currentProcess.Message += " ";
                     currentProcess.Message += ExceptionManager.GetMessage(ex);
                     currentProcess.AddError(currentProcess.Message);
-                    Log.AddError(ex.Message);
+                    Logger.LogError(ex, "Exception while running importation process.");
                     throw;
                 }
             }
@@ -183,7 +187,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 }
             }
 
-            Hashtable values = GetHashWithNameAndValue(listField, cols);
+            var values = GetHashWithNameAndValue(listField, cols);
             SetFormValues(values, currentProcess);
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
@@ -193,8 +197,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string cmd;
-            cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
+            var cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
             formManager.EntityRepository.SetCommand(cmd);
         }
 

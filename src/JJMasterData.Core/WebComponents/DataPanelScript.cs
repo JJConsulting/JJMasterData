@@ -25,8 +25,7 @@ internal class DataPanelScript
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("{pagestate}", $"'{DataPanel.PageState.ToString()}'");
-            exp = exp.Replace("{PAGESTATE}", $"'{DataPanel.PageState.ToString()}'");
+            exp = exp.Replace("{pagestate}", $"'{DataPanel.PageState.ToString().ToLower()}'");
             exp = exp
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")
@@ -35,7 +34,7 @@ internal class DataPanelScript
                 .Replace("=", " == ")
                 .Replace("<>", " != ");
 
-            List<string> list = StringManager.FindValuesByInterval(exp, '{', '}');
+            var list = StringManager.FindValuesByInterval(exp, '{', '}').ToList();
             if (list.Count == 0)
                 continue;
 
@@ -47,14 +46,14 @@ internal class DataPanelScript
             script.Append('\t', 2);
             script.AppendLine($"var exp = \"{exp}\";");
 
-            for (int i = 0; i < list.Count; i++)
+            foreach (var value in list)
             {
                 script.Append('\t', 2);
                 script.Append("exp = exp.replace(\"");
-                script.Append("{");
-                script.Append(list[i]);
+                script.Append('{');
+                script.Append(value);
                 script.Append("}\", \"'\" + $(\"#");
-                script.Append(list[i]);
+                script.Append(value);
                 script.AppendLine("\").val() + \"'\"); ");
             }
 
@@ -72,7 +71,8 @@ internal class DataPanelScript
             script.Append("$(\"#");
             script.Append(f.Name);
 
-            //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
+            /*If you change it to disabled, the value will not return in the post and the GetFormValues() routine will
+            fail when there is a EnabledExpression*/
             script.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
             script.Append('\t');
             script.AppendLine("});");
@@ -81,13 +81,13 @@ internal class DataPanelScript
         return script.ToString();
     }
 
-    private string ParseExpression(string exp, List<string> list)
+    private string ParseExpression(string exp, IEnumerable<string> list)
     {
         foreach (string fieldName in list)
         {
             string val = null;
             var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
-            if (field != null && field.AutoPostBack)
+            if (field is { AutoPostBack: true })
                 continue;
 
             if (DataPanel.UserValues.Contains(fieldName))
