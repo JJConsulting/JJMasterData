@@ -69,7 +69,7 @@ public class FunctionLoader
         {
             int errorCode = Marshal.GetLastWin32Error();
             throw new ApplicationException(
-            string.Format("There was an error during dll loading : {0}, error - {1}", dllFilePath, errorCode)
+                $"There was an error during dll loading : {dllFilePath}, error - {errorCode}"
             );
         }
         return moduleHandle;

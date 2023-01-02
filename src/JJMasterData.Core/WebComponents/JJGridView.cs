@@ -641,10 +641,11 @@ public class JJGridView : JJBaseView
         PythonEngine = coreServicesFacade.PythonEngine;
         LoggerFactory = coreServicesFacade.LoggerFactory;
         Logger = LoggerFactory.CreateLogger<JJGridView>();
+        HttpContext = httpContext;
         
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
-        HttpContext = httpContext;
+
     }
 
     public JJGridView(

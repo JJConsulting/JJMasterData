@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
         
         services.AddDefaultServices();
         
-        return services.AddJJMasterDataCommons(configuration.GetJJMasterData());
+        return services.AddJJMasterDataCommons(configuration);
     }
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCommons(configureCommons);
     }
 
-    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfigurationSection configuration)
+    public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
         

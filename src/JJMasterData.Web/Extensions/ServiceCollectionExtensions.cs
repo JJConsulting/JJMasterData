@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
             configuration.GetSection("ConnectionProviders"), filePath);
 
         
-        return services.AddJJMasterDataCore(configuration.GetJJMasterData());
+        return services.AddJJMasterDataCore(configuration);
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfigurationSection configuration)

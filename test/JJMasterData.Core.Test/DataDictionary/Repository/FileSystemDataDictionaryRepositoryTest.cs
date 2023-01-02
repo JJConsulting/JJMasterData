@@ -3,11 +3,11 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Test.DataDictionary.Repository;
 
-public class DataDictionaryRepositoryTest
+public class FileSystemDataDictionaryRepositoryTest
 {
-    private IDataDictionaryRepository _repository;
+    private readonly IDataDictionaryRepository _repository;
     
-    public DataDictionaryRepositoryTest(IOptions<FileSystemDataDictionaryOptions> options)
+    public FileSystemDataDictionaryRepositoryTest(IOptions<FileSystemDataDictionaryOptions> options)
     {
         _repository = new FileSystemDataDictionaryRepository(options);
     }

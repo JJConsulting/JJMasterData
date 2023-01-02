@@ -8,6 +8,8 @@ using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -19,13 +21,16 @@ public class JJServiceBuilder
         Services = services;
     }
 
-    public JJServiceBuilder AddDefaultServices()
+    public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
     {
         Services.AddLocalization();
+        
+        
         Services.AddLogging(builder =>
         {
             builder.AddDbLoggerProvider();
             builder.AddFileLoggerProvider();
+            builder.AddConfiguration(configuration.GetSection("Logging"));
         });
         Services.AddScoped<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();

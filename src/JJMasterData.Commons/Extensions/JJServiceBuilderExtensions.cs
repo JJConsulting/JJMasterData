@@ -18,19 +18,18 @@ public static class JJServiceBuilderExtensions
 
         var builder = new JJServiceBuilder(services);
         
-        builder.AddDefaultServices();
+        builder.AddDefaultServices(configuration);
         builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
         
         return builder;
     }
 
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfigurationSection configuration)
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
     {
         var builder = new JJServiceBuilder(services);
         
-
-        builder.AddDefaultServices();
-        builder.Services.Configure<JJMasterDataCommonsOptions>(configuration);
+        builder.AddDefaultServices(configuration);
+        builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
         
         return builder;
     }
@@ -39,7 +38,7 @@ public static class JJServiceBuilderExtensions
     {
         var builder = new JJServiceBuilder(services);
         
-        builder.AddDefaultServices();
+        builder.AddDefaultServices(null);
         builder.Services.Configure(configure);
         
         return builder;

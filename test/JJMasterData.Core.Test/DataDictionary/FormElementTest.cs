@@ -26,7 +26,7 @@ public class FormElementTest
         var formElement = new FormElement
         {
             Name = "Test",
-            TableName = "tb_teste",
+            TableName = "tb_test",
             Title = "Test Title"
         };
 
