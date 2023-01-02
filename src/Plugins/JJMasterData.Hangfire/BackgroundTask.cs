@@ -12,15 +12,8 @@ namespace JJMasterData.Hangfire;
 
 public sealed class BackgroundTask : IBackgroundTask
 {
-    private static BackgroundTask _instance;
-
-    public static BackgroundTask GetInstance()
-    {
-        return _instance ??= new BackgroundTask();
-    }
-
-    private static Lazy<List<TaskWrapper>> _taskList;
-    internal static List<TaskWrapper> TaskList
+    private Lazy<List<TaskWrapper>> _taskList;
+    internal List<TaskWrapper> TaskList
     {
         get
         {
@@ -65,7 +58,7 @@ public sealed class BackgroundTask : IBackgroundTask
             return false;
 
         var connection = JobStorage.Current.GetConnection();
-        JobData jobData = connection.GetJobData(taskWrapper.JobId);
+        var jobData = connection.GetJobData(taskWrapper.JobId);
 
         return jobData.State.Equals(ProcessingState.StateName);
     }
@@ -81,7 +74,7 @@ public sealed class BackgroundTask : IBackgroundTask
 
     public T GetProgress<T>(string key) where T : IProgressReporter
     {
-        TaskWrapper task = GetTask(key);
+        var task = GetTask(key);
         if (task != null)
             return (T)task.ProgressResult;
 

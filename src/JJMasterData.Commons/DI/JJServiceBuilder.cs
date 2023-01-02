@@ -29,7 +29,7 @@ public class JJServiceBuilder
         });
         Services.AddScoped<IEntityRepository,Factory>();
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
-        Services.AddTransient<IBackgroundTask, BackgroundTask>();
+        Services.AddSingleton<IBackgroundTask, BackgroundTask>();
         return this;
     }
 

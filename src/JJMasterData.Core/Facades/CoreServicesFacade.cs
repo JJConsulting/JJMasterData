@@ -1,3 +1,4 @@
+#nullable enable
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
@@ -15,13 +16,14 @@ public class CoreServicesFacade
     public IOptions<JJMasterDataCoreOptions> Options { get; }
     public ILoggerFactory LoggerFactory { get; }
     public IBackgroundTask BackgroundTaskManager { get; }
-    public IPythonEngine PythonEngine { get; }
+    public IPythonEngine? PythonEngine { get; }
     public CoreServicesFacade(IFormEventResolver formEventResolver,
         AuditLogService auditLogService,
         IBackgroundTask backgroundTaskManager,
         IOptions<JJMasterDataCoreOptions> options,
-        IPythonEngine pythonEngine,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        IPythonEngine? pythonEngine = null
+    )
     {
         FormEventResolver = formEventResolver;
         AuditLogService = auditLogService;

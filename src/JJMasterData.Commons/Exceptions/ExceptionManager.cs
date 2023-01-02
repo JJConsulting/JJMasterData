@@ -16,26 +16,25 @@ public static class ExceptionManager
         var err = new ResponseLetter();
         switch (ex)
         {
-            case UnauthorizedAccessException exAccess:
-                err.Message = exAccess.Message;
+            case UnauthorizedAccessException unauthorizedAccessException:
+                err.Message = unauthorizedAccessException.Message;
                 err.Status = (int)HttpStatusCode.Unauthorized;
                 break;
-            case JJMasterDataException dcEx:
-                err.Message = dcEx.Message;
+            case JJMasterDataException jjMasterDataException:
+                err.Message = jjMasterDataException.Message;
                 err.Status = (int)HttpStatusCode.BadRequest;
                 Log.AddError(ex.Message);
                 break;
-            case SqlException exSql:
+            case SqlException sqlException:
             {
-                string errMsg = GetMessage(exSql);
+                string errMsg = GetMessage(sqlException);
                 err.Message = errMsg;
                 err.Status = (int)HttpStatusCode.BadRequest;
-                err.ValidationList = new Hashtable();
-                err.ValidationList.Add("DB", errMsg);
+                err.ValidationList = new Hashtable { { "DB", errMsg } };
                 break;
             }
-            case KeyNotFoundException exNotFound:
-                err.Message = exNotFound.Message ?? "Page not found.";
+            case KeyNotFoundException keyNotFoundException:
+                err.Message = keyNotFoundException.Message ?? "Page not found.";
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
