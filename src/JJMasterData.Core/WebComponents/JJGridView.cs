@@ -807,7 +807,7 @@ public class JJGridView : JJBaseView
     {
         if ("selectall".Equals(requestType))
         {
-            string values = DoSelectAllRows();
+            string values = GetAllSelectedRows();
             HttpContext.Response.SendResponse(values);
             return true;
         }
@@ -1366,7 +1366,7 @@ public class JJGridView : JJBaseView
         SelectedRowsId = string.Empty;
     }
 
-    private string DoSelectAllRows()
+    private string GetAllSelectedRows()
     {
         int tot = 0;
         var dt = GetDataTable(CurrentFilter, CurrentOrder, 999999, 1, ref tot);
