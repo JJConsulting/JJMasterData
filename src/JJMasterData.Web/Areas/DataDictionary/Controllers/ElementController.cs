@@ -32,7 +32,7 @@ public class ElementController : DataDictionaryController
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = GetEntityFormView();
+            var model = GetEntityGridView();
             return View(model);
         }
         catch (DataAccessException)
@@ -173,7 +173,7 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public JJGridView GetEntityFormView()
+    public JJGridView GetEntityGridView()
     {
         var gridView = GetFormView();
 
@@ -346,7 +346,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Delete()
     {
-        var formView = GetEntityFormView();
+        var formView = GetEntityGridView();
 
         var selectedGridValues = formView.GetSelectedGridValues();
 

@@ -13,10 +13,10 @@ public class UIOptionsService : BaseService
     {
     }
 
-    private bool ValidateOptions(UIOptions uIOptions, string dictionaryName)
+    private bool ValidateOptions(UIOptions uiOptions, string dictionaryName)
     {
 
-        if (uIOptions.Grid.EnableMultSelect)
+        if (uiOptions.Grid.EnableMultSelect)
         {
             var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
             var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);

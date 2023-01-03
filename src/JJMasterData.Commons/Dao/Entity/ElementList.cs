@@ -30,13 +30,7 @@ public class ElementList : IList<ElementField>
 
     public bool ContainsKey(string name)
     {
-        foreach(ElementField field in _list)
-        {
-            if (field.Name.ToLower().Equals(name.ToLower()))
-                return true;
-        }
-
-        return false;
+        return _list.Any(field => field.Name.ToLower().Equals(name.ToLower()));
     }
 
     #endregion
@@ -72,16 +66,18 @@ public class ElementList : IList<ElementField>
     /// <param name="filterMode">Filter Type</param>
     public void Add(string name, string label, FieldType dataType, int size, bool required, FilterMode filterMode)
     {
-        ElementField e = new ElementField();
-        e.Name = name;
-        e.Label = label;
-        e.DataType = dataType;
-        e.Size = size;
-        e.IsPk = false;
-        e.IsRequired = required;
-        e.AutoNum = false;
-        e.Filter = new ElementFilter(filterMode);
-        e.DataBehavior = FieldBehavior.Real;
+        var e = new ElementField
+        {
+            Name = name,
+            Label = label,
+            DataType = dataType,
+            Size = size,
+            IsPk = false,
+            IsRequired = required,
+            AutoNum = false,
+            Filter = new ElementFilter(filterMode),
+            DataBehavior = FieldBehavior.Real
+        };
 
         _list.Add(e);
     }
@@ -99,18 +95,20 @@ public class ElementList : IList<ElementField>
     /// <param name="dataBehavior">Specifies the behavior of the field.</param>
     public void Add(string name, string label, FieldType dataType, int size, bool required, FilterMode filterMode, FieldBehavior dataBehavior)
     {
-        ElementField e = new ElementField();
-        e.Name = name;
-        e.Label = label;
-        e.DataType = dataType;
-        e.Size = size;
-        e.IsPk = false;
-        e.IsRequired = required;
-        e.AutoNum = false;
-        e.Filter = new ElementFilter(filterMode);
-        e.DataBehavior = dataBehavior;
+        var elementField = new ElementField
+        {
+            Name = name,
+            Label = label,
+            DataType = dataType,
+            Size = size,
+            IsPk = false,
+            IsRequired = required,
+            AutoNum = false,
+            Filter = new ElementFilter(filterMode),
+            DataBehavior = dataBehavior
+        };
 
-        _list.Add(e);
+        _list.Add(elementField);
     }
 
     /// <summary>
@@ -124,18 +122,20 @@ public class ElementList : IList<ElementField>
     /// <param name="filterMode">Filter type</param>
     public void AddPK(string name, string label, FieldType dataType, int size, bool autoNum, FilterMode filterMode)
     {
-        ElementField e = new ElementField();
-        e.Name = name;
-        e.Label = label;
-        e.DataType = dataType;
-        e.Size = size;
-        e.IsPk = true;
-        e.IsRequired = true;
-        e.AutoNum = autoNum;
-        e.Filter = new ElementFilter(filterMode);
-        e.DataBehavior = FieldBehavior.Real;
+        var elementField = new ElementField
+        {
+            Name = name,
+            Label = label,
+            DataType = dataType,
+            Size = size,
+            IsPk = true,
+            IsRequired = true,
+            AutoNum = autoNum,
+            Filter = new ElementFilter(filterMode),
+            DataBehavior = FieldBehavior.Real
+        };
 
-        _list.Add(e);
+        _list.Add(elementField);
     }
 
     public void Clear()
@@ -158,15 +158,9 @@ public class ElementList : IList<ElementField>
         return _list.Remove(item);
     }
 
-    public int Count
-    {
-        get { return _list.Count; }
-    }
+    public int Count => _list.Count;
 
-    public bool IsReadOnly
-    {
-        get { return _list.IsReadOnly; }
-    }
+    public bool IsReadOnly => _list.IsReadOnly;
 
     #endregion
 
@@ -189,15 +183,15 @@ public class ElementList : IList<ElementField>
 
     public ElementField this[int index]
     {
-        get { return _list[index]; }
-        set { _list[index] = value; }
+        get => _list[index];
+        set => _list[index] = value;
     }
 
     public ElementField this[string fieldName]
     {
         get
         {
-            foreach (ElementField val in _list)
+            foreach (var val in _list)
             {
                 if (val.Name.ToLower().Equals(fieldName.ToLower()))
                     return val;
@@ -210,8 +204,8 @@ public class ElementList : IList<ElementField>
             bool isOk = false;
             for (int i = 0; i < _list.Count; i++)
             {
-                ElementField e = _list[i];
-                if (e.Name.ToLower().Equals(fieldName.ToLower()))
+                var field = _list[i];
+                if (field.Name.ToLower().Equals(fieldName.ToLower()))
                 {
                     _list[i] = value;
                     isOk = true;
