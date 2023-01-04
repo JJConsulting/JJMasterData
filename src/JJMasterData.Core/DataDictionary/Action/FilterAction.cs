@@ -5,7 +5,7 @@ using JJMasterData.Core.WebComponents;
 namespace JJMasterData.Core.DataDictionary.Action;
 
 /// <summary>
-/// Represents the dictionary export button.
+/// Represents the dictionary filter button.
 /// </summary>
 [Serializable]
 [DataContract]
