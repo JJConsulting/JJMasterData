@@ -97,11 +97,11 @@ public class JJDataPanel : JJBaseView
     /// Render field grouping
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
-    
+
     internal IHttpContext HttpContext { get; set; }
 
     internal ILoggerFactory LoggerFactory { get; }
-    
+
     #endregion
 
     #region "Constructors"
@@ -123,34 +123,36 @@ public class JJDataPanel : JJBaseView
     [Obsolete("Please use DataPanelFactory by constructor injection.")]
     internal JJDataPanel()
     {
-        EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
-        HttpContext = JJService.Provider.GetRequiredService<IHttpContext>();
-        DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+        using var scope = JJService.Provider.CreateScope();
+        EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
+        DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         Values = new Hashtable();
         Errors = new Hashtable();
         AutoReloadFormFields = true;
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         PageState = PageState.View;
-        _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
-        _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
+        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
+        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
     }
 
     [Obsolete("Please use DataPanelFactory by constructor injection.")]
     public JJDataPanel(string elementName) : this()
     {
-        var factory = JJService.Provider.GetRequiredService<DataPanelFactory>();
+        using var scope = JJService.Provider.CreateScope();
+        var factory = scope.ServiceProvider.GetRequiredService<DataPanelFactory>();
         factory.SetDataPanelParams(this, elementName);
     }
 
     public JJDataPanel(FormElement formElement, IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : this(httpContext,repositoryServicesFacade, coreServicesFacade)
+        CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
     {
         var factory = new DataPanelFactory(httpContext, repositoryServicesFacade, coreServicesFacade);
         factory.SetDataPanelParams(this, formElement);
     }
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState,IHttpContext httpContext, 
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement,httpContext,
+    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState, IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement, httpContext,
         repositoryServicesFacade, coreServicesFacade)
     {
         Values = values;
@@ -168,7 +170,7 @@ public class JJDataPanel : JJBaseView
         string pnlname = HttpContext.Request.QueryString("pnlname");
 
         //Lookup Route
-        if (JJLookup.IsLookupRoute(HttpContext,this))
+        if (JJLookup.IsLookupRoute(HttpContext, this))
             return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
@@ -272,7 +274,7 @@ public class JJDataPanel : JJBaseView
             var entityRepository = FieldManager.Expression.EntityRepository;
             tempvalues = entityRepository.GetFields(FormElement, filters);
         }
-        
+
 
         tempvalues ??= new Hashtable();
 

@@ -44,15 +44,18 @@ public class JJCollapsePanelTagHelper : TagHelper
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        AssertAttributes();
-
         var panel = CollapsePanelFactory.CreateCollapsePanel();
-        panel.Name = Title!.ToLower().Replace(" ", "_");
+        panel.Name = Title?.ToLower().Replace(" ", "_");
         panel.Title = Title;
         panel.Color = Color;
         panel.ExpandedByDefault = ExpandedByDefault;
-        panel.TitleIcon = new JJIcon(Icon);
-        
+
+        if(Icon != default)
+        {
+            panel.TitleIcon = new JJIcon(Icon);
+        }
+
+
         if (Partial == null)
         {
             var content = output.GetChildContentAsync().Result.GetContent();
@@ -69,9 +72,4 @@ public class JJCollapsePanelTagHelper : TagHelper
         output.Content.SetHtmlContent(panel.GetHtml());
     }
 
-    private void AssertAttributes()
-    {
-        if (Title == null)
-            throw new ArgumentNullException(nameof(Title));
-    }
 }

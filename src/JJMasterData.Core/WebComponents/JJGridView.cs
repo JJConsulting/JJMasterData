@@ -591,6 +591,7 @@ public class JJGridView : JJBaseView
     [Obsolete("Please use GridViewFactory with dependency injection.")]
     public JJGridView()
     {
+        using var scope = JJService.Provider.CreateScope();
         HttpContext = JJService.Provider.GetRequiredService<IHttpContext>();
         Name = "jjview";
         ShowTitle = true;
@@ -604,15 +605,15 @@ public class JJGridView : JJBaseView
         AutoReloadFormFields = true;
         RelationValues = new Hashtable();
         TitleSize = HeadingSize.H1;
-        EntityRepository = JJService.Provider.GetRequiredService<IEntityRepository>();
-        DataDictionaryRepository = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+        EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IExportationWriter>>();
         PythonEngine = JJService.Provider.GetService<IPythonEngine>();
         
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
         
-        _repositoryServicesFacade = JJService.Provider.GetRequiredService<RepositoryServicesFacade>();
+        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
     }
 
