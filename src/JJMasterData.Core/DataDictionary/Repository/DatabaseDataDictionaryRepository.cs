@@ -149,14 +149,16 @@ public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
 
         DateTime dNow = DateTime.Now;
 
-        var values = new Hashtable();
-        values.Add("name", name);
-        values.Add("tablename", metadata.Table.TableName);
-        values.Add("info", metadata.Table.Info);
-        values.Add("type", "T");
-        values.Add("json", jsonTable);
-        values.Add("sync", metadata.Table.Sync ? "1" : "0");
-        values.Add("modified", dNow);
+        var values = new Hashtable
+        {
+            { "name", name },
+            { "tablename", metadata.Table.TableName },
+            { "info", metadata.Table.Info },
+            { "type", "T" },
+            { "json", jsonTable },
+            { "sync", metadata.Table.Sync ? "1" : "0" },
+            { "modified", dNow }
+        };
         _entityRepository.SetValues(element, values);
 
         if (metadata.Form != null)
@@ -225,11 +227,16 @@ public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.Delete(element, delFilter);
         }
     }
-
+    
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string dictionaryName)
+    public bool Exists(string elementName)
     {
-        return _entityRepository.TableExists(dictionaryName);
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName));
+
+        var filter = new Hashtable { { "name", elementName } };
+        int count = _entityRepository.GetCount(DataDictionaryStructure.GetElement(_dataDictionaryTableName), filter);
+        return count > 0;
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
