@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
-    <PackageVersion>3.0.38</PackageVersion>
+    <PackageVersion>3.0.39</PackageVersion>
     <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
-    <AssemblyVersion>3.0.38</AssemblyVersion>
+    <AssemblyVersion>3.0.39</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
