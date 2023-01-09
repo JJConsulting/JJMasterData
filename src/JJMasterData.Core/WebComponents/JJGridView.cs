@@ -592,7 +592,7 @@ public class JJGridView : JJBaseView
     public JJGridView()
     {
         using var scope = JJService.Provider.CreateScope();
-        HttpContext = JJService.Provider.GetRequiredService<IHttpContext>();
+        HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
         Name = "jjview";
         ShowTitle = true;
         EnableFilter = true;
@@ -607,14 +607,14 @@ public class JJGridView : JJBaseView
         TitleSize = HeadingSize.H1;
         EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
-        ExportationWriters = JJService.Provider.GetRequiredService<IEnumerable<IExportationWriter>>();
+        ExportationWriters = scope.ServiceProvider.GetRequiredService<IEnumerable<IExportationWriter>>();
         PythonEngine = JJService.Provider.GetService<IPythonEngine>();
         
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
         
         _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
-        _coreServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
+        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
     }
 
     public JJGridView(

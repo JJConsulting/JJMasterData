@@ -206,8 +206,9 @@ public class JJFormView : JJGridView
     [Obsolete("Please use FormViewFactory by dependency injection.")]
     public JJFormView(string elementName) : base()
     {
-        var formServicesFacade = JJService.Provider.GetRequiredService<CoreServicesFacade>();
-        var formViewFactory = JJService.Provider.GetRequiredService<FormViewFactory>();
+        using var scope = JJService.Provider.CreateScope();
+        var formServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        var formViewFactory = scope.ServiceProvider.GetRequiredService<FormViewFactory>();
         
         FormEventResolver = formServicesFacade.FormEventResolver;
         AuditLogService = formServicesFacade.AuditLogService;
@@ -219,8 +220,8 @@ public class JJFormView : JJGridView
         GridActions.Add(new ViewAction());
         GridActions.Add(new EditAction());
         GridActions.Add(new DeleteAction());
-        
-        JJService.Provider.GetRequiredService<FormViewFactory>().SetFormViewParams(this, elementName);
+
+        formViewFactory.SetFormViewParams(this, elementName);
     }
 
     public JJFormView(
