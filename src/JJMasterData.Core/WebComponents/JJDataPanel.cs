@@ -111,13 +111,11 @@ public class JJDataPanel : JJBaseView
         EntityRepository = repositoryServicesFacade.EntityRepository;
         HttpContext = httpContext;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        Values = new Hashtable();
-        Errors = new Hashtable();
-        AutoReloadFormFields = true;
         LoggerFactory = coreServicesFacade.LoggerFactory;
-        PageState = PageState.View;
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
+        
+        DataPanelFactory.SetDataPanelParams(this);
     }
 
     [Obsolete("Please use DataPanelFactory by constructor injection.")]
@@ -127,13 +125,11 @@ public class JJDataPanel : JJBaseView
         EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
         DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
-        Values = new Hashtable();
-        Errors = new Hashtable();
-        AutoReloadFormFields = true;
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
-        PageState = PageState.View;
         _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        
+        DataPanelFactory.SetDataPanelParams(this);
     }
 
     [Obsolete("Please use DataPanelFactory by constructor injection.")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -26,7 +27,7 @@ public class GridViewFactory
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
     }
-
+    
     public JJGridView CreateGridView(string elementName)
     {
         var grid = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, ExportationWriters);
@@ -36,7 +37,23 @@ public class GridViewFactory
 
     public JJGridView CreateGridView(FormElement formElement) =>
         new(formElement, HttpContext, RepositoryServicesFacade,CoreServicesFacade, ExportationWriters);
-
+    
+    internal static void SetGridViewParams(JJGridView gridView)
+    {
+        gridView.Name = "jjview";
+        gridView.ShowTitle = true;
+        gridView.EnableFilter = true;
+        gridView.EnableAjax = true;
+        gridView.EnableSorting = true;
+        gridView.ShowHeaderWhenEmpty = true;
+        gridView.ShowPagging = true;
+        gridView.ShowToolbar = true;
+        gridView.EmptyDataText = "No records found";
+        gridView.AutoReloadFormFields = true;
+        gridView.RelationValues = new Hashtable();
+        gridView.TitleSize = HeadingSize.H1;
+    }
+    
     internal void SetGridViewParams(JJGridView grid, string elementName)
     {
         if (string.IsNullOrEmpty(elementName))

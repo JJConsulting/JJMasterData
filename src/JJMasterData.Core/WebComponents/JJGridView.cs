@@ -591,28 +591,15 @@ public class JJGridView : JJBaseView
     [Obsolete("Please use GridViewFactory with dependency injection.")]
     public JJGridView()
     {
+        GridViewFactory.SetGridViewParams(this);
         using var scope = JJService.Provider.CreateScope();
         HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
-        Name = "jjview";
-        ShowTitle = true;
-        EnableFilter = true;
-        EnableAjax = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found";
-        AutoReloadFormFields = true;
-        RelationValues = new Hashtable();
-        TitleSize = HeadingSize.H1;
         EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         ExportationWriters = scope.ServiceProvider.GetRequiredService<IEnumerable<IExportationWriter>>();
         PythonEngine = JJService.Provider.GetService<IPythonEngine>();
-        
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
-        
         _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
     }
@@ -624,18 +611,7 @@ public class JJGridView : JJBaseView
         IEnumerable<IExportationWriter> exportationWriters
     )
     {
-        Name = "jjview";
-        ShowTitle = true;
-        EnableFilter = true;
-        EnableAjax = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found";
-        AutoReloadFormFields = true;
-        RelationValues = new Hashtable();
-        TitleSize = HeadingSize.H1;
+        GridViewFactory.SetGridViewParams(this);
         EntityRepository = repositoryServicesFacade.EntityRepository;
         ExportationWriters = exportationWriters;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
@@ -643,7 +619,6 @@ public class JJGridView : JJBaseView
         LoggerFactory = coreServicesFacade.LoggerFactory;
         Logger = LoggerFactory.CreateLogger<JJGridView>();
         HttpContext = httpContext;
-        
         _repositoryServicesFacade = repositoryServicesFacade;
         _coreServicesFacade = coreServicesFacade;
 

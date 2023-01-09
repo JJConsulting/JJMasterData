@@ -182,7 +182,8 @@ public class JJFormView : JJGridView
     #endregion
 
     #region "Constructors"
-
+    
+    
     internal JJFormView(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
@@ -194,33 +195,22 @@ public class JJFormView : JJGridView
         FormEventResolver = coreServicesFacade.FormEventResolver;
         AuditLogService = coreServicesFacade.AuditLogService;
         FormViewFactory = formViewFactory;
-        ShowTitle = true;
-        ToolBarActions.Add(new InsertAction());
-        ToolBarActions.Add(new DeleteSelectedRowsAction());
-        ToolBarActions.Add(new LogAction());
-        GridActions.Add(new ViewAction());
-        GridActions.Add(new EditAction());
-        GridActions.Add(new DeleteAction());
+
+        FormViewFactory.SetFormViewParams(this);
     }
 
     [Obsolete("Please use FormViewFactory by dependency injection.")]
-    public JJFormView(string elementName) : base()
+    public JJFormView(string elementName)
     {
         using var scope = JJService.Provider.CreateScope();
-        var formServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        var coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
         var formViewFactory = scope.ServiceProvider.GetRequiredService<FormViewFactory>();
-        
-        FormEventResolver = formServicesFacade.FormEventResolver;
-        AuditLogService = formServicesFacade.AuditLogService;
+        FormEventResolver = coreServicesFacade.FormEventResolver;
+        AuditLogService = coreServicesFacade.AuditLogService;
         FormViewFactory = formViewFactory;
-        ShowTitle = true;
-        ToolBarActions.Add(new InsertAction());
-        ToolBarActions.Add(new DeleteSelectedRowsAction());
-        ToolBarActions.Add(new LogAction());
-        GridActions.Add(new ViewAction());
-        GridActions.Add(new EditAction());
-        GridActions.Add(new DeleteAction());
-
+        
+        FormViewFactory.SetFormViewParams(this);
+        
         formViewFactory.SetFormViewParams(this, elementName);
     }
 

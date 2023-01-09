@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
@@ -13,7 +14,6 @@ namespace JJMasterData.Core.WebComponents.Factories;
 
 public class FormViewFactory
 {
-    public GridViewFactory GridViewFactory { get; }
     public IHttpContext HttpContext { get; }
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
     public CoreServicesFacade CoreServicesFacade { get; }
@@ -24,14 +24,12 @@ public class FormViewFactory
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters,
-        GridViewFactory gridViewFactory)
+        IEnumerable<IExportationWriter> exportationWriters)
     {
         HttpContext = httpContext;
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
         ExportationWriters = exportationWriters;
-        GridViewFactory = gridViewFactory;
     }
 
 
@@ -48,7 +46,17 @@ public class FormViewFactory
             ExportationWriters, this);
     }
 
-
+    internal static void SetFormViewParams(JJFormView formView)
+    {
+        formView.ShowTitle = true;
+        formView.ToolBarActions.Add(new InsertAction());
+        formView.ToolBarActions.Add(new DeleteSelectedRowsAction());
+        formView.ToolBarActions.Add(new LogAction());
+        formView.GridActions.Add(new ViewAction());
+        formView.GridActions.Add(new EditAction());
+        formView.GridActions.Add(new DeleteAction());
+    }
+    
     internal void SetFormViewParams(JJFormView form, string elementName)
     {
         if (string.IsNullOrEmpty(elementName))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
@@ -30,7 +31,13 @@ public class DataPanelFactory
         return dataPanel;
     }
 
-
+    internal static void SetDataPanelParams(JJDataPanel dataPanel)
+    {
+        dataPanel.Values = new Hashtable();
+        dataPanel.Errors = new Hashtable();
+        dataPanel.AutoReloadFormFields = true;
+        dataPanel.PageState = PageState.View;
+    }
 
     internal void SetDataPanelParams(JJDataPanel dataPanel, string elementName)
     {
