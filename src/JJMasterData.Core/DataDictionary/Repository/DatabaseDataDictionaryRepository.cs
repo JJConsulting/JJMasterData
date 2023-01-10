@@ -244,7 +244,7 @@ public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
-        if(_entityRepository.TableExists(_dataDictionaryTableName))
+        if(!_entityRepository.TableExists(_dataDictionaryTableName))
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement(_dataDictionaryTableName));
     }
 
