@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
 
 namespace JJMasterData.Commons.Util;
 
@@ -55,17 +56,20 @@ public static class Validate
     }
 
     /// <summary>
-    /// Verifica se o e-mail é valido
+    /// Verify if a email is valid.
     /// </summary>
     /// <param name="email">E-Mail</param>
     public static bool ValidEmail(string email)
     {
-        if (email.Contains("'"))
-            return false;
-
-        if (email.Contains('@') && email.Contains('.') && !email.Contains(".."))
+        try
+        {
+            var _ = new MailAddress(email);
             return true;
-        return false;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     /// <summary>

@@ -128,55 +128,45 @@ public static class StringManager
     /// </returns>
     public static string GetAge(string data2)
     {
-
-        string dt = data2;
-        int idade;
         //calculo a data de hoje 
-        DateTime hoje = DateTime.Now;
+        var hoje = DateTime.Now;
         //alert(hoje) 
 
         //calculo a data que recebo 
         //descomponho a data em um array 
-        string[] array_data = dt.Split('/');
+        string[] array_data = data2.Split('/');
 
         //se o array nao tem tres partes, a data eh incorreta 
         if (array_data.Length != 3)
             return "";
 
         //comprovo que o ano, mes, dia são corretos 
-        int ano;
-        ano = int.Parse(array_data[2]);
-        //if ( isNaN(ano) )
-        //  return "";
+        var ano = int.Parse(array_data[2]);
+        
+        var mes = int.Parse(array_data[1]);
 
-        int mes;
-        mes = int.Parse(array_data[1]);
-        // if (isNaN(mes))
-        //    return false
-
-        int dia;
-        dia = int.Parse(array_data[0]);
-        //if (isNaN(dia))
-        //    return false*/
-
+        var dia = int.Parse(array_data[0]);
 
         //se o ano da data que recebo so tem 2 cifras temos que muda-lo a 4 
         if (ano <= 99)
             ano += 1900;
 
         //subtraio os anos das duas datas 
-        idade = hoje.Year - ano - 1; //-1 porque ainda nao fez anos durante este ano
+        var idade = hoje.Year - ano - 1; //-1 porque ainda nao fez anos durante este ano
 
-        //se subtraio os meses e for menor que 0 entao nao cumpriu anos. Se for maior sim ja cumpriu
-        if (hoje.Month - mes < 0) //+ 1 porque os meses comecam em 0 
-            return idade.ToString();
-
-        if (hoje.Month - mes > 0)
-            return (idade + 1).ToString();
+        switch (hoje.Month - mes)
+        {
+            //se subtraio os meses e for menor que 0 entao nao cumpriu anos. Se for maior sim ja cumpriu
+            //+ 1 porque os meses comecam em 0 
+            case < 0:
+                return idade.ToString();
+            case > 0:
+                return (idade + 1).ToString();
+        }
 
         //entao eh porque sao iguais. Vejo os dias 
         //se subtraio os dias e der menor que 0 entao nao cumpriu anos. Se der maior ou igual sim que já cumpriu
-        if ((hoje.Day - dia) >= 0)
+        if (hoje.Day - dia >= 0)
             return (idade + 1).ToString();
 
         return idade.ToString();

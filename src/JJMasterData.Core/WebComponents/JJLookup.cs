@@ -10,7 +10,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using System.Web;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Facades;
@@ -266,8 +268,10 @@ public class JJLookup : JJBaseControl
             }
         }
 
+        var parameters = _coreServicesFacade.EncryptionService.EncryptString(@params.ToString());
+        
         string url =
-            $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?p={_coreServicesFacade.EncryptionService.EncryptString(@params.ToString())}";
+            $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?parameters={HttpUtility.UrlEncode(parameters)}";
 
         var dto = new LookupUrlDto(url);
 
@@ -384,7 +388,8 @@ public class JJLookup : JJBaseControl
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
 
-        if (field == null) return null;
+        if (field == null) 
+            return null;
 
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return lookup.GetHtmlBuilder();

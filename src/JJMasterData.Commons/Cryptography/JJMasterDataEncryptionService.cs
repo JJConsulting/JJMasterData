@@ -4,6 +4,9 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Cryptography;
 
+/// <summary>
+/// Wrapper to IEncryptionService with the secret key loaded by IOptions.
+/// </summary>
 public class JJMasterDataEncryptionService
 {
     private readonly string _secretKey;
