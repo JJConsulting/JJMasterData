@@ -96,7 +96,7 @@ public class Cript
     [Obsolete("Please use ProtheusEncryptionService.")]
     public static string DeCriptPwdProtheus(string password)
     {
-        return new ProtheusEncryptionService().DecryptPassword(password);
+        return ProtheusEncryptionService.DecryptPassword(password);
     }
     
     [Obsolete("Please use MD5HashHelper.")]

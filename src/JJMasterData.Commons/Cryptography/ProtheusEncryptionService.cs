@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Commons.Cryptography;
 
-public class ProtheusEncryptionService
+public static class ProtheusEncryptionService
 {
     /// <summary>
     /// Encrypts a Protheus password.
@@ -47,7 +47,7 @@ public class ProtheusEncryptionService
     /// </summary>
     /// <param name="password">Password</param>
     /// <remarks>Lucio Pelinson 2012-09-21</remarks>
-    public string DecryptPassword(string password)
+    public static string DecryptPassword(string password)
     {
         string protheusPassword = "";
         var evenList = new List<char>();

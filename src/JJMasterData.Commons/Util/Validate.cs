@@ -238,7 +238,7 @@ public static class Validate
         }
 
         resto = soma % 11;
-        if (resto == 0 || resto == 1)
+        if (resto is 0 or 1)
         {
             digitoRetorno = 0;
         }
@@ -257,7 +257,7 @@ public static class Validate
     /// </summary>
     public static bool ValidFileName(string filename)
     {
-        if (String.IsNullOrEmpty(filename))
+        if (string.IsNullOrEmpty(filename))
             return false;
 
         if (filename.Contains('?') |
