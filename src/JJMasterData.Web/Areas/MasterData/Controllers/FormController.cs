@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Util;
-using JJMasterData.Core.WebComponents;
-using JJMasterData.Core.WebComponents.Factories;
+﻿using JJMasterData.Core.WebComponents;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;

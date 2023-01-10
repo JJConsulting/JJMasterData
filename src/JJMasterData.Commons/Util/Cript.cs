@@ -69,13 +69,13 @@ public class Cript
         try
         {
             var des = new DESCryptoServiceProvider();
-            var ms = new MemoryStream();
+            using var ms = new MemoryStream();
             
             var input = Convert.FromBase64String(value.Replace(" ", "+"));
 
             _chave = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
 
-            var cs = new CryptoStream(ms, des.CreateDecryptor(_chave, Iv), CryptoStreamMode.Write);
+            using var cs = new CryptoStream(ms, des.CreateDecryptor(_chave, Iv), CryptoStreamMode.Write);
             cs.Write(input, 0, input.Length);
             cs.FlushFinalBlock();
 

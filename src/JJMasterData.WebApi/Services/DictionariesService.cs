@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using System.Collections;

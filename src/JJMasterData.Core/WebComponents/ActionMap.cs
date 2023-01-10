@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 

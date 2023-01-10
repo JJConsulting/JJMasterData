@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -13,7 +12,6 @@ using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 

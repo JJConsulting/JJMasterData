@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
@@ -9,7 +8,6 @@ using System;
 using System.Collections;
 using System.Data.SqlClient;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
-using JJMasterData.Core.Facades;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;

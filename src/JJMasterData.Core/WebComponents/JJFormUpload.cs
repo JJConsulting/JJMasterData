@@ -16,7 +16,6 @@ using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;

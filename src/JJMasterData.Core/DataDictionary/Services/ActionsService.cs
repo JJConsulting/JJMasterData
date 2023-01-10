@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.WebComponents;

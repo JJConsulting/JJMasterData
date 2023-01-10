@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Data;
 using System.Text;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
