@@ -18,14 +18,15 @@ public class CoreServicesFacade
     public ILoggerFactory LoggerFactory { get; }
     public IBackgroundTask BackgroundTaskManager { get; }
     public IPythonEngine? PythonEngine { get; }
-    
     public JJMasterDataEncryptionService EncryptionService { get; }
-    public CoreServicesFacade(IFormEventResolver formEventResolver,
+    public CoreServicesFacade(
+        IFormEventResolver formEventResolver,
         AuditLogService auditLogService,
         IBackgroundTask backgroundTaskManager,
         IOptions<JJMasterDataCoreOptions> options,
         JJMasterDataEncryptionService encryptionService,
-        ILoggerFactory loggerFactory, IPythonEngine? pythonEngine = null)
+        ILoggerFactory loggerFactory, 
+        IPythonEngine? pythonEngine = null)
     {
         FormEventResolver = formEventResolver;
         AuditLogService = auditLogService;

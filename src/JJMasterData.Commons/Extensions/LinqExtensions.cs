@@ -17,7 +17,7 @@ public static class LinqExtensions
 
         return matchedProperty;
     }
-    private static LambdaExpression GetOrderExpression(Type objType, PropertyInfo pi)
+    private static LambdaExpression GetOrderExpression(Type objType, MemberInfo pi)
     {
         var paramExpr = Expression.Parameter(objType);
         var propAccess = Expression.PropertyOrField(paramExpr, pi.Name);
@@ -30,11 +30,11 @@ public static class LinqExtensions
         if (string.IsNullOrEmpty(orderBy))
             return query;
         
-        string[] splintedOrder = orderBy.Split(' ');
-        string orderByField = splintedOrder[0];
+        string[] splittedOrderBy = orderBy.Split(' ');
+        string orderByField = splittedOrderBy[0];
         string orderByDirection = "ASC";
-        if (splintedOrder.Length > 1)
-            orderByDirection = splintedOrder[1].ToUpper(); 
+        if (splittedOrderBy.Length > 1)
+            orderByDirection = splittedOrderBy[1].ToUpper(); 
         
         var propInfo = GetPropertyInfo(typeof(T), orderByField);
         var expr = GetOrderExpression(typeof(T), propInfo);
