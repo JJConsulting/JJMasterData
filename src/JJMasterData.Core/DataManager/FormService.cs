@@ -52,13 +52,17 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext, CoreServicesFacade coreServices)
+    public FormService(
+        FormManager formManager, 
+        DataContext dataContext,
+        AuditLogService auditLogService,
+        ILoggerFactory loggerFactory)
     {
         FormManager = formManager;
         DataContext = dataContext;
-        LoggerFactory = coreServices.LoggerFactory;
+        LoggerFactory = loggerFactory;
         Logger = LoggerFactory.CreateLogger<FormService>();
-        AuditLogService = coreServices.AuditLogService;
+        AuditLogService = auditLogService;
     }
 
     #endregion

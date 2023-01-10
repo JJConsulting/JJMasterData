@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -12,7 +13,9 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -27,25 +30,28 @@ public abstract class JJBaseProcess : JJBaseView
     
     public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
     
-    private readonly CoreServicesFacade _coreServicesFacade;
+
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
     
     private ILogger<JJBaseProcess> Logger { get; }
     
     internal ILoggerFactory LoggerFactory { get; }
     
-    protected JJBaseProcess(
-        IHttpContext httpContext, 
+    protected JJBaseProcess(IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade)
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory)
     {
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         EntityRepository = repositoryServicesFacade.EntityRepository;
-        _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
-        BackgroundTask = coreServicesFacade.BackgroundTaskManager;
         _repositoryServicesFacade = repositoryServicesFacade;
-        LoggerFactory = _coreServicesFacade.LoggerFactory;
+        LoggerFactory = loggerFactory;
+        BackgroundTask = backgroundTask;
+        EncryptionService = encryptionService;
+        Options = options;
         Logger = LoggerFactory.CreateLogger<JJBaseProcess>();
     }
 
@@ -80,11 +86,13 @@ public abstract class JJBaseProcess : JJBaseView
 
 
     internal FieldManager FieldManager =>
-        _fieldManager ??= new FieldManager(FormElement,HttpContext, _repositoryServicesFacade,_coreServicesFacade, ExpressionManager);
+        _fieldManager ??= new FieldManager(FormElement,HttpContext, _repositoryServicesFacade,ExpressionManager,EncryptionService,Options,LoggerFactory);
 
     internal FormManager FormManager => _formManager ??= new FormManager(FormElement, ExpressionManager);
 
     internal IBackgroundTask BackgroundTask { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
+    public IOptions<JJMasterDataCoreOptions> Options { get; }
 
     internal bool IsRunning()
     {

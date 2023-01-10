@@ -15,8 +15,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -25,8 +29,6 @@ namespace JJMasterData.Core.WebComponents;
 /// </summary>
 public class JJDataExp : JJBaseProcess
 {
-    private readonly CoreServicesFacade _coreServicesFacade;
-
     #region "Events"
 
     /// <summary>
@@ -67,9 +69,7 @@ public class JJDataExp : JJBaseProcess
     public string ExportationFolderPath { get; }
 
     public IEnumerable<IExportationWriter> Writers { get; }
-
-    internal JJMasterDataEncryptionService EncryptionService { get; }
-
+    
     #endregion
 
     #region "Constructors"
@@ -77,23 +77,28 @@ public class JJDataExp : JJBaseProcess
     public JJDataExp(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
+        IEnumerable<IExportationWriter> exportationWriters,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, backgroundTask,encryptionService,options, loggerFactory)
     {
         Writers = exportationWriters;
-        EncryptionService = coreServicesFacade.EncryptionService;
-        ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
+        ExportationFolderPath = options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
-        _coreServicesFacade = coreServicesFacade;
     }
 
     public JJDataExp(
         FormElement formElement,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters) :
-        this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
+        IEnumerable<IExportationWriter> exportationWriters,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory) :
+        this(httpContext, repositoryServicesFacade, exportationWriters, backgroundTask, encryptionService, options,
+            loggerFactory)
     {
         FormElement = formElement;
     }
@@ -114,7 +119,8 @@ public class JJDataExp : JJBaseProcess
         return new JJIcon(IconType.FileTextO);
     }
 
-    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext, JJMasterDataEncryptionService encryptionService)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext,
+        JJMasterDataEncryptionService encryptionService)
     {
         return JJDownloadFile.GetDownloadUrl(filePath, httpContext, encryptionService);
     }
@@ -123,9 +129,8 @@ public class JJDataExp : JJBaseProcess
     {
         if (!reporter.HasError)
         {
-            string url = GetDownloadUrl(reporter.FilePath, HttpContext, _coreServicesFacade.EncryptionService);
-            var html = new HtmlBuilder(HtmlTag.Div);
-
+            string url = GetDownloadUrl(reporter.FilePath, HttpContext, EncryptionService);
+            var html = new HtmlBuilder(HtmlTag.Div); 
             if (reporter.HasError)
             {
                 var panel = new JJValidationSummary
@@ -235,7 +240,7 @@ public class JJDataExp : JJBaseProcess
 
         Task.Run(async () => await writer.RunWorkerAsync(CancellationToken.None));
 
-        var download = new JJDownloadFile(HttpContext,_coreServicesFacade.EncryptionService, _coreServicesFacade.LoggerFactory)
+        var download = new JJDownloadFile(HttpContext, EncryptionService, LoggerFactory)
         {
             FilePath = writer.FolderPath
         };

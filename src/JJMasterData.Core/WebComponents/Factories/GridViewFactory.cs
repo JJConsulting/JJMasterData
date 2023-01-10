@@ -1,42 +1,77 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
 public class GridViewFactory
 {
-    public IHttpContext HttpContext { get; }
-    public RepositoryServicesFacade RepositoryServicesFacade { get; }
-    public CoreServicesFacade CoreServicesFacade { get; }
-    public IEnumerable<IExportationWriter> ExportationWriters { get;  }
+    private IHttpContext HttpContext { get; }
+    private RepositoryServicesFacade RepositoryServicesFacade { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private ILoggerFactory LoggerFactory { get; }
+    private IBackgroundTask BackgroundTask { get; }
+    private IOptions<JJMasterDataCoreOptions> Options { get; }
+    private AuditLogService AuditLogService { get; }
+    private IEnumerable<IExportationWriter> ExportationWriters { get;  }
         
     public GridViewFactory(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade, 
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    )
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IEnumerable<IExportationWriter> exportationWriters, 
+        IBackgroundTask backgroundTask, 
+        IOptions<JJMasterDataCoreOptions> options, 
+        AuditLogService auditLogService)
     {
         HttpContext = httpContext;
         ExportationWriters = exportationWriters;
+        BackgroundTask = backgroundTask;
+        Options = options;
+        AuditLogService = auditLogService;
         RepositoryServicesFacade = repositoryServicesFacade;
-        CoreServicesFacade = coreServicesFacade;
+        EncryptionService = encryptionService;
+        LoggerFactory = loggerFactory;
     }
+
+    public JJGridView CreateGridView() => new (HttpContext,RepositoryServicesFacade,EncryptionService,LoggerFactory,BackgroundTask,ExportationWriters,Options, AuditLogService);
     
     public JJGridView CreateGridView(string elementName)
     {
-        var grid = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, ExportationWriters);
+        var grid = CreateGridView();
         SetGridViewParams(grid, elementName);
         return grid;
     }
 
-    public JJGridView CreateGridView(FormElement formElement) =>
-        new(formElement, HttpContext, RepositoryServicesFacade,CoreServicesFacade, ExportationWriters);
+    public JJGridView CreateGridView(FormElement formElement)
+    {
+        var grid = CreateGridView();
+
+        grid.FormElement = formElement;
+
+        return grid;
+    }
+    
+    public JJGridView CreateGridView(DataTable dataTable)
+    {
+        var grid = CreateGridView();
+
+        grid.FormElement = new FormElement(dataTable);
+
+        return grid;
+    }
     
     internal static void SetGridViewParams(JJGridView gridView)
     {
@@ -100,4 +135,6 @@ public class GridViewFactory
         grid.ShowHeaderWhenEmpty = options.ShowHeaderWhenEmpty;
         grid.EmptyDataText = options.EmptyDataText;
     }
+
+
 }

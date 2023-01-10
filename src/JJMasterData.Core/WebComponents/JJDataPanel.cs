@@ -16,9 +16,11 @@ using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -29,7 +31,7 @@ namespace JJMasterData.Core.WebComponents;
 public class JJDataPanel : JJBaseView
 {
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    private readonly CoreServicesFacade _coreServicesFacade;
+
 
     #region "Events"
 
@@ -53,7 +55,7 @@ public class JJDataPanel : JJBaseView
 
             var expression = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
 
-            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade, expression);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, expression,EncryptionService,Options,LoggerFactory);
             return _fieldManager;
         }
     }
@@ -107,38 +109,26 @@ public class JJDataPanel : JJBaseView
     
     internal JJMasterDataEncryptionService EncryptionService { get; }
 
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
+
     #endregion
 
     #region "Constructors"
 
-    internal JJDataPanel(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
-    {
-        EntityRepository = repositoryServicesFacade.EntityRepository;
-        HttpContext = httpContext;
-        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        LoggerFactory = coreServicesFacade.LoggerFactory;
-        EncryptionService = coreServicesFacade.EncryptionService;
-        _repositoryServicesFacade = repositoryServicesFacade;
-        
-        _coreServicesFacade = coreServicesFacade;
-
-        DataPanelFactory.SetDataPanelParams(this);
-    }
-
+    
     [Obsolete("Please use DataPanelFactory by constructor injection.")]
     internal JJDataPanel()
     {
+
         using var scope = JJService.Provider.CreateScope();
         _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
-        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
-        
+
         EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
         DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
-        EncryptionService = _coreServicesFacade.EncryptionService;
+        EncryptionService = scope.ServiceProvider.GetRequiredService<JJMasterDataEncryptionService>();
 
-        
         DataPanelFactory.SetDataPanelParams(this);
     }
 
@@ -149,21 +139,24 @@ public class JJDataPanel : JJBaseView
         var factory = scope.ServiceProvider.GetRequiredService<DataPanelFactory>();
         factory.SetDataPanelParams(this, elementName);
     }
-
-    public JJDataPanel(FormElement formElement, IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
+    
+    internal JJDataPanel(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade, 
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory)
     {
-        var factory = new DataPanelFactory(httpContext, repositoryServicesFacade, coreServicesFacade);
-        factory.SetDataPanelParams(this, formElement);
-    }
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        HttpContext = httpContext;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        LoggerFactory = loggerFactory;
+        EncryptionService = encryptionService;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        Options = options;
+        
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState, IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(formElement, httpContext,
-        repositoryServicesFacade, coreServicesFacade)
-    {
-        Values = values;
-        Errors = errors;
-        PageState = pageState;
+        DataPanelFactory.SetDataPanelParams(this);
     }
 
     #endregion
@@ -185,7 +178,7 @@ public class JJDataPanel : JJBaseView
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(HttpContext))
-            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.EncryptionService,_coreServicesFacade.LoggerFactory);
+            return JJDownloadFile.ResponseRoute(HttpContext, EncryptionService, LoggerFactory);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {

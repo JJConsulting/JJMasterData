@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
@@ -10,24 +14,57 @@ public class DataPanelFactory
 {
     public IHttpContext HttpContext { get; }
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    private readonly CoreServicesFacade _coreServicesFacade;
+    private readonly JJMasterDataEncryptionService _encryptionService;
+    private readonly IOptions<JJMasterDataCoreOptions> _options;
+    private readonly ILoggerFactory _loggerFactory;
+
 
     public DataPanelFactory(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade)
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
         _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
+        _encryptionService = encryptionService;
+        _options = options;
+        _loggerFactory = loggerFactory;
     }
         
     public JJDataPanel CreateDataPanel(string elementName)
     {
-        var dataPanel = new JJDataPanel(HttpContext, _repositoryServicesFacade, _coreServicesFacade);
+        var dataPanel = new JJDataPanel(HttpContext, _repositoryServicesFacade,_encryptionService,_options,_loggerFactory);
             
         SetDataPanelParams(dataPanel, elementName);
             
+        return dataPanel;
+    }
+
+    public JJDataPanel CreateDataPanel(FormElement formElement)
+    {
+        var dataPanel = new JJDataPanel(HttpContext, _repositoryServicesFacade,_encryptionService,_options,_loggerFactory);
+        
+        SetDataPanelParams(dataPanel, formElement);
+
+        return dataPanel;
+    }
+
+    public JJDataPanel CreateDataPanel(
+        FormElement formElement,
+        Hashtable values,
+        Hashtable errors,
+        PageState pageState)
+    {
+        var dataPanel = new JJDataPanel(HttpContext, _repositoryServicesFacade,_encryptionService,_options,_loggerFactory)
+            {
+                Values = values,
+                Errors = errors,
+                PageState = pageState
+            };
+        SetDataPanelParams(dataPanel, formElement);
+
         return dataPanel;
     }
 

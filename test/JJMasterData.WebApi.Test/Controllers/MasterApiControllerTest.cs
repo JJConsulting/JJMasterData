@@ -8,11 +8,14 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Xunit.Extensions.Ordering;
 
@@ -24,7 +27,12 @@ namespace JJMasterData.WebApi.Test.Controllers;
 public class MasterApiControllerTest
 {
     private readonly MasterApiController _controller;
-    public MasterApiControllerTest(IHttpContext httpContext,RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade)
+    public MasterApiControllerTest(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        ILoggerFactory loggerFactory,
+        IFormEventResolver formEventResolver,
+        AuditLogService auditLogService)
     {
         var accessor = new HttpContextAccessor
         {
@@ -38,7 +46,7 @@ public class MasterApiControllerTest
             }
         };
         
-        var masterApiService = new MasterApiService(httpContext, accessor, repositoryServicesFacade, coreServicesFacade);
+        var masterApiService = new MasterApiService(httpContext, accessor, repositoryServicesFacade, loggerFactory,formEventResolver,auditLogService);
         _controller = new MasterApiController(masterApiService);
     }
     

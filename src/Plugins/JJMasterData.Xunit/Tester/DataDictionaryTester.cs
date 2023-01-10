@@ -13,6 +13,7 @@ using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Xunit.Tester;
@@ -20,10 +21,11 @@ namespace JJMasterData.Xunit.Tester;
 internal class DataDictionaryTester : IDataDictionaryTester
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly CoreServicesFacade _coreServicesFacade;
     private readonly IFormEventResolver _formEventResolver;
     private readonly FormService _formService;
- 
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly AuditLogService _auditLogService;
+
     public string DictionaryName { get; }
     public IOptions<JJMasterDataCoreOptions> Options { get; }
     public string? UserId { get; }
@@ -34,16 +36,21 @@ internal class DataDictionaryTester : IDataDictionaryTester
         Metadata metadata, 
         IEntityRepository entityRepository,
         IHttpContext httpContext,
-        CoreServicesFacade coreServicesFacade, string? userId = null)
+        IFormEventResolver formEventResolver,
+        ILoggerFactory loggerFactory,
+        IOptions<JJMasterDataCoreOptions> options, 
+        AuditLogService auditLogService, 
+        string? userId = null)
     {
         DictionaryName = metadata.Table.Name;
-        Options = coreServicesFacade.Options;
+        Options = options;
+        _auditLogService = auditLogService;
         UserId = userId;
         HttpContext = httpContext;
-        
+        _loggerFactory = loggerFactory;
+
         _entityRepository = entityRepository;
-        _coreServicesFacade = coreServicesFacade;
-        _formEventResolver = coreServicesFacade.FormEventResolver;
+        _formEventResolver = formEventResolver;
         _formService = GetFormService(metadata);
     }
    
@@ -60,9 +67,9 @@ internal class DataDictionaryTester : IDataDictionaryTester
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        var expManager = new ExpressionManager(userValues, _entityRepository,HttpContext, _coreServicesFacade.LoggerFactory);
+        var expManager = new ExpressionManager(userValues, _entityRepository,HttpContext, _loggerFactory);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext, _coreServicesFacade)
+        var service = new FormService(formManager, dataContext, _auditLogService, _loggerFactory)
         {
             EnableHistoryLog = logActionIsVisible
         };

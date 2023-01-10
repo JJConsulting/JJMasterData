@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -20,8 +21,10 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -64,15 +67,17 @@ public abstract class BaseWriter :  IExportationWriter
     public ExportOptions Configuration { get; set; }
 
     public IHttpContext HttpContext { get; }
-    
+    public IOptions<JJMasterDataCoreOptions> Options { get; }
+    internal ILoggerFactory LoggerFactory { get; }
+
     public FieldManager FieldManager
     {
         get
         {
             if (_fieldManager != null) 
                 return _fieldManager;
-            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository, HttpContext, _coreServicesFacade.LoggerFactory);
-            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade,_coreServicesFacade, expressionManager);
+            var expressionManager = new ExpressionManager(new Hashtable(), EntityRepository, HttpContext, LoggerFactory);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, expressionManager, EncryptionService,Options,LoggerFactory);
 
 
             return _fieldManager;
@@ -145,24 +150,27 @@ public abstract class BaseWriter :  IExportationWriter
     
     public ILogger<BaseWriter> Logger { get; }
 
-    private readonly CoreServicesFacade _coreServicesFacade;
+    public JJMasterDataEncryptionService EncryptionService { get; }
     
     #endregion
 
 
-    protected BaseWriter(
-        IHttpContext httpContext,
+    protected BaseWriter(IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade)
+        IOptions<JJMasterDataCoreOptions> options,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory)
     {
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         EntityRepository = repositoryServicesFacade.EntityRepository;
-        ExportationFolderPath = coreServicesFacade.Options.Value.ExportationFolderPath;
-        Logger = coreServicesFacade.LoggerFactory.CreateLogger<BaseWriter>();
+        ExportationFolderPath =options.Value.ExportationFolderPath;
+        Logger = loggerFactory.CreateLogger<BaseWriter>();
         CurrentFilter = new Hashtable();
         _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
         HttpContext = httpContext;
+        Options = options;
+        LoggerFactory = loggerFactory;
+        EncryptionService = encryptionService;
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
@@ -257,7 +265,7 @@ public abstract class BaseWriter :  IExportationWriter
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
         }
 
-        var textFile = new JJTextFile(HttpContext, _repositoryServicesFacade,_coreServicesFacade , null)
+        var textFile = new JJTextFile(HttpContext, _repositoryServicesFacade, null, EncryptionService,null, LoggerFactory)
         {
             FormElement = FormElement,
             ElementField = field,
@@ -269,8 +277,7 @@ public abstract class BaseWriter :  IExportationWriter
 
         return textFile.GetDownloadLink(value, true, AbsoluteUri);
     }
-
-
+    
     private string GetFilePath()
     {
         string title;

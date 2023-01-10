@@ -91,6 +91,5 @@ public static class ServiceCollectionExtensions
     private static void AddServicesFacades(this IServiceCollection services)
     {
         services.AddTransient<RepositoryServicesFacade>();
-        services.AddTransient<CoreServicesFacade>();
     }
 }

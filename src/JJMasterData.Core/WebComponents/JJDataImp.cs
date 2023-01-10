@@ -10,17 +10,21 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
+using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJDataImp : JJBaseProcess
 {
-
-
     #region "Events"
 
     internal EventHandler<FormAfterActionEventArgs> OnAfterDelete;
@@ -33,12 +37,11 @@ public class JJDataImp : JJBaseProcess
     #endregion
 
     #region "Properties"
-    
+
     private RepositoryServicesFacade RepositoryServicesFacade { get; }
-    private CoreServicesFacade CoreServicesFacade { get; }
 
     private JJUploadArea _upload;
-    
+
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
@@ -57,33 +60,38 @@ public class JJDataImp : JJBaseProcess
     /// Default: true (panel is open by default)
     /// </summary>
     public bool ExpandedByDefault { get; set; }
-    
+
     public AuditLogService AuditLogService { get; }
-    
 
     #endregion
 
     #region "Constructors"
 
-    public JJDataImp(IHttpContext httpContext, RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : base(httpContext,repositoryServicesFacade,coreServicesFacade)
+    public JJDataImp(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory,
+        AuditLogService auditLogService
+    ) : base(httpContext, repositoryServicesFacade, backgroundTask, encryptionService, options, loggerFactory)
     {
         RepositoryServicesFacade = repositoryServicesFacade;
-        CoreServicesFacade = coreServicesFacade;
-        AuditLogService = CoreServicesFacade.AuditLogService;
+        AuditLogService = auditLogService;
         ExpandedByDefault = true;
         Name = "jjdataimp1";
     }
-    
-    public JJDataImp(string elementName, IHttpContext httpContext,
-       RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade )
-    {
-        var factory = new DataImpFactory(httpContext, RepositoryServicesFacade, CoreServicesFacade);
-        factory.SetDataImpParams(this, elementName);
-    }
 
     public JJDataImp(
-        FormElement formElement,IHttpContext httpContext, 
-        RepositoryServicesFacade repositoryServicesFacade, CoreServicesFacade coreServicesFacade) : this(httpContext, repositoryServicesFacade, coreServicesFacade)
+        FormElement formElement, 
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory, AuditLogService auditLogService) : this(httpContext, repositoryServicesFacade,
+        backgroundTask, encryptionService, options, loggerFactory, auditLogService)
     {
         FormElement = formElement;
     }
@@ -124,6 +132,7 @@ public class JJDataImp : JJBaseProcess
                     string pasteValue = HttpContext.Request.Form("pasteValue");
                     ImportInBackground(pasteValue);
                 }
+
                 html = GetHtmlWaitProcess();
                 break;
             }
@@ -143,9 +152,9 @@ public class JJDataImp : JJBaseProcess
     private HtmlBuilder GetHtmlLogProcess()
     {
         var html = new DataImpLog(this).GetHtmlLog()
-         .AppendHiddenInput("current_uploadaction")
-         .AppendHiddenInput("filename")
-         .AppendElement(BackButton);
+            .AppendHiddenInput("current_uploadaction")
+            .AppendHiddenInput("filename")
+            .AppendElement(BackButton);
 
         return html;
     }
@@ -172,40 +181,35 @@ public class JJDataImp : JJBaseProcess
             .AppendElement(HtmlTag.Div, msg =>
             {
                 msg.WithAttribute("id", "divMsgProcess")
-                   .WithAttribute("style", "display:none")
-                   .AppendElement(HtmlTag.Div, status =>
-                   {
-                       status.WithAttribute("id", "divStatus");
-                   })
-                   .AppendElement(HtmlTag.Span, resume =>
-                   {
-                       resume.WithAttribute("id", "lblResumeLog");
-                   });
+                    .WithAttribute("style", "display:none")
+                    .AppendElement(HtmlTag.Div, status => { status.WithAttribute("id", "divStatus"); })
+                    .AppendElement(HtmlTag.Span, resume => { resume.WithAttribute("id", "lblResumeLog"); });
             })
             .AppendElement(HtmlTag.Div, div =>
             {
                 div.WithAttribute("style", "width:50%;")
-                   .WithCssClass(BootstrapHelper.CenterBlock)
-                   .AppendElement(HtmlTag.Div, progress =>
-                   {
-                       progress.WithCssClass("progress")
-                           .AppendElement(HtmlTag.Div, bar =>
+                    .WithCssClass(BootstrapHelper.CenterBlock)
+                    .AppendElement(HtmlTag.Div, progress =>
+                    {
+                        progress.WithCssClass("progress")
+                            .AppendElement(HtmlTag.Div, bar =>
                             {
                                 bar.WithCssClass("progress-bar")
-                                   .WithAttribute("role", "progressbar")
-                                   .WithAttribute("style", "width:0;")
-                                   .WithAttribute("aria-valuemin", "0")
-                                   .WithAttribute("aria-valuemax", "100")
-                                   .AppendText("0%");
+                                    .WithAttribute("role", "progressbar")
+                                    .WithAttribute("style", "width:0;")
+                                    .WithAttribute("aria-valuemin", "0")
+                                    .WithAttribute("aria-valuemax", "100")
+                                    .AppendText("0%");
                             });
-                   });
+                    });
             })
             .AppendElement(new DataImpLog(this).GetHtmlResume())
             .AppendElement(HtmlTag.Br).AppendElement(HtmlTag.Br);
 
         var btnStop = new JJLinkButton
         {
-            OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{Translate.Key("Stopping Processing...")}');",
+            OnClientClick =
+                $"javascript:JJDataImp.stopProcess('{Upload.Name}','{Translate.Key("Stopping Processing...")}');",
             IconClass = IconType.Stop.GetCssClass(),
             Text = Translate.Key("Stop the import.")
         };
@@ -226,7 +230,7 @@ public class JJDataImp : JJBaseProcess
                 area.WithNameAndId("pasteValue");
                 area.WithAttribute("style", "display:none");
             });
-            
+
 
         var collapsePanel = new JJCollapsePanel(HttpContext)
         {
@@ -234,10 +238,12 @@ public class JJDataImp : JJBaseProcess
             Title = "Import File",
             ExpandedByDefault = ExpandedByDefault,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .AppendElement(HtmlTag.Label, label =>
-                {
-                    label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));
-                })
+                .AppendElement(HtmlTag.Label,
+                    label =>
+                    {
+                        label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}",
+                            Upload.AllowedTypes));
+                    })
                 .AppendElement(Upload)
         };
 
@@ -261,7 +267,7 @@ public class JJDataImp : JJBaseProcess
 
         return html;
     }
-    
+
     private void OnPostFile(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
@@ -284,7 +290,7 @@ public class JJDataImp : JJBaseProcess
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
         var dataContext = new DataContext(HttpContext, DataContextSource.Upload, UserId);
-        var formService = new FormService(FormManager, dataContext, CoreServicesFacade)
+        var formService = new FormService(FormManager, dataContext, AuditLogService, LoggerFactory)
         {
             EnableErrorLink = false,
             EnableHistoryLog = EnableHistoryLog,
@@ -387,5 +393,4 @@ public class JJDataImp : JJBaseProcess
             AllowedTypes = "txt,csv,log"
         };
     }
-
 }

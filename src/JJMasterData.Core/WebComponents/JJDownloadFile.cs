@@ -5,6 +5,7 @@ using JJMasterData.Core.Html;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http.Abstractions;
@@ -132,7 +133,7 @@ public class JJDownloadFile : JJBaseView
             appPath += "/";
 
         var culture = CultureInfo.CurrentCulture.Name + "/";
-        return $"{appPath}{culture}MasterData/File/Download?filePath={encryptionService.EncryptString(filePath)}";
+        return $"{appPath}{culture}MasterData/File/Download?filePath={HttpUtility.UrlEncode(encryptionService.EncryptString(filePath))}";
     }
 
     public static bool IsDownloadRoute(IHttpContext httpContext)

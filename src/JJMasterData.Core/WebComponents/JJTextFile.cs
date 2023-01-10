@@ -8,14 +8,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -59,22 +60,28 @@ public class JJTextFile : JJBaseControl
 
     public IEnumerable<IExportationWriter> ExportationWriters { get; }
     
-    public CoreServicesFacade CoreServicesFacade { get; }
-
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
-    
+
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal GridViewFactory GridViewFactory { get; }
+
+    internal ILoggerFactory LoggerFactory { get; }
+
     
     public JJTextFile(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-        ) : base(httpContext)
+        IEnumerable<IExportationWriter> exportationWriters, 
+        JJMasterDataEncryptionService encryptionService, 
+        GridViewFactory gridViewFactory,
+        ILoggerFactory loggerFactory) : base(httpContext)
     {
-        CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = exportationWriters;
+        EncryptionService = encryptionService;
+        GridViewFactory = gridViewFactory;
+        LoggerFactory = loggerFactory;
         EntityRepository = repositoryServicesFacade.EntityRepository;
     }
     
@@ -83,10 +90,11 @@ public class JJTextFile : JJBaseControl
         FormElementField field,
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
         IEnumerable<IExportationWriter> exportationWriters,
+        JJMasterDataEncryptionService encryptionService,
+        GridViewFactory gridViewFactory,
+        ILoggerFactory loggerFactory,
         ExpressionOptions expOptions,
-        
         object value,
         string panelName)
     {
@@ -96,7 +104,7 @@ public class JJTextFile : JJBaseControl
         if (field.DataFile == null)
             throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
 
-        var text = new JJTextFile(httpContext, repositoryServicesFacade,coreServicesFacade, exportationWriters)
+        var text = new JJTextFile(httpContext, repositoryServicesFacade, exportationWriters, encryptionService,gridViewFactory, loggerFactory)
         {
             ElementField = field,
             PageState = expOptions.PageState,
@@ -196,7 +204,7 @@ public class JJTextFile : JJBaseControl
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
-        string value = CoreServicesFacade.EncryptionService.EncryptString(json);
+        string value = EncryptionService.EncryptString(json);
 
         string title = ElementField.Label;
         if (title == null)
@@ -214,7 +222,7 @@ public class JJTextFile : JJBaseControl
         if (string.IsNullOrEmpty(uploadvalues))
             throw new ArgumentNullException(nameof(uploadvalues));
 
-        string json = CoreServicesFacade.EncryptionService.DecryptString(uploadvalues);
+        string json = EncryptionService.DecryptString(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
             throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
@@ -252,7 +260,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload(HttpContext, RepositoryServicesFacade,CoreServicesFacade, ExportationWriters);
+        var form = new JJFormUpload(HttpContext, RepositoryServicesFacade, ExportationWriters, LoggerFactory, EncryptionService, GridViewFactory);
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -273,7 +281,6 @@ public class JJTextFile : JJBaseControl
 
         return form;
     }
-    
     private bool HasPk()
     {
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -393,12 +400,12 @@ public class JJTextFile : JJBaseControl
 
 
             url += "=";
-            url += CoreServicesFacade.EncryptionService.EncryptString(filePath);
+            url += EncryptionService.EncryptString(filePath);
 
             return url;
         }
 
-        return JJDownloadFile.GetDownloadUrl(filePath, HttpContext, CoreServicesFacade.EncryptionService);
+        return JJDownloadFile.GetDownloadUrl(filePath, HttpContext, EncryptionService);
     }
 
     private bool IsFormUploadRoute()

@@ -20,6 +20,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
@@ -92,12 +93,8 @@ public class JJFormUpload : JJBaseView
     /// Example: c:\temp\files\
     /// </remarks>
     public string FolderPath { get; set; }
-    
     public IEnumerable<IExportationWriter> ExportationWriters { get; }
     public JJUploadArea Upload => _upload ??= new JJUploadArea(HttpContext);
-    
-    public CoreServicesFacade CoreServicesFacade {get;}
-
     public RepositoryServicesFacade RepositoryServicesFacade { get; }
 
     public JJGridView GridView
@@ -107,13 +104,11 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView(HttpContext, RepositoryServicesFacade, CoreServicesFacade, ExportationWriters)
-            {
-                Name = Name + "_gridview",
-                UserValues = UserValues,
-                ShowPagging = false,
-                ShowTitle = false
-            };
+            _gridView = GridViewFactory.CreateGridView();
+            _gridView.Name = Name + "_gridview";
+            _gridView.UserValues = UserValues;
+            _gridView.ShowPagging = false;
+            _gridView.ShowTitle = false;
 
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
@@ -122,6 +117,7 @@ public class JJFormUpload : JJBaseView
             _gridView.AddGridAction(DownloadAction);
             _gridView.AddGridAction(RenameAction);
             _gridView.AddGridAction(DeleteAction);
+            
             return _gridView;
         }
     }
@@ -188,7 +184,7 @@ public class JJFormUpload : JJBaseView
         {
             if (_service == null)
             {
-                _service = new FormFileService(Name, HttpContext, CoreServicesFacade.LoggerFactory)
+                _service = new FormFileService(Name, HttpContext, LoggerFactory)
                 {
                     OnBeforeCreateFile = OnBeforeCreateFile,
                     OnBeforeDeleteFile = OnBeforeDeleteFile,
@@ -201,23 +197,28 @@ public class JJFormUpload : JJBaseView
         }
     }
 
+    internal ILoggerFactory LoggerFactory { get; }
+
     private ILogger<JJFormUpload> Logger { get; }
     
     private JJMasterDataEncryptionService EncryptionService { get; }
-    
+    private GridViewFactory GridViewFactory { get; }
+
     public JJFormUpload(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters)
+        IEnumerable<IExportationWriter> exportationWriters, 
+        ILoggerFactory loggerFactory, 
+        JJMasterDataEncryptionService encryptionService, GridViewFactory gridViewFactory)
     {
         RepositoryServicesFacade = repositoryServicesFacade;
-        CoreServicesFacade = coreServicesFacade;
         ExportationWriters = exportationWriters;
-        EncryptionService = coreServicesFacade.EncryptionService;
+        LoggerFactory = loggerFactory;
+        EncryptionService = encryptionService;
+        GridViewFactory = gridViewFactory;
         HttpContext = httpContext;
         Name = "jjuploadform1";
-        Logger = CoreServicesFacade.LoggerFactory.CreateLogger<JJFormUpload>();
+        Logger = LoggerFactory.CreateLogger<JJFormUpload>();
         ShowAddFile = true;
         ExpandedByDefault = true;
     }
@@ -750,7 +751,7 @@ public class JJFormUpload : JJBaseView
             }
         }
 
-        var download = new JJDownloadFile(fileName,HttpContext, CoreServicesFacade.EncryptionService, CoreServicesFacade.LoggerFactory);
+        var download = new JJDownloadFile(fileName,HttpContext, EncryptionService, LoggerFactory);
         download.DirectDownload();
     }
 

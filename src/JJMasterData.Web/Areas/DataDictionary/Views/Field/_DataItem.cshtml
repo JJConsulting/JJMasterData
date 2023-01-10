@@ -67,7 +67,7 @@
 
         cm.on("keyup", function (cm, event) {
             if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
-                event.keyCode == 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
+                event.keyCode === 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.dictionaryHint, { completeSingle: false });
                 //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
             }

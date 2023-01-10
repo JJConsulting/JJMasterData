@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.Facades;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
@@ -20,23 +21,30 @@ namespace JJMasterData.WebApi.Services;
 public class MasterApiService
 {
     private readonly IHttpContext? _httpContext;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly HttpContext _aspNetHttpContext;
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
-    private readonly CoreServicesFacade _coreServicesFacade;
+    private readonly AuditLogService _auditLogService;
+
 
     public MasterApiService(IHttpContext httpContext, 
                             IHttpContextAccessor aspNetHttpContext,
                             RepositoryServicesFacade repositoryServicesFacade,
-                            CoreServicesFacade coreServicesFacade)
+                            ILoggerFactory loggerFactory,
+                            IFormEventResolver formEventResolver,
+                            AuditLogService auditLogService
+                )
     {
         _httpContext = httpContext;
+        _loggerFactory = loggerFactory;
+        _formEventResolver = formEventResolver;
+        _auditLogService = auditLogService;
         _aspNetHttpContext = aspNetHttpContext.HttpContext!;
         _entityRepository = repositoryServicesFacade.EntityRepository;
         _dataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        _formEventResolver = coreServicesFacade.FormEventResolver;
-        _coreServicesFacade = coreServicesFacade;
+   ;
     }
 
     public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
@@ -327,7 +335,7 @@ public class MasterApiService
             { "objname", objname }
         };
 
-        var expManager = new ExpressionManager(userValues, _entityRepository, _httpContext, _coreServicesFacade.LoggerFactory);
+        var expManager = new ExpressionManager(userValues, _entityRepository, _httpContext, _loggerFactory);
         var formManager = new FormManager(dictionary.GetFormElement(), expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
@@ -439,9 +447,9 @@ public class MasterApiService
         formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
-        var expManager = new ExpressionManager(userValues, _entityRepository,_httpContext, _coreServicesFacade.LoggerFactory);
+        var expManager = new ExpressionManager(userValues, _entityRepository,_httpContext, _loggerFactory);
         var formManager = new FormManager(formElement, expManager);
-        var service = new FormService(formManager, dataContext, _coreServicesFacade)
+        var service = new FormService(formManager, dataContext,_auditLogService ,_loggerFactory)
         {
             EnableHistoryLog = logActionIsVisible
         };

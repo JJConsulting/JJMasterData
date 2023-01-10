@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
@@ -13,7 +14,9 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents.Factories;
 
@@ -30,33 +33,36 @@ internal class FormElementControlFactory
     public FormElement FormElement { get; set; }
     public IHttpContext HttpContext { get; }
     internal RepositoryServicesFacade RepositoryServicesFacade { get; }
-    internal CoreServicesFacade CoreServicesFacade { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IEnumerable<IExportationWriter> ExportationWriters { get; }
     internal IEntityRepository EntityRepository { get; }
     public TextGroupFactory TextGroupFactory { get; }
-
+    
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
+ 
     internal ILoggerFactory LoggerFactory { get; }
-
+    public JJMasterDataEncryptionService EncryptionService { get; }
+    
     public FormElementControlFactory(
         JJDataPanel dataPanel,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    )
+        IEnumerable<IExportationWriter> exportationWriters,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IOptions<JJMasterDataCoreOptions> options)
     {
-        CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = exportationWriters;
-        LoggerFactory = coreServicesFacade.LoggerFactory;
+        LoggerFactory = loggerFactory;
+
         ActionManager = new ActionManager(dataPanel.FormElement,
             new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext, LoggerFactory),
             repositoryServicesFacade.DataDictionaryRepository,
-            CoreServicesFacade.EncryptionService,
-            coreServicesFacade.Options,
+            encryptionService,
+            options,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
         FormElement = dataPanel.FormElement;
@@ -71,7 +77,9 @@ internal class FormElementControlFactory
         FormElement formElement,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory,
         ExpressionManager expressionManager,
         ExpressionOptions expressionOptions,
         string panelName)
@@ -81,15 +89,18 @@ internal class FormElementControlFactory
         FormElement = formElement;
         HttpContext = httpContext;
         RepositoryServicesFacade = repositoryServicesFacade;
-        CoreServicesFacade = coreServicesFacade;
+        EncryptionService = encryptionService;
         ExpressionOptions = expressionOptions;
-        LoggerFactory = coreServicesFacade.LoggerFactory;
+        LoggerFactory = loggerFactory;
+        Options = options;
         PanelName = panelName;
         TextGroupFactory = new TextGroupFactory(HttpContext);
         ActionManager = new ActionManager(FormElement, expressionManager,
-            repositoryServicesFacade.DataDictionaryRepository, CoreServicesFacade.EncryptionService,
-            coreServicesFacade.Options, panelName);
+            repositoryServicesFacade.DataDictionaryRepository, encryptionService,
+            options, panelName);
     }
+
+
 
     public JJBaseControl CreateControl(FormElementField field, object value)
     {
@@ -108,7 +119,7 @@ internal class FormElementControlFactory
                     PanelName);
                 break;
             case FormComponent.Lookup:
-                baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository, CoreServicesFacade,
+                baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository,EncryptionService,Options,LoggerFactory,
                     ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.CheckBox:
@@ -136,8 +147,10 @@ internal class FormElementControlFactory
                         field,
                         HttpContext,
                         RepositoryServicesFacade,
-                        CoreServicesFacade,
                         ExportationWriters,
+                        EncryptionService,
+                        new GridViewFactory(HttpContext,RepositoryServicesFacade,EncryptionService,LoggerFactory,ExportationWriters,null,Options,null),
+                        LoggerFactory,
                         ExpressionOptions, value, PanelName);
                     baseView = textFile;
                 }
@@ -167,6 +180,8 @@ internal class FormElementControlFactory
 
         return baseView;
     }
+
+
 
     private void AddUserActions(JJTextGroup textGroup, FormElementField f)
     {

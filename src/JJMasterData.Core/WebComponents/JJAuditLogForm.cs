@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
@@ -13,36 +12,50 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJAuditLogForm : JJBaseView
 {
-    private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    private readonly CoreServicesFacade _coreServicesFacade;
     private JJGridView _gridView;
-    private JJDataPanel _dataPainel;
+    private JJDataPanel _dataPanel;
 
     public AuditLogService Service { get; }
+    internal GridViewFactory GridViewFactory { get; }
 
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
+    
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
+
+    internal DataPanelFactory DataPanelFactory { get; }
+    
     /// <summary>
     /// Configuração do painel com os campos do formulário
     /// </summary>
-    internal JJDataPanel DataPainel
+    internal JJDataPanel DataPanel
     {
-        get =>
-            _dataPainel ??= new JJDataPanel(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+        get
+        {
+            if (_dataPanel == null)
             {
-                Name = "jjpainellog_" + Name
-            };
-        set => _dataPainel = value;
+                _dataPanel = DataPanelFactory.CreateDataPanel(FormElement);
+                _dataPanel.Name = "jjpainellog_" + Name;
+            }
+
+            return _dataPanel;
+        }
+        set => _dataPanel = value;
     }
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -58,33 +71,39 @@ public class JJAuditLogForm : JJBaseView
     private JJAuditLogForm(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-        )
+        IEnumerable<IExportationWriter> exportationWriters,
+        AuditLogService auditLogService, 
+        GridViewFactory gridViewFactory, 
+        IOptions<JJMasterDataCoreOptions> options, 
+        ILoggerFactory loggerFactory, 
+        DataPanelFactory dataPanelFactory)
     {
         EntityRepository = repositoryServicesFacade.EntityRepository;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         ExportationWriters = exportationWriters;
-        Service = coreServicesFacade.AuditLogService;
+        Service = auditLogService;
+        GridViewFactory = gridViewFactory;
+        Options = options;
+        LoggerFactory = loggerFactory;
+        DataPanelFactory = dataPanelFactory;
         HttpContext = httpContext;
-        _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
         Name = "loghistory";
     }
+    
 
     public JJAuditLogForm(
         FormElement formElement,
         IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade, 
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-            ) : this(httpContext,
-        repositoryServicesFacade, coreServicesFacade,exportationWriters)
+        RepositoryServicesFacade repositoryServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters, 
+        AuditLogService auditLogService,
+        GridViewFactory gridViewFactory, 
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory, DataPanelFactory dataPanelFactory) : this(httpContext,
+        repositoryServicesFacade, exportationWriters, auditLogService, gridViewFactory, options, loggerFactory, dataPanelFactory)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         HttpContext = httpContext;
-        _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -167,7 +186,7 @@ public class JJAuditLogForm : JJBaseView
         string recordsKey = values[AuditLogService.DIC_KEY]?.ToString();
         var fields = JsonConvert.DeserializeObject<Hashtable>(json ?? string.Empty);
 
-        var panel = DataPainel;
+        var panel = DataPanel;
         panel.PageState = PageState.View;
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
@@ -234,7 +253,7 @@ public class JJAuditLogForm : JJBaseView
 
         Hashtable fields = JsonConvert.DeserializeObject<Hashtable>(json);
 
-        var panel = DataPainel;
+        var panel = DataPanel;
         panel.PageState = PageState.View;
         panel.Values = fields;
         panel.Name = "jjpainellog_" + Name;
@@ -247,18 +266,7 @@ public class JJAuditLogForm : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(
-            Service.GetFormElement(),
-            HttpContext,
-            _repositoryServicesFacade,
-            _coreServicesFacade, 
-            ExportationWriters)
-        {
-            FormElement =
-            {
-                Title = FormElement.Title
-            }
-        };
+        var grid = GridViewFactory.CreateGridView(FormElement);
         grid.SetCurrentFilter(AuditLogService.DIC_NAME, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DIC_MODIFIED + " DESC";
 

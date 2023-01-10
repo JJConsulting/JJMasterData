@@ -13,11 +13,14 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -25,7 +28,7 @@ namespace JJMasterData.Core.WebComponents;
 //Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
-    private readonly CoreServicesFacade _coreServicesFacade;
+    private readonly string _url;
 
     #region "Properties"
 
@@ -110,33 +113,41 @@ public class JJLookup : JJBaseControl
 
     #region "Constructors"
 
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
 
-    public JJLookup(IHttpContext httpContext, IDataDictionaryRepository dataDictionaryRepository,
-        CoreServicesFacade coreServicesFacade) : base(httpContext)
+    public JJLookup(
+        IHttpContext httpContext, 
+        IDataDictionaryRepository dataDictionaryRepository,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> coreOptions,
+        ILoggerFactory loggerFactory) : base(httpContext)
     {
-        _coreServicesFacade = coreServicesFacade;
+        _url = coreOptions.Value.JJMasterDataUrl;
         DataDictionaryRepository = dataDictionaryRepository;
+        EncryptionService = encryptionService;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
-        LoggerFactory = coreServicesFacade.LoggerFactory;
+        LoggerFactory = loggerFactory;
         PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";
-        Logger = coreServicesFacade.LoggerFactory.CreateLogger<JJLookup>();
+        Logger = loggerFactory.CreateLogger<JJLookup>();
     }
 
     internal static JJLookup GetInstance(
         FormElementField f,
         IHttpContext httpContext,
         IDataDictionaryRepository repository,
-        CoreServicesFacade coreServicesFacade,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> coreOptions,
+        ILoggerFactory loggerFactory,
         ExpressionOptions expOptions,
         object value,
         string panelName)
     {
-        var search = new JJLookup(httpContext, repository, coreServicesFacade);
+        var search = new JJLookup(httpContext, repository,encryptionService,coreOptions, loggerFactory);
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
         search.Visible = true;
@@ -268,10 +279,10 @@ public class JJLookup : JJBaseControl
             }
         }
 
-        var parameters = _coreServicesFacade.EncryptionService.EncryptString(@params.ToString());
+        var parameters = EncryptionService.EncryptString(@params.ToString());
         
         string url =
-            $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?parameters={HttpUtility.UrlEncode(parameters)}";
+            $"{MasterDataUrlHelper.GetUrl(_url)}Lookup?parameters={HttpUtility.UrlEncode(parameters)}";
 
         var dto = new LookupUrlDto(url);
 

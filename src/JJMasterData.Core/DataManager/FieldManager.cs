@@ -5,12 +5,18 @@ using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -23,8 +29,7 @@ public class FieldManager
     private string Name { get; set; }
     
     private readonly RepositoryServicesFacade _repositoryServicesFacade;
-    private readonly CoreServicesFacade _coreServicesFacade;
-    
+
 
     /// <summary>
     /// Configurações pré-definidas do formulário
@@ -39,24 +44,28 @@ public class FieldManager
     public ExpressionManager Expression { get; private set; }
     
     internal IHttpContext HttpContext { get; }
-
-
+    internal ILoggerFactory LoggerFactory { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
     #endregion
 
     #region "Constructors"
 
-    public FieldManager(
-        FormElement formElement, 
+    public FieldManager(FormElement formElement,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        ExpressionManager expression)
+        ExpressionManager expression,
+        JJMasterDataEncryptionService encryptionService, 
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory)
     {
         FormElement = formElement;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
         Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+        EncryptionService = encryptionService;
+        LoggerFactory = loggerFactory;
+        Options = options;
         HttpContext = httpContext;
         Name = "jjpainel_" + (formElement?.Name?.ToLower() ?? "1");
     }
@@ -232,10 +241,11 @@ public class FieldManager
         }
         
         var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
-        var controlFactory = new FormElementControlFactory(FormElement, HttpContext, _repositoryServicesFacade,_coreServicesFacade, Expression, expOptions, Name);
+        var controlFactory = new FormElementControlFactory(FormElement, HttpContext, _repositoryServicesFacade,EncryptionService,Options,LoggerFactory, Expression, expOptions, Name);
 
         return controlFactory.CreateControl(f, value);
     }
+
 
 
     public static bool IsRange(FormElementField field, PageState pageState)

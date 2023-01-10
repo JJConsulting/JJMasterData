@@ -12,21 +12,25 @@ using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -43,7 +47,7 @@ namespace JJMasterData.Core.WebComponents;
 public class JJGridView : JJBaseView
 {
     protected readonly RepositoryServicesFacade _repositoryServicesFacade;
-    protected readonly CoreServicesFacade _coreServicesFacade;
+
 
     #region "Events"
 
@@ -117,7 +121,8 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade)
+            _dataImp = new JJDataImp(FormElement, HttpContext, _repositoryServicesFacade, BackgroundTask,
+                EncryptionService, Options, LoggerFactory, AuditLogService)
             {
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
@@ -128,6 +133,8 @@ public class JJGridView : JJBaseView
         }
     }
 
+    internal AuditLogService AuditLogService { get; }
+
     public JJDataExp DataExp
     {
         get
@@ -135,8 +142,8 @@ public class JJGridView : JJBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = new JJDataExp(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade,
-                ExportationWriters)
+            _dataExp = new JJDataExp(FormElement, HttpContext, _repositoryServicesFacade, ExportationWriters,
+                BackgroundTask, EncryptionService, Options, LoggerFactory)
             {
                 Name = Name,
                 ExportOptions = CurrentExportConfig,
@@ -192,8 +199,8 @@ public class JJGridView : JJBaseView
             FormElement,
             FieldManager.Expression,
             DataDictionaryRepository,
-            _coreServicesFacade.EncryptionService,
-            _coreServicesFacade.Options,
+            EncryptionService,
+            Options,
             Name);
 
     internal FieldManager FieldManager
@@ -204,8 +211,8 @@ public class JJGridView : JJBaseView
                 return _fieldManager;
 
             var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
-            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade, _coreServicesFacade,
-                exp);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade,
+                exp, EncryptionService, Options, LoggerFactory);
 
             return _fieldManager;
         }
@@ -581,15 +588,17 @@ public class JJGridView : JJBaseView
     public IEnumerable<IExportationWriter> ExportationWriters { get; }
 
     internal IHttpContext HttpContext { get; }
-    
+
     private ILogger<JJGridView> Logger { get; }
-    
+
     internal IPythonEngine PythonEngine { get; }
     internal ILoggerFactory LoggerFactory { get; }
-    
-    
+
+    internal IBackgroundTask BackgroundTask { get; }
+
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
-    
+
     #endregion
 
     #region "Constructors"
@@ -606,63 +615,35 @@ public class JJGridView : JJBaseView
         PythonEngine = JJService.Provider.GetService<IPythonEngine>();
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
-        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
-        EncryptionService = _coreServicesFacade.EncryptionService;
+        AuditLogService = scope.ServiceProvider.GetRequiredService<AuditLogService>();
+        EncryptionService = JJService.Provider.GetRequiredService<JJMasterDataEncryptionService>();
         _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
-
     }
 
     public JJGridView(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters)
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IBackgroundTask backgroundTask,
+        IEnumerable<IExportationWriter> exportationWriters,
+        IOptions<JJMasterDataCoreOptions> options,
+        AuditLogService auditLogService)
     {
         GridViewFactory.SetGridViewParams(this);
         EntityRepository = repositoryServicesFacade.EntityRepository;
         ExportationWriters = exportationWriters;
-        EncryptionService = coreServicesFacade.EncryptionService;
+        Options = options;
+        AuditLogService = auditLogService;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
-        PythonEngine = coreServicesFacade.PythonEngine;
-        LoggerFactory = coreServicesFacade.LoggerFactory;
-        Logger = LoggerFactory.CreateLogger<JJGridView>();
+        LoggerFactory = loggerFactory;
+        BackgroundTask = backgroundTask;
+        Logger = loggerFactory.CreateLogger<JJGridView>();
         HttpContext = httpContext;
+        EncryptionService = encryptionService;
         _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
-
     }
-
-    public JJGridView(
-        IHttpContext httpContext,
-        DataTable table,
-        RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
-    {
-        FormElement = new FormElement(table);
-        DataSource = table;
-    }
-
-    public JJGridView(string elementName,
-        IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
-    {
-        var factory = new GridViewFactory(httpContext, repositoryServicesFacade, coreServicesFacade, ExportationWriters);
-        factory.SetGridViewParams(this, elementName);
-    }
-
-    public JJGridView(
-        FormElement formElement,
-        IHttpContext httpContext,
-        RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
-    {
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Name = "jjview" + formElement.Name.ToLower();
-    }
+    
 
     [Obsolete("Please use GridViewFactory by dependency injection.")]
     public JJGridView(string elementName) : this()

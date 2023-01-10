@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
@@ -10,7 +11,10 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -34,7 +38,9 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     public ExcelWriter(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
-        CoreServicesFacade coreServicesFacade) : base(httpContext, repositoryServicesFacade, coreServicesFacade)
+        IOptions<JJMasterDataCoreOptions> options,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, options,encryptionService,loggerFactory)
     {
     }
 
