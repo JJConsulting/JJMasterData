@@ -1,11 +1,11 @@
 ﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Html;
 using System;
 using System.Globalization;
 using System.IO;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -18,6 +18,7 @@ public class JJDownloadFile : JJBaseView
     public const string DownloadParameter = "jjdownload";
     
     internal IHttpContext HttpContext { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
 
     public string FilePath { get; set; }
 
@@ -38,16 +39,18 @@ public class JJDownloadFile : JJBaseView
         return null;
     }
     
-    public JJDownloadFile(IHttpContext httpContext, ILoggerFactory loggerFactory)
+    public JJDownloadFile(IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
+        EncryptionService = encryptionService;
         Logger = loggerFactory.CreateLogger<JJDownloadFile>();
     }
 
-    public JJDownloadFile(string filePath, IHttpContext httpContext, ILoggerFactory loggerFactory)
+    public JJDownloadFile(string filePath, IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
     {
         FilePath = filePath;
         HttpContext = httpContext;
+        EncryptionService = encryptionService;
         Logger = loggerFactory.CreateLogger<JJDownloadFile>();
     }
 
@@ -118,10 +121,10 @@ public class JJDownloadFile : JJBaseView
 
     internal void DirectDownload(string filePath)
     {
-        HttpContext.Response.Redirect(GetDownloadUrl(filePath,HttpContext));
+        HttpContext.Response.Redirect(GetDownloadUrl(filePath,HttpContext, EncryptionService));
     }
 
-    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext, JJMasterDataEncryptionService encryptionService)
     {
         var appPath = httpContext.Request.ApplicationPath;
 
@@ -129,7 +132,7 @@ public class JJDownloadFile : JJBaseView
             appPath += "/";
 
         var culture = CultureInfo.CurrentCulture.Name + "/";
-        return $"{appPath}{culture}MasterData/File/Download?filePath={Cript.Cript64(filePath)}";
+        return $"{appPath}{culture}MasterData/File/Download?filePath={encryptionService.EncryptString(filePath)}";
     }
 
     public static bool IsDownloadRoute(IHttpContext httpContext)
@@ -141,24 +144,24 @@ public class JJDownloadFile : JJBaseView
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(IHttpContext httpContext, ILoggerFactory loggerFactory)
+    public static HtmlBuilder ResponseRoute(IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
     {
         bool isExternalLink = false;
-        string criptFilePath = httpContext.Request.QueryString(DownloadParameter);
-        if (criptFilePath == null)
+        string encryptedFilePath = httpContext.Request.QueryString(DownloadParameter);
+        if (encryptedFilePath == null)
         {
-            criptFilePath = httpContext.Request.QueryString(DirectDownloadParameter);
+            encryptedFilePath = httpContext.Request.QueryString(DirectDownloadParameter);
             isExternalLink = true;
         }
 
-        if (criptFilePath == null)
+        if (encryptedFilePath == null)
             return null;
 
-        string filePath = Cript.Descript64(criptFilePath);
+        string filePath = encryptionService.DecryptString(encryptedFilePath);
         if (filePath == null)
             throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
-        var download = new JJDownloadFile(httpContext, loggerFactory)
+        var download = new JJDownloadFile(httpContext, encryptionService, loggerFactory)
         {
             FilePath = filePath,
             IsExternalLink = isExternalLink

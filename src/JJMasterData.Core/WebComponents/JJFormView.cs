@@ -129,7 +129,7 @@ public class JJFormView : JJGridView
             if (string.IsNullOrEmpty(criptMap))
                 return null;
 
-            string jsonMap = Cript.Descript64(criptMap);
+            string jsonMap = EncryptionService.DecryptString(criptMap);
             _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
             return _currentActionMap;
         }
@@ -242,7 +242,7 @@ public class JJFormView : JJGridView
             return new HtmlBuilder(dataPanel.GetHtml());
 
         if (JJDownloadFile.IsDownloadRoute(HttpContext))
-            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.LoggerFactory);
+            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.EncryptionService, _coreServicesFacade.LoggerFactory);
 
         if ("jjsearchbox".Equals(requestType))
         {
@@ -549,7 +549,7 @@ public class JJFormView : JJGridView
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
         string criptMap = HttpContext.Request.Form("current_selaction_" + Name);
-        string jsonMap = Cript.Descript64(criptMap);
+        string jsonMap = EncryptionService.DecryptString(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var dictionary = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
@@ -606,7 +606,7 @@ public class JJFormView : JJGridView
 
             var errors = DeleteFormValues(filter);
 
-            if (errors != null && errors.Count > 0)
+            if (errors is { Count: > 0 })
             {
                 var errorMessage = new StringBuilder();
                 foreach (DictionaryEntry err in errors)
@@ -674,7 +674,7 @@ public class JJFormView : JJGridView
             if (rows.Count > 0)
             {
                 var message = new StringBuilder();
-                MessageIcon icon = MessageIcon.Info;
+                var icon = MessageIcon.Info;
                 if (successCount > 0)
                 {
                     message.Append("<p class=\"text-success\">");
@@ -932,7 +932,7 @@ public class JJFormView : JJGridView
         if (sender is not JJGridView grid) return;
 
         var map = new ActionMap(ActionOrigin.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
-        string criptId = map.GetCriptJson();
+        string criptId = map.GetEncryptedJson(EncryptionService);
         e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
     }
 

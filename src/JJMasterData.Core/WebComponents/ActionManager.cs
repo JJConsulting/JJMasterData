@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,7 @@ internal class ActionManager
 
     public ExpressionManager Expression { get; private set; }
     public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
 
     public string ComponentName { get; set; }
 
@@ -34,6 +37,7 @@ internal class ActionManager
         FormElement formElement,
         ExpressionManager expression,
         IDataDictionaryRepository dataDictionaryRepository,
+        JJMasterDataEncryptionService encryptionService,
         IOptions<JJMasterDataCoreOptions> options,
         string panelName)
     {
@@ -41,6 +45,7 @@ internal class ActionManager
         Expression = expression;
         JJMasterDataUrl = options.Value.JJMasterDataUrl;
         DataDictionaryRepository = dataDictionaryRepository;
+        EncryptionService = encryptionService;
         ComponentName = panelName;   
     }
 
@@ -74,7 +79,7 @@ internal class ActionManager
         }
 
         string url =
-            $"{MasterDataUrlHelper.GetUrl(JJMasterDataUrl)}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+            $"{MasterDataUrlHelper.GetUrl(JJMasterDataUrl)}InternalRedirect?parameters={EncryptionService.EncryptString(@params.ToString())}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -98,13 +103,12 @@ internal class ActionManager
         {
             FieldName = fieldName
         };
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
 
-        if (contextAction == ActionOrigin.Field ||
-            contextAction == ActionOrigin.Form)
+        if (contextAction is ActionOrigin.Field or ActionOrigin.Form)
         {
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);
@@ -141,7 +145,7 @@ internal class ActionManager
     public string GetFormActionScript(BasicAction action, Hashtable formValues, ActionOrigin contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
@@ -165,7 +169,7 @@ internal class ActionManager
     internal string GetExportScript(ExportAction action, Hashtable formValues)
     {
         var actionMap = new ActionMap(ActionOrigin.Toolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
 
         var script = new StringBuilder();
         script.Append("JJDataExp.doExport('");
@@ -180,7 +184,7 @@ internal class ActionManager
     internal string GetConfigUIScript(ConfigAction action, Hashtable formValues)
     {
         var actionMap = new ActionMap(ActionOrigin.Toolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
 
         var script = new StringBuilder();
         script.Append("jjview.doConfigUI('");
@@ -196,7 +200,7 @@ internal class ActionManager
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string jsonMap = JsonConvert.SerializeObject(actionMap);
-        string criptMap = Cript.Cript64(jsonMap);
+        string criptMap = EncryptionService.EncryptString(jsonMap);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();

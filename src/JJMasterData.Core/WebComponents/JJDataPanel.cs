@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
@@ -101,6 +102,8 @@ public class JJDataPanel : JJBaseView
     internal IHttpContext HttpContext { get; set; }
 
     internal ILoggerFactory LoggerFactory { get; }
+    
+    internal JJMasterDataEncryptionService EncryptionService { get; }
 
     #endregion
 
@@ -112,9 +115,11 @@ public class JJDataPanel : JJBaseView
         HttpContext = httpContext;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         LoggerFactory = coreServicesFacade.LoggerFactory;
+        EncryptionService = coreServicesFacade.EncryptionService;
         _repositoryServicesFacade = repositoryServicesFacade;
-        _coreServicesFacade = coreServicesFacade;
         
+        _coreServicesFacade = coreServicesFacade;
+
         DataPanelFactory.SetDataPanelParams(this);
     }
 
@@ -122,12 +127,15 @@ public class JJDataPanel : JJBaseView
     internal JJDataPanel()
     {
         using var scope = JJService.Provider.CreateScope();
+        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
+        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        
         EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
         DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
-        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
-        _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        EncryptionService = _coreServicesFacade.EncryptionService;
+
         
         DataPanelFactory.SetDataPanelParams(this);
     }
@@ -175,7 +183,7 @@ public class JJDataPanel : JJBaseView
 
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(HttpContext))
-            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.LoggerFactory);
+            return JJDownloadFile.ResponseRoute(HttpContext, _coreServicesFacade.EncryptionService,_coreServicesFacade.LoggerFactory);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
@@ -229,7 +237,7 @@ public class JJDataPanel : JJBaseView
     private string GetPkInputHidden()
     {
         string pkval = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return Cript.Cript64(pkval);
+        return EncryptionService.EncryptString(pkval);
     }
 
     private string GetHtmlFormScript()
@@ -265,7 +273,7 @@ public class JJDataPanel : JJBaseView
         string criptPkval = HttpContext.Request["jjform_pkval_" + Name];
         if (!string.IsNullOrEmpty(criptPkval))
         {
-            string parsedPkval = Cript.Descript64(criptPkval);
+            string parsedPkval = EncryptionService.DecryptString(criptPkval);
             var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
             var entityRepository = FieldManager.Expression.EntityRepository;
             tempvalues = entityRepository.GetFields(FormElement, filters);
@@ -291,24 +299,12 @@ public class JJDataPanel : JJBaseView
 
     /// <summary>
     /// Validate form fields and return a list with errors
-    ///  </summary>
-    /// <returns>
-    /// Key = Field Name
-    /// Valor = Error message
-    /// </returns>
-    public Hashtable ValidateFields(Hashtable values, PageState pageState)
-    {
-        return ValidateFields(values, pageState, true);
-    }
-
-    /// <summary>
-    /// Validate form fields and return a list with errors
     /// </summary>
     /// <returns>
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
+    public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink = true)
     {
         var formManager = new FormManager(FormElement, FieldManager.Expression);
         return formManager.ValidateFields(values, pageState, enableErrorLink);
@@ -323,7 +319,7 @@ public class JJDataPanel : JJBaseView
         if (string.IsNullOrEmpty(criptMap))
             return;
 
-        string jsonMap = Cript.Descript64(criptMap);
+        string jsonMap = EncryptionService.DecryptString(criptMap);
         var parms = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);

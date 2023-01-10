@@ -17,7 +17,6 @@ namespace JJMasterData.Core.WebComponents.Factories;
 
 internal class FormElementControlFactory
 {
-
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
 
     internal ActionManager ActionManager { get; }
@@ -34,16 +33,16 @@ internal class FormElementControlFactory
     internal IEnumerable<IExportationWriter> ExportationWriters { get; }
     internal IEntityRepository EntityRepository { get; }
     public TextGroupFactory TextGroupFactory { get; }
-    
+
     internal ILoggerFactory LoggerFactory { get; }
-    
+
     public FormElementControlFactory(
-        JJDataPanel dataPanel, 
+        JJDataPanel dataPanel,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
         IEnumerable<IExportationWriter> exportationWriters
-        )
+    )
     {
         CoreServicesFacade = coreServicesFacade;
         RepositoryServicesFacade = repositoryServicesFacade;
@@ -52,7 +51,9 @@ internal class FormElementControlFactory
         ExportationWriters = exportationWriters;
         LoggerFactory = coreServicesFacade.LoggerFactory;
         ActionManager = new ActionManager(dataPanel.FormElement,
-            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext, LoggerFactory), repositoryServicesFacade.DataDictionaryRepository,
+            new ExpressionManager(new Hashtable(), dataPanel.EntityRepository, httpContext, LoggerFactory),
+            repositoryServicesFacade.DataDictionaryRepository,
+            CoreServicesFacade.EncryptionService,
             coreServicesFacade.Options,
             dataPanel.Name);
         OnRenderAction += dataPanel.OnRenderAction;
@@ -65,7 +66,7 @@ internal class FormElementControlFactory
     }
 
     public FormElementControlFactory(
-        FormElement formElement, 
+        FormElement formElement,
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
@@ -83,7 +84,9 @@ internal class FormElementControlFactory
         LoggerFactory = coreServicesFacade.LoggerFactory;
         PanelName = panelName;
         TextGroupFactory = new TextGroupFactory(HttpContext);
-        ActionManager = new ActionManager(FormElement, expressionManager, repositoryServicesFacade.DataDictionaryRepository,coreServicesFacade.Options, panelName);
+        ActionManager = new ActionManager(FormElement, expressionManager,
+            repositoryServicesFacade.DataDictionaryRepository, CoreServicesFacade.EncryptionService,
+            coreServicesFacade.Options, panelName);
     }
 
     public JJBaseControl CreateControl(FormElementField field, object value)
@@ -95,13 +98,16 @@ internal class FormElementControlFactory
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                baseView = JJComboBox.GetInstance(field,HttpContext, EntityRepository, ExpressionOptions,LoggerFactory, value);
+                baseView = JJComboBox.GetInstance(field, HttpContext, EntityRepository, ExpressionOptions,
+                    LoggerFactory, value);
                 break;
             case FormComponent.Search:
-                baseView = JJSearchBox.GetInstance(field,HttpContext, ExpressionOptions,LoggerFactory, value, PanelName);
+                baseView = JJSearchBox.GetInstance(field, HttpContext, ExpressionOptions, LoggerFactory, value,
+                    PanelName);
                 break;
             case FormComponent.Lookup:
-                baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository,CoreServicesFacade, ExpressionOptions, value, PanelName);
+                baseView = JJLookup.GetInstance(field, HttpContext, DataDictionaryRepository, CoreServicesFacade,
+                    ExpressionOptions, value, PanelName);
                 break;
             case FormComponent.CheckBox:
                 baseView = JJCheckBox.GetInstance(field, HttpContext, value);
@@ -111,10 +117,10 @@ internal class FormElementControlFactory
 
                 break;
             case FormComponent.TextArea:
-                baseView = JJTextArea.GetInstance(field, value,HttpContext);
+                baseView = JJTextArea.GetInstance(field, value, HttpContext);
                 break;
             case FormComponent.Slider:
-                baseView = JJSlider.GetInstance(field, value,HttpContext);
+                baseView = JJSlider.GetInstance(field, value, HttpContext);
                 break;
             case FormComponent.File:
                 if (ExpressionOptions.PageState == PageState.Filter)
@@ -126,11 +132,11 @@ internal class FormElementControlFactory
                     var textFile = JJTextFile.GetInstance(
                         FormElement,
                         field,
-                        HttpContext, 
-                        RepositoryServicesFacade, 
-                        CoreServicesFacade, 
+                        HttpContext,
+                        RepositoryServicesFacade,
+                        CoreServicesFacade,
                         ExportationWriters,
-                        ExpressionOptions,value, PanelName);
+                        ExpressionOptions, value, PanelName);
                     baseView = textFile;
                 }
 
@@ -153,7 +159,8 @@ internal class FormElementControlFactory
                 break;
         }
 
-        baseView.ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
+        baseView.ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly &&
+                            ExpressionOptions.PageState != PageState.Filter;
 
 
         return baseView;

@@ -7,7 +7,6 @@ using JJMasterData.Core.Html;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.DataManager;
@@ -315,7 +314,7 @@ internal class GridTableBody
         var checkBox = new JJCheckBox(GridView.HttpContext)
         {
             Name = "jjchk_" + index,
-            Value = Cript.Cript64(pkValues),
+            Value = GridView.EncryptionService.EncryptString(pkValues),
             IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsValue(pkValues))
         };
 

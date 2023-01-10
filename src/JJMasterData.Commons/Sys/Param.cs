@@ -9,6 +9,7 @@ namespace JJMasterData.Commons.Sys;
 /// <summary>
 /// Parametros e configurações armazenadas no banco de dados
 /// </summary>
+[Obsolete("Please migrate this to the application layer.")]
 public class Param
 {
     public string TableName { get; set; }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
@@ -189,6 +190,7 @@ public class JJGridView : JJBaseView
             FormElement,
             FieldManager.Expression,
             DataDictionaryRepository,
+            _coreServicesFacade.EncryptionService,
             _coreServicesFacade.Options,
             Name);
 
@@ -562,7 +564,7 @@ public class JJGridView : JJBaseView
             if (string.IsNullOrEmpty(criptMap))
                 return null;
 
-            var jsonMap = Cript.Descript64(criptMap);
+            var jsonMap = EncryptionService.DecryptString(criptMap);
             _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
             return _currentActionMap;
         }
@@ -583,7 +585,9 @@ public class JJGridView : JJBaseView
     internal IPythonEngine PythonEngine { get; }
     internal ILoggerFactory LoggerFactory { get; }
     
-
+    
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    
     #endregion
 
     #region "Constructors"
@@ -600,20 +604,22 @@ public class JJGridView : JJBaseView
         PythonEngine = JJService.Provider.GetService<IPythonEngine>();
         LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
         Logger = LoggerFactory.CreateLogger<JJGridView>();
-        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
         _coreServicesFacade = scope.ServiceProvider.GetRequiredService<CoreServicesFacade>();
+        EncryptionService = _coreServicesFacade.EncryptionService;
+        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
+
     }
 
     public JJGridView(
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    )
+        IEnumerable<IExportationWriter> exportationWriters)
     {
         GridViewFactory.SetGridViewParams(this);
         EntityRepository = repositoryServicesFacade.EntityRepository;
         ExportationWriters = exportationWriters;
+        EncryptionService = coreServicesFacade.EncryptionService;
         DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
         PythonEngine = coreServicesFacade.PythonEngine;
         LoggerFactory = coreServicesFacade.LoggerFactory;
@@ -629,8 +635,7 @@ public class JJGridView : JJBaseView
         DataTable table,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
+        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormElement = new FormElement(table);
         DataSource = table;
@@ -640,8 +645,7 @@ public class JJGridView : JJBaseView
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
+        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         var factory = new GridViewFactory(httpContext, repositoryServicesFacade, coreServicesFacade, ExportationWriters);
         factory.SetGridViewParams(this, elementName);
@@ -652,8 +656,7 @@ public class JJGridView : JJBaseView
         IHttpContext httpContext,
         RepositoryServicesFacade repositoryServicesFacade,
         CoreServicesFacade coreServicesFacade,
-        IEnumerable<IExportationWriter> exportationWriters
-    ) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
+        IEnumerable<IExportationWriter> exportationWriters) : this(httpContext, repositoryServicesFacade, coreServicesFacade, exportationWriters)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
@@ -1128,7 +1131,7 @@ public class JJGridView : JJBaseView
 
         if (string.IsNullOrEmpty(currentRow)) return values;
 
-        var decriptId = Cript.Descript64(currentRow);
+        var decriptId = EncryptionService.DecryptString(currentRow);
         var parms = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in parms)
@@ -1323,7 +1326,7 @@ public class JJGridView : JJBaseView
         foreach (string pk in pkList)
         {
             Hashtable values = new();
-            string descriptval = Cript.Descript64(pk);
+            string descriptval = EncryptionService.DecryptString(pk);
             string[] ids = descriptval.Split(';');
             for (int i = 0; i < pkFields.Count; i++)
             {
@@ -1356,7 +1359,7 @@ public class JJGridView : JJBaseView
                 sIds.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            sIds.Append(Cript.Cript64(values));
+            sIds.Append(EncryptionService.DecryptString(values));
         }
 
         return sIds.ToString();

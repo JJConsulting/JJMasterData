@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Data.SqlClient;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
@@ -17,13 +18,15 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController : MasterDataController
 {
     public WebComponentFactory ComponentFactory { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
     private string? _dictionaryName;
     private RelationType _relationType;
     private Hashtable? _relationValues;
 
-    public InternalRedirectController(WebComponentFactory componentFactory)
+    public InternalRedirectController(WebComponentFactory componentFactory, JJMasterDataEncryptionService encryptionService)
     {
         ComponentFactory = componentFactory;
+        EncryptionService = encryptionService;
     }
 
     public ActionResult Index(string parameters)
@@ -132,7 +135,7 @@ public class InternalRedirectController : MasterDataController
         _dictionaryName = null;
         _relationType = RelationType.List;
         _relationValues = new Hashtable();
-        var @params = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(parameters));
+        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptString(parameters));
         _dictionaryName = @params.Get("formname");
         foreach (string key in @params)
         {

@@ -338,7 +338,7 @@ internal class DataExpSettings
                 continue;
 
             var icon = _dataExp.GetFileIcon(file.Extension);
-            string url = JJDataExp.GetDownloadUrl(file.FullName, _dataExp.HttpContext);
+            string url = JJDataExp.GetDownloadUrl(file.FullName, _dataExp.HttpContext,_dataExp.EncryptionService);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");

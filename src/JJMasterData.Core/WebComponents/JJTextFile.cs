@@ -194,7 +194,7 @@ public class JJTextFile : JJBaseControl
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
-        string value = Cript.Cript64(json);
+        string value = CoreServicesFacade.EncryptionService.EncryptString(json);
 
         string title = ElementField.Label;
         if (title == null)
@@ -212,7 +212,7 @@ public class JJTextFile : JJBaseControl
         if (string.IsNullOrEmpty(uploadvalues))
             throw new ArgumentNullException(nameof(uploadvalues));
 
-        string json = Cript.Descript64(uploadvalues);
+        string json = CoreServicesFacade.EncryptionService.DecryptString(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
             throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
@@ -391,12 +391,12 @@ public class JJTextFile : JJBaseControl
 
 
             url += "=";
-            url += Cript.Cript64(filePath);
+            url += CoreServicesFacade.EncryptionService.EncryptString(filePath);
 
             return url;
         }
 
-        return JJDownloadFile.GetDownloadUrl(filePath, HttpContext);
+        return JJDownloadFile.GetDownloadUrl(filePath, HttpContext, CoreServicesFacade.EncryptionService);
     }
 
     private bool IsFormUploadRoute()

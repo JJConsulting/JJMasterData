@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -131,16 +132,13 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_downloadAction == null)
-                _downloadAction = new ScriptAction
-                {
-                    Icon = IconType.CloudDownload,
-                    ToolTip = "Download File",
-                    Name = "DOWNLOADFILE",
-                    OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
-                };
-
-            return _downloadAction;
+            return _downloadAction ??= new ScriptAction
+            {
+                Icon = IconType.CloudDownload,
+                ToolTip = "Download File",
+                Name = "DOWNLOADFILE",
+                OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
+            };
         }
     }
     
@@ -205,6 +203,8 @@ public class JJFormUpload : JJBaseView
 
     private ILogger<JJFormUpload> Logger { get; }
     
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    
     public JJFormUpload(
         IHttpContext httpContext, 
         RepositoryServicesFacade repositoryServicesFacade,
@@ -214,6 +214,7 @@ public class JJFormUpload : JJBaseView
         RepositoryServicesFacade = repositoryServicesFacade;
         CoreServicesFacade = coreServicesFacade;
         ExportationWriters = exportationWriters;
+        EncryptionService = coreServicesFacade.EncryptionService;
         HttpContext = httpContext;
         Name = "jjuploadform1";
         Logger = CoreServicesFacade.LoggerFactory.CreateLogger<JJFormUpload>();
@@ -250,7 +251,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
-        string fileName = Cript.Descript64(previewVideo);
+        string fileName = EncryptionService.DecryptString(previewVideo);
         var video = Service.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
@@ -281,7 +282,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
-        string fileName = Cript.Descript64(previewImage);
+        string fileName = EncryptionService.DecryptString(previewImage);
         var file = Service.GetFile(fileName);
 
         if (file == null)
@@ -296,7 +297,7 @@ public class JJFormUpload : JJBaseView
         else
         {
             var filePath = Path.Combine(Service.FolderPath, fileName);
-            src = JJDownloadFile.GetDownloadUrl(filePath, HttpContext);
+            src = JJDownloadFile.GetDownloadUrl(filePath, HttpContext,EncryptionService);
         }
 
         const string script = """
@@ -540,7 +541,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            src = JJDownloadFile.GetDownloadUrl(filePath,HttpContext);
+            src = JJDownloadFile.GetDownloadUrl(filePath,HttpContext, EncryptionService);
         }
 
         if (url.Contains('?'))
@@ -549,7 +550,7 @@ public class JJFormUpload : JJBaseView
             url += "?";
 
         url += "previewImage=";
-        url += Cript.Cript64(fileName);
+        url += EncryptionService.EncryptString(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
         .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
@@ -575,7 +576,7 @@ public class JJFormUpload : JJBaseView
             videoUrl += "?";
 
         videoUrl += "previewVideo=";
-        videoUrl += Cript.Cript64(fileName);
+        videoUrl += EncryptionService.EncryptString(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
          .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")
@@ -657,10 +658,12 @@ public class JJFormUpload : JJBaseView
         };
         btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
 
-        var modal = new JJModalDialog();
-        modal.Name = $"preview_modal_{Upload.Name}";
-        modal.Title = "Would you like to save the image below?";
-        modal.HtmlBuilderContent = html;
+        var modal = new JJModalDialog
+        {
+            Name = $"preview_modal_{Upload.Name}",
+            Title = "Would you like to save the image below?",
+            HtmlBuilderContent = html
+        };
         modal.Buttons.Add(btnOk);
         modal.Buttons.Add(btnCancel);
 
@@ -747,7 +750,7 @@ public class JJFormUpload : JJBaseView
             }
         }
 
-        var download = new JJDownloadFile(fileName,HttpContext, CoreServicesFacade.LoggerFactory);
+        var download = new JJDownloadFile(fileName,HttpContext, CoreServicesFacade.EncryptionService, CoreServicesFacade.LoggerFactory);
         download.DirectDownload();
     }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
@@ -25,16 +27,21 @@ public class JJServiceBuilder
     {
         Services.AddLocalization();
         
-        
         Services.AddLogging(builder =>
         {
             builder.AddDbLoggerProvider();
             builder.AddFileLoggerProvider();
             builder.AddConfiguration(configuration.GetSection("Logging"));
         });
+        
         Services.AddScoped<IEntityRepository,Factory>();
+        
+        Services.AddTransient<IEncryptionService, AesEncryptionService>();
+        Services.AddTransient<JJMasterDataEncryptionService>();
+        
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddSingleton<IBackgroundTask, BackgroundTask>();
+        
         return this;
     }
 

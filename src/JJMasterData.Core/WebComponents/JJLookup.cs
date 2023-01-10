@@ -31,6 +31,7 @@ public class JJLookup : JJBaseControl
     private ExpressionManager _expressionManager;
 
     internal IEntityRepository EntityRepository { get; private set; }
+
     internal ExpressionManager ExpressionManager
     {
         get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
@@ -97,16 +98,18 @@ public class JJLookup : JJBaseControl
         get => _dataItem ??= new FormElementDataItem();
         set => _dataItem = value;
     }
-    
+
     private ILogger<JJLookup> Logger { get; }
     internal ILoggerFactory LoggerFactory { get; }
+
     #endregion
 
     #region "Constructors"
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
-    
-    public JJLookup(IHttpContext httpContext,IDataDictionaryRepository dataDictionaryRepository, CoreServicesFacade coreServicesFacade) : base(httpContext)
+
+    public JJLookup(IHttpContext httpContext, IDataDictionaryRepository dataDictionaryRepository,
+        CoreServicesFacade coreServicesFacade) : base(httpContext)
     {
         _coreServicesFacade = coreServicesFacade;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -123,8 +126,8 @@ public class JJLookup : JJBaseControl
     internal static JJLookup GetInstance(
         FormElementField f,
         IHttpContext httpContext,
-        IDataDictionaryRepository repository, 
-        CoreServicesFacade coreServicesFacade, 
+        IDataDictionaryRepository repository,
+        CoreServicesFacade coreServicesFacade,
         ExpressionOptions expOptions,
         object value,
         string panelName)
@@ -155,22 +158,23 @@ public class JJLookup : JJBaseControl
     }
 
     #endregion
-    
+
     #region "DTOs"
+
     private record LookupUrlDto(string Url)
     {
-        [JsonProperty("url")]
-        public string Url { get; } = Url;
+        [JsonProperty("url")] public string Url { get; } = Url;
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
+
     private record LookupDescriptionDto(string Description)
     {
-        [JsonProperty("description")]
-        public string Description { get; } = Description;
+        [JsonProperty("description")] public string Description { get; } = Description;
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
+
     #endregion
-    
+
     internal override HtmlBuilder RenderHtml()
     {
         if (!IsLookupRoute())
@@ -251,21 +255,23 @@ public class JJLookup : JJBaseControl
         {
             foreach (DictionaryEntry filter in elementMap.Filters)
             {
-                string filterParsed = ExpressionManager.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
+                string filterParsed =
+                    ExpressionManager.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
                 @params.Append('&');
                 @params.Append(filter.Key);
                 @params.Append('=');
                 @params.Append(filterParsed);
             }
         }
-        
-        string url = $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
+
+        string url =
+            $"{MasterDataUrlHelper.GetUrl(_coreServicesFacade.Options.Value.JJMasterDataUrl)}Lookup?p={_coreServicesFacade.EncryptionService.EncryptString(@params.ToString())}";
 
         var dto = new LookupUrlDto(url);
-        
+
         HttpContext.Response.SendResponse(dto.ToJson(), "application/json");
     }
-    
+
     private void SendDescription()
     {
         LookupDescriptionDto dto = null;
@@ -310,7 +316,8 @@ public class JJLookup : JJBaseControl
         {
             foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
             {
-                string filterParsed = ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
+                string filterParsed =
+                    ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
                 filters.Add(filter.Key, StringManager.ClearText(filterParsed));
             }
         }
@@ -379,6 +386,5 @@ public class JJLookup : JJBaseControl
 
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return lookup.GetHtmlBuilder();
-
     }
 }

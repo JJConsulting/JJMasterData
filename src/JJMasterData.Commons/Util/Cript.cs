@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Util;
 
+[Obsolete("This class violates the SRP principle. Please use each equivalent service.")]
 public class Cript
 {
     private static byte[] _chave = { };
@@ -17,6 +18,7 @@ public class Cript
     /// </summary>
     /// <param name="value">Value to be encrypted.</param>
     /// <returns>Encrypted value.</returns>
+    [Obsolete("DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.")]
     public static string Cript64(string value)
     {
         return Cript64(value, JJService.CommonsOptions.SecretKey);
@@ -28,6 +30,7 @@ public class Cript
     /// <param name="value">Value to be encrypted.</param>
     /// <param name="secretKey">Secret key.</param>
     /// <returns>Encrypted value.</returns>
+    [Obsolete("DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.")]
     public static string Cript64(string value, string secretKey)
     {
         var des = new DESCryptoServiceProvider();
@@ -45,6 +48,7 @@ public class Cript
     /// </summary>
     /// <param name="value">Value to be descrypted.</param>
     /// <returns>Descrypted value.</returns>
+    [Obsolete("DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.")]
     public static string Descript64(string value)
     {
         return Descript64(value, JJService.CommonsOptions.SecretKey);
@@ -56,6 +60,7 @@ public class Cript
     /// <param name="value">Value to be descrypted.</param>
     /// <param name="secretKey">Secret key.</param>
     /// <returns>Descrypted value.</returns>
+    [Obsolete("DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.")]
     public static string Descript64(string value, string secretKey)
     {
         if (value == null)
@@ -81,126 +86,32 @@ public class Cript
             return null;
         }
     }
-
-    /// <summary>
-    /// Encrypts a Protheus password.
-    /// </summary>
-    /// <param name="password">Password</param>
-    /// <remarks>Kleberton 2012-08-28</remarks>
+    
+    [Obsolete("Please use ProtheusEncryptionService.")]
     public static string CriptPwdProtheus(string password)
     {
-        string protheusPassword = "";
-
-        int[] odd = { 1, 3, 5, 7, 9, 11 };
-        int[] even = { 0, 2, 4, 6, 8, 10 };
-
-        //Caracters pares
-        for (int i = 0; i < password.Length; i++)
-        {
-            if (odd[i] < password.Length)
-            {
-                protheusPassword += password.ToCharArray()[odd[i]];
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        // Caracters impares
-        for (int i = 0; i < password.Length; i++)
-        {
-            if (even[i] < password.Length)
-            {
-                protheusPassword += password.ToCharArray()[even[i]];
-            }
-            else
-            {
-                break;
-            }
-        }
-        return protheusPassword;
+        return ProtheusEncryptionService.EncryptPassword(password);
     }
 
-    /// <summary>
-    /// Descript a Protheus password from SRA
-    /// </summary>
-    /// <param name="password">Password</param>
-    /// <remarks>Lucio Pelinson 2012-09-21</remarks>
+    [Obsolete("Please use ProtheusEncryptionService.")]
     public static string DeCriptPwdProtheus(string password)
     {
-        string protheusPassword = "";
-        var evenList = new List<char>();
-        var oddList = new List<char>();
-        char[] aSenha = password.ToCharArray();
-        int passwordLengthByHalf = password.Length / 2;
-
-        for (int i = 0; i < password.Length; i++)
-        {
-            if (i < passwordLengthByHalf)
-                evenList.Add(aSenha[i]);
-            else
-                oddList.Add(aSenha[i]);
-        }
-
-
-        int charCount = evenList.Count >= oddList.Count ? evenList.Count : oddList.Count;
-        for (int i = 0; i < charCount; i++)
-        {
-            if (i < oddList.Count)
-            {
-                protheusPassword += oddList[i];
-            }
-
-            if (i < evenList.Count)
-            {
-                protheusPassword += evenList[i];
-            }
-        }
-
-        return protheusPassword;
+        return new ProtheusEncryptionService().DecryptPassword(password);
     }
-
-    /// <summary>
-    /// Converts a string to MD5 hash (32 character hexadecimal string)
-    /// </summary>
-    /// <param name="input">Value to be converted</param>
-    /// <returns>Value in hash</returns>
-    /// <remarks>Lucio Pelinson 06-12-2013</remarks>
+    
+    [Obsolete("Please use MD5HashHelper.")]
     public static string GetMd5Hash(string input)
     {
-        var md5Hasher = MD5.Create();
-        byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
-        var stringBuilder = new StringBuilder();
-
-        for (int i = 0; i <= data.Length - 1; i++)
-        {
-            stringBuilder.Append(data[i].ToString("x2"));
-        }
-
-        return stringBuilder.ToString();
+        return Md5HashHelper.GetMd5Hash(input);
     }
 
-    /// <summary>
-    /// Verify MD5 hash
-    /// </summary>
-    /// <remarks>Lucio Pelinson 06-12-2013</remarks>
+    [Obsolete("Please use MD5HashHelper.")]
     public static bool VerifyMd5Hash(string input, string hash)
     {
-        string hashOfInput = GetMd5Hash(input);
-        var comparer = StringComparer.OrdinalIgnoreCase;
-
-        return 0 == comparer.Compare(hashOfInput, hash);
+        return Md5HashHelper.VerifyMd5Hash(input, hash);
     }
 
-    /// <summary>
-    /// Descripts a message from ReportPortal
-    /// </summary>
-    /// <param name="message">Text to be encrypted.</param>
-    /// <param name="secretKey">Secret key.</param>
-    /// <remarks>
-    /// See dbo.EnigmaEncrypt function in SQLServer
-    /// </remarks>
+    [Obsolete("Please use ReportPortalEnigmaService.")]
     public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
     {
         string encryptRp = "";
@@ -232,31 +143,10 @@ public class Cript
         return encryptRp;
     }
 
-    /// <summary>
-    /// Descripts a message from ReportPortal
-    /// </summary>
-    /// <param name="message">Text to be descrypted.</param>
-    /// <param name="secretKey">Chave secreta</param>
+    [Obsolete("Please use ReportPortalEnigmaService.")]
     public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
     {
-        if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(secretKey))
-            return null;
-
-        string decryptRp = null;
-        int tam = message.Length / 2;
-        int pos = 1;
-
-        while (pos <= tam)
-        {
-            int numM = Convert.ToInt32("0x" + message.Substring((pos - 1) * 2, 2), 16);
-            short numP = (short)Convert.ToChar(secretKey.Substring(pos % secretKey.Length, 1));
-            int charCode = (short)(numM - numP);
-
-            decryptRp += (char)charCode;
-            pos++;
-        }
-
-        return decryptRp;
+        return new ReportPortalEnigmaService().EncryptString(message, secretKey);
     }
 
 }

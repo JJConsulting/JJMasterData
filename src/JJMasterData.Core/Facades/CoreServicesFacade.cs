@@ -1,4 +1,5 @@
 #nullable enable
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
@@ -17,18 +18,20 @@ public class CoreServicesFacade
     public ILoggerFactory LoggerFactory { get; }
     public IBackgroundTask BackgroundTaskManager { get; }
     public IPythonEngine? PythonEngine { get; }
+    
+    public JJMasterDataEncryptionService EncryptionService { get; }
     public CoreServicesFacade(IFormEventResolver formEventResolver,
         AuditLogService auditLogService,
         IBackgroundTask backgroundTaskManager,
         IOptions<JJMasterDataCoreOptions> options,
-        ILoggerFactory loggerFactory,
-        IPythonEngine? pythonEngine = null
-    )
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory, IPythonEngine? pythonEngine = null)
     {
         FormEventResolver = formEventResolver;
         AuditLogService = auditLogService;
         Options = options;
         LoggerFactory = loggerFactory;
+        EncryptionService = encryptionService;
         PythonEngine = pythonEngine;
         BackgroundTaskManager = backgroundTaskManager;
     }

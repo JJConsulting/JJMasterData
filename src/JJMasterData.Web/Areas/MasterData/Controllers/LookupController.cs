@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
@@ -15,15 +17,17 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class LookupController : MasterDataController
 {
     public FormViewFactory FormViewFactory { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
 
-    public LookupController(FormViewFactory formViewFactory)
+    public LookupController(FormViewFactory formViewFactory, JJMasterDataEncryptionService encryptionService)
     {
         FormViewFactory = formViewFactory;
+        EncryptionService = encryptionService;
     }
     // GET: MasterData/Lookup
-    public ActionResult Index(string p)
+    public ActionResult Index(string parameters)
     {
-        if (string.IsNullOrEmpty(p))
+        if (string.IsNullOrEmpty(parameters))
             throw new ArgumentNullException();
 
         string? elementName = null;
@@ -32,7 +36,7 @@ public class LookupController : MasterDataController
         bool enableAction = false;
 
         var filters = new Hashtable();
-        var parms = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(p));
+        var parms = HttpUtility.ParseQueryString(EncryptionService.DecryptString(parameters));
         foreach (string key in parms)
         {
             if ("elementname".Equals(key.ToLower()))
