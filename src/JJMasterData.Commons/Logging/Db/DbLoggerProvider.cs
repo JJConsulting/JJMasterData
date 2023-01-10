@@ -1,5 +1,6 @@
 using System;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

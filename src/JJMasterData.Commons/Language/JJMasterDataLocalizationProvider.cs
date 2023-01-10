@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Localization;

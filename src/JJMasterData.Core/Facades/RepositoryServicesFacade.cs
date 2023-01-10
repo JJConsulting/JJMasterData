@@ -1,5 +1,7 @@
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.Facades;
 

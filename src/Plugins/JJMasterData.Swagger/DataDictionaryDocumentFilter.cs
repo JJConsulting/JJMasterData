@@ -8,6 +8,7 @@ using System.Threading;
 using System.Web.Http.Description;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger

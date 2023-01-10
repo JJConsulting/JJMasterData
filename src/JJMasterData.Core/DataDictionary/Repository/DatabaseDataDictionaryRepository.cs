@@ -6,7 +6,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 

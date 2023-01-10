@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;

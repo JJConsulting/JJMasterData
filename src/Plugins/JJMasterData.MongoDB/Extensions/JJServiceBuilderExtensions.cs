@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.MongoDB.Models;
 using JJMasterData.MongoDB.Repository;
 using Microsoft.Extensions.Configuration;

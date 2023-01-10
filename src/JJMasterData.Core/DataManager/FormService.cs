@@ -8,6 +8,7 @@ using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
 using System.Data.SqlClient;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.Facades;
 using Microsoft.Extensions.Logging;
 

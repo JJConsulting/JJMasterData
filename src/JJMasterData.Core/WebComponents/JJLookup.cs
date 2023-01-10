@@ -11,6 +11,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;

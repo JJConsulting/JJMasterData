@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 

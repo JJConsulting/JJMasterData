@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Abstractions;

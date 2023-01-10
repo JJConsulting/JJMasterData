@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
@@ -7,6 +8,7 @@ using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;

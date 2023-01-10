@@ -4,6 +4,7 @@ using System.Web;
 using AutoFixture;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.AuditLog;

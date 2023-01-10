@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;

@@ -14,6 +14,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.Extensions.Options;

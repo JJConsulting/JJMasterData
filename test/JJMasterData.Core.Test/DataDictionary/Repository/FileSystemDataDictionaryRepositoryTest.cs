@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Test.DataDictionary.Repository;

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;

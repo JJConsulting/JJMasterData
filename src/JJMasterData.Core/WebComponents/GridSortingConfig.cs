@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;

@@ -12,7 +12,9 @@ using System.Collections;
 using System.Text;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 

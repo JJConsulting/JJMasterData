@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Dao.Providers;
 using JJMasterData.Commons.Language;
 

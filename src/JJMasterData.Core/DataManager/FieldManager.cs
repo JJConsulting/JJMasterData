@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Facades;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.WebComponents.Factories;

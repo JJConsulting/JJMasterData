@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JJMasterData.Core.DataDictionary.Repository;
+namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 /// <summary>
 /// The repository of Data Dictionaries (metadata)

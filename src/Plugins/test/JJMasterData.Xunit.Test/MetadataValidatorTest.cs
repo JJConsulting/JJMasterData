@@ -1,13 +1,10 @@
 using AutoFixture;
 using System.Collections;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Facades;
-using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Options;
 using JJMasterData.Xunit.Validators;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Xunit.Test;
 

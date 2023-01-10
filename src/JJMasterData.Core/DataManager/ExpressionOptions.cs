@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
 using System.Collections;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 

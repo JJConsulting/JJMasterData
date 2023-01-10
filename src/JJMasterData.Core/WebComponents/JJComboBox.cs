@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Http.Abstractions;

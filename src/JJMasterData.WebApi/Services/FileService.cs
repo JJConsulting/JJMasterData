@@ -1,8 +1,8 @@
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.WebApi.Services;

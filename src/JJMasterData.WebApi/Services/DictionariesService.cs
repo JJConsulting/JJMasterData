@@ -1,20 +1,20 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 
 namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService
 {
-    private IEntityRepository _entityRepository;
-    private IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly IEntityRepository _entityRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
     public DictionariesService(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
     {
