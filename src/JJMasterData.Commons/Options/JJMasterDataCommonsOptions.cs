@@ -1,16 +1,10 @@
 ﻿#nullable enable
 
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 

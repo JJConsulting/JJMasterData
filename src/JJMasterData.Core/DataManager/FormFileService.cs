@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 

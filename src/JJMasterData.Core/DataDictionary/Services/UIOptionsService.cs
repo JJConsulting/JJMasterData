@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 

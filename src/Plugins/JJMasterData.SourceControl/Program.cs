@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;

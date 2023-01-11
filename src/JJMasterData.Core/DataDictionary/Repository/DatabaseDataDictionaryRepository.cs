@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using Newtonsoft.Json;
 using System;

@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
