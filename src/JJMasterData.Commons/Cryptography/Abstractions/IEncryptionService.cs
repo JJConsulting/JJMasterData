@@ -5,6 +5,6 @@ namespace JJMasterData.Commons.Cryptography.Abstractions;
 /// </summary>
 public interface IEncryptionService
 {
-    public string EncryptString(string plainText, string key);
-    public string DecryptString(string cipherText, string key);
+    public string EncryptString(string plainText, string secretKey);
+    public string DecryptString(string cipherText, string secretKey);
 }

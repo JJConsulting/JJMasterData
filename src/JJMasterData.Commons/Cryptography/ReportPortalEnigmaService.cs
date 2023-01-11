@@ -5,22 +5,22 @@ namespace JJMasterData.Commons.Cryptography;
 
 public class ReportPortalEnigmaService : IEncryptionService
 {
-    public string EncryptString(string plainText, string key)
+    public string EncryptString(string plainText, string secretKey)
     {
         string encryptRp = "";
-        if (string.IsNullOrEmpty(plainText) || string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(plainText) || string.IsNullOrEmpty(secretKey))
         {
             return plainText;
         }
 
-        int tam = key.Length;
+        int tam = secretKey.Length;
         int pos = 1;
         while (pos <= plainText.Length)
         {
             char @char = plainText.Substring(pos - 1, 1).ToCharArray()[0];
             int num = @char;
 
-            @char = key.Substring(pos % tam, 1).ToCharArray()[0];
+            @char = secretKey.Substring(pos % tam, 1).ToCharArray()[0];
             int num3 = @char;
 
             int number = num + num3;
@@ -36,9 +36,9 @@ public class ReportPortalEnigmaService : IEncryptionService
         return encryptRp;
     }
 
-    public string DecryptString(string cipherText, string key)
+    public string DecryptString(string cipherText, string secretKey)
     {
-        if (string.IsNullOrEmpty(cipherText) || string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(cipherText) || string.IsNullOrEmpty(secretKey))
             return null;
 
         string decryptRp = null;
@@ -48,7 +48,7 @@ public class ReportPortalEnigmaService : IEncryptionService
         while (pos <= tam)
         {
             int numM = Convert.ToInt32("0x" + cipherText.Substring((pos - 1) * 2, 2), 16);
-            short numP = (short)Convert.ToChar(key.Substring(pos % key.Length, 1));
+            short numP = (short)Convert.ToChar(secretKey.Substring(pos % secretKey.Length, 1));
             int charCode = (short)(numM - numP);
 
             decryptRp += (char)charCode;

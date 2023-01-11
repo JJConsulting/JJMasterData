@@ -15,7 +15,6 @@ public static class Md5HashHelper
         }
         
         var stringBuilder = new StringBuilder();
-
         for (int i = 0; i <= data.Length - 1; i++)
         {
             stringBuilder.Append(data[i].ToString("x2"));
