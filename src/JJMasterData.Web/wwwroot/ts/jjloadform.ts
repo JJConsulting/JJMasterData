@@ -12,7 +12,7 @@
         wrap: true,
         allowInput: true,
         altInput: false,
-        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
@@ -33,11 +33,12 @@
     });
     
     $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: false,
+        enableTime: true,
         wrap: true,
         allowInput: true,
         altInput: false,
-        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+        noCalendar: true,
+        dateFormat: "H:i",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
