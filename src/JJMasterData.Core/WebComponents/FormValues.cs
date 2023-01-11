@@ -64,7 +64,7 @@ internal class FormValues
                 val ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
             }
              
-            if (val != null && !string.IsNullOrEmpty(val.ToString()))
+            if (val != null)
             {
                 values.Add(f.Name, val);
             }
