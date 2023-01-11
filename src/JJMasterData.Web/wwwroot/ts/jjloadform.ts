@@ -8,12 +8,11 @@
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     
     $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: true,
+        enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
@@ -25,9 +24,8 @@
         enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        dateFormat: localeCode === "pt" ? "d-m-Y" : "m-d-Y",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },
@@ -35,12 +33,11 @@
     });
     
     $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: true,
+        enableTime: false,
         wrap: true,
-        noCalendar: true,
         allowInput: true,
-        altInput: true,
-        dateFormat: "H:i",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now())
         },

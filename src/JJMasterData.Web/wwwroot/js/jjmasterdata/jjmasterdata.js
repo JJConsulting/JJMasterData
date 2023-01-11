@@ -42,22 +42,22 @@ class JJDataExp {
         fetch(formUrl)
             .then(response => response.json())
             .then(function (data) {
-            if (data.FinishedMessage) {
-                clearInterval(intervalId);
-                showWaitOnPost = true;
-                $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
-                $("#dataexp_spinner_" + objname).hide();
-                var linkFile = $("#export_link_" + objname)[0];
-                if (linkFile)
-                    linkFile.click();
-            }
-            else {
-                $("#divMsgProcess").css("display", "");
-                $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
-                $("#lblStartDate").text(data.StartDate);
-                $("#lblResumeLog").text(data.Message);
-            }
-        });
+                if (data.FinishedMessage) {
+                    clearInterval(intervalId);
+                    showWaitOnPost = true;
+                    $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
+                    $("#dataexp_spinner_" + objname).hide();
+                    var linkFile = $("#export_link_" + objname)[0];
+                    if (linkFile)
+                        linkFile.click();
+                }
+                else {
+                    $("#divMsgProcess").css("display", "");
+                    $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
+                    $("#lblStartDate").text(data.StartDate);
+                    $("#lblResumeLog").text(data.Message);
+                }
+            });
     }
     static startProcess(objname) {
         JJDataExp.setLoadMessage();
@@ -362,12 +362,11 @@ function jjloadform(event, prefixSelector) {
     $(prefixSelector + ".selectpicker").selectpicker("render");
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: true,
+        enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        dateFormat: localeCode === "pt" ? "d-m-Y H:i" : "m-d-Y H:i",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
@@ -377,21 +376,19 @@ function jjloadform(event, prefixSelector) {
         enableTime: false,
         wrap: true,
         allowInput: true,
-        altInput: true,
-        altFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        dateFormat: localeCode === "pt" ? "d-m-Y" : "m-d-Y",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
         locale: localeCode
     });
     $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: true,
+        enableTime: false,
         wrap: true,
-        noCalendar: true,
         allowInput: true,
-        altInput: true,
-        dateFormat: "H:i",
+        altInput: false,
+        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
@@ -1254,8 +1251,8 @@ var messageBox = (function () {
             $(jQueryModalId)
                 .modal()
                 .on("shown.bs.modal", function () {
-                $(jQueryModalButton1Id).focus();
-            });
+                    $(jQueryModalButton1Id).focus();
+                });
         }
         else {
             const modal = new bootstrap.Modal(document.getElementById(modalId), {});
@@ -1575,9 +1572,9 @@ var jjutil = (function () {
             if (whichCode == 0)
                 return true;
             if ((whichCode == 99 || whichCode == 97 ||
-                whichCode == 118 || whichCode == 120 ||
-                whichCode == 67 || whichCode == 88 ||
-                whichCode == 86 || whichCode == 65) &&
+                    whichCode == 118 || whichCode == 120 ||
+                    whichCode == 67 || whichCode == 88 ||
+                    whichCode == 86 || whichCode == 65) &&
                 (e.ctrlKey === true || e.metaKey === true)) {
                 return true;
             }
@@ -1598,7 +1595,7 @@ var jjutil = (function () {
             if (whichCode == 0)
                 return true;
             if ((whichCode == 99 || whichCode == 120 || whichCode == 118 || whichCode == 97 ||
-                whichCode == 67 || whichCode == 88 || whichCode == 86 || whichCode == 65) &&
+                    whichCode == 67 || whichCode == 88 || whichCode == 86 || whichCode == 65) &&
                 (e.ctrlKey === true || e.metaKey === true)) {
                 return true;
             }
