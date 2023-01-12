@@ -116,7 +116,7 @@ namespace JJMasterData.Core.DataManager
         {
             var formValues = row.Table.Columns
                 .Cast<DataColumn>()
-                .ToDictionary(col => col.ColumnName, col => row[col.ColumnName]);
+                .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()]);
 
             return ParsePkValues(formElement, formValues, separator);
         }
