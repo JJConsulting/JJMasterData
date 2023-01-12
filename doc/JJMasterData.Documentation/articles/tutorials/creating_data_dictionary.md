@@ -1,20 +1,34 @@
-# Creating a Data Dictionary from a table 
+# What is a Data Dictionary
+Data Dictionary é um metadado para representar a strutura de uma tabela e sua visualização em um CRUD (tela de cadastro onde o usuário pode Criar, Ler, Atualizar e Deletar registros).
+Aqui você poderá gerenciar e configurar em tempo de execução as funcionalidades e caracteristicas desse CRUD.
 
-Para a criação da estrutura de dados com JJMasterData através de uma tabela já existente em seu banco de dados, é necessário que o campo “Import field” esteja marcado. O campo Table Name será preenchido com o nome da tabela já existente. Preenchido o table Name e marcado o campo Import fields, é só clicar em next e será criada sua estrutura de dados.
+Os metadados são trasformados em JSON e por padrão armazenado em uma tabela no banco, porém pode ser armazenado em arquivos ou em qualquer outro lugar, para isso veja as configurações de inicialização do sitema.
 
-Depois de criada, você poderá acessar a aba Fields e você irá ver os campos da sua tabela preexistente, sendo possível edita-los. Também podendo acrescentar novos campos utilizando o ícone de adicionar, ao lado da barra de pesquisa, porém é importante que seja feito o alter table após a adição do novo campo.
-
-# Creating a Data Dictionary from scratch
-
-Você poderá dar início ao processo de criação através do link /pt-br/DataDictionary. 
-O ícone New irá permitir que você faça a criação das suas tabelas de acordo com o dicionário criado.
+# Creating a Data Dictionary 
+Você poderá dar início ao processo de criação através do link /pt-br/DataDictionary.
+O ícone New irá permitir que você faça a criação dos seus metadados e gere os scripts de suas tabelas de acordo com o dicionário criado.
 
 Com o JJMasterData será possível fazer a importação ou criação da sua tabela e a organização da mesma para dicionários e posteriormente exibidos em metadados.
 
-Para a criação da estrutura de dados direto pelo JJMasterData será necessário deixar o campo “import field” desmarcado, inserir o nome da tabela a ser criada e clicar em Next. Preenchido o campo Table Name e clicado em Next, você irá acessar a janela de Entidade. Aqui você irá encontra os seguintes itens:
+- Creating a new Data Dictionary<br>
+Para a criação da estrutura de dados direto pelo JJMasterData será necessário deixar o campo “import field” desmarcado, inserir o nome da tabela a ser criada e clicar em Next. 
+Preenchido o campo Table Name e clicado em Next, você irá acessar a janela de Entidade. 
+Aqui você irá encontra os seguintes itens:
+
+
+- Importing structure from a existing table<br>
+Para a criação da estrutura de dados com JJMasterData através de uma tabela já existente em seu banco de dados, 
+é necessário que o campo “Import field” esteja marcado e o usuário da conexão com o banco tenha permissão para ler a estrutura da tabela. 
+O campo Table Name será preenchido com o nome da tabela já existente. 
+Preenchido o table Name e marcado o campo Import fields, 
+é só clicar em next e será criada sua estrutura de dados.
+
+Depois de criada, você poderá acessar a aba Fields e você irá ver os campos da sua tabela preexistente, sendo possível edita-los. 
+Você poderá acrescentar novos campos utilizando o ícone de adicionar, ao lado da barra de pesquisa, porém é importante que seja feito o alter table após a adição do novo campo, sempre que incluir ou alterar um campo, 
+para facilitar o processo geramos os em scripts no Menu->More->Get Scripts
+
 
 ## **Entity**
-
 - Dictionary name:  Será o nome que irá representar o seu metadado.
 	
 - Table Name: Nome da tabela onde seus dados ficarão armazenados.
@@ -27,13 +41,14 @@ Para a criação da estrutura de dados direto pelo JJMasterData será necessári
 
 - Subtitle: Aqui você irá preencher com o subtítulo que será exibido dentro do Form. Da mesma forma que o title, o subtitle também poderá ser habilitado ou não.
 
-- Info: Informações fixas que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
+- Info: Informações fixas de uso interno que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
 
 ## **Fields**
 
 ### General
 
-O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os dados que irão ser exibidos na criação da nova tabela a partir dos metadados. É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
+O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os campos do formulário que irão ser exibidos na criação da nova tabela a partir dos metadados. 
+É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
 
 - FieldName: Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
 
@@ -81,15 +96,16 @@ Após o preenchimento de todos os itens obrigatórios em Fields, você deverá e
 
 #### CssClass
 
-É possível inserir várias classes Css e criar layouts responsivos utilizando o sistema de grid do Bootstrap. Por exemplo, dois campos com a classe `col-sm-6` no formulário ficarão na mesma linha.
+É possível inserir várias classes Css e criar layouts responsivos utilizando o sistema de grid do Bootstrap. 
+Por exemplo, dois campos com a classe `col-sm-6` no formulário ficarão na mesma linha.
 
 #### Line Group
 
-É a linha do campo dentro do sistema de grid.
+É a linha do campo dentro do sistema de grid. Representa a classe row do bootstrap.
 
 #### Export
 
-Você poderá definir se ele irá ou não dentro da exportação.
+Você poderá definir se o campo irá ou não ser exportado.
 
 
 #### Validade Request
