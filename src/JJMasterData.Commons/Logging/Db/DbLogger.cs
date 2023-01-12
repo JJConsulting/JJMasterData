@@ -55,10 +55,7 @@ public class DbLogger : ILogger
         };
         
         var element = DbLoggerElement.GetInstance(_dbLoggerProvider.Options);
-        
-        if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
-            _dbLoggerProvider.Repository.CreateDataModel(element);
-        
+
         _dbLoggerProvider.Repository.Insert(element, values);
     }
 

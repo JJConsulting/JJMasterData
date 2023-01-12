@@ -24,12 +24,12 @@ public static class JJService
         }
     }
     
-    public static JJMasterDataOptions Options
+    public static JJMasterDataCommonsOptions CommonsOptions
     {
         get
         {
             using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataOptions>>()!.Value;
+            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataCommonsOptions>>()!.Value;
         }
     }
 

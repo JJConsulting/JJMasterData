@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -225,7 +226,7 @@ public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
-        if(!Exists(JJService.Options.TableName))
+        if(!Exists(JJServiceCore.CoreOptions.DataDictionaryTableName))
             _entityRepository.CreateDataModel(DataDictionaryStructure.GetElement());
     }
 

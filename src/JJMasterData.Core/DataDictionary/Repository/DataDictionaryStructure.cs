@@ -6,6 +6,7 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -25,7 +26,7 @@ public class DataDictionaryStructure
     
     public static Element GetElement()
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        var element = new Element(JJServiceCore.CoreOptions.DataDictionaryTableName, "Data Dictionaries");
             
         element.Fields.AddPK(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;

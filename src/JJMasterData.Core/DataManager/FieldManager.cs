@@ -111,7 +111,7 @@ public class FieldManager
         }
         else
         {
-            sVal = FormatVal(field, value);
+            sVal = FormatValue(field, value);
         }
 
         return sVal ?? "";
@@ -121,7 +121,7 @@ public class FieldManager
     /// <summary>
     /// Formata os valores exibidos no Panel
     /// </summary>
-    public string FormatVal(FormElementField field, object value)
+    public string FormatValue(FormElementField field, object value)
     {
         if (value == null)
             return "";
