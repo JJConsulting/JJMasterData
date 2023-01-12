@@ -46,7 +46,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>3.0.14</Version>
     <Company>JJ Consulting</Company>
-    <Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
+    <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Product>JJMasterData.Core - Mars Version</Product>
     <Description>JJMasterData library to render JJMasterData's components.</Description>

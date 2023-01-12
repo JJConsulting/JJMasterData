@@ -3088,7 +3088,7 @@
                         var link = new JJMasterData.WebForm.JJLinkButton();
                         link.Text = "JJ Consulting";
                         link.IconClass = "glyphicon glyphicon-home";
-                        link.UrlAction = "http://www.jjconsulting.com.br";
+                        link.UrlAction = "https://jjconsulting.tech";
                     %>
             
                     <%--Rendereiza o componente--%>

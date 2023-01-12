@@ -5,7 +5,7 @@
 		<Version>3.0.38</Version>
 		<Company>JJ Consulting</Company>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Copyright>© 2022 JJConsulting. All rights reserved.</Copyright>
+		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<Product>JJMasterData.Commons - Mars Version</Product>
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<PackageIcon>JJMasterData.png</PackageIcon>
