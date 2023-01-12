@@ -7,7 +7,6 @@ using JJMasterData.Core.Html;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.DataManager;
@@ -178,16 +177,16 @@ internal class GridTableBody
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-        var htmlList = new List<HtmlBuilder>();
 
-        htmlList.AddRange(GetActionsWithoutGroupHtml(actionsWithoutGroup, values));
+        foreach (var action in GetActionsWithoutGroupHtml(actionsWithoutGroup, values))
+        {
+            yield return action;
+        }
 
         if (groupedActions.Count > 0)
         {
-            htmlList.Add(GetGroupedActionsHtml(groupedActions, values));
+            yield return GetGroupedActionsHtml(groupedActions, values);
         }
-
-        return htmlList;
     }
 
     private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
@@ -312,10 +311,10 @@ internal class GridTableBody
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
-        var checkBox = new JJCheckBox
+        var checkBox = new JJCheckBox(GridView.HttpContext)
         {
             Name = "jjchk_" + index,
-            Value = Cript.Cript64(pkValues),
+            Value = GridView.EncryptionService.EncryptString(pkValues),
             IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsValue(pkValues))
         };
 

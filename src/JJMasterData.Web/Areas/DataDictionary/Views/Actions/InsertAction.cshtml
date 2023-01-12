@@ -1,8 +1,15 @@
 ﻿@{
     Layout = "_MasterDataLayout.Popup";
 }
-
+@using JJMasterData.Commons.Dao.Entity.Abstractions
+@using JJMasterData.Core.Http.Abstractions
+@using Microsoft.Extensions.Logging
+@inject IHttpContext HttpContext
+@inject ILoggerFactory LoggerFactory
 @model  JJMasterData.Core.DataDictionary.Action.InsertAction
+
+
+@inject IEntityRepository EntityRepository;
 
 @using (Html.BeginForm("InsertAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
@@ -72,8 +79,10 @@
 @functions {
     private JJSearchBox BuildElementToSelect()
     {
-        var cbo = new JJSearchBox();
-        cbo.Name = "ElementNameToSelect";
+        var cbo = new JJSearchBox(HttpContext,EntityRepository, LoggerFactory)
+        {
+            Name = "ElementNameToSelect"
+        };
         cbo.DataItem.Command.Sql = "select name as cod, name from tb_masterdata where type = 'F' order by name";
         cbo.SelectedValue = Model.ElementNameToSelect;
         return cbo;

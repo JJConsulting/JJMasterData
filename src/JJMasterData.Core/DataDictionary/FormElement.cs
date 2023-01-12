@@ -24,10 +24,6 @@ public class FormElement : Element
     public string SubTitle { get; set; }
     
     [DataMember(Name = "fields")]
-    // BsonSerializationException:
-    // The property 'Name' of type 'JJMasterData.Core.DataDictionary.FormElement'
-    // cannot use element name 'Name' because it is already being used by property 'Name' of type
-    // 'JJMasterData.Commons.Dao.Entity.Element'.
     public new FormElementList Fields { get; private set; }
 
     [DataMember(Name = "panels")]
@@ -55,9 +51,9 @@ public class FormElement : Element
         SubTitle = element.Info;
         Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
-        foreach (var f in element.Fields)
+        foreach (var field in element.Fields)
         {
-            AddField(f);
+            AddField(field);
         }
     }
 

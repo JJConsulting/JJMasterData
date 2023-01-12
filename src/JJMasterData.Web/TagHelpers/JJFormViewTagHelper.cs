@@ -1,5 +1,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -14,10 +15,17 @@ public class JJFormViewTagHelper : TagHelper
     
     [HtmlAttributeName("configure")] 
     public Action<JJFormView>? Configure { get; set; }
+
+    public FormViewFactory FormViewFactory { get; }
+    
+    public JJFormViewTagHelper(FormViewFactory formViewFactory)
+    {
+        FormViewFactory = formViewFactory;
+    }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var form = new JJFormView(ElementName ?? throw new ArgumentNullException(nameof(ElementName)));
+        var form = FormViewFactory.CreateFormView(ElementName);
 
         if (!string.IsNullOrEmpty(Name))
         {

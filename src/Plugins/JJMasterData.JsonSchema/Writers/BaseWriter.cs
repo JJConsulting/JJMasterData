@@ -1,5 +1,4 @@
 using JJMasterData.JsonSchema.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;

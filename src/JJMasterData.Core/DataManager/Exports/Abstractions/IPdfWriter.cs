@@ -1,14 +1,13 @@
 ﻿using System;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public interface IPdfWriter : IWriter
+public interface IPdfWriter : IExportationWriter
 {
     event EventHandler<GridCellEventArgs> OnRenderCell;
 
-    public FormElement FormElement { get; set; }
+
 
     public bool ShowBorder { get; set; }
 

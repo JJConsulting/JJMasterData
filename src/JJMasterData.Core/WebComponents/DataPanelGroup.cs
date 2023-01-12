@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -18,6 +19,7 @@ internal class DataPanelGroup
     public FormElement FormElement { private get; set; }
 
     public DataPanelControl DataPanelControl { get; set; }
+    private readonly IHttpContext _httpContext;
 
     public DataPanelGroup(JJDataPanel dataPanel)
     {
@@ -25,32 +27,36 @@ internal class DataPanelGroup
         RenderPanelGroup = dataPanel.RenderPanelGroup;
         FormElement = dataPanel.FormElement;
         Name = dataPanel.Name;
+        _httpContext = dataPanel.HttpContext;
     }
 
-    public List<HtmlBuilder> GetHtmlPanelList()
+    public IEnumerable<HtmlBuilder> GetHtmlPanelList()
     {
-        var list = new List<HtmlBuilder>();
-
-        list.AddRange(GetTabPanels());
-
-        list.AddRange(GetNonTabPanels());
+        foreach (var tabPanel in GetTabPanels())
+        {
+            yield return tabPanel;
+        }
         
-        list.AddRange(GetFieldsWithoutPanel());
-
-        return list;
+        foreach (var nonTabPanel in GetNonTabPanels())
+        {
+            yield return nonTabPanel;
+        }
+        
+        foreach (var fieldWithoutPanel in GetFieldsWithoutPanel())
+        {
+            yield return fieldWithoutPanel;
+        }
     }
 
     private IEnumerable<HtmlBuilder> GetTabPanels()
     {
-        var list = new List<HtmlBuilder>();
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
-        if (tabs.Count <= 0) return list;
+        if (tabs.Count <= 0) 
+            yield break;
         
         var navTab = GetTabNav(tabs);
-        list.Add(navTab.GetHtmlBuilder());
-
-        return list;
+        yield return navTab.GetHtmlBuilder();
     }
 
     private IEnumerable<HtmlBuilder> GetNonTabPanels()
@@ -65,17 +71,15 @@ internal class DataPanelGroup
 
     private IEnumerable<HtmlBuilder> GetFieldsWithoutPanel()
     {
-        var list = new List<HtmlBuilder>();
-
         bool dontContainsVisibleFields = !FormElement.Fields.ToList()
             .Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0"));
-        
+
         if (dontContainsVisibleFields)
-            return list;
+            yield break;
         
         if (!RenderPanelGroup)
         {
-            list.Add(GetHtmlForm(null));
+            yield return GetHtmlForm(null);
         }
         else
         {
@@ -84,15 +88,13 @@ internal class DataPanelGroup
                 ShowAsWell = true,
                 HtmlBuilderContent = GetHtmlForm(null)
             };
-            list.Add(card.GetHtmlBuilder());
+            yield return card.GetHtmlBuilder();
         }
-
-        return list;
     }
 
     private JJTabNav GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav
+        var navTab = new JJTabNav(_httpContext)
         {
             Name = "nav_" + Name
         };
@@ -120,7 +122,7 @@ internal class DataPanelGroup
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel
+            var collapse = new JJCollapsePanel(_httpContext)
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
@@ -132,17 +134,15 @@ internal class DataPanelGroup
             };
             return collapse.GetHtmlBuilder();
         }
-        else
+
+        var card = new JJCard
         {
-            var card = new JJCard
-            {
-                Title = panel.Title,
-                SubTitle = panel.SubTitle,
-                ShowAsWell = panel.Layout == PanelLayout.Well,
-                HtmlBuilderContent = GetHtmlForm(panel)
-            };
-            return card.GetHtmlBuilder();
-        }
+            Title = panel.Title,
+            SubTitle = panel.SubTitle,
+            ShowAsWell = panel.Layout == PanelLayout.Well,
+            HtmlBuilderContent = GetHtmlForm(panel)
+        };
+        return card.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlForm(FormElementPanel panel)

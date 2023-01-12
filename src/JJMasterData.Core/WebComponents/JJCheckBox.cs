@@ -2,11 +2,13 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 public class JJCheckBox : JJBaseControl
 {
+
     private bool? _isChecked;
 
     /// <remarks>
@@ -18,24 +20,24 @@ public class JJCheckBox : JJBaseControl
     {
         get
         {
-            if (_isChecked == null && CurrentContext.IsPostBack)
-                _isChecked = Value.Equals(CurrentContext.Request[Name]);
+            if (_isChecked == null && HttpContext.IsPost)
+                _isChecked = Value.Equals(HttpContext.Request[Name]);
 
             return _isChecked ?? false;
         }
         set => _isChecked = value;
     }
 
-    public JJCheckBox()
+    public JJCheckBox(IHttpContext httpContext) : base(httpContext)
     {
         Visible = true;
         Enabled = true;
         Value = "1";
     }
 
-    internal static JJCheckBox GetInstance(FormElementField field, object value)
+    internal static JJCheckBox GetInstance(FormElementField field, IHttpContext httpContext, object value)
     {
-        var check = new JJCheckBox
+        var check = new JJCheckBox(httpContext)
         {
             Name = field.Name,
             IsChecked = ExpressionManager.ParseBool(value),
@@ -56,18 +58,27 @@ public class JJCheckBox : JJBaseControl
 
     private HtmlBuilder GetInputHtml()
     {
-        var input = new HtmlBuilder(HtmlTag.Input)
-            .WithAttributes(Attributes)
-            .WithAttribute("type", "checkbox")
-            .WithNameAndId(Name)
-            .WithAttribute("value", Value)
-            .WithCssClass("form-check-input")
-            .WithCssClass(CssClass)
-            .WithToolTip(Translate.Key(ToolTip))
-            .WithAttributeIf(IsChecked, "checked", "checked")
-            .WithAttributeIf(!Enabled, "disabled", "disabled");
+        var div = new HtmlBuilder(HtmlTag.Div);
 
-        return input;
+        div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
+        {
+            label.AppendText(Text);
+        });
+
+        div.AppendElement(HtmlTag.Input, input =>
+        {
+            input.WithAttributes(Attributes)
+                .WithAttribute("type", "checkbox")
+                .WithNameAndId(Name)
+                .WithAttribute("value", Value)
+                .WithCssClass("form-check-input")
+                .WithCssClass(CssClass)
+                .WithToolTip(Translate.Key(ToolTip))
+                .WithAttributeIf(IsChecked, "checked", "checked")
+                .WithAttributeIf(!Enabled, "disabled", "disabled");
+        });
+        
+        return div;
     }
     
 }

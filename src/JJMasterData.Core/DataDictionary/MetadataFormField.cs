@@ -84,7 +84,7 @@ public class MetadataFormField
         HelpDescription = f.HelpDescription;
         DataItem = f.DataItem;
         DataFile = f.DataFile;
-        Export = f.Export;
+        Export = f.EnableExportation;
         MinValue = f.MinValue;
         MaxValue = f.MaxValue;
         ValidateRequest = f.ValidateRequest;

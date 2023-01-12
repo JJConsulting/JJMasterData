@@ -1,14 +1,15 @@
 ﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Html;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -17,19 +18,14 @@ public class JJDownloadFile : JJBaseView
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
     
-    public JJDownloadFile()
-    {
-
-    }
-
-    public JJDownloadFile(string filePath)
-    {
-        FilePath = filePath;
-    }
+    internal IHttpContext HttpContext { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
 
     public string FilePath { get; set; }
 
     public bool IsExternalLink { get; set; }
+    
+    private ILogger<JJDownloadFile> Logger { get; }
 
     internal override HtmlBuilder RenderHtml()
     {
@@ -43,6 +39,21 @@ public class JJDownloadFile : JJBaseView
     
         return null;
     }
+    
+    public JJDownloadFile(IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
+    {
+        HttpContext = httpContext;
+        EncryptionService = encryptionService;
+        Logger = loggerFactory.CreateLogger<JJDownloadFile>();
+    }
+
+    public JJDownloadFile(string filePath, IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
+    {
+        FilePath = filePath;
+        HttpContext = httpContext;
+        EncryptionService = encryptionService;
+        Logger = loggerFactory.CreateLogger<JJDownloadFile>();
+    }
 
     private HtmlBuilder GetDownloadHtmlElement()
     {
@@ -50,7 +61,7 @@ public class JJDownloadFile : JJBaseView
         string fileName = file.Name;
         string size = Format.FormatFileSize(file.Length);
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
-        string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
+        string url = HttpContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
@@ -102,7 +113,7 @@ public class JJDownloadFile : JJBaseView
         if (!File.Exists(FilePath))
         {
             var exception = new JJMasterDataException(Translate.Key("File {0} not found!", FilePath));
-            Log.AddError(exception, exception.Message);
+            Logger.LogCritical(exception, "Error while downloading file.");
             throw exception;
         }
 
@@ -111,48 +122,47 @@ public class JJDownloadFile : JJBaseView
 
     internal void DirectDownload(string filePath)
     {
-        var context = JJHttpContext.GetInstance();
-        context.Response.Redirect(GetDownloadUrl(filePath));
+        HttpContext.Response.Redirect(GetDownloadUrl(filePath,HttpContext, EncryptionService));
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext, JJMasterDataEncryptionService encryptionService)
     {
-        var appPath = HttpContext.Current!.Request.ApplicationPath;
+        var appPath = httpContext.Request.ApplicationPath;
 
         if (!appPath.EndsWith("/"))
             appPath += "/";
 
         var culture = CultureInfo.CurrentCulture.Name + "/";
-        return $"{appPath}{culture}MasterData/File/Download?filePath={Cript.Cript64(filePath)}";
+        return $"{appPath}{culture}MasterData/File/Download?filePath={HttpUtility.UrlEncode(encryptionService.EncryptString(filePath))}";
     }
 
-    public static bool IsDownloadRoute(JJBaseView view)
+    public static bool IsDownloadRoute(IHttpContext httpContext)
     {
-        if (view.CurrentContext.Request.QueryString(DirectDownloadParameter) != null)
+        if (httpContext.Request.QueryString(DirectDownloadParameter) != null)
             return true;
-        if (view.CurrentContext.Request.QueryString(DownloadParameter) != null)
+        if (httpContext.Request.QueryString(DownloadParameter) != null)
             return true;
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(JJBaseView view)
+    public static HtmlBuilder ResponseRoute(IHttpContext httpContext,JJMasterDataEncryptionService encryptionService, ILoggerFactory loggerFactory)
     {
         bool isExternalLink = false;
-        string criptFilePath = view.CurrentContext.Request.QueryString(DownloadParameter);
-        if (criptFilePath == null)
+        string encryptedFilePath = httpContext.Request.QueryString(DownloadParameter);
+        if (encryptedFilePath == null)
         {
-            criptFilePath = view.CurrentContext.Request.QueryString(DirectDownloadParameter);
+            encryptedFilePath = httpContext.Request.QueryString(DirectDownloadParameter);
             isExternalLink = true;
         }
 
-        if (criptFilePath == null)
+        if (encryptedFilePath == null)
             return null;
 
-        string filePath = Cript.Descript64(criptFilePath);
+        string filePath = encryptionService.DecryptString(encryptedFilePath);
         if (filePath == null)
             throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
 
-        var download = new JJDownloadFile
+        var download = new JJDownloadFile(httpContext, encryptionService, loggerFactory)
         {
             FilePath = filePath,
             IsExternalLink = isExternalLink

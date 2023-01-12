@@ -1,55 +1,55 @@
 ﻿using System;
-using JJMasterData.Commons.DI;
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.WebComponents;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
 public static class WriterFactory
 {
 
-    public static IPdfWriter GetPdfWriter()
+    public static IPdfWriter GetPdfWriter(IEnumerable<IExportationWriter> writers)
     {
-        return JJService.Provider.GetService<IPdfWriter>();
+        return (IPdfWriter)writers.FirstOrDefault(writer=> writer.GetType() == typeof(IPdfWriter));
     }
 
-    public static IExcelWriter GetExcelWriter()
+    public static IExcelWriter GetExcelWriter(IEnumerable<IExportationWriter> writers)
     {
-        return JJService.Provider.GetService<IExcelWriter>();
+        return (IExcelWriter)writers.FirstOrDefault(writer=> writer.GetType().GetInterface("IExcelWriter") == typeof(IExcelWriter));
     }
 
-    public static ITextWriter GetTextWriter()
+    public static ITextWriter GetTextWriter(IEnumerable<IExportationWriter> writers)
     {
-        return JJService.Provider.GetService<ITextWriter>();
+        return (ITextWriter)writers.FirstOrDefault(writer=> writer.GetType().GetInterface("ITextWriter") == typeof(ITextWriter));
     }
 
-    public static BaseWriter GetInstance(JJDataExp exporter)
+    public static IExportationWriter ConfigureWriter(JJDataExp exporter, IEnumerable<IExportationWriter> writers)
     {
-        BaseWriter writer;
+        IExportationWriter exportationWriter;
         switch (exporter.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
             case ExportFileExtension.TXT:
-                var textWriter = GetTextWriter();
+                var textWriter = GetTextWriter(writers);
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)textWriter;
+                exportationWriter = textWriter;
                 break;
 
             case ExportFileExtension.XLS:
-                var excelWriter = GetExcelWriter();
+                var excelWriter = GetExcelWriter(writers);
                 excelWriter.ShowRowStriped = exporter.ShowRowStriped;
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)excelWriter;
+                exportationWriter = excelWriter;
 
                 break;
             case ExportFileExtension.PDF:
-                var pdfWriter = GetPdfWriter();
+                var pdfWriter = GetPdfWriter(writers);
 
                 if (pdfWriter == null)
                     throw new NotImplementedException("Please implement IPdfWriter in your application services.");
@@ -57,27 +57,25 @@ public static class WriterFactory
                 pdfWriter.ShowRowStriped = exporter.ShowRowStriped;
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += exporter.OnRenderCell;
-
-                // ReSharper disable once SuspiciousTypeConversion.Global;
-                // PdfWriter is dynamic loaded by plugin.
-                writer = pdfWriter as BaseWriter;
+                
+                exportationWriter = pdfWriter;
 
                 break;
             default:
                 throw new NotImplementedException();
         }
 
-        ConfigureWriter(exporter, writer);
+        ConfigureWriter(exporter, exportationWriter);
 
-        return writer;
+        return exportationWriter;
     }
 
-    private static void ConfigureWriter(JJDataExp exporter, BaseWriter writer)
+    private static void ConfigureWriter(JJDataExp exporter, IExportationWriter exportationWriter)
     {
-        writer.FormElement = exporter.FormElement;
-        writer.FieldManager = exporter.FieldManager;
-        writer.Configuration = exporter.ExportOptions;
-        writer.UserId = exporter.UserId;
-        writer.ProcessOptions = exporter.ProcessOptions;
+        exportationWriter.FormElement = exporter.FormElement;
+        exportationWriter.FieldManager = exporter.FieldManager;
+        exportationWriter.Configuration = exporter.ExportOptions;
+        exportationWriter.UserId = exporter.UserId;
+        exportationWriter.ProcessOptions = exporter.ProcessOptions;
     }
 }

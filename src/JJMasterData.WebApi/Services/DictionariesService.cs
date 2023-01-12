@@ -1,23 +1,29 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using System.Collections;
+using System.Collections.Immutable;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 
 namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService
 {
-    private IEntityRepository _entityRepository;
-    private IDataDictionaryRepository _dataDictionaryRepository;
+    public ILogger<DictionariesService> Logger { get; }
+    private readonly IEntityRepository _entityRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DictionariesService(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    public DictionariesService(
+        IDataDictionaryRepository dataDictionaryRepository,
+        IEntityRepository entityRepository,
+        ILogger<DictionariesService> logger
+    )
     {
+        Logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
         _entityRepository = entityRepository;
     }
@@ -41,23 +47,26 @@ public class DictionariesService
             throw new ArgumentException(Translate.Key("DicSyncParam invalid"));
 
         var dStart = DateTime.Now;
-        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
+        var dictionaries = _dataDictionaryRepository.GetMetadataList(true).ToImmutableList();
         var syncInfo = new DicSyncInfo
         {
             ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")
         };
         int totRecords = 0;
-        foreach (var os in listSync)
+        foreach (var dicSync in listSync)
         {
             var dStartObj = DateTime.Now;
-            var dictionary = dictionaries.First(x => x.Table.Name.Equals(os.Name));
+            var dictionary = dictionaries?.First(x => x.Table.Name.Equals(dicSync.Name));
             if (dictionary == null)
-                throw new JJMasterDataException(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
+                throw new JJMasterDataException(Translate.Key("Dictionary {0} not found or not configured for REST API.",
+                    dicSync.Name));
 
-            var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
-            var info = new DicSyncInfoElement();
-            info.Name = os.Name;
-            info.RecordSize = _entityRepository.GetCount(dictionary.Table, filters);
+            var filters = GetSyncInfoFilter(userId, dictionary, dicSync.Filters);
+            var info = new DicSyncInfoElement
+            {
+                Name = dicSync.Name,
+                RecordSize = _entityRepository.GetCount(dictionary.Table, filters)
+            };
             totRecords += info.RecordSize;
 
             TimeSpan tsObj = DateTime.Now - dStartObj;
@@ -66,28 +75,32 @@ public class DictionariesService
 
             if (showLogInfo)
             {
-                Log.AddInfo($"- {os.Name}: [{info.RecordSize}] {tsObj.TotalMilliseconds}ms\r\n");
+                Logger.LogInformation("{dictionaryName}: [{recordSize}] {totalMilliseconds}ms\r\n", dicSync.Name,
+                    info.RecordSize, tsObj.TotalMilliseconds);
             }
 
             if (maxRecordsAllowed > 0 && info.RecordSize > maxRecordsAllowed)
             {
-                throw new JJMasterDataException(Translate.Key("Number maximum of records exceeded on {0}, contact the administrator.", os.Name));
+                throw new JJMasterDataException(
+                    Translate.Key("Number maximum of records exceeded on {0}, contact the administrator.",
+                        dicSync.Name));
             }
         }
 
-        TimeSpan ts = DateTime.Now - dStart;
-        syncInfo.TotalProcessMilliseconds = ts.TotalMilliseconds;
+        var timeSpan = DateTime.Now - dStart;
+        syncInfo.TotalProcessMilliseconds = timeSpan.TotalMilliseconds;
 
-        var sLog = new StringBuilder();
-        sLog.AppendLine($"UserId: {userId}");
-        sLog.Append(Translate.Key("Synchronizing"));
-        sLog.Append(listSync.Length);
-        sLog.Append(Translate.Key("objects"));
-        sLog.Append(" ");
-        sLog.AppendLine(" ...");
-        sLog.AppendLine(Translate.Key("{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)));
-        Log.AddInfo(sLog.ToString());
-
+        var logMessage = new StringBuilder();
+        logMessage.AppendLine($"UserId: {userId}");
+        logMessage.Append(Translate.Key("Synchronizing"));
+        logMessage.Append(listSync.Length);
+        logMessage.Append(Translate.Key("objects"));
+        logMessage.Append(' ');
+        logMessage.AppendLine(" ...");
+        logMessage.AppendLine(Translate.Key("{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(timeSpan)));
+        
+        Logger.LogInformation(logMessage.ToString());
+        
         if (syncInfo.ListElement.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No dictionary found"));
 
@@ -110,8 +123,8 @@ public class DictionariesService
         }
 
         string fieldApplyUser = metadata.Api.ApplyUserIdOn;
-        
-        if (string.IsNullOrEmpty(fieldApplyUser)) 
+
+        if (string.IsNullOrEmpty(fieldApplyUser))
             return filters;
         if (!filters.ContainsKey(fieldApplyUser))
         {
@@ -120,10 +133,10 @@ public class DictionariesService
         else
         {
             if (!filters[fieldApplyUser]!.ToString()!.Equals(userId))
-                throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", metadata.Table.Name));
+                throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}",
+                    metadata.Table.Name));
         }
 
         return filters;
     }
-
 }

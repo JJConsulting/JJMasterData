@@ -7,21 +7,24 @@ using JJMasterData.Core.Html;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
 internal class DataImpHelp
 {
     public JJDataImp DataImp { get; private set; }
+    public IEntityRepository EntityRepository { get; }
 
-    internal DataImpHelp(JJDataImp dataImp)
+    internal DataImpHelp(JJDataImp dataImp, IEntityRepository entityRepository)
     {
         DataImp = dataImp;
+        EntityRepository = entityRepository;
     }
 
     public HtmlBuilder GetHtmlHelp()
     {
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(DataImp.HttpContext)
         {
             Title = "Import File - Help",
             TitleIcon = new JJIcon(IconType.QuestionCircle),
@@ -249,7 +252,7 @@ internal class DataImpHelp
         var userValues = DataImp.ExpressionManager.UserValues;
         var entityrepository = DataImp.ExpressionManager.EntityRepository;
         var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
-        var cbo = JJComboBox.GetInstance(f, expOptions, null);
+        var cbo = JJComboBox.GetInstance(f,DataImp.HttpContext,EntityRepository, expOptions,DataImp.LoggerFactory, null);
         var itens = cbo.GetValues();
         if (itens.Count == 0)
             return string.Empty;

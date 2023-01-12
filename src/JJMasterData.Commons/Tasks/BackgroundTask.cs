@@ -10,12 +10,8 @@ namespace JJMasterData.Commons.Tasks;
 
 internal sealed class BackgroundTask : IBackgroundTask
 {
-    private static BackgroundTask _instance;
-
-    public static BackgroundTask GetInstance() => _instance ??= new BackgroundTask();
-
-    private static Lazy<List<TaskWrapper>> _taskList;
-    internal static List<TaskWrapper> TaskList
+    private Lazy<List<TaskWrapper>> _taskList;
+    internal List<TaskWrapper> TaskList
     {
         get
         {
@@ -59,17 +55,14 @@ internal sealed class BackgroundTask : IBackgroundTask
 
     public bool IsRunning(string key)
     {
-        TaskWrapper taskWrapper = GetTask(key);
-        if (taskWrapper == null)
-            return false;
+        var taskWrapper = GetTask(key);
 
-        return taskWrapper.Task.Status == TaskStatus.Running |
-            taskWrapper.Task.Status == TaskStatus.WaitingForActivation;
+        return taskWrapper?.Task.Status is TaskStatus.Running or TaskStatus.WaitingForActivation;
     }
 
     public void Abort(string key)
     {
-        TaskWrapper taskWrapper = GetTask(key);
+        var taskWrapper = GetTask(key);
         
         taskWrapper?.CancellationSource.Cancel();
     }

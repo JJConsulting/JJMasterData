@@ -3,7 +3,7 @@ using JJMasterData.Core.FormEvents.Args;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public interface ITextWriter : IWriter
+public interface ITextWriter : IExportationWriter
 {
     string Delimiter { get; set; }
 

@@ -1,4 +1,6 @@
-﻿@model FormElementField
+﻿@using JJMasterData.Core.Http.Abstractions
+@model FormElementField
+@inject IHttpContext HttpContext
 
 @section Scripts{
     <script lang="javascript" type="text/javascript">
@@ -21,7 +23,7 @@
 }
 
 @{
-    var slider = new JJSlider(0, 28)
+    var slider = new JJSlider(HttpContext, 0, 28)
     {
         Name = @Html.NameFor(m=>m.DataFile.MaxFileSize),
         Value = Model.DataFile.MaxFileSize,

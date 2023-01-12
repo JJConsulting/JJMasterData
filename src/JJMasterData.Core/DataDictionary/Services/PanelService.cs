@@ -1,8 +1,8 @@
 ﻿using JJMasterData.Commons.Extensions;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -18,8 +18,11 @@ public class PanelService : BaseService
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var formElement = dictionary.GetFormElement();
 
-        if(selectedFields?.Length == 0){}
+        if (selectedFields?.Length == 0)
+        {
             AddError(nameof(selectedFields), "No fields selected for this panel.");
+        }
+            
         
         if (!ValidatePanel(panel))
             return;

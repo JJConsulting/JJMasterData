@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -50,7 +50,7 @@ public class GridUI
     }
 
 
-    internal static GridUI LoadFromForm(JJHttpContext currentContext)
+    internal static GridUI LoadFromForm(IHttpContext currentContext)
     {
         var gridSettings = new GridUI();
         string tableRegPerPage = currentContext.Request[TableTotalPerPage];
@@ -74,7 +74,7 @@ public class GridUI
         return gridSettings;
     }
 
-    internal static bool HasFormValues(JJHttpContext currentContext) =>
+    internal static bool HasFormValues(IHttpContext currentContext) =>
         currentContext.Request[TableTotalPerPage] != null;
 
     internal HtmlBuilder GetHtmlElement(bool isPaginationEnabled)

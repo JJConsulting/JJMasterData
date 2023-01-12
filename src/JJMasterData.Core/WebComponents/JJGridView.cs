@@ -5,19 +5,29 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.WebComponents;
@@ -33,6 +43,9 @@ namespace JJMasterData.Core.WebComponents;
 /// </example>
 public class JJGridView : JJBaseView
 {
+    protected readonly RepositoryServicesFacade _repositoryServicesFacade;
+
+
     #region "Events"
 
     public event EventHandler<GridCellEventArgs> OnRenderCell;
@@ -81,13 +94,9 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-    private IEntityRepository _entityRepository;
-    
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        set => _entityRepository = value;
-    }
+
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IEntityRepository EntityRepository { get; }
 
     internal FormManager FormManager
     {
@@ -95,9 +104,10 @@ public class JJGridView : JJBaseView
         {
             if (_formManager == null)
             {
-                var expManager = new ExpressionManager(UserValues, EntityRepository);
+                var expManager = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 _formManager = new FormManager(FormElement, expManager);
             }
+
             return _formManager;
         }
     }
@@ -108,9 +118,9 @@ public class JJGridView : JJBaseView
         {
             if (_dataImp != null) return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement)
+            _dataImp = new JJDataImp(FormElement, HttpContext, _repositoryServicesFacade, BackgroundTask,
+                EncryptionService, Options, LoggerFactory, AuditLogService)
             {
-                EntityRepository = EntityRepository,
                 UserValues = UserValues,
                 ProcessOptions = ImportAction.ProcessOptions,
                 Name = Name + "_dataimp"
@@ -120,18 +130,22 @@ public class JJGridView : JJBaseView
         }
     }
 
+    internal AuditLogService AuditLogService { get; }
+
     public JJDataExp DataExp
     {
         get
         {
-            if (_dataExp != null) return _dataExp;
-            _dataExp = new JJDataExp(FormElement)
+            if (_dataExp != null)
+                return _dataExp;
+
+            _dataExp = new JJDataExp(FormElement, HttpContext, _repositoryServicesFacade, ExportationWriters,
+                BackgroundTask, EncryptionService, Options, LoggerFactory)
             {
                 Name = Name,
                 ExportOptions = CurrentExportConfig,
                 ShowBorder = CurrentUI.ShowBorder,
                 ShowRowStriped = CurrentUI.ShowRowStriped,
-                EntityRepository = EntityRepository,
                 UserValues = UserValues,
                 ProcessOptions = ExportAction.ProcessOptions,
                 OnRenderCell = OnRenderCell
@@ -177,26 +191,26 @@ public class JJGridView : JJBaseView
         }
     }
 
-    internal ActionManager ActionManager
-    {
-        get
-        {
-            if (_actionManager == null)
-                _actionManager = new ActionManager(FormElement, FieldManager.Expression, Name);
-
-            return _actionManager;
-        }
-    }
+    internal ActionManager ActionManager =>
+        _actionManager ??= new ActionManager(
+            FormElement,
+            FieldManager.Expression,
+            DataDictionaryRepository,
+            EncryptionService,
+            Options,
+            Name);
 
     internal FieldManager FieldManager
     {
         get
         {
-            if (_fieldManager == null)
-            {
-                var exp = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement, exp);
-            }
+            if (_fieldManager != null)
+                return _fieldManager;
+
+            var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
+            _fieldManager = new FieldManager(FormElement, HttpContext, _repositoryServicesFacade,
+                exp, EncryptionService, Options, LoggerFactory);
+
             return _fieldManager;
         }
     }
@@ -253,11 +267,11 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentOrder != null) return _currentOrder;
-            if (!CurrentContext.IsPostBack)
+            if (!HttpContext.IsPost)
             {
                 if (MaintainValuesOnLoad)
                 {
-                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    object tableOrder = HttpContext.Session[$"jjcurrentorder_{Name}"];
                     if (tableOrder != null)
                     {
                         _currentOrder = tableOrder.ToString();
@@ -266,10 +280,10 @@ public class JJGridView : JJBaseView
             }
             else
             {
-                _currentOrder = CurrentContext.Request["current_tableorder_" + Name];
+                _currentOrder = HttpContext.Request["current_tableorder_" + Name];
                 if (_currentOrder == null)
                 {
-                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    object tableOrder = HttpContext.Session[$"jjcurrentorder_{Name}"];
                     if (tableOrder != null)
                     {
                         _currentOrder = tableOrder.ToString();
@@ -282,7 +296,7 @@ public class JJGridView : JJBaseView
         }
         set
         {
-            CurrentContext.Session[$"jjcurrentorder_{Name}"] = value;
+            HttpContext.Session[$"jjcurrentorder_{Name}"] = value;
             _currentOrder = value;
         }
     }
@@ -296,18 +310,18 @@ public class JJGridView : JJBaseView
                 return _currentPage;
             }
 
-            if (CurrentContext.IsPostBack)
+            if (HttpContext.IsPost)
             {
                 int currentPage = 1;
                 string tablePageId = "current_tablepage_" + Name;
-                if (!string.IsNullOrEmpty(CurrentContext.Request[tablePageId]))
+                if (!string.IsNullOrEmpty(HttpContext.Request[tablePageId]))
                 {
-                    if (int.TryParse(CurrentContext.Request[tablePageId], out var page))
+                    if (int.TryParse(HttpContext.Request[tablePageId], out var page))
                         currentPage = page;
                 }
                 else
                 {
-                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
+                    object tablePage = HttpContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
                         if (int.TryParse(tablePage.ToString(), out var page))
@@ -322,7 +336,7 @@ public class JJGridView : JJBaseView
                 int page = 1;
                 if (MaintainValuesOnLoad)
                 {
-                    object tablePage = CurrentContext.Session[$"jjcurrentpage_{Name}"];
+                    object tablePage = HttpContext.Session[$"jjcurrentpage_{Name}"];
                     if (tablePage != null)
                     {
                         if (int.TryParse(tablePage.ToString(), out var nAuxPage))
@@ -338,7 +352,7 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad)
-                CurrentContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
+                HttpContext.Session[$"jjcurrentpage_{Name}"] = value.ToString();
 
             _currentPage = value;
         }
@@ -359,17 +373,17 @@ public class JJGridView : JJBaseView
             var action = GetCurrentAction(actionMap);
             if (action is ConfigAction)
             {
-                CurrentUI = GridUI.LoadFromForm(CurrentContext);
+                CurrentUI = GridUI.LoadFromForm(HttpContext);
                 return _currentUI;
             }
 
             if (MaintainValuesOnLoad && FormElement != null)
             {
-                CurrentUI = JJSession.GetSessionValue<GridUI>($"jjcurrentui_{FormElement.Name}");
+                CurrentUI = HttpContext.Session.GetSessionValue<GridUI>($"jjcurrentui_{FormElement.Name}");
             }
 
             if (_currentUI == null)
-                CurrentUI = GridUI.LoadFromForm(CurrentContext);
+                CurrentUI = GridUI.LoadFromForm(HttpContext);
 
             if (_currentUI == null)
                 CurrentUI = new GridUI();
@@ -379,21 +393,21 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad && FormElement != null)
-                JJSession.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
+                HttpContext.Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
 
             _currentUI = value;
         }
     }
 
     internal GridFilter Filter => _filter ??= new GridFilter(this);
-    
+
     internal GridTable Table
     {
         get
         {
-            if (_table != null) 
+            if (_table != null)
                 return _table;
-            
+
             _table = new GridTable(this)
             {
                 Body =
@@ -415,9 +429,9 @@ public class JJGridView : JJBaseView
             if (_currentExportConfig != null) return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (CurrentContext.IsPostBack)
+            if (HttpContext.IsPost)
             {
-                _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
+                _currentExportConfig = ExportOptions.LoadFromForm(HttpContext, Name);
             }
 
             return _currentExportConfig;
@@ -502,16 +516,7 @@ public class JJGridView : JJBaseView
 
     public HeadingSize TitleSize { get; set; }
 
-    internal Hashtable DefaultValues
-    {
-        get
-        {
-            if (_defaultValues == null)
-                _defaultValues = FormManager.GetDefaultValues(null, PageState.List);
-
-            return _defaultValues;
-        }
-    }
+    internal Hashtable DefaultValues => _defaultValues ??= FormManager.GetDefaultValues(null, PageState.List);
 
     public LegendAction LegendAction
     {
@@ -561,11 +566,11 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentActionMap != null) return _currentActionMap;
-            var criptMap = CurrentContext.Request["current_tableaction_" + Name];
+            var criptMap = HttpContext.Request["current_tableaction_" + Name];
             if (string.IsNullOrEmpty(criptMap))
                 return null;
 
-            var jsonMap = Cript.Descript64(criptMap);
+            var jsonMap = EncryptionService.DecryptString(criptMap);
             _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
             return _currentActionMap;
         }
@@ -573,60 +578,88 @@ public class JJGridView : JJBaseView
 
     private string SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.Form("selectedrows_" + Name);
+        get => _selectedRowsId ??= HttpContext.Request.Form("selectedrows_" + Name);
         set => _selectedRowsId = value ?? "";
     }
+
+    public IEnumerable<IExportationWriter> ExportationWriters { get; }
+
+    internal IHttpContext HttpContext { get; }
+
+    private ILogger<JJGridView> Logger { get; }
+
+    internal IPythonEngine PythonEngine { get; }
+    internal ILoggerFactory LoggerFactory { get; }
+
+    internal IBackgroundTask BackgroundTask { get; }
+
+    internal IOptions<JJMasterDataCoreOptions> Options { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
 
     #endregion
 
     #region "Constructors"
 
+    [Obsolete("Please use GridViewFactory with dependency injection.")]
     public JJGridView()
     {
-        Name = "jjview";
-        ShowTitle = true;
-        EnableFilter = true;
-        EnableAjax = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found";
-        AutoReloadFormFields = true;
-        RelationValues = new Hashtable();
-        TitleSize = HeadingSize.H1;
+        GridViewFactory.SetGridViewParams(this);
+        using var scope = JJService.Provider.CreateScope();
+        HttpContext = scope.ServiceProvider.GetRequiredService<IHttpContext>();
+        EntityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        DataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
+        ExportationWriters = scope.ServiceProvider.GetRequiredService<IEnumerable<IExportationWriter>>();
+        PythonEngine = JJService.Provider.GetService<IPythonEngine>();
+        LoggerFactory = JJService.Provider.GetRequiredService<ILoggerFactory>();
+        Logger = LoggerFactory.CreateLogger<JJGridView>();
+        AuditLogService = scope.ServiceProvider.GetRequiredService<AuditLogService>();
+        EncryptionService = JJService.Provider.GetRequiredService<JJMasterDataEncryptionService>();
+        _repositoryServicesFacade = scope.ServiceProvider.GetRequiredService<RepositoryServicesFacade>();
     }
 
-    public JJGridView(DataTable table) : this()
+    public JJGridView(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IBackgroundTask backgroundTask,
+        IEnumerable<IExportationWriter> exportationWriters,
+        IOptions<JJMasterDataCoreOptions> options,
+        AuditLogService auditLogService)
     {
-        FormElement = new FormElement(table);
-        DataSource = table;
+        GridViewFactory.SetGridViewParams(this);
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        ExportationWriters = exportationWriters;
+        Options = options;
+        AuditLogService = auditLogService;
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        LoggerFactory = loggerFactory;
+        BackgroundTask = backgroundTask;
+        Logger = loggerFactory.CreateLogger<JJGridView>();
+        HttpContext = httpContext;
+        EncryptionService = encryptionService;
+        _repositoryServicesFacade = repositoryServicesFacade;
     }
+    
 
+    [Obsolete("Please use GridViewFactory by dependency injection.")]
     public JJGridView(string elementName) : this()
     {
-        GridViewFactory.SetGridViewParams(this, elementName);
+        JJService.Provider.GetRequiredService<GridViewFactory>().SetGridViewParams(this, elementName);
     }
-
-    public JJGridView(FormElement formElement) : this()
-    {
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Name = "jjview" + formElement.Name.ToLower();
-    }
-
 
     #endregion
 
     internal override HtmlBuilder RenderHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
+        string lookupRoute = HttpContext.Request.QueryString("jjlookup_" + Name);
 
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
 
         html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
-        html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtmlBuilder);
+        html.AppendElementIf(FilterAction.IsVisible, Filter.GetFilterHtmlBuilder);
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
         html.AppendElement(GetTableHtmlBuilder());
@@ -639,24 +672,24 @@ public class JJGridView : JJBaseView
     private HtmlBuilder GetTableHtmlBuilder()
     {
         AssertProperties();
-        
-        string requestType = CurrentContext.Request.QueryString("t");
 
-        if (CheckForExportation(requestType)) 
+        string requestType = HttpContext.Request.QueryString("t");
+
+        if (CheckForExportation(requestType))
             return null;
-        
-        if (CheckForTableRow(requestType, Table)) 
+
+        if (CheckForTableRow(requestType, Table))
             return null;
-        
-        if (CheckForSelectAllRows(requestType)) 
+
+        if (CheckForSelectAllRows(requestType))
             return null;
-        
+
         GetDataTable();
-        
+
         var html = new HtmlBuilder(HtmlTag.Div);
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
-        
+
         html.AppendText(GetHtmlScript());
         html.AppendRange(GetHiddenInputs());
 
@@ -666,7 +699,7 @@ public class JJGridView : JJBaseView
         {
             html.AppendElement(GetNoRecordsAlert());
         }
-        
+
         var gridPagination = new GridPagination(this);
 
         html.AppendElement(gridPagination.GetHtmlElement());
@@ -674,18 +707,15 @@ public class JJGridView : JJBaseView
         if (ShowToolbar)
         {
             html.AppendElement(GetSettingsHtml());
-            
+
             html.AppendElement(GetExportHtml());
 
             html.AppendElement(GetLegendHtml());
         }
-        
-        html.AppendElement(HtmlTag.Div, div =>
-        {
-            div.WithCssClass("clearfix");
-        });
 
-        if (CheckForAjaxResponse(requestType, html)) 
+        html.AppendElement(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
+
+        if (CheckForAjaxResponse(requestType, html))
             return null;
 
         return html;
@@ -693,10 +723,10 @@ public class JJGridView : JJBaseView
 
     private bool CheckForAjaxResponse(string requestType, HtmlBuilder html)
     {
-        string objName = CurrentContext.Request.QueryString("objname");
+        string objName = HttpContext.Request.QueryString("objname");
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(html.ToString());
+            HttpContext.Response.SendResponse(html.ToString());
             return true;
         }
 
@@ -705,26 +735,22 @@ public class JJGridView : JJBaseView
 
     private IEnumerable<HtmlBuilder> GetHiddenInputs()
     {
-        var elementList = new List<HtmlBuilder>();
-        
-        var (error,currentAction  ) = GetAndExecuteCurrentAction();
+        var (error, currentAction) = GetAndExecuteCurrentAction();
 
         if (!string.IsNullOrEmpty(error))
         {
-            elementList.Add(new HtmlBuilder(error));
+            yield return new HtmlBuilder(error);
         }
 
-        elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
-        elementList.Add(GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString()));
-        elementList.Add(GetHiddenInput($"current_tableaction_{Name}", currentAction));
-        elementList.Add(GetHiddenInput($"current_tablerow_{Name}", string.Empty));
+        yield return GetHiddenInput($"current_tableorder_{Name}", CurrentOrder);
+        yield return GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString());
+        yield return GetHiddenInput($"current_tableaction_{Name}", currentAction);
+        yield return GetHiddenInput($"current_tablerow_{Name}", string.Empty);
 
         if (EnableMultSelect)
         {
-            elementList.Add(GetHiddenInput($"selectedrows_{Name}", SelectedRowsId));
+            yield return GetHiddenInput($"selectedrows_{Name}", SelectedRowsId);
         }
-
-        return elementList;
     }
 
     private HtmlBuilder GetHiddenInput(string name, string value)
@@ -740,8 +766,8 @@ public class JJGridView : JJBaseView
     {
         if ("selectall".Equals(requestType))
         {
-            string values = DoSelectAllRows();
-            CurrentContext.Response.SendResponse(values);
+            string values = GetAllSelectedRows();
+            HttpContext.Response.SendResponse(values);
             return true;
         }
 
@@ -752,14 +778,14 @@ public class JJGridView : JJBaseView
     {
         if ("tablerow".Equals(requestType))
         {
-            string gridName = CurrentContext.Request.QueryString("gridName");
+            string gridName = HttpContext.Request.QueryString("gridName");
             if (Name.Equals(gridName))
             {
-                int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
+                int rowIndex = int.Parse(HttpContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[rowIndex];
                 string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).ToString();
 
-                CurrentContext.Response.SendResponse(responseHtml);
+                HttpContext.Response.SendResponse(responseHtml);
             }
 
             return true;
@@ -772,7 +798,7 @@ public class JJGridView : JJBaseView
     {
         if ("tableexp".Equals(requestType))
         {
-            string gridName = CurrentContext.Request.QueryString("gridName");
+            string gridName = HttpContext.Request.QueryString("gridName");
             if (Name.Equals(gridName))
                 DoExport();
 
@@ -814,10 +840,10 @@ public class JJGridView : JJBaseView
 
     public string GetTitleHtml() => GetTitle().GetHtml();
 
-    private (string currentAction,string error) GetAndExecuteCurrentAction()
+    private (string currentAction, string error) GetAndExecuteCurrentAction()
     {
         string error = string.Empty;
-        string currentAction = CurrentContext.Request["current_tableaction_" + Name];
+        string currentAction = HttpContext.Request["current_tableaction_" + Name];
         var actionMap = CurrentActionMap;
         var action = GetCurrentAction(actionMap);
 
@@ -1050,7 +1076,7 @@ public class JJGridView : JJBaseView
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(FormElement)
+        var legend = new JJLegendView(FormElement, HttpContext, EntityRepository, LoggerFactory)
         {
             ShowAsModal = true,
             Name = "iconlegend_modal_" + Name
@@ -1077,16 +1103,15 @@ public class JJGridView : JJBaseView
         return name;
     }
 
-    
 
     public Hashtable GetSelectedRowId()
     {
         var values = new Hashtable();
-        string currentRow = CurrentContext.Request["current_tablerow_" + Name];
+        string currentRow = HttpContext.Request["current_tablerow_" + Name];
 
         if (string.IsNullOrEmpty(currentRow)) return values;
 
-        var decriptId = Cript.Descript64(currentRow);
+        var decriptId = EncryptionService.DecryptString(currentRow);
         var parms = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in parms)
@@ -1100,11 +1125,11 @@ public class JJGridView : JJBaseView
     private void DoExport()
     {
         var exp = DataExp;
-        string expressionType = CurrentContext.Request.QueryString("exptype");
+        string expressionType = HttpContext.Request.QueryString("exptype");
         switch (expressionType)
         {
             case "showoptions":
-                CurrentContext.Response.SendResponse(exp.GetHtml());
+                HttpContext.Response.SendResponse(exp.GetHtml());
                 break;
             case "export":
             {
@@ -1127,26 +1152,26 @@ public class JJGridView : JJBaseView
                             MessageTitle = "Error"
                         };
 
-                        CurrentContext.Response.SendResponse(err.GetHtml());
+                        HttpContext.Response.SendResponse(err.GetHtml());
                         return;
                     }
                 }
 
                 var html = new DataExpLog(exp.Name).GetHtmlProcess();
 
-                CurrentContext.Response.SendResponse(html.ToString());
+                HttpContext.Response.SendResponse(html.ToString());
                 break;
             }
             case "checkProcess":
             {
                 var dto = exp.GetCurrentProcess();
                 string json = JsonConvert.SerializeObject(dto);
-                CurrentContext.Response.SendResponse(json, "text/json");
+                HttpContext.Response.SendResponse(json, "text/json");
                 break;
             }
             case "stopProcess":
                 exp.AbortProcess();
-                CurrentContext.Response.SendResponse("{}", "text/json");
+                HttpContext.Response.SendResponse("{}", "text/json");
                 break;
         }
     }
@@ -1281,7 +1306,7 @@ public class JJGridView : JJBaseView
         foreach (string pk in pkList)
         {
             Hashtable values = new();
-            string descriptval = Cript.Descript64(pk);
+            string descriptval = EncryptionService.DecryptString(pk);
             string[] ids = descriptval.Split(';');
             for (int i = 0; i < pkFields.Count; i++)
             {
@@ -1300,7 +1325,7 @@ public class JJGridView : JJBaseView
         SelectedRowsId = string.Empty;
     }
 
-    private string DoSelectAllRows()
+    private string GetAllSelectedRows()
     {
         int tot = 0;
         var dt = GetDataTable(CurrentFilter, CurrentOrder, 999999, 1, ref tot);
@@ -1314,7 +1339,7 @@ public class JJGridView : JJBaseView
                 sIds.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            sIds.Append(Cript.Cript64(values));
+            sIds.Append(EncryptionService.DecryptString(values));
         }
 
         return sIds.ToString();
@@ -1383,7 +1408,7 @@ public class JJGridView : JJBaseView
         ValidateAction(action);
         ToolBarActions.Add(action);
     }
-    
+
     public void AddToolBarAction(SubmitAction action)
     {
         ValidateAction(action);
@@ -1532,6 +1557,6 @@ public class JJGridView : JJBaseView
 
     public bool IsExportPost()
     {
-        return "export".Equals(CurrentContext.Request["exptype"]) && Name.Equals(CurrentContext.Request["gridName"]);
+        return "export".Equals(HttpContext.Request["exptype"]) && Name.Equals(HttpContext);
     }
 }

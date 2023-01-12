@@ -1,5 +1,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -26,27 +27,34 @@ public class JJCollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("expanded-by-default")]
     public bool ExpandedByDefault { get; set; }
     
+    [HtmlAttributeName("color")]
+    public PanelColor Color { get; set; }
+    
     [HtmlAttributeName("configure")]
     public Action<JJCollapsePanel>? Configure { get; set; }
 
+    private CollapsePanelFactory CollapsePanelFactory { get; }
     private RazorPartialRendererService RendererService { get; }
     
-    public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService)
+    public JJCollapsePanelTagHelper(CollapsePanelFactory collapsePanelFactory, RazorPartialRendererService rendererService)
     {
+        CollapsePanelFactory = collapsePanelFactory;
         RendererService = rendererService;
     }
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        AssertAttributes();
-        
-        var panel = new JJCollapsePanel
+        var panel = CollapsePanelFactory.CreateCollapsePanel();
+        panel.Name = Title?.ToLower().Replace(" ", "_");
+        panel.Title = Title;
+        panel.Color = Color;
+        panel.ExpandedByDefault = ExpandedByDefault;
+
+        if(Icon != default)
         {
-            Name = Title!.ToLower().Replace(" ", "_"),
-            Title = Title,
-            ExpandedByDefault = ExpandedByDefault,
-            TitleIcon = new JJIcon(Icon)
-        };
+            panel.TitleIcon = new JJIcon(Icon);
+        }
+
 
         if (Partial == null)
         {
@@ -64,9 +72,4 @@ public class JJCollapsePanelTagHelper : TagHelper
         output.Content.SetHtmlContent(panel.GetHtml());
     }
 
-    private void AssertAttributes()
-    {
-        if (Title == null)
-            throw new ArgumentNullException(nameof(Title));
-    }
 }

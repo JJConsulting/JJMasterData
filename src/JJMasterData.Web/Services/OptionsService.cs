@@ -3,7 +3,7 @@ using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
@@ -15,12 +15,12 @@ public class OptionsService : BaseService
 {
     private IWritableOptions<ConnectionStrings>? ConnectionStringsWritableOptions { get; }
     private IWritableOptions<ConnectionProviders>? ConnectionProvidersWritableOptions { get; }
-    internal IWritableOptions<JJMasterDataOptions>? JJMasterDataWritableOptions { get; }
+    internal IWritableOptions<JJMasterDataCommonsOptions>? JJMasterDataWritableOptions { get; }
 
     public OptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
-        IWritableOptions<JJMasterDataOptions>? masterDataWritableOptions = null,
+        IWritableOptions<JJMasterDataCommonsOptions>? masterDataWritableOptions = null,
         IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
         : base(validationDictionary, dataDictionaryRepository)
     {
@@ -51,12 +51,6 @@ public class OptionsService : BaseService
                 options.ConnectionString = model.ConnectionString.ToString();
             });
 
-            await JJMasterDataWritableOptions!.UpdateAsync(options =>
-            {
-                options.BootstrapVersion = model.Options!.BootstrapVersion;
-            });
-
-
             await ConnectionProvidersWritableOptions!.UpdateAsync(options =>
             {
                 options.ConnectionString = model.ConnectionProvider.GetDescription();
@@ -66,14 +60,14 @@ public class OptionsService : BaseService
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
     {
-        string? connection = JJMasterDataOptions.GetConnectionString();
+        string? connection = JJMasterDataCommonsOptions.GetConnectionString();
         var connectionResult = await GetConnectionResultAsync(connection);
         var viewModel = new OptionsViewModel
         {
             ConnectionString = new ConnectionString(connection),
-            Options = JJMasterDataWritableOptions?.Value,
+            //Options = JJMasterDataWritableOptions?.Value,
             ConnectionProvider =
-                DataAccessProvider.GetDataAccessProviderTypeFromString(JJMasterDataOptions.GetConnectionProvider()),
+                DataAccessProvider.GetDataAccessProviderTypeFromString(JJMasterDataCommonsOptions.GetConnectionProvider()),
             FilePath = JJMasterDataWritableOptions?.FilePath,
             IsFullscreen = isFullscreen,
             IsConnectionSuccessful = connectionResult.IsConnectionSuccessful

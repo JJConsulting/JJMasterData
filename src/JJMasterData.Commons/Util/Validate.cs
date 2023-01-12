@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
 
 namespace JJMasterData.Commons.Util;
 
@@ -55,17 +56,20 @@ public static class Validate
     }
 
     /// <summary>
-    /// Verifica se o e-mail é valido
+    /// Verify if a email is valid.
     /// </summary>
     /// <param name="email">E-Mail</param>
     public static bool ValidEmail(string email)
     {
-        if (email.Contains("'"))
-            return false;
-
-        if (email.Contains('@') && email.Contains('.') && !email.Contains(".."))
+        try
+        {
+            var _ = new MailAddress(email);
             return true;
-        return false;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -238,7 +242,7 @@ public static class Validate
         }
 
         resto = soma % 11;
-        if (resto == 0 || resto == 1)
+        if (resto is 0 or 1)
         {
             digitoRetorno = 0;
         }
@@ -257,7 +261,7 @@ public static class Validate
     /// </summary>
     public static bool ValidFileName(string filename)
     {
-        if (String.IsNullOrEmpty(filename))
+        if (string.IsNullOrEmpty(filename))
             return false;
 
         if (filename.Contains('?') |

@@ -51,7 +51,7 @@ public class Metadata
             field.MinValue = item.MinValue;
             field.MaxValue = item.MaxValue;
             field.DataFile = item.DataFile;
-            field.Export = item.Export;
+            field.EnableExportation = item.Export;
             field.ValidateRequest = item.ValidateRequest ?? true;
             field.AutoPostBack = item.AutoPostBack;
             field.NumberOfDecimalPlaces = item.NumberOfDecimalPlaces;

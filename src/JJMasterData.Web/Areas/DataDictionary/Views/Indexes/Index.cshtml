@@ -1,8 +1,9 @@
 ﻿@using JJMasterData.Commons.Dao.Entity
+@using JJMasterData.Core.Http.Abstractions
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model List<JJMasterData.Commons.Dao.Entity.ElementIndex>
-
+@inject IHttpContext HttpContext
 
 @section Scripts
 {
@@ -39,7 +40,7 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
 @{
-    var filterTextBox = new JJTextGroup
+    var filterTextBox = new JJTextGroup(HttpContext)
     {
        Name = "txtFilter",
        PlaceHolder = Translate.Key("Search...")

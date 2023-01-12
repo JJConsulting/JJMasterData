@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 
@@ -21,7 +21,7 @@ internal class ActionMap
 
     [DataMember(Name = "contextAction")]
     public ActionOrigin ContextAction { get; set; }
-
+    
     public ActionMap()
     {
         
@@ -45,10 +45,10 @@ internal class ActionMap
         }
     }
 
-    public string GetCriptJson()
+    public string GetEncryptedJson(JJMasterDataEncryptionService service)
     {
         string jsonMap = JsonConvert.SerializeObject(this);
-        string criptMap = Cript.Cript64(jsonMap);
+        string criptMap = service.EncryptString(jsonMap);
         return criptMap;
     }
 

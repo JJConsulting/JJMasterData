@@ -8,7 +8,7 @@ public class HtmlElementTest
     [Theory]
     [InlineData(HtmlTag.Div)]
     [InlineData(HtmlTag.Span)]
-    public void RenderTagWithCloseTag_Test(HtmlTag tag)
+    public void RenderTagWithCloseTagTest(HtmlTag tag)
     {
         var builder = new HtmlBuilder();
         builder.AppendElement(tag);
@@ -20,7 +20,7 @@ public class HtmlElementTest
 
     [Theory]
     [InlineData(HtmlTag.Br)]
-    public void RenderTagSelfClosed_Test(HtmlTag tag)
+    public void RenderTagSelfClosedTest(HtmlTag tag)
     {
         var builder = new HtmlBuilder(tag);
         var result = builder.ToString();
@@ -30,7 +30,7 @@ public class HtmlElementTest
     }
 
     [Fact]
-    public void RenderElementText_Test()
+    public void RenderBuilderTextTest()
     {
         var builder = new HtmlBuilder(HtmlTag.Span)
             .AppendText("test");
@@ -40,7 +40,7 @@ public class HtmlElementTest
     }
 
     [Fact]
-    public void RenderElementIndentation_Test()
+    public void RenderBuilderIndentationTest()
     {
         var builder = new HtmlBuilder(HtmlTag.Div)
              .AppendText("test2")
@@ -66,7 +66,7 @@ public class HtmlElementTest
     }
 
     [Fact]
-    public void RenderComplex_Test()
+    public void RenderInnerBuilderTest()
     {
         var builder = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId("id1")
@@ -79,9 +79,7 @@ public class HtmlElementTest
                     s.AppendText("This is a subtitle");
                 });
             });
-
-
-
+        
         var shtml = builder.ToString(indentHtml: true);
         
         Assert.Equal(shtml, builder.ToString(true));

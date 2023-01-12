@@ -9,11 +9,18 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -59,16 +66,39 @@ public class JJDataExp : JJBaseProcess
 
     public bool ShowRowStriped { get; set; }
 
+    public string ExportationFolderPath { get; }
+
+    public IEnumerable<IExportationWriter> Writers { get; }
+    
     #endregion
 
     #region "Constructors"
 
-    public JJDataExp()
+    public JJDataExp(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, backgroundTask,encryptionService,options, loggerFactory)
     {
+        Writers = exportationWriters;
+        ExportationFolderPath = options.Value.ExportationFolderPath;
         Name = "JJDataExp1";
     }
 
-    public JJDataExp(FormElement formElement) : this()
+    public JJDataExp(
+        FormElement formElement,
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IEnumerable<IExportationWriter> exportationWriters,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory) :
+        this(httpContext, repositoryServicesFacade, exportationWriters, backgroundTask, encryptionService, options,
+            loggerFactory)
     {
         FormElement = formElement;
     }
@@ -89,18 +119,18 @@ public class JJDataExp : JJBaseProcess
         return new JJIcon(IconType.FileTextO);
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal static string GetDownloadUrl(string filePath, IHttpContext httpContext,
+        JJMasterDataEncryptionService encryptionService)
     {
-        return JJDownloadFile.GetDownloadUrl(filePath);
+        return JJDownloadFile.GetDownloadUrl(filePath, httpContext, encryptionService);
     }
 
     private string GetFinishedMessageHtml(DataExpReporter reporter)
     {
         if (!reporter.HasError)
         {
-            string url = GetDownloadUrl(reporter.FilePath);
-            var html = new HtmlBuilder(HtmlTag.Div);
-
+            string url = GetDownloadUrl(reporter.FilePath, HttpContext, EncryptionService);
+            var html = new HtmlBuilder(HtmlTag.Div); 
             if (reporter.HasError)
             {
                 var panel = new JJValidationSummary
@@ -185,7 +215,7 @@ public class JJDataExp : JJBaseProcess
             return html.ToString();
         }
 
-        var alert = new JJAlert()
+        var alert = new JJAlert
         {
             Title = reporter.Message,
             Icon = IconType.Warning,
@@ -195,24 +225,24 @@ public class JJDataExp : JJBaseProcess
         return alert.GetHtml();
     }
 
-    private BaseWriter CreateWriter()
+    private IExportationWriter CreateWriter()
     {
-        return WriterFactory.GetInstance(this);
+        return WriterFactory.ConfigureWriter(this, Writers);
     }
 
     public void DoExport(DataTable dt)
     {
-        var exporter = CreateWriter();
+        var writer = CreateWriter();
 
-        exporter.DataSource = dt;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
-        Task.Run(async () => await exporter.RunWorkerAsync(CancellationToken.None));
+        writer.DataSource = dt;
+        writer.CurrentContext = HttpContext;
+        writer.AbsoluteUri = HttpContext.Request.AbsoluteUri;
 
-        var download = new JJDownloadFile
+        Task.Run(async () => await writer.RunWorkerAsync(CancellationToken.None));
+
+        var download = new JJDownloadFile(HttpContext, EncryptionService, LoggerFactory)
         {
-            FilePath = exporter.FolderPath
+            FilePath = writer.FolderPath
         };
 
         download.DirectDownload();
@@ -220,14 +250,14 @@ public class JJDataExp : JJBaseProcess
 
     internal void ExportFileInBackground(Hashtable filter, string order)
     {
-        var exporter = CreateWriter();
+        var writer = CreateWriter();
 
-        exporter.CurrentFilter = filter;
-        exporter.CurrentOrder = order;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
-        BackgroundTask.Run(ProcessKey, exporter);
+        writer.CurrentFilter = filter;
+        writer.CurrentOrder = order;
+        writer.CurrentContext = HttpContext;
+        writer.AbsoluteUri = HttpContext.Request.AbsoluteUri;
+
+        BackgroundTask.Run(ProcessKey, writer);
     }
 
     internal DataExpDto GetCurrentProcess()

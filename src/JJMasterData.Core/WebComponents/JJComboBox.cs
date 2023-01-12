@@ -1,5 +1,3 @@
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -10,8 +8,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -20,16 +19,9 @@ public class JJComboBox : JJBaseControl
     private IList<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
-    private IEntityRepository _entityRepository;
-
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
-
+    
+    internal IEntityRepository EntityRepository { get; private set; }
     internal Hashtable FormValues { get; private set; }
-
     internal PageState PageState { get; set; }
 
     public bool EnableSearch { get; set; }
@@ -49,30 +41,43 @@ public class JJComboBox : JJBaseControl
     {
         get
         {
-            if (_selectedValue == null && CurrentContext.IsPostBack)
+            if (_selectedValue == null && HttpContext.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = HttpContext.Request[Name];
             }
 
             return _selectedValue;
         }
         set => _selectedValue = value;
     }
+    
+    private ILogger<JJComboBox> Logger { get; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
 
-    public JJComboBox()
+    public JJComboBox(IHttpContext httpContext, IEntityRepository entityRepository, ILoggerFactory loggerFactory) : base(httpContext)
     {
+        EntityRepository = entityRepository;
+        Logger = loggerFactory.CreateLogger<JJComboBox>();
+        LoggerFactory = loggerFactory;
         Enabled = true;
         MultiSelect = false;
     }
 
 
-    internal static JJComboBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value)
+    internal static JJComboBox GetInstance(
+        FormElementField field,
+        IHttpContext httpContext,
+        IEntityRepository repository,
+        ExpressionOptions expOptions,
+        ILoggerFactory loggerFactory,
+        object value)
     {
-        var cbo = new JJComboBox
+        var cbo = new JJComboBox(httpContext, repository, loggerFactory)
         {
-            Name = f.Name,
+            Name = field.Name,
             Visible = true,
-            DataItem = f.DataItem,
+            DataItem = field.DataItem,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
             UserValues = expOptions.UserValues,
@@ -102,12 +107,8 @@ public class JJComboBox : JJBaseControl
             combobox.AppendRange(GetReadOnlyInputs(values));
             return combobox;
         }
-        else
-        {
-            return GetSelectElement(values);
-        }
 
-
+        return GetSelectElement(values);
     }
 
     private HtmlBuilder GetSelectElement(IEnumerable<DataItemValue> values)
@@ -129,15 +130,13 @@ public class JJComboBox : JJBaseControl
 
     private IEnumerable<HtmlBuilder> GetOptions(IEnumerable<DataItemValue> values)
     {
-        var options = new List<HtmlBuilder>();
-
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, Translate.Key("(All)"))
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, Translate.Key("(Choose)"));
 
         if (DataItem.FirstOption != FirstOptionMode.None)
-            options.Add(firstOption);
+            yield return firstOption;
 
         foreach (var value in values)
         {
@@ -149,22 +148,18 @@ public class JJComboBox : JJBaseControl
                 .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
                 .AppendText(label);
 
-            options.Add(option);
+            yield return option;
         }
-
-        return options;
     }
 
     private IEnumerable<HtmlBuilder> GetReadOnlyInputs(IEnumerable<DataItemValue> values)
     {
-        var inputs = new List<HtmlBuilder>();
-
         var hiddenInput = new HtmlBuilder(HtmlTag.Input)
             .WithAttribute("type", "hidden")
             .WithNameAndId(Name)
             .WithValue(SelectedValue);
 
-        inputs.Add(hiddenInput);
+        yield return hiddenInput;
 
         var selectedText = GetSelectedText(values);
 
@@ -176,9 +171,7 @@ public class JJComboBox : JJBaseControl
             .WithAttributes(Attributes)
             .WithAttribute("readonly", "readonly");
 
-        inputs.Add(readonlyInput);
-
-        return inputs;
+        yield return readonlyInput;
     }
 
     private string GetSelectedText(IEnumerable<DataItemValue> list)
@@ -209,9 +202,8 @@ public class JJComboBox : JJBaseControl
         }
         catch (Exception ex)
         {
-            var exception = new JJMasterDataException(Translate.Key("Error loading data from JJComboBox {0}. Error Details: {1}", Name, ex.Message),ex);
-            Log.AddError(exception, exception.Message);
-            throw exception;
+            Logger.LogError(ex, "Error loading data from JJComboBox {Name}", Name);
+            throw;
         }
 
         return _values;
@@ -290,7 +282,7 @@ public class JJComboBox : JJBaseControl
                         UserValues.Add("search_id", null);
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 

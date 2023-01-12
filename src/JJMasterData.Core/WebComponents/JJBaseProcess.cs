@@ -1,59 +1,71 @@
-﻿using System;
-using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
+﻿using System.Text;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
 public abstract class JJBaseProcess : JJBaseView
 {
-    private string _keyProcess;
+    private string _processKey;
     private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private ExpressionManager _expressionManager;
-    IEntityRepository _entityRepository;
+    private string _userId;
+    
+    public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
+    
 
-    internal ExpressionManager ExpressionManager
+    private readonly RepositoryServicesFacade _repositoryServicesFacade;
+    
+    private ILogger<JJBaseProcess> Logger { get; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
+    
+    protected JJBaseProcess(IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IBackgroundTask backgroundTask,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILoggerFactory loggerFactory)
     {
-        get
-        {
-            if (_expressionManager == null)
-                _expressionManager = new ExpressionManager(UserValues, EntityRepository);
-
-            return _expressionManager;
-        }
+        DataDictionaryRepository = repositoryServicesFacade.DataDictionaryRepository;
+        EntityRepository = repositoryServicesFacade.EntityRepository;
+        HttpContext = httpContext;
+        _repositoryServicesFacade = repositoryServicesFacade;
+        LoggerFactory = loggerFactory;
+        BackgroundTask = backgroundTask;
+        EncryptionService = encryptionService;
+        Options = options;
+        Logger = LoggerFactory.CreateLogger<JJBaseProcess>();
     }
 
-    internal IEntityRepository EntityRepository
-    {
-        get
-        {
-            if (_entityRepository == null)
-                _entityRepository = JJService.EntityRepository;
+    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
 
-            return _entityRepository;
-        }
-        set
-        {
-            _entityRepository = value;
-        }
-    }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IEntityRepository EntityRepository { get; }
+    
+    internal IHttpContext HttpContext { get; }
 
     internal string ProcessKey
     {
         get
         {
-            if (string.IsNullOrEmpty(_keyProcess))
-                _keyProcess = BuildProcessKey();
+            if (string.IsNullOrEmpty(_processKey))
+                _processKey = BuildProcessKey();
 
-            return _keyProcess;
+            return _processKey;
         }
     }
 
@@ -69,29 +81,14 @@ public abstract class JJBaseProcess : JJBaseView
     public FormElement FormElement { get; set; }
 
 
-    internal FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement, ExpressionManager);
+    internal FieldManager FieldManager =>
+        _fieldManager ??= new FieldManager(FormElement,HttpContext, _repositoryServicesFacade,ExpressionManager,EncryptionService,Options,LoggerFactory);
 
-            return _fieldManager;
-        }
-    }
+    internal FormManager FormManager => _formManager ??= new FormManager(FormElement, ExpressionManager);
 
-    internal FormManager FormManager
-    {
-        get
-        {
-            if (_formManager == null)
-                _formManager = new FormManager(FormElement, ExpressionManager);
-
-            return _formManager;
-        }
-    }
-
-    internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
+    internal IBackgroundTask BackgroundTask { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
+    public IOptions<JJMasterDataCoreOptions> Options { get; }
 
     internal bool IsRunning()
     {
@@ -123,15 +120,15 @@ public abstract class JJBaseProcess : JJBaseView
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();
 
-        if (string.IsNullOrEmpty(UserId))
+        if (string.IsNullOrEmpty(DataHelper.GetCurrentUserId(HttpContext, UserValues)))
         {
             var error = new StringBuilder();
             error.AppendLine(Translate.Key("User not found, contact system administrator."));
             error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
-            
+
             var exception = new JJMasterDataException(error.ToString());
-            Log.AddError(exception, exception.Message);
-            
+            Logger.LogError(exception, "User not found.");
+
             throw exception;
         }
 
@@ -139,5 +136,4 @@ public abstract class JJBaseProcess : JJBaseView
 
         return processKey.ToString();
     }
-
 }

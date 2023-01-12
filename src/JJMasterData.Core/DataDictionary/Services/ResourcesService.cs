@@ -1,25 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Commons.Options;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    public FormViewFactory FormViewFactory { get; }
+    
+    private string ResourcesTableName { get; }
+    
+    public ResourcesService(
+        IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IOptions<JJMasterDataCommonsOptions> commonsOptions,
+        FormViewFactory formViewFactory)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        ResourcesTableName = commonsOptions.Value.ResourcesTableName;
+        FormViewFactory = formViewFactory;
     }
 
     public JJFormView GetFormView(IList<CultureInfo> supportedCultures)
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataLocalizationProvider.GetElement();
+        var element = JJMasterDataLocalizationProvider.GetElement(ResourcesTableName);
         
         var formElement = new FormElement(element)
         {
@@ -27,7 +40,7 @@ public class ResourcesService : BaseService
             SubTitle = "Languages"
         };
 
-        var formView = new JJFormView(formElement);
+        var formView = FormViewFactory.CreateFormView(formElement);
         
         formView.ImportAction.SetVisible(true);
         formView.ViewAction.SetVisible(false);
@@ -53,7 +66,7 @@ public class ResourcesService : BaseService
    
         formView.FormElement.Fields["resourceKey"].IsRequired = true;
         formView.FormElement.Fields["resourceOrigin"].VisibleExpression = "val:0";
-        formView.FormElement.Fields["resourceOrigin"].Export = false;
+        formView.FormElement.Fields["resourceOrigin"].EnableExportation = false;
 
         formView.OnBeforeInsert += ValidateEspecialChars;
         formView.OnBeforeUpdate += ValidateEspecialChars;

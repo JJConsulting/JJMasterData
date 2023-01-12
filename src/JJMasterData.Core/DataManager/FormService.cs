@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
@@ -8,15 +7,15 @@ using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
 using System.Data.SqlClient;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FormService
 {
     #region Properties
-
-    private AuditLogService _auditLog;
-
+    
     private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
     public FormElement FormElement => FormManager.FormElement;
@@ -25,15 +24,15 @@ public class FormService
 
     public DataContext DataContext { get; private set; }
     
-    public AuditLogService AuditLog
-    {
-        get => _auditLog ??= new AuditLogService(DataContext, EntityRepository);
-        internal set => _auditLog = value;
-    }
+    public AuditLogService AuditLogService { get; }
 
     public bool EnableErrorLink { get; set; }
 
     public bool EnableHistoryLog { get; set; }
+    
+    internal ILoggerFactory LoggerFactory { get; }
+    
+    private ILogger<FormService> Logger { get; }
 
     #endregion
 
@@ -51,10 +50,17 @@ public class FormService
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext)
+    public FormService(
+        FormManager formManager, 
+        DataContext dataContext,
+        AuditLogService auditLogService,
+        ILoggerFactory loggerFactory)
     {
         FormManager = formManager;
         DataContext = dataContext;
+        LoggerFactory = loggerFactory;
+        Logger = LoggerFactory.CreateLogger<FormService>();
+        AuditLogService = auditLogService;
     }
 
     #endregion
@@ -86,10 +92,10 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+            FormFileService.SaveFormMemoryFiles(FormElement, values, DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Update);
+            AuditLogService.AddLog(FormElement, DataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -121,10 +127,10 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+            FormFileService.SaveFormMemoryFiles(FormElement, values,DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Insert);
+            AuditLogService.AddLog(FormElement,DataContext,  values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -160,7 +166,7 @@ public class FormService
             return result;
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, result.Result);
+            AuditLogService.AddLog(FormElement,DataContext,  values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -211,10 +217,10 @@ public class FormService
             return result;
 
         if (DataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(FormElement, primaryKeys);
+            FormFileService.DeleteFiles(FormElement, DataContext.HttpContext, LoggerFactory);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, primaryKeys, CommandOperation.Delete);
+            AuditLogService.AddLog(FormElement,DataContext,  primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
@@ -222,7 +228,6 @@ public class FormService
             OnAfterDelete.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
-
         return result;
     }
 

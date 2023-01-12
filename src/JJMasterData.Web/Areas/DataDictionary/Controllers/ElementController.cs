@@ -9,9 +9,7 @@ using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -32,7 +30,7 @@ public class ElementController : DataDictionaryController
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = GetEntityFormView();
+            var model = GetEntityGridView();
             return View(model);
         }
         catch (DataAccessException)
@@ -173,7 +171,7 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public JJGridView GetEntityFormView()
+    public JJGridView GetEntityGridView()
     {
         var gridView = GetFormView();
 
@@ -346,7 +344,7 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Delete()
     {
-        var formView = GetEntityFormView();
+        var formView = GetEntityGridView();
 
         var selectedGridValues = formView.GetSelectedGridValues();
 

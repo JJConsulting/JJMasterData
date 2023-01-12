@@ -8,13 +8,18 @@ namespace JJMasterData.Core.Test;
 
 public class Startup
 {
+    private static string GetAppSettingsPath(HostBuilderContext context)
+    {
+        var root = Path.Join(context.HostingEnvironment.ContentRootPath,  "..","..","..","..","..");
+        return Path.GetFullPath(Path.Combine(root, "appsettings.json"));
+    }
+    
     public void ConfigureHost(IHostBuilder hostBuilder)
     {
         void ConfigureJsonFile(HostBuilderContext context, IConfigurationBuilder builder)
         {
-            var root = Path.Join(context.HostingEnvironment.ContentRootPath,  "..","..","..","..","..");
-            var sharedSettings = Path.Combine(root, "appsettings.json");
-            builder.AddJsonFile(sharedSettings);
+            string path = GetAppSettingsPath(context);
+            builder.AddJsonFile(path);
         }
 
         hostBuilder
@@ -23,11 +28,12 @@ public class Startup
             .ConfigureServices(ConfigureServices);
 
     }
-    private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
+    private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
-        services.AddJJMasterDataCore()
-            .WithFileSystemDataDictionary();
-        
+        string path = GetAppSettingsPath(context);
+
+        services.AddJJMasterDataCore(path);
+
         services.BuildServiceProvider()
             .UseJJMasterData();
     }

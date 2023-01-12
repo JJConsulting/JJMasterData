@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
@@ -15,18 +13,30 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
+    private GridViewFactory GridViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
+    private readonly string _dataDictionaryTableName;
+
     public ElementService(IValidationDictionary validationDictionary, 
-                          IEntityRepository entityRepository, 
-                          IDataDictionaryRepository dataDictionaryRepository) 
+                          IEntityRepository entityRepository,
+                          IDataDictionaryRepository dataDictionaryRepository,
+                          GridViewFactory gridViewFactory, 
+                          IOptions<JJMasterDataCoreOptions> options) 
         : base(validationDictionary, dataDictionaryRepository)
     {
+        GridViewFactory = gridViewFactory;
         _entityRepository = entityRepository;
+        _dataDictionaryTableName = options.Value.DataDictionaryTableName;
     }
 
     #region Exec Scripts GET/SET/TABLE
@@ -90,8 +100,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
-                CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
-                CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
+                CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
             };
         }
         
@@ -118,8 +128,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var dataAccess = JJService.EntityRepository;
-            if (!dataAccess.TableExists(tableName))
+            if (!_entityRepository.TableExists(tableName))
                 AddError("Name", Translate.Key("Table not found"));
 
         }
@@ -183,7 +192,7 @@ public class ElementService : BaseService
 
     public JJGridView GetFormView()
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        var element = new Element(_dataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
         element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
         element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
@@ -197,16 +206,11 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("0", "No"));
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
-        
-        var gridView = new JJGridView(formElement)
-        {
-            Name = "List",
-            FilterAction =
-            {
-                ExpandedByDefault = true
-            }
-        };
-        
+
+
+        var gridView = GridViewFactory.CreateGridView(formElement);
+        gridView.Name = "List";
+        gridView.FilterAction.ExpandedByDefault = true;
         gridView.MaintainValuesOnLoad = true;
         gridView.EnableMultSelect = true;
         gridView.ExportAction.SetVisible(false);

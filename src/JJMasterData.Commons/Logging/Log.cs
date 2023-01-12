@@ -1,5 +1,6 @@
 ﻿using System;
 using JJMasterData.Commons.DI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
@@ -14,7 +15,7 @@ public static class Log
 
     static Log()
     {
-        _logger = JJService.Logger;
+        _logger = JJService.Provider.GetRequiredService<ILogger<JJServiceBuilder>>();
     }
 
     public static void Configure(ILogger logger)

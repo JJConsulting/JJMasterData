@@ -1,17 +1,18 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Exceptions;
+﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Text;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DI;
+using System.Web;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 internal class ActionManager
@@ -23,28 +24,38 @@ internal class ActionManager
     public FormElement FormElement { get; private set; }
 
     public ExpressionManager Expression { get; private set; }
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
 
     public string ComponentName { get; set; }
 
     internal IEntityRepository EntityRepository => Expression.EntityRepository; 
-
-
-    public ActionManager(FormElement formElement, ExpressionManager expression, string panelName)
+    
+    public ActionManager(
+        FormElement formElement,
+        ExpressionManager expression,
+        IDataDictionaryRepository dataDictionaryRepository,
+        JJMasterDataEncryptionService encryptionService,
+        IOptions<JJMasterDataCoreOptions> options,
+        string panelName)
     {
         FormElement = formElement;
         Expression = expression;
+        JJMasterDataUrl = options.Value.JJMasterDataUrl;
+        DataDictionaryRepository = dataDictionaryRepository;
+        EncryptionService = encryptionService;
         ComponentName = panelName;   
     }
 
+    private string JJMasterDataUrl { get; set; }
 
     private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var dicParser = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
-        string popUpTitle = dicParser.Form.Title;
+        var metadata = DataDictionaryRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
+        string popUpTitle = metadata.Form.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
-        string popup = "true";
+        const string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;
 
         var @params = new StringBuilder();
@@ -66,7 +77,7 @@ internal class ActionManager
         }
 
         string url =
-            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+            $"{MasterDataUrlHelper.GetUrl(JJMasterDataUrl)}InternalRedirect?parameters={HttpUtility.UrlEncode(EncryptionService.EncryptString(@params.ToString()))}";
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -86,15 +97,16 @@ internal class ActionManager
 
     private string GetUrlRedirectScript(UrlRedirectAction action, Hashtable formValues, PageState pageState, ActionOrigin contextAction, string fieldName)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        actionMap.FieldName = fieldName;
-        string criptMap = actionMap.GetCriptJson();
+        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name)
+        {
+            FieldName = fieldName
+        };
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
 
-        if (contextAction == ActionOrigin.Field ||
-            contextAction == ActionOrigin.Form)
+        if (contextAction is ActionOrigin.Field or ActionOrigin.Form)
         {
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);
@@ -131,7 +143,7 @@ internal class ActionManager
     public string GetFormActionScript(BasicAction action, Hashtable formValues, ActionOrigin contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
@@ -155,7 +167,7 @@ internal class ActionManager
     internal string GetExportScript(ExportAction action, Hashtable formValues)
     {
         var actionMap = new ActionMap(ActionOrigin.Toolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
 
         var script = new StringBuilder();
         script.Append("JJDataExp.doExport('");
@@ -170,7 +182,7 @@ internal class ActionManager
     internal string GetConfigUIScript(ConfigAction action, Hashtable formValues)
     {
         var actionMap = new ActionMap(ActionOrigin.Toolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string criptMap = actionMap.GetEncryptedJson(EncryptionService);
 
         var script = new StringBuilder();
         script.Append("jjview.doConfigUI('");
@@ -186,7 +198,7 @@ internal class ActionManager
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string jsonMap = JsonConvert.SerializeObject(actionMap);
-        string criptMap = Cript.Cript64(jsonMap);
+        string criptMap = EncryptionService.EncryptString(jsonMap);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
@@ -301,7 +313,7 @@ internal class ActionManager
 
     public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
     {
-        var scriptManager = JJService.Provider.GetService(typeof(IPythonEngine)) as IPythonEngine;
+        var engine = gridView.PythonEngine;
 
         try
         {
@@ -315,7 +327,7 @@ internal class ActionManager
                 }
 
                 foreach (var row in selectedRows)
-                    scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
+                    engine?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
 
                 gridView.ClearSelectedGridValues();
             }
@@ -332,7 +344,7 @@ internal class ActionManager
                     var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
-                scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+                engine?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
             }
         }
         catch (Exception ex)
@@ -360,7 +372,7 @@ internal class ActionManager
 
                 foreach (var row in selectedRows)
                 {
-                    string sql = this.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
                     listSql.Add(sql);
                 }
 

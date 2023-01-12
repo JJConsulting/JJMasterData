@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Language;
 
@@ -15,23 +15,27 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
 {
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IEntityRepository EntityRepository { get; }
+    
+    internal string ResourcesTableName { get;}
 
-    public JJMasterDataLocalizationProvider(IEntityRepository entityRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public JJMasterDataLocalizationProvider(
+        IEntityRepository entityRepository,
+        IOptions<JJMasterDataCommonsOptions> options,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
+        ResourcesTableName = options.Value.ResourcesTableName; 
         StringLocalizer = stringLocalizer;
     }
 
     public IDictionary<string, string> GetLocalizedStrings(string culture)
     {
-        string tableName = JJService.Options.ResourcesTableName;
-        
-        if (string.IsNullOrEmpty(tableName))
+        if (string.IsNullOrEmpty(ResourcesTableName))
             return new Dictionary<string,string>();
-        if (string.IsNullOrEmpty(JJMasterDataOptions.GetConnectionString()))
+        if (string.IsNullOrEmpty(JJMasterDataCommonsOptions.GetConnectionString()))
             return new Dictionary<string,string>();
 
-        var element = GetElement(tableName);
+        var element = GetElement(ResourcesTableName);
         if (!EntityRepository.TableExists(element.TableName))
             EntityRepository.CreateDataModel(element);
         
@@ -99,18 +103,14 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         }
         return values;
     }
-    public static Element GetElement()
-    {
-        return GetElement(JJService.Options.ResourcesTableName);
-    }
-    private static Element GetElement(string tablename)
+    public static Element GetElement(string tablename)
     {
         var element = new Element
         {
             Name = tablename,
             TableName = tablename,
-            CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tablename),
-            CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tablename),
+            CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tablename),
+            CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tablename),
             Info = "Resources"
         };
 

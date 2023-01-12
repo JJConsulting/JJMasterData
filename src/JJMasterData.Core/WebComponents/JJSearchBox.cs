@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -13,6 +11,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -41,8 +42,7 @@ public class JJSearchBox : JJBaseControl
     private const string NumberOfItemsAttribute = "numberofitems";
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
-
-    private IEntityRepository _entityRepository;
+    
     private IList<DataItemValue> _values;
     private FormElementDataItem _dataItem;
     private string _selectedValue;
@@ -52,24 +52,17 @@ public class JJSearchBox : JJBaseControl
 
     internal PageState PageState { get; set; }
 
-    internal string Id
-    {
-        get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-    } 
+    internal string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
+    internal IEntityRepository EntityRepository { get; private set; }
 
     public new string Text
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && _text == null && HttpContext.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = HttpContext.Request[Name];
             }
 
             return _text;
@@ -152,9 +145,9 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && HttpContext.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = HttpContext.Request[Name];
             }
 
             if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
@@ -183,16 +176,22 @@ public class JJSearchBox : JJBaseControl
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
-
+    
+    
+    private ILogger<JJSearchBox> Logger { get; }
+    internal ILoggerFactory LoggerFactory { get; }
 
     #endregion
 
     #region "Constructors"
 
-    public JJSearchBox()
+    public JJSearchBox(IHttpContext httpContext, IEntityRepository entityRepository, ILoggerFactory loggerFactory) : base(httpContext)
     {
+        EntityRepository = entityRepository;
         Enabled = true;
         TriggerLength = 1;
+        Logger = loggerFactory.CreateLogger<JJSearchBox>();
+        LoggerFactory = loggerFactory;
         PlaceHolder = Translate.Key("Search...");
         NumberOfItems = 10;
         ScrollBar = false;
@@ -201,14 +200,9 @@ public class JJSearchBox : JJBaseControl
         PageState = PageState.List;
     }
 
-    public JJSearchBox(IEntityRepository entityRepository) : this()
+    internal static JJSearchBox GetInstance(FormElementField f,IHttpContext httpContext, ExpressionOptions expOptions,ILoggerFactory loggerFactory, object value, string panelName)
     {
-        EntityRepository = entityRepository;
-    }
-
-    internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
-    {
-        var search = new JJSearchBox
+        var search = new JJSearchBox(httpContext,expOptions.EntityRepository, loggerFactory)
         {
             Name = f.Name,
             SelectedValue = (string)value,
@@ -217,7 +211,6 @@ public class JJSearchBox : JJBaseControl
             AutoReloadFormFields = false,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
-            EntityRepository = expOptions.EntityRepository,
             UserValues = expOptions.UserValues
         };
         search.Attributes.Add("pnlname", panelName);
@@ -230,14 +223,14 @@ public class JJSearchBox : JJBaseControl
     internal override HtmlBuilder RenderHtml()
     {
         var html = new HtmlBuilder();
-        if ("jjsearchbox".Equals(CurrentContext.Request.QueryString("t")))
+        if ("jjsearchbox".Equals(HttpContext.Request.QueryString("t")))
         {
-            if (Id.Equals(CurrentContext.Request.QueryString("objname")))
+            if (Id.Equals(HttpContext.Request.QueryString("objname")))
             {
-                string textSearch = CurrentContext.Request[Name + "_text"];
+                string textSearch = HttpContext.Request[Name + "_text"];
                 string json = GetJsonValues(textSearch);
 
-                CurrentContext.Response.SendResponse(json, "application/json");
+                HttpContext.Response.SendResponse(json, "application/json");
             }
         }
         else
@@ -362,17 +355,19 @@ public class JJSearchBox : JJBaseControl
                         UserValues.Add("search_text", StringManager.ClearText(searchText));
                 }
 
-                var exp = new ExpressionManager(UserValues, EntityRepository);
+                var exp = new ExpressionManager(UserValues, EntityRepository, HttpContext, LoggerFactory);
                 sql = exp.ParseExpression(sql, PageState, false, FormValues);
             }
 
 
-            DataTable dt = EntityRepository.GetDataTable(sql);
+            var dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
-                var item = new DataItemValue();
-                item.Id = row[0].ToString();
-                item.Description = row[1].ToString().Trim();
+                var item = new DataItemValue
+                {
+                    Id = row[0].ToString(),
+                    Description = row[1].ToString().Trim()
+                };
                 if (DataItem.ShowImageLegend)
                 {
                     item.Icon = (IconType)int.Parse(row[2].ToString());
@@ -395,9 +390,9 @@ public class JJSearchBox : JJBaseControl
         var listValue = GetValues(textSearch);
         var listItem = new List<JJSearchBoxItem>();
 
-        string description;
         foreach (var i in listValue)
         {
+            string description;
             if (DataItem.ShowImageLegend)
                 description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}";
             else

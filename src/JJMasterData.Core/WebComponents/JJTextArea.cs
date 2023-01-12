@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Html;
 using System;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -9,18 +10,18 @@ public class JJTextArea : JJBaseControl
 {
     public int Rows { get; set; }
 
-    public JJTextArea()
+    public JJTextArea(IHttpContext httpContext) : base(httpContext)
     {
         Attributes.Add("class", "form-control");
         Rows = 5;
     }
 
-    internal static JJTextArea GetInstance(FormElementField field, object value)
+    internal static JJTextArea GetInstance(FormElementField field, object value, IHttpContext httpContext)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var text = new JJTextArea();
+        var text = new JJTextArea(httpContext);
         text.SetAttr(field.Attributes);
         text.ToolTip = field.HelpDescription;
         text.MaxLength = field.Size;
@@ -38,7 +39,6 @@ public class JJTextArea : JJBaseControl
             .WithCssClass(CssClass)
             .WithToolTip(ToolTip)
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
-            .WithAttribute("rows", Rows.ToString())
             .WithAttribute("cols", "20")
             .WithAttribute("strvalid", Translate.Key("Maximum limit of {0} characters!"))
             .WithAttribute("strchars", Translate.Key("({0} characters remaining)"))

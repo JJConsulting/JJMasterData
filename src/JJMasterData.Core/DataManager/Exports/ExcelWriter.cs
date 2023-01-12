@@ -3,18 +3,23 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
 public class ExcelWriter : BaseWriter, IExcelWriter
 {
-
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     /// <summary>
@@ -23,11 +28,21 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// </summary>
     public bool ShowBorder { get; set; }
 
+
     /// <summary>
     /// Exibir colunas zebradas 
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
+
+    public ExcelWriter(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        IOptions<JJMasterDataCoreOptions> options,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, options,encryptionService,loggerFactory)
+    {
+    }
 
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -125,7 +140,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         {
             if (DataSource.Columns.Contains(field.Name))
             {
-                value = FieldManager.FormatVal(field, row[field.Name]);
+                value = FieldManager.FormatValue(field, row[field.Name]);
             }
         }
 
@@ -166,10 +181,12 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             {
                 thStyle = " style=\"text-align:right;\" ";
             }
+
             sw.Write("\t\t\t\t<td" + thStyle + ">");
             sw.Write(field.GetTranslatedLabel());
             sw.WriteLine("</td>");
         }
+
         sw.WriteLine("\t\t\t</tr>");
     }
 }

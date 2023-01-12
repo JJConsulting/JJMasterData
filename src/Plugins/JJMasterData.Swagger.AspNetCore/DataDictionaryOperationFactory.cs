@@ -4,7 +4,6 @@ using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Text;
 using JJMasterData.Commons.Dao.Entity;
-using Microsoft.AspNetCore.Http;
 using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
 namespace JJMasterData.Swagger.AspNetCore;

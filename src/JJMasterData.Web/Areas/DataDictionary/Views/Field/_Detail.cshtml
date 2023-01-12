@@ -202,7 +202,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="Export" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Allows you to export the field")">@Translate.Key("Export")</label>
-                    @Html.DropDownListFor(modelItem => modelItem.Export, new[]
+                    @Html.DropDownListFor(modelItem => modelItem.EnableExportation, new[]
                     {
                         new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" }

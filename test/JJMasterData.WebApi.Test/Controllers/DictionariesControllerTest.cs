@@ -1,7 +1,5 @@
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Services;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using Xunit.Extensions.Ordering;
@@ -13,12 +11,9 @@ public class DictionariesControllerTest
 {
     private readonly DictionariesController _controller;
     
-    public DictionariesControllerTest()
+    public DictionariesControllerTest(DictionariesService service, DatabaseDataDictionaryRepository dataDictionaryRepository)
     {
-        IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository);
-        var dictionariesService = new DictionariesService(dataDictionaryRepository, entityRepository);
-        _controller = new DictionariesController(dictionariesService, dataDictionaryRepository);
+        _controller = new DictionariesController(service, dataDictionaryRepository);
     }
     
     [Fact]

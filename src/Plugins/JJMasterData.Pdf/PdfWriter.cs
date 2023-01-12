@@ -16,12 +16,19 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Pdf;
 
@@ -35,6 +42,16 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
+    public PdfWriter(IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        IOptions<JJMasterDataCoreOptions> options,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, options, encryptionService,
+        loggerFactory)
+    {
+        
+    }
+    
     public override void GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
@@ -304,5 +321,4 @@ public class PdfWriter : BaseWriter, IPdfWriter
         resFilestream.Read(ba, 0, ba.Length);
         return ba;
     }
-    
 }

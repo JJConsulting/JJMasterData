@@ -13,7 +13,7 @@ public class JJMasterDataOptionsWriter : BaseWriter
             Description = "JSON schema for JJMasterData ASP.NET Core's appsettings.json file"
         };
 
-        var jjmasterdata = new KeyValuePair<string, JSchema>("JJMasterData", Generator.Generate(typeof(JJMasterDataOptions)));
+        var jjmasterdata = new KeyValuePair<string, JSchema>("JJMasterData", Generator.Generate(typeof(JJMasterDataCommonsOptions)));
 
         schema.Properties.Add(jjmasterdata);
 

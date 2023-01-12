@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using System;
@@ -7,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Dao.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -20,14 +20,8 @@ public class FormManager
 
     public FormManager(FormElement formElement, ExpressionManager expression)
     {
-        if (formElement == null)
-            throw new ArgumentNullException(nameof(formElement));
-
-        if (expression == null)
-            throw new ArgumentNullException(nameof(expression));
-
-        FormElement = formElement;
-        Expression = expression;
+        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
     }
 
     /// <summary>
@@ -195,7 +189,6 @@ public class FormManager
 
         return val;
     }
-
     public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
     {
         if (DataItem == null)

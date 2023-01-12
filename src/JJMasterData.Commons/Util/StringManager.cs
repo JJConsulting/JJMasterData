@@ -25,30 +25,34 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Remove os acentos e caracteres especiais
+    /// Remove accents and special characters
     /// </summary>
     /// <param name="str">Valor</param>
     public static string GetStringWithoutAccents(string str)
     {
-        //Troca os caracteres acentuados por não acentuados
-        string[] acentos = { "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È", "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â", "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û" };
-        string[] semAcento = { "c", "C", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "Y", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "a", "o", "n", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "A", "O", "N", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U" };
+        string[] acentos =
+        {
+            "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È",
+            "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â",
+            "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û"
+        };
+        string[] semAcento =
+        {
+            "c", "C", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "Y", "a", "e", "i", "o", "u", "A", "E",
+            "I", "O", "U", "a", "o", "n", "a", "e", "i", "o", "u", "y", "A", "E", "I", "O", "U", "A", "O", "N", "a",
+            "e", "i", "o", "u", "A", "E", "I", "O", "U"
+        };
         for (int i = 0; i < acentos.Length; i++)
         {
             str = str.Replace(acentos[i], semAcento[i]);
         }
-        //Troca os caracteres especiais da string por "" 
-        //string[] caracteresEspeciais = { "\\.", ",", "-", ":", "\\(", "\\)", "ª", "\\|", "\\\\", "°" };
+
         string[] caracteresEspeciais = { "ª", "\\|", "°" };
-        for (int i = 0; i < caracteresEspeciais.Length; i++)
-        {
-            str = str.Replace(caracteresEspeciais[i], "");
-        }
-        //Troca os espaços no início por "" 
+        
+        str = caracteresEspeciais.Aggregate(str, (current, t) => current.Replace(t, ""));
+
         str = str.Replace("^\\s+", "");
-        // Troca os espaços no início por "" 
         str = str.Replace("\\s+$", "");
-        // Troca os espaços duplicados, tabulações e etc por  " " 
         str = str.Replace("\\s+", " ");
         return str;
     }
@@ -65,7 +69,7 @@ public static class StringManager
         string greeting;
         if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
             greeting = Translate.Key("Good Morning");
-        else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
+        else if (DateTime.Now.Hour is > 12 and <= 18)
             greeting = Translate.Key("Good Afternoon");
         else
             greeting = Translate.Key("Good Night");
@@ -124,55 +128,45 @@ public static class StringManager
     /// </returns>
     public static string GetAge(string data2)
     {
-
-        string dt = data2;
-        int idade;
         //calculo a data de hoje 
-        DateTime hoje = DateTime.Now;
+        var hoje = DateTime.Now;
         //alert(hoje) 
 
         //calculo a data que recebo 
         //descomponho a data em um array 
-        string[] array_data = dt.Split('/');
+        string[] array_data = data2.Split('/');
 
         //se o array nao tem tres partes, a data eh incorreta 
         if (array_data.Length != 3)
             return "";
 
         //comprovo que o ano, mes, dia são corretos 
-        int ano;
-        ano = int.Parse(array_data[2]);
-        //if ( isNaN(ano) )
-        //  return "";
+        var ano = int.Parse(array_data[2]);
+        
+        var mes = int.Parse(array_data[1]);
 
-        int mes;
-        mes = int.Parse(array_data[1]);
-        // if (isNaN(mes))
-        //    return false
-
-        int dia;
-        dia = int.Parse(array_data[0]);
-        //if (isNaN(dia))
-        //    return false*/
-
+        var dia = int.Parse(array_data[0]);
 
         //se o ano da data que recebo so tem 2 cifras temos que muda-lo a 4 
         if (ano <= 99)
             ano += 1900;
 
         //subtraio os anos das duas datas 
-        idade = hoje.Year - ano - 1; //-1 porque ainda nao fez anos durante este ano
+        var idade = hoje.Year - ano - 1; //-1 porque ainda nao fez anos durante este ano
 
-        //se subtraio os meses e for menor que 0 entao nao cumpriu anos. Se for maior sim ja cumpriu
-        if (hoje.Month - mes < 0) //+ 1 porque os meses comecam em 0 
-            return idade.ToString();
-
-        if (hoje.Month - mes > 0)
-            return (idade + 1).ToString();
+        switch (hoje.Month - mes)
+        {
+            //se subtraio os meses e for menor que 0 entao nao cumpriu anos. Se for maior sim ja cumpriu
+            //+ 1 porque os meses comecam em 0 
+            case < 0:
+                return idade.ToString();
+            case > 0:
+                return (idade + 1).ToString();
+        }
 
         //entao eh porque sao iguais. Vejo os dias 
         //se subtraio os dias e der menor que 0 entao nao cumpriu anos. Se der maior ou igual sim que já cumpriu
-        if ((hoje.Day - dia) >= 0)
+        if (hoje.Day - dia >= 0)
             return (idade + 1).ToString();
 
         return idade.ToString();
@@ -417,9 +411,8 @@ public static class StringManager
     /// <param name="begin">Caracter Inicial</param>
     /// <param name="end">Caracter Final</param>
     /// <returns>Lista com as strings localizadas</returns>
-    public static List<string> FindValuesByInterval(string text, char begin, char end)
+    public static IEnumerable<string> FindValuesByInterval(string text, char begin, char end)
     {
-        List<string> list = new List<string>();
         char[] arr = text.ToCharArray();
         string value = "";
         bool isReading = false;
@@ -429,7 +422,7 @@ public static class StringManager
             {
                 if (c.Equals(end))
                 {
-                    list.Add(value);
+                    yield return value;
                     value = "";
                     isReading = false;
                 }
@@ -447,13 +440,11 @@ public static class StringManager
                 }
             } 
         }
-            
-        return list;
     }
 
     public static string Soma1(string baseVal)
     {
-        if (String.IsNullOrEmpty(baseVal))
+        if (string.IsNullOrEmpty(baseVal))
         {
             return "0";
         }
@@ -462,8 +453,7 @@ public static class StringManager
 
     private static string Soma1(string baseVal, int size)
     {
-        long nAux;
-        if (long.TryParse(baseVal, out nAux))
+        if (long.TryParse(baseVal, out var nAux))
         {
             nAux++;
             string sRet = nAux.ToString().PadLeft(size, '0');

@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.WebComponents.Factories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -13,11 +13,19 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 [Area("MasterData")]
 public class LookupController : MasterDataController
 {
-    // GET: MasterData/Lookup
-    public ActionResult Index(string p)
+    public FormViewFactory FormViewFactory { get; }
+    public JJMasterDataEncryptionService EncryptionService { get; }
+
+    public LookupController(FormViewFactory formViewFactory, JJMasterDataEncryptionService encryptionService)
     {
-        if (string.IsNullOrEmpty(p))
-            throw new ArgumentNullException();
+        FormViewFactory = formViewFactory;
+        EncryptionService = encryptionService;
+    }
+    // GET: MasterData/Lookup
+    public ActionResult Index(string parameters)
+    {
+        if (string.IsNullOrEmpty(parameters))
+            throw new ArgumentNullException(nameof(parameters));
 
         string? elementName = null;
         string? fieldKey = null;
@@ -25,29 +33,25 @@ public class LookupController : MasterDataController
         bool enableAction = false;
 
         var filters = new Hashtable();
-        var parms = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(p));
-        foreach (string key in parms)
+        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptString(parameters));
+        foreach (string key in @params)
         {
             if ("elementname".Equals(key.ToLower()))
-                elementName = parms.Get(key);
+                elementName = @params.Get(key);
             else if ("fieldkey".Equals(key.ToLower()))
-                fieldKey = parms.Get(key);
+                fieldKey = @params.Get(key);
             else if ("objid".Equals(key.ToLower()))
-                objid = parms.Get(key);
+                objid = @params.Get(key);
             else if ("enableaction".Equals(key.ToLower()))
-                enableAction = parms.Get(key)!.Equals("1");
+                enableAction = @params.Get(key)!.Equals("1");
             else
-                filters.Add(key, parms.Get(key));
+                filters.Add(key, @params.Get(key));
         }
             
         if (elementName == null | objid == null)
             throw new JJMasterDataException(Translate.Key("Invalid Parameter"));
-
-        //FormView
-        var form = new JJFormView(elementName)
-        {
-            ShowTitle = false
-        };
+        
+        var form = FormViewFactory.CreateFormView(elementName);
 
         //Actions
         if (!enableAction)

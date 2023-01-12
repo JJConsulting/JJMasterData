@@ -3,11 +3,17 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.WebComponents;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -16,6 +22,15 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
+
+    public TextWriter(
+        IHttpContext httpContext, 
+        RepositoryServicesFacade repositoryServicesFacade,
+        IOptions<JJMasterDataCoreOptions> options,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory) : base(httpContext, repositoryServicesFacade, options,encryptionService,loggerFactory)
+    {
+    }
 
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -92,6 +107,7 @@ public class TextWriter : BaseWriter, ITextWriter
 
                 sw.Write(value);
             }
+
             sw.WriteLine("");
             sw.Flush();
 
@@ -113,6 +129,7 @@ public class TextWriter : BaseWriter, ITextWriter
 
             sw.Write(field.GetTranslatedLabel());
         }
+
         sw.WriteLine("");
         sw.Flush();
     }

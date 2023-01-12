@@ -1,19 +1,30 @@
 ﻿using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Html;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DI;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.Facades;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.WebComponents.Factories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -25,6 +36,7 @@ namespace JJMasterData.Core.WebComponents;
 /// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
+
 public class JJFormView : JJGridView
 {
     #region "Events"
@@ -42,13 +54,18 @@ public class JJFormView : JJGridView
 
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
-    private JJFormLog _logHistory;
+    private JJAuditLogForm _auditLogForm;
     private FormService _service;
-    
 
-    internal JJFormLog FormLog =>
-        _logHistory ??= new JJFormLog(FormElement, EntityRepository);
-        
+    private string _userId;
+
+    public string UserId => _userId ??= DataHelper.GetCurrentUserId(HttpContext, UserValues);
+
+    internal JJAuditLogForm AuditLogForm =>
+        _auditLogForm ??=
+            new JJAuditLogForm(FormElement, HttpContext, _repositoryServicesFacade, ExportationWriters, AuditLogService,
+                GridViewFactory, Options, LoggerFactory, DataPanelFactory);
+
 
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
@@ -58,7 +75,7 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    public new JJDataImp DataImp 
+    public new JJDataImp DataImp
     {
         get
         {
@@ -70,7 +87,7 @@ public class JJFormView : JJGridView
             return dataimp;
         }
     }
-        
+
     /// <summary>
     /// Configuração do painel com os campos do formulário
     /// </summary>
@@ -80,14 +97,12 @@ public class JJFormView : JJGridView
         {
             if (_dataPanel == null)
             {
-                _dataPanel = new JJDataPanel(FormElement)
-                {
-                    Name = "jjpainel_" + FormElement.Name.ToLower(),
-                    EntityRepository = EntityRepository,
-                    UserValues = UserValues,
-                    RenderPanelGroup = true
-                };
+                _dataPanel = DataPanelFactory.CreateDataPanel(FormElement);
+                _dataPanel.Name = "jjpainel_" + FormElement.Name.ToLower();
+                _dataPanel.UserValues = UserValues;
+                _dataPanel.RenderPanelGroup = true;
             }
+
             _dataPanel.PageState = PageState;
 
             return _dataPanel;
@@ -102,8 +117,8 @@ public class JJFormView : JJGridView
         get
         {
             PageState pageState = PageState.List;
-            if (CurrentContext.Request["current_pagestate_" + Name] != null)
-                pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
+            if (HttpContext.Request["current_pagestate_" + Name] != null)
+                pageState = (PageState)int.Parse(HttpContext.Request["current_pagestate_" + Name]);
 
             return pageState;
         }
@@ -115,45 +130,47 @@ public class JJFormView : JJGridView
         {
             if (_currentActionMap != null) return _currentActionMap;
 
-            string criptMap = CurrentContext.Request["current_formaction_" + Name];
+            string criptMap = HttpContext.Request["current_formaction_" + Name];
             if (string.IsNullOrEmpty(criptMap))
                 return null;
 
-            string jsonMap = Cript.Descript64(criptMap);
+            string jsonMap = EncryptionService.DecryptString(criptMap);
             _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
             return _currentActionMap;
         }
     }
 
-
-    private FormService Service 
-    { 
+    private FormService Service
+    {
         get
         {
-            if (_service == null)
-            { 
-                var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext)
-                {
-                    EnableErrorLink = true,
-                    EnableHistoryLog = LogAction.IsVisible
-                };
+            if (_service != null) return _service;
+            var dataContext = new DataContext(HttpContext, DataContextSource.Form, UserId);
+            _service = new FormService(FormManager, dataContext, AuditLogService, LoggerFactory)
+            {
+                EnableErrorLink = true,
+                EnableHistoryLog = LogAction.IsVisible
+            };
 
-                _service.OnBeforeInsert += OnBeforeInsert;
-                _service.OnBeforeUpdate += OnBeforeUpdate;
-                _service.OnBeforeDelete += OnBeforeDelete;
+            _service.OnBeforeInsert += OnBeforeInsert;
+            _service.OnBeforeUpdate += OnBeforeUpdate;
+            _service.OnBeforeDelete += OnBeforeDelete;
 
-                _service.OnAfterDelete += OnAfterDelete;
-                _service.OnAfterUpdate += OnAfterUpdate;
-                _service.OnAfterInsert += OnAfterInsert;
-            }
-                
+            _service.OnAfterDelete += OnAfterDelete;
+            _service.OnAfterUpdate += OnAfterUpdate;
+            _service.OnAfterInsert += OnAfterInsert;
+
             return _service;
-        } 
+        }
     }
 
+    private IFormEventResolver FormEventResolver { get; }
+    public DataPanelFactory DataPanelFactory { get; }
+    public GridViewFactory GridViewFactory { get; }
+    private FormViewFactory FormViewFactory { get; }
+
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
-       => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
+        => (DeleteSelectedRowsAction)ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
 
     public InsertAction InsertAction => (InsertAction)ToolBarActions.Find(x => x is InsertAction);
 
@@ -169,48 +186,69 @@ public class JJFormView : JJGridView
 
     #region "Constructors"
 
-    internal JJFormView()
+    internal JJFormView(
+        IHttpContext httpContext,
+        RepositoryServicesFacade repositoryServicesFacade,
+        JJMasterDataEncryptionService encryptionService,
+        ILoggerFactory loggerFactory,
+        IBackgroundTask backgroundTask,
+        IEnumerable<IExportationWriter> exportationWriters,
+        IOptions<JJMasterDataCoreOptions> options,
+        AuditLogService auditLogService,
+        IFormEventResolver formEventResolver,
+        DataPanelFactory dataPanelFactory,
+        GridViewFactory gridViewFactory,
+        FormViewFactory formViewFactory
+    )
+        : base(httpContext, repositoryServicesFacade, encryptionService, loggerFactory, backgroundTask,
+            exportationWriters, options, auditLogService)
     {
-        ShowTitle = true;
-        ToolBarActions.Add(new InsertAction());
-        ToolBarActions.Add(new DeleteSelectedRowsAction());
-        ToolBarActions.Add(new LogAction());
-        GridActions.Add(new ViewAction());
-        GridActions.Add(new EditAction());
-        GridActions.Add(new DeleteAction());
+        FormEventResolver = formEventResolver;
+        DataPanelFactory = dataPanelFactory;
+        GridViewFactory = gridViewFactory;
+        FormViewFactory = formViewFactory;
+
+        FormViewFactory.SetFormViewParams(this);
     }
 
-    public JJFormView(string elementName) : this()
-    {
-        FormFactory.SetFormViewParams(this, elementName);
-    }
 
-    public JJFormView(FormElement formElement) : this()
+#if NETFRAMEWORK
+    [Obsolete("Obsolete")]
+    public JJFormView(string elementName)
     {
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Name = "jjview" + formElement.Name.ToLower();
+        using var scope = JJService.Provider.CreateScope();
+
+        var formViewFactory = scope.ServiceProvider.GetRequiredService<FormViewFactory>();
+        FormEventResolver = scope.ServiceProvider.GetRequiredService<FormEventResolver>();
+        FormViewFactory = formViewFactory;
+        GridViewFactory = scope.ServiceProvider.GetRequiredService<GridViewFactory>();
+        DataPanelFactory = scope.ServiceProvider.GetRequiredService<DataPanelFactory>();
+        FormViewFactory.SetFormViewParams(this);
+
+        formViewFactory.SetFormViewParams(this, elementName);
     }
-    
+#endif
+
     #endregion
 
     internal override HtmlBuilder RenderHtml()
     {
-        string requestType = CurrentContext.Request.QueryString("t");
-        string objName = CurrentContext.Request.QueryString("objname");
+        string requestType = HttpContext.Request.QueryString("t");
+        string objName = HttpContext.Request.QueryString("objname");
         var dataPanel = DataPanel;
-        
-        if (JJLookup.IsLookupRoute(this))
+
+        if (JJLookup.IsLookupRoute(HttpContext, this))
             return new HtmlBuilder(dataPanel.GetHtml());
-        
-        if (JJTextFile.IsFormUploadRoute(this))
+
+        if (JJTextFile.IsFormUploadRoute(HttpContext, this))
             return new HtmlBuilder(dataPanel.GetHtml());
-        
-        if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+
+        if (JJDownloadFile.IsDownloadRoute(HttpContext))
+            return JJDownloadFile.ResponseRoute(HttpContext, EncryptionService, LoggerFactory);
 
         if ("jjsearchbox".Equals(requestType))
         {
-            string pnlname = CurrentContext.Request.QueryString("pnlname");
+            string pnlname = HttpContext.Request.QueryString("pnlname");
             if (dataPanel.Name.Equals(pnlname))
             {
                 dataPanel.GetHtml();
@@ -233,7 +271,7 @@ public class JJFormView : JJGridView
                 values = EntityRepository.GetFields(FormElement, filter);
 
             string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
-            CurrentContext.Response.SendResponse(htmlPanel);
+            HttpContext.Response.SendResponse(htmlPanel);
             return null;
         }
         else if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
@@ -250,11 +288,12 @@ public class JJFormView : JJGridView
             dataPanel.ResponseUrlAction();
             return null;
         }
+
         var htmlForm = GetHtmlForm();
 
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(htmlForm.ToString());
+            HttpContext.Response.SendResponse(htmlForm.ToString());
             return null;
         }
 
@@ -320,8 +359,8 @@ public class JJFormView : JJGridView
     {
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (HttpContext.Request["current_painelaction_" + Name] != null)
+            formAction = HttpContext.Request["current_painelaction_" + Name];
 
         if ("OK".Equals(formAction))
         {
@@ -332,7 +371,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
+                    HttpContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -347,9 +386,10 @@ public class JJFormView : JJGridView
         if ("CANCEL".Equals(formAction))
         {
             ClearTempFiles();
-            CurrentContext.Response.Redirect(CurrentContext.Request.AbsoluteUri);
+            HttpContext.Response.Redirect(HttpContext.Request.AbsoluteUri);
             return null;
         }
+
         if ("REFRESH".Equals(formAction))
         {
             var values = GetFormValues();
@@ -384,11 +424,11 @@ public class JJFormView : JJGridView
                 RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(Translate.Key("Insert action not enabled"));
-        
+
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (HttpContext.Request["current_painelaction_" + Name] != null)
+            formAction = HttpContext.Request["current_painelaction_" + Name];
 
         if (formAction.Equals("OK"))
         {
@@ -399,7 +439,7 @@ public class JJFormView : JJGridView
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
+                    HttpContext.Response.Redirect(UrlRedirect);
                     return null;
                 }
 
@@ -418,21 +458,19 @@ public class JJFormView : JJGridView
                     alertHtml.AppendElement(HtmlTag.Div, div =>
                     {
                         div.WithAttribute("id", $"pnl_insert_{Name}")
-                           .WithAttribute("style", "display:none")
-                           .AppendElement(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
+                            .WithAttribute("style", "display:none")
+                            .AppendElement(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
                     });
                     alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
                     return alertHtml;
                 }
- 
+
                 pageState = PageState.List;
                 return GetHtmlGrid();
-
             }
-  
+
             pageState = PageState.Insert;
             return GetHtmlDataPainel(values, erros, pageState, true);
-
         }
 
         if (formAction.Equals("CANCEL"))
@@ -441,22 +479,25 @@ public class JJFormView : JJGridView
             ClearTempFiles();
             return GetHtmlGrid();
         }
+
         if (formAction.Equals("ELEMENTSEL"))
         {
             return GetHtmlElementInsert(ref pageState);
         }
+
         if (formAction.Equals("ELEMENTLIST"))
         {
             pageState = PageState.Insert;
             return GetHtmlElementList(action);
         }
+
         if (pageState == PageState.Insert)
         {
             return GetHtmlDataPainel(GetFormValues(), null, pageState, true);
         }
 
         pageState = PageState.Insert;
-        
+
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
             return GetHtmlDataPainel(RelationValues, null, PageState.Insert, false);
         return GetHtmlElementList(action);
@@ -468,19 +509,16 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = JJServiceCore.DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement())
-        {
-            EntityRepository = EntityRepository,
-            UserValues = UserValues,
-            Name = action.ElementNameToSelect
-        };
-        formsel.SetOptions(dicParser.UIOptions);
+        var metadata = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
+        var formsel = FormViewFactory.CreateFormView(metadata.GetFormElement());
+        formsel.UserValues = UserValues;
+        formsel.Name = action.ElementNameToSelect;
+        formsel.SetOptions(metadata.UIOptions);
 
         var goBackScript = new StringBuilder();
         goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
         goBackScript.AppendLine("$('form:first').submit(); ");
-        
+
         var goBackAction = new ScriptAction
         {
             Name = "_jjgobacktion",
@@ -510,12 +548,11 @@ public class JJFormView : JJGridView
 
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
-        string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
-        string jsonMap = Cript.Descript64(criptMap);
+        string criptMap = HttpContext.Request.Form("current_selaction_" + Name);
+        string jsonMap = EncryptionService.DecryptString(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var dictionary = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
+        var dictionary = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var element = dictionary.Table;
         var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
         var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
@@ -569,7 +606,7 @@ public class JJFormView : JJGridView
 
             var errors = DeleteFormValues(filter);
 
-            if (errors != null && errors.Count > 0)
+            if (errors is { Count: > 0 })
             {
                 var errorMessage = new StringBuilder();
                 foreach (DictionaryEntry err in errors)
@@ -594,7 +631,7 @@ public class JJFormView : JJGridView
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
-            CurrentContext.Response.Redirect(UrlRedirect);
+            HttpContext.Response.Redirect(UrlRedirect);
             return null;
         }
 
@@ -637,7 +674,7 @@ public class JJFormView : JJGridView
             if (rows.Count > 0)
             {
                 var message = new StringBuilder();
-                MessageIcon icon = MessageIcon.Info;
+                var icon = MessageIcon.Info;
                 if (successCount > 0)
                 {
                     message.Append("<p class=\"text-success\">");
@@ -691,16 +728,16 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
+            var html = AuditLogForm.GetDetailLog(actionMap.PKFieldValues);
             html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
 
-        FormLog.GridView.AddToolBarAction(goBackAction);
-        FormLog.DataPainel = DataPanel;
+        AuditLogForm.GridView.AddToolBarAction(goBackAction);
+        AuditLogForm.DataPanel = DataPanel;
         pageState = PageState.Log;
-        return FormLog.GetHtmlBuilder();
+        return AuditLogForm.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlDataImp(ref PageState pageState)
@@ -732,7 +769,8 @@ public class JJFormView : JJGridView
         return html;
     }
 
-    private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
+    private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState,
+        bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         var relations = FormElement.Relations.FindAll(x => x.ViewType != RelationType.None);
@@ -766,7 +804,7 @@ public class JJFormView : JJGridView
             sPainel.AppendElement(GetFormBottombar(pageState, values));
             sPainel.AppendHiddenInput($"current_painelaction_{Name}");
 
-            var collapse = new JJCollapsePanel
+            var collapse = new JJCollapsePanel(HttpContext)
             {
                 Name = "collapse_" + Name,
                 Title = FormElement.Title,
@@ -776,10 +814,9 @@ public class JJFormView : JJGridView
             html.AppendElement(collapse);
         }
 
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
         foreach (var relation in relations)
         {
-            var dic = dicRepository.GetMetadata(relation.ChildElement);
+            var dic = DataDictionaryRepository.GetMetadata(relation.ChildElement);
             var childElement = dic.GetFormElement();
 
             var filter = new Hashtable();
@@ -791,14 +828,11 @@ public class JJFormView : JJGridView
             if (relation.ViewType == RelationType.View)
             {
                 var childvalues = EntityRepository.GetFields(childElement, filter);
-                var chieldView = new JJDataPanel(childElement)
-                {
-                    EntityRepository = EntityRepository,
-                    PageState = PageState.View,
-                    UserValues = UserValues,
-                    Values = childvalues,
-                    RenderPanelGroup = true
-                };
+                var chieldView = DataPanelFactory.CreateDataPanel(FormElement);
+                chieldView.PageState = PageState.View;
+                chieldView.UserValues = UserValues;
+                chieldView.Values = childvalues;
+                chieldView.RenderPanelGroup = true;
 
                 if (dic.UIOptions != null)
                 {
@@ -809,16 +843,10 @@ public class JJFormView : JJGridView
             }
             else if (relation.ViewType == RelationType.List)
             {
-                var childGrid = new JJFormView(childElement)
-                {
-                    EntityRepository = EntityRepository,
-                    UserValues = UserValues,
-                    FilterAction =
-                    {
-                        ShowAsCollapse = false
-                    },
-                    Name = "jjgridview_" + childElement.Name
-                };
+                var childGrid = FormViewFactory.CreateFormView(childElement);
+                childGrid.UserValues = UserValues;
+                childGrid.FilterAction.ShowAsCollapse = false;
+                childGrid.Name = "jjgridview_" + childElement.Name;
                 childGrid.Filter.ApplyCurrentFilter(filter);
 
                 if (dic.UIOptions != null)
@@ -828,7 +856,7 @@ public class JJFormView : JJGridView
 
                 childGrid.ShowTitle = false;
 
-                var collapse = new JJCollapsePanel
+                var collapse = new JJCollapsePanel(HttpContext)
                 {
                     Name = "collapse_" + childGrid.Name,
                     Title = childElement.Title,
@@ -857,8 +885,8 @@ public class JJFormView : JJGridView
         {
             CssClass = "pb-3 mt-3"
         };
-        toolbar.ListElement.Add(btnBack.GetHtmlBuilder());
-        toolbar.ListElement.Add(btnHideLog.GetHtmlBuilder());
+        toolbar.ElementList.Add(btnBack.GetHtmlBuilder());
+        toolbar.ElementList.Add(btnHideLog.GetHtmlBuilder());
         return toolbar;
     }
 
@@ -870,16 +898,17 @@ public class JJFormView : JJGridView
         };
         if (pageState == PageState.View)
         {
-            toolbar.ListElement.Add(GetButtonBack().GetHtmlBuilder());
+            toolbar.ElementList.Add(GetButtonBack().GetHtmlBuilder());
 
             if (LogAction.IsVisible)
-                toolbar.ListElement.Add(GetButtonViewLog(values).GetHtmlBuilder());
+                toolbar.ElementList.Add(GetButtonViewLog(values).GetHtmlBuilder());
         }
         else
         {
-            toolbar.ListElement.Add(GetButtonOk().GetHtmlBuilder());
-            toolbar.ListElement.Add(GetButtonCancel().GetHtmlBuilder());
+            toolbar.ElementList.Add(GetButtonOk().GetHtmlBuilder());
+            toolbar.ElementList.Add(GetButtonCancel().GetHtmlBuilder());
         }
+
         return toolbar;
     }
 
@@ -888,9 +917,9 @@ public class JJFormView : JJGridView
         if (!e.Action.Name.Equals("_jjselaction")) return;
 
         if (sender is not JJGridView grid) return;
-        
+
         var map = new ActionMap(ActionOrigin.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
-        string criptId = map.GetCriptJson();
+        string criptId = map.GetEncryptedJson(EncryptionService);
         e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
     }
 
@@ -915,7 +944,7 @@ public class JJFormView : JJGridView
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
-    
+
     public Hashtable DeleteFormValues(Hashtable filter)
     {
         var values = Service.FormManager.MergeWithExpressionValues(filter, PageState.Delete, true);
@@ -923,26 +952,26 @@ public class JJFormView : JJGridView
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
-    
+
     public Hashtable GetFormValues()
     {
         var painel = DataPanel;
         var values = painel.GetFormValues();
 
-        if (RelationValues == null) 
+        if (RelationValues == null)
             return values;
 
         DataHelper.CopyIntoHash(ref values, RelationValues, true);
 
         return values;
     }
-    
+
     public Hashtable ValidateFields(Hashtable values, PageState pageState)
     {
         var painel = DataPanel;
         painel.Values = values;
 
-        Hashtable errors = painel.ValidateFields(values, pageState);
+        var errors = painel.ValidateFields(values, pageState);
         return errors;
     }
 
@@ -952,14 +981,14 @@ public class JJFormView : JJGridView
         foreach (var field in uploadFields)
         {
             string sessionName = $"{field.Name}_formupload_jjfiles";
-            if (CurrentContext?.Session[sessionName] != null)
-                CurrentContext.Session[sessionName] = null;
+            if (HttpContext?.Session[sessionName] != null)
+                HttpContext.Session[sessionName] = null;
         }
     }
-    
+
     public void SetOptions(UIOptions options)
     {
-        FormFactory.SetFormOptions(this, options);
+        FormViewFactory.SetFormOptions(this, options);
     }
 
     private JJLinkButton GetButtonOk()
@@ -980,6 +1009,7 @@ public class JJFormView : JJGridView
             btn.Type = LinkButtonType.Button;
             btn.CssClass = BootstrapHelper.DefaultButton + " btn-small";
         }
+
         return btn;
     }
 
@@ -1031,5 +1061,4 @@ public class JJFormView : JJGridView
         };
         return btn;
     }
-
 }

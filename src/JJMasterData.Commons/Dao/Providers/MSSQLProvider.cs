@@ -234,7 +234,7 @@ internal class MSSQLProvider : BaseProvider
         StringBuilder sql = new StringBuilder();
 
         bool updateScript = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataOptions.GetWriteProcedureName(element);
+        string procedureFinalName = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -500,7 +500,7 @@ internal class MSSQLProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataOptions.GetReadProcedureName(element);
+        string procedureFinalName = JJMasterDataCommonsOptions.GetReadProcedureName(element);
 
         //Se exisitir apaga
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -924,7 +924,7 @@ internal class MSSQLProvider : BaseProvider
         var command = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
-            Sql = JJMasterDataOptions.GetReadProcedureName(element),
+            Sql = JJMasterDataCommonsOptions.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
                 new("@orderby", orderBy),
@@ -1001,7 +1001,7 @@ internal class MSSQLProvider : BaseProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetWriteProcedureName(element);
+        cmd.Sql = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 

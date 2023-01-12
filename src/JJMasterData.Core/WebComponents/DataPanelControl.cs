@@ -83,7 +83,7 @@ internal class DataPanelControl
             //value
             object value = null;
             if (Values != null && Values.Contains(field.Name))
-                value = FieldManager.FormatVal(field, Values[field.Name]);
+                value = FieldManager.FormatValue(field, Values[field.Name]);
 
             if (linegroup != field.LineGroup)
             {
@@ -193,7 +193,7 @@ internal class DataPanelControl
             //Value
             object value = null;
             if (Values != null && Values.Contains(f.Name))
-                value = FieldManager.FormatVal(f, Values[f.Name]);
+                value = FieldManager.FormatValue(f, Values[f.Name]);
 
             var label = new JJLabel(f)
             {

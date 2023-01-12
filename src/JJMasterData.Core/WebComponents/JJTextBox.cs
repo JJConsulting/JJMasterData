@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Language;
 using JJMasterData.Core.Html;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -13,7 +14,7 @@ public class JJTextBox : JJBaseControl
 
     public float? MaxValue { get; set; }
 
-    public JJTextBox()
+    public JJTextBox(IHttpContext httpContext) : base(httpContext)
     {
         InputType = InputType.Text;
         Visible = true;
