@@ -1,8 +1,8 @@
 ﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Http;
 using System;
 using System.Collections;
+using JJMasterData.Core.Http;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -24,18 +24,13 @@ internal class FormValues
     public Hashtable RequestFormValues(PageState state, string prefix = null)
     {
         if (FormElement == null)
-            throw new ArgumentNullException(nameof(FormElement));
-
-        if (CurrentContext == null || !CurrentContext.HasContext())
-            throw new ArgumentNullException(nameof(CurrentContext));
+            throw new ArgumentException(nameof(FormElement));
 
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        string objname;
-        object val;
         foreach (var f in FormElement.Fields)
         {
-            objname = (prefix == null ? prefix : string.Empty) + f.Name;
-            val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
+            var objname = (prefix == null ? prefix : string.Empty) + f.Name;
+            var val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
 
             if (f.Component == FormComponent.Search)
             {
@@ -58,7 +53,7 @@ internal class FormValues
                 string t = CurrentContext.Request.QueryString("t");
                 if (val != null && "reloadpainel".Equals(t) | "tablerow".Equals(t) | "ajax".Equals(t))
                 {
-                    string sVal = val.ToString().Replace(" ", "").Replace(".", ",");
+                    string sVal = val.ToString()?.Replace(" ", "").Replace(".", ",");
                     if (double.TryParse(sVal, out var nVal))
                         val = nVal;
                     else
@@ -70,7 +65,7 @@ internal class FormValues
                 val ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
             }
              
-            if (val != null && !string.IsNullOrEmpty(val.ToString()))
+            if (val != null)
             {
                 values.Add(f.Name, val);
             }
