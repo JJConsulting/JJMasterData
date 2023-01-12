@@ -54,8 +54,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IFormEventResolver,FormEventResolver>();
         services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
         
-        services.AddTransient<IWriter, ExcelWriter>();
-        services.AddTransient<IWriter, DataManager.Exports.TextWriter>();
+        services.AddTransient<IExcelWriter, ExcelWriter>();
+        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         
     }
     
