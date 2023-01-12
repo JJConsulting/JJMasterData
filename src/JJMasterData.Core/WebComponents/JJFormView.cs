@@ -857,8 +857,8 @@ public class JJFormView : JJGridView
         {
             CssClass = "pb-3 mt-3"
         };
-        toolbar.ListElement.Add(btnBack.GetHtmlBuilder());
-        toolbar.ListElement.Add(btnHideLog.GetHtmlBuilder());
+        toolbar.BuilderList.Add(btnBack.GetHtmlBuilder());
+        toolbar.BuilderList.Add(btnHideLog.GetHtmlBuilder());
         return toolbar;
     }
 
@@ -870,15 +870,15 @@ public class JJFormView : JJGridView
         };
         if (pageState == PageState.View)
         {
-            toolbar.ListElement.Add(GetButtonBack().GetHtmlBuilder());
+            toolbar.BuilderList.Add(GetButtonBack().GetHtmlBuilder());
 
             if (LogAction.IsVisible)
-                toolbar.ListElement.Add(GetButtonViewLog(values).GetHtmlBuilder());
+                toolbar.BuilderList.Add(GetButtonViewLog(values).GetHtmlBuilder());
         }
         else
         {
-            toolbar.ListElement.Add(GetButtonOk().GetHtmlBuilder());
-            toolbar.ListElement.Add(GetButtonCancel().GetHtmlBuilder());
+            toolbar.BuilderList.Add(GetButtonOk().GetHtmlBuilder());
+            toolbar.BuilderList.Add(GetButtonCancel().GetHtmlBuilder());
         }
         return toolbar;
     }

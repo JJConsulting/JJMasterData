@@ -15,8 +15,8 @@ public partial class HtmlBuilder
 {
     private readonly string _rawText;
     private readonly bool _hasRawText;
-    private readonly Dictionary<string, string> _attributes;
-    private readonly HtmlBuilderCollection _children;
+    private readonly IDictionary<string, string> _attributes;
+    private readonly ICollection<HtmlBuilder> _children;
 
     /// <summary>
     /// Tag of the current builder.
@@ -29,7 +29,7 @@ public partial class HtmlBuilder
     public HtmlBuilder()
     {
         _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        _children = new HtmlBuilderCollection();
+        _children = new HashSet<HtmlBuilder>();
     }
 
     /// <summary>
@@ -136,13 +136,13 @@ public partial class HtmlBuilder
     {
         return _attributes[key];
     }
-    public List<HtmlBuilder> GetChildren()
+    public IEnumerable<HtmlBuilder> GetChildren()
     {
         return _children.ToList();
     } 
-    public List<HtmlBuilder> GetChildren(HtmlTag tagName)
+    public IEnumerable<HtmlBuilder> GetChildren(HtmlTag tagName)
     {
-        return _children.FindAll(x => x.Tag?.TagName == tagName).ToList();
+        return _children.Where(x => x.Tag?.TagName == tagName);
     }
     public string GetRawText()
     {
