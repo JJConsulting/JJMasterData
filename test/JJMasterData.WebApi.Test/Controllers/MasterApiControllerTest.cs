@@ -7,9 +7,12 @@ using JJMasterData.WebApi.Services;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Xunit.Extensions.Ordering;
 
@@ -36,7 +39,7 @@ public class MasterApiControllerTest
         };
 
         IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository);
+        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository,JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
         var masterApiService = new MasterApiService(accessor, entityRepository, dataDictionaryRepository, null);
         _controller = new MasterApiController(masterApiService);
     }

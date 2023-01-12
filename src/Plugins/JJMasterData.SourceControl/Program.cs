@@ -13,9 +13,9 @@ var path = configuration.GetValue<string>("DictionaryPath");
 Console.WriteLine(AppContext.BaseDirectory);
 Console.WriteLine("Starting Process...\n");
 
-DateTime start = DateTime.Now;
+var start = DateTime.Now;
 IEntityRepository entityRepository = new Factory();
-var dicDao = new DatabaseDataDictionaryRepository(entityRepository);
+var dicDao = new DatabaseDataDictionaryRepository(entityRepository, "tb_masterdata");
 var databaseDictionaries = dicDao.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 

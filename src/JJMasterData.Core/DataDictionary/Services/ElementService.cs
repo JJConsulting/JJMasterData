@@ -15,6 +15,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -90,8 +91,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
-                CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tableName),
-                CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tableName)
+                CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
             };
         }
         
@@ -183,7 +184,7 @@ public class ElementService : BaseService
 
     public JJGridView GetFormView()
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
+        var element = new Element(JJServiceCore.CoreOptions.DataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
         element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
         element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);

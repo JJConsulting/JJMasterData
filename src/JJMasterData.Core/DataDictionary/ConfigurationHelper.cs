@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 #endif
 using System.Threading;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.DataDictionary
 {
@@ -12,7 +13,7 @@ namespace JJMasterData.Core.DataDictionary
     {
         public static string GetMasterDataAuditLog()
         {
-            string prefix = JJService.Options.AuditLogTableName;
+            string prefix= JJServiceCore.CoreOptions.AuditLogTableName;
             if (string.IsNullOrEmpty(prefix))
                 prefix = "tb_masterdata_auditlog";
             return prefix;
@@ -20,7 +21,7 @@ namespace JJMasterData.Core.DataDictionary
 
         public static string GetUrlMasterData()
         {
-            string value = JJService.Options.JJMasterDataUrl;
+            string value = JJServiceCore.CoreOptions.JJMasterDataUrl;
 
 #if NETFRAMEWORK
             if (string.IsNullOrEmpty(value))

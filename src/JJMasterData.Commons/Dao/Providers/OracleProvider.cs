@@ -243,7 +243,7 @@ internal class OracleProvider : BaseProvider
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataOptions.GetWriteProcedureName(element);
+        string procedureFinalName = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -498,7 +498,7 @@ internal class OracleProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         StringBuilder sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataOptions.GetReadProcedureName(element);
+        string procedureFinalName = JJMasterDataCommonsOptions.GetReadProcedureName(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -815,7 +815,7 @@ internal class OracleProvider : BaseProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataOptions.GetWriteProcedureName(element);
+        cmd.Sql = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
 
@@ -851,7 +851,7 @@ internal class OracleProvider : BaseProvider
         var cmd = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
-            Sql = JJMasterDataOptions.GetReadProcedureName(element),
+            Sql = JJMasterDataCommonsOptions.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
                 new(VariablePrefix + "orderby", orderBy),

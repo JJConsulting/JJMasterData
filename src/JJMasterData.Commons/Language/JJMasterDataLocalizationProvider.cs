@@ -24,11 +24,11 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
 
     public IDictionary<string, string> GetLocalizedStrings(string culture)
     {
-        string tableName = JJService.Options.ResourcesTableName;
+        string tableName = JJService.CommonsOptions.ResourcesTableName;
         
         if (string.IsNullOrEmpty(tableName))
             return new Dictionary<string,string>();
-        if (string.IsNullOrEmpty(JJMasterDataOptions.GetConnectionString()))
+        if (string.IsNullOrEmpty(JJMasterDataCommonsOptions.GetConnectionString()))
             return new Dictionary<string,string>();
 
         var element = GetElement(tableName);
@@ -101,7 +101,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
     }
     public static Element GetElement()
     {
-        return GetElement(JJService.Options.ResourcesTableName);
+        return GetElement(JJService.CommonsOptions.ResourcesTableName);
     }
     private static Element GetElement(string tablename)
     {
@@ -109,8 +109,8 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         {
             Name = tablename,
             TableName = tablename,
-            CustomProcNameGet = JJMasterDataOptions.GetReadProcedureName(tablename),
-            CustomProcNameSet = JJMasterDataOptions.GetWriteProcedureName(tablename),
+            CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tablename),
+            CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tablename),
             Info = "Resources"
         };
 

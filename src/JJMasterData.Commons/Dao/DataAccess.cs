@@ -77,8 +77,8 @@ public class DataAccess
     /// </summary>
     public DataAccess()
     {
-        ConnectionString = JJMasterDataOptions.GetConnectionString();
-        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider();
+        ConnectionString = JJMasterDataCommonsOptions.GetConnectionString();
+        ConnectionProvider = JJMasterDataCommonsOptions.GetConnectionProvider();
     }
 
     /// <summary>
@@ -87,8 +87,8 @@ public class DataAccess
     /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJMasterDataOptions.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJMasterDataOptions.GetConnectionProvider(connectionStringName);
+        ConnectionString = JJMasterDataCommonsOptions.GetConnectionString(connectionStringName);
+        ConnectionProvider = JJMasterDataCommonsOptions.GetConnectionProvider(connectionStringName);
     }
 
     /// <summary>

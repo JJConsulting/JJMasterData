@@ -7,6 +7,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.Html;
 
 namespace JJMasterData.Core.WebComponents;
@@ -360,7 +361,7 @@ internal class DataExpSettings
     {
         var list = new List<FileInfo>();
 
-        var oDir = new DirectoryInfo(JJService.Options.ExportationFolderPath);
+        var oDir = new DirectoryInfo(JJServiceCore.CoreOptions.ExportationFolderPath);
 
         if (oDir.Exists)
             list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));

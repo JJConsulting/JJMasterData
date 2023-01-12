@@ -279,7 +279,7 @@ public class JJFormLog : JJBaseView
         btn.Text = "Back";
 
         var toolbar = new JJToolbar();
-        toolbar.ListElement.Add(btn.GetHtmlBuilder());
+        toolbar.BuilderList.Add(btn.GetHtmlBuilder());
         return toolbar;
     }
 

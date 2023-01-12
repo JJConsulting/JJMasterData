@@ -1,4 +1,6 @@
+using System;
 using JJMasterData.Commons.Dao;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -10,10 +12,12 @@ public class DbLoggerProvider : ILoggerProvider
     internal readonly DbLoggerOptions Options;
     internal readonly IEntityRepository Repository;
  
-    public DbLoggerProvider(IOptions<DbLoggerOptions> options, IEntityRepository _entityRepository)
+    public DbLoggerProvider(IOptions<DbLoggerOptions> options, IServiceProvider serviceProvider)
     {
         Options = options.Value;
-        Repository = _entityRepository;
+
+        using var scope = serviceProvider.CreateScope();
+        Repository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
     }
  
     /// <summary>

@@ -56,18 +56,28 @@ public class JJCheckBox : JJBaseControl
 
     private HtmlBuilder GetInputHtml()
     {
-        var input = new HtmlBuilder(HtmlTag.Input)
-            .WithAttributes(Attributes)
-            .WithAttribute("type", "checkbox")
-            .WithNameAndId(Name)
-            .WithAttribute("value", Value)
-            .WithCssClass("form-check-input")
-            .WithCssClass(CssClass)
-            .WithToolTip(Translate.Key(ToolTip))
-            .WithAttributeIf(IsChecked, "checked", "checked")
-            .WithAttributeIf(!Enabled, "disabled", "disabled");
 
-        return input;
+        var div = new HtmlBuilder(HtmlTag.Div);
+        
+        div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
+        {
+            label.AppendText(Text);
+        });
+
+        div.AppendElement(HtmlTag.Input, input =>
+        {
+            input.WithAttributes(Attributes)
+                .WithAttribute("type", "checkbox")
+                .WithNameAndId(Name)
+                .WithAttribute("value", Value)
+                .WithCssClass("form-check-input")
+                .WithCssClass(CssClass)
+                .WithToolTip(Translate.Key(ToolTip))
+                .WithAttributeIf(IsChecked, "checked", "checked")
+                .WithAttributeIf(!Enabled, "disabled", "disabled");
+        });
+
+        return div;
     }
     
 }
