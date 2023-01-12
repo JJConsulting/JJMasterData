@@ -1,68 +1,67 @@
-# UI OPTIONS
-
-## **ShowTitle**
-A ativação dessa configuração permitirá a exibição do título e subtítulo preenchidos dentro da aba Entity.
+### **ShowTitle**
+Enabling this setting will allow the display of the populated title and subtitle within the Entity tab.
 
 ![ShowTitleOn](../../media/ShowTitleON.png)
 
 ![ShowTitleOFF](../../media/ShowTitleOFF.png)
 
-## **Enable MultiSelect**
-Nesta opção será necessário que você selecione uma Chave primária para utiliza-lo.
+### **Enable MultiSelect**
+In this option you will need to select a Primary key to use it.
 
 ![EnableMultiSelectON.png](../../media/EnableMultiSelectON.png)
 
 ![EnableMultiSelectOFF.png](../../media/EnableMultiSelectOFF.png)
 
-## **ShowRowStriped**
-Ao ativar está opção, a grid da sua tabela será exibida de forma zebrada.
+### **ShowRowStriped**
+When activating this option, the grid of your table will be displayed in a zebra shape.
 
 ![ShowRowStripeON.png](../../media/ShowRowStripedON.png)
 
 ![ShowRowStripeOFF.png](../../media/ShowRowStripedOFF.png)
 
-## **ShowPagging**
-Dentro das configurações para sua tabela, Irá habilitar a opção para mudar a quantidade de itens a serem exibidos.
+### **ShowPagging**
+Within the settings for your table, will enable the option to change the amount of items to be displayed.
 
 ![ShowPaggingON.png](../../media/ShowPaggingON.png)
 
 ![ShowPaggingOFF.png](../../media/ShowPaggingOFF.png)
 
-## **ShowHeaderWhenEmpty**
-Define se será exibido o cabeçalho quando não há resposta de nenhum item dentro da tabela.
+### **ShowHeaderWhenEmpty**
+Defines whether the header will be displayed when there is no response from any item within the table.
 
 ![ShowHeaderWhenEmptyON.png](../../media/ShowHeaderWhenEmptyON.png)
 
 ![ShowHeaderWhenEmptyOFF.png](../../media/ShowHeaderWhenEmptyOFF.png)
 
-## **Header Fixed**
-Ao exibir diversos itens de sua tabela, você poderá manter seus títulos fixos ao rolar a página para baixo.
+### **Header Fixed**
+When displaying multiple items from your table, you can keep their titles fixed as you scroll down the page.
 
 ![HeaderFixedON.png](../../media/HeaderFixedON.png)
 
 ![HeaderFixedOFF.png](../../media/HeaderFixedOFF.png)
 
-## **MaintainValuesOnLoad**
-Essa opção irá garantir que a sua busca através do filtro seja salva ao recarregar a página, sendo busca de filtros ou opções de configurações.
+### **MaintainValuesOnLoad**
+This option will ensure that your search through the filter is saved when reloading the page, whether searching for filters or configuration options.
 
 ![MaintainValuesOnLoadON.png](../../media/MaintainValuesOnLoadON.png)
 
-## **ShowBorder**
-Essa configuração será utilizada para  exibir a delimitação em volta dos itens presentes na tabela.
+### **ShowBorder**
+This setting will be used to display the boundary around the items present in the table.
 
 ![ShowBorderON.png](../../media/ShowBorderON.png)
 
 ![ShowBorderOFF.png](../../media/ShowBorderOFF.png)
 
-## **EnableSorting**
-Essa configuração irá permitir que os itens da sua tabela sejam ordenados de crescente ou descrecente.
+### **EnableSorting**
+This setting will allow your table items to be sorted in ascending or descending order.
 
 ![EnableSortingON.png](../../media/EnableSortingON.png)
 
 ![EnableSortingOFF.png](../../media/EnableSortingOFF.png)
 
-## **ShowToolbar**
-A ativação da configuração de ShowToolbar irá habilitar o menu de opções na parte superior da sua tabela. Os itens a serem adicionados ou removidos podem ser visualizados dentro de aba *Action* e em seguida *Toolbar*.
+### **ShowToolbar**
+Enabling the ShowToolbar setting will enable the options menu at the top of your table. 
+Items to be added or removed can be viewed within the Action tab and then Toolbar.
 
 ![ShowToolbarON.png](../../media/ShowToolbarON.png)
 

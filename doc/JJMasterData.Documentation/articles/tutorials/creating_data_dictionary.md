@@ -1,182 +1,147 @@
 # What is a Data Dictionary
-Data Dictionary é um metadado para representar a strutura de uma tabela e sua visualização em um CRUD (tela de cadastro onde o usuário pode Criar, Ler, Atualizar e Deletar registros).
-Aqui você poderá gerenciar e configurar em tempo de execução as funcionalidades e caracteristicas desse CRUD.
+Data Dictionary is a metadata to represent the structure of a table and 
+its visualization in a CRUD (registration screen where the user can Create, Read, Update and Delete records).
 
-Os metadados são trasformados em JSON e por padrão armazenado em uma tabela no banco, porém pode ser armazenado em arquivos ou em qualquer outro lugar, para isso veja as configurações de inicialização do sitema.
+Here you can manage and configure the functionalities and characteristics of this CRUD at runtime. 
+Metadata is parsed into JSON by default and stored in a table in the database, 
+but it can be stored in files or anywhere else, 
+for that see the system [configurations](../configurations.md).
 
 # Creating a Data Dictionary 
-Você poderá dar início ao processo de criação através do link /pt-br/DataDictionary.
-O ícone New irá permitir que você faça a criação dos seus metadados e gere os scripts de suas tabelas de acordo com o dicionário criado.
 
-Com o JJMasterData será possível fazer a importação ou criação da sua tabela e a organização da mesma para dicionários e posteriormente exibidos em metadados.
+You can start through the link /pt-br/DataDictionary.
+The New icon will allow you to create your metadata and generate scripts for your tables.
 
-- Creating a new Data Dictionary<br>
-Para a criação da estrutura de dados direto pelo JJMasterData será necessário deixar o campo “import field” desmarcado, inserir o nome da tabela a ser criada e clicar em Next. 
-Preenchido o campo Table Name e clicado em Next, você irá acessar a janela de Entidade. 
-Aqui você irá encontra os seguintes itens:
+With JJMasterData you will be able to import or create your table and organize it into dictionaries and later displayed in metadata.
 
-
-- Importing structure from a existing table<br>
-Para a criação da estrutura de dados com JJMasterData através de uma tabela já existente em seu banco de dados, 
-é necessário que o campo “Import field” esteja marcado e o usuário da conexão com o banco tenha permissão para ler a estrutura da tabela. 
-O campo Table Name será preenchido com o nome da tabela já existente. 
-Preenchido o table Name e marcado o campo Import fields, 
-é só clicar em next e será criada sua estrutura de dados.
-
-Depois de criada, você poderá acessar a aba Fields e você irá ver os campos da sua tabela preexistente, sendo possível edita-los. 
-Você poderá acrescentar novos campos utilizando o ícone de adicionar, ao lado da barra de pesquisa, porém é importante que seja feito o alter table após a adição do novo campo, sempre que incluir ou alterar um campo, 
-para facilitar o processo geramos os em scripts no Menu->More->Get Scripts
+- <b>Adding a new Data Dictionary<br></b>
+  To create the data structure directly by JJMasterData it will be necessary to leave the field “import field” unchecked, 
+  insert the name of the table to be created and click Next.
 
 
-## **Entity**
-- Dictionary name:  Será o nome que irá representar o seu metadado.
-	
-- Table Name: Nome da tabela onde seus dados ficarão armazenados.
+- <b>Importing a Data Dictionary from an existing table<br></b>
+  To create a data structure with JJMasterData using an existing table in your database,
+  it is necessary that the “Import field” field is checked and the database connection user has permission to read the table structure.
+  The Table Name field will be filled in with the name of the existing table and click Next.
 
-- Get procedure Name: Nome da procedure que Irá realizar a leitura dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Get Procedure*.
+After you will access the Entity window and you will find the following items:
 
-- Set Procedure Name: Nome da procedure que Irá realizar aescrita dos dados. Você poderá visualizar a procedure criada clicando em *more*, *Get Script* e depois *Set Procedure*.
+## Entity
+- **Dictionary name**: It will be the name that will represent your metadata.
+- **Table Name**: Name of the table where your records will be stored.
+- **Get procedure** Name: Name of the procedure that will read the records. 
+  You can view the procedure created by clicking on *more*, *Get Script* and then *Get Procedure*.
+- **Set Procedure Name**: Name of the procedure that will write the records.
+  You can view the procedure created by clicking on *more*, *Get Script* and then *Set Procedure*.
+- **Title**: Here you will fill in the title that will be displayed inside the Form. 
+  It will be possible to enable or disable the visualization of the title through the internal settings.
+- **Subtitle**: Here you will fill in the subtitle that will be displayed inside the Form. 
+  Just like the title, the subtitle can also be enabled or disabled.
+- **Info**: Free text information for internal use that will be shown to the developer.
 
-- Title:  Aqui você irá preencher com o título que será exibido dentro do Form. Será possível habilitar ou não a visualização do título através das configurações internas.
+## Fields
+The next step is to access the Fields area, 
+where you can fill in and format the form fields.
 
-- Subtitle: Aqui você irá preencher com o subtítulo que será exibido dentro do Form. Da mesma forma que o title, o subtitle também poderá ser habilitado ou não.
+> [!INFO]
+> After completing all required items, you must perform another action before the table is definitely created.
+> you will access the More option on the right side of the menu and click on Get Script,
+> in this way the scripts will be converted to an SQL script and will be displayed to you.
+> After displaying the scripts, you will have the option of executing the stored procedure, 
+> if there are no procedures to be executed, just click Run All and save the page by clicking at the bottom. 
+> Okay, now your table is created. 
+> By clicking on the Exit button, at list of Data Dictionaries, when locating your table, click on the icon on the right next to the edit button,
+> so you will see the Preview button, it will let you see what the final display will look like.
 
-- Info: Informações fixas de uso interno que irão ser mostradas para o desenvolvedor que esteja desenvolvendo a aplicação.
-
-## **Fields**
+The Fields are separated in following areas:
 
 ### General
+It's required to fill in the following fields: 
+FieldName, Filter, DataBehavior, Data Type, Size, Required, Pk, Identify.
 
-O próximo passo é acessar o campo Fields, local aonde você poderá preencher e formatar os campos do formulário que irão ser exibidos na criação da nova tabela a partir dos metadados. 
-É obrigatório o preenchimento dos seguintes campos: FieldName, Filter, DataBehavior, Data Type, Size,  Required, Pk, Identify.
+- **FieldName**: This name is used to refer a field and will be related within the database.
+- **Label**: Label that will be displayed in a form
+- **Default Value**: An expression that will return a default value if the value inside the database is null.
+- **Filter**: Field that indicates a type of filter that will be executed in the get procedure
+- **DataBehavior**: Data behavior
+  - Real: Will be used in Get and Set;
+  - Virtual: It will be used only in Set;
+  - ViewOnly: Will be used only in Get.
+- **DataType**: Type of data that will be received from the table.
+- **Size**: Number of characters and when used as Varchar it will be the size to be reserved within the database and the max length in the form. 
+- **Required**: It will define the required filling of the field.
+- **PK**: Define whether or not it's the primary key, it's important that you fill in one of the items in your table as the primary key.
+- **Identity**: If the field will be auto-incremented, for example, if it will automatically return a field from within the database.
+- **Help Description**: Message to be displayed to the user in a tooltip to help him.
 
-- FieldName: Este nome será apresentado somente dentro do banco de dados, será relacionado somente dentro do banco, não será exibido ao usuário final.
+### Component 
+- **Component**: Component used to render a specific field within the grid and form.
+- **AutoPostBack**: true if an automatic postback occurs when the component control loses focus; otherwise, false. 
+  The default is false.
+- **Placeholder**: Will show a note for the component when there is no data included.
 
-- Label: Este campo deve ser preenchido de acordo com o nome que deseja ser exibido no título da coluna, por exemplo, caso seja uma coluna de emails, o título deverá conter esse nome ou algo que tenha relação.
+To upload see [Configuring Data Upload](data_file.md)
 
-- DafaultValue: Uma expressão que irá retornar um valor padrão caso o valor dentro do banco de dados seja nulo.
-
-- Filter: Campo que indica um tipo de filtro que será executado na procedure de get
-
-- DataBehavior: Comportamento de dados
-
-    - Real: Será usado em Get e Set;
-
-    - Virtual: Será utilizado somente em Set;
-
-    - ViewOnly: Será usado somente em Get.
-
-- DataType: Tipo dos dados que serão recebidos para tabela.
-
-- Size: Quantidade caracteres e quando utilizado como Varchar será o tamanho a ser reservado dentro do banco de dados.
-
-- Required: Irá definir a obrigatoriedade do preenchimento do campo.
-
-- PK: Definir se é ou não a chave primária, é importante que você preencha um dos itens da sua tabela como chave primária.
-
-- Identity:  Se o campo será auto incremento, por exemplo, se ele irá retornar um campo de forma automática de dentro do banco de dados. 
-
-- Help Description: Mensagem a ser exibida para o usuário com a finalidade auxilia-lo.
-
-Após o preenchimento de todos os itens obrigatórios em Fields, você deverá executar outra ação antes da tabela ser definitivamente  criada. Com todos os campos obrigatórios preenchidos você irá acessar a opção More na lateral direita da tela e clicar em Get Script, dessa forma os dados preenchidos na aba Fields serão convertidos para um script SQL e será exibido para você. Após a exibição dos scripts, você terá a opção de executar a stored procedure, caso não haja procedures a serem executadas, basta clicar em Run All e salvar a página clicando na parte inferior. Pronto, agora sua tabela está criada. Ao clicar no botão Exit, ao lado do botão Entidade, você poderá retornar ao local onde as tabelas estão sendo exibidas. Ao localizar a sua tabela, clique no ícone a direita ao lado do botão de editar, assim você irá visualizar o botão Render, ele permitirá que você veja como será a exibição final.
-
-### Component (completar)
-
-- Component: Componente utilizado para reinderização de uma coluna específica dentro de sua tabela.
-
-- AutoPostBack: Ele irá definir se o Form será enviado para o servidor toda vez que haja uma alteração dentro dele.
-
-- Placeholder: Irá mostrar uma observação para o componente quando não houver nenhum dado incluso.
-
-### Advanced (completar)
+### Advanced
+Advanced Settings in a component
 
 #### Expressions
 
-[!include[expressions](../expressions.md)
+!include[expressions](../expressions.md)
 
 #### CssClass
-
-É possível inserir várias classes Css e criar layouts responsivos utilizando o sistema de grid do Bootstrap. 
-Por exemplo, dois campos com a classe `col-sm-6` no formulário ficarão na mesma linha.
+It's possible to insert several Css classes and create responsive layouts using Bootstrap's grid system. 
+For example, two fields with class `col-sm-6` in the form will be on the same line.
 
 #### Line Group
-
-É a linha do campo dentro do sistema de grid. Representa a classe row do bootstrap.
+It's the field line within the grid system. Represents the bootstrap row class.
 
 #### Export
-
-Você poderá definir se o campo irá ou não ser exportado.
-
+You can define whether or not the field will be exported.
 
 #### Validade Request
-
-Em sistemas .NET Framework 4.8 o campo irá validar valores perigosos, como tags Html e comandos SQL.
+On .NET Framework 4.8 systems, the field will validate dangerous values, like Html tags and SQL commands.
 
 ## **Panels**
-Permite separar os campos do dicionário em paineis. Mas somente para as ações de adicionar, editar e visualizar.
+Allows you to separate the dictionary fields into panels. 
+But only for add, edit and view actions.
 
 ### General
-
-- Layout: É Maneira com que o painel será reinderizado.
-
-- Expanded By Default: Está opção irá definir se o painel criado será iniciado maximizado por minimizado por padrão.
-
-- Available Field: Serão os itens que não serão exibidos como paineis.
-
-- Selected Fields: Ao mudar um item da sua tabela para o campo Selected fields, você verá que ao acessar sua tabela e tentar realizar alguma ação entre adicionar, editar e visualizar um item ele irá ser exibido como painel.
-
-### Adavanced
-- Visible Expression: seeref.
-
-- Enable Expression: seeref.
-
-- CssClass: Classe Css do campo.
+- **Layout**: It's the way the panel will be displayed.
+- **Expanded By Default**: This option will define if the created panel will be started maximized by minimized by default.
+- **Available Field**: Will be the items that will not be displayed as panels.
+- **Selected Fields**: Will be the items that will be displayed as panels.
 
 ## **Indexes and Relationships**
+Both items will be used to generate information from your metadata. 
+You can add this information by clicking the New button.
 
-Ambos os itens serão utilizados para gerar informações dos seus metadados. Você poderá adicionar essas informações clicando no botão *New*.
+## Options
+Layout settings that can be performed on the form at runtime.<br>
+!include[expressions](ui_options.md)
 
-## **Actions**
-
-Dentro da aba Actions você poderá configurar a exibição de ícones para editar sua tabela. O campo Actions é dividido em dois, Grid e Toolbar. 
+## Actions
+Within the Actions tab you can configure the display of icons to edit your table. 
+The Actions field is divided into two, Grid and Toolbar. 
 
 ### Grid
-
-- View: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *View*, será exibido a linha escolhida de forma detalhada.
-
-- Edit: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Ao clicar no botão *Edit*, será possível alterar informarções já registradas anteriormente em sua tabela de dados.
-
-- Delete: Este ícone será exibido ao lado dos itens de sua tabela, é possível encontra-lo ao utilizar a visualização prévia de sua tabela. Está opção irá deletar a linha de informações desejada.
+- View: This icon will be displayed next to the items in your table, you can find it when using the preview of your table. By clicking on the *View* button, the chosen line will be displayed in detail.
+- Edit: This icon will be displayed next to the items in your table, you can find it when using the preview of your table. By clicking on the *Edit* button, it will be possible to change information previously registered in your data table.
+- Delete: This icon will be displayed next to the items in your table, you can find it when using the preview of your table. This option will delete the desired line of information.
 
 ### Toolbar
-
-- Insert: Permite adicionar um novo dado na sua tabela.
-
-- config: Permite que você acesse as configurações de layout para o usuário, por exemplo, records per page and show table border.
-
-- Export: Permite selecionar a exportação dos dados presentes na tabela. Você poderá importar apenas os dados visíveis na tela ou todos os dados de sua tabela, é permitido que a exportação seja feita em arquivos pdf, csv, excel e txt. Caso a exportação seja feita em PDF, é necessário que seja habilitado o plugin de pdf (LINK PARA DOC PLUGIN PDF).
-
-- Import: Este item será exibido como upload para o usuário, permitindo a importação de dados para sua tabela através de arquivos txt, csv e log. Você poderá clicar no botão Help Para visualizar a formatação de upload do arquivo.
-
-- Refresh: A opção refresh irá atualizar sua tabela de dados, para caso haja alguma mudança para ser exibida.
-
-- Legend: A legenda é utilizada para auxiliar a descrição do dado dentro de sua tabela, por exemplo, você poderá criar a legenda para uma coluna de sexo, em que é possível atribuir a descrição Woman, Man e na sequência associar com cores e ícones. Você pode ver uma descrição completa de como criar sua legenda através do link (LINK PARA DATA_ITEM_LEG).
-
-- Sort: Permite que o usuário ordenar a busca pelos itens, por exemplo, em ordem alfabética.
-
-- Filter: Mostra todas as opções de filtro para busca de itens dentro da tabela.
-
-- Log: Registra e exibe as ações feitas dentro da tabela, sendo adicionar, editar e deletar.
+- Insert: Allows you to add new data to your table.
+- Config: Allows you to access layout settings for the user, for example, records per page and show table border.
+- Export: Allows you to select the export of the data present in the table. You will be able to import only the data visible on the screen or all the data in your table, exporting to pdf, csv, excel and txt files is allowed. If the export is done in PDF, it is necessary to enable the pdf plugin (LINK PARA DOC PLUGIN PDF).
+- Import: This item will be displayed as an upload for the user, allowing the import of data to your table through txt, csv and log files. You can click the Help button to view the file upload formatting.
+- Refresh: The refresh option will update your data table, in case there is any change to be displayed.
+- Legend: The legend is used to help describe the data within your table, for example, you can create the legend for a gender column, where you can assign the description Woman, Man and then associate with colors and icons . You can see a complete description of how to create your legend via the link (LINK TO DATA_ITEM_LEG).
+- Sort: Allows the user to order the search by items, for example, in alphabetical order.
+- Filter: Shows all filter options for searching items within the table.
+- Log: Records and displays the actions performed within the table, including adding, editing and deleting.
 
 ## **API**
-
-Dentro desta aba será possível editar cada verbo responsável pelas permissões http dentro da REST API.
-
-- ApplyUseridOn: Nome do campo em que o filtro de ID do usuário será aplicado.
-
-- JsonFormat: Está opção irá definir e modificar a formatação do arquivo Json. Ao utilizar a opção default, ficará definido o padrão já escolhido pelo usuário, entretando a opção LowerCase irá formatar o arquivo para letras minúsculas.
-
-- Sync: Está opção habilita ou desabilita o dicionário da REST API.
-
-
-
+Within this tab it will be possible to edit each verb responsible for http permissions within the REST API.
+- ApplyUseridOn: Name of the field where the user ID filter will be applied.
+- JsonFormat: This option will define and modify the formatting of the Json file. When using the default option, the default chosen by the user will be defined, however the LowerCase option will format the file for lowercase letters.
+- Sync: This option enables or disables the REST API dictionary.
