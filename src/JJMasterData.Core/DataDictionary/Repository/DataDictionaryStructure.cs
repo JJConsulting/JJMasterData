@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DI;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -24,9 +21,9 @@ public class DataDictionaryStructure
     public const string LastModifiedTo = "modified_to";
     public const string Json = "json";
     
-    public static Element GetElement()
+    public static Element GetElement(string tableName)
     {
-        var element = new Element(JJServiceCore.CoreOptions.DataDictionaryTableName, "Data Dictionaries");
+        var element = new Element(tableName, "Data Dictionaries");
             
         element.Fields.AddPK(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;

@@ -740,7 +740,7 @@ public class JJGridView : JJBaseView
     {
         if ("selectall".Equals(requestType))
         {
-            string values = DoSelectAllRows();
+            string values = GetAllSelectedRows();
             CurrentContext.Response.SendResponse(values);
             return true;
         }
@@ -1300,24 +1300,24 @@ public class JJGridView : JJBaseView
         SelectedRowsId = string.Empty;
     }
 
-    private string DoSelectAllRows()
+    private string GetAllSelectedRows()
     {
         int tot = 0;
         var dt = GetDataTable(CurrentFilter, CurrentOrder, 999999, 1, ref tot);
-        var sIds = new StringBuilder();
+        var selectedKeys = new StringBuilder();
         var hasVal = false;
         foreach (DataRow row in dt.Rows)
         {
             if (!hasVal)
                 hasVal = true;
             else
-                sIds.Append(",");
+                selectedKeys.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            sIds.Append(Cript.Cript64(values));
+            selectedKeys.Append(Cript.Cript64(values));
         }
 
-        return sIds.ToString();
+        return selectedKeys.ToString();
     }
 
     /// <summary>
