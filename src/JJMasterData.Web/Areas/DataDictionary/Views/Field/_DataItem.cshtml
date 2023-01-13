@@ -210,7 +210,7 @@
                                         ShowImageLegend = true,
                                         Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
                                     },
-                                    SelectedValue = (Model.DataItem.Items[i].Id).ToString(),
+                                    SelectedValue = (Model.DataItem.Items[i].Icon.GetId()).ToString(),
                                     Name = iconId
                                 };
                             }
