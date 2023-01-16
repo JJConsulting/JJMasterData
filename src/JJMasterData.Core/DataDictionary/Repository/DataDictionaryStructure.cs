@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
@@ -23,10 +22,12 @@ public class DataDictionaryStructure
     public const string LastModifiedTo = "modified_to";
     public const string Json = "json";
     
-    public static Element GetElement()
+    public static Element GetElement(string tableName)
     {
-        var element = new Element(JJService.Options.TableName, "Data Dictionaries");
-            
+        if (string.IsNullOrEmpty(tableName))
+            throw new ArgumentNullException(nameof(tableName));
+        
+        var element = new Element(tableName, "Data Dictionaries");
         element.Fields.AddPK(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;
         element.Fields.AddPK(Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
@@ -41,13 +42,10 @@ public class DataDictionaryStructure
         return element;
     }
     
-    public static void ApplyCompatibility(Metadata dicParser, string elementName)
+    public static void ApplyCompatibility(Metadata dicParser)
     {
-        if (dicParser == null)
+        if (dicParser == null || dicParser.Table == null)
             return;
-
-        if (dicParser.Table == null)
-            throw new JJMasterDataException(Translate.Key("Dictionary {0} not found", elementName));
 
         //Nairobi
         dicParser.UIOptions ??= new UIOptions();

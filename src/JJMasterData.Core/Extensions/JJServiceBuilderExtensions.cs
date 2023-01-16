@@ -52,7 +52,7 @@ public static class JJServiceBuilderExtensions
     
     public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder)
     {
-        builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>());
+        builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
         return builder;
     }
    

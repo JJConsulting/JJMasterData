@@ -1,5 +1,9 @@
 ﻿using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Options;
+using JJMasterData.Core.DI;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.WebComponents;
 
@@ -13,9 +17,11 @@ namespace JJMasterData.Core.WebComponents;
 public static class BootstrapHelper
 {
     #region Options
-    private static JJMasterDataOptions Options => JJService.Options;
-
-    public static int Version => Options.BootstrapVersion;
+    public static readonly int Version;
+    static BootstrapHelper()
+    {
+        Version = JJServiceCore.Options.BootstrapVersion;
+    }
     #endregion
 
     #region Button

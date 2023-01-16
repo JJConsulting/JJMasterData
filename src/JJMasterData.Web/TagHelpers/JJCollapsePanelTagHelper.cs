@@ -29,6 +29,9 @@ public class JJCollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("configure")]
     public Action<JJCollapsePanel>? Configure { get; set; }
 
+    [HtmlAttributeName("color")]
+    public PanelColor Color { get; set; }
+    
     private RazorPartialRendererService RendererService { get; }
     
     public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService)
@@ -45,8 +48,13 @@ public class JJCollapsePanelTagHelper : TagHelper
             Name = Title!.ToLower().Replace(" ", "_"),
             Title = Title,
             ExpandedByDefault = ExpandedByDefault,
-            TitleIcon = new JJIcon(Icon)
+            Color = Color
         };
+
+        if (Icon != default)
+        {
+            panel.TitleIcon = new JJIcon(Icon);
+        }
 
         if (Partial == null)
         {

@@ -178,16 +178,17 @@ internal class GridTableBody
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-        var htmlList = new List<HtmlBuilder>();
-
-        htmlList.AddRange(GetActionsWithoutGroupHtml(actionsWithoutGroup, values));
+        
+        foreach (var action in GetActionsWithoutGroupHtml(actionsWithoutGroup, values))
+        {
+            yield return action;
+        }
 
         if (groupedActions.Count > 0)
         {
-            htmlList.Add(GetGroupedActionsHtml(groupedActions, values));
+            yield return GetGroupedActionsHtml(groupedActions, values);
         }
-
-        return htmlList;
+        
     }
 
     private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,

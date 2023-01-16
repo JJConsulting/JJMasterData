@@ -17,6 +17,7 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -113,7 +114,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = Path.Combine(JJService.Options.ExportationFolderPath, FormElement.Name);
+            string folderPath = Path.Combine(JJServiceCore.Options.ExportationFolderPath, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {

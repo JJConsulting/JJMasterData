@@ -8,6 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using JJMasterData.Commons.Options;
+using JJMasterData.Core.DataManager.AuditLog;
+using JJMasterData.Core.FormEvents;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 
 namespace JJMasterData.Core.Extensions;
 
@@ -20,27 +24,40 @@ public static class ServiceCollectionExtensions
         .AddJsonFile(filePath, optional: false, reloadOnChange: true)
         .Build();
 
+        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        
         services.AddDefaultServices();
+        
         return services.AddJJMasterDataCommons(configuration);
     }
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<JJMasterDataOptions> configure)
+        Action<JJMasterDataCoreOptions> configureCore,
+        Action<JJMasterDataCommonsOptions> configureCommons)
     {
+        services.Configure(configureCore);
+        
         services.AddDefaultServices();
-        return services.AddJJMasterDataCommons(configure);
+        return services.AddJJMasterDataCommons(configureCommons);
     }
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        
         services.AddDefaultServices();
         return services.AddJJMasterDataCommons(configuration);
     }
 
     private static void AddDefaultServices(this IServiceCollection services)
     {
-        services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
+        services.AddTransient<IFormEventResolver,FormEventResolver>();
+        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
+        
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+        
     }
+    
+    
 }

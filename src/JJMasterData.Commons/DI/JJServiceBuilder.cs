@@ -1,13 +1,14 @@
-﻿using System;
+﻿using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -19,29 +20,25 @@ public class JJServiceBuilder
         Services = services;
     }
 
-    public JJServiceBuilder ConfigureJJMasterDataOptions(IConfiguration configuration)
-    {
-        Services.Configure<JJMasterDataOptions>(configuration);
-        return this;
-    }
-    
-    public JJServiceBuilder ConfigureJJMasterDataOptions(Action<JJMasterDataOptions> configure)
-    {
-        Services.Configure(configure);
-        return this;
-    }
-    
-    public JJServiceBuilder AddDefaultServices()
+    public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
     {
         Services.AddLocalization();
+        
         Services.AddLogging(builder =>
         {
             builder.AddDbLoggerProvider();
             builder.AddFileLoggerProvider();
+            builder.AddConfiguration(configuration.GetSection("Logging"));
         });
-        Services.AddTransient<IEntityRepository,Factory>();
+        
+        Services.AddScoped<IEntityRepository,Factory>();
+        
+        Services.AddTransient<IEncryptionService, AesEncryptionService>();
+        Services.AddTransient<JJMasterDataEncryptionService>();
+        
         Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
-        Services.AddTransient<IBackgroundTask, BackgroundTask>();
+        Services.AddSingleton<IBackgroundTask, BackgroundTask>();
+        
         return this;
     }
 

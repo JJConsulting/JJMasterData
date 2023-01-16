@@ -27,30 +27,29 @@ internal class DataPanelGroup
         Name = dataPanel.Name;
     }
 
-    public List<HtmlBuilder> GetHtmlPanelList()
+    public IEnumerable<HtmlBuilder> GetHtmlPanelList()
     {
-        var list = new List<HtmlBuilder>();
-
-        list.AddRange(GetTabPanels());
-
-        list.AddRange(GetNonTabPanels());
         
-        list.AddRange(GetFieldsWithoutPanel());
+        foreach (var panel in GetTabPanels())
+            yield return panel;
 
-        return list;
+        foreach (var nonTabPanel in GetNonTabPanels()) 
+            yield return nonTabPanel;
+
+        foreach (var fieldWithoutPanel in GetFieldsWithoutPanel())
+            yield return fieldWithoutPanel;
     }
 
     private IEnumerable<HtmlBuilder> GetTabPanels()
     {
-        var list = new List<HtmlBuilder>();
+
         var tabs = FormElement.Panels.FindAll(x => x.Layout == PanelLayout.Tab);
 
-        if (tabs.Count <= 0) return list;
+        if (tabs.Count <= 0)
+            yield break;
         
         var navTab = GetTabNav(tabs);
-        list.Add(navTab.GetHtmlBuilder());
-
-        return list;
+        yield return navTab.GetHtmlBuilder();
     }
 
     private IEnumerable<HtmlBuilder> GetNonTabPanels()
@@ -65,17 +64,15 @@ internal class DataPanelGroup
 
     private IEnumerable<HtmlBuilder> GetFieldsWithoutPanel()
     {
-        var list = new List<HtmlBuilder>();
-
         bool dontContainsVisibleFields = !FormElement.Fields.ToList()
             .Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0"));
         
         if (dontContainsVisibleFields)
-            return list;
+            yield break;
         
         if (!RenderPanelGroup)
         {
-            list.Add(GetHtmlForm(null));
+            yield return GetHtmlForm(null);
         }
         else
         {
@@ -84,10 +81,8 @@ internal class DataPanelGroup
                 ShowAsWell = true,
                 HtmlBuilderContent = GetHtmlForm(null)
             };
-            list.Add(card.GetHtmlBuilder());
+            yield return card.GetHtmlBuilder();
         }
-
-        return list;
     }
 
     private JJTabNav GetTabNav(List<FormElementPanel> tabs)

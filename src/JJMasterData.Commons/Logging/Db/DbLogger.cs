@@ -9,6 +9,7 @@ namespace JJMasterData.Commons.Logging.Db;
 public class DbLogger : ILogger
 {
     private readonly DbLoggerProvider _dbLoggerProvider;
+    private bool _tableExists;
  
     /// <summary>
     /// Creates a new instance of <see cref="DbLogger" />.
@@ -55,9 +56,17 @@ public class DbLogger : ILogger
         };
         
         var element = DbLoggerElement.GetInstance(_dbLoggerProvider.Options);
+
         
-        if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
-            _dbLoggerProvider.Repository.CreateDataModel(element);
+        if (!_tableExists)
+        {
+            if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
+            {
+                _dbLoggerProvider.Repository.CreateDataModel(element);
+            }
+
+            _tableExists = true;
+        }
         
         _dbLoggerProvider.Repository.Insert(element, values);
     }
@@ -65,7 +74,7 @@ public class DbLogger : ILogger
     private string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
     {
         var message = new StringBuilder();
-        
+
         message.AppendLine(eventId.Name);
         message.AppendLine(formatterMessage);
 
