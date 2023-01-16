@@ -163,7 +163,7 @@ public class FieldManager
             case FormComponent.Text:
                 if (type == FieldType.Date)
                 {
-                    DateTime dVal = DateTime.Parse(sVal);
+                    var dVal = DateTime.Parse(sVal);
                     sVal = dVal == DateTime.MinValue ? "" : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
                 }
                 else if (type is FieldType.DateTime or FieldType.DateTime2)

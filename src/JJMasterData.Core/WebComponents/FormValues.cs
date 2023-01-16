@@ -40,7 +40,7 @@ internal class FormValues
             }
             else if (f.Component == FormComponent.Lookup)
             {
-                var lookup = (JJLookup)FieldManager.GetField(f, state, null, values);
+                var lookup = (JJLookup)FieldManager.GetField(f, state, values);
                 lookup.AutoReloadFormFields = true;
                 val = lookup.SelectedValue;
             }
@@ -53,7 +53,7 @@ internal class FormValues
                 string t = CurrentContext.Request.QueryString("t");
                 if (val != null && "reloadpainel".Equals(t) | "tablerow".Equals(t) | "ajax".Equals(t))
                 {
-                    string sVal = val.ToString()?.Replace(" ", "").Replace(".", ",");
+                    string sVal = val.ToString().Replace(" ", "").Replace(".", ",");
                     if (double.TryParse(sVal, out var nVal))
                         val = nVal;
                     else
