@@ -26,7 +26,7 @@ public static class JJService
         }
     }
     
-    public static JJMasterDataCommonsOptions CommonsOptions
+    public static JJMasterDataCommonsOptions Options
     {
         get
         {

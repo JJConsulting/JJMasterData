@@ -87,7 +87,7 @@ public sealed class JJMasterDataCommonsOptions
             return element.CustomProcNameGet;
 
         string tableName = element.TableName;
-        string pattern = JJService.CommonsOptions.PrefixGetProc;
+        string pattern = JJService.Options.PrefixGetProc;
 
         return pattern.Replace("{tablename}", tableName);
     }
@@ -98,7 +98,7 @@ public sealed class JJMasterDataCommonsOptions
             return element.CustomProcNameSet;
 
         string tableName = element.TableName;
-        string pattern = JJService.CommonsOptions.PrefixSetProc;
+        string pattern = JJService.Options.PrefixSetProc;
 
         return pattern.Replace("{tablename}", tableName);
     }
@@ -106,7 +106,7 @@ public sealed class JJMasterDataCommonsOptions
     public static string GetReadProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.CommonsOptions.PrefixGetProc;
+        var pattern = JJService.Options.PrefixGetProc;
 
         return pattern.Replace("{tablename}", dicName);
     }
@@ -114,7 +114,7 @@ public sealed class JJMasterDataCommonsOptions
     public static string GetWriteProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.CommonsOptions.PrefixSetProc;
+        var pattern = JJService.Options.PrefixSetProc;
 
         return pattern.Replace("{tablename}", dicName);
     }
