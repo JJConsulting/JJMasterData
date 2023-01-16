@@ -429,7 +429,7 @@
             Formato o campo conforme parametrização do dicionário
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.DictionaryDAL.DicSyncInfo.BuilderList">
+        <member name="P:JJMasterData.Core.DataDictionary.DictionaryDAL.DicSyncInfo.Items">
             <summary>
             Lista de dicionários com retorno do count
             </summary>

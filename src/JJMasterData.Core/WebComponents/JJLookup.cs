@@ -120,6 +120,7 @@ public class JJLookup : JJBaseControl
         var search = new JJLookup();
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
+        search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
         search.AutoReloadFormFields = false;
