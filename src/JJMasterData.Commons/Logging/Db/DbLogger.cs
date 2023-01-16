@@ -63,8 +63,9 @@ public class DbLogger : ILogger
             if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
             {
                 _dbLoggerProvider.Repository.CreateDataModel(element);
-                _tableExists = true;
             }
+
+            _tableExists = true;
         }
         
         _dbLoggerProvider.Repository.Insert(element, values);
