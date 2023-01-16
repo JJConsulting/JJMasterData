@@ -8,8 +8,6 @@ namespace JJMasterData.Commons.Util;
 /// </summary>
 public class Cript
 {
-    private static byte[] _chave = { };
-    private static readonly byte[] Iv = { 12, 34, 56, 78, 90, 102, 114, 126 };
     private static DesEncryptionService _desEncryptionService;
     private static ReportPortalEnigmaService _reportPortalEnigmaService;
 
