@@ -32,7 +32,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
     {
         var metadata = _metadataCollection.Find(metadata => metadata.Table.Name == dictionaryName).FirstOrDefault();
         
-        DataDictionaryStructure.ApplyCompatibility(metadata, dictionaryName);
+        DataDictionaryStructure.ApplyCompatibility(metadata);
 
         return metadata;
     }

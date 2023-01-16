@@ -2,7 +2,9 @@
 using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
@@ -15,7 +17,8 @@ Console.WriteLine("Starting Process...\n");
 
 var start = DateTime.Now;
 IEntityRepository entityRepository = new Factory();
-var dicDao = new SqlDataDictionaryRepository(entityRepository, "tb_masterdata");
+var options = Options.Create(new JJMasterDataCoreOptions());
+var dicDao = new SqlDataDictionaryRepository(entityRepository, options);
 var databaseDictionaries = dicDao.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 
