@@ -23,8 +23,6 @@ namespace JJMasterData.Commons.Dao;
 public class DataAccess
 {
     private DbProviderFactory _factory;
-    private DbConnection _connection;
-    private bool _keepAlive;
 
     ///<summary>
     ///Database connection string; 
@@ -51,26 +49,6 @@ public class DataAccess
     /// </summary>
     public int TimeOut { get; set; } = 240;
 
-    /// <summary>
-    /// Keeps the database connection open, 
-    /// Allowing to execute a sequence of commands; 
-    /// </summary>
-    /// <example>
-    /// <a href="https://portal.jjconsulting.com.br/jjdoc/articles/miscellaneous/dataaccess.html">To read more click here</a>
-    /// </example>
-    /// <remarks>
-    /// Default value is false;
-    /// </remarks>
-    public bool KeepConnAlive
-    {
-        get => _keepAlive;
-        set
-        {
-            _keepAlive = value;
-            if (_keepAlive == false)
-                CloseConnection();
-        }
-    }
 
     /// <summary>
     /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
@@ -143,10 +121,7 @@ public class DataAccess
 
     public DbConnection GetConnection()
     {
-        _connection ??= GetFactory().CreateConnection();
-
-        if (_connection?.State is ConnectionState.Open or ConnectionState.Connecting)
-            return _connection;
+        var _connection = GetFactory().CreateConnection();
 
         try
         {
@@ -163,10 +138,7 @@ public class DataAccess
 
     public async Task<DbConnection> GetConnectionAsync()
     {
-        _connection ??= GetFactory().CreateConnection();
-
-        if (_connection?.State is ConnectionState.Open or ConnectionState.Connecting)
-            return _connection;
+        var _connection = GetFactory().CreateConnection();
 
         try
         {
@@ -179,21 +151,6 @@ public class DataAccess
         }
 
         return _connection;
-    }
-
-    public void CloseConnection()
-    {
-        if (KeepConnAlive)
-            return;
-
-        if (_connection == null)
-            return;
-
-        if (_connection.State == ConnectionState.Open)
-            _connection.Close();
-
-        _connection?.Dispose();
-        _connection = null;
     }
 
     /// <summary>
@@ -215,33 +172,35 @@ public class DataAccess
     /// </returns>
     public DataTable GetDataTable(DataAccessCommand cmd)
     {
-        DataTable dt = new DataTable();
+        var dt = new DataTable();
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            using var dataAdapter = GetFactory().CreateDataAdapter();
-            dataAdapter!.SelectCommand = dbCommand;
-            dataAdapter.Fill(dt);
-
-            if (cmd.Parameters != null)
+            using (dbCommand.Connection)
             {
-                foreach (var parameter in cmd.Parameters)
+                using var dataAdapter = GetFactory().CreateDataAdapter();
+                dataAdapter!.SelectCommand = dbCommand;
+                dataAdapter.Fill(dt);
+    
+                if (cmd.Parameters != null)
                 {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                    foreach (var parameter in cmd.Parameters)
+                    {
+                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                    }
                 }
             }
+            
+
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
         }
-        finally
-        {
-            CloseConnection();
-        }
+
 
         return dt;
     }
@@ -261,26 +220,25 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
 
-            using var dataAdapter = GetFactory().CreateDataAdapter();
-            dataAdapter!.SelectCommand = dbCommand;
-            dataAdapter.Fill(dt);
-
-            if (cmd.Parameters != null)
+            using (dbCommand.Connection)
             {
-                foreach (var param in cmd.Parameters)
+                using var dataAdapter = GetFactory().CreateDataAdapter();
+                dataAdapter!.SelectCommand = dbCommand;
+                dataAdapter.Fill(dt);
+
+                if (cmd.Parameters != null)
                 {
-                    if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        param.Value = dbCommand.Parameters[param.Name].Value;
+                    foreach (var param in cmd.Parameters)
+                    {
+                        if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                            param.Value = dbCommand.Parameters[param.Name].Value;
+                    }
                 }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return dt;
@@ -337,21 +295,21 @@ public class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-            scalarResult = dbCommand.ExecuteScalar();
 
-            foreach (var param in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    param.Value = dbCommand.Parameters[param.Name].Value;
+                scalarResult = dbCommand.ExecuteScalar();
+
+                foreach (var param in cmd.Parameters)
+                {
+                    if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        param.Value = dbCommand.Parameters[param.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return scalarResult;
@@ -371,21 +329,21 @@ public class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
-            scalarResult = await dbCommand.ExecuteScalarAsync();
-
-            foreach (var parameter in cmd.Parameters)
+        
+            using (dbCommand.Connection)
             {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                scalarResult = await dbCommand.ExecuteScalarAsync();
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return scalarResult;
@@ -409,7 +367,11 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-            scalarResult = dbCommand.ExecuteScalar();
+
+            using (dbCommand.Connection)
+            {
+                scalarResult = dbCommand.ExecuteScalar();
+            }
         }
         catch (Exception ex)
         {
@@ -430,22 +392,21 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
 
-            rowsAffected += dbCommand.ExecuteNonQuery();
-
-            foreach (DataAccessParameter parameter in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (parameter.Direction == ParameterDirection.Output ||
-                    parameter.Direction == ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                rowsAffected += dbCommand.ExecuteNonQuery();
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction == ParameterDirection.Output ||
+                        parameter.Direction == ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return rowsAffected;
@@ -460,21 +421,20 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
 
-            rowsAffected = await dbCommand.ExecuteNonQueryAsync();
-
-            foreach (DataAccessParameter parameter in cmd.Parameters)
+            using (dbCommand.Connection)
             {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                rowsAffected = await dbCommand.ExecuteNonQueryAsync();
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return rowsAffected;
@@ -488,31 +448,31 @@ public class DataAccess
         int numberOfRowsAffected = 0;
         int index = 0;
 
-        DbConnection connection = GetConnection();
-        using var sqlTras = connection.BeginTransaction();
-        try
+        var connection = GetConnection();
+
+        using (connection)
         {
-            foreach (var cmd in commands)
+            using var sqlTras = connection.BeginTransaction();
+            try
             {
-                using var dbCommand = CreateDbCommand(cmd);
-                dbCommand.Connection = connection;
-                dbCommand.Transaction = sqlTras;
+                foreach (var cmd in commands)
+                {
+                    using var dbCommand = CreateDbCommand(cmd);
+                    dbCommand.Connection = connection;
+                    dbCommand.Transaction = sqlTras;
 
-                numberOfRowsAffected += dbCommand.ExecuteNonQuery();
-                index++;
+                    numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+                    index++;
+                }
+
+                sqlTras.Commit();
             }
-
-            sqlTras.Commit();
-        }
-        catch (Exception ex)
-        {
-            sqlTras.Rollback();
-            var cmd = commands[index];
-            throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
+            catch (Exception ex)
+            {
+                sqlTras.Rollback();
+                var cmd = commands[index];
+                throw GetDataAccessException(ex, cmd);
+            }
         }
 
         return numberOfRowsAffected;
@@ -524,30 +484,29 @@ public class DataAccess
         int index = 0;
 
         var connection = await GetConnectionAsync();
-        using var transaction = connection.BeginTransaction();
-        try
+        using (connection)
         {
-            foreach (DataAccessCommand cmd in commands)
+            using var transaction = connection.BeginTransaction();
+            try
             {
-                using var dbCommand = CreateDbCommand(cmd);
-                dbCommand.Connection = connection;
-                dbCommand.Transaction = transaction;
+                foreach (var cmd in commands)
+                {
+                    using var dbCommand = CreateDbCommand(cmd);
+                    dbCommand.Connection = connection;
+                    dbCommand.Transaction = transaction;
 
-                numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync();
-                index++;
+                    numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync();
+                    index++;
+                }
+
+                transaction.Commit();
             }
-
-            transaction.Commit();
-        }
-        catch (Exception ex)
-        {
-            transaction.Rollback();
-            var cmd = commands[index];
-            throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                var cmd = commands[index];
+                throw GetDataAccessException(ex, cmd);
+            }
         }
 
         return numberOfRowsAffected;
@@ -613,8 +572,13 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
             dbCommand.Transaction = trans;
-
-            numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+            
+            
+            using(dbCommand.Connection)
+            {
+            	numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+            }
+            
         }
         catch (Exception ex)
         {
@@ -653,41 +617,40 @@ public class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-
-            using var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
-
-            while (dr.Read())
+            
+            using (dbCommand.Connection)
             {
-                retCollection = new Hashtable();
-                int nQtd = 0;
+                using var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
 
-                while (nQtd < dr.FieldCount)
+                while (dr.Read())
                 {
-                    string fieldName = dr.GetName(nQtd);
-                    if (retCollection.ContainsKey(fieldName))
-                        throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                    retCollection = new Hashtable();
+                    int nQtd = 0;
 
-                    retCollection.Add(fieldName, dr.GetValue(nQtd));
-                    nQtd += 1;
+                    while (nQtd < dr.FieldCount)
+                    {
+                        string fieldName = dr.GetName(nQtd);
+                        if (retCollection.ContainsKey(fieldName))
+                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                        retCollection.Add(fieldName, dr.GetValue(nQtd));
+                        nQtd += 1;
+                    }
                 }
-            }
 
-            if (!dr.IsClosed)
-                dr.Close();
+                if (!dr.IsClosed)
+                    dr.Close();
 
-            foreach (var parameter in cmd.Parameters)
-            {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
-        }
-        finally
-        {
-            CloseConnection();
         }
 
         return retCollection;
@@ -696,47 +659,46 @@ public class DataAccess
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
     {
-        Hashtable retCollection = null;
+        Hashtable result = null;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync();
-            DbDataReader dr = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
-            while (await dr.ReadAsync())
+            using (dbCommand.Connection)
             {
-                retCollection = new Hashtable();
-                int nQtd = 0;
-
-                while (nQtd < dr.FieldCount)
+                var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
+                while (await dataReader.ReadAsync())
                 {
-                    string fieldName = dr.GetName(nQtd);
-                    if (retCollection.ContainsKey(fieldName))
-                        throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                    result = new Hashtable();
+                    int count = 0;
 
-                    retCollection.Add(fieldName, dr.GetValue(nQtd));
-                    nQtd += 1;
+                    while (count < dataReader.FieldCount)
+                    {
+                        string fieldName = dataReader.GetName(count);
+                        if (result.ContainsKey(fieldName))
+                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                        result.Add(fieldName, dataReader.GetValue(count));
+                        count += 1;
+                    }
                 }
-            }
 
-            if (!dr.IsClosed)
-                dr.Close();
+                if (!dataReader.IsClosed)
+                    dataReader.Close();
 
-            foreach (DataAccessParameter parameter in cmd.Parameters)
-            {
-                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
             }
         }
         catch (Exception ex)
         {
             throw GetDataAccessException(ex, cmd);
         }
-        finally
-        {
-            CloseConnection();
-        }
 
-        return retCollection;
+        return result;
     }
 
     private static DataAccessCommand GetTableExistsCommand(string table)
@@ -763,16 +725,8 @@ public class DataAccess
     /// </summary>
     public bool TableExists(string tableName)
     {
-        bool result;
-        try
-        {
-            var ret = GetResult(GetTableExistsCommand(tableName));
-            result = ret as int? == 1;
-        }
-        finally
-        {
-            CloseConnection();
-        }
+        var ret = GetResult(GetTableExistsCommand(tableName));
+        var result = ret as int? == 1;
 
         return result;
     }
@@ -780,16 +734,7 @@ public class DataAccess
     /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName)
     {
-        bool result;
-        try
-        {
-            result = (int)await GetResultAsync(GetTableExistsCommand(tableName)) == 1;
-        }
-        finally
-        {
-            CloseConnection();
-        }
-
+        var result = (int)await GetResultAsync(GetTableExistsCommand(tableName)) == 1;
         return result;
     }
 
