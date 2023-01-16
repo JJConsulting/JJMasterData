@@ -39,7 +39,7 @@ public class MasterApiControllerTest
         };
 
         IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository,JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
+        IDataDictionaryRepository dataDictionaryRepository = new SqlDataDictionaryRepository(entityRepository,JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
         var masterApiService = new MasterApiService(accessor, entityRepository, dataDictionaryRepository, null);
         _controller = new MasterApiController(masterApiService);
     }

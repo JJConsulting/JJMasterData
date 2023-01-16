@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
     private static void AddDefaultServices(this IServiceCollection services)
     {
         services.AddTransient<IFormEventResolver,FormEventResolver>();
-        services.AddScoped<IDataDictionaryRepository, DatabaseDataDictionaryRepository>();
+        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();

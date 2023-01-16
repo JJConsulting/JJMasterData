@@ -20,7 +20,7 @@ public class DictionariesControllerTest
     public DictionariesControllerTest()
     {
         IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDataDictionaryRepository dataDictionaryRepository = new DatabaseDataDictionaryRepository(entityRepository, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
+        IDataDictionaryRepository dataDictionaryRepository = new SqlDataDictionaryRepository(entityRepository, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
         var dictionariesService = new DictionariesService(dataDictionaryRepository, entityRepository);
         _controller = new DictionariesController(dictionariesService, dataDictionaryRepository);
     }

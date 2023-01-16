@@ -12,19 +12,19 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class DatabaseDataDictionaryRepository : IDataDictionaryRepository
+public class SqlDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
 
     private readonly string _dataDictionaryTableName;
     
-    public DatabaseDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
+    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
         _dataDictionaryTableName = options.Value.DataDictionaryTableName;
     }
     
-    public DatabaseDataDictionaryRepository(IEntityRepository entityRepository, string dataDictionaryTableName)
+    public SqlDataDictionaryRepository(IEntityRepository entityRepository, string dataDictionaryTableName)
     {
         _entityRepository = entityRepository;
         _dataDictionaryTableName = dataDictionaryTableName;
