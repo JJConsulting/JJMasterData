@@ -24,6 +24,48 @@ public class DataAccess
 {
     private DbProviderFactory _factory;
 
+    public DbProviderFactory Factory
+    {
+        get
+        {
+            if (_factory != null)
+                return _factory;
+
+            if (ConnectionString == null)
+            {
+                var error = new StringBuilder();
+                error.AppendLine("Connection string not found in configuration file.");
+                error.AppendLine("Default connection name is [ConnectionString].");
+                error.AppendLine("Please check JJ001 for more information.");
+                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
+                throw new DataAccessException(error.ToString());
+            }
+
+            if (ConnectionProvider == null)
+            {
+                var error = new StringBuilder();
+                error.AppendLine("Connection provider not found in configuration file.");
+                error.Append("Default connection name is [ConnectionString]");
+                throw new DataAccessException(error.ToString());
+            }
+
+            try
+            {
+                _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
+            }
+            catch (DataAccessProviderException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException(ex);
+            }
+
+            return _factory;
+        }
+    }
+    
     ///<summary>
     ///Database connection string; 
     ///Default value configured in app.config as "ConnectionString";
@@ -81,51 +123,9 @@ public class DataAccess
         ConnectionProvider = connectionProviderName;
     }
 
-    public DbProviderFactory DbProviderFactory
-    {
-        get
-        {
-            if (_factory != null)
-                return _factory;
-
-            if (ConnectionString == null)
-            {
-                var error = new StringBuilder();
-                error.AppendLine("Connection string not found in configuration file.");
-                error.AppendLine("Default connection name is [ConnectionString].");
-                error.AppendLine("Please check JJ001 for more information.");
-                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
-                throw new DataAccessException(error.ToString());
-            }
-
-            if (ConnectionProvider == null)
-            {
-                var error = new StringBuilder();
-                error.AppendLine("Connection provider not found in configuration file.");
-                error.Append("Default connection name is [ConnectionString]");
-                throw new DataAccessException(error.ToString());
-            }
-
-            try
-            {
-                _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
-            }
-            catch (DataAccessProviderException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException(ex);
-            }
-
-            return _factory;
-        }
-    }
-
     public DbConnection GetConnection()
     {
-        var _connection = DbProviderFactory.CreateConnection();
+        var _connection = Factory.CreateConnection();
 
         try
         {
@@ -142,7 +142,7 @@ public class DataAccess
 
     public async Task<DbConnection> GetConnectionAsync()
     {
-        var _connection = DbProviderFactory.CreateConnection();
+        var _connection = Factory.CreateConnection();
 
         try
         {
@@ -184,7 +184,7 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = DbProviderFactory.CreateDataAdapter();
+                using var dataAdapter = Factory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
     
@@ -226,7 +226,7 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = DbProviderFactory.CreateDataAdapter();
+                using var dataAdapter = Factory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
 
@@ -258,13 +258,13 @@ public class DataAccess
         var dt = new DataTable();
         try
         {
-            using var dbCommand = DbProviderFactory.CreateCommand();
+            using var dbCommand = Factory.CreateCommand();
             dbCommand!.CommandType = CommandType.Text;
             dbCommand.Connection = sqlConn;
             dbCommand.CommandText = sql;
             dbCommand.CommandTimeout = TimeOut;
 
-            using var dataAdapter = DbProviderFactory.CreateDataAdapter();
+            using var dataAdapter = Factory.CreateDataAdapter();
             dataAdapter!.SelectCommand = dbCommand;
             dataAdapter.Fill(dt);
         }
@@ -752,7 +752,7 @@ public class DataAccess
         errorMessage = null;
         try
         {
-            connection = DbProviderFactory.CreateConnection();
+            connection = Factory.CreateConnection();
             connection!.ConnectionString = ConnectionString;
             connection.Open();
             result = true;
@@ -791,7 +791,7 @@ public class DataAccess
         string errorMessage = null;
         try
         {
-            connection = DbProviderFactory.CreateConnection();
+            connection = Factory.CreateConnection();
             connection!.ConnectionString = ConnectionString;
             await connection.OpenAsync();
             result = true;
@@ -933,7 +933,7 @@ public class DataAccess
 
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
-        var dbCommand = DbProviderFactory.CreateCommand();
+        var dbCommand = Factory.CreateCommand();
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
 
@@ -951,7 +951,7 @@ public class DataAccess
 
     private DbParameter CreateDbParameter(DataAccessParameter parameter)
     {
-        var dbParameter = DbProviderFactory.CreateParameter();
+        var dbParameter = Factory.CreateParameter();
         dbParameter!.DbType = parameter.Type;
         dbParameter.Value = parameter.Value ?? DBNull.Value;
         dbParameter.ParameterName = parameter.Name;

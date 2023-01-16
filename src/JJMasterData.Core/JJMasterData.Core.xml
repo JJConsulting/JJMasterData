@@ -379,7 +379,7 @@
             Objeto responsável por fazer toda a comunicação com o banco de dados
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.DataLog.AuditLogService.DbProviderFactory">
+        <member name="P:JJMasterData.Core.DataDictionary.DataLog.AuditLogService.Factory">
             <summary>
             Objeto responsável por traduzir o elemento base em comandos para o banco de dados
             </summary>
@@ -1000,7 +1000,7 @@
             Configurações pré-definidas do formulário
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.FormManager.DbProviderFactory">
+        <member name="P:JJMasterData.Core.DataDictionary.FormManager.Factory">
             <summary>
             Objeto responsável por traduzir o elemento base em comandos para o banco de dados
             </summary>
@@ -1682,7 +1682,7 @@
             Objeto responsável por fazer toda a comunicação com o banco de dados
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJBaseView.DbProviderFactory">
+        <member name="P:JJMasterData.Core.WebComponents.JJBaseView.Factory">
             <summary>
             Objeto responsável por traduzir o elemento base em comandos para o banco de dados
             </summary>
