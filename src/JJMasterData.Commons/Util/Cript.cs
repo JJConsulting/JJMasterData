@@ -3,11 +3,20 @@ using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Util;
 
-
+/// <summary>
+/// Static acessor to encryption services.
+/// </summary>
 public class Cript
 {
     private static byte[] _chave = { };
     private static readonly byte[] Iv = { 12, 34, 56, 78, 90, 102, 114, 126 };
+    private static DesEncryptionService _desEncryptionService;
+    private static ReportPortalEnigmaService _reportPortalEnigmaService;
+
+    private static DesEncryptionService DesEncryptionService => _desEncryptionService ??= new DesEncryptionService();
+
+    private static ReportPortalEnigmaService ReportPortalEnigmaService =>
+        _reportPortalEnigmaService ??= new ReportPortalEnigmaService();
 
     /// <summary>
     /// Encrypts a text.
@@ -21,9 +30,9 @@ public class Cript
 
     public static string Cript64(string value, string secretKey)
     {
-        return new DesEncryptionService().EncryptString(value, secretKey);
+        return _desEncryptionService.EncryptString(value, secretKey);
     }
-    
+
     /// <summary>
     /// Decrypts a text.
     /// DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.
@@ -35,37 +44,36 @@ public class Cript
 
     public static string Descript64(string value, string secretKey)
     {
-        return new DesEncryptionService().DecryptString(value, secretKey);
+        return _desEncryptionService.DecryptString(value, secretKey);
     }
-    
+
     public static string CriptPwdProtheus(string password)
     {
         return ProtheusEncryptionService.EncryptPassword(password);
     }
-    
+
     public static string DeCriptPwdProtheus(string password)
     {
         return ProtheusEncryptionService.DecryptPassword(password);
     }
-    
+
     public static string GetMd5Hash(string input)
     {
         return Md5HashHelper.GetMd5Hash(input);
     }
-    
+
     public static bool VerifyMd5Hash(string input, string hash)
     {
         return Md5HashHelper.VerifyMd5Hash(input, hash);
     }
-    
+
     public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
     {
-        return new ReportPortalEnigmaService().EncryptString(message, secretKey);
-    }
-    
-    public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
-    {
-        return new ReportPortalEnigmaService().DecryptString(message, secretKey);
+        return _reportPortalEnigmaService.EncryptString(message, secretKey);
     }
 
+    public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
+    {
+        return _reportPortalEnigmaService.DecryptString(message, secretKey);
+    }
 }
