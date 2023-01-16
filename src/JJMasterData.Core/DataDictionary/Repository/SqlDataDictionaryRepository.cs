@@ -49,7 +49,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             string name = row["name"].ToString();
             if (!currentName.Equals(name))
             {
-                DataDictionaryStructure.ApplyCompatibility(currentParser, name);
+                DataDictionaryStructure.ApplyCompatibility(currentParser);
 
                 currentName = name;
                 list.Add(new Metadata());
@@ -74,7 +74,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             }
         }
 
-        DataDictionaryStructure.ApplyCompatibility(currentParser, currentName);
+        DataDictionaryStructure.ApplyCompatibility(currentParser);
 
         return list;
     }
@@ -125,7 +125,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             }
         }
 
-        DataDictionaryStructure.ApplyCompatibility(metadata, dictionaryName);
+        DataDictionaryStructure.ApplyCompatibility(metadata);
 
         return metadata;
     }
