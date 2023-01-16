@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JJMasterData.Commons.Cryptography;
 
-public static class Md5HashHelper
+internal static class Md5HashHelper
 {
     public static string GetMd5Hash(string input)
     {

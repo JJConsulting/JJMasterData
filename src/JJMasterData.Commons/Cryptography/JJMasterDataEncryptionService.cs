@@ -7,7 +7,7 @@ namespace JJMasterData.Commons.Cryptography;
 /// <summary>
 /// Wrapper to IEncryptionService with the secret key loaded by IOptions.
 /// </summary>
-public class JJMasterDataEncryptionService
+internal class JJMasterDataEncryptionService
 {
     private readonly string _secretKey;
     private readonly IEncryptionService _encryptionService;

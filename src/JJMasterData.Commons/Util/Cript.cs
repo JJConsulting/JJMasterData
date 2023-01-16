@@ -30,7 +30,7 @@ public class Cript
 
     public static string Cript64(string value, string secretKey)
     {
-        return _desEncryptionService.EncryptString(value, secretKey);
+        return DesEncryptionService.EncryptString(value, secretKey);
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class Cript
 
     public static string Descript64(string value, string secretKey)
     {
-        return _desEncryptionService.DecryptString(value, secretKey);
+        return DesEncryptionService.DecryptString(value, secretKey);
     }
 
     public static string CriptPwdProtheus(string password)
@@ -69,11 +69,11 @@ public class Cript
 
     public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
     {
-        return _reportPortalEnigmaService.EncryptString(message, secretKey);
+        return ReportPortalEnigmaService.EncryptString(message, secretKey);
     }
 
     public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
     {
-        return _reportPortalEnigmaService.DecryptString(message, secretKey);
+        return ReportPortalEnigmaService.DecryptString(message, secretKey);
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Commons.Cryptography;
 
-public static class ProtheusEncryptionService
+internal static class ProtheusEncryptionService
 {
     /// <summary>
     /// Encrypts a Protheus password.
