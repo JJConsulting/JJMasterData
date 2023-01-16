@@ -13,7 +13,7 @@ namespace JJMasterData.Core.DataDictionary
     {
         public static string GetMasterDataAuditLog()
         {
-            string prefix= JJServiceCore.CoreOptions.AuditLogTableName;
+            string prefix= JJServiceCore.Options.AuditLogTableName;
             if (string.IsNullOrEmpty(prefix))
                 prefix = "tb_masterdata_auditlog";
             return prefix;
@@ -21,7 +21,7 @@ namespace JJMasterData.Core.DataDictionary
 
         public static string GetUrlMasterData()
         {
-            string value = JJServiceCore.CoreOptions.JJMasterDataUrl;
+            string value = JJServiceCore.Options.JJMasterDataUrl;
 
 #if NETFRAMEWORK
             if (string.IsNullOrEmpty(value))

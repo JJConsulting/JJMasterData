@@ -114,7 +114,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = Path.Combine(JJServiceCore.CoreOptions.ExportationFolderPath, FormElement.Name);
+            string folderPath = Path.Combine(JJServiceCore.Options.ExportationFolderPath, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {

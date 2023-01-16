@@ -22,7 +22,7 @@ public class Cript
     /// </summary>
     public static string Cript64(string value)
     {
-        return Cript64(value, JJService.CommonsOptions.SecretKey);
+        return Cript64(value, JJService.Options.SecretKey);
     }
 
 
@@ -37,7 +37,7 @@ public class Cript
     /// </summary>
     public static string Descript64(string value)
     {
-        return Descript64(value, JJService.CommonsOptions.SecretKey);
+        return Descript64(value, JJService.Options.SecretKey);
     }
 
     public static string Descript64(string value, string secretKey)

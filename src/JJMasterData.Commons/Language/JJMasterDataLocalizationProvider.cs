@@ -24,7 +24,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
 
     public IDictionary<string, string> GetLocalizedStrings(string culture)
     {
-        string tableName = JJService.CommonsOptions.ResourcesTableName;
+        string tableName = JJService.Options.ResourcesTableName;
         
         if (string.IsNullOrEmpty(tableName))
             return new Dictionary<string,string>();
@@ -101,7 +101,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
     }
     public static Element GetElement()
     {
-        return GetElement(JJService.CommonsOptions.ResourcesTableName);
+        return GetElement(JJService.Options.ResourcesTableName);
     }
     private static Element GetElement(string tablename)
     {

@@ -32,7 +32,7 @@ public static class JJServiceCore
         }
     }
     
-    public static JJMasterDataCoreOptions CoreOptions
+    public static JJMasterDataCoreOptions Options
     {
         get
         {
