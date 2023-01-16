@@ -4,7 +4,6 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Html;
 using System;
@@ -120,6 +119,7 @@ public class JJLookup : JJBaseControl
         var search = new JJLookup();
         search.SetAttr(f.Attributes);
         search.Name = f.Name;
+        search.SelectedValue = value?.ToString();
         search.Visible = true;
         search.DataItem = f.DataItem;
         search.AutoReloadFormFields = false;
@@ -214,9 +214,9 @@ public class JJLookup : JJBaseControl
     private string GetFeedbackIcon(string value, string description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
-            return " fa fa-check ";
+            return " jj-icon-success ";
         if (!string.IsNullOrEmpty(value) & string.IsNullOrEmpty(description))
-            return " fa fa-exclamation-triangle";
+            return " jj-icon-warning";
         return null;
     }
 
