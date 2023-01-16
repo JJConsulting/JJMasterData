@@ -81,47 +81,51 @@ public class DataAccess
         ConnectionProvider = connectionProviderName;
     }
 
-    public DbProviderFactory GetFactory()
+    public DbProviderFactory DbProviderFactory
     {
-        if (_factory != null) return _factory;
+        get
+        {
+            if (_factory != null)
+                return _factory;
 
-        if (ConnectionString == null)
-        {
-            var error = new StringBuilder();
-            error.AppendLine("Connection string not found in configuration file.");
-            error.AppendLine("Default connection name is [ConnectionString].");
-            error.AppendLine("Please check JJ001 for more information.");
-            error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
-            throw new DataAccessException(error.ToString());
-        }
+            if (ConnectionString == null)
+            {
+                var error = new StringBuilder();
+                error.AppendLine("Connection string not found in configuration file.");
+                error.AppendLine("Default connection name is [ConnectionString].");
+                error.AppendLine("Please check JJ001 for more information.");
+                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
+                throw new DataAccessException(error.ToString());
+            }
 
-        if (ConnectionProvider == null)
-        {
-            var error = new StringBuilder();
-            error.AppendLine("Connection provider not found in configuration file.");
-            error.Append("Default connection name is [ConnectionString]");
-            throw new DataAccessException(error.ToString());
-        }
+            if (ConnectionProvider == null)
+            {
+                var error = new StringBuilder();
+                error.AppendLine("Connection provider not found in configuration file.");
+                error.Append("Default connection name is [ConnectionString]");
+                throw new DataAccessException(error.ToString());
+            }
 
-        try
-        {
-            _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
-        }
-        catch (DataAccessProviderException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new DataAccessException(ex);
-        }
+            try
+            {
+                _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
+            }
+            catch (DataAccessProviderException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException(ex);
+            }
 
-        return _factory;
+            return _factory;
+        }
     }
 
     public DbConnection GetConnection()
     {
-        var _connection = GetFactory().CreateConnection();
+        var _connection = DbProviderFactory.CreateConnection();
 
         try
         {
@@ -138,7 +142,7 @@ public class DataAccess
 
     public async Task<DbConnection> GetConnectionAsync()
     {
-        var _connection = GetFactory().CreateConnection();
+        var _connection = DbProviderFactory.CreateConnection();
 
         try
         {
@@ -180,7 +184,7 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = GetFactory().CreateDataAdapter();
+                using var dataAdapter = DbProviderFactory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
     
@@ -222,7 +226,7 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = GetFactory().CreateDataAdapter();
+                using var dataAdapter = DbProviderFactory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
 
@@ -254,13 +258,13 @@ public class DataAccess
         var dt = new DataTable();
         try
         {
-            using var dbCommand = GetFactory().CreateCommand();
+            using var dbCommand = DbProviderFactory.CreateCommand();
             dbCommand!.CommandType = CommandType.Text;
             dbCommand.Connection = sqlConn;
             dbCommand.CommandText = sql;
             dbCommand.CommandTimeout = TimeOut;
 
-            using var dataAdapter = GetFactory().CreateDataAdapter();
+            using var dataAdapter = DbProviderFactory.CreateDataAdapter();
             dataAdapter!.SelectCommand = dbCommand;
             dataAdapter.Fill(dt);
         }
@@ -748,7 +752,7 @@ public class DataAccess
         errorMessage = null;
         try
         {
-            connection = GetFactory().CreateConnection();
+            connection = DbProviderFactory.CreateConnection();
             connection!.ConnectionString = ConnectionString;
             connection.Open();
             result = true;
@@ -787,7 +791,7 @@ public class DataAccess
         string errorMessage = null;
         try
         {
-            connection = GetFactory().CreateConnection();
+            connection = DbProviderFactory.CreateConnection();
             connection!.ConnectionString = ConnectionString;
             await connection.OpenAsync();
             result = true;
@@ -929,7 +933,7 @@ public class DataAccess
 
     private DbCommand CreateDbCommand(DataAccessCommand command)
     {
-        var dbCommand = GetFactory().CreateCommand();
+        var dbCommand = DbProviderFactory.CreateCommand();
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
 
@@ -947,7 +951,7 @@ public class DataAccess
 
     private DbParameter CreateDbParameter(DataAccessParameter parameter)
     {
-        var dbParameter = GetFactory().CreateParameter();
+        var dbParameter = DbProviderFactory.CreateParameter();
         dbParameter!.DbType = parameter.Type;
         dbParameter.Value = parameter.Value ?? DBNull.Value;
         dbParameter.ParameterName = parameter.Name;
