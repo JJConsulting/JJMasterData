@@ -37,7 +37,7 @@ public class JJDataPanel : JJBaseView
         set => _entityRepository = value;
     }
 
-    internal FieldManager FieldManager
+    public FieldManager FieldManager
     {
         get
         {

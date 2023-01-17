@@ -6,9 +6,9 @@ using System.Globalization;
 
 namespace JJMasterData.Core.WebComponents
 {
-    internal static class WebControlTextFactory
+    public static class WebControlTextFactory
     {
-        internal static JJTextGroup CreateTextGroup(FormElementField f, object value)
+        public static JJTextGroup CreateTextGroup(FormElementField f, object value)
         {
             
             var textGroup = CreateTextGroup(f);
@@ -21,7 +21,7 @@ namespace JJMasterData.Core.WebComponents
             return textGroup;
         }
 
-        internal static JJTextGroup CreateTextGroup(FormElementField f)
+        public static JJTextGroup CreateTextGroup(FormElementField f)
         {
             if (f == null)
                 throw new ArgumentNullException(nameof(FormElementField));
@@ -39,10 +39,19 @@ namespace JJMasterData.Core.WebComponents
             return textGroup;
         }
 
+        public static JJTextGroup CreateTextDate()
+        {
+            var textGroup = new JJTextGroup();
+            SetDefaultAttrs(textGroup,FormComponent.Date);
+            return textGroup;
+        }
+
         private static void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
         {
-            var listClass = new List<string>();
-            listClass.Add("form-control");
+            var listClass = new List<string>
+            {
+                "form-control"
+            };
 
             switch (type)
             {
