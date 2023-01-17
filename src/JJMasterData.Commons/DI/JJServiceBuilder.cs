@@ -26,9 +26,12 @@ public class JJServiceBuilder
         
         Services.AddLogging(builder =>
         {
-            builder.AddDbLoggerProvider();
-            builder.AddFileLoggerProvider();
-            builder.AddConfiguration(configuration.GetSection("Logging"));
+            if (configuration != null)
+            {
+                builder.AddDbLoggerProvider();
+                builder.AddFileLoggerProvider();
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+            }
         });
         
         Services.AddScoped<IEntityRepository,Factory>();

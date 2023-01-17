@@ -34,11 +34,11 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
     
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure)
+    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
     {
         var builder = new JJServiceBuilder(services);
         
-        builder.AddDefaultServices(null);
+        builder.AddDefaultServices(loggingConfiguration);
         builder.Services.Configure(configure);
         
         return builder;

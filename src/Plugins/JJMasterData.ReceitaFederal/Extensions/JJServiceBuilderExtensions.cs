@@ -1,5 +1,6 @@
 ﻿using System;
 using JJMasterData.Commons.DI;
+using JJMasterData.ReceitaFederal.Abstractions;
 using JJMasterData.ReceitaFederal.Models;
 using JJMasterData.ReceitaFederal.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,14 +13,14 @@ public static class Extensions
     public static JJServiceBuilder WithSintegra(this JJServiceBuilder builder)
     {
         builder.Services.AddOptions<SintegraSettings>();
-        builder.Services.AddTransient<SintegraService>();
+        builder.Services.AddTransient<IReceitaFederal, SintegraService>();
         return builder;
     }
     
     public static JJServiceBuilder WithServicesHub(this JJServiceBuilder builder)
     {
         builder.Services.AddOptions<ServicesHubSettings>();
-        builder.Services.AddTransient<ServicesHubService>();
+        builder.Services.AddTransient<IReceitaFederal, ServicesHubService>();
         return builder;
     }
     
@@ -31,7 +32,7 @@ public static class Extensions
         
         builder.Services.AddOptions<SintegraSettings>(JsonConvert.SerializeObject(settings));
 
-        builder.Services.AddTransient<SintegraService>();
+        builder.Services.AddTransient<IReceitaFederal,SintegraService>();
         return builder;
     }
     
@@ -43,7 +44,7 @@ public static class Extensions
         
         builder.Services.AddOptions<ServicesHubSettings>(JsonConvert.SerializeObject(settings));
         
-        builder.Services.AddTransient<ServicesHubService>();
+        builder.Services.AddTransient<IReceitaFederal, ServicesHubService>();
         
         return builder;
     }

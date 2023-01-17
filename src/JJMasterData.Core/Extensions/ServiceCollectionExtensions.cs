@@ -33,12 +33,12 @@ public static class ServiceCollectionExtensions
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
         Action<JJMasterDataCoreOptions> configureCore,
-        Action<JJMasterDataCommonsOptions> configureCommons)
+        Action<JJMasterDataCommonsOptions> configureCommons, IConfiguration loggingConfiguration = null)
     {
         services.Configure(configureCore);
         
         services.AddDefaultServices();
-        return services.AddJJMasterDataCommons(configureCommons);
+        return services.AddJJMasterDataCommons(configureCommons, loggingConfiguration);
     }
 
     public static JJServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
