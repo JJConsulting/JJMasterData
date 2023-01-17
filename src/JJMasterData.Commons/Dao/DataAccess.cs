@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
@@ -226,10 +227,12 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using var dataAdapter = Factory.CreateDataAdapter();
-                dataAdapter!.SelectCommand = dbCommand;
-                dataAdapter.Fill(dt);
-
+                using (var dataAdapter = Factory.CreateDataAdapter())
+                {
+                    dataAdapter!.SelectCommand = dbCommand;
+                    dataAdapter.Fill(dt);
+                }
+                
                 if (cmd.Parameters != null)
                 {
                     foreach (var param in cmd.Parameters)
@@ -447,10 +450,10 @@ public class DataAccess
     /// <summary>Runs one or more commands on the database with transactions.</summary>
     /// <returns>Returns the number of affected records.</returns>
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
-    public int SetCommand(List<DataAccessCommand> commands)
+    public int SetCommand(IEnumerable<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
-        int index = 0;
+        DataAccessCommand currentCommand = null;
 
         var connection = GetConnection();
 
@@ -459,14 +462,15 @@ public class DataAccess
             using var sqlTras = connection.BeginTransaction();
             try
             {
-                foreach (var cmd in commands)
+                foreach (var command in commands)
                 {
-                    using var dbCommand = CreateDbCommand(cmd);
+                    currentCommand = command;
+                    
+                    using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = sqlTras;
 
                     numberOfRowsAffected += dbCommand.ExecuteNonQuery();
-                    index++;
                 }
 
                 sqlTras.Commit();
@@ -474,18 +478,17 @@ public class DataAccess
             catch (Exception ex)
             {
                 sqlTras.Rollback();
-                var cmd = commands[index];
-                throw GetDataAccessException(ex, cmd);
+                throw GetDataAccessException(ex, currentCommand);
             }
         }
 
         return numberOfRowsAffected;
     }
 
-    public async Task<int> SetCommandAsync(List<DataAccessCommand> commands)
+    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
-        int index = 0;
+        DataAccessCommand currentCommand = null;
 
         var connection = await GetConnectionAsync();
         using (connection)
@@ -493,14 +496,15 @@ public class DataAccess
             using var transaction = connection.BeginTransaction();
             try
             {
-                foreach (var cmd in commands)
+                foreach (var command in commands)
                 {
-                    using var dbCommand = CreateDbCommand(cmd);
+                    currentCommand = command;
+                    
+                    using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = transaction;
 
                     numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync();
-                    index++;
                 }
 
                 transaction.Commit();
@@ -508,8 +512,7 @@ public class DataAccess
             catch (Exception ex)
             {
                 transaction.Rollback();
-                var cmd = commands[index];
-                throw GetDataAccessException(ex, cmd);
+                throw GetDataAccessException(ex, currentCommand);
             }
         }
 
@@ -533,26 +536,18 @@ public class DataAccess
     /// <summary>Runs one or more commands on the database with transactions.</summary>
     /// <returns>Returns the number of affected records.</returns>
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
-    public int SetCommand(ArrayList sqlList)
+    public int SetCommand(IEnumerable<string> sqlList)
     {
-        var cmdList = new List<DataAccessCommand>();
-        foreach (string sql in sqlList)
-        {
-            cmdList.Add(new DataAccessCommand(sql));
-        }
+        var cmdList = (from string sql in sqlList select new DataAccessCommand(sql)).ToList();
 
         int numberOfRowsAffected = SetCommand(cmdList);
         return numberOfRowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(ArrayList)"/>
-    public async Task<int> SetCommandAsync(ArrayList sqlList)
+    /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>
+    public async Task<int> SetCommandAsync(IEnumerable<string> sqlList)
     {
-        var cmdList = new List<DataAccessCommand>();
-        foreach (string sql in sqlList)
-        {
-            cmdList.Add(new DataAccessCommand(sql));
-        }
+        var cmdList = sqlList.Select(sql => new DataAccessCommand(sql));
 
         int numberOfRowsAffected = await SetCommandAsync(cmdList);
         return numberOfRowsAffected;
@@ -574,7 +569,7 @@ public class DataAccess
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = GetConnection();
+            dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
             
             
@@ -661,12 +656,12 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand cmd)
+    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command)
     {
         Hashtable result = null;
         try
         {
-            using var dbCommand = CreateDbCommand(cmd);
+            using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync();
             using (dbCommand.Connection)
             {
@@ -690,7 +685,7 @@ public class DataAccess
                 if (!dataReader.IsClosed)
                     dataReader.Close();
 
-                foreach (var parameter in cmd.Parameters)
+                foreach (var parameter in command.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                         parameter.Value = dbCommand.Parameters[parameter.Name].Value;
@@ -699,7 +694,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex, cmd);
+            throw GetDataAccessException(ex, command);
         }
 
         return result;
@@ -836,7 +831,7 @@ public class DataAccess
 
         if (script.Trim().Length > 0)
         {
-            var aSql = new ArrayList();
+            var sqlList = new List<string>();
             string sqlBatch = string.Empty;
             script += "\n" + markpar; // make sure last batch is executed. 
 
@@ -846,7 +841,7 @@ public class DataAccess
                 {
                     if (sqlBatch.Trim().Length > 0)
                     {
-                        aSql.Add(sqlBatch);
+                        sqlList.Add(sqlBatch);
                     }
 
                     sqlBatch = string.Empty;
@@ -857,7 +852,7 @@ public class DataAccess
                 }
             }
 
-            SetCommand(aSql);
+            SetCommand(sqlList);
         }
 
         return true;
@@ -875,7 +870,7 @@ public class DataAccess
 
         if (script.Trim().Length <= 0) return await Task.FromResult(true);
 
-        var arrayList = new ArrayList();
+        var sqlList = new List<string>();
         string sqlBatch = string.Empty;
         script += "\n" + markpar; // make sure last batch is executed. 
 
@@ -885,7 +880,7 @@ public class DataAccess
             {
                 if (sqlBatch.Trim().Length > 0)
                 {
-                    arrayList.Add(sqlBatch);
+                    sqlList.Add(sqlBatch);
                 }
 
                 sqlBatch = string.Empty;
@@ -896,7 +891,7 @@ public class DataAccess
             }
         }
 
-        await SetCommandAsync(arrayList);
+        await SetCommandAsync(sqlList);
         return await Task.FromResult(true);
     }
 
@@ -906,7 +901,7 @@ public class DataAccess
     }
 
     private static Exception GetDataAccessException(Exception ex, string sql,
-        List<DataAccessParameter> parameters = null)
+        ICollection<DataAccessParameter> parameters = null)
     {
         ex.Data.Add("DataAccess Query", sql);
 
