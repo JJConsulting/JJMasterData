@@ -405,8 +405,7 @@ public class DataAccess
 
                 foreach (var parameter in cmd.Parameters)
                 {
-                    if (parameter.Direction == ParameterDirection.Output ||
-                        parameter.Direction == ParameterDirection.InputOutput)
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
                         parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
             }
@@ -538,18 +537,18 @@ public class DataAccess
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(IEnumerable<string> sqlList)
     {
-        var cmdList = (from string sql in sqlList select new DataAccessCommand(sql)).ToList();
+        var commandList = from string sql in sqlList select new DataAccessCommand(sql);
 
-        int numberOfRowsAffected = SetCommand(cmdList);
+        int numberOfRowsAffected = SetCommand(commandList);
         return numberOfRowsAffected;
     }
 
     /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>
     public async Task<int> SetCommandAsync(IEnumerable<string> sqlList)
     {
-        var cmdList = sqlList.Select(sql => new DataAccessCommand(sql));
+        var commandList = sqlList.Select(sql => new DataAccessCommand(sql));
 
-        int numberOfRowsAffected = await SetCommandAsync(cmdList);
+        int numberOfRowsAffected = await SetCommandAsync(commandList);
         return numberOfRowsAffected;
     }
 

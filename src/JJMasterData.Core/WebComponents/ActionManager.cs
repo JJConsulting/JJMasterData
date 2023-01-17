@@ -4,11 +4,11 @@ using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DI;
@@ -332,7 +332,7 @@ internal class ActionManager
                     var formManager = new FormManager(FormElement, Expression);
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
-                scriptManager.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
+                scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
             }
         }
         catch (Exception ex)
@@ -348,7 +348,7 @@ internal class ActionManager
     {
         try
         {
-            var listSql = new ArrayList();
+            var listSql = new List<string>();
             if (map.ContextAction == ActionOrigin.Toolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
             {
                 var selectedRows = gridView.GetSelectedGridValues();
@@ -360,7 +360,7 @@ internal class ActionManager
 
                 foreach (var row in selectedRows)
                 {
-                    string sql = this.Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
                     listSql.Add(sql);
                 }
 
