@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Dao.Entity;
 
@@ -197,7 +198,7 @@ public interface IEntityRepository
     /// <remarks>
     /// It's used to run delete scripts
     /// </remarks>
-    public int SetCommand(ArrayList sqlList);
+    public int SetCommand(IEnumerable<string> sqlList);
 
     /// <summary>
     /// Executes a database script.

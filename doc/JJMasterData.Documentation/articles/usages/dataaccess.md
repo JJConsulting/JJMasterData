@@ -12,31 +12,24 @@ cmd.Paramneters.Add(new DataAccessCommand("@group", "G1"));
 DataTable dt = dataAccess.GetDataTable(cmd);
 ```
 
-## How maintain opened connection? 
-Keeps the database connection open,
-Allowing to execute a sequence of commands;
-
-This example shows how the KeepConnAlive method should be used:<br>
+## How to execute a sequence of commands?
+This example shows how to execute a sequence of commands:<br>
 ```csharp
    class TestClass  
    { 
-       private void Test()
-       {
-           var dao = new DataAccess())
-           try
-           {
-               dao.KeepConnAlive = true;
-               dao.SetCommand("update table1 set ...");
-               dao.SetCommand("update table2 set ...");
-           }
-           catch (Exception ex)
-           {
-               //Do Log
-           }
-           finally
-           {
-              dao.KeepConnAlive = false;
-           }
-       }
+       var dataAccess = new DataAccess())
+        try
+        {
+            var commands = new List<DataAccessCommand>
+            {
+                new("update table1 set ..."),
+                new("update table2 set ..."),
+            };
+            dataAccess.SetCommand(commands);
+        }
+        catch (Exception ex)
+        {
+            //Handle your exception
+        }
    }
 ```

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Dao.Providers;
 using JJMasterData.Commons.Language;
@@ -71,7 +72,7 @@ public class Factory : IEntityRepository
     public void SetCommand(string sql) => DataAccess.SetCommand(sql);
 
     ///<inheritdoc cref="IEntityRepository.SetCommand(ArrayList)"/>
-    public int SetCommand(ArrayList sqlList) => DataAccess.SetCommand(sqlList);
+    public int SetCommand(IEnumerable<string> sqlList) => DataAccess.SetCommand(sqlList);
 
     ///<inheritdoc cref="IEntityRepository.TableExists(string)"/>
     public bool TableExists(string tableName) => DataAccess.TableExists(tableName);
