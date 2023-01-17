@@ -636,9 +636,6 @@ public class DataAccess
                     }
                 }
 
-                if (!dr.IsClosed)
-                    dr.Close();
-
                 foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
@@ -664,7 +661,7 @@ public class DataAccess
             dbCommand.Connection = await GetConnectionAsync();
             using (dbCommand.Connection)
             {
-                var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
+                using var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
                 while (await dataReader.ReadAsync())
                 {
                     result = new Hashtable();
@@ -680,9 +677,6 @@ public class DataAccess
                         count += 1;
                     }
                 }
-
-                if (!dataReader.IsClosed)
-                    dataReader.Close();
 
                 foreach (var parameter in command.Parameters)
                 {
