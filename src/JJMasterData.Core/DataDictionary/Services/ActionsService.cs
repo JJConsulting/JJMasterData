@@ -37,15 +37,15 @@ public class ActionsService : BaseService
         }
         else if (context == ActionSource.Grid)
         {
-            var action = metadata.MetadataOptions.GridActions.Get(originalName);
+            var action = metadata.Options.GridActions.Get(originalName);
             if (action != null)
-                metadata.MetadataOptions.GridActions.Remove(action);
+                metadata.Options.GridActions.Remove(action);
         }
         else if (context == ActionSource.Toolbar)
         {
-            var action = metadata.MetadataOptions.ToolBarActions.Get(originalName);
+            var action = metadata.Options.ToolBarActions.Get(originalName);
             if (action != null)
-                metadata.MetadataOptions.ToolBarActions.Remove(action);
+                metadata.Options.ToolBarActions.Remove(action);
         }
     }
 
@@ -83,14 +83,14 @@ public class ActionsService : BaseService
             }
             case ActionSource.Grid:
             {
-                dicParser.MetadataOptions.GridActions.Set(action);
+                dicParser.Options.GridActions.Set(action);
 
                 if (action.IsDefaultOption)
-                    dicParser.MetadataOptions.GridActions.SetDefault(action.Name);
+                    dicParser.Options.GridActions.SetDefault(action.Name);
                 break;
             }
             case ActionSource.Toolbar:
-                dicParser.MetadataOptions.ToolBarActions.Set(action);
+                dicParser.Options.ToolBarActions.Set(action);
                 break;
         }
 
@@ -119,10 +119,10 @@ public class ActionsService : BaseService
                 break;
             }
             case ActionSource.Grid:
-                listAction = dicParser.MetadataOptions.GridActions.GetAll();
+                listAction = dicParser.Options.GridActions.GetAll();
                 break;
             case ActionSource.Toolbar:
-                listAction = dicParser.MetadataOptions.ToolBarActions.GetAll();
+                listAction = dicParser.Options.ToolBarActions.GetAll();
                 break;
         }
 
@@ -154,7 +154,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(sqlAction.CommandSQL))
                 AddError(nameof(sqlAction.CommandSQL), Translate.Key("Required [Sql Command] field"));
 
-            if (!dicParser.MetadataOptions.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
+            if (!dicParser.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                 AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -163,7 +163,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(pythonScriptAction.PythonScript))
                 AddError(nameof(pythonScriptAction.PythonScript), Translate.Key("Required [Python Script] field"));
 
-            if (!dicParser.MetadataOptions.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
+            if (!dicParser.Options.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
                 AddError(nameof(pythonScriptAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -194,11 +194,11 @@ public class ActionsService : BaseService
 
             if (actionContext == ActionSource.Grid)
             {
-                action = dicParser.MetadataOptions.GridActions.Get(actionName);
+                action = dicParser.Options.GridActions.Get(actionName);
             }
             else if (actionContext == ActionSource.Toolbar)
             {
-                action = dicParser.MetadataOptions.ToolBarActions.Get(actionName);
+                action = dicParser.Options.ToolBarActions.Get(actionName);
             }
             else if (actionContext == ActionSource.Field)
             {
@@ -218,11 +218,11 @@ public class ActionsService : BaseService
         BasicAction action = null;
         if (actionContext == ActionSource.Grid)
         {
-            action = dicParser.MetadataOptions.GridActions.Get(actionName);
+            action = dicParser.Options.GridActions.Get(actionName);
         }
         else if (actionContext == ActionSource.Toolbar)
         {
-            action = dicParser.MetadataOptions.ToolBarActions.Get(actionName);
+            action = dicParser.Options.ToolBarActions.Get(actionName);
         }
 
         action.SetVisible(visible);

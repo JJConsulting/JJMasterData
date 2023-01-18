@@ -44,7 +44,7 @@ namespace JJMasterData.Core.Web.Factories
             formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
             
             dataPanel.FormElement = metadata.GetFormElement();
-            dataPanel.ProcessOptions = metadata.MetadataOptions.ToolBarActions.ImportAction.ProcessOptions;
+            dataPanel.ProcessOptions = metadata.Options.ToolBarActions.ImportAction.ProcessOptions;
         }
 
     }

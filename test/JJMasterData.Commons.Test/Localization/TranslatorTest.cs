@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 
-namespace JJMasterData.Commons.Test.Language;
+namespace JJMasterData.Commons.Test.Localization;
 
 public class TranslatorTest
 {

@@ -21,46 +21,46 @@ namespace JJMasterData.Swagger
             foreach (Metadata metadata in dictionaries)
             {
                 FormElement f = metadata.GetFormElement();
-                MetadataApiOptions metadataApiOptions = metadata.MetadataApiOptions;
+                MetadataApiOptions metadataApiOptions = metadata.ApiOptions;
                 string key;
 
                 //Get All
-                if (metadata.MetadataApiOptions.EnableGetAll)
+                if (metadata.ApiOptions.EnableGetAll)
                 {
                     key = "/MasterApi/" + f.Name + "/";
                     swaggerDoc.paths.Add(key, GetAllPathItem(f, metadataApiOptions));
                 }
 
                 //Get Detail
-                if (metadata.MetadataApiOptions.EnableGetDetail)
+                if (metadata.ApiOptions.EnableGetDetail)
                 {
                     key = "/MasterApi/" + f.Name + "/{id}";
                     swaggerDoc.paths.Add(key, GetDetailPathItem(f, metadataApiOptions));
                 }
 
                 //Add 
-                if (metadata.MetadataApiOptions.EnableAdd)
+                if (metadata.ApiOptions.EnableAdd)
                 {
                     key = "/MasterApi/" + f.Name;
                     swaggerDoc.paths.Add(key, GetPostPathItem(f, metadataApiOptions));
                 }
 
                 //Update 
-                if (metadata.MetadataApiOptions.EnableUpdate)
+                if (metadata.ApiOptions.EnableUpdate)
                 {
                     key = "/MasterApi/" + f.Name + "/ ";
                     swaggerDoc.paths.Add(key, GetPutPathItem(f, metadataApiOptions));
                 }
 
                 //Parcial Update
-                if (metadata.MetadataApiOptions.EnableUpdatePart)
+                if (metadata.ApiOptions.EnableUpdatePart)
                 {
                     key = "/MasterApi/" + f.Name + " ";
                     swaggerDoc.paths.Add(key, GetPatchPathItem(f, metadataApiOptions));
                 }
 
                 //Del
-                if (metadata.MetadataApiOptions.EnableDel)
+                if (metadata.ApiOptions.EnableDel)
                 {
                     key = "/MasterApi/" + f.Name + "/{id} ";
                     swaggerDoc.paths.Add(key, GetDelPathItem(f, metadataApiOptions));

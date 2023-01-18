@@ -38,7 +38,7 @@ internal static class FormFactory
         formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
         
         form.FormElement = metadata.GetFormElement();
-        SetFormOptions(form, metadata.MetadataOptions);
+        SetFormOptions(form, metadata.Options);
     }
 
     internal static void SetFormOptions(JJFormView form, MetadataOptions metadataOptions)

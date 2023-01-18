@@ -1,7 +1,7 @@
-﻿using JJMasterData.Core.WebComponents;
-using System.Text;
+﻿using System.Text;
+using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Core.Test.WebComponents
+namespace JJMasterData.Core.Test.Web.Components
 {
     public class JJTextBoxTest
     {

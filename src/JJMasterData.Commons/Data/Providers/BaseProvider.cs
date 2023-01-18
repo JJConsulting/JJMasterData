@@ -18,21 +18,21 @@ public abstract class BaseProvider
         DataAccess = dataAccess;
     }
     public abstract string VariablePrefix { get; }
-    public abstract string GetScriptCreateTable(Element element);
-    public abstract string GetScriptWriteProcedure(Element element);
-    public abstract string GetScriptReadProcedure(Element element);
+    public abstract string GetCreateTableScript(Element element);
+    public abstract string GetWriteProcedureScript(Element element);
+    public abstract string GetReadProcedureScript(Element element);
     public abstract Element GetElementFromTable(string tableName);
 
-    public abstract DataAccessCommand GetCommandInsert(Element element, IDictionary values);
-    public abstract DataAccessCommand GetCommandUpdate(Element element, IDictionary values);
-    public abstract DataAccessCommand GetCommandDelete(Element element, IDictionary filters);
-    public abstract DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
-    public abstract DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values);
+    public abstract DataAccessCommand GetInsertCommand(Element element, IDictionary values);
+    public abstract DataAccessCommand GetUpdateCommand(Element element, IDictionary values);
+    public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary filters);
+    public abstract DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
+    public abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values);
 
     ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
     public void Insert(Element element, IDictionary values)
     {
-        var command = GetCommandInsert(element, values);
+        var command = GetInsertCommand(element, values);
         var newFields = DataAccess.GetFields(command);
 
         if (newFields == null)
@@ -53,7 +53,7 @@ public abstract class BaseProvider
     ///<inheritdoc cref="IEntityRepository.Update(Element, IDictionary)"/>
     public int Update(Element element, IDictionary values)
     {
-        var cmd = GetCommandUpdate(element, values);
+        var cmd = GetUpdateCommand(element, values);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
@@ -62,7 +62,7 @@ public abstract class BaseProvider
     public CommandOperation SetValues(Element element, IDictionary values)
     {
         var commandType = CommandOperation.None;
-        var command = GetCommandInsertOrReplace(element, values);
+        var command = GetInsertOrReplaceCommand(element, values);
         var newFields = DataAccess.GetFields(command);
 
         var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
@@ -107,7 +107,7 @@ public abstract class BaseProvider
     ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
     public int Delete(Element element, IDictionary filters)
     {
-        var cmd = GetCommandDelete(element, filters);
+        var cmd = GetDeleteCommand(element, filters);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
@@ -117,7 +117,7 @@ public abstract class BaseProvider
     {
         DataAccessParameter pTot =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetCommandRead(element, filters, "", 1, 1, ref pTot);
+        var cmd = GetReadCommand(element, filters, "", 1, 1, ref pTot);
         return DataAccess.GetFields(cmd);
     }
 
@@ -131,7 +131,7 @@ public abstract class BaseProvider
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
         DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetCommandRead(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
+        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
         DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
         if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
@@ -159,9 +159,9 @@ public abstract class BaseProvider
     public void CreateDataModel(Element element)
     {
         var scriptSql = new StringBuilder();
-        scriptSql.AppendLine(GetScriptCreateTable(element));
-        scriptSql.AppendLine(GetScriptWriteProcedure(element));
-        scriptSql.AppendLine(GetScriptReadProcedure(element));
+        scriptSql.AppendLine(GetCreateTableScript(element));
+        scriptSql.AppendLine(GetWriteProcedureScript(element));
+        scriptSql.AppendLine(GetReadProcedureScript(element));
         DataAccess.ExecuteBatch(scriptSql.ToString());
     }
 
@@ -207,7 +207,7 @@ public abstract class BaseProvider
     private CommandOperation SetValuesNoResult(Element element, IDictionary values)
     {
         var ret = CommandOperation.None;
-        var command = GetCommandInsertOrReplace(element, values);
+        var command = GetInsertOrReplaceCommand(element, values);
         DataAccess.SetCommand(command);
 
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));

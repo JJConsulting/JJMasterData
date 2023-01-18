@@ -36,7 +36,7 @@ public class ApiController : DataDictionaryController
     public ActionResult Edit(ApiViewModel apiViewModel)
     {
         var dic = _apiService.DataDictionaryRepository.GetMetadata( apiViewModel.DictionaryName);
-        dic.MetadataApiOptions = apiViewModel.MetadataApiOptions;
+        dic.ApiOptions = apiViewModel.MetadataApiOptions;
         dic.Table.Sync = apiViewModel.IsSync;
         dic.Table.SyncMode = apiViewModel.Mode;
 
@@ -51,7 +51,7 @@ public class ApiController : DataDictionaryController
     {
         var model = new ApiViewModel
         {
-            MetadataApiOptions = metadata.MetadataApiOptions,
+            MetadataApiOptions = metadata.ApiOptions,
             MenuId = "Api",
             DictionaryName = metadata.Table.Name,
             Mode = metadata.Table.SyncMode,

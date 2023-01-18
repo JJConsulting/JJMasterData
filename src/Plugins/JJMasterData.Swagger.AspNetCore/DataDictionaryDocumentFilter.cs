@@ -30,24 +30,24 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
-            var factory = new DataDictionaryOperationFactory(formElement, metadata.MetadataApiOptions);
+            var factory = new DataDictionaryOperationFactory(formElement, metadata.ApiOptions);
 
-            if (metadata.MetadataApiOptions.EnableGetAll)
+            if (metadata.ApiOptions.EnableGetAll)
                 defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
 
-            if (metadata.MetadataApiOptions.EnableGetDetail)
+            if (metadata.ApiOptions.EnableGetDetail)
                 detailPathItem.AddOperation(OperationType.Get, factory.Get());
             
-            if (metadata.MetadataApiOptions.EnableAdd)
+            if (metadata.ApiOptions.EnableAdd)
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
 
-            if (metadata.MetadataApiOptions.EnableUpdate)
+            if (metadata.ApiOptions.EnableUpdate)
                 defaultPathItem.AddOperation(OperationType.Put, factory.Put());
 
-            if (metadata.MetadataApiOptions.EnableUpdatePart)
+            if (metadata.ApiOptions.EnableUpdatePart)
                 defaultPathItem.AddOperation(OperationType.Patch, factory.Patch());
 
-            if (metadata.MetadataApiOptions.EnableDel)
+            if (metadata.ApiOptions.EnableDel)
                 detailPathItem.AddOperation(OperationType.Delete, factory.Delete());
 
             document.Paths.AddDataDictionaryPath(defaultPathItem);
@@ -61,16 +61,16 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
                 var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
                 
-                if (metadata.MetadataApiOptions.EnableGetDetail)
+                if (metadata.ApiOptions.EnableGetDetail)
                     fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
                     
-                if (metadata.MetadataApiOptions.EnableAdd && metadata.MetadataApiOptions.EnableUpdate)
+                if (metadata.ApiOptions.EnableAdd && metadata.ApiOptions.EnableUpdate)
                     filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
                         
-                if (metadata.MetadataApiOptions.EnableUpdatePart)
+                if (metadata.ApiOptions.EnableUpdatePart)
                     fileDetailPathItem.AddOperation(OperationType.Patch, factory.RenameFile(field));
                 
-                if (metadata.MetadataApiOptions.EnableDel)
+                if (metadata.ApiOptions.EnableDel)
                     fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
                 
                 document.Paths.AddDataDictionaryPath(filePathItem);

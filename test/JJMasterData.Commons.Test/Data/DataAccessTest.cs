@@ -1,6 +1,6 @@
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data;
 
-namespace JJMasterData.Commons.Test.Dao;
+namespace JJMasterData.Commons.Test.Data;
 
 public class DataAccessTest
 {

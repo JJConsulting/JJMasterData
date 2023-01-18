@@ -17,7 +17,7 @@ public class ProviderSQLite : BaseProvider
     {
     }
 
-    public override string GetScriptCreateTable(Element element)
+    public override string GetCreateTableScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(Element));
@@ -228,37 +228,37 @@ public class ProviderSQLite : BaseProvider
         return sSql.ToString();
     }
 
-    public override string GetScriptWriteProcedure(Element element)
+    public override string GetWriteProcedureScript(Element element)
     {
         return null;
     }
 
-    public override string GetScriptReadProcedure(Element element)
+    public override string GetReadProcedureScript(Element element)
     {
         return null;
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var isFirst = true;
         var sSql = new StringBuilder();
@@ -324,7 +324,7 @@ public class ProviderSQLite : BaseProvider
     public new DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regporpag, int pag, ref int tot)
     {
         DataAccessParameter pTot = null;
-        var cmd = GetCommandRead(element, filters, orderby, regporpag, pag, ref pTot);
+        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
         DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
 

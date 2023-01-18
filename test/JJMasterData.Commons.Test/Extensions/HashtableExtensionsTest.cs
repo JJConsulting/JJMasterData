@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Commons.Test.Extensions;

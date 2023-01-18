@@ -1,5 +1,5 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
@@ -44,7 +44,7 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         };
 
         var dataAccess = new DataAccess();
-        var provider = new Factory();
+        var provider = new EntityRepository();
         
         string script = provider.GetScriptCreateTable(element);
 

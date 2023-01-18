@@ -24,7 +24,7 @@ public class ApiService : BaseService
     {
         bool hasApiGetEnabled;
 
-        if (dicParser.MetadataApiOptions.EnableGetDetail & dicParser.MetadataApiOptions.EnableGetAll)
+        if (dicParser.ApiOptions.EnableGetDetail & dicParser.ApiOptions.EnableGetAll)
             hasApiGetEnabled = true;
         else
             hasApiGetEnabled = false;

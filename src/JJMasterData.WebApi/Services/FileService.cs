@@ -22,7 +22,7 @@ public class FileService
     public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
-        if (!metadata.MetadataApiOptions.EnableGetDetail)
+        if (!metadata.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -46,7 +46,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.MetadataApiOptions.EnableAdd)
+        if (!metadata.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -106,7 +106,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.MetadataApiOptions.EnableDel)
+        if (!metadata.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -157,7 +157,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.MetadataApiOptions.EnableUpdatePart)
+        if (!metadata.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();

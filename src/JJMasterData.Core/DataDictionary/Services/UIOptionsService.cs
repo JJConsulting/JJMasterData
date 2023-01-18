@@ -38,8 +38,8 @@ public class UIOptionsService : BaseService
             if (ValidateOptions(uIMetadataOptions, dictionaryName))
             {
                 var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
-                dicParser.MetadataOptions.Form = uIMetadataOptions.Form;
-                dicParser.MetadataOptions.Grid = uIMetadataOptions.Grid;
+                dicParser.Options.Form = uIMetadataOptions.Form;
+                dicParser.Options.Grid = uIMetadataOptions.Grid;
 
                 DataDictionaryRepository.InsertOrReplace(dicParser);
             }

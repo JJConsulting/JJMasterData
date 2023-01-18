@@ -1,7 +1,7 @@
-using JJMasterData.Core.Html;
 using System.Text;
+using JJMasterData.Core.Web.Html;
 
-namespace JJMasterData.Core.Test.Html;
+namespace JJMasterData.Core.Test.Web.Html;
 
 public class HtmlElementTest
 {

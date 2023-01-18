@@ -111,7 +111,7 @@ public class DictionariesService
             }
         }
 
-        string fieldApplyUser = metadata.MetadataApiOptions.ApplyUserIdOn;
+        string fieldApplyUser = metadata.ApiOptions.ApplyUserIdOn;
         
         if (string.IsNullOrEmpty(fieldApplyUser)) 
             return filters;

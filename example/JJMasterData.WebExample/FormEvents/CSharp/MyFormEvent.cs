@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;

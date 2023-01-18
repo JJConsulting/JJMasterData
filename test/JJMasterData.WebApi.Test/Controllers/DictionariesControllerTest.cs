@@ -1,9 +1,10 @@
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Services;
-using JJMasterData.Commons.Dao;
+
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,8 @@ public class DictionariesControllerTest
     
     public DictionariesControllerTest()
     {
-        IEntityRepository entityRepository = JJService.EntityRepository; 
-        IDataDictionaryRepository dataDictionaryRepository = new SqlDataDictionaryRepository(entityRepository, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
+        var entityRepository = JJService.EntityRepository; 
+        var dataDictionaryRepository = new SqlDataDictionaryRepository(entityRepository, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
         var dictionariesService = new DictionariesService(dataDictionaryRepository, entityRepository);
         _controller = new DictionariesController(dictionariesService, dataDictionaryRepository);
     }

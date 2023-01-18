@@ -24,7 +24,7 @@ public class EntityRepository : IEntityRepository
 
             _provider = DataAccessProvider.GetDataAccessProviderTypeFromString(DataAccess.ConnectionProvider) switch
             {
-                DataAccessProviderType.SqlServer => new MSSQLProvider(DataAccess),
+                DataAccessProviderType.SqlServer => new SqlServerProvider(DataAccess),
                 DataAccessProviderType.Oracle => new OracleProvider(DataAccess),
                 DataAccessProviderType.OracleNetCore => new OracleProvider(DataAccess),
                 DataAccessProviderType.SqLite => new ProviderSQLite(DataAccess),
@@ -88,13 +88,13 @@ public class EntityRepository : IEntityRepository
     public void CreateDataModel(Element element) => Provider.CreateDataModel(element);
 
     ///<inheritdoc cref="IEntityRepository.GetScriptCreateTable(Element)"/>
-    public string GetScriptCreateTable(Element element) => Provider.GetScriptCreateTable(element);
+    public string GetScriptCreateTable(Element element) => Provider.GetCreateTableScript(element);
 
     ///<inheritdoc cref="IEntityRepository.GetScriptWriteProcedure(Element)"/>
-    public string GetScriptWriteProcedure(Element element) => Provider.GetScriptWriteProcedure(element);
+    public string GetScriptWriteProcedure(Element element) => Provider.GetWriteProcedureScript(element);
 
     ///<inheritdoc cref="IEntityRepository.GetScriptReadProcedure(Element)"/>
-    public string GetScriptReadProcedure(Element element) => Provider.GetScriptReadProcedure(element);
+    public string GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);
 
     ///<inheritdoc cref="IEntityRepository.GetElementFromTable(string)"/>
     public Element GetElementFromTable(string tableName) => Provider.GetElementFromTable(tableName);

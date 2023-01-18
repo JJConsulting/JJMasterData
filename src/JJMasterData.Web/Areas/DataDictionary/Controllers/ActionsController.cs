@@ -23,8 +23,8 @@ public class ActionsController : DataDictionaryController
         var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
-        ViewBag.ToolBarActions = dicParcer.MetadataOptions.ToolBarActions.GetAll();
-        ViewBag.GridActions = dicParcer.MetadataOptions.GridActions.GetAll();
+        ViewBag.ToolBarActions = dicParcer.Options.ToolBarActions.GetAll();
+        ViewBag.GridActions = dicParcer.Options.GridActions.GetAll();
 
         if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
@@ -45,10 +45,10 @@ public class ActionsController : DataDictionaryController
         switch (context)
         {
             case ActionSource.Grid:
-                action = metadata.MetadataOptions.GridActions.Get(actionName);
+                action = metadata.Options.GridActions.Get(actionName);
                 break;
             case ActionSource.Toolbar:
-                action = metadata.MetadataOptions.ToolBarActions.Get(actionName);
+                action = metadata.Options.ToolBarActions.Get(actionName);
                 break;
             case ActionSource.Field:
                 var formElement = metadata.GetFormElement();

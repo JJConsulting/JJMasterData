@@ -53,8 +53,8 @@ public class EntityService : BaseService
             dicParser.Table.CustomProcNameGet = formElement.CustomProcNameGet;
             dicParser.Table.CustomProcNameSet = formElement.CustomProcNameSet;
             dicParser.Table.Info = formElement.Info;
-            dicParser.MetadataForm.Title = formElement.Title;
-            dicParser.MetadataForm.SubTitle = formElement.SubTitle;
+            dicParser.Form.Title = formElement.Title;
+            dicParser.Form.SubTitle = formElement.SubTitle;
 
             if (!entityName.Equals(formElement.Name))
             {

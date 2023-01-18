@@ -13,13 +13,13 @@ public class Metadata
     public Element Table { get; set; }
 
     [DataMember(Name = "form")]
-    public MetadataForm MetadataForm { get; set; }
+    public MetadataForm Form { get; set; }
 
     [DataMember(Name = "uioptions")]
-    public MetadataOptions MetadataOptions { get; set; }
+    public MetadataOptions Options { get; set; }
 
     [DataMember(Name = "api")]
-    public MetadataApiOptions MetadataApiOptions { get; set; }
+    public MetadataApiOptions ApiOptions { get; set; }
 
     public static explicit operator FormElement(Metadata metadata) => metadata.GetFormElement();
 
@@ -28,19 +28,19 @@ public class Metadata
         if (Table == null)
             return null;
 
-        if (MetadataForm == null)
+        if (Form == null)
             return null;
 
         var fe = new FormElement(Table)
         {
-            Title = MetadataForm.Title,
-            SubTitle = MetadataForm.SubTitle,
-            Panels = MetadataForm.Panels
+            Title = Form.Title,
+            SubTitle = Form.SubTitle,
+            Panels = Form.Panels
         };
 
-        foreach (var item in MetadataForm.FormFields)
+        foreach (var item in Form.FormFields)
         {
-            FormElementField field = fe.Fields[item.Name];
+            var field = fe.Fields[item.Name];
             field.Component = item.Component;
             field.VisibleExpression = item.VisibleExpression;
             field.EnableExpression = item.EnableExpression;
@@ -74,12 +74,12 @@ public class Metadata
         if (string.IsNullOrEmpty(formElement.Name))
             throw new ArgumentException(Translate.Key("Invalid dictionary name"));
 
-        for (int i = 0; i < formElement.Fields.Count; i++)
+        for (var i = 0; i < formElement.Fields.Count; i++)
         {
             formElement.Fields[i].Order = i + 1;
         }
 
         Table = formElement.DeepCopy<Element>();
-        MetadataForm = new MetadataForm(formElement);
+        Form = new MetadataForm(formElement);
     }
 }

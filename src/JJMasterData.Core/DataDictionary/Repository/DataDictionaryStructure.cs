@@ -47,25 +47,25 @@ public class DataDictionaryStructure
             return;
 
         //Nairobi
-        dicParser.MetadataOptions ??= new MetadataOptions();
+        dicParser.Options ??= new MetadataOptions();
 
-        dicParser.MetadataOptions.ToolBarActions ??= new GridToolBarActions();
+        dicParser.Options.ToolBarActions ??= new GridToolBarActions();
 
-        dicParser.MetadataOptions.GridActions ??= new GridActions();
+        dicParser.Options.GridActions ??= new GridActions();
 
 
         //Denver
-        if (dicParser.MetadataApiOptions == null)
+        if (dicParser.ApiOptions == null)
         {
-            dicParser.MetadataApiOptions = new MetadataApiOptions();
+            dicParser.ApiOptions = new MetadataApiOptions();
             if (dicParser.Table.Sync)
             {
-                dicParser.MetadataApiOptions.EnableGetAll = true;
-                dicParser.MetadataApiOptions.EnableGetDetail = true;
-                dicParser.MetadataApiOptions.EnableAdd = true;
-                dicParser.MetadataApiOptions.EnableUpdate = true;
-                dicParser.MetadataApiOptions.EnableUpdatePart = true;
-                dicParser.MetadataApiOptions.EnableDel = true;
+                dicParser.ApiOptions.EnableGetAll = true;
+                dicParser.ApiOptions.EnableGetDetail = true;
+                dicParser.ApiOptions.EnableAdd = true;
+                dicParser.ApiOptions.EnableUpdate = true;
+                dicParser.ApiOptions.EnableUpdatePart = true;
+                dicParser.ApiOptions.EnableDel = true;
             }
         }
 
@@ -75,12 +75,12 @@ public class DataDictionaryStructure
         }
 
         //Tokio
-        if (dicParser.MetadataForm is { Panels: null }) dicParser.MetadataForm.Panels = new List<FormElementPanel>();
+        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
 
         //Professor
-        if (dicParser.MetadataForm != null)
+        if (dicParser.Form != null)
         {
-            foreach (var field in dicParser.MetadataForm.FormFields)
+            foreach (var field in dicParser.Form.FormFields)
             {
                 if (field.DataItem is not { DataItemType: DataItemType.Manual })
                     continue;
@@ -93,13 +93,13 @@ public class DataDictionaryStructure
         }
 
         //Arturito
-        foreach (var action in dicParser.MetadataOptions.GridActions.GetAll()
+        foreach (var action in dicParser.Options.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
             action.IsCustomAction = true;
         }
 
-        foreach (var action in dicParser.MetadataOptions.ToolBarActions
+        foreach (var action in dicParser.Options.ToolBarActions
                      .GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
@@ -108,14 +108,14 @@ public class DataDictionaryStructure
 
         //Alpha Centauri
 
-        dicParser.MetadataOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+        dicParser.Options.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
 
-        dicParser.MetadataOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
+        dicParser.Options.GridActions.PythonActions ??= new List<PythonScriptAction>();
 
         //Sirius
 
-        dicParser.MetadataOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
-        dicParser.MetadataOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
     }
 }

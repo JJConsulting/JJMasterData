@@ -1,7 +1,7 @@
 using AutoFixture;
 using JJMasterData.Xunit.Assertions;
 using System.Collections;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Xunit.Test;
 

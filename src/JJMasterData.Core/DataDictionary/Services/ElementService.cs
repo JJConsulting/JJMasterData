@@ -100,7 +100,7 @@ public class ElementService : BaseService
         var metadata = new Metadata
         {
             Table = element.DeepCopy(),
-            MetadataForm = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
+            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
         };
 
         DataDictionaryRepository.InsertOrReplace(metadata);

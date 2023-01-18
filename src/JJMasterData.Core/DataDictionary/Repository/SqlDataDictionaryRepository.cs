@@ -71,13 +71,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
                     currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
                     break;
                 case "F":
-                    currentParser!.MetadataForm = JsonConvert.DeserializeObject<MetadataForm>(json);
+                    currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
                     break;
                 case "L":
-                    currentParser!.MetadataOptions = JsonConvert.DeserializeObject<MetadataOptions>(json);
+                    currentParser!.Options = JsonConvert.DeserializeObject<MetadataOptions>(json);
                     break;
                 case "A":
-                    currentParser!.MetadataApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
+                    currentParser!.ApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
                     break;
             }
         }
@@ -122,13 +122,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
                     metadata.Table = JsonConvert.DeserializeObject<Element>(json);
                     break;
                 case "F":
-                    metadata.MetadataForm = JsonConvert.DeserializeObject<MetadataForm>(json);
+                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
                     break;
                 case "L":
-                    metadata.MetadataOptions = JsonConvert.DeserializeObject<MetadataOptions>(json);
+                    metadata.Options = JsonConvert.DeserializeObject<MetadataOptions>(json);
                     break;
                 case "A":
-                    metadata.MetadataApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
+                    metadata.ApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
                     break;
             }
         }
@@ -167,9 +167,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         };
         _entityRepository.SetValues(MasterDataElement, values);
 
-        if (metadata.MetadataForm != null)
+        if (metadata.Form != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataForm);
+            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
             values.Clear();
             values.Add("name", name);
             values.Add("tablename", metadata.Table.TableName);
@@ -182,9 +182,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.SetValues(MasterDataElement, values);
         }
 
-        if (metadata.MetadataOptions != null)
+        if (metadata.Options != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataOptions);
+            string jsonForm = JsonConvert.SerializeObject(metadata.Options);
             values.Clear();
             values.Add("name", name);
             values.Add("tablename", metadata.Table.TableName);
@@ -197,9 +197,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.SetValues(MasterDataElement, values);
         }
 
-        if (metadata.MetadataApiOptions != null)
+        if (metadata.ApiOptions != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataApiOptions);
+            string jsonForm = JsonConvert.SerializeObject(metadata.ApiOptions);
             values.Clear();
             values.Add("name", name);
             values.Add("info", "");

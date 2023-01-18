@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
 using Xunit.Extensions.Ordering;

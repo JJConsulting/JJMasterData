@@ -23,7 +23,7 @@ namespace JJMasterData.Core.Web.Components
             var metadata = dictionaryRepository.GetMetadata(elementName);
             grid.Name = "jjview" + elementName.ToLower();
             grid.FormElement = metadata.GetFormElement();
-            SetGridOptions(grid, metadata.MetadataOptions.Grid);
+            SetGridOptions(grid, metadata.Options.Grid);
         }
 
         internal static void SetGridOptions(JJGridView grid, GridUI options)

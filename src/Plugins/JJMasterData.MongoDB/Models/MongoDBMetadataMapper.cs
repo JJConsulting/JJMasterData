@@ -9,10 +9,10 @@ internal static class MongoDBMetadataMapper
     {
         return new MongoDBMetadata
         {
-            Api = metadata.Api,
+            ApiOptions = metadata.ApiOptions,
             Form = metadata.Form,
             Table = metadata.Table,
-            UIOptions = metadata.UIOptions
+            Options = metadata.Options
         };
     }
     
@@ -20,10 +20,10 @@ internal static class MongoDBMetadataMapper
     {
         return new Metadata
         {
-            Api = mongoDbMetadata.Api,
+            ApiOptions = mongoDbMetadata.ApiOptions,
             Form = mongoDbMetadata.Form,
             Table = mongoDbMetadata.Table,
-            UIOptions = mongoDbMetadata.UIOptions
+            Options = mongoDbMetadata.Options
         };
     }
 }

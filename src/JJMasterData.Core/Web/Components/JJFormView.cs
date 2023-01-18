@@ -474,7 +474,7 @@ public class JJFormView : JJGridView
             UserValues = UserValues,
             Name = action.ElementNameToSelect
         };
-        formsel.SetOptions(dicParser.MetadataOptions);
+        formsel.SetOptions(dicParser.Options);
 
         var goBackScript = new StringBuilder();
         goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
@@ -799,9 +799,9 @@ public class JJFormView : JJGridView
                     RenderPanelGroup = true
                 };
 
-                if (dic.MetadataOptions != null)
+                if (dic.Options != null)
                 {
-                    chieldView.FormUI = dic.MetadataOptions.Form;
+                    chieldView.FormUI = dic.Options.Form;
                 }
 
                 html.AppendElement(chieldView);
@@ -820,9 +820,9 @@ public class JJFormView : JJGridView
                 };
                 childGrid.Filter.ApplyCurrentFilter(filter);
 
-                if (dic.MetadataOptions != null)
+                if (dic.Options != null)
                 {
-                    childGrid.SetOptions(dic.MetadataOptions);
+                    childGrid.SetOptions(dic.Options);
                 }
 
                 childGrid.ShowTitle = false;

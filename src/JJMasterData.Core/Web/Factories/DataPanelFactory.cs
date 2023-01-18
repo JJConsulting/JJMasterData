@@ -24,7 +24,7 @@ namespace JJMasterData.Core.Web.Factories
             var formElement = dicParser.GetFormElement();
 
             SetDataPanelParams(dataPanel, formElement);
-            dataPanel.FormUI = dicParser.MetadataOptions.Form;
+            dataPanel.FormUI = dicParser.Options.Form;
         }
 
         internal static void SetDataPanelParams(JJDataPanel dataPanel, FormElement formElement)

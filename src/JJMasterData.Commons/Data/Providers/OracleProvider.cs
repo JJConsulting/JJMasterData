@@ -21,7 +21,7 @@ public class OracleProvider : BaseProvider
     {
     }
 
-    public override string GetScriptCreateTable(Element element)
+    public override string GetCreateTableScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(Element));
@@ -231,7 +231,7 @@ public class OracleProvider : BaseProvider
         return sSql.ToString();
     }
 
-    public override string GetScriptWriteProcedure(Element element)
+    public override string GetWriteProcedureScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(Element));
@@ -482,7 +482,7 @@ public class OracleProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override string GetScriptReadProcedure(Element element)
+    public override string GetReadProcedureScript(Element element)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(Element));
@@ -791,22 +791,22 @@ public class OracleProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override DataAccessCommand GetCommandInsert(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(INSERT, element, values);
     }
 
-    public override DataAccessCommand GetCommandUpdate(Element element, IDictionary values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(UPDATE, element, values);
     }
 
-    public override DataAccessCommand GetCommandDelete(Element element, IDictionary filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary filters)
     {
         return GetCommandWrite(DELETE, element, filters);
     }
 
-    public override DataAccessCommand GetCommandInsertOrReplace(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
@@ -846,7 +846,7 @@ public class OracleProvider : BaseProvider
         return cmd;
     }
 
-    public override DataAccessCommand GetCommandRead(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
     {
         var cmd = new DataAccessCommand
         {

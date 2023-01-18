@@ -172,7 +172,7 @@ public class RelationsController : DataDictionaryController
         else
         {
             Metadata dicParser = _relationsService.DataDictionaryRepository.GetMetadata(childElement);
-            title = dicParser.MetadataForm.Title;
+            title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {
                 listItem.Add(new SelectListItem(field.Name, field.Name));
