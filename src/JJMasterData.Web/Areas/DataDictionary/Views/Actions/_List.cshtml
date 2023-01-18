@@ -1,6 +1,8 @@
 ﻿@using JJMasterData.Commons.Util
 @using JJMasterData.Core.DataDictionary.Action
 @using System.Text
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
 @model  JJMasterData.Web.Areas.DataDictionary.Models.DataDictionaryListAction
 
 @{string sortableClass = string.Empty;}
@@ -25,7 +27,7 @@
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(InternalAction))">@Translate.Key("Internal Redirect")</a></li>
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(SqlCommandAction))">@Translate.Key("Sql Command")</a></li>
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(PythonScriptAction))">@Translate.Key("Python Script")</a></li>
-                @if (Model.Context == ActionOrigin.Field)
+                @if (Model.Context == ActionSource.Field)
                 {
                     <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(ScriptAction))">@Translate.Key("JavaScript Command")</a></li>
                 }

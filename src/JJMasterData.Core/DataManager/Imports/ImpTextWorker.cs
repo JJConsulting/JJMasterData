@@ -1,6 +1,4 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
@@ -13,6 +11,8 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataManager.Imports;
 

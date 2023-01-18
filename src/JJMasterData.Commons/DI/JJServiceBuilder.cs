@@ -1,9 +1,9 @@
 ﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +34,7 @@ public class JJServiceBuilder
             }
         });
         
-        Services.AddScoped<IEntityRepository,Factory>();
+        Services.AddScoped<IEntityRepository,EntityRepository>();
         
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
         Services.AddTransient<JJMasterDataEncryptionService>();

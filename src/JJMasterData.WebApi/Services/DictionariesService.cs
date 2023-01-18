@@ -1,12 +1,14 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using System.Collections;
 using System.Text;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 
 namespace JJMasterData.WebApi.Services;
@@ -109,7 +111,7 @@ public class DictionariesService
             }
         }
 
-        string fieldApplyUser = metadata.Api.ApplyUserIdOn;
+        string fieldApplyUser = metadata.MetadataApiOptions.ApplyUserIdOn;
         
         if (string.IsNullOrEmpty(fieldApplyUser)) 
             return filters;

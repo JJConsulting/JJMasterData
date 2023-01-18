@@ -27,7 +27,9 @@ internal class FormEventResolver : IFormEventResolver
     {
         var assemblies = new List<Assembly>
         {
+#if NET
             Assembly.GetEntryAssembly()
+#endif
         };
 
         if (Assemblies?.Any() ?? false)
@@ -47,7 +49,7 @@ internal class FormEventResolver : IFormEventResolver
 
     private static IEnumerable<TypeInfo> GetFormEventTypes(IEnumerable<Assembly> assemblies)
     {
-        return assemblies.SelectMany(a => a.DefinedTypes.Where(x =>
+        return assemblies.SelectMany(a => a?.DefinedTypes.Where(x =>
             x.GetInterfaces().Any(i => i == typeof(IFormEvent)))).ToList();
     }
 }

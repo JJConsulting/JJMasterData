@@ -1,5 +1,6 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -23,7 +24,7 @@ public class ApiService : BaseService
     {
         bool hasApiGetEnabled;
 
-        if (dicParser.Api.EnableGetDetail & dicParser.Api.EnableGetAll)
+        if (dicParser.MetadataApiOptions.EnableGetDetail & dicParser.MetadataApiOptions.EnableGetAll)
             hasApiGetEnabled = true;
         else
             hasApiGetEnabled = false;

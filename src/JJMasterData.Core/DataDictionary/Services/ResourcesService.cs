@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 

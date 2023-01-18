@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -13,10 +14,10 @@ public class UIOptionsService : BaseService
     {
     }
 
-    private bool ValidateOptions(UIOptions uIOptions, string dictionaryName)
+    private bool ValidateOptions(MetadataOptions uIMetadataOptions, string dictionaryName)
     {
 
-        if (uIOptions.Grid.EnableMultSelect)
+        if (uIMetadataOptions.Grid.EnableMultSelect)
         {
             var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
             var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);
@@ -30,15 +31,15 @@ public class UIOptionsService : BaseService
     }
 
 
-    public bool EditOptions(UIOptions uIOptions,string dictionaryName)
+    public bool EditOptions(MetadataOptions uIMetadataOptions,string dictionaryName)
     {
         try
         {
-            if (ValidateOptions(uIOptions, dictionaryName))
+            if (ValidateOptions(uIMetadataOptions, dictionaryName))
             {
                 var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
-                dicParser.UIOptions.Form = uIOptions.Form;
-                dicParser.UIOptions.Grid = uIOptions.Grid;
+                dicParser.MetadataOptions.Form = uIMetadataOptions.Form;
+                dicParser.MetadataOptions.Grid = uIMetadataOptions.Grid;
 
                 DataDictionaryRepository.InsertOrReplace(dicParser);
             }

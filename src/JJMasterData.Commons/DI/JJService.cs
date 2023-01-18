@@ -1,6 +1,7 @@
 ﻿using System;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.DependencyInjection;

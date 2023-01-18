@@ -1,5 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
@@ -7,7 +7,7 @@ public class DataDictionaryListAction
 {
     public string? DictionaryName { get; set; }
 
-    public ActionOrigin Context { get; set; }
+    public ActionSource Context { get; set; }
 
     public string? FieldName { get; set; }
 

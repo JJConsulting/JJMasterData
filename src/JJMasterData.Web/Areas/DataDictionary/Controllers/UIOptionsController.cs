@@ -25,9 +25,9 @@ public class UIOptionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Edit(UIOptions uIOptions, string dictionaryName)
+    public ActionResult Edit(MetadataOptions uIMetadataOptions, string dictionaryName)
     {
-        if (_optionsService!.EditOptions(uIOptions, dictionaryName))
+        if (_optionsService!.EditOptions(uIMetadataOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
 
         var jjValidationSummary = _optionsService.GetValidationSummary();
@@ -35,13 +35,13 @@ public class UIOptionsController : DataDictionaryController
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Options";
 
-        return View(uIOptions);
+        return View(uIMetadataOptions);
     }
 
-    private UIOptions Populate(string dictionaryName)
+    private MetadataOptions Populate(string dictionaryName)
     {
         var dicParser = _optionsService!.DataDictionaryRepository.GetMetadata(dictionaryName);
-        var uIOptions = dicParser.UIOptions;
+        var uIOptions = dicParser.MetadataOptions;
         ViewBag.MenuId = "Options";
         ViewBag.DictionaryName = dictionaryName;
 

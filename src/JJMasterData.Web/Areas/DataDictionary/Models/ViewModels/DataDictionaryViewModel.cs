@@ -1,4 +1,4 @@
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 

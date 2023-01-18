@@ -1,6 +1,6 @@
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Options;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 

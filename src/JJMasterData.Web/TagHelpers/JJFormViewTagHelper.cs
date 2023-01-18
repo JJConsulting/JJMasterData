@@ -1,5 +1,5 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;

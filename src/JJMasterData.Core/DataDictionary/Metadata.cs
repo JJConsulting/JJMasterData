@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -13,30 +13,32 @@ public class Metadata
     public Element Table { get; set; }
 
     [DataMember(Name = "form")]
-    public MetadataForm Form { get; set; }
+    public MetadataForm MetadataForm { get; set; }
 
     [DataMember(Name = "uioptions")]
-    public UIOptions UIOptions { get; set; }
+    public MetadataOptions MetadataOptions { get; set; }
 
     [DataMember(Name = "api")]
-    public ApiSettings Api { get; set; }
+    public MetadataApiOptions MetadataApiOptions { get; set; }
+
+    public static explicit operator FormElement(Metadata metadata) => metadata.GetFormElement();
 
     public FormElement GetFormElement()
     {
         if (Table == null)
             return null;
 
-        if (Form == null)
+        if (MetadataForm == null)
             return null;
 
         var fe = new FormElement(Table)
         {
-            Title = Form.Title,
-            SubTitle = Form.SubTitle,
-            Panels = Form.Panels
+            Title = MetadataForm.Title,
+            SubTitle = MetadataForm.SubTitle,
+            Panels = MetadataForm.Panels
         };
 
-        foreach (var item in Form.FormFields)
+        foreach (var item in MetadataForm.FormFields)
         {
             FormElementField field = fe.Fields[item.Name];
             field.Component = item.Component;
@@ -78,7 +80,6 @@ public class Metadata
         }
 
         Table = formElement.DeepCopy<Element>();
-        Form = new MetadataForm(formElement);
+        MetadataForm = new MetadataForm(formElement);
     }
-
 }

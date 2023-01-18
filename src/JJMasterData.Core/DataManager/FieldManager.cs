@@ -1,11 +1,12 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
 using System;
 using System.Collections;
 using System.Globalization;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.DataManager;
 

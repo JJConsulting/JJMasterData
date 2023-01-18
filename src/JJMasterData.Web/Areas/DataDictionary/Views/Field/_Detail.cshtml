@@ -1,4 +1,7 @@
-﻿@using JJMasterData.Commons.Dao.Entity
+﻿@using JJMasterData.Commons.Data.Entity
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 
 <script lang="javascript" type="text/javascript">
@@ -155,7 +158,7 @@
                 {
                     @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new DataDictionaryListAction
                     {
-                        Context = ActionOrigin.Field,
+                        Context = ActionSource.Field,
                         DictionaryName = ViewBag.DictionaryName,
                         ListAction = Model.Actions.GetAll(),
                         FieldName = ViewBag.OriginalName

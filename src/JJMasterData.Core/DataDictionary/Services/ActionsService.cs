@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using JJMasterData.Core.WebComponents;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -14,7 +14,7 @@ public class ActionsService : BaseService
     {
     }
 
-    public bool DeleteAction(string elementName, string actionName, ActionOrigin context, string fieldName = null)
+    public bool DeleteAction(string elementName, string actionName, ActionSource context, string fieldName = null)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         DeleteAction(ref dicParser, actionName, context, fieldName);
@@ -23,33 +23,33 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void DeleteAction(ref Metadata metadata, string originalName, ActionOrigin context, string fieldName = null)
+    private void DeleteAction(ref Metadata metadata, string originalName, ActionSource context, string fieldName = null)
     {
         if (originalName == null)
             return;
 
-        if (context == ActionOrigin.Field)
+        if (context == ActionSource.Field)
         {
             var field = metadata.GetFormElement().Fields[fieldName];
             var action = field.Actions.Get(originalName);
             if (action != null)
                 field.Actions.Remove(action);
         }
-        else if (context == ActionOrigin.Grid)
+        else if (context == ActionSource.Grid)
         {
-            var action = metadata.UIOptions.GridActions.Get(originalName);
+            var action = metadata.MetadataOptions.GridActions.Get(originalName);
             if (action != null)
-                metadata.UIOptions.GridActions.Remove(action);
+                metadata.MetadataOptions.GridActions.Remove(action);
         }
-        else if (context == ActionOrigin.Toolbar)
+        else if (context == ActionSource.Toolbar)
         {
-            var action = metadata.UIOptions.ToolBarActions.Get(originalName);
+            var action = metadata.MetadataOptions.ToolBarActions.Get(originalName);
             if (action != null)
-                metadata.UIOptions.ToolBarActions.Remove(action);
+                metadata.MetadataOptions.ToolBarActions.Remove(action);
         }
     }
 
-    public bool SaveAction(string elementName, BasicAction action, ActionOrigin context, string originalName, string fieldName = null)
+    public bool SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         ValidateActionName(dicParser, action.Name, originalName, context, fieldName);
@@ -72,7 +72,7 @@ public class ActionsService : BaseService
                 
         switch (context)
         {
-            case ActionOrigin.Field:
+            case ActionSource.Field:
             {
                 var field = dicParser.GetFormElement().Fields[fieldName];
                 field.Actions.Set(action);
@@ -81,16 +81,16 @@ public class ActionsService : BaseService
                     field.Actions.SetDefault(action.Name);
                 break;
             }
-            case ActionOrigin.Grid:
+            case ActionSource.Grid:
             {
-                dicParser.UIOptions.GridActions.Set(action);
+                dicParser.MetadataOptions.GridActions.Set(action);
 
                 if (action.IsDefaultOption)
-                    dicParser.UIOptions.GridActions.SetDefault(action.Name);
+                    dicParser.MetadataOptions.GridActions.SetDefault(action.Name);
                 break;
             }
-            case ActionOrigin.Toolbar:
-                dicParser.UIOptions.ToolBarActions.Set(action);
+            case ActionSource.Toolbar:
+                dicParser.MetadataOptions.ToolBarActions.Set(action);
                 break;
         }
 
@@ -99,7 +99,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionOrigin context, string fieldName = null)
+    private void ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionSource context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -112,17 +112,17 @@ public class ActionsService : BaseService
         List<BasicAction> listAction = null;
         switch (context)
         {
-            case ActionOrigin.Field:
+            case ActionSource.Field:
             {
                 var field = dicParser.GetFormElement().Fields[fieldName];
                 listAction = field.Actions.GetAll();
                 break;
             }
-            case ActionOrigin.Grid:
-                listAction = dicParser.UIOptions.GridActions.GetAll();
+            case ActionSource.Grid:
+                listAction = dicParser.MetadataOptions.GridActions.GetAll();
                 break;
-            case ActionOrigin.Toolbar:
-                listAction = dicParser.UIOptions.ToolBarActions.GetAll();
+            case ActionSource.Toolbar:
+                listAction = dicParser.MetadataOptions.ToolBarActions.GetAll();
                 break;
         }
 
@@ -154,7 +154,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(sqlAction.CommandSQL))
                 AddError(nameof(sqlAction.CommandSQL), Translate.Key("Required [Sql Command] field"));
 
-            if (!dicParser.UIOptions.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
+            if (!dicParser.MetadataOptions.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                 AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -163,7 +163,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(pythonScriptAction.PythonScript))
                 AddError(nameof(pythonScriptAction.PythonScript), Translate.Key("Required [Python Script] field"));
 
-            if (!dicParser.UIOptions.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
+            if (!dicParser.MetadataOptions.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
                 AddError(nameof(pythonScriptAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -184,7 +184,7 @@ public class ActionsService : BaseService
         }
     }
 
-    public bool SortActions(string elementName, string[] listAction, ActionOrigin actionContext, string fieldName)
+    public bool SortActions(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         for (int i = 0; i < listAction.Length; i++)
@@ -192,15 +192,15 @@ public class ActionsService : BaseService
             string actionName = listAction[i];
             BasicAction action = null;
 
-            if (actionContext == ActionOrigin.Grid)
+            if (actionContext == ActionSource.Grid)
             {
-                action = dicParser.UIOptions.GridActions.Get(actionName);
+                action = dicParser.MetadataOptions.GridActions.Get(actionName);
             }
-            else if (actionContext == ActionOrigin.Toolbar)
+            else if (actionContext == ActionSource.Toolbar)
             {
-                action = dicParser.UIOptions.ToolBarActions.Get(actionName);
+                action = dicParser.MetadataOptions.ToolBarActions.Get(actionName);
             }
-            else if (actionContext == ActionOrigin.Field)
+            else if (actionContext == ActionSource.Field)
             {
                 var formElement = dicParser.GetFormElement();
                 action = formElement.Fields[fieldName].Actions.Get(actionName);
@@ -212,17 +212,17 @@ public class ActionsService : BaseService
         return true;
     }
 
-    public bool EnableDisable(string elementName, string actionName, ActionOrigin actionContext, bool visible)
+    public bool EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         BasicAction action = null;
-        if (actionContext == ActionOrigin.Grid)
+        if (actionContext == ActionSource.Grid)
         {
-            action = dicParser.UIOptions.GridActions.Get(actionName);
+            action = dicParser.MetadataOptions.GridActions.Get(actionName);
         }
-        else if (actionContext == ActionOrigin.Toolbar)
+        else if (actionContext == ActionSource.Toolbar)
         {
-            action = dicParser.UIOptions.ToolBarActions.Get(actionName);
+            action = dicParser.MetadataOptions.ToolBarActions.Get(actionName);
         }
 
         action.SetVisible(visible);

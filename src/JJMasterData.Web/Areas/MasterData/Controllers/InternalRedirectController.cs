@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Data.SqlClient;
 using System.Web;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;

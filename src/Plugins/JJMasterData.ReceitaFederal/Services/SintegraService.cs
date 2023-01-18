@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.ReceitaFederal.Abstractions;

@@ -1,4 +1,4 @@
-﻿using JJMasterData.Core.Http;
+﻿using JJMasterData.Core.Web.Http;
 
 namespace JJMasterData.Core.DataManager.Exports.Configuration;
 

@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Text;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using Microsoft.AspNetCore.Http;
 using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
@@ -12,12 +12,12 @@ namespace JJMasterData.Swagger.AspNetCore;
 internal class DataDictionaryOperationFactory
 {
     internal FormElement FormElement { get; set; }
-    internal ApiSettings Settings { get; set; }
+    internal MetadataApiOptions Options { get; set; }
     internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
-    internal DataDictionaryOperationFactory(FormElement formElement, ApiSettings settings)
+    internal DataDictionaryOperationFactory(FormElement formElement, MetadataApiOptions options)
     {
         FormElement = formElement;
-        Settings = settings;
+        Options = options;
     }
     internal OpenApiOperation Get()
     {
@@ -61,7 +61,7 @@ internal class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Settings.GetFieldNameParsed("id"),
+                    Name = Options.GetFieldNameParsed("id"),
                     Description = "Primary Key Value.<br>" + nameFields,
                     In = ParameterLocation.Path,
                     Required = true,
@@ -116,7 +116,7 @@ internal class DataDictionaryOperationFactory
         {
             new()
             {
-                Name = Settings.GetFieldNameParsed("pag"),
+                Name = Options.GetFieldNameParsed("pag"),
                 Description = "Current page",
                 In = ParameterLocation.Query,
                 Required = true,
@@ -129,7 +129,7 @@ internal class DataDictionaryOperationFactory
             },
             new()
             {
-                Name = Settings.GetFieldNameParsed("regporpag"),
+                Name = Options.GetFieldNameParsed("regporpag"),
                 Description = "Number of records per page",
                 In = ParameterLocation.Query,
                 Required = true,
@@ -142,7 +142,7 @@ internal class DataDictionaryOperationFactory
             },
             new()
             {
-                Name = Settings.GetFieldNameParsed("orderby"),
+                Name = Options.GetFieldNameParsed("orderby"),
                 Description = "Order of records (default is pk ASC). Attention, this field is case sensitive.",
                 In = ParameterLocation.Query,
                 Required = false,
@@ -153,7 +153,7 @@ internal class DataDictionaryOperationFactory
             },
             new()
             {
-                Name = Settings.GetFieldNameParsed("tot"),
+                Name = Options.GetFieldNameParsed("tot"),
                 Description = "If you pass the total, the count of records will not be executed saving processing. (optional)",
                 In = ParameterLocation.Query,
                 Required = false,
@@ -171,7 +171,7 @@ internal class DataDictionaryOperationFactory
 
         foreach (FormElementField field in fields)
         {
-            string fieldName = Settings.GetFieldNameParsed(field.Name);
+            string fieldName = Options.GetFieldNameParsed(field.Name);
             string description = "Filter available. (" + field.Filter.Type.ToString().ToLower() + ")";
             if (!string.IsNullOrEmpty(field.Label))
                 description += "<br>" + field.Label;
@@ -186,7 +186,7 @@ internal class DataDictionaryOperationFactory
 
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = Settings.GetFieldNameParsed("_from"),
+                    Name = Options.GetFieldNameParsed("_from"),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = field.IsRequired,
@@ -195,7 +195,7 @@ internal class DataDictionaryOperationFactory
 
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = Settings.GetFieldNameParsed("_to"),
+                    Name = Options.GetFieldNameParsed("_to"),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = field.IsRequired,
@@ -206,7 +206,7 @@ internal class DataDictionaryOperationFactory
             {
                 var parameter = new OpenApiParameter
                 {
-                    Name = Settings.GetFieldNameParsed(fieldName),
+                    Name = Options.GetFieldNameParsed(fieldName),
                     Description = description,
                     In = ParameterLocation.Query,
                     Required = false
@@ -270,7 +270,7 @@ internal class DataDictionaryOperationFactory
 
         var id = ModelName + "List";
 
-        var items = GetDictionarySchema(FormElement, Settings, id, true);
+        var items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
         {
@@ -338,7 +338,7 @@ internal class DataDictionaryOperationFactory
                 {
                     new()
                     {
-                        Name = Settings.GetFieldNameParsed("replace"),
+                        Name = Options.GetFieldNameParsed("replace"),
                         Description = "If record exists updates it, otherwise insert. (default false)",
                         In = ParameterLocation.Query,
                         Required = false,
@@ -365,7 +365,7 @@ internal class DataDictionaryOperationFactory
         description.Append("<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)");
 
         var id = ModelName + "List";
-        var items = GetDictionarySchema(FormElement, Settings, id, true);
+        var items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
         {
@@ -446,7 +446,7 @@ internal class DataDictionaryOperationFactory
 
         string id = ModelName + "List";
 
-        OpenApiSchema items = GetDictionarySchema(FormElement, Settings, id, true);
+        OpenApiSchema items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
         {
@@ -564,7 +564,7 @@ internal class DataDictionaryOperationFactory
             {
                 new()
                 {
-                    Name = Settings.GetFieldNameParsed("id"),
+                    Name = Options.GetFieldNameParsed("id"),
                     Description = "Primary Key Value.<br>" + nameFields,
                     In = ParameterLocation.Path,
                     Required = true,
@@ -597,7 +597,7 @@ internal class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Settings.GetFieldNameParsed("id"),
+            Name = Options.GetFieldNameParsed("id"),
             Description = "Primary Key Value.<br>" + nameFields,
             In = ParameterLocation.Path,
             Required = true,
@@ -656,7 +656,7 @@ internal class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Settings.GetFieldNameParsed("id"),
+            Name = Options.GetFieldNameParsed("id"),
             Description = "Primary Key Value.<br>" + nameFields,
             In = ParameterLocation.Path,
             Required = true,
@@ -735,7 +735,7 @@ internal class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Settings.GetFieldNameParsed("id"),
+            Name = Options.GetFieldNameParsed("id"),
             Description = "Primary Key Value.<br>" + nameFields,
             In = ParameterLocation.Path,
             Required = true,
@@ -794,7 +794,7 @@ internal class DataDictionaryOperationFactory
         };
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = Settings.GetFieldNameParsed("id"),
+            Name = Options.GetFieldNameParsed("id"),
             Description = "Primary Key Value.<br>" + nameFields,
             In = ParameterLocation.Path,
             Required = true,

@@ -1,4 +1,7 @@
-﻿@using JJMasterData.Commons.Dao.Entity
+﻿@using JJMasterData.Commons.Data.Entity
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
 
@@ -67,7 +70,7 @@
                 <tbody>
                     <tr class="text-info jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableGetAll)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetAll)
                         </td>
                         <td>
                             <label for="EnableGetAll">@Translate.Key("GET")</label>
@@ -78,7 +81,7 @@
                     </tr>
                     <tr class="text-info jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableGetDetail)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetDetail)
                         </td>
                         <td>
                             <label for="EnableGetDetail">@Translate.Key("GET")</label>
@@ -89,7 +92,7 @@
                     </tr>
                     <tr class="text-success jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableAdd)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableAdd)
                         </td>
                         <td>
                             <label for="EnableAdd">@Translate.Key("POST")</label>
@@ -100,7 +103,7 @@
                     </tr>
                     <tr class="text-primary jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableUpdate)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdate)
                         </td>
                         <td>
                             <label for="EnableUpdate">@Translate.Key("PUT")</label>
@@ -111,7 +114,7 @@
                     </tr>
                     <tr class="text-primary jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableUpdatePart)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdatePart)
                         </td>
                         <td>
                             <label for="EnableUpdatePart">@Translate.Key("PATCH")</label>
@@ -122,7 +125,7 @@
                     </tr>
                     <tr class="text-danger jjgrid-action">
                         <td class="jjselect">
-                            @Html.CheckBoxFor(model => Model.ApiSettings.EnableDel)
+                            @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableDel)
                         </td>
                         <td>
                             <label for="EnableDel">@Translate.Key("DEL")</label>
@@ -139,13 +142,13 @@
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-5">
                         <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("ApplyUserIdOn")</label>
-                        @Html.DropDownListFor(model => Model.ApiSettings.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control form-select" })
+                        @Html.DropDownListFor(model => Model.MetadataApiOptions.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control form-select" })
 
                         <span id="helpBlock" class="help-block">@Translate.Key("Aways apply UserId (from login) as filter and default value on set.")</span>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
                         <label class="@BootstrapHelper.Label " for="FormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("JsonFormat")</label>
-                        <select asp-for="ApiSettings.FormatType" class = "form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
+                        <select asp-for="MetadataApiOptions.FormatType" class = "form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                         <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Used in sync?")">@Translate.Key("Sync")</label>

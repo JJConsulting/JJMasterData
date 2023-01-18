@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using Swashbuckle.Swagger;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DI;
 
 namespace JJMasterData.Swagger
@@ -21,49 +21,49 @@ namespace JJMasterData.Swagger
             foreach (Metadata metadata in dictionaries)
             {
                 FormElement f = metadata.GetFormElement();
-                ApiSettings api = metadata.Api;
+                MetadataApiOptions metadataApiOptions = metadata.MetadataApiOptions;
                 string key;
 
                 //Get All
-                if (metadata.Api.EnableGetAll)
+                if (metadata.MetadataApiOptions.EnableGetAll)
                 {
                     key = "/MasterApi/" + f.Name + "/";
-                    swaggerDoc.paths.Add(key, GetAllPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetAllPathItem(f, metadataApiOptions));
                 }
 
                 //Get Detail
-                if (metadata.Api.EnableGetDetail)
+                if (metadata.MetadataApiOptions.EnableGetDetail)
                 {
                     key = "/MasterApi/" + f.Name + "/{id}";
-                    swaggerDoc.paths.Add(key, GetDetailPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetDetailPathItem(f, metadataApiOptions));
                 }
 
                 //Add 
-                if (metadata.Api.EnableAdd)
+                if (metadata.MetadataApiOptions.EnableAdd)
                 {
                     key = "/MasterApi/" + f.Name;
-                    swaggerDoc.paths.Add(key, GetPostPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetPostPathItem(f, metadataApiOptions));
                 }
 
                 //Update 
-                if (metadata.Api.EnableUpdate)
+                if (metadata.MetadataApiOptions.EnableUpdate)
                 {
                     key = "/MasterApi/" + f.Name + "/ ";
-                    swaggerDoc.paths.Add(key, GetPutPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetPutPathItem(f, metadataApiOptions));
                 }
 
                 //Parcial Update
-                if (metadata.Api.EnableUpdatePart)
+                if (metadata.MetadataApiOptions.EnableUpdatePart)
                 {
                     key = "/MasterApi/" + f.Name + " ";
-                    swaggerDoc.paths.Add(key, GetPatchPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetPatchPathItem(f, metadataApiOptions));
                 }
 
                 //Del
-                if (metadata.Api.EnableDel)
+                if (metadata.MetadataApiOptions.EnableDel)
                 {
                     key = "/MasterApi/" + f.Name + "/{id} ";
-                    swaggerDoc.paths.Add(key, GetDelPathItem(f, api));
+                    swaggerDoc.paths.Add(key, GetDelPathItem(f, metadataApiOptions));
                 }
             }
 
@@ -72,7 +72,7 @@ namespace JJMasterData.Swagger
             swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
         }
 
-        private PathItem GetPatchPathItem(FormElement f, ApiSettings api)
+        private PathItem GetPatchPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -87,7 +87,7 @@ namespace JJMasterData.Swagger
             {
                 title = modelName + "List",
                 type = "array",
-                items = GetDictionarySchema(f, api, modelName + "List"),
+                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List"),
                 description = "List of records"
             };
 
@@ -103,7 +103,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("listParam"),
+                    name = metadataApiOptions.GetFieldNameParsed("listParam"),
                     description = "Array with the objects<br>Primary key required",
                     @in = "body",
                     required = true,
@@ -134,7 +134,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPostPathItem(FormElement f, ApiSettings api)
+        private PathItem GetPostPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -149,7 +149,7 @@ namespace JJMasterData.Swagger
             {
                 title = modelName + "List",
                 type = "array",
-                items = GetDictionarySchema(f, api, modelName + "List", true),
+                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List", true),
                 description = "List of records"
             };
 
@@ -165,7 +165,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("listParam"),
+                    name = metadataApiOptions.GetFieldNameParsed("listParam"),
                     description = "Array with the objects.",
                     @in = "body",
                     required = true,
@@ -173,7 +173,7 @@ namespace JJMasterData.Swagger
                 },
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("replace"),
+                    name = metadataApiOptions.GetFieldNameParsed("replace"),
                     description = "If exist record, update otherwise insert. (default false)",
                     @in = "query",
                     required = false,
@@ -205,7 +205,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPutPathItem(FormElement f, ApiSettings api)
+        private PathItem GetPutPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -221,7 +221,7 @@ namespace JJMasterData.Swagger
             {
                 title = modelName + "List",
                 type = "array",
-                items = GetDictionarySchema(f, api, modelName + "List"),
+                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List"),
                 description = "List of records"
             };
 
@@ -237,7 +237,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("listParam"),
+                    name = metadataApiOptions.GetFieldNameParsed("listParam"),
                     description = "Array with the objects",
                     @in = "body",
                     required = true,
@@ -268,7 +268,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDelPathItem(FormElement f, ApiSettings api)
+        private PathItem GetDelPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -302,7 +302,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("id"),
+                    name = metadataApiOptions.GetFieldNameParsed("id"),
                     description = "Primary Key Value.<br>" + nameFields,
                     @in = "path",
                     required = true,
@@ -325,7 +325,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDetailPathItem(FormElement f, ApiSettings api)
+        private PathItem GetDetailPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -359,7 +359,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = api.GetFieldNameParsed("id"),
+                    name = metadataApiOptions.GetFieldNameParsed("id"),
                     description = "Primary Key Value.<br>" + nameFields,
                     @in = "path",
                     required = true,
@@ -371,7 +371,7 @@ namespace JJMasterData.Swagger
             oPathItem.get = oper;
             oPathItem.get.responses = new Dictionary<string, Response>();
 
-            var baseSchema = GetDictionarySchema(f, api, modelName);
+            var baseSchema = GetDictionarySchema(f, metadataApiOptions, modelName);
             oPathItem.get.responses.Add("200", new Response { description = "OK", schema = baseSchema });
             oPathItem.get.responses.Add("400", new Response { description = "Bad Request" });
             oPathItem.get.responses.Add("401", new Response { description = "Unauthorized" });
@@ -382,7 +382,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetAllPathItem(FormElement f, ApiSettings api)
+        private PathItem GetAllPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "");
             var oPathItem = new PathItem();
@@ -397,7 +397,7 @@ namespace JJMasterData.Swagger
             oper.parameters = new List<Parameter>();
             oper.parameters.Add(new Parameter
             {
-                name = api.GetFieldNameParsed("pag"),
+                name = metadataApiOptions.GetFieldNameParsed("pag"),
                 description = "Current page",
                 @in = "query",
                 required = true,
@@ -407,7 +407,7 @@ namespace JJMasterData.Swagger
             });
             oper.parameters.Add(new Parameter
             {
-                name = api.GetFieldNameParsed("regporpag"),
+                name = metadataApiOptions.GetFieldNameParsed("regporpag"),
                 description = "Number of records per page",
                 @in = "query",
                 required = true,
@@ -417,7 +417,7 @@ namespace JJMasterData.Swagger
             });
             oper.parameters.Add(new Parameter
             {
-                name = api.GetFieldNameParsed("orderby"),
+                name = metadataApiOptions.GetFieldNameParsed("orderby"),
                 description = "Order of records (default is pk ASC). Attention this field is case sensitive.",
                 @in = "query",
                 required = false,
@@ -426,7 +426,7 @@ namespace JJMasterData.Swagger
             });
             oper.parameters.Add(new Parameter
             {
-                name = api.GetFieldNameParsed("tot"),
+                name = metadataApiOptions.GetFieldNameParsed("tot"),
                 description = "If you pass the total, the count of records will not be executed saving processing. (optional)",
                 @in = "query",
                 required = false,
@@ -438,7 +438,7 @@ namespace JJMasterData.Swagger
             var fields = f.Fields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
             foreach (FormElementField item in fields)
             {
-                string fieldName = api.GetFieldNameParsed(item.Name);
+                string fieldName = metadataApiOptions.GetFieldNameParsed(item.Name);
                 string description = "Filter available. (" + item.Filter.Type.ToString().ToLower() + ")";
                 if (!string.IsNullOrEmpty(item.Label))
                     description += "<br>" + item.Label;
@@ -502,8 +502,8 @@ namespace JJMasterData.Swagger
             oPathItem.get = oper;
             oPathItem.get.responses = new Dictionary<string, Response>();
 
-            string totVarName = api.GetFieldNameParsed("tot");
-            string fieldsVarName = api.GetFieldNameParsed("fields");
+            string totVarName = metadataApiOptions.GetFieldNameParsed("tot");
+            string fieldsVarName = metadataApiOptions.GetFieldNameParsed("fields");
 
             var baseSchema = new Schema();
             baseSchema.title = modelName + "Response";
@@ -521,7 +521,7 @@ namespace JJMasterData.Swagger
                 type = "array",
                 description = "Properties",
                 uniqueItems = true,
-                items = GetDictionarySchema(f, api, modelName)
+                items = GetDictionarySchema(f, metadataApiOptions, modelName)
             });
 
             baseSchema.required = new List<string> { totVarName, fieldsVarName };
@@ -587,7 +587,7 @@ namespace JJMasterData.Swagger
             return modelSchema;
         }
 
-        private Schema GetDictionarySchema(FormElement f, ApiSettings api, string modelName, bool ignoreIdentity = false)
+        private Schema GetDictionarySchema(FormElement f, MetadataApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
         {
             var modelSchema = new Schema();
             modelSchema.title = modelName;
@@ -600,7 +600,7 @@ namespace JJMasterData.Swagger
                 if (ignoreIdentity && item.IsPk && item.AutoNum)
                     continue;
 
-                string fieldName = api.GetFieldNameParsed(item.Name);
+                string fieldName = metadataApiOptions.GetFieldNameParsed(item.Name);
                 var itemSchema = GetFieldSchema(item);
                 modelSchema.readOnly = item.DataBehavior == FieldBehavior.ViewOnly;
                 modelSchema.properties.Add(fieldName, itemSchema);

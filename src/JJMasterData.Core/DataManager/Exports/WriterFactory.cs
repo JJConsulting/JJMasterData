@@ -2,7 +2,7 @@
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exports;

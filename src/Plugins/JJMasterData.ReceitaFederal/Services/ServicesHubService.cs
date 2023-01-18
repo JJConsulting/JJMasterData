@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.ReceitaFederal.Abstractions;
 using JJMasterData.ReceitaFederal.Models;
@@ -7,6 +6,7 @@ using System;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 

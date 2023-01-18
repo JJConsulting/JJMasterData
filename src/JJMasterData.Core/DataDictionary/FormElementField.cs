@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 

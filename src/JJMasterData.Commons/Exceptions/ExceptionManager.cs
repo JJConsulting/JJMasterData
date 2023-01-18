@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Net;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 
 namespace JJMasterData.Commons.Exceptions;

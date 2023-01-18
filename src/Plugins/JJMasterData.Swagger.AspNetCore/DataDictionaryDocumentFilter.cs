@@ -3,8 +3,8 @@ using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
-using JJMasterData.Commons.Dao;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DI;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,24 +30,24 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");
             var detailPathItem = new DataDictionaryPathItem($"{defaultPathItem.Key}/{{id}}");
-            var factory = new DataDictionaryOperationFactory(formElement, metadata.Api);
+            var factory = new DataDictionaryOperationFactory(formElement, metadata.MetadataApiOptions);
 
-            if (metadata.Api.EnableGetAll)
+            if (metadata.MetadataApiOptions.EnableGetAll)
                 defaultPathItem.AddOperation(OperationType.Get, factory.GetAll());
 
-            if (metadata.Api.EnableGetDetail)
+            if (metadata.MetadataApiOptions.EnableGetDetail)
                 detailPathItem.AddOperation(OperationType.Get, factory.Get());
             
-            if (metadata.Api.EnableAdd)
+            if (metadata.MetadataApiOptions.EnableAdd)
                 defaultPathItem.AddOperation(OperationType.Post, factory.Post());
 
-            if (metadata.Api.EnableUpdate)
+            if (metadata.MetadataApiOptions.EnableUpdate)
                 defaultPathItem.AddOperation(OperationType.Put, factory.Put());
 
-            if (metadata.Api.EnableUpdatePart)
+            if (metadata.MetadataApiOptions.EnableUpdatePart)
                 defaultPathItem.AddOperation(OperationType.Patch, factory.Patch());
 
-            if (metadata.Api.EnableDel)
+            if (metadata.MetadataApiOptions.EnableDel)
                 detailPathItem.AddOperation(OperationType.Delete, factory.Delete());
 
             document.Paths.AddDataDictionaryPath(defaultPathItem);
@@ -61,16 +61,16 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
                 var filePathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}/{{id}}/{field.Name}/file");
                 var fileDetailPathItem = new DataDictionaryPathItem($"{filePathItem.Key}/{{fileName}}");
                 
-                if (metadata.Api.EnableGetDetail)
+                if (metadata.MetadataApiOptions.EnableGetDetail)
                     fileDetailPathItem.AddOperation(OperationType.Get, factory.GetFile(field));
                     
-                if (metadata.Api.EnableAdd && metadata.Api.EnableUpdate)
+                if (metadata.MetadataApiOptions.EnableAdd && metadata.MetadataApiOptions.EnableUpdate)
                     filePathItem.AddOperation(OperationType.Post, factory.PostFile(field));
                         
-                if (metadata.Api.EnableUpdatePart)
+                if (metadata.MetadataApiOptions.EnableUpdatePart)
                     fileDetailPathItem.AddOperation(OperationType.Patch, factory.RenameFile(field));
                 
-                if (metadata.Api.EnableDel)
+                if (metadata.MetadataApiOptions.EnableDel)
                     fileDetailPathItem.AddOperation(OperationType.Delete, factory.DeleteFile(field));
                 
                 document.Paths.AddDataDictionaryPath(filePathItem);

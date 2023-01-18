@@ -4,7 +4,7 @@ using Hangfire;
 using Hangfire.States;
 using Hangfire.Storage;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 

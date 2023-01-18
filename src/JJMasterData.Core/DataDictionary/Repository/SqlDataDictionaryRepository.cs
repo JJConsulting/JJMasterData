@@ -1,12 +1,13 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 
@@ -70,13 +71,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
                     currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
                     break;
                 case "F":
-                    currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+                    currentParser!.MetadataForm = JsonConvert.DeserializeObject<MetadataForm>(json);
                     break;
                 case "L":
-                    currentParser!.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+                    currentParser!.MetadataOptions = JsonConvert.DeserializeObject<MetadataOptions>(json);
                     break;
                 case "A":
-                    currentParser!.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                    currentParser!.MetadataApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
                     break;
             }
         }
@@ -121,13 +122,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
                     metadata.Table = JsonConvert.DeserializeObject<Element>(json);
                     break;
                 case "F":
-                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
+                    metadata.MetadataForm = JsonConvert.DeserializeObject<MetadataForm>(json);
                     break;
                 case "L":
-                    metadata.UIOptions = JsonConvert.DeserializeObject<UIOptions>(json);
+                    metadata.MetadataOptions = JsonConvert.DeserializeObject<MetadataOptions>(json);
                     break;
                 case "A":
-                    metadata.Api = JsonConvert.DeserializeObject<ApiSettings>(json);
+                    metadata.MetadataApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
                     break;
             }
         }
@@ -166,9 +167,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         };
         _entityRepository.SetValues(MasterDataElement, values);
 
-        if (metadata.Form != null)
+        if (metadata.MetadataForm != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
+            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataForm);
             values.Clear();
             values.Add("name", name);
             values.Add("tablename", metadata.Table.TableName);
@@ -181,9 +182,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.SetValues(MasterDataElement, values);
         }
 
-        if (metadata.UIOptions != null)
+        if (metadata.MetadataOptions != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.UIOptions);
+            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataOptions);
             values.Clear();
             values.Add("name", name);
             values.Add("tablename", metadata.Table.TableName);
@@ -196,9 +197,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             _entityRepository.SetValues(MasterDataElement, values);
         }
 
-        if (metadata.Api != null)
+        if (metadata.MetadataApiOptions != null)
         {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Api);
+            string jsonForm = JsonConvert.SerializeObject(metadata.MetadataApiOptions);
             values.Clear();
             values.Add("name", name);
             values.Add("info", "");

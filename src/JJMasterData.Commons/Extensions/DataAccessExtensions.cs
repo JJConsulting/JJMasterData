@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data;
 
 namespace JJMasterData.Commons.Extensions;
 

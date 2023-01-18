@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
 using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -48,25 +47,25 @@ public class DataDictionaryStructure
             return;
 
         //Nairobi
-        dicParser.UIOptions ??= new UIOptions();
+        dicParser.MetadataOptions ??= new MetadataOptions();
 
-        dicParser.UIOptions.ToolBarActions ??= new GridToolBarActions();
+        dicParser.MetadataOptions.ToolBarActions ??= new GridToolBarActions();
 
-        dicParser.UIOptions.GridActions ??= new GridActions();
+        dicParser.MetadataOptions.GridActions ??= new GridActions();
 
 
         //Denver
-        if (dicParser.Api == null)
+        if (dicParser.MetadataApiOptions == null)
         {
-            dicParser.Api = new ApiSettings();
+            dicParser.MetadataApiOptions = new MetadataApiOptions();
             if (dicParser.Table.Sync)
             {
-                dicParser.Api.EnableGetAll = true;
-                dicParser.Api.EnableGetDetail = true;
-                dicParser.Api.EnableAdd = true;
-                dicParser.Api.EnableUpdate = true;
-                dicParser.Api.EnableUpdatePart = true;
-                dicParser.Api.EnableDel = true;
+                dicParser.MetadataApiOptions.EnableGetAll = true;
+                dicParser.MetadataApiOptions.EnableGetDetail = true;
+                dicParser.MetadataApiOptions.EnableAdd = true;
+                dicParser.MetadataApiOptions.EnableUpdate = true;
+                dicParser.MetadataApiOptions.EnableUpdatePart = true;
+                dicParser.MetadataApiOptions.EnableDel = true;
             }
         }
 
@@ -76,12 +75,12 @@ public class DataDictionaryStructure
         }
 
         //Tokio
-        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
+        if (dicParser.MetadataForm is { Panels: null }) dicParser.MetadataForm.Panels = new List<FormElementPanel>();
 
         //Professor
-        if (dicParser.Form != null)
+        if (dicParser.MetadataForm != null)
         {
-            foreach (var field in dicParser.Form.FormFields)
+            foreach (var field in dicParser.MetadataForm.FormFields)
             {
                 if (field.DataItem is not { DataItemType: DataItemType.Manual })
                     continue;
@@ -94,13 +93,13 @@ public class DataDictionaryStructure
         }
 
         //Arturito
-        foreach (var action in dicParser.UIOptions.GridActions.GetAll()
+        foreach (var action in dicParser.MetadataOptions.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
             action.IsCustomAction = true;
         }
 
-        foreach (var action in dicParser.UIOptions.ToolBarActions
+        foreach (var action in dicParser.MetadataOptions.ToolBarActions
                      .GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
@@ -109,14 +108,14 @@ public class DataDictionaryStructure
 
         //Alpha Centauri
 
-        dicParser.UIOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+        dicParser.MetadataOptions.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
 
-        dicParser.UIOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
+        dicParser.MetadataOptions.GridActions.PythonActions ??= new List<PythonScriptAction>();
 
         //Sirius
 
-        dicParser.UIOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.MetadataOptions.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
-        dicParser.UIOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.MetadataOptions.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
     }
 }

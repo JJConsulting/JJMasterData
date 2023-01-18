@@ -1,6 +1,7 @@
 ﻿using System;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -52,8 +53,8 @@ public class EntityService : BaseService
             dicParser.Table.CustomProcNameGet = formElement.CustomProcNameGet;
             dicParser.Table.CustomProcNameSet = formElement.CustomProcNameSet;
             dicParser.Table.Info = formElement.Info;
-            dicParser.Form.Title = formElement.Title;
-            dicParser.Form.SubTitle = formElement.SubTitle;
+            dicParser.MetadataForm.Title = formElement.Title;
+            dicParser.MetadataForm.SubTitle = formElement.SubTitle;
 
             if (!entityName.Equals(formElement.Name))
             {

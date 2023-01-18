@@ -1,12 +1,13 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataManager;
 

@@ -1,5 +1,5 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -172,7 +172,7 @@ public class RelationsController : DataDictionaryController
         else
         {
             Metadata dicParser = _relationsService.DataDictionaryRepository.GetMetadata(childElement);
-            title = dicParser.Form.Title;
+            title = dicParser.MetadataForm.Title;
             foreach (var field in dicParser.Table.Fields)
             {
                 listItem.Add(new SelectListItem(field.Name, field.Name));

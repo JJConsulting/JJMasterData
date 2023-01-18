@@ -7,7 +7,7 @@ using Hangfire.Console;
 using Hangfire.Console.Progress;
 using Hangfire.Server;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Imports;

@@ -1,12 +1,12 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Http;
 using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.Web.Http;
 
 namespace JJMasterData.Core.DataManager
 {

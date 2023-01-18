@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Web;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;

@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -7,7 +7,7 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal static class DataDictionarySchema
 {
-    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, ApiSettings api, string modelName, bool ignoreIdentity = false)
+    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, MetadataApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
     {
         var modelSchema = new OpenApiSchema
         {
@@ -27,7 +27,7 @@ internal static class DataDictionarySchema
             if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
 
-            string fieldName = api.GetFieldNameParsed(field.Name);
+            string fieldName = metadataApiOptions.GetFieldNameParsed(field.Name);
             var itemSchema = GetFieldSchema(field);
 
             modelSchema.Properties.Add(fieldName, itemSchema);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.FormEvents.Args;
 

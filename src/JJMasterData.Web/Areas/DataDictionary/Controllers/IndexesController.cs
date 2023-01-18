@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;

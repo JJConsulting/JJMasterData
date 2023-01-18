@@ -1,6 +1,7 @@
 using System;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.DependencyInjection;

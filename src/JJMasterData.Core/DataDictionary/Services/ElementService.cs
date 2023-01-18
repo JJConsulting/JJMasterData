@@ -1,13 +1,9 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Language;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using JJMasterData.Core.WebComponents;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +11,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DI;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -99,7 +100,7 @@ public class ElementService : BaseService
         var metadata = new Metadata
         {
             Table = element.DeepCopy(),
-            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
+            MetadataForm = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
         };
 
         DataDictionaryRepository.InsertOrReplace(metadata);

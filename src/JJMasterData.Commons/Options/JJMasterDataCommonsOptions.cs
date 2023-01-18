@@ -1,8 +1,8 @@
 ﻿#nullable enable
 
 using System.Runtime.InteropServices;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using Microsoft.Extensions.Configuration;

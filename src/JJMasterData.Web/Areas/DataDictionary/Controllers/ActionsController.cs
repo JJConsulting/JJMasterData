@@ -4,7 +4,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.WebComponents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -24,8 +23,8 @@ public class ActionsController : DataDictionaryController
         var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
-        ViewBag.ToolBarActions = dicParcer.UIOptions.ToolBarActions.GetAll();
-        ViewBag.GridActions = dicParcer.UIOptions.GridActions.GetAll();
+        ViewBag.ToolBarActions = dicParcer.MetadataOptions.ToolBarActions.GetAll();
+        ViewBag.GridActions = dicParcer.MetadataOptions.GridActions.GetAll();
 
         if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
@@ -33,7 +32,7 @@ public class ActionsController : DataDictionaryController
         return View();
     }
 
-    public ActionResult Edit(string dictionaryName, string actionName, ActionOrigin context, string fieldName)
+    public ActionResult Edit(string dictionaryName, string actionName, ActionSource context, string fieldName)
     {
         if (dictionaryName is null)
         {
@@ -45,13 +44,13 @@ public class ActionsController : DataDictionaryController
         BasicAction? action = null;
         switch (context)
         {
-            case ActionOrigin.Grid:
-                action = metadata.UIOptions.GridActions.Get(actionName);
+            case ActionSource.Grid:
+                action = metadata.MetadataOptions.GridActions.Get(actionName);
                 break;
-            case ActionOrigin.Toolbar:
-                action = metadata.UIOptions.ToolBarActions.Get(actionName);
+            case ActionSource.Toolbar:
+                action = metadata.MetadataOptions.ToolBarActions.Get(actionName);
                 break;
-            case ActionOrigin.Field:
+            case ActionSource.Field:
                 var formElement = metadata.GetFormElement();
                 action = formElement.Fields[fieldName].Actions.Get(actionName);
                 break;
@@ -63,7 +62,7 @@ public class ActionsController : DataDictionaryController
         
     }
 
-    public ActionResult Add(string dictionaryName, string actionType, ActionOrigin context, string? fieldName)
+    public ActionResult Add(string dictionaryName, string actionType, ActionSource context, string? fieldName)
     {
         BasicAction action = actionType switch
         {
@@ -81,7 +80,7 @@ public class ActionsController : DataDictionaryController
 
 
     [HttpPost]
-    public ActionResult Remove(string dictionaryName, string actionName, ActionOrigin context, string? fieldName)
+    public ActionResult Remove(string dictionaryName, string actionName, ActionSource context, string? fieldName)
     {
         _actionsService.DeleteAction(dictionaryName, actionName, context, fieldName);
         return Json(new { success = true });
@@ -89,14 +88,14 @@ public class ActionsController : DataDictionaryController
 
 
     [HttpPost]
-    public ActionResult Sort(string dictionaryName, string[] orderFields, ActionOrigin context, string? fieldName)
+    public ActionResult Sort(string dictionaryName, string[] orderFields, ActionSource context, string? fieldName)
     {
         _actionsService.SortActions(dictionaryName, orderFields, context, fieldName);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public ActionResult EnableDisable(string dictionaryName, string actionName, ActionOrigin context, bool value)
+    public ActionResult EnableDisable(string dictionaryName, string actionName, ActionSource context, bool value)
     {
         _actionsService.EnableDisable(dictionaryName, actionName, context, value);
         return Json(new { success = true });
@@ -104,7 +103,7 @@ public class ActionsController : DataDictionaryController
 
 
     [HttpPost]
-    public ActionResult InsertAction(string dictionaryName, InsertAction insertAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult InsertAction(string dictionaryName, InsertAction insertAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -116,7 +115,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult ConfigAction(string dictionaryName, ConfigAction configAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult ConfigAction(string dictionaryName, ConfigAction configAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -128,7 +127,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult ExportAction(string dictionaryName, ExportAction exportAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult ExportAction(string dictionaryName, ExportAction exportAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -140,7 +139,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult ViewAction(string dictionaryName, ViewAction viewAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult ViewAction(string dictionaryName, ViewAction viewAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -152,7 +151,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult EditAction(string dictionaryName, EditAction editAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult EditAction(string dictionaryName, EditAction editAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -164,7 +163,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult DeleteAction(string dictionaryName, DeleteAction deleteAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult DeleteAction(string dictionaryName, DeleteAction deleteAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -176,7 +175,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult ImportAction(string dictionaryName, ImportAction importAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult ImportAction(string dictionaryName, ImportAction importAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -188,7 +187,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult RefreshAction(string dictionaryName, RefreshAction refreshAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult RefreshAction(string dictionaryName, RefreshAction refreshAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -200,7 +199,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult LegendAction(string dictionaryName, LegendAction legendAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult LegendAction(string dictionaryName, LegendAction legendAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -212,7 +211,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult SortAction(string dictionaryName, SortAction sortAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult SortAction(string dictionaryName, SortAction sortAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -224,7 +223,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult LogAction(string dictionaryName, LogAction logAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -236,7 +235,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult FilterAction(string dictionaryName, FilterAction filterAction, ActionOrigin context, string? originalName, bool isActionSave)
+    public ActionResult FilterAction(string dictionaryName, FilterAction filterAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
@@ -248,7 +247,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult UrlRedirectAction(string dictionaryName, UrlRedirectAction urlAction, ActionOrigin context,
+    public ActionResult UrlRedirectAction(string dictionaryName, UrlRedirectAction urlAction, ActionSource context,
         string? fieldName, string? originalName, bool isActionSave)
     {
         if (isActionSave)
@@ -261,7 +260,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult ScriptAction(string dictionaryName, ScriptAction scriptAction, ActionOrigin context,
+    public ActionResult ScriptAction(string dictionaryName, ScriptAction scriptAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
@@ -274,7 +273,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult SqlCommandAction(string dictionaryName, SqlCommandAction sqlAction, ActionOrigin context,
+    public ActionResult SqlCommandAction(string dictionaryName, SqlCommandAction sqlAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
@@ -287,7 +286,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult PythonScriptAction(string dictionaryName, PythonScriptAction pythonAction, ActionOrigin context,
+    public ActionResult PythonScriptAction(string dictionaryName, PythonScriptAction pythonAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
@@ -300,7 +299,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult InternalAction(string dictionaryName, InternalAction internalAction, ActionOrigin context,
+    public ActionResult InternalAction(string dictionaryName, InternalAction internalAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
@@ -313,7 +312,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult AddRelation(string dictionaryName, InternalAction internalAction, ActionOrigin context,
+    public ActionResult AddRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
         string redirectField, string internalField, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.Add(new FormActionRelationField
@@ -327,7 +326,7 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult RemoveRelation(string dictionaryName, InternalAction internalAction, ActionOrigin context,
+    public ActionResult RemoveRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
         int relationIndex, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
@@ -335,7 +334,7 @@ public class ActionsController : DataDictionaryController
         return View(internalAction.GetType().Name, internalAction);
     }
 
-    private void SaveAction(string dictionaryName, BasicAction basicAction, ActionOrigin context,string? originalName,string? fieldName = null)
+    private void SaveAction(string dictionaryName, BasicAction basicAction, ActionSource context,string? originalName,string? fieldName = null)
     {
         _actionsService.SaveAction(dictionaryName, basicAction, context, originalName, fieldName);
         
@@ -345,7 +344,7 @@ public class ActionsController : DataDictionaryController
             ViewBag.Error = _actionsService.GetValidationSummary().GetHtml();
     }
 
-    private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionOrigin context, string? fieldName = null)
+    private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionSource context, string? fieldName = null)
     {
         if ((string?)Request.Query["selected_tab"] != null)
             ViewBag.Tab = Request.Query["selected_tab"];

@@ -32,7 +32,7 @@ public class MasterApiListResponse
             var cols = new Dictionary<string, object?>();
             foreach(var field in metadata.Table.Fields)
             {
-                string fieldName = metadata.Api.GetFieldNameParsed(field.Name);
+                string fieldName = metadata.MetadataApiOptions.GetFieldNameParsed(field.Name);
                 object val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);

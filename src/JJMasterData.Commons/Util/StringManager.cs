@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Commons.Util;
 

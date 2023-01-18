@@ -1,5 +1,5 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Options;
@@ -16,7 +16,7 @@ Console.WriteLine(AppContext.BaseDirectory);
 Console.WriteLine("Starting Process...\n");
 
 var start = DateTime.Now;
-IEntityRepository entityRepository = new Factory();
+IEntityRepository entityRepository = new EntityRepository();
 var options = Options.Create(new JJMasterDataCoreOptions());
 var dicDao = new SqlDataDictionaryRepository(entityRepository, options);
 var databaseDictionaries = dicDao.GetMetadataList(false);

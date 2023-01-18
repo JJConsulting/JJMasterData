@@ -2,6 +2,8 @@
     Layout = "_MasterDataLayout.Popup";
 }
 
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
 @model  JJMasterData.Core.DataDictionary.Action.ConfigAction
 
 @using (Html.BeginForm("ConfigAction", "Actions", new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))

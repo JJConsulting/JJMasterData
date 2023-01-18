@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
@@ -36,7 +36,7 @@ public class ApiController : DataDictionaryController
     public ActionResult Edit(ApiViewModel apiViewModel)
     {
         var dic = _apiService.DataDictionaryRepository.GetMetadata( apiViewModel.DictionaryName);
-        dic.Api = apiViewModel.ApiSettings;
+        dic.MetadataApiOptions = apiViewModel.MetadataApiOptions;
         dic.Table.Sync = apiViewModel.IsSync;
         dic.Table.SyncMode = apiViewModel.Mode;
 
@@ -51,7 +51,7 @@ public class ApiController : DataDictionaryController
     {
         var model = new ApiViewModel
         {
-            ApiSettings = metadata.Api,
+            MetadataApiOptions = metadata.MetadataApiOptions,
             MenuId = "Api",
             DictionaryName = metadata.Table.Name,
             Mode = metadata.Table.SyncMode,

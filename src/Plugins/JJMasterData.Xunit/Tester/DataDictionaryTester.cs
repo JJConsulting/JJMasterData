@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Data;
 using AutoFixture;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -33,7 +33,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
    
     private FormService GetFormService(Metadata metadata)
     {
-        bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = metadata.MetadataOptions.ToolBarActions.LogAction.IsVisible;
         var userValues = new Hashtable
         {
             { "USERID", UserId }

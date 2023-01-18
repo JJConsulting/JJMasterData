@@ -1,7 +1,4 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -9,6 +6,10 @@ using JJMasterData.Core.DataManager;
 using System.Collections;
 using System.Diagnostics;
 using System.Net;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
@@ -37,7 +38,7 @@ public class MasterApiService
             throw new ArgumentNullException(nameof(elementName));
 
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
-        if (!dictionary.Api.EnableGetAll)
+        if (!dictionary.MetadataApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
@@ -56,7 +57,7 @@ public class MasterApiService
             throw new ArgumentNullException(nameof(elementName));
 
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
-        if (!dictionary.Api.EnableGetAll)
+        if (!dictionary.MetadataApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
@@ -77,7 +78,7 @@ public class MasterApiService
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
-        if (!dictionary.Api.EnableGetDetail)
+        if (!dictionary.MetadataApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
         var element = dictionary.Table;
@@ -92,7 +93,7 @@ public class MasterApiService
         var listRet = new Dictionary<string, object>();
         foreach (ElementField field in element.Fields)
         {
-            string fieldName = dictionary.Api.GetFieldNameParsed(field.Name);
+            string fieldName = dictionary.MetadataApiOptions.GetFieldNameParsed(field.Name);
             if (fields.ContainsKey(field.Name))
                 listRet.Add(fieldName, fields[field.Name]!);
         }
@@ -105,7 +106,7 @@ public class MasterApiService
             throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.Api.EnableAdd | !dictionary.Api.EnableUpdate)
+        if (!dictionary.MetadataApiOptions.EnableAdd | !dictionary.MetadataApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
@@ -113,8 +114,8 @@ public class MasterApiService
         foreach (var values in paramsList)
         {
             yield return replace ?
-                InsertOrReplace(formService, values, dictionary.Api) :
-                Insert(formService, values, dictionary.Api);
+                InsertOrReplace(formService, values, dictionary.MetadataApiOptions) :
+                Insert(formService, values, dictionary.MetadataApiOptions);
         }
     }
     public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<Hashtable> paramsList, string elementName)
@@ -123,14 +124,14 @@ public class MasterApiService
             throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
 
         var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.Api.EnableUpdate)
+        if (!dictionary.MetadataApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
         
         foreach (var values in paramsList)
         {
-            yield return Update(formService, values, dictionary.Api);
+            yield return Update(formService, values, dictionary.MetadataApiOptions);
         }
     }
     public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<Hashtable> paramsList, string elementName)
@@ -139,7 +140,7 @@ public class MasterApiService
             throw new ArgumentNullException(nameof(paramsList));
 
         var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.Api.EnableUpdatePart)
+        if (!dictionary.MetadataApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
         if (paramsList == null)
@@ -149,10 +150,10 @@ public class MasterApiService
 
         foreach (var values in paramsList)
         {
-            yield return Patch(formService, values, dictionary.Api);
+            yield return Patch(formService, values, dictionary.MetadataApiOptions);
         }
     }
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -165,12 +166,12 @@ public class MasterApiService
                 {
                     Status = (int)HttpStatusCode.Created,
                     Message = Translate.Key("Record added successfully"),
-                    Data = GetDiff(apiValues, values, api)
+                    Data = GetDiff(apiValues, values, metadataApiOptions)
                 };
             }
             else
             {
-                ret = CreateErrorResponseLetter(formResult.Errors, api);
+                ret = CreateErrorResponseLetter(formResult.Errors, metadataApiOptions);
             }
         }
         catch (Exception ex)
@@ -179,7 +180,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -195,12 +196,12 @@ public class MasterApiService
                 {
                     Status = (int)HttpStatusCode.OK,
                     Message = Translate.Key("Record updated successfully"),
-                    Data = GetDiff(apiValues, values, api)
+                    Data = GetDiff(apiValues, values, metadataApiOptions)
                 };
             }
             else
             {
-                ret = CreateErrorResponseLetter(formResult.Errors, api);
+                ret = CreateErrorResponseLetter(formResult.Errors, metadataApiOptions);
             }
         }
         catch (Exception ex)
@@ -209,7 +210,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, ApiSettings api)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -229,11 +230,11 @@ public class MasterApiService
                     ret.Status = (int)HttpStatusCode.OK;
                     ret.Message = Translate.Key("Record updated successfully");
                 }
-                ret.Data = GetDiff(apiValues, values, api);
+                ret.Data = GetDiff(apiValues, values, metadataApiOptions);
             }
             else
             {
-                ret = CreateErrorResponseLetter(formResult.Errors, api);
+                ret = CreateErrorResponseLetter(formResult.Errors, metadataApiOptions);
             }
         }
         catch (Exception ex)
@@ -243,7 +244,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Patch(FormService formService, Hashtable values, ApiSettings api)
+    private ResponseLetter Patch(FormService formService, Hashtable values, MetadataApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -259,7 +260,7 @@ public class MasterApiService
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
             DataHelper.CopyIntoHash(ref currentValues, parsedValues, true);
-            ret = Update(formService, currentValues, api);
+            ret = Update(formService, currentValues, metadataApiOptions);
         }
         catch (Exception ex)
         {
@@ -274,7 +275,7 @@ public class MasterApiService
             throw new ArgumentNullException(nameof(id));
 
         var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.Api.EnableDel)
+        if (!dictionary.MetadataApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
@@ -295,7 +296,7 @@ public class MasterApiService
             };
         }
 
-        return CreateErrorResponseLetter(formResult.Errors, dictionary.Api);
+        return CreateErrorResponseLetter(formResult.Errors, dictionary.MetadataApiOptions);
     }
 
     /// <summary>
@@ -309,7 +310,7 @@ public class MasterApiService
 
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
 
-        if (!dictionary.Api.EnableAdd & !dictionary.Api.EnableUpdate)
+        if (!dictionary.MetadataApiOptions.EnableAdd & !dictionary.MetadataApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
         var element = dictionary.GetFormElement();
@@ -386,17 +387,17 @@ public class MasterApiService
             }
         }
 
-        if (string.IsNullOrEmpty(dic.Api.ApplyUserIdOn))
+        if (string.IsNullOrEmpty(dic.MetadataApiOptions.ApplyUserIdOn))
             return filters;
 
         string userId = GetUserId();
-        if (!filters.ContainsKey(dic.Api.ApplyUserIdOn))
+        if (!filters.ContainsKey(dic.MetadataApiOptions.ApplyUserIdOn))
         {
-            filters.Add(dic.Api.ApplyUserIdOn, userId);
+            filters.Add(dic.MetadataApiOptions.ApplyUserIdOn, userId);
         }
         else
         {
-            if (!userId.Equals(filters[dic.Api.ApplyUserIdOn]!.ToString()))
+            if (!userId.Equals(filters[dic.MetadataApiOptions.ApplyUserIdOn]!.ToString()))
             {
                 throw new UnauthorizedAccessException(
                     Translate.Key("Access denied to change user filter on {0}", dic.Table.Name));
@@ -419,7 +420,7 @@ public class MasterApiService
     }
     private FormService GetFormService(Metadata metadata)
     {
-        bool logActionIsVisible = metadata.UIOptions.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = metadata.MetadataOptions.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
         var userValues = new Hashtable
         {
@@ -458,7 +459,7 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, ApiSettings api)
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, MetadataApiOptions metadataApiOptions)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)
@@ -466,7 +467,7 @@ public class MasterApiService
             if (entry.Value == null)
                 continue;
 
-            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = metadataApiOptions.GetFieldNameParsed(entry.Key.ToString());
             if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
@@ -479,7 +480,7 @@ public class MasterApiService
 
         return newValues.Count > 0 ? newValues : null;
     }
-    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, ApiSettings api)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, MetadataApiOptions metadataApiOptions)
     {
         var letter = new ResponseLetter
         {
@@ -493,7 +494,7 @@ public class MasterApiService
 
         foreach (DictionaryEntry entry in erros)
         {
-            string fieldName = api.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = metadataApiOptions.GetFieldNameParsed(entry.Key.ToString());
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

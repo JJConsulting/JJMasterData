@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -80,13 +81,13 @@ public class PanelService : BaseService
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        for (int i = 0; i < dictionary.Form.Panels.Count; i++)
+        for (int i = 0; i < dictionary.MetadataForm.Panels.Count; i++)
         {
-            if (dictionary.Form.Panels[i].PanelId == panelId)
-                dictionary.Form.Panels.Remove(dictionary.Form.Panels[i]);
+            if (dictionary.MetadataForm.Panels[i].PanelId == panelId)
+                dictionary.MetadataForm.Panels.Remove(dictionary.MetadataForm.Panels[i]);
         }
 
-        foreach (var f in dictionary.Form.FormFields)
+        foreach (var f in dictionary.MetadataForm.FormFields)
         {
             if (f.PanelId == panelId)
                 f.PanelId = 0;
@@ -123,8 +124,8 @@ public class PanelService : BaseService
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var newPanel = panel.DeepCopy();
-        newPanel.PanelId = 1 + dictionary.Form.Panels.Max(x => x.PanelId);
-        dictionary.Form.Panels.Add(newPanel);
+        newPanel.PanelId = 1 + dictionary.MetadataForm.Panels.Max(x => x.PanelId);
+        dictionary.MetadataForm.Panels.Add(newPanel);
         DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return newPanel;

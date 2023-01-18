@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Commons.Logging.Db;
 

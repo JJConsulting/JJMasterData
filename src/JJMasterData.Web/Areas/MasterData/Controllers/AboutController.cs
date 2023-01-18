@@ -1,5 +1,5 @@
 using System.Reflection;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web;
 using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;

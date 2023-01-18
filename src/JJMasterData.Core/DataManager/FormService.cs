@@ -1,5 +1,3 @@
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.AuditLog;
@@ -8,6 +6,8 @@ using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
 using System.Data.SqlClient;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 

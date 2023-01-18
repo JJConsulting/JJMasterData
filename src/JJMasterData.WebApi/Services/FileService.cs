@@ -1,8 +1,9 @@
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.WebApi.Services;
@@ -21,7 +22,7 @@ public class FileService
     public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
-        if (!metadata.Api.EnableGetDetail)
+        if (!metadata.MetadataApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -45,7 +46,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.Api.EnableAdd)
+        if (!metadata.MetadataApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -105,7 +106,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.Api.EnableDel)
+        if (!metadata.MetadataApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();
@@ -156,7 +157,7 @@ public class FileService
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.Api.EnableUpdatePart)
+        if (!metadata.MetadataApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
         
         var formElement = metadata.GetFormElement();

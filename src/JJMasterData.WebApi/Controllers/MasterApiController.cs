@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Net;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;

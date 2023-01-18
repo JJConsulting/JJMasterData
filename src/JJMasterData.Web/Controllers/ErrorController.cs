@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;

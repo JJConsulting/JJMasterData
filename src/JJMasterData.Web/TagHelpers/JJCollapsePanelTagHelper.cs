@@ -1,5 +1,5 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

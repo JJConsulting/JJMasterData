@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
@@ -18,7 +18,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DI;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 

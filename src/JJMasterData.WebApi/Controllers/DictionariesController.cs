@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
 

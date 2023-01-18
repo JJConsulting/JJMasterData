@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
