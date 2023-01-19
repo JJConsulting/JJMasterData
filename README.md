@@ -30,7 +30,7 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 - Pages generated at runtime 🔥
 - Data exportation & importation ↔️
 - Database script generation ✍️
-- Plugins support by [interfaces](https://portal.jjconsulting.com.br/jjdoc/articles/plugins/intro.html) 🪄
+- Plugins support by interfaces 🪄
 <br>
 
 # Demo
