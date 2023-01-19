@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>11</LangVersion>
         <Nullable>enable</Nullable>
+        <Description>JJMasterData MongoDB support.</Description>
+        <PackageIcon>JJMasterData.png</PackageIcon>
+        <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,5 +17,12 @@
 
     <ItemGroup>
       <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\JJMasterData.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
     </ItemGroup>
 </Project>
