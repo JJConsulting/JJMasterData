@@ -246,6 +246,9 @@ internal class GridTableBody
                     foreach (var action in actionsWithGroup)
                     {
                         var link = GridView.ActionManager.GetLinkGrid(action, values);
+                        
+                        link.Attributes.Add("style","display:block");
+                        
                         var onRender = OnRenderAction;
                         if (onRender != null)
                         {
