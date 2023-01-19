@@ -4,16 +4,11 @@
 @model FormElementField
 
 @{
-    if (Model.DataItem.ElementMap == null)
-    {
-        Model.DataItem.ElementMap = new DataElementMap();
-        Model.DataItem.ElementMap.ElementName = "pan";
-    }
+    Model.DataItem.ElementMap ??= new DataElementMap();
 }
 
 @functions
 {
-
     void ElementMap()
     {
         <div class="row">

@@ -158,7 +158,8 @@
                         }
                         @foreach (FormElementField field in ViewBag.Fields)
                         {
-                            string fieldName = field.Name == null ? "nulo" : field.Name;
+                            string fieldName = field.Name;
+                            
                             <a href="javascript:loadIframe('@Url.Action("Detail", new { dictionaryName = ViewBag.DictionaryName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
                                id="@fieldName">

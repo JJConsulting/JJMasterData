@@ -3,7 +3,6 @@ using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
@@ -26,7 +25,7 @@ public class FieldService : BaseService
         if (field.DataFile != null)
         {
             field.DataFile.MaxFileSize *= 1000000;
-            field.DataFile.FolderPath = field.DataFile.FolderPath.Trim();
+            field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
 
         if (!ValidateFields(formElement, field, originalName))
@@ -263,13 +262,13 @@ public class FieldService : BaseService
         if (dataBehavior == FieldBehavior.Virtual)
             AddError("DataFile", Translate.Key("Fields of type FILE cannot be virtual"));
 
-        if (string.IsNullOrEmpty(dataFile.FolderPath))
+        if (string.IsNullOrEmpty(dataFile?.FolderPath))
             AddError(nameof(dataFile.FolderPath), Translate.Key($"Field [{nameof(dataFile.FolderPath)}] required"));
 
-        if (string.IsNullOrEmpty(dataFile.AllowedTypes))
+        if (string.IsNullOrEmpty(dataFile?.AllowedTypes))
             AddError(nameof(dataFile.AllowedTypes), Translate.Key("Required [AllowedTypes] field"));
 
-        if (dataFile.MultipleFile & dataFile.ExportAsLink)
+        if (dataFile!.MultipleFile & dataFile.ExportAsLink)
             AddError(nameof(dataFile.ExportAsLink),
                 Translate.Key("The [ExportAsLink] field cannot be enabled with [MultipleFile]"));
     }

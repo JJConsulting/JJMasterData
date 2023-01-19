@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
@@ -18,7 +20,7 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
 
-    private FormElementFieldActions _action;
+    private FormElementFieldActions? _actions;
 
     /// <summary>
     /// Tipo do componente
@@ -30,7 +32,7 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "visibleExpression")]
-    public string VisibleExpression { get; set; }
+    public string? VisibleExpression { get; set; }
 
     /// <summary>
     /// Expression on runtime
@@ -39,7 +41,7 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "enableExpression")]
-    public string EnableExpression { get; set; }
+    public string? EnableExpression { get; set; }
 
     /// <summary>
     /// Ordem do campo
@@ -77,13 +79,13 @@ public class FormElementField : ElementField
     /// Nome da classe (CSS) a ser acrescentado na renderização do grupo do objeto
     /// </summary>
     [DataMember(Name = "cssClass")]
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
 
     /// <summary>
     /// Texto de ajuda, será exibido ao lado do label
     /// </summary>
     [DataMember(Name = "helpDescription")]
-    public string HelpDescription { get; set; }
+    public string? HelpDescription { get; set; }
 
     /// <summary>
     /// Configurações especificas para lista
@@ -95,7 +97,8 @@ public class FormElementField : ElementField
     /// Configurações do arquivo
     /// </summary>
     [DataMember(Name = "dataFile")]
-    public FormElementDataFile DataFile { get; set; }
+
+    public FormElementDataFile? DataFile { get; set; }
 
     /// <summary>
     /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
@@ -187,7 +190,7 @@ public class FormElementField : ElementField
     /// Se o valor da trigger retorna nulo o mesmo será desconsiderado.
     /// </remarks>
     [DataMember(Name = "triggerExpression")]
-    public string TriggerExpression { get; set; }
+    public string? TriggerExpression { get; set; }
 
     /// <summary>
     /// Numero de casas decimais
@@ -214,15 +217,15 @@ public class FormElementField : ElementField
     [DataMember(Name = "actions")]
     public FormElementFieldActions Actions
     {
-        get => _action ??= new FormElementFieldActions();
-        set => _action = value;
+        get => _actions ??= new FormElementFieldActions();
+        set => _actions = value;
     }
 
     /// <summary>
     /// Observação interna do desenvolvedor
     /// </summary>
     [DataMember(Name = "internalNotes")]
-    public string InternalNotes { get; set; }
+    public string? InternalNotes { get; set; }
     
     /// <summary>
     /// Minimum value for number components
@@ -300,23 +303,21 @@ public class FormElementField : ElementField
     }
 
 
-    public string GetAttr(string key)
+    public string? GetAttr(string key)
     {
-        if (Attributes != null && Attributes.ContainsKey(key))
-            return Attributes[key].ToString();
+        if (Attributes.ContainsKey(key))
+            return Attributes[key]?.ToString();
         return string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        Attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-
         if (Attributes.ContainsKey(key))
             Attributes[key] = value;
         else
             Attributes.Add(key, value);
 
-        if (value == null || string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value.ToString()))
             Attributes.Remove(key);
     }
 
