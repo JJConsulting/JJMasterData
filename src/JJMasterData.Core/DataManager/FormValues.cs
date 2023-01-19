@@ -30,44 +30,48 @@ internal class FormValues
         foreach (var f in FormElement.Fields)
         {
             var objname = (prefix == null ? prefix : string.Empty) + f.Name;
-            var val = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
+            var value = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
 
-            if (f.Component == FormComponent.Search)
+            switch (f.Component)
             {
-                var search = (JJSearchBox)FieldManager.GetField(f, state, values);
-                search.AutoReloadFormFields = true;
-                val = search.SelectedValue;
-            }
-            else if (f.Component == FormComponent.Lookup)
-            {
-                var lookup = (JJLookup)FieldManager.GetField(f, state, values);
-                lookup.AutoReloadFormFields = true;
-                val = lookup.SelectedValue;
-            }
-            else if (f.Component == FormComponent.Number |
-                     f.Component == FormComponent.Currency)
-            {
-                //When the post is run via ajax with the serialize() function,
-                //I don't know why the decimal point is changed to a dot.
-                //WorkAround Serialize()
-                string t = CurrentContext.Request.QueryString("t");
-                if (val != null && "reloadpainel".Equals(t) | "tablerow".Equals(t) | "ajax".Equals(t))
+                case FormComponent.Search:
                 {
-                    string sVal = val.ToString().Replace(" ", "").Replace(".", ",");
-                    if (double.TryParse(sVal, out var nVal))
-                        val = nVal;
-                    else
-                        val = 0;
+                    var search = (JJSearchBox)FieldManager.GetField(f, state, values);
+                    search.AutoReloadFormFields = true;
+                    value = search.SelectedValue;
+                    break;
+                }
+                case FormComponent.Lookup:
+                {
+                    var lookup = (JJLookup)FieldManager.GetField(f, state, values);
+                    lookup.AutoReloadFormFields = true;
+                    value = lookup.SelectedValue;
+                    break;
+                }
+                default:
+                {
+                    if (f.Component is FormComponent.Number or FormComponent.Currency)
+                    {
+                        string requestType = CurrentContext.Request.QueryString("t");
+                        if (value != null && "reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType))
+                        {
+                            if (double.TryParse(value?.ToString(), out var numericValue))
+                                value = numericValue;
+                            else
+                                value = 0;
+                        }
+                    }
+                    else if (f.Component == FormComponent.CheckBox)
+                    {
+                        value ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
+                    }
+                    break;
                 }
             }
-            else if (f.Component == FormComponent.CheckBox)
-            {
-                val ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
-            }
              
-            if (val != null)
+            if (value != null)
             {
-                values.Add(f.Name, val);
+                values.Add(f.Name, value);
             }
         }
 

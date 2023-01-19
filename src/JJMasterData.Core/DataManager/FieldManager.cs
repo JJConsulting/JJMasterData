@@ -4,6 +4,7 @@ using JJMasterData.Core.DataDictionary.Action;
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Threading;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -85,37 +86,40 @@ public class FieldManager
         if (value == null)
             return "";
 
-        string sVal;
-        if (field.Component == FormComponent.ComboBox
-            && field.DataItem != null
-            && (field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend))
+        string valueString;
+        switch (field.Component)
         {
-            var cbo = (JJComboBox)GetField(field, PageState.List, values, value);
-            sVal = cbo.GetDescription() ?? value.ToString();
-        }
-        else if (field.Component == FormComponent.Lookup
-                 && field.DataItem is { ReplaceTextOnGrid: true })
-        {
-            var lookup = (JJLookup)GetField(field, PageState.List, values, value);
-            sVal = lookup.GetDescription() ?? value.ToString();
-        }
-        else if (field.Component == FormComponent.CheckBox)
-        {
-            sVal = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
-        }
-        else if (field.Component == FormComponent.Search
-                 && field.DataItem is { ReplaceTextOnGrid: true })
-        {
-            var search = (JJSearchBox)GetField(field, PageState.List, values, value);
-            search.AutoReloadFormFields = false;
-            sVal = search.GetDescription(value.ToString()) ?? value.ToString();
-        }
-        else
-        {
-            sVal = FormatValue(field, value);
+            case FormComponent.ComboBox 
+            when field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend:
+            {
+                var comboBox = (JJComboBox)GetField(field, PageState.List, values, value);
+                valueString = comboBox.GetDescription() ?? value.ToString();
+                break;
+            }
+            case FormComponent.Lookup 
+                 when field.DataItem is { ReplaceTextOnGrid: true }:
+            {
+                var lookup = (JJLookup)GetField(field, PageState.List, values, value);
+                valueString = lookup.GetDescription() ?? value.ToString();
+                break;
+            }
+            case FormComponent.CheckBox:
+                valueString = ExpressionManager.ParseBool(value) ? "Sim" : "Não";
+                break;
+            case FormComponent.Search 
+                 when field.DataItem is { ReplaceTextOnGrid: true }:
+            {
+                var search = (JJSearchBox)GetField(field, PageState.List, values, value);
+                search.AutoReloadFormFields = false;
+                valueString = search.GetDescription(value.ToString()) ?? value.ToString();
+                break;
+            }
+            default:
+                valueString = FormatValue(field, value);
+                break;
         }
 
-        return sVal ?? "";
+        return valueString ?? "";
     }
 
 
@@ -130,8 +134,8 @@ public class FieldManager
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        string sVal = value.ToString();
-        if (string.IsNullOrEmpty(sVal))
+        string valueString = value.ToString();
+        if (string.IsNullOrEmpty(valueString))
             return "";
 
         FieldType type = field.DataType;
@@ -140,50 +144,65 @@ public class FieldManager
             case FormComponent.Cnpj:
             case FormComponent.Cpf:
             case FormComponent.CnpjCpf:
-                sVal = Format.FormatCnpj_Cpf(sVal);
+                valueString = Format.FormatCnpj_Cpf(valueString);
                 break;
             case FormComponent.Number:
 
-                if (type == FieldType.Float)
+                switch (type)
                 {
-                    if (double.TryParse(sVal, out double nVal))
-                        sVal = nVal.ToString("N" + field.NumberOfDecimalPlaces);
-                }
-                else if (type == FieldType.Int && !field.IsPk)
-                {
-                    if (int.TryParse(sVal, out int intVal))
-                        sVal = intVal.ToString("N0");
+                    case FieldType.Float:
+                    {
+                        if (double.TryParse(valueString, out double nVal))
+                            valueString = nVal.ToString("N" + field.NumberOfDecimalPlaces);
+                        break;
+                    }
+                    case FieldType.Int when !field.IsPk:
+                    {
+                        if (int.TryParse(valueString, out int intVal))
+                            valueString = intVal.ToString("N0");
+                        break;
+                    }
                 }
                 break;
             case FormComponent.Currency:
-                if (double.TryParse(sVal, out var nCurrency))
-                    sVal = nCurrency.ToString("C" + field.NumberOfDecimalPlaces);
+                if (double.TryParse(valueString, out var currencyValue))
+                {
+                    var cultureInfo = CultureInfo.CurrentCulture;
+                    var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
+                    valueString = currencyValue.ToString("C" + field.NumberOfDecimalPlaces, numberFormatInfo);
+                }
+                    
                 break;
             case FormComponent.Date:
             case FormComponent.DateTime:
             case FormComponent.Text:
-                if (type == FieldType.Date)
+                switch (type)
                 {
-                    var dVal = DateTime.Parse(sVal);
-                    sVal = dVal == DateTime.MinValue ? "" : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
-                }
-                else if (type is FieldType.DateTime or FieldType.DateTime2)
-                {
-                    DateTime dVal = DateTime.Parse(sVal);
-                    sVal = dVal == DateTime.MinValue
-                        ? ""
-                        : dVal.ToString(
-                            $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} " +
-                            $"{DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                    case FieldType.Date:
+                    {
+                        var dVal = DateTime.Parse(valueString);
+                        valueString = dVal == DateTime.MinValue ? "" : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
+                        break;
+                    }
+                    case FieldType.DateTime or FieldType.DateTime2:
+                    {
+                        var dateValue = DateTime.Parse(valueString);
+                        valueString = dateValue == DateTime.MinValue
+                            ? ""
+                            : dateValue.ToString(
+                                $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} " +
+                                $"{DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                        break;
+                    }
                 }
 
                 break;
             case FormComponent.Tel:
-                sVal = Format.FormatTel(sVal);
+                valueString = Format.FormatTel(valueString);
                 break;
         }
 
-        return sVal;
+        return valueString;
     }
 
     public JJBaseControl GetField(FormElementField f, PageState pageState, Hashtable formValues, object value = null)

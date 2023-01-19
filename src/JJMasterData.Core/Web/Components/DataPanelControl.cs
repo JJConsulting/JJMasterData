@@ -68,26 +68,34 @@ internal class DataPanelControl
             cols = 12;
 
         if (cols >= 1)
-            colClass = $" col-sm-{(12 / cols)}";
+            colClass = $" col-sm-{12 / cols}";
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        int linegroup = int.MinValue;
+        int lineGroup = int.MinValue;
         HtmlBuilder row = null;
         foreach (var field in fields)
         {
-            //visible expression
             bool visible = FieldManager.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
-
-            //value
+            
             object value = null;
             if (Values != null && Values.Contains(field.Name))
-                value = FieldManager.FormatValue(field, Values[field.Name]);
-
-            if (linegroup != field.LineGroup)
             {
-                linegroup = field.LineGroup;
+                if (field.Component != FormComponent.Currency)
+                {
+                    value = FieldManager.FormatValue(field, Values[field.Name]);
+                }
+                else
+                {
+                    value = Values[field.Name];
+                }
+            }
+                
+
+            if (lineGroup != field.LineGroup)
+            {
+                lineGroup = field.LineGroup;
                 row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("row");
                 html.AppendElement(row);
@@ -136,7 +144,6 @@ internal class DataPanelControl
 
     private HtmlBuilder GetHtmlFormHorizontal(List<FormElementField> fields)
     {
-        string fldClass = "";
         string labelClass = "";
         string fieldClass = "";
         string fullClass = "";
@@ -200,9 +207,9 @@ internal class DataPanelControl
                 CssClass = labelClass
             };
 
-            fldClass = string.Empty;
+            var cssClass = string.Empty;
             if (BootstrapHelper.Version == 3 && Erros != null && Erros.Contains(f.Name))
-                fldClass += " has-error";
+                cssClass += " has-error";
 
             if (colCount == 1 || colCount >= cols)
             {
@@ -231,12 +238,12 @@ internal class DataPanelControl
                 colCount++;
             }
 
-            row.WithCssClass(fldClass)
+            row?.WithCssClass(cssClass)
              .AppendElement(label);
 
             if (FieldManager.IsRange(f, PageState))
             {
-                row.AppendElement(GetControlField(f, value));
+                row?.AppendElement(GetControlField(f, value));
             }
             else
             {

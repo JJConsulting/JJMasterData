@@ -120,7 +120,7 @@ public class FieldController : DataDictionaryController
         {
             var item = new DataItemValue
             {
-                Id = field.DataItem.Items.Count.ToString(),
+                Id = field.DataItem!.Items.Count.ToString(),
                 Description = "",
                 Icon = IconType.Star,
                 ImageColor = "#ffffff"
@@ -133,14 +133,14 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveDataItem(string dictionaryName, FormElementField field, int dataItemIndex)
     {
-        field.DataItem.Items.RemoveAt(dataItemIndex);
+        field.DataItem!.Items.RemoveAt(dataItemIndex);
         return RedirectToIndex(dictionaryName, field);
     }
 
     [HttpPost]
     public IActionResult RemoveAllDataItem(string dictionaryName, FormElementField field)
     {
-        field.DataItem.Items = new List<DataItemValue>();
+        field.DataItem!.Items = new List<DataItemValue>();
         return RedirectToIndex(dictionaryName, field);
     }
 
@@ -165,7 +165,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveElementMapFilter(string dictionaryName, FormElementField field, string elementMapFieldName)
     {
-        field.DataItem.ElementMap.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
+        field.DataItem!.ElementMap.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
         return RedirectToIndex(dictionaryName, field);
     }
 

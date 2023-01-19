@@ -9,33 +9,33 @@ namespace JJMasterData.Core.Web.Factories
 {
     public static class WebControlTextFactory
     {
-        public static JJTextGroup CreateTextGroup(FormElementField f, object value)
+        public static JJTextGroup CreateTextGroup(FormElementField field, object value)
         {
             
-            var textGroup = CreateTextGroup(f);
+            var textGroup = CreateTextGroup(field);
 
-            if (f.Component == FormComponent.Currency)
-                value = value?.ToString()?.Replace("R$", string.Empty).Trim();
+            if (field.Component == FormComponent.Currency)
+                value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
 
             textGroup.Text = value?.ToString() ?? string.Empty;
 
             return textGroup;
         }
 
-        public static JJTextGroup CreateTextGroup(FormElementField f)
+        public static JJTextGroup CreateTextGroup(FormElementField field)
         {
-            if (f == null)
+            if (field == null)
                 throw new ArgumentNullException(nameof(FormElementField));
             
             var textGroup = new JJTextGroup();
-            textGroup.SetAttr(f.Attributes);
-            textGroup.MaxLength = f.Size;
-            textGroup.NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
-            textGroup.Name = f.Name;
-            textGroup.MinValue = f.MinValue;
-            textGroup.MaxValue = f.MaxValue;
+            textGroup.SetAttr(field.Attributes);
+            textGroup.MaxLength = field.Size;
+            textGroup.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
+            textGroup.Name = field.Name;
+            textGroup.MinValue = field.MinValue;
+            textGroup.MaxValue = field.MaxValue;
 
-            SetDefaultAttrs(textGroup, f.Component);
+            SetDefaultAttrs(textGroup, field.Component);
 
             return textGroup;
         }

@@ -45,6 +45,7 @@ public class JJSlider : JJBaseControl
                 InputType = InputType.Number,
                 Name = $"{Name}-value",
                 MinValue = MinValue,
+                Text = Value.ToString(),
                 MaxValue = MaxValue,
                 CssClass = "jjslider-value"
             };

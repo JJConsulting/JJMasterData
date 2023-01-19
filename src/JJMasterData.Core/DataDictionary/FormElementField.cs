@@ -8,7 +8,7 @@ using JJMasterData.Commons.Data.Entity;
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
-/// Informações específicas do campo no formulário, herda de ElementField
+/// Field-specific information in the form, inherits from ElementField
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
@@ -21,10 +21,7 @@ public class FormElementField : ElementField
     public const string PopUpTitleAttribute = "popuptitle";
 
     private FormElementFieldActions? _actions;
-
-    /// <summary>
-    /// Tipo do componente
-    /// </summary>
+    
     [DataMember(Name = "component")] 
     public FormComponent Component { get; set; }
 
@@ -76,38 +73,37 @@ public class FormElementField : ElementField
     public int LineGroup { get; set; }
 
     /// <summary>
-    /// Nome da classe (CSS) a ser acrescentado na renderização do grupo do objeto
+    /// Class name (CSS) to be appended in object group rendering
     /// </summary>
     [DataMember(Name = "cssClass")]
     public string? CssClass { get; set; }
 
     /// <summary>
-    /// Texto de ajuda, será exibido ao lado do label
+    /// Help text will be displayed next to the label
     /// </summary>
     [DataMember(Name = "helpDescription")]
     public string? HelpDescription { get; set; }
 
     /// <summary>
-    /// Configurações especificas para lista
+    /// Relationship specific settings
     /// </summary>
     [DataMember(Name = "dataItem")]
-    public FormElementDataItem DataItem { get; set; }
+    public FormElementDataItem? DataItem { get; set; }
 
     /// <summary>
-    /// Configurações do arquivo
+    /// File-specific settings
     /// </summary>
     [DataMember(Name = "dataFile")]
-
     public FormElementDataFile? DataFile { get; set; }
 
     /// <summary>
-    /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
+    /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [DataMember(Name = "attributes")]
     public Hashtable Attributes { get; set; }
 
     /// <summary>
-    /// Permite exportar o campo (Default=true)
+    /// Allows exporting the field (Default=true)
     /// </summary>
     [DataMember(Name = "export")]
     public bool Export { get; set; }
@@ -193,20 +189,19 @@ public class FormElementField : ElementField
     public string? TriggerExpression { get; set; }
 
     /// <summary>
-    /// Numero de casas decimais
-    /// Default(0)
+    /// Number of decimal places. The default value is 0.
     /// </summary>
     /// <remarks>
-    /// Propriedade válida somente para tipos numéricos
+    /// Property valid only for numeric types
     /// </remarks>
     [DataMember(Name = "numberOfDecimalPlaces")]
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>
-    /// Id do painel agrupador de campos
+    /// Field grouper panel id
     /// </summary>
     /// <remarks>
-    /// Id referente a classe FormElementPanel
+    /// Id references a FormElementPanel
     /// </remarks>
     [DataMember(Name = "panelId")]
     public int PanelId { get; set; }
