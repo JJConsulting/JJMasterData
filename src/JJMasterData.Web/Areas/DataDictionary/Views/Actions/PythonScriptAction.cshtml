@@ -1,7 +1,9 @@
 ﻿@{
-    Layout = "_Layout.Popup";
+    Layout = "_MasterDataLayout.Popup";
 }
 
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
 @model  JJMasterData.Core.DataDictionary.Action.PythonScriptAction
 
 <link href="@Url.Content("~/js/codemirror/lib/codemirror.css")" rel="stylesheet" />
@@ -70,7 +72,7 @@
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
         <li id="navPythonCommand" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divPythonScript">@Translate.Key("Python Script")</a></li>
         <li id="navAdvanced" class="nav-item"><a  class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
     </ul>

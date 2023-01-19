@@ -1,67 +1,93 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿#nullable enable
+
+using System;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Core.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder)
+    public static JJServiceBuilder WithFormEventResolver(this JJServiceBuilder builder, Action<FormEventOptions>? configure = null)
     {
-        var assemblies = new List<Assembly>
-        {
-            Assembly.GetCallingAssembly()
-        };
+        if(configure != null)
+            builder.Services.Configure(configure);
+        
+        builder.Services.AddTransient<IFormEventResolver,FormEventResolver>();
 
-        string[] externalAssemblies = JJService.Settings.ExternalAssembliesPath;
-
-        if (externalAssemblies == null) return builder.WithFormEvents(assemblies.ToArray());
-
-        assemblies.AddRange(from assemblyPath in externalAssemblies 
-            where !string.IsNullOrEmpty(assemblyPath) 
-            select Assembly.LoadFrom(assemblyPath));
-
-        return builder.WithFormEvents(assemblies.ToArray());
+        return builder;
     }
-
-    public static JJServiceBuilder WithFormEvents(this JJServiceBuilder builder, params Assembly[] assemblies)
+    
+    public static JJServiceBuilder WithFormEventResolver<T>(this JJServiceBuilder builder) where  T: class, IFormEventResolver
     {
-        FormEventManager.Assemblies = assemblies;
+        builder.Services.AddTransient<IFormEventResolver, T>();
 
-        var formEventTypes = FormEventManager.GetFormEventTypes(assemblies);
-        foreach (var type in formEventTypes.Where(type => !type.IsAbstract))
-        {
-            builder.Services.Add(new ServiceDescriptor(type, type, ServiceLifetime.Transient));
-        }
         return builder;
     }
 
-    public static JJServiceBuilder WithPythonEngine(this JJServiceBuilder builder, IPythonEngine engine)
+    public static JJServiceBuilder WithPythonEngine<T>(this JJServiceBuilder builder) where T : IPythonEngine
     {
-        builder.Services.AddSingleton(engine);
+        builder.Services.AddSingleton(typeof(IPythonEngine), typeof(T));
         return builder;
     }
-
+    
     public static JJServiceBuilder WithPdfExportation<T>(this JJServiceBuilder builder) where T : IPdfWriter
     {
         builder.Services.AddTransient(typeof(IPdfWriter), typeof(T));
         return builder;
     }
-
-    public static JJServiceBuilder WithExcelExportation<T>(this JJServiceBuilder builder) where T : IExcelWriter
+    
+    public static JJServiceBuilder WithDataDictionaryRepository<T>(this JJServiceBuilder builder) where T : class, IDataDictionaryRepository 
     {
-        builder.Services.AddTransient(typeof(IExcelWriter), typeof(T));
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, T>());
+        return builder;
+    }
+    
+    public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder)
+    {
+        builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
+        return builder;
+    }
+   
+    public static JJServiceBuilder WithFileSystemDataDictionary(this JJServiceBuilder builder)
+    {
+        builder.Services.AddOptions<FileSystemDataDictionaryOptions>().BindConfiguration("JJMasterData:DataDictionary");
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
+        return builder;
+    }
+    
+    public static JJServiceBuilder WithFileSystemDataDictionary(this JJServiceBuilder builder, Action<FileSystemDataDictionaryOptions> options)
+    {
+        builder.Services.Configure(options);
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
         return builder;
     }
 
-    public static JJServiceBuilder WithTextExportation<T>(this JJServiceBuilder builder) where T : ITextWriter
+    public static JJServiceBuilder WithFileSystemDataDictionary(this JJServiceBuilder builder, IConfiguration configuration)
     {
-        builder.Services.AddTransient(typeof(ITextWriter), typeof(T));
+        builder.Services.AddOptions<FileSystemDataDictionaryOptions>().Bind(configuration);
+        builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, FileSystemDataDictionaryRepository>());
+        return builder;
+    }
+    
+    public static JJServiceBuilder WithExcelExportation<T>(this JJServiceBuilder builder) where T : class, IExcelWriter
+    {
+        builder.Services.Replace(ServiceDescriptor.Transient<IExcelWriter, T>());
+        return builder;
+    }
+
+    public static JJServiceBuilder WithTextExportation<T>(this JJServiceBuilder builder) where T : class, ITextWriter
+    {
+        builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
         return builder;
     }
 }

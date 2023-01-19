@@ -1,7 +1,9 @@
 ﻿@inject ThemeService ThemeService
 @using JJMasterData.Web.Services
 @using Microsoft.AspNetCore.Html
-@model DataDictionaryViewModel;
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
 
 @{
     IHtmlContent NavItem(string menuId)
@@ -9,7 +11,7 @@
 
         string cssClass = "nav-item jj-nav-item";
 
-        if (Model!.MenuId!.Equals(menuId) && BootstrapHelper.Version < 5)
+        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version < 5)
         {
             cssClass += " active";
         }
@@ -21,7 +23,7 @@
     {
         string cssClass = string.Empty;
 
-        if (Model!.MenuId!.Equals(menuId) && BootstrapHelper.Version == 5)
+        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version == 5)
         {
             cssClass += " active";
         }
@@ -33,7 +35,7 @@
     {
         string ariaSelected = "false";
 
-        if (Model!.MenuId!.Equals(menuId))
+        if (Model.MenuId!.Equals(menuId))
         {
             ariaSelected = "true";
         }
@@ -97,11 +99,11 @@
                     </li>
                     <li class="@NavItem("Relations")">
                         <a class="nav-link @ActiveBs5("Relations")" href="@Url.Action("Index","Relations",new {dictionaryName=Model.DictionaryName})">
-                            <span class="fa fa-joomla" aria-selected="@AriaSelected("Relations")"></span>&nbsp;@Translate.Key("Relations")
+                            <span class="fa fa-joomla" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@Translate.Key("Relationships")
                         </a>
                     </li>
                     <li class="@NavItem("Options")">
-                        <a class="nav-link @ActiveBs5("Options")" href="@Url.Action("Index", "Options" , new {dictionaryName=Model.DictionaryName})">
+                        <a class="nav-link @ActiveBs5("Options")" href="@Url.Action("Index", "UIOptions" , new {dictionaryName=Model.DictionaryName})">
                             <span class="fa fa-gear" aria-selected="@AriaSelected("Options")"></span>&nbsp;@Translate.Key("Options")
                         </a>
                     </li>

@@ -5,25 +5,25 @@ namespace JJMasterData.Core.DataDictionary;
 public class ProcessOptions
 {
     /// <summary>
-    /// Comando SQL a ser executado antes de iniciar o processo de importação
+    /// SQL command to be executed before starting the import process
     /// </summary>
     [DataMember(Name = "commandBeforeProcess")]
     public string CommandBeforeProcess { get; set; }
 
     /// <summary>
-    /// Comando SQL a ser executado no final do processo de importação
+    /// SQL command to be executed at the end of the import process
     /// </summary>
     [DataMember(Name = "commandAfterProcess")]
     public string CommandAfterProcess { get; set; }
 
     /// <summary>
-    /// Escopo de execução do pocesso
+    /// Process execution scope
     /// </summary>
     /// <remarks>
     /// Global<para></para>
-    /// Somente uma importação desse dicionário poderá ser excutada por vez 
-    /// e todos os usuários poderão visualizar o último log 
-    /// e a execução de um processo em andamento.
+    /// Only one import of this dictionary can be performed at a time
+    /// and all users will be able to view the last log
+    /// and the execution of an ongoing process.
     /// <para></para>
     /// User<para></para>
     /// Varios usuários poderão executar esse processo simultaneamente, 

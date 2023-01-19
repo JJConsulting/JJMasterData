@@ -10,14 +10,15 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.DI;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
@@ -52,16 +53,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public DataExpReporter ProcessReporter
-    {
-        get
-        {
-            if (_processReporter == null)
-                _processReporter = new DataExpReporter();
-
-            return _processReporter;
-        }
-    }
+    public DataExpReporter ProcessReporter => _processReporter ??= new DataExpReporter();
 
     public ExportOptions Configuration { get; set; }
 
@@ -70,14 +62,15 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         get
         {
             if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement);
+            {
+                var expressionManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
+                _fieldManager = new FieldManager(FormElement, expressionManager);
+            }
+                
 
             return _fieldManager;
         }
-        set
-        {
-            _fieldManager = value;
-        }
+        set => _fieldManager = value;
     }
 
     /// <summary>
@@ -121,14 +114,11 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = JJService.Settings.ExportationFolderPath;
-            folderPath += FormElement.Name;
-            folderPath += "\\";
+            string folderPath = Path.Combine(JJServiceCore.Options.ExportationFolderPath, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {
-                folderPath += UserId;
-                folderPath += "\\";
+                folderPath = Path.Combine(folderPath, UserId);
             }
 
             if (!Directory.Exists(folderPath))
@@ -140,6 +130,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public string UserId { get; set; }
     public HttpContext CurrentContext { get; internal set; }
+
+    //We need this property because Current.Context.Request is disposed inside a thread.
+    public string AbsoluteUri { get; set; }
 
     #endregion
 
@@ -200,13 +193,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                             else
                                 goto default;
                             break;
-                        case DataDictionaryException:
+                        case JJMasterDataException:
                             ProcessReporter.Message = ex.Message;
                             break;
                         default:
                             ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Log.AddError(ex.Message);
+                            Log.AddError(ex, ex.Message);
                             break;
                     }
                 }
@@ -215,13 +208,12 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                     ProcessReporter.EndDate = DateTime.Now;
                     Reporter(ProcessReporter);
                 }
-            });
+            }, token);
     }
 
     public void Reporter(DataExpReporter processReporter)
     {
-        if (OnProgressChanged != null)
-            OnProgressChanged.Invoke(this, processReporter);
+        OnProgressChanged?.Invoke(this, processReporter);
     }
 
     public abstract void GenerateDocument(Stream ms, CancellationToken token);
@@ -246,10 +238,17 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = JJTextFile.GetInstance(field, PageState.List, value, values, false, null);
-        textFile.FormElement = FormElement;
+        var textFile = new JJTextFile
+        {
+            FormElement = FormElement,
+            ElementField = field,
+            PageState = PageState.List,
+            Text = value,
+            FormValues = values,
+            Name = field.Name
+        };
 
-        return textFile.GetDownloadLink(fileName, true);
+        return textFile.GetDownloadLink(fileName, true, AbsoluteUri);
     }
 
 
@@ -263,17 +262,19 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         else
             title = "file";
 
-        title = StringManager.NoAccents(title);
-        string[] espChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
-        for (int i = 0; i < espChars.Length; i++)
+        title = StringManager.GetStringWithoutAccents(title);
+        
+        string[] escapeChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
+        
+        foreach (var @char in escapeChars)
         {
-            title = title.Replace(espChars[i], "");
+            title = title.Replace(@char, string.Empty);
         }
 
         title = HttpUtility.UrlEncode(title, Encoding.UTF8);
         string ext = Configuration.FileExtension.ToString().ToLower();
 
-        return string.Format("{0}_{1}.{2}", title, DateTime.Now.ToString("yyyMMdd_HHmmss"), ext);
+        return $"{title}_{DateTime.Now:yyyMMdd_HHmmss}.{ext}";
     }
 
 

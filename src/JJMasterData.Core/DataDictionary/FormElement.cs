@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -15,24 +15,19 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new List<FormElementField>();
-
-    /// <summary>
-    /// Titulo do Formulário
-    /// </summary>
+    private List<FormElementField> _formFields = new();
+    
     [DataMember(Name = "title")]
     public string Title { get; set; }
-
-    /// <summary>
-    /// Sub-Titulo do Formulário
-    /// </summary>
+    
     [DataMember(Name = "subTitle")]
     public string SubTitle { get; set; }
-
-    /// <summary>
-    /// Campos do Formulário
-    /// </summary>
+    
     [DataMember(Name = "fields")]
+    // BsonSerializationException:
+    // The property 'Name' of type 'JJMasterData.Core.DataDictionary.FormElement'
+    // cannot use element name 'Name' because it is already being used by property 'Name' of type
+    // 'JJMasterData.Commons.Dao.Entity.Element'.
     public new FormElementList Fields { get; private set; }
 
     [DataMember(Name = "panels")]
@@ -78,44 +73,46 @@ public class FormElement : Element
         Fields = new FormElementList(base.Fields, _formFields);
         foreach (DataColumn col in schema.Columns)
         {
-            var f = new ElementField();
-            f.Name = col.Caption;
-            f.Label = col.Caption.Replace("::ASC", "").Replace("::DESC", "");
-            f.Size = col.MaxLength;
-            f.IsRequired = !col.AllowDBNull;
-            f.IsPk = col.Unique;
-
-            Type type = col.DataType;
-            if (type == typeof(int) ||
-                type == typeof(Int16) ||
-                type == typeof(Int32) ||
-                type == typeof(Int64) ||
-                type == typeof(UInt16) ||
-                type == typeof(UInt32) ||
-                type == typeof(UInt64) ||
-                type == typeof(Single))
+            var field = new ElementField
             {
-                f.DataType = FieldType.Int;
+                Name = col.Caption,
+                Label = col.Caption.Replace("::ASC", "").Replace("::DESC", ""),
+                Size = col.MaxLength,
+                IsRequired = !col.AllowDBNull,
+                IsPk = col.Unique
+            };
+
+            var type = col.DataType;
+            if (type == typeof(int) ||
+                type == typeof(short) ||
+                type == typeof(int) ||
+                type == typeof(long) ||
+                type == typeof(ushort) ||
+                type == typeof(uint) ||
+                type == typeof(ulong) ||
+                type == typeof(float))
+            {
+                field.DataType = FieldType.Int;
             }
             else if (type == typeof(decimal) ||
                      type == typeof(double))
             {
-                f.DataType = FieldType.Float;
+                field.DataType = FieldType.Float;
             }
             else if (type == typeof(DateTime))
             {
-                f.DataType = FieldType.Date;
+                field.DataType = FieldType.Date;
             }
             else if (type == typeof(TimeSpan))
             {
-                f.DataType = FieldType.DateTime;
+                field.DataType = FieldType.DateTime;
             }
             else
             {
-                f.DataType = FieldType.NVarchar;
+                field.DataType = FieldType.NVarchar;
             }
 
-            AddField(f);
+            AddField(field);
         }
     }
 
@@ -124,30 +121,10 @@ public class FormElement : Element
         base.Fields.Add(field);
         _formFields.Add(new FormElementField(field));
     }
-        
+
     public FormElementPanel GetPanelById(int id)
     {
         return Panels.Find(x => x.PanelId == id);
-    }
-
-    public Element DeepCopyElement()
-    {
-        var element = new Element();
-        element.Name = Name;
-        element.TableName = TableName;
-        element.Info = Info;
-        element.Indexes = Indexes;
-        element.Relations = Relations;
-        element.CustomProcNameGet = CustomProcNameGet;
-        element.CustomProcNameSet = CustomProcNameSet;
-        element.SyncMode = SyncMode;
-        element.Sync = Sync;
-
-        element.Fields = new ElementList();
-        foreach (FormElementField f in Fields)
-            element.Fields.Add(f.DeepCopyField());
-
-        return element;
     }
 
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao;
+using JJMasterData.Commons.Data;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -13,8 +13,8 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElementDataItem
 {
-    private DataAccessCommand _Command;
-    private List<DataItemValue> _Itens;
+    private DataAccessCommand _command;
+    private IList<DataItemValue> _items;
 
     /// <summary>
     /// Tipo da origem dos dados
@@ -30,38 +30,18 @@ public class FormElementDataItem
     [DataMember(Name = "command")]
     public DataAccessCommand Command
     {
-        get
-        {
-            if (_Command == null)
-                _Command = new DataAccessCommand();
-
-            return _Command;
-        }
-        set
-        {
-            _Command = value;
-        }
+        get => _command ??= new DataAccessCommand();
+        set => _command = value;
     }
 
     /// <summary>
-    /// Lista de itens da combo [Chave, Valor]
+    /// ComboBox items [Key, Value]
     /// </summary>
     [DataMember(Name = "itens")]
-    public List<DataItemValue> Itens
+    public IList<DataItemValue> Items
     {
-        get
-        {
-            if (_Itens == null)
-            {
-                _Itens = new List<DataItemValue>();
-            }
-                    
-            return _Itens;
-        }
-        set
-        {
-            _Itens = value;
-        }
+        get => _items ??= new List<DataItemValue>();
+        set => _items = value;
     }
 
     /// <summary>

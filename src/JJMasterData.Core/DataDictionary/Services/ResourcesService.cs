@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
@@ -17,7 +20,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = new DbTranslatorProvider().GetElement();
+        var element = JJMasterDataLocalizationProvider.GetElement();
         
         var formElement = new FormElement(element)
         {
@@ -33,16 +36,20 @@ public class ResourcesService : BaseService
 
         var cultureField = formView.FormElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
-        cultureField.Component = FormComponent.Search;
-        cultureField.DataItem = new FormElementDataItem();
-        cultureField.DataItem.Itens = new List<DataItemValue>();
-        cultureField.DataItem.ReplaceTextOnGrid = false;
-        foreach (CultureInfo ci in supportedCultures)
+        cultureField.Component = FormComponent.ComboBox;
+        cultureField.DataItem = new FormElementDataItem
         {
-            var item = new DataItemValue();
-            item.Id = ci.Name;
-            item.Description = ci.Name + " " + ci.DisplayName;
-            cultureField.DataItem.Itens.Add(item);
+            Items = new List<DataItemValue>(),
+            ReplaceTextOnGrid = false
+        };
+        foreach (var cultureInfo in supportedCultures)
+        {
+            var item = new DataItemValue
+            {
+                Id = cultureInfo.Name,
+                Description = cultureInfo.Name + " " + cultureInfo.DisplayName
+            };
+            cultureField.DataItem.Items.Add(item);
         }
    
         formView.FormElement.Fields["resourceKey"].IsRequired = true;

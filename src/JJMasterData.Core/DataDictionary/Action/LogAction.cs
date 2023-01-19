@@ -1,5 +1,5 @@
 ﻿using System;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Action;
 

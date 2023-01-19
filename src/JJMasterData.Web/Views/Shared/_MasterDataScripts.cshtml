@@ -1,4 +1,6 @@
-﻿<script src="~/js/jquery/jquery.js"></script>
+﻿@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+<script src="~/js/jquery/jquery.js"></script>
 <script src="~/js/jquery/jquery-form/jquery.form.js"></script>
 <script src="~/js/jquery/jquery-number/jquery.number.min.js"></script>
 <script src="~/js/jquery/jquery-ui/jquery-ui.min.js"></script>
@@ -7,7 +9,7 @@
         $.widget.bridge('uitooltip', $.ui.tooltip);
         $.widget.bridge('uibutton', $.ui.button);
     });
-    // Change JQueryUI plugin names to fix name collision with Bootstrap.
+        // Change JQueryUI plugin names to fix name collision with Bootstrap.
 </script>
 
 <script src="~/js/jquery/jquery-validation/jquery.validate.min.js"></script>
@@ -43,10 +45,6 @@
 <script type="text/javascript" src="~/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js"></script>
 <script type="text/javascript" src="~/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
 
-<environment include="Development">
-    <script asp-append-version="true" type="text/javascript" src="~/js/jjmasterdata/jjmasterdata.js"></script>
-</environment>
-<environment exclude="Development">
-    <script asp-append-version="true" type="text/javascript" src="~/js/jjmasterdata/jjmasterdata.min.js"></script>
-</environment>
+<script asp-append-version="true" type="text/javascript" src="~/js/jjmasterdata/jjmasterdata.js"></script>
+
 

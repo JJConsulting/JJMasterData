@@ -1,11 +1,12 @@
-﻿
-@using JJMasterData.Commons.Util
+﻿@using JJMasterData.Commons.Util
 @using JJMasterData.Core.DataDictionary.Action
 @using System.Text
-@model  DataDictionaryListAction
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@model  JJMasterData.Web.Areas.DataDictionary.Models.DataDictionaryListAction
 
 @{string sortableClass = string.Empty;}
-@if (Model.ListAction.Count > 1)
+@if (Model.ListAction?.Count > 1)
 {
     sortableClass = "jjsortable";
     <script language="javascript" type="text/javascript">
@@ -26,7 +27,7 @@
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(InternalAction))">@Translate.Key("Internal Redirect")</a></li>
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(SqlCommandAction))">@Translate.Key("Sql Command")</a></li>
                 <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(PythonScriptAction))">@Translate.Key("Python Script")</a></li>
-                @if (Model.Context == ActionOrigin.Field)
+                @if (Model.Context == ActionSource.Field)
                 {
                     <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(ScriptAction))">@Translate.Key("JavaScript Command")</a></li>
                 }
@@ -37,12 +38,12 @@
 <div class="row">
     <div class="col-sm-12">
         <ul class="list-group @sortableClass" id="sortable_@Model.Context.ToString()">
-            @foreach (BasicAction action in Model.ListAction)
+            @foreach (var action in Model.ListAction!)
             {
                 <li class="list-group-item" id="@action.Name">
                     <div style="height: 33px;">
                         <div style="float: left; margin-top: 10px;">
-                            <span class="@IconHelper.GetClassName(action.Icon) fa-fw"></span>&nbsp;
+                            <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
                             @action.Name
                             &nbsp;
                         </div>
@@ -123,13 +124,13 @@
         return sScript.ToString();
     }
 
-    public string GetUrlDisable(BasicAction action)
+    public string? GetUrlDisable(BasicAction action)
     {
         return Url.Action("EnableDisable", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName });
     }
 
-    public string GetUrlSort()
+    public string? GetUrlSort()
     {
         return Url.Action("Sort", "Actions",
             new { dictionaryName = Model.DictionaryName, fieldName = Model.FieldName });

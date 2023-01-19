@@ -2,33 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Commons.Util;
 
 public static class StringManager
 {
     /// <summary>
-    /// Limpa o texto evitando eject-sql
+    /// Clear the text, preventing SQL injection
     /// </summary>
     /// <remarks>
-    /// Autor: Lucio Pelinson 21-05-2012
+    /// Author: Lucio Pelinson 21-05-2012
     /// </remarks>
-    public static string ClearText(string str)
+    public static string ClearText(string input)
     {
-        string sRet = str.Replace("'", "`");
-        sRet = sRet.Replace("<", "[");
-        sRet = sRet.Replace(">", "]");
-        sRet = sRet.Replace("--", "");
+        string result = input.Replace("'", "`");
+        result = result.Replace('<', '[');
+        result = result.Replace('>', ']');
+        result = result.Replace("--", "");
 
-        return sRet;
+        return result;
     }
 
     /// <summary>
     /// Remove os acentos e caracteres especiais
     /// </summary>
     /// <param name="str">Valor</param>
-    public static string NoAccents(string str)
+    public static string GetStringWithoutAccents(string str)
     {
         //Troca os caracteres acentuados por não acentuados
         string[] acentos = { "ç", "Ç", "á", "é", "í", "ó", "ú", "ý", "Á", "É", "Í", "Ó", "Ú", "Ý", "à", "è", "ì", "ò", "ù", "À", "È", "Ì", "Ò", "Ù", "ã", "õ", "ñ", "ä", "ë", "ï", "ö", "ü", "ÿ", "Ä", "Ë", "Ï", "Ö", "Ü", "Ã", "Õ", "Ñ", "â", "ê", "î", "ô", "û", "Â", "Ê", "Î", "Ô", "Û" };
@@ -54,28 +54,25 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Função para retornar saudação
+    /// Function to return greeting
     /// </summary>
     /// <returns>
-    /// Bom dia, Boa tarde ou Boa noite
+    /// Good Morning, Good Afternoon or Good Night. i18n supported.
     /// </returns>
     public static string GetGreeting()
     {
-        DateTime now = DateTime.Now;
-        string saudacao = "";
-        if ((now.Hour > 0) && (DateTime.Now.Hour <= 12))
-            saudacao = Translate.Key("Good Morning");
+        var now = DateTime.Now;
+        string greeting;
+        if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
+            greeting = Translate.Key("Good Morning");
         else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
-            saudacao = Translate.Key("Good Afternoon");
+            greeting = Translate.Key("Good Afternoon");
         else
-            saudacao = Translate.Key("Good Night");
+            greeting = Translate.Key("Good Night");
 
-        return saudacao;
+        return greeting;
     }
-
-    /// <summary>
-    /// Retorna apenas os numeros no Cpf ou Cnpj
-    /// </summary>
+    
     public static string ClearCpfCnpjChars(string value)
     {
         string sRet = ClearText(value);
@@ -85,10 +82,7 @@ public static class StringManager
 
         return sRet;
     }
-
-    /// <summary>
-    /// Retorna apenas os numeros do Telefone
-    /// </summary>
+    
     public static string ClearTelChars(string value)
     {
         string sRet = ClearText(value);
@@ -102,22 +96,22 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Converte a data yyyyMMdd para DateTime
+    /// Converts the date from yyyyMMdd to DateTime
     /// </summary>
-    /// <param name="dataString">Data no formato yyyyMMdd</param>
+    /// <param name="dataString">Data at yyyyMMdd format</param>
     /// <returns></returns>
     public static DateTime GetDataSiga(string dataString)
     {
-        DateTime d = DateTime.MinValue;
+        var date = DateTime.MinValue;
 
         if (dataString.Trim().Length == 8)
         {
             int day = int.Parse(dataString.Substring(6, 2));
             int month = int.Parse(dataString.Substring(4, 2));
             int year = int.Parse(dataString.Substring(0, 4));
-            d = new DateTime(year, month, day);
+            date = new DateTime(year, month, day);
         }
-        return d;
+        return date;
     }
 
     /// <summary>
@@ -185,22 +179,22 @@ public static class StringManager
     }
 
     /// <summary>
-    /// Função para escrever por extenso um número DECIMAL
+    /// Function to write a number in full in a brazilian format.
     /// </summary>
-    /// <param name="valor">Valor decimal limitado a (999.999.999.999.999,00)</param>
-    /// <param name="isCurrency">Encrever em Reais</param>
-    /// <param name="isFemale">Encrever no Feminino ex. ao invés de dois ecreve duas</param>
+    /// <param name="valor">Value, limited to (999.999.999.999.999,00)</param>
+    /// <param name="isCurrency">Write in Reais</param>
+    /// <param name="isFemale">Use a female substantive</param>
     /// <returns>Número por extenso</returns>
     /// <remarks>Lucio Pelinson 21-02-2013</remarks> 
     public static string NumToWords(decimal valor, bool isCurrency = true, bool isFemale = false)
     {
         if (valor >= 1000000000000000)
-            throw new Exception("Valor não suportado pelo sistema.");
+            throw new FormatException("Value not supported.");
         bool isNegativo = false;
         if (valor < 0)
         {
             isNegativo = true;
-            valor = valor * -1;
+            valor *= -1;
         }
         string strValor = valor.ToString("000000000000000.00");
         string valor_por_extenso = string.Empty;

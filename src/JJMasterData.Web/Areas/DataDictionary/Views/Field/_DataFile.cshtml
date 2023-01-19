@@ -1,4 +1,7 @@
-﻿@model FormElementField
+﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@model FormElementField
 
 @section Scripts{
     <script lang="javascript" type="text/javascript">
@@ -23,8 +26,9 @@
 @{
     var slider = new JJSlider(0, 28)
     {
-        Name = @Html.NameFor(m=>m.DataFile.MaxFileSize),
-        Value = Model.DataFile.MaxFileSize
+        Name = @Html.NameFor(m=>m.DataFile!.MaxFileSize),
+        Value = Model.DataFile!.MaxFileSize,
+        CssClass = "row"
     };
 }
 
@@ -36,7 +40,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Folder Path")">@Translate.Key("FolderPath")</label>
-        @Html.TextBoxFor(model => model.DataFile.FolderPath, new { maxlength = "400", @class = "form-control" })
+        @Html.TextBoxFor(model => model.DataFile!.FolderPath, new { maxlength = "400", @class = "form-control" })
         
         <span class="help-block">
             @Translate.Key("You can use for example: ") {app.path}/DataDictionaries/AnotherFolder
@@ -45,42 +49,42 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label class="@BootstrapHelper.Label " for="txtAllowedTypes" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Types of historical files")">@Translate.Key("AllowedTypes")</label>
-        @Html.TextBoxFor(model => model.DataFile.AllowedTypes, new { maxlength = "255", @class = "form-control" })
+        @Html.TextBoxFor(model => model.DataFile!.AllowedTypes, new { maxlength = "255", @class = "form-control" })
         <span class="help-block">@Translate.Key("file types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked")</span>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        @Html.LabelFor(m=>m.DataFile.MaxFileSize,@Translate.Key("Max File Size (MB)"), new {@class = BootstrapHelper.Label})
+        @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@Translate.Key("Max File Size (MB)"), new {@class = BootstrapHelper.Label})
         @Html.Raw(slider.GetHtml())
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label class="@BootstrapHelper.Label " for="chkViewGallery" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("View Gallery")">@Translate.Key("View Gallery")</label>
         <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile.ViewGallery, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+            @Html.CheckBoxFor(model => model.DataFile!.ViewGallery, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label class="@BootstrapHelper.Label " for="chkDragDrop" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Allow dragging files")">@Translate.Key("DragDrop")</label>
         <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile.DragDrop, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+            @Html.CheckBoxFor(model => model.DataFile!.DragDrop, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label class="@BootstrapHelper.Label " for="chkMultiplefile" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Allows you to upload multiple files")">@Translate.Key("MultipleFile")</label>
         <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile.MultipleFile, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+            @Html.CheckBoxFor(model => model.DataFile!.MultipleFile, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label class="@BootstrapHelper.Label " for="chkExportAsLink" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Export file name with download link")">@Translate.Key("ExportAsLink")</label>
         <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile.ExportAsLink, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+            @Html.CheckBoxFor(model => model.DataFile!.ExportAsLink, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
 
     <div class="col-sm-12">
-        <a href="javascript:window.open('https://portal.jjconsulting.com.br/jjdoc/articles/components/data_file.html', '_blank').focus();">@Translate.Key("Need more help ?")</a>
+        <a href="javascript:window.open('https://portal.jjconsulting.com.br/jjdoc/articles/tutorials/data_file.html', '_blank').focus();">@Translate.Key("Need more help ?")</a>
     </div>
 
 

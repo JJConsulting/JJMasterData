@@ -1,29 +1,30 @@
-﻿using JJMasterData.Commons.Language;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
+﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    public ApiService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public ApiService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
-    public bool EditApi(DicParser dicParser)
+    public bool EditApi(Metadata dicParser)
     {
         if (ValidateApi(dicParser))
-            DicDao.SetDictionary(dicParser);
+            DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return IsValid;
     }
 
-    public bool ValidateApi(DicParser dicParser)
+    public bool ValidateApi(Metadata dicParser)
     {
-
         bool hasApiGetEnabled;
 
-        if (dicParser.Api.EnableGetDetail & dicParser.Api.EnableGetAll)
+        if (dicParser.ApiOptions.EnableGetDetail & dicParser.ApiOptions.EnableGetAll)
             hasApiGetEnabled = true;
         else
             hasApiGetEnabled = false;

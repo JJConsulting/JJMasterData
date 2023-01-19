@@ -1,6 +1,5 @@
-﻿using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
@@ -8,7 +7,7 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal static class DataDictionarySchema
 {
-    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, DicApiSettings api, string modelName, bool ignoreIdentity = false)
+    internal static OpenApiSchema GetDictionarySchema(FormElement formElement, MetadataApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
     {
         var modelSchema = new OpenApiSchema
         {
@@ -20,15 +19,15 @@ internal static class DataDictionarySchema
 
         var example = new OpenApiObject();
 
-        foreach (FormElementField field in formElement.Fields)
+        foreach (var field in formElement.Fields)
         {
 
             example[field.Name] = GetFieldExample(field);
 
-            if (ignoreIdentity && field.IsPk && field.AutoNum)
+            if (ignoreIdentity && field is { IsPk: true, AutoNum: true })
                 continue;
 
-            string fieldName = api.GetFieldNameParsed(field.Name);
+            string fieldName = metadataApiOptions.GetFieldNameParsed(field.Name);
             var itemSchema = GetFieldSchema(field);
 
             modelSchema.Properties.Add(fieldName, itemSchema);
@@ -45,7 +44,7 @@ internal static class DataDictionarySchema
         return modelSchema;
     }
 
-    private static IOpenApiAny GetFieldExample(FormElementField field)
+    private static IOpenApiAny GetFieldExample(ElementField field)
     {
         return field.DataType switch
         {
@@ -102,12 +101,9 @@ internal static class DataDictionarySchema
         }
 
 
-        if (item.Component == FormComponent.ComboBox
-                    && item.DataItem != null
-                    && item.DataItem.Itens != null
-                    && item.DataItem.Itens.Count > 0)
+        if (item is { Component: FormComponent.ComboBox, DataItem.Items.Count: > 0 })
         {
-            foreach (DataItemValue dataItem in item.DataItem.Itens)
+            foreach (var dataItem in item.DataItem.Items)
             {
                 itemSchema.Description += "<br>" + dataItem.Id + " = " + dataItem.Description;
             }

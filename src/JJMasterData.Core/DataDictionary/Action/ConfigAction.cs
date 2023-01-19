@@ -1,5 +1,5 @@
 ﻿using System;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Action;
 
@@ -17,7 +17,7 @@ public class ConfigAction : BasicAction
     public ConfigAction()
     {
         Name = ACTION_NAME;
-        ToolTip = "Settings";
+        ToolTip = "Options";
         Icon = IconType.Cog;
         ShowAsButton = true;
         CssClass = BootstrapHelper.PullRight;

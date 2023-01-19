@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JJMasterData</title>
+
+    @await RenderSectionAsync("Stylesheets", required: false)
+    
+    <partial name="_MasterDataStylesheets"/>
+    <partial name="_MasterDataTheme"/>
+    <partial name="_MasterDataScripts"/>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    @RenderBody()
+</div>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

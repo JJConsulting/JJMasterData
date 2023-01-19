@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 
@@ -125,6 +125,7 @@ public static class FieldValidator
         {
             case FieldType.Date:
             case FieldType.DateTime:
+            case FieldType.DateTime2:
                 if (!DateTime.TryParse(value, out var date) || date.Year < 1900)
                 {
                     return Translate.Key("{0} field is a invalid date",

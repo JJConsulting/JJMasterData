@@ -1,9 +1,13 @@
-﻿@model FormElementField
+﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FormElementField
 
 
 @{
-    bool showImage = Model.DataItem.ShowImageLegend;
-    bool isManualVal = Model.DataItem.DataItemType == DataItemType.Manual;
+    bool showImage = Model.DataItem!.ShowImageLegend;
+    bool isManualVal = Model.DataItem!.DataItemType == DataItemType.Manual;
 }
 
 <script lang="javascript" type="text/javascript">
@@ -71,14 +75,14 @@
     }
 
     function setIconValue(fieldid, cod, description) {
-        let oFldId = window.document.getElementById("DataItem_Itens_" + fieldid + "__Icon");
-        oFldId.value = cod;
+        let fieldIcon = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon");
+        fieldIcon.value = cod;
 
-        let oFld = window.document.getElementById("DataItem_Itens_" + fieldid + "__Icon_text");
-        oFld.value = description;
+        let fieldIconText = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon_text");
+        fieldIconText.value = description;
 
         popup.hide();
-        oFld.focus();
+        fieldIconText.focus();
     }
 
     function addDataItem(qtd) {
@@ -90,7 +94,7 @@
             value: qtd
         }).appendTo("form");
 
-        var url = "@Url.Action("AddDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("AddDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -103,13 +107,13 @@
             value: dataItemIndex
         }).appendTo("form");
 
-        var url = "@Url.Action("RemoveDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
     function removeAllDataItem() {
         messageWait.show();
-        var url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -123,7 +127,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("List Type")">@Translate.Key("ListType")</label>
-        <select id="DataItem_DataItemType" name="DataItem.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
                 <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
@@ -146,7 +150,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Replace the field value with a description of the combination when displaying a grid")">@Translate.Key("ReplaceTextOnGrid")</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem.ReplaceTextOnGrid, new[]
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
         {
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
             new SelectListItem { Text = Translate.Key("No"), Value = "false" }
@@ -158,12 +162,12 @@
     {
         <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divFirstOption">
             <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display text (All) as first option")">@Translate.Key("FirstOption")</label>
-            <select asp-for="DataItem.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
+            <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display images with text in the combo")">@Translate.Key("ShowImageLegend")</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem.ShowImageLegend, new[]
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowImageLegend, new[]
         {
             new SelectListItem { Text = Translate.Key("No"), Value = "false" },
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
@@ -186,33 +190,38 @@
             </tr>
             </thead>
             <tbody>
-            @for (int i = 0; i < Model.DataItem.Itens.Count; i++)
+            @for (int i = 0; i < Model.DataItem.Items.Count; i++)
             {
                 <tr>
                     <td>
-                        @Html.TextBox("DataItem.Itens[" + i + "].Id",
-                            Model.DataItem.Itens[i].Id, new { @class = "form-control" })
+                        @Html.TextBox("DataItem.Items[" + i + "].Id",
+                            Model.DataItem.Items[i].Id, new { @class = "form-control" })
                     </td>
                     <td>
-                        @Html.TextBox("DataItem.Itens[" + i + "].Description",
-                            Model.DataItem.Itens[i].Description, new { @class = "form-control" })
+                        @Html.TextBox("DataItem.Items[" + i + "].Description",
+                            Model.DataItem.Items[i].Description, new { @class = "form-control" })
                     </td>
 
                     @if (showImage)
                     {
                         <td>
                             @{
-                                var iconId = "DataItem.Itens[" + i + "].Icon";
-                                var cbo = new JJSearchBox();
-                                cbo.DataItem.ShowImageLegend = true;
-                                cbo.DataItem.Itens = IconHelper.GetListImages();
-                                cbo.SelectedValue = ((int)Model.DataItem.Itens[i].Icon).ToString();
-                                cbo.Name = iconId;
+                                var iconId = "DataItem.Items[" + i + "].Icon";
+                                var searchBox = new JJSearchBox
+                                {
+                                    DataItem =
+                                    {
+                                        ShowImageLegend = true,
+                                        Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
+                                    },
+                                    SelectedValue = (Model.DataItem.Items[i].Icon.GetId()).ToString(),
+                                    Name = iconId
+                                };
                             }
 
                             <div class="row">
                                 <div class="col-sm-10">
-                                    @Html.Raw(cbo.GetHtml())
+                                    @Html.Raw(searchBox.GetHtml())
                                 </div>
                                 <div class="col-sm-2">
                                     <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.show('Icons','@Url.Action("Icons", new { dictionaryName = ViewBag.DictionaryName, itemId = i })');">
@@ -222,8 +231,8 @@
                             </div>
                         </td>
                         <td>
-                            @Html.TextBox("DataItem.Itens[" + i + "].ImageColor",
-                                Model.DataItem.Itens[i].ImageColor, new { @class = "form-control", type = "color" })
+                            @Html.TextBox("DataItem.Items[" + i + "].ImageColor",
+                                Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
                         </td>
                     }
 
@@ -293,7 +302,7 @@
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("PL-SQL Command")">@Translate.Key("Command.Sql")</label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@Translate.Key("(Type Ctrl+Space to AutoComplete)")</span>
         <div class="well" style="margin-bottom: 0px">
-            @Html.TextAreaFor(model => model.DataItem.Command.Sql, new { @class = "form-control", rows = "10" })
+            @Html.TextAreaFor(model => model.DataItem!.Command.Sql, new { @class = "form-control", rows = "10" })
         </div>
     </div>
     <label class="small col-sm-12">

@@ -1,26 +1,28 @@
 ﻿@{
-    Layout = "_Layout.Popup";
+    Layout = "_MasterDataLayout.Popup";
 }
 
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
 @model  JJMasterData.Core.DataDictionary.Action.ExportAction
 
 @using (Html.BeginForm("ExportAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
 <ul class="nav nav-tabs">
-    <li id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+    <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
     <li id="navExportAction" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divExportAction">@Translate.Key("Export Action")</a></li>
     <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
 </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+        <div id="divGeneral" class="tab-pane fade active @BootstrapHelper.Show">
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>
         <div id="divExportAction" class="tab-pane fade">
             @await Html.PartialAsync("_ProcessOptions", Model.ProcessOptions)
         </div>
-        <div id="divAdvanced" runat="server" class="tab-pane fade">
+        <div id="divAdvanced" class="tab-pane fade">
             @await Html.PartialAsync("_NavAdvanced", Model)
         </div>
     </div>

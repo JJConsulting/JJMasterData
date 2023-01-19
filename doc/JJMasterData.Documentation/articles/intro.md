@@ -11,7 +11,7 @@ A long time ago, we created a product and started to implement it in some custom
 First we replicated the code, one for each customer, with their specifications. <br>
 I don't even need to say that this was the worst possible solution ever.<br>
 So we mapped all the rules and had the brilliant idea of ​​parameterizing them within a single system and whether or not to enable it a certain field or functionality etc.<br>
-Over time, we understood that this would be unfeasible, as each customer had a different particularity. Also the parameterizations became complex and the end of this job wasn't visible.<br>
+Over time, we understood that this would be unfeasible, as each customer had a different particularity. Also the parameterization became complex and the end of this job wasn't visible.<br>
 <br>
 Next, we started to look for an existing solution in FOSS community and how the community solved it. So we find out the "Data Dictionary solution". <br>
 That's how big ERP companies works!<br>
@@ -27,10 +27,6 @@ We made our own data dictionary and we liked it so much that we started using it
 
 On 09/09/2022 JJMasterData became part of the open-source community, where everyone can contribute to improve it.
 
-------
-
-<br>
-
 ## Why use? 
 - Code Pattern<br>
   Improvements, updates and fixes without code repetition.
@@ -44,9 +40,6 @@ On 09/09/2022 JJMasterData became part of the open-source community, where every
 - CRUD at runtime instead of compile time<br>
   Enables runtime customization without having to recompile the system.
 
-------
-
-<br>
 
 ## When not to use?
 - Complex screens that are not standard CRUD<br>
@@ -55,18 +48,8 @@ On 09/09/2022 JJMasterData became part of the open-source community, where every
 - Static contents pages<br>
   It makes no sense for static content.
 
-------
-
-<br>
-
 ## What is JJMasterData?
 JJMasterData is an open-source .NET library to help you create CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
 
-------
-
-<br>
-
 ## Who is using JJMasterData ?
-JJMasterData is **production-ready** and is already being used by JJConsulting [customers](https://www.jjconsulting.com.br#clientes).
-
-------
+JJMasterData is **production-ready** and is already being used by [JJConsulting](https://jjconsulting.tech).

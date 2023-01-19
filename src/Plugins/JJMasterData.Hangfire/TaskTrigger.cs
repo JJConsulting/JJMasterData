@@ -6,7 +6,8 @@ using Hangfire;
 using Hangfire.Console;
 using Hangfire.Console.Progress;
 using Hangfire.Server;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
@@ -84,13 +85,13 @@ internal class TaskTrigger
     {
         var taskWrapper = BackgroundTask.GetTask(key);
         if (taskWrapper?.TaskWorker == null)
-            throw new Exception(Translate.Key("This task has expired and can no longer run"));
+            throw new JJMasterDataException(Translate.Key("This task has expired and can no longer run"));
 
         IBackgroundTaskWorker worker = taskWrapper.TaskWorker;
         IProgressBar consoleProgress = null;
         string consoleMessage = string.Empty;
             
-        worker.OnProgressChanged += (s, e) =>
+        worker.OnProgressChanged += (_, e) =>
         {
             BackgroundTask.SetProgress(key, e);
             if (context == null) return;

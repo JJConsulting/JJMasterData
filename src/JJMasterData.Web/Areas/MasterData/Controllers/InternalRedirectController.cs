@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using System.Data.SqlClient;
 using System.Web;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Controllers;
+using JJMasterData.Core.Web.Components;
+using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
 using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -95,7 +94,7 @@ public class InternalRedirectController : MasterDataController
 
         panel.LoadValuesFromPK(_relationValues);
         if (userId != null)
-            panel.SetUserValues("USERID", userId.ToString());
+            panel.SetUserValues("USERID", userId);
 
         var values = panel.GetFormValues();
         var errors = panel.ValidateFields(values, PageState.Update);
@@ -104,7 +103,7 @@ public class InternalRedirectController : MasterDataController
         {
             if (errors.Count == 0)
             {
-                panel.Factory.SetValues(formElement, values);
+                panel.EntityRepository.SetValues(formElement, values);
             }
         }
         catch (SqlException ex)
@@ -143,7 +142,7 @@ public class InternalRedirectController : MasterDataController
                     _dictionaryName = @params.Get(key);
                     break;
                 case "viewtype":
-                    _relationType = (RelationType)int.Parse(@params.Get(key));
+                    _relationType = (RelationType)int.Parse(@params.Get(key) ?? string.Empty);
                     break;
                 default:
                     _relationValues.Add(key, @params.Get(key));

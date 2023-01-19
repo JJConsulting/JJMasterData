@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using iText.IO.Font;
 using iText.Kernel.Colors;
@@ -15,12 +16,12 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Pdf;
 
@@ -96,7 +97,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = new Factory(FieldManager.DataAccess);
+            var factory = new EntityRepository();
             DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
@@ -157,7 +158,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             else
             {
-                value = FieldManager.ParseVal(values, field);
+                value = FieldManager.ParseVal(field, values);
             }
         }
 
@@ -176,7 +177,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
             ev.Invoke(this, args);
 
-            value = args.ResultHtml;
+            value = args.HtmlResult;
             value = value.Replace("<br>", "\r\n");
             value = value.Replace("<center>", string.Empty);
             value = value.Replace("</center>", string.Empty);
@@ -256,7 +257,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, selectedValue, values);
+        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, values, selectedValue);
         var item = cbo.GetValue(selectedValue);
 
         if (item != null)
@@ -267,7 +268,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             if (field.DataItem.ShowImageLegend)
             {
-                image = new Text(IconHelper.Get(item.Icon).Unicode.Replace(";", string.Empty));
+                image = new Text(item.Icon.GetUnicode().ToString());
                 var color = ColorTranslator.FromHtml(item.ImageColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";
@@ -286,12 +287,22 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     private PdfFont CreateFontAwesomeIcon()
     {
-        string fontPath = AppDomain.CurrentDomain.BaseDirectory;
-        fontPath += @"Fonts\fontawesome-webfont.ttf";
-
-        var fontProgram = FontProgramFactory.CreateFont(fontPath);
+        var fontBytes = ExtractResource("JJMasterData.Pdf.Fonts.fontawesome-webfont.ttf");
+        var fontProgram = FontProgramFactory.CreateFont(fontBytes, true);
+        
         return PdfFontFactory.CreateFont(fontProgram);
     }
-
-
+    
+    private static byte[] ExtractResource(string filename)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var resFilestream = assembly.GetManifestResourceStream(filename);
+        
+        if (resFilestream == null)
+            return null;
+        byte[] ba = new byte[resFilestream.Length];
+        resFilestream.Read(ba, 0, ba.Length);
+        return ba;
+    }
+    
 }

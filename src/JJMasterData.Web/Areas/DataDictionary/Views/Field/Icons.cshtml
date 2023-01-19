@@ -1,5 +1,4 @@
-﻿
-<style>
+﻿<style>
     .icon {
         margin-bottom: 5px;
         margin-top: 5px;
@@ -16,8 +15,7 @@
     <script lang="javascript" type="text/javascript">
     
         function postValues(cod, description) {
-            var owner = window.parent;
-            owner.setIconValue('@ViewBag.ItemId', cod, description);
+            window.parent.setIconValue('@ViewBag.ItemId', cod, description);
             window.close();
             return false;
         }
@@ -25,14 +23,14 @@
 }
 
 <div class="row">
-    @foreach (var icon in IconHelper.Icons)
+    @foreach (var icon in Enum.GetValues<IconType>())
     {
         <div class="col-sm-2 text-center icon">
-            <div class="icon text-center" onclick="postValues('@icon.Id.ToString()', '@icon.Description');">
-                <span class="fa @icon.ClassName fa-3x"></span>
-                <br />
-                <span>@icon.Id</span><br />
-                <span>@icon.Description</span>
+            <div class="icon text-center" onclick="postValues('@icon.GetId().ToString()', '@icon.GetDescription()');">
+                <span class="@icon.GetCssClass() fa-3x"></span>
+                <br/>
+                <span>@icon.GetId()</span><br/>
+                <span>@icon.GetDescription()</span>
             </div>
         </div>
     }

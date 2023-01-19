@@ -1,6 +1,9 @@
 ﻿@using JJMasterData.Web.Services
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model EntityViewModel;
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
 @inject RazorPartialRendererService RendererService;
 
@@ -11,7 +14,7 @@
     {
         Name = "dataDictionaryPanel",
         Title = Translate.Key("Data Dictionary"),
-        HtmlContent = await RendererService.ToStringAsync("../Areas/DataDictionary/Views/Entity/_DataDictionaryPanel", Model),
+        HtmlContent = await RendererService.ToStringAsync("_DataDictionaryPanel", Model),
         ExpandedByDefault = true
     };
 }
@@ -21,7 +24,7 @@
     {
         Name = "formPanel",
         Title = Translate.Key("Form"),
-        HtmlContent = await RendererService.ToStringAsync("../Areas/DataDictionary/Views/Entity/_FormPanel", Model),
+        HtmlContent = await RendererService.ToStringAsync("_FormPanel", Model),
         ExpandedByDefault = true
     };
 }
@@ -31,7 +34,7 @@
     {
         Name = "eventsPanel",
         Title = Translate.Key("Events"),
-        HtmlContent = await RendererService.ToStringAsync("../Areas/DataDictionary/Views/Entity/_EventsPanel", Model),
+        HtmlContent = await RendererService.ToStringAsync("_EventsPanel", Model),
         ExpandedByDefault = true
     };
 }

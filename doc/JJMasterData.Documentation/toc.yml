@@ -1,8 +1,6 @@
 - name: Articles
   href: articles/
   homepage: articles/intro.md
-- name: JJMasterData
+- name: API Reference
   href: lib/
   homepage: lib/JJMasterData.Core.WebComponents.yml
-- name: REST API
-  href: restapi/

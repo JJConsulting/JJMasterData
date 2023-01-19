@@ -1,6 +1,10 @@
-﻿@using JJMasterData.Commons.Dao.Entity
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model List<JJMasterData.Commons.Dao.Entity.ElementIndex>
+@using JJMasterData.Commons.Data.Entity
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@model List<JJMasterData.Commons.Data.Entity.ElementIndex>
 
 
 @section Scripts
@@ -37,12 +41,11 @@
 
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
-
 @{
-    var filterTextBox = new JJTextBox
+    var filterTextBox = new JJTextGroup
     {
-        Name = "filter",
-        PlaceHolder = Translate.Key("Search...")
+       Name = "txtFilter",
+       PlaceHolder = Translate.Key("Search...")
     };
 
     filterTextBox.Actions.Add(new JJLinkButton

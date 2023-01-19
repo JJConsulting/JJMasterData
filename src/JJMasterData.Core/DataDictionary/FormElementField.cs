@@ -1,12 +1,14 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Dao.Entity;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
-/// Informações específicas do campo no formulário, herda de ElementField
+/// Field-specific information in the form, inherits from ElementField
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
@@ -18,11 +20,8 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
 
-    private FormElementFieldActions _action;
-
-    /// <summary>
-    /// Tipo do componente
-    /// </summary>
+    private FormElementFieldActions? _actions;
+    
     [DataMember(Name = "component")] 
     public FormComponent Component { get; set; }
 
@@ -30,7 +29,7 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "visibleExpression")]
-    public string VisibleExpression { get; set; }
+    public string? VisibleExpression { get; set; }
 
     /// <summary>
     /// Expression on runtime
@@ -39,7 +38,7 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "enableExpression")]
-    public string EnableExpression { get; set; }
+    public string? EnableExpression { get; set; }
 
     /// <summary>
     /// Ordem do campo
@@ -74,37 +73,37 @@ public class FormElementField : ElementField
     public int LineGroup { get; set; }
 
     /// <summary>
-    /// Nome da classe (CSS) a ser acrescentado na renderização do grupo do objeto
+    /// Class name (CSS) to be appended in object group rendering
     /// </summary>
     [DataMember(Name = "cssClass")]
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
 
     /// <summary>
-    /// Texto de ajuda, será exibido ao lado do label
+    /// Help text will be displayed next to the label
     /// </summary>
     [DataMember(Name = "helpDescription")]
-    public string HelpDescription { get; set; }
+    public string? HelpDescription { get; set; }
 
     /// <summary>
-    /// Configurações especificas para lista
+    /// Relationship specific settings
     /// </summary>
     [DataMember(Name = "dataItem")]
-    public FormElementDataItem DataItem { get; set; }
+    public FormElementDataItem? DataItem { get; set; }
 
     /// <summary>
-    /// Configurações do arquivo
+    /// File-specific settings
     /// </summary>
     [DataMember(Name = "dataFile")]
-    public FormElementDataFile DataFile { get; set; }
+    public FormElementDataFile? DataFile { get; set; }
 
     /// <summary>
-    /// Coleção de atributos arbitrários (somente para renderização) que não correspondem às propriedades do controle
+    /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [DataMember(Name = "attributes")]
     public Hashtable Attributes { get; set; }
 
     /// <summary>
-    /// Permite exportar o campo (Default=true)
+    /// Allows exporting the field (Default=true)
     /// </summary>
     [DataMember(Name = "export")]
     public bool Export { get; set; }
@@ -187,23 +186,22 @@ public class FormElementField : ElementField
     /// Se o valor da trigger retorna nulo o mesmo será desconsiderado.
     /// </remarks>
     [DataMember(Name = "triggerExpression")]
-    public string TriggerExpression { get; set; }
+    public string? TriggerExpression { get; set; }
 
     /// <summary>
-    /// Numero de casas decimais
-    /// Default(0)
+    /// Number of decimal places. The default value is 0.
     /// </summary>
     /// <remarks>
-    /// Propriedade válida somente para tipos numéricos
+    /// Property valid only for numeric types
     /// </remarks>
     [DataMember(Name = "numberOfDecimalPlaces")]
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>
-    /// Id do painel agrupador de campos
+    /// Field grouper panel id
     /// </summary>
     /// <remarks>
-    /// Id referente a classe FormElementPanel
+    /// Id references a FormElementPanel
     /// </remarks>
     [DataMember(Name = "panelId")]
     public int PanelId { get; set; }
@@ -214,15 +212,15 @@ public class FormElementField : ElementField
     [DataMember(Name = "actions")]
     public FormElementFieldActions Actions
     {
-        get => _action ??= new FormElementFieldActions();
-        set => _action = value;
+        get => _actions ??= new FormElementFieldActions();
+        set => _actions = value;
     }
 
     /// <summary>
     /// Observação interna do desenvolvedor
     /// </summary>
     [DataMember(Name = "internalNotes")]
-    public string InternalNotes { get; set; }
+    public string? InternalNotes { get; set; }
     
     /// <summary>
     /// Minimum value for number components
@@ -265,6 +263,7 @@ public class FormElementField : ElementField
         {
             case FieldType.Date:
             case FieldType.DateTime:
+            case FieldType.DateTime2:
                 Component = FormComponent.Date;
                 break;
             case FieldType.Int:
@@ -299,23 +298,21 @@ public class FormElementField : ElementField
     }
 
 
-    public string GetAttr(string key)
+    public string? GetAttr(string key)
     {
-        if (Attributes != null && Attributes.ContainsKey(key))
-            return Attributes[key].ToString();
+        if (Attributes.ContainsKey(key))
+            return Attributes[key]?.ToString();
         return string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        Attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-
         if (Attributes.ContainsKey(key))
             Attributes[key] = value;
         else
             Attributes.Add(key, value);
 
-        if (value == null || string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value.ToString()))
             Attributes.Remove(key);
     }
 

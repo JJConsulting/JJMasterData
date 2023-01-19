@@ -1,8 +1,11 @@
 ﻿@{
-    Layout = "_Layout.Popup";
+    Layout = "_MasterDataLayout.Popup";
 }
 
-@using (Html.BeginForm())
-{
-    @Html.Raw(ViewBag.GetHtml)
-}
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Web.TagHelpers
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ImportViewModel
+
+<form asp-action="Import" method="post">
+    <jj-upload-area name="metadata-import" configure="Model.Configure"/>
+</form>

@@ -1,5 +1,22 @@
-﻿@using JJMasterData.Commons.Dao.Entity
+﻿@using JJMasterData.Commons.Data.Entity
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
+
+
+@{
+    string currentTab = ViewBag.Tab;
+
+    string IsActive(string tab)
+    {
+        if (currentTab == tab)
+        {
+            return "active";
+        }
+        return string.Empty;
+    }
+}
 
 <script lang="javascript" type="text/javascript">
     function save() {
@@ -29,13 +46,13 @@
 <div class="container-fluid jjcontainer">
 
     <ul class="nav nav-tabs">
-        <li class="nav-item" id="navGeneral">
+        <li class="nav-item" id="navGeneral" @IsActive("navGeneral")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
         </li>
-        <li class="nav-item" id="navComponent">
+        <li class="nav-item" id="navComponent" @IsActive("navComponent")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divComponent">@Translate.Key("Component")</a>
         </li>
-        <li class="nav-item" id="navAdvanced">
+        <li class="nav-item" id="navAdvanced"  @IsActive("navAdvanced")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
         </li>
     </ul>
@@ -118,8 +135,7 @@
                         new { @class = "form-control form-select" })
                 </div>
 
-                @if (Model.Component == FormComponent.Number |
-                     Model.Component == FormComponent.Currency)
+                @if (Model.Component is FormComponent.Number or FormComponent.Currency)
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
                         <label class="@BootstrapHelper.Label " for="NumberOfDecimalPlaces" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of decimal places")">@Translate.Key("DecimalPlaces")</label>
@@ -155,7 +171,7 @@
                 {
                     @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new DataDictionaryListAction
                     {
-                        Context = ActionOrigin.Field,
+                        Context = ActionSource.Field,
                         DictionaryName = ViewBag.DictionaryName,
                         ListAction = Model.Actions.GetAll(),
                         FieldName = ViewBag.OriginalName
@@ -220,7 +236,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="row">

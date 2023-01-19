@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -20,11 +20,11 @@ public class ResourcesController : MasterDataController
 
     public ActionResult Index()
     {
-        string tablename = JJService.Settings.ResourcesTableName;
+        string tablename = JJService.Options.ResourcesTableName;
         
         if (string.IsNullOrEmpty(tablename))
         {
-            throw new Exception("Resources table not found.");
+            throw new JJMasterDataException("Resources table not found.");
         }
         
         var formView = _resourcesService.GetFormView(_options.SupportedCultures);

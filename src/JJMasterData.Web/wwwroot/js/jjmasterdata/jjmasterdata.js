@@ -2,6 +2,18 @@ $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     jjloadform("load", null);
 });
+function setupCollapsePanel(name) {
+    let nameSelector = "#" + name;
+    let collapseSelector = '#collapse_mode_' + name;
+    document.addEventListener("DOMContentLoaded", function () {
+        $(nameSelector).on('hidden.bs.collapse', function () {
+            $(collapseSelector).val("0");
+        });
+        $(nameSelector).on('show.bs.collapse', function () {
+            $(collapseSelector).val("1");
+        });
+    });
+}
 class JJDataExp {
     static setLoadMessage() {
         const options = {
@@ -47,7 +59,7 @@ class JJDataExp {
                 showWaitOnPost = true;
                 $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
                 $("#dataexp_spinner_" + objname).hide();
-                var linkFile = $("#export_link_" + objname)[0];
+                const linkFile = $("#export_link_" + objname)[0];
                 if (linkFile)
                     linkFile.click();
             }
@@ -190,36 +202,60 @@ class JJDataImp {
                 $("#lblStartDate").text(result.StartDate);
                 if (result.Insert > 0) {
                     $("#lblInsert").css("display", "");
-                    $("#lblInsertCount").text(result.Insert);
+                    if (result.PercentProcess == 100)
+                        $("#lblInsertCount").text(result.Insert);
+                    else
+                        jjutil.animateValue("lblInsertCount", JJDataImp.insertCount, result.Insert, 1000);
+                    JJDataImp.insertCount = result.Insert;
                 }
                 if (result.Update > 0) {
                     $("#lblUpdate").css("display", "");
-                    $("#lblUpdateCount").text(result.Update);
+                    if (result.PercentProcess == 100)
+                        $("#lblUpdateCount").text(result.Update);
+                    else
+                        jjutil.animateValue("lblUpdateCount", JJDataImp.updateCount, result.Update, 1000);
+                    JJDataImp.updateCount = result.Update;
                 }
                 if (result.Delete > 0) {
                     $("#lblDelete").css("display", "");
-                    $("#lblDeleteCount").text(result.Delete);
+                    if (result.PercentProcess == 100)
+                        $("#lblDeleteCount").text(result.Delete);
+                    else
+                        jjutil.animateValue("lblDeleteCount", JJDataImp.deleteCount, result.Delete, 1000);
+                    JJDataImp.deleteCount = result.Delete;
                 }
                 if (result.Ignore > 0) {
                     $("#lblIgnore").css("display", "");
-                    $("#lblIgnoreCount").text(result.Ignore);
+                    if (result.PercentProcess == 100)
+                        $("#lblIgnoreCount").text(result.Ignore);
+                    else
+                        jjutil.animateValue("lblIgnoreCount", JJDataImp.ignoreCount, result.Ignore, 1000);
+                    JJDataImp.ignoreCount = result.Ignore;
                 }
                 if (result.Error > 0) {
                     $("#lblError").css("display", "");
-                    $("#lblErrorCount").text(result.Error);
+                    if (result.PercentProcess == 100)
+                        $("#lblErrorCount").text(result.Error);
+                    else
+                        jjutil.animateValue("lblErrorCount", JJDataImp.errorCount, result.Error, 1000);
+                    JJDataImp.errorCount = result.Error;
                 }
                 if (!result.IsProcessing) {
                     $("#current_uploadaction").val("process_finished");
-                    $("form:first").submit();
+                    setTimeout(function () {
+                        $("form:first").submit();
+                    }, 1000);
                 }
             }
         });
     }
     static startProcess(objname) {
-        this.setLoadMessage();
-        setInterval(function () {
-            JJDataImp.checkProcess(objname);
-        }, (3 * 1000));
+        $(document).ready(function () {
+            JJDataImp.setLoadMessage();
+            setInterval(function () {
+                JJDataImp.checkProcess(objname);
+            }, 3000);
+        });
     }
     static stopProcess(objname, stopStr) {
         $("#divMsgProcess").html(stopStr);
@@ -234,6 +270,57 @@ class JJDataImp {
             url: url,
             dataType: "json",
             cache: false
+        });
+    }
+    static addPasteListener() {
+        $(document).ready(function () {
+            document.addEventListener("paste", (e) => {
+                var pastedText = undefined;
+                if (window.clipboardData && window.clipboardData.getData) {
+                    pastedText = window.clipboardData.getData("Text");
+                }
+                else if (e.clipboardData && e.clipboardData.getData) {
+                    pastedText = e.clipboardData.getData("text/plain");
+                }
+                e.preventDefault();
+                if (pastedText != undefined) {
+                    $("#current_uploadaction").val("posted_past_text");
+                    $("#pasteValue").val(pastedText);
+                    $("form:first").submit();
+                }
+                return false;
+            });
+        });
+    }
+}
+JJDataImp.insertCount = 0;
+JJDataImp.updateCount = 0;
+JJDataImp.deleteCount = 0;
+JJDataImp.ignoreCount = 0;
+JJDataImp.errorCount = 0;
+class JJDataPanel {
+    static doReload(panelname, objid) {
+        const frm = $("form");
+        let surl = frm.attr("action");
+        surl += surl.includes("?") ? "&" : "?";
+        surl += "t=reloadpainel";
+        surl += "&pnlname=" + panelname;
+        surl += "&objname=" + objid;
+        $.ajax({
+            async: true,
+            type: frm.attr("method"),
+            url: surl,
+            data: frm.serialize(),
+            success: function (data) {
+                $("#" + panelname).html(data);
+                jjloadform();
+                jjutil.gotoNextFocus(objid);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                console.log(textStatus);
+                console.log(jqXHR);
+            }
         });
     }
 }
@@ -355,17 +442,37 @@ var jjdictionary = (function () {
         }
     };
 })();
+class JJFeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(JJFeedbackIcon.successClass)
+            .removeClass(JJFeedbackIcon.warningClass)
+            .removeClass(JJFeedbackIcon.searchClass)
+            .removeClass(JJFeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
+    }
+}
+JJFeedbackIcon.searchClass = "jj-icon-search";
+JJFeedbackIcon.successClass = "jj-icon-success";
+JJFeedbackIcon.warningClass = "jj-icon-warning";
+JJFeedbackIcon.errorClass = "jj-icon-error";
 function jjloadform(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
-    $(prefixSelector + ".selectpicker").selectpicker("render");
+    $(prefixSelector + ".selectpicker").selectpicker({
+        iconBase: 'fa'
+    });
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
     $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: false,
+        enableTime: true,
         wrap: true,
         allowInput: true,
         altInput: false,
+        time_24hr: true,
         dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
@@ -386,10 +493,11 @@ function jjloadform(event, prefixSelector) {
     $(prefixSelector + ".jjform-hour").flatpickr({
         enableTime: true,
         wrap: true,
+        noCalendar: true,
         allowInput: true,
         altInput: false,
-        noCalendar: true,
         dateFormat: "H:i",
+        time_24hr: true,
         onOpen: function (selectedDates, dateStr, instance) {
             instance.setDate(Date.now());
         },
@@ -413,6 +521,7 @@ function jjloadform(event, prefixSelector) {
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();
+    JJTabNav.setup();
     JJSlider.observeSliders();
     JJSlider.observeInputs();
     messageWait.hide();
@@ -429,7 +538,14 @@ function jjloadform(event, prefixSelector) {
         ajaxStop: function () { messageWait.hide(); }
     });
     $("form").on("submit", function () {
-        if (showWaitOnPost) {
+        let isValid;
+        try {
+            isValid = $("form").valid();
+        }
+        catch (_a) {
+            isValid = true;
+        }
+        if (isValid && showWaitOnPost) {
             setTimeout(function () { messageWait.show(); }, 1);
         }
     });
@@ -450,6 +566,8 @@ class JJLookup {
                 url += "?";
             url += "jjlookup_";
             url += panelName + "=" + lookupId;
+            const jjLookupSelector = "#" + lookupId + "";
+            const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
                 let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
                 $.ajax({
@@ -479,12 +597,8 @@ class JJLookup {
             });
             lookupInput.on("blur", function () {
                 showWaitOnPost = false;
-                $("#id_" + lookupId).val(lookupInput.val());
-                $("#st_" + lookupId)
-                    .removeClass("fa-check")
-                    .removeClass("fa-exclamation-triangle")
-                    .removeClass("fa-ellipsis-h")
-                    .removeClass("fa-times");
+                $(jjHiddenLookupSelector).val(lookupInput.val());
+                JJFeedbackIcon.removeAllIcons(jjLookupSelector);
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
                     return;
@@ -501,25 +615,18 @@ class JJLookup {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-check")
-                                .addClass("fa fa-exclamation-triangle");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
                             lookupInput.removeAttr("readonly");
                         }
                         else {
-                            $("#st_" + lookupId)
-                                .removeClass("fa fa-exclamation-triangle")
-                                .removeClass("fa fa-ellipsis-h")
-                                .addClass("fa fa-check");
+                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInput.attr("readonly", "readonly").val(data.description);
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        $("#st_" + lookupId)
-                            .removeClass("fa fa-check")
-                            .addClass("fa fa-times");
+                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass);
                         console.log(errorThrown);
                         console.log(textStatus);
                         console.log(jqXHR);
@@ -532,12 +639,12 @@ class JJLookup {
 class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
-            var objid = $(this).attr("jjid");
-            var pnlname = $(this).attr("pnlname");
-            var triggerlength = $(this).attr("triggerlength");
-            var numberofitems = $(this).attr("numberofitems");
-            var scrollbar = Boolean($(this).attr("scrollbar"));
-            var showimagelegend = Boolean($(this).attr("showimagelegend"));
+            const objid = $(this).attr("jjid");
+            const pnlname = $(this).attr("pnlname");
+            let triggerlength = $(this).attr("triggerlength");
+            let numberofitems = $(this).attr("numberofitems");
+            let scrollbar = Boolean($(this).attr("scrollbar"));
+            let showimagelegend = Boolean($(this).attr("showimagelegend"));
             if (triggerlength == null)
                 triggerlength = "1";
             if (numberofitems == null)
@@ -546,8 +653,8 @@ class JJSearchBox {
                 scrollbar = false;
             if (showimagelegend == null)
                 showimagelegend = false;
-            var frm = $("form");
-            var urltypehead = frm.attr("action");
+            const frm = $("form");
+            let urltypehead = frm.attr("action");
             if (urltypehead.includes("?"))
                 urltypehead += "&";
             else
@@ -555,12 +662,15 @@ class JJSearchBox {
             urltypehead += "t=jjsearchbox";
             urltypehead += "&objname=" + objid;
             urltypehead += "&pnlname=" + pnlname;
+            const jjSearchBoxSelector = "#" + objid + "_text";
+            const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    $("#st_" + objid)
-                        .removeClass("fa-check")
-                        .removeClass("fa-exclamation-triangle");
-                    $("#" + objid).val("");
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass);
+                    $(jjSearchBoxHiddenSelector).val("");
+                }
+                else if ($(jjSearchBoxHiddenSelector).val() == "") {
+                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass);
                 }
             });
             $(this).typeahead({
@@ -570,21 +680,15 @@ class JJSearchBox {
                     loadingClass: "loading-circle",
                     triggerLength: triggerlength,
                     preDispatch: function () {
-                        $("#" + objid).val("");
-                        $("#st_" + objid)
-                            .removeClass("fa-check")
-                            .removeClass("fa-exclamation-triangle ");
-                        var data = frm.serializeArray();
-                        return data;
+                        $(jjSearchBoxHiddenSelector).val("");
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "");
+                        return frm.serializeArray();
                     },
                 },
                 onSelect: function (item) {
-                    $("#" + objid).val(item.value);
+                    $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        $("#st_" + objid)
-                            .removeClass("fa-search")
-                            .removeClass("fa-exclamation-triangle ")
-                            .addClass("fa fa-check");
+                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass);
                     }
                 },
                 displayField: "name",
@@ -594,10 +698,10 @@ class JJSearchBox {
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
-                    var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    var textSel;
+                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+                    let textSel;
                     if (showimagelegend) {
-                        var parts = item.split("|");
+                        const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";
                         });
@@ -654,6 +758,14 @@ class JJSortable {
                     background: "#fbfbfb"
                 });
             }
+        });
+    }
+}
+class JJTabNav {
+    static setup() {
+        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
+            var link = $(e.target);
+            $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
         });
     }
 }
@@ -726,7 +838,7 @@ class JJUpload {
                 dragdropWidth: ($(this).width() - 10),
                 statusBarWidth: ($(this).width() - 10),
                 autoSubmit: true,
-                uploadButtonClass: "btn btn-default",
+                uploadButtonClass: "btn btn-primary",
                 allowedTypes: allowedTypes,
                 acceptFiles: acceptFiles,
                 uploadStr: obj.attr("uploadStr"),
@@ -1028,7 +1140,7 @@ var jjview = (function () {
             $("#current_formaction_" + objid).val("");
             jjview.doRefresh(objid, true);
         },
-        doPaging: function (objid, enableAjax, v) {
+        doPagination: function (objid, enableAjax, v) {
             $("#current_tablepage_" + objid).val(v);
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
@@ -1059,7 +1171,7 @@ var jjview = (function () {
         },
         formAction: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
-                var result = confirm(confirmMessage);
+                const result = confirm(confirmMessage);
                 if (!result) {
                     return false;
                 }
@@ -1183,11 +1295,11 @@ var jjview = (function () {
         },
         openUploadForm: function (objid, title, values) {
             const pnlname = $("#v_" + objid).attr("pnlname");
-            let surl = $("form").attr("action");
-            surl += surl.includes("?") ? "&" : "?";
-            surl += "jjuploadform_" + pnlname + "=" + objid;
-            surl += "&uploadvalues=" + values;
-            popup.show(title, surl);
+            let url = $("form").attr("action");
+            url += url.includes("?") ? "&" : "?";
+            url += "jjuploadform_" + pnlname + "=" + objid;
+            url += "&uploadvalues=" + values;
+            popup.show(title, url, 1);
         },
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();
@@ -1453,8 +1565,9 @@ class Popup {
         });
     }
     loadHtml(url, size) {
-        if ($("#" + this.modalId).length) {
-            $("#" + this.modalId).remove();
+        const modalIdSelector = `#${this.modalId}`;
+        if ($(modalIdSelector).length) {
+            $(modalIdSelector).remove();
         }
         let width;
         let height;
@@ -1541,7 +1654,7 @@ class Popup {
         html += "</div>\r\n";
         $(html).appendTo($("body"));
     }
-    show(title, url, size = 0) {
+    show(title, url, size = 1) {
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
@@ -1628,6 +1741,32 @@ var jjutil = (function () {
                     return false;
                 }
             });
+        },
+        animateValue: function (id, start, end, duration) {
+            if (start === end)
+                return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start ? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+            var incrementValue = increment;
+            if (stepTime == 0) {
+                incrementValue = increment * Math.abs(Math.ceil(range / duration));
+                stepTime = 1;
+            }
+            var obj = document.getElementById(id);
+            var timer = setInterval(function () {
+                current = parseInt(obj.innerHTML);
+                current += incrementValue;
+                if ((current >= end && increment > 0) ||
+                    (current <= end && increment < 0)) {
+                    obj.innerHTML = end.toString();
+                    clearInterval(timer);
+                }
+                else {
+                    obj.innerHTML = current.toString();
+                }
+            }, stepTime);
         }
     };
 })();

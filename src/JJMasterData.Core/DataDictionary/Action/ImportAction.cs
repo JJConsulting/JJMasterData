@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Action;
 
@@ -23,7 +23,7 @@ public class ImportAction : BasicAction
         ToolTip = "Upload";
         Icon = IconType.Upload;
         ShowAsButton = true;
-        CssClass = BootstrapHelper.PullRight;;
+        CssClass = BootstrapHelper.PullRight;
         Order = 4;
         ProcessOptions = new ProcessOptions();
         SetVisible(false);

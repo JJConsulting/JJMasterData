@@ -1,21 +1,24 @@
 ﻿@{
-    Layout = "_Layout.Popup";
+    Layout = "_MasterDataLayout.Popup";
 }
 
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
 @model  JJMasterData.Core.DataDictionary.Action.InsertAction
 
 @using (Html.BeginForm("InsertAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li  id="navGeneral" class="nav-item active"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li  id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
         <li class="nav-item" id="navInsertAction"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInsertAction">@Translate.Key("Insert Action")</a></li>
         <li  class="nav-item" id="navAdvanced"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
     </ul>
 
 
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade in active @BootstrapHelper.Show">
+        <div id="divGeneral" class="tab-pane fade active @BootstrapHelper.Show">
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>
 

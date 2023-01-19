@@ -1,9 +1,7 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -14,7 +12,7 @@ public class RelationsController : DataDictionaryController
 {
     private readonly RelationsService _relationsService;
 
-    public RelationsController(RelationsService relationsService) 
+    public RelationsController(RelationsService relationsService)
     {
         _relationsService = relationsService;
     }
@@ -62,7 +60,8 @@ public class RelationsController : DataDictionaryController
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
         PopulateFkColumn(elementRelation.ChildElement);
-        ViewBag.Index = index;
+        if (index != null) 
+            ViewBag.Index = index;
 
         return View("Detail", elementRelation);
     }
@@ -116,56 +115,30 @@ public class RelationsController : DataDictionaryController
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
         elementRelation.Title = PopulateFkColumn(elementRelation.ChildElement);
-        ViewBag.Index = index;
+        if (index != null) 
+            ViewBag.Index = index;
         return View(elementRelation);
     }
 
     [HttpPost]
     public ActionResult Delete(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        ElementRelation elementRelation = formElement.Relations[int.Parse(index)];
-        formElement.Relations.Remove(elementRelation);
-        _relationsService.DicDao.SetFormElement(formElement);
-
+        _relationsService.Delete(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveDown = int.Parse(index);
-        if (indexToMoveDown >= 0 && indexToMoveDown < formElement.Relations.Count - 1)
-        {
-            ElementRelation elementRelation = formElement.Relations[indexToMoveDown + 1];
-            formElement.Relations[indexToMoveDown + 1] = formElement.Relations[indexToMoveDown];
-            formElement.Relations[indexToMoveDown] = elementRelation;
-            _relationsService.DicDao.SetFormElement(formElement);
-        }
-
+        _relationsService.MoveDown(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
-
     }
 
     [HttpPost]
     public ActionResult MoveUp(string dictionaryName, string index)
     {
-        FormElement formElement = _relationsService.DicDao.GetFormElement(dictionaryName);
-
-        int indexToMoveUp = int.Parse(index);
-        if (indexToMoveUp > 0)
-        {
-            ElementRelation elementRelation = formElement.Relations[indexToMoveUp - 1];
-            formElement.Relations[indexToMoveUp - 1] = formElement.Relations[indexToMoveUp];
-            formElement.Relations[indexToMoveUp] = elementRelation;
-            _relationsService.DicDao.SetFormElement(formElement);
-        }
-
+        _relationsService.MoveUp(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
-
     }
 
     private void PopulateViewBag(string dictionaryName)
@@ -198,7 +171,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            DicParser dicParser = _relationsService.DicDao.GetDictionary(childElement);
+            Metadata dicParser = _relationsService.DataDictionaryRepository.GetMetadata(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {
@@ -215,7 +188,7 @@ public class RelationsController : DataDictionaryController
     public void PopulatePkTable()
     {
         var listItem = new List<SelectListItem>();
-        string[] list = _relationsService.DicDao.GetListDictionaryName();
+        IEnumerable<string> list = _relationsService.DataDictionaryRepository.GetNameList();
 
         foreach (string name in list)
         {

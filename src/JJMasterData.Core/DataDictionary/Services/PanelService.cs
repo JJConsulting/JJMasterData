@@ -1,19 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using System.Collections.Generic;
+using System.Linq;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService : BaseService
 {
-    public PanelService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
-    public bool SavePanel(FormElement formElement, FormElementPanel panel, List<FormElementField> listSelected)
+    public void SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = dictionary.GetFormElement();
+
+        if(selectedFields?.Length == 0){}
+            AddError(nameof(selectedFields), "No fields selected for this panel.");
+        
         if (!ValidatePanel(panel))
-            return false;
+            return;
 
         if (panel.PanelId == 0)
         {
@@ -36,23 +46,21 @@ public class PanelService : BaseService
             }
         }
 
-        foreach (FormElementField f in formElement.Fields)
+        foreach (var field in formElement.Fields)
         {
-            var selField = listSelected.Find(x => x.Name.Equals(f.Name));
-            if (selField != null)
+            if (selectedFields!.Contains(field.Name))
             {
-                f.PanelId = panel.PanelId;
+                field.PanelId = panel.PanelId;
             }
             else
             {
-                if (f.PanelId == panel.PanelId)
-                    f.PanelId = 0;
+                if (field.PanelId == panel.PanelId)
+                    field.PanelId = 0;
             }
         }
 
-        DicDao.SetFormElement(formElement);
-
-        return IsValid;
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
     private bool ValidatePanel(FormElementPanel panel)
@@ -61,7 +69,6 @@ public class PanelService : BaseService
             AddError(nameof(panel.VisibleExpression), "Required [VisibleExpression] panel");
         else if (!ValidateExpression(panel.VisibleExpression, "val:", "exp:"))
             AddError(nameof(panel.VisibleExpression), "Invalid [VisibleExpression] panel");
-
         if (string.IsNullOrWhiteSpace(panel.EnableExpression))
             AddError(nameof(panel.EnableExpression), "Required [VisibleExpression] panel");
         else if (!ValidateExpression(panel.EnableExpression, "val:", "exp:"))
@@ -70,28 +77,31 @@ public class PanelService : BaseService
         return IsValid;
     }
 
-    public bool DeleteField(FormElement formElement, int panelId)
+    public bool DeleteField(string dictionaryName, int panelId)
     {
-        for (int i = 0; i < formElement.Panels.Count; i++)
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+
+        for (int i = 0; i < dictionary.Form.Panels.Count; i++)
         {
-            if (formElement.Panels[i].PanelId == panelId)
-                formElement.Panels.Remove(formElement.Panels[i]);
+            if (dictionary.Form.Panels[i].PanelId == panelId)
+                dictionary.Form.Panels.Remove(dictionary.Form.Panels[i]);
         }
 
-        foreach (FormElementField f in formElement.Fields)
+        foreach (var f in dictionary.Form.FormFields)
         {
             if (f.PanelId == panelId)
                 f.PanelId = 0;
         }
 
-        DicDao.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
 
     public bool SortPanels(string elementName, string[] orderFields)
     {
-        var formElement = DicDao.GetFormElement(elementName);
+        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = dictionary.GetFormElement();
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
         {
@@ -104,9 +114,21 @@ public class PanelService : BaseService
             formElement.Panels[i] = newList[i];
         }
 
-        DicDao.SetFormElement(formElement);
-        return true;
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
+        return true;
+    }
+
+    public FormElementPanel CopyPanel(string dictionaryName, FormElementPanel panel)
+    {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var newPanel = panel.DeepCopy();
+        newPanel.PanelId = 1 + dictionary.Form.Panels.Max(x => x.PanelId);
+        dictionary.Form.Panels.Add(newPanel);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
+
+        return newPanel;
     }
 
 }

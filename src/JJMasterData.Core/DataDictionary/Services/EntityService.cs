@@ -1,12 +1,15 @@
 ﻿using System;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService : BaseService
 {
-    public EntityService(IValidationDictionary validationDictionary) :base(validationDictionary)
+    public EntityService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
@@ -14,7 +17,7 @@ public class EntityService : BaseService
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
-            if (DicDao.HasDictionary(formElement.Name))
+            if (DataDictionaryRepository.Exists(formElement.Name))
                 AddError("Name", Translate.Key("There is already a dictionary with the name {0}",formElement.Name));
         }
 
@@ -43,7 +46,7 @@ public class EntityService : BaseService
         
         try
         {
-            var dicParser = DicDao.GetDictionary(entityName);
+            var dicParser = DataDictionaryRepository.GetMetadata(entityName);
 
             dicParser.Table.Name = formElement.Name;
             dicParser.Table.TableName = formElement.TableName;
@@ -55,12 +58,12 @@ public class EntityService : BaseService
 
             if (!entityName.Equals(formElement.Name))
             {
-                DicDao.DelDictionary(entityName);
-                DicDao.SetDictionary(dicParser);
+                DataDictionaryRepository.Delete(entityName);
+                DataDictionaryRepository.InsertOrReplace(dicParser);
             }
             else
             {
-                DicDao.SetDictionary(dicParser);
+                DataDictionaryRepository.InsertOrReplace(dicParser);
             }
 
             return formElement;

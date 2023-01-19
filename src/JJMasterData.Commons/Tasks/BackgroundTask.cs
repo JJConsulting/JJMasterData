@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Commons.Tasks;
@@ -32,7 +33,7 @@ internal sealed class BackgroundTask : IBackgroundTask
     public void Run(string key, IBackgroundTaskWorker worker)
     {
         if (IsRunning(key))
-            throw new Exception(Translate.Key("Background task is already running."));
+            throw new JJMasterDataException(Translate.Key("Background task is already running."));
 
         var cancellationSource = new CancellationTokenSource();
 
@@ -43,7 +44,7 @@ internal sealed class BackgroundTask : IBackgroundTask
         };
 
         taskWrapper.Task = new Task(() => {
-            worker.OnProgressChanged += (s, e) => { taskWrapper.ProgressResult = e; };
+            worker.OnProgressChanged += (_, e) => { taskWrapper.ProgressResult = e; };
             worker.RunWorkerAsync(cancellationSource.Token).Wait();
         });
 

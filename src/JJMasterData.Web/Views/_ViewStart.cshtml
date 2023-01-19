@@ -1,3 +1,6 @@
+@using JJMasterData.Web.Options
+@using Microsoft.Extensions.Options
+@inject IOptions<JJMasterDataWebOptions> Options
 @{
-    Layout = "_Layout";
+    Layout = string.IsNullOrEmpty(Options.Value.LayoutPath) ? "_MasterDataLayout" : Options.Value.LayoutPath;
 }

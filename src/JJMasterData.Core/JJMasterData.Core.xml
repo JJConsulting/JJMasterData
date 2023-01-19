@@ -429,7 +429,7 @@
             Formato o campo conforme parametrização do dicionário
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.DictionaryDAL.DicSyncInfo.ListElement">
+        <member name="P:JJMasterData.Core.DataDictionary.DictionaryDAL.DicSyncInfo.Items">
             <summary>
             Lista de dicionários com retorno do count
             </summary>
@@ -1035,7 +1035,7 @@
             se não existir o valor da PK uma exceção será lançada
             </summary>
             <remarks>
-            Se não existir o valor da PK uma DataDictionaryException será lançada
+            Se não existir o valor da PK uma JJMasterDataException será lançada
             </remarks>
         </member>
         <member name="M:JJMasterData.Core.DataDictionary.FormManager.ParseOriginalName(System.Collections.Hashtable)">
@@ -1142,7 +1142,7 @@
             porém visualiza apenas o log e a execução do seu processo.
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIForm.FormCols">
+        <member name="P:JJMasterData.Core.DataDictionary.FormUI.FormCols">
             <summary>
             Número de colunas onde os campos serão renderizados
             Default 1
@@ -1151,12 +1151,12 @@
             Somente multiplos de 12
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIForm.IsVerticalLayout">
+        <member name="P:JJMasterData.Core.DataDictionary.FormUI.IsVerticalLayout">
             <summary>
             Tipo de layot para renderizar os campos
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIForm.ShowViewModeAsStatic">
+        <member name="P:JJMasterData.Core.DataDictionary.FormUI.ShowViewModeAsStatic">
             <summary>
             Quando o painel estiver no modo de visualização
             remover as bordas dos campos exibindo como texto.
@@ -1165,18 +1165,18 @@
             Valor padrão falso
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIForm.EnterKey">
+        <member name="P:JJMasterData.Core.DataDictionary.FormUI.EnterKey">
             <summary>
             Comportamento da Tecla enter no formulário 
             Default = DISABLED
             </summary>
         </member>
-        <member name="T:JJMasterData.Core.DataDictionary.UIGrid">
+        <member name="T:JJMasterData.Core.DataDictionary.GridUI">
             <summary>
             Opções configuradas no dicionário de dados
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.TotalPerPage">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.TotalPerPage">
             <summary>
             Total de Registros por página 
             (Default = 5)
@@ -1185,46 +1185,46 @@
             Se o TotalPerPage for zero a paginação não será exibida
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.TotalPaggingButton">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.TotalPaggingButton">
             <summary>
             Total de botões na paginação 
             (Default = 5)
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowBorder">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowBorder">
             <summary>
             Exibi borda na grid 
             (Default = false)
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowRowStriped">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowRowStriped">
             <summary>
             Exibir colunas zebradas 
             (Default = true)
             </summary>*
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowRowHover">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowRowHover">
             <summary>
             Alterar a cor da linha ao passar o mouse 
             (Default = true)
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.TotalReg">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.TotalRecords">
             <summary>
             Quantidade total de registros existentes no banco
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowTitle">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowTitle">
             <summary>
             Exibir título no cabeçalho da página
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowToolBar">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowToolBar">
             <summary>
             Exibir toolbar (Default = true) 
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.EnableSorting">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.EnableSorting">
             <summary>
             Habilita Ordenação das colunas (Default = true)
             </summary>
@@ -1233,13 +1233,13 @@
             Mesmo quando configurado como falso, a grid respeita a propriedade CurrentOrder
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.EnableMultSelect">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.EnableMultSelect">
             <summary>
             Permite selecionar multiplas linhas na Grid 
             habilitando um checkbox na primeira coluna. (Defaut = false)
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.MaintainValuesOnLoad">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.MaintainValuesOnLoad">
             <summary>
             Mantem os filtros, ordem e paginação da grid na sessão, 
             e recupera na primeira carga da pagina. (Default = false)
@@ -1249,7 +1249,7 @@
             A propriedade [Name] é utilizada para compor o nome da variável de sessão.
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowHeaderWhenEmpty">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowHeaderWhenEmpty">
             <summary>
             Obtém ou define um valor que indica se o cabeçalho da gridview ficará visível quando não existir dados.
             </summary>
@@ -1259,7 +1259,7 @@
             Para alterar o texto da mensagem veja o método EmptyDataText
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.EmptyDataText">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.EmptyDataText">
             <summary>
             Obtém ou define o texto a ser exibido na linha de dados vazia quando um controle JJGridView não contém registros.
             </summary>
@@ -1268,7 +1268,7 @@
             <para/>
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.ShowPagging">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.ShowPagging">
             <summary>
             Exibe os controles de paginação (Default = true) 
             </summary>
@@ -1282,10 +1282,10 @@
             <para/>
             Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
             <para/>
-            Se a propriedade TotalReg for igual zero a paginação não será exibida.
+            Se a propriedade TotalRecords for igual zero a paginação não será exibida.
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.DataDictionary.UIGrid.HeaderFixed">
+        <member name="P:JJMasterData.Core.DataDictionary.GridUI.HeaderFixed">
             <summary>
             Fixar o cabeçalho da grid ao realizar Scroll (Default = false)
             </summary>
@@ -1336,7 +1336,7 @@
             Campos do formulário, composto por um hash com o nome e valor do campo
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.Events.ActionEventArgs.ResultHtml">
+        <member name="P:JJMasterData.Core.WebComponents.Events.ActionEventArgs.HtmlResult">
             <summary>
             (opcional) Retorno esperado com o conteudo HTML renderizado
             </summary>
@@ -1431,7 +1431,7 @@
             Objeto renderizado
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.Events.GridCellEventArgs.ResultHtml">
+        <member name="P:JJMasterData.Core.WebComponents.Events.GridCellEventArgs.HtmlResult">
             <summary>
             Retorno esperado com o conteudo HTML renderizado
             </summary>
@@ -1548,7 +1548,7 @@
             Aplica filtros na grid mantendo os valores padrões
             </summary>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.GridFilter.GetHtmlFilter">
+        <member name="M:JJMasterData.Core.WebComponents.GridFilter.GetFilterHtmlBuilder">
             <summary>
             Renderiza o conteúdo do filtro
             </summary>
@@ -1990,7 +1990,7 @@
             Estado atual da pagina
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJDataPanel.Erros">
+        <member name="P:JJMasterData.Core.WebComponents.JJDataPanel.Errors">
             <summary>
             Campos com erro.
             Key=Nome do campo, Value=Descricão do erro
@@ -2069,7 +2069,7 @@
             Valor = Mensagem de erro
             </returns>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJDataPanel.SetOptions(JJMasterData.Core.DataDictionary.UIForm)">
+        <member name="M:JJMasterData.Core.WebComponents.JJDataPanel.SetOptions(JJMasterData.Core.DataDictionary.FormUI)">
             <summary>
             Atribui as configurações do usuário cadastrado no dicionário de dados
             </summary>
@@ -2509,7 +2509,7 @@
             Indica se o usuário preecheu manualmente o DataSource
             </summary>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TotalReg">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TotalRecords">
             <summary>
             Quantidade total de registros existentes no banco
             </summary>
@@ -2639,10 +2639,10 @@
             <para/>
             Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
             <para/>
-            Se a propriedade TotalReg for igual zero a paginação não será exibida.
+            Se a propriedade TotalRecords for igual zero a paginação não será exibida.
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.Erros">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.Errors">
             <summary>
             Campos com erro.
             Key=Nome do campo, Value=Descricão do erro
@@ -2668,7 +2668,7 @@
             Key = Nome do campo, Value=Valor do campo
             </remarks>
         </member>
-        <member name="P:JJMasterData.Core.WebComponents.JJGridView.SizeTitle">
+        <member name="P:JJMasterData.Core.WebComponents.JJGridView.TitleSize">
             <summary>
             Tamanho da fonte do titulo (default(H1)
             </summary>
@@ -2681,7 +2681,7 @@
             Retorna Html renderizado
             </returns>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetHtmlFilter">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetFilterHtmlBuilder">
             <summary>
             Renderiza o conteúdo do filtro
             </summary>
@@ -2788,7 +2788,7 @@
             Executa uma ação SQL
             </summary>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetDataTable">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetMetadataInfoList">
             <summary>
             Recupera os registros do banco de dados com base nos filtros atuais.  
             </summary>
@@ -2802,7 +2802,7 @@
             utilizando a proc informada no FormElement;
             </returns>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetDataTable(System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.GetMetadataInfoList(System.Collections.Hashtable,System.String,System.Int32,System.Int32,System.Int32@)">
             <summary>
             Recupera os registros do banco de dados com base no filtro.  
             </summary>
@@ -2971,7 +2971,7 @@
             Verifica se ação é valida, se não for retorna uma exception
             </summary>
         </member>
-        <member name="M:JJMasterData.Core.WebComponents.JJGridView.SetGridOptions(JJMasterData.Core.DataDictionary.UIGrid)">
+        <member name="M:JJMasterData.Core.WebComponents.JJGridView.SetGridOptions(JJMasterData.Core.DataDictionary.GridUI)">
             <summary>
             Atribui as configurações do usuário cadastrado no dicionário de dados
             </summary>
@@ -3088,7 +3088,7 @@
                         var link = new JJMasterData.WebForm.JJLinkButton();
                         link.Text = "JJ Consulting";
                         link.IconClass = "glyphicon glyphicon-home";
-                        link.UrlAction = "http://www.jjconsulting.com.br";
+                        link.UrlAction = "https://jjconsulting.tech";
                     %>
             
                     <%--Rendereiza o componente--%>

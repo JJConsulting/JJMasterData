@@ -1,29 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    public FieldService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    public FieldService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
     {
-        var formElement = DicDao.GetFormElement(elementName);
+        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = dictionary.GetFormElement();
 
         RemoveUnusedProperties(ref field);
 
         if (field.DataFile != null)
         {
             field.DataFile.MaxFileSize *= 1000000;
-            field.DataFile.FolderPath = field.DataFile.FolderPath.Trim();
+            field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
-            
 
         if (!ValidateFields(formElement, field, originalName))
         {
@@ -44,7 +47,8 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
@@ -60,7 +64,7 @@ public class FieldService : BaseService
                 case DataItemType.Dictionary:
                     field.DataFile = null;
                     field.DataItem.Command = null;
-                    field.DataItem.Itens.Clear();
+                    field.DataItem.Items.Clear();
                     break;
                 case DataItemType.Manual:
                     field.DataFile = null;
@@ -70,7 +74,7 @@ public class FieldService : BaseService
                 case DataItemType.SqlCommand:
                     field.DataFile = null;
                     field.DataItem.ElementMap = null;
-                    field.DataItem.Itens.Clear();
+                    field.DataItem.Items.Clear();
                     break;
             }
         }
@@ -100,6 +104,70 @@ public class FieldService : BaseService
                 AddError(nameof(field.Name), Translate.Key("Name of field already exists"));
         }
 
+        ValidateExpressions(field);
+
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
+        {
+            if (field.Size <= 0)
+                AddError(nameof(field.Size), Translate.Key("Invalid [Size] field"));
+        }
+        else
+        {
+            if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
+            {
+                AddError(nameof(field.Filter.Type),
+                    Translate.Key("MULTVALUES filters are only allowed for text type fields"));
+            }
+        }
+
+        if (field.AutoNum && field.DataType != FieldType.Int)
+            AddError(nameof(field.AutoNum),
+                Translate.Key(
+                    "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
+
+        if (field.DataType is not FieldType.Varchar or FieldType.NVarchar or FieldType.NText)
+        {
+            if (field.Filter.Type is FilterMode.Contain)
+            {
+                AddError(nameof(field.Filter.Type),
+                    Translate.Key("Only fields of type VarChar or Text can be of type Contains."));
+            }
+        }
+
+        if (field.Component is FormComponent.Number or FormComponent.Currency)
+        {
+            if (field.NumberOfDecimalPlaces > 0)
+            {
+                if (field.DataType != FieldType.Float)
+                {
+                    AddError(nameof(field.DataType),
+                        Translate.Key("The field [NumberOfDecimalPlaces] cannot be defined with the type ") +
+                        field.DataType);
+                }
+
+                if (field.IsPk)
+                    AddError(nameof(field.DataType),
+                        Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
+            }
+            else
+            {
+                return IsValid;
+            }
+        }
+        else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search)
+        {
+            ValidateDataItem(field.DataItem);
+        }
+        else if (field.Component == FormComponent.File)
+        {
+            ValidateDataFile(field.DataBehavior, field.DataFile);
+        }
+
+        return IsValid;
+    }
+
+    private void ValidateExpressions(FormElementField field)
+    {
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
             AddError(nameof(field.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
         else if (!ValidateExpression(field.VisibleExpression, "val:", "exp:"))
@@ -121,154 +189,94 @@ public class FieldService : BaseService
             if (!ValidateExpression(field.TriggerExpression, "val:", "exp:", "sql:", "protheus:"))
                 AddError(nameof(field.TriggerExpression), Translate.Key("Invalid [TriggerExpression] field"));
         }
-
-        if (field.DataType == FieldType.Varchar ||
-            field.DataType == FieldType.NVarchar)
-        {
-            if (field.Size <= 0)
-                AddError(nameof(field.Size), Translate.Key("Invalid [Size] field"));
-        }
-        else
-        {
-            if (field.Filter.Type == FilterMode.MultValuesContain ||
-                field.Filter.Type == FilterMode.MultValuesEqual)
-            {
-                AddError(nameof(field.Filter.Type),
-                    Translate.Key("MULTVALUES filters are only allowed for text type fields"));
-            }
-        }
-
-        if (field.AutoNum && field.DataType != FieldType.Int)
-            AddError(nameof(field.AutoNum), Translate.Key("Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
-        
-
-        if (field.Component == FormComponent.Number ||
-            field.Component == FormComponent.Currency)
-        {
-            if (field.NumberOfDecimalPlaces > 0)
-            {
-                if (field.DataType != FieldType.Float)
-                {
-                    AddError(nameof(field.DataType),
-                        Translate.Key("The field[NumberOfDecimalPlaces] cannot be defined with the type ") +
-                        field.DataType);
-                }
-
-                if (field.IsPk)
-                    AddError(nameof(field.DataType),
-                        Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
-            }
-        }
-        else if (field.Component == FormComponent.Lookup |
-                 field.Component == FormComponent.ComboBox |
-                 field.Component == FormComponent.Search)
-        {
-            ValidateDataItem(field.DataItem);
-        }
-        else if (field.Component == FormComponent.File)
-        {
-            ValidateDataFile(field.DataBehavior, field.DataFile);
-        }
-
-        return IsValid;
     }
 
-    private bool ValidateDataItem(FormElementDataItem data)
+    private void ValidateDataItem(FormElementDataItem data)
     {
         if (data == null)
         {
             AddError("DataItem", Translate.Key("Undefined font settings"));
-            return false;
         }
 
-        switch (data.DataItemType)
+        switch (data!.DataItemType)
         {
             case DataItemType.SqlCommand:
             {
                 if (string.IsNullOrEmpty(data.Command.Sql))
                     AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
 
-                if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
+                if (data.ReplaceTextOnGrid && !data.Command!.Sql!.Contains("{search_id}"))
                 {
-                    AddError("Command.Sql","{search_id} is required at queries using ReplaceTextOnGrid. " +
-                                           "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
+                    AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
+                                            "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
                 }
+
                 break;
             }
             case DataItemType.Manual:
-                ValidateManualItens(data.Itens);
+                ValidateManualItens(data.Items);
                 break;
             case DataItemType.Dictionary:
                 ValidateDataElementMap(data.ElementMap);
                 break;
         }
-
-        return IsValid;
     }
 
-    private bool ValidateManualItens(List<DataItemValue> itens)
+    private void ValidateManualItens(IList<DataItemValue> itens)
     {
         if (itens == null || itens.Count == 0)
         {
             AddError("DataItem", Translate.Key("Item list not defined"));
-            return false;
         }
 
-        for (int i = 0; i < itens.Count; i++)
-        {
-            var it = itens[i];
-            if (string.IsNullOrEmpty(it.Id))
-                AddError("DataItem", Translate.Key("Item id {0} required", i));
+        if (itens != null)
+            for (int i = 0; i < itens.Count; i++)
+            {
+                var it = itens[i];
+                if (string.IsNullOrEmpty(it.Id))
+                    AddError("DataItem", Translate.Key("Item id {0} required", i));
 
-            if (string.IsNullOrEmpty(it.Description))
-                AddError("DataItem", Translate.Key("Item description {0} required", i));
-        }
-
-        return IsValid;
+                if (string.IsNullOrEmpty(it.Description))
+                    AddError("DataItem", Translate.Key("Item description {0} required", i));
+            }
     }
 
-    private bool ValidateDataElementMap(DataElementMap data)
+    private void ValidateDataElementMap(DataElementMap data)
     {
         if (data == null)
         {
             AddError("ElementMap", Translate.Key("Undefined mapping settings"));
-            return false;
         }
 
-        if (string.IsNullOrEmpty(data.ElementName))
+        if (string.IsNullOrEmpty(data!.ElementName))
             AddError(nameof(data.ElementName), Translate.Key("Required field [ElementName]"));
-
-        return IsValid;
     }
 
-    private bool ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
+    private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
     {
         if (dataFile == null)
         {
             AddError("DataFile", Translate.Key("Undefined file settings"));
-            return false;
         }
 
         if (dataBehavior == FieldBehavior.Virtual)
             AddError("DataFile", Translate.Key("Fields of type FILE cannot be virtual"));
 
-        if (string.IsNullOrEmpty(dataFile.FolderPath))
+        if (string.IsNullOrEmpty(dataFile?.FolderPath))
             AddError(nameof(dataFile.FolderPath), Translate.Key($"Field [{nameof(dataFile.FolderPath)}] required"));
 
-        if (string.IsNullOrEmpty(dataFile.AllowedTypes))
+        if (string.IsNullOrEmpty(dataFile?.AllowedTypes))
             AddError(nameof(dataFile.AllowedTypes), Translate.Key("Required [AllowedTypes] field"));
 
-        if (dataFile.MultipleFile & dataFile.ExportAsLink)
+        if (dataFile!.MultipleFile & dataFile.ExportAsLink)
             AddError(nameof(dataFile.ExportAsLink),
                 Translate.Key("The [ExportAsLink] field cannot be enabled with [MultipleFile]"));
-
-        return IsValid;
     }
 
     public bool SortFields(string elementName, string[] orderFields)
     {
-        var formElement = DicDao.GetFormElement(elementName);
-        
+        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = dictionary.GetFormElement();
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
@@ -276,7 +284,8 @@ public class FieldService : BaseService
             formElement.Fields[i] = newList[i];
         }
 
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
         return true;
     }
 
@@ -304,7 +313,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = DicDao.GetDictionary(elementMap.ElementName);
+            var dataEntry = DataDictionaryRepository.GetMetadata(elementMap.ElementName);
             var fieldKey = dataEntry.Table.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -323,24 +332,33 @@ public class FieldService : BaseService
         return false;
     }
 
-    public bool DeleteField(FormElement formElement, string fieldName)
+    public bool DeleteField(string dictionaryName, string fieldName)
     {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        if (!dictionary.Table.Fields.ContainsKey(fieldName))
+            return false;
+
+        var formElement = dictionary.GetFormElement();
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
-        DicDao.SetFormElement(formElement);
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
 
         return IsValid;
     }
 
-    public string GetNextFieldName(FormElement formElement, string fieldName)
+    public string GetNextFieldName(string dictionaryName, string fieldName)
     {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var element = dictionary.Table;
         string nextField = null;
-        if (formElement.Fields.Contains(fieldName))
+        if (element.Fields.ContainsKey(fieldName))
         {
-            int iIndex = formElement.Fields.IndexOf(fieldName);
-            if (iIndex >= 0 && iIndex < formElement.Fields.Count - 1)
+            var currentField = element.Fields[fieldName];
+            int iIndex = element.Fields.IndexOf(currentField);
+            if (iIndex >= 0 && iIndex < element.Fields.Count - 1)
             {
-                nextField = formElement.Fields[iIndex + 1].Name;
+                nextField = element.Fields[iIndex + 1].Name;
             }
         }
 
@@ -356,7 +374,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = DicDao.GetDictionary(map.ElementName);
+        var dataEntry = DataDictionaryRepository.GetMetadata(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 
@@ -366,5 +384,22 @@ public class FieldService : BaseService
         }
 
         return dicFields;
+    }
+
+    public bool CopyField(Metadata metadata, FormElementField field)
+    {
+        var formElement = metadata.GetFormElement();
+        var newField = field.DeepCopy();
+
+        if (formElement.Fields.Contains(newField.Name))
+        {
+            AddError(newField.Name, Translate.Key("Name of field already exists"));
+            return IsValid;
+        }
+
+        formElement.Fields.Add(newField);
+        metadata.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(metadata);
+        return IsValid;
     }
 }

@@ -1,7 +1,8 @@
 ﻿@using JJMasterData.Web.Extensions
-@model JJFormView;
+@model JJMasterData.Core.Web.Components.JJGridView;
 
 @using (Html.BeginForm())
 {
     @Model.GetHtml().ToHtmlString()
 }
+    

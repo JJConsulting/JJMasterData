@@ -1,13 +1,15 @@
-﻿using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
@@ -15,56 +17,64 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 [Authorize(Policy = "Log")]
 public class LogController : Controller
 {
-    private Logger Logger { get; set; }
+    private DbLoggerOptions Options { get; }
+    private Element LoggerElement { get;  }
+    
+    private IEntityRepository EntityRepository { get; }
 
-    public LogController()
+    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository)
     {
-        Logger = new Logger();
+        EntityRepository = entityRepository;
+        Options = options.Value;
+        LoggerElement = DbLoggerElement.GetInstance(Options);
     }
 
     public ActionResult Index()
     {
-        if (Logger.Settings.WriteInDatabase == LoggerOption.None)
-            throw new DataDictionaryException(Translate.Key("Configuration for logging to the database is not enabled"));
-
-        if (!Logger.LogTableExists())
+        if (!EntityRepository.TableExists(Options.TableName))
         {
-            var factory = new Factory();
-            factory.CreateDataModel(Logger.GetElement());
+            EntityRepository.CreateDataModel(LoggerElement);
         }
 
-        var gridView = GetLoggingGridView(Logger);
+        var gridView = GetLoggingGridView();
         return View(gridView);
     }
 
     [HttpGet]
     public ActionResult ClearAll()
     {
-        var logger = new Logger();
-        logger.ClearLog();
-
-        GetLoggingGridView(logger);
-
+        string sql = $"TRUNCATE TABLE {Options.TableName}";
+        
+        EntityRepository.SetCommand(sql);
+        
         return RedirectToAction("Index");
     }
 
-    private JJGridView GetLoggingGridView(Logger logger)
+    private JJGridView GetLoggingGridView()
     {
-        var f = new FormElement(logger.GetElement())
+        var formElement = new FormElement(LoggerElement)
         {
             Title = Translate.Key("Application Log"),
             SubTitle = string.Empty
         };
 
-        var tipo = f.Fields[Logger.Settings.Table.LevelColumnName];
-        tipo.Component = FormComponent.ComboBox;
-        tipo.DataItem.Itens.Add(new DataItemValue("I", "Info"));
-        tipo.DataItem.Itens.Add(new DataItemValue("W", "Alerta"));
-        tipo.DataItem.Itens.Add(new DataItemValue("E", "Erro"));
+        formElement.Fields["Id"].VisibleExpression = "val:0";
 
-        var gridView = new JJGridView(f);
-        gridView.CurrentOrder = $"{Logger.Settings.Table.DateColumnName} DESC";
-        gridView.OnRenderCell += OnRenderCell!;
+        var logLevel = formElement.Fields[Options.LevelColumnName];
+        logLevel.Component = FormComponent.ComboBox;
+        
+        logLevel.DataItem!.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
+        
+        var gridView = new JJGridView(formElement)
+        {
+            CurrentOrder = $"{Options.CreatedColumnName} DESC"
+        };
 
         var btnClearAll = new UrlRedirectAction
         {
@@ -74,26 +84,25 @@ public class LogController : Controller
             ShowAsButton = true,
             UrlRedirect = Url.Action("ClearAll")
         };
-            
+
+        gridView.OnRenderCell += OnRenderCell;
         gridView.AddToolBarAction(btnClearAll);
 
         return gridView;
     }
-        
-
-    private void OnRenderCell(object sender, GridCellEventArgs e)
+    private void OnRenderCell(object? sender, GridCellEventArgs e)
     {
-        string msg;
-        if (e.Field.Name.Equals(Logger.Settings.Table.ContentColumnName))
+        string? message;
+        if (e.Field.Name.Equals(Options.MessageColumnName))
         {
-            msg = e.DataRow[Logger.Settings.Table.ContentColumnName].ToString().Replace("\r\n", "<br>");
+            message = e.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
         }
         else
         {
-            msg = e.Sender.GetHtml();
+            message = e.Sender.GetHtml();
         }
 
-        e.ResultHtml = msg;
+        e.HtmlResult = message;
     }
-
+    
 }

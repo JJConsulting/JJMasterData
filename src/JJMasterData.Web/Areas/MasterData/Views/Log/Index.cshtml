@@ -1,5 +1,13 @@
 @using JJMasterData.Web.Extensions
-@model JJGridView;
+@using Microsoft.Extensions.Options
+@using JJMasterData.Web.Options
+@inject IOptions<JJMasterDataWebOptions> Options
+
+@model JJMasterData.Core.Web.Components.JJGridView;
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 @using (Html.BeginForm())
 {

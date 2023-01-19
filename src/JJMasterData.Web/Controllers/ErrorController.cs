@@ -1,9 +1,9 @@
-﻿using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Web.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Controllers;
 
@@ -11,7 +11,7 @@ public class ErrorController : Controller
 {
     [Route("/Error")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Index([FromQuery]int? statusCode)
+    public IActionResult Index([FromQuery]int? statusCode, [FromServices] ILogger<ErrorController>? logger)
     {
         var exceptionHandler =
             HttpContext.Features.Get<IExceptionHandlerPathFeature>();
@@ -24,8 +24,7 @@ public class ErrorController : Controller
             StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
         };
         
-
-        Log.AddError(model.Exception + "\n\n" + model.StackTrace);
+        logger?.LogError(exceptionHandler?.Error, exceptionHandler?.Error.Message);
 
         return View(model);
     }

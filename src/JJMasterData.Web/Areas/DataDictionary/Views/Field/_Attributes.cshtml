@@ -1,5 +1,6 @@
-﻿
-@using System.Text
+﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 
 @if (Model.Component == FormComponent.Text |
@@ -38,7 +39,7 @@
     case FormComponent.Lookup:
         <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label class="@BootstrapHelper.Label " for="cboLkPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Popup Size")">@Translate.Key("Popup Size")</label>
-            @Html.Raw(GetHtmlCboPopUpSize())
+            <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<PopupSize>()"></select>
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-4">
@@ -46,27 +47,4 @@
             <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@Translate.Key("Search...")" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
         </div>
         break;
-}
-
-@functions{
-
-    public string GetHtmlCboPopUpSize()
-    {
-        var sHtml = new StringBuilder();
-        string value = Model.GetAttr(FormElementField.PopUpSizeAttribute);
-        sHtml.Append("<select id=\"cboLkPopUpSize\" name=\"cboLkPopUpSize\" class=\"form-control form-select\">");
-        foreach (PopupSize type in Enum.GetValues(typeof(PopupSize)))
-        {
-            string selected = "";
-            if (((int)type).ToString().Equals(value))
-            {
-                selected = "selected=\"selected\"";
-            }
-            sHtml.AppendFormat("<option value=\"{0}\" {1}>", (int)type, selected);
-            sHtml.Append(type.ToString());
-            sHtml.Append("</option>");
-        }
-        sHtml.Append("</select>");
-        return sHtml.ToString();
-    }
 }

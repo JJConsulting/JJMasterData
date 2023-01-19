@@ -1,14 +1,18 @@
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Controllers;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Logging;
+using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -17,7 +21,8 @@ public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
     private readonly ThemeService _themeService;
-    public ElementController(ElementService elementService,ThemeService themeService)
+
+    public ElementController(ElementService elementService, ThemeService themeService)
     {
         _themeService = themeService;
         _elementService = elementService;
@@ -25,20 +30,27 @@ public class ElementController : DataDictionaryController
 
     public ActionResult Index()
     {
-        if (_elementService.JJMasterDataTableExists())
+        try
         {
+            _elementService.CreateStructureIfNotExists();
             var model = GetEntityFormView();
             return View(model);
         }
-
-        return View("Create");
+        catch (DataAccessException)
+        {
+            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen = true });
+        }
     }
 
     private void OnRenderAction(object? sender, ActionEventArgs e)
     {
-        var formName = e.FieldValues["name"]!.ToString();
+        var formName = e.FieldValues["name"]?.ToString();
         switch (e.Action.Name)
         {
+            case "preview":
+                e.LinkButton.OnClientClick =
+                    $"window.open('{Url.Action("Render", "Form", new { dictionaryName = formName, Area = "MasterData" })}', '_blank').focus();";
+                break;
             case "tools":
                 e.LinkButton.UrlAction = Url.Action("Index", "Entity", new { dictionaryName = formName });
                 e.LinkButton.OnClientClick = "";
@@ -57,32 +69,35 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Export()
     {
-        var formView = GetFormView();
-        var selectedRows = formView.GetSelectedGridValues();
-        var zipFile = _elementService.Export(selectedRows);
-        return File(zipFile, "application/zip", "Dictionaries.zip");
+        var gridView = GetFormView();
+        var selectedRows = gridView.GetSelectedGridValues();
+
+        if(selectedRows.Count == 1)
+        {
+            var jsonBytes = _elementService.ExportSingleRow(selectedRows[0]);
+            return File(jsonBytes, "application/json", selectedRows[0]["name"] + ".json");
+        }
+
+        var zipBytes = _elementService.ExportMultipleRows(selectedRows);
+        return File(zipBytes, "application/zip", "Dictionaries.zip");
     }
 
     public IActionResult Import()
     {
-           
-        var upload = new JJUploadFile
-        {
-            Name = "dicImport",
-            LabelAdd = Translate.Key("Select Dictionaries"),
-            AllowedTypes = "json",
-            AutoSubmitAfterUploadAll = false
-        };
-
-        upload.OnPostFile += OnPostFile;
-        ViewBag.GetHtml = upload.GetHtml();
-
-        return View();
+        return View(new ImportViewModel(ConfigureUploadArea));
     }
 
-    private void OnPostFile(object sender, FormUploadFileEventArgs e)
+    private void ConfigureUploadArea(JJUploadArea upload)
     {
-        _elementService.Import(e.File.FileData.OpenReadStream());
+        upload.AddLabel = Translate.Key("Select Dictionaries");
+        upload.AllowedTypes = "json";
+        upload.AutoSubmitAfterUploadAll = false;
+        upload.OnPostFile += OnPostFile;
+    }
+
+    private void OnPostFile(object? sender, FormUploadFileEventArgs e)
+    {
+        _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
             e.SuccessMessage = Translate.Key("Dictionary imported successfully!");
@@ -102,51 +117,28 @@ public class ElementController : DataDictionaryController
 
     public IActionResult ClassSourceCode(string dictionaryName)
     {
-
         ViewBag.ClassSourceCode = _elementService.GetClassSourceCode(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
 
-        return View("ClassSourceCode", "_Layout.Popup");
+        return View("ClassSourceCode", "_MasterDataLayout.Popup");
     }
 
-    public IActionResult Scripts(string dictionaryName, bool isDefault = false)
+    public IActionResult Scripts(string dictionaryName)
     {
-        if (isDefault)
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDefault();
-            ViewBag.IsDefault = true;
-        }
-        else
-        {
-            ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
-            ViewBag.DictionaryName = dictionaryName;
-            ViewBag.IsDefault = false;
-        }
+        ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
+        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.IsDefault = false;
 
-        return View("Scripts", "_Layout.Popup");
-    }
-
-    public IActionResult About()
-    {
-        var service = new AboutService();
-
-        var model = new AboutViewModel
-        {
-            AssemblyInfoHtml = service.GetAssemblyInfo(),
-            BootstrapVersion = BootstrapHelper.Version.ToString(),
-            Dependencies = service.GetJJAssemblies()
-        };
-
-        return View("About", model);
+        return View("Scripts", "_MasterDataLayout.Popup");
     }
 
     [HttpPost]
     public IActionResult Add(string tableName, bool importFields)
     {
-        var formElement = _elementService.CreateEntity(tableName, importFields);
-        if (formElement != null)
+        var element = _elementService.CreateEntity(tableName, importFields);
+        if (element != null)
         {
-            return RedirectToAction("Index", "Entity", new { dictionaryName = formElement.Name });
+            return RedirectToAction("Index", "Entity", new { dictionaryName = element.Name });
         }
 
         var jjValidationSummary = _elementService.GetValidationSummary();
@@ -178,20 +170,13 @@ public class ElementController : DataDictionaryController
         catch (Exception ex)
         {
             var error = new { success = false, message = ex.Message };
-            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error};
+            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
     }
 
-    [HttpPost]
-    public IActionResult Create()
+    public JJGridView GetEntityFormView()
     {
-        _elementService.ExecScriptsMasterData();
-        return RedirectToAction("Index");
-    }
-
-    public JJFormView GetEntityFormView()
-    {
-        var formView = GetFormView();
+        var gridView = GetFormView();
 
         var acTools = new UrlRedirectAction
         {
@@ -201,9 +186,19 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsDefaultOption = true
         };
-        formView.AddGridAction(acTools);
+        gridView.AddGridAction(acTools);
 
-        var acdup = new UrlRedirectAction
+        var renderBtn = new ScriptAction
+        {
+            Icon = IconType.Eye,
+            Name = "preview",
+            Text = Translate.Key("Preview"),
+            EnableExpression = "exp:'T' <> {type}",
+            IsGroup = true
+        };
+        gridView.AddGridAction(renderBtn);
+
+        var btnDuplicate = new UrlRedirectAction
         {
             Icon = IconType.FilesO,
             Name = "duplicate",
@@ -211,7 +206,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
-        formView.AddGridAction(acdup);
+        gridView.AddGridAction(btnDuplicate);
 
         var btnAdd = new UrlRedirectAction
         {
@@ -221,7 +216,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlRedirect = Url.Action("Add")
         };
-        formView.AddToolBarAction(btnAdd);
+        gridView.AddToolBarAction(btnAdd);
 
         var btnImport = new UrlRedirectAction
         {
@@ -235,7 +230,7 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-        formView.AddToolBarAction(btnImport);
+        gridView.AddToolBarAction(btnImport);
 
         var btnExport = new ScriptAction
         {
@@ -245,10 +240,10 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
-            OnClientClick = string.Format("jjdictionary.exportElement('{0}', '{1}', '{2}');",
-                formView.Name, Url.Action("Export"), Translate.Key("Select one or more dictionaries"))
+            OnClientClick =
+                $"jjdictionary.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
         };
-        formView.AddToolBarAction(btnExport);
+        gridView.AddToolBarAction(btnExport);
 
         var themeMode = _themeService.GetTheme();
         var btnTheme = new UrlRedirectAction
@@ -262,7 +257,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnTheme);
+        gridView.AddToolBarAction(btnTheme);
 
         var btnAbout = new UrlRedirectAction
         {
@@ -272,13 +267,13 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("About"),
+            UrlRedirect = Url.Action("Index", "About", new { Area = "MasterData" }),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnAbout);
-        
+        gridView.AddToolBarAction(btnAbout);
+
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
@@ -287,35 +282,90 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Log"),
-            UrlRedirect = Url.Action("Index", "Log", new {Area = "MasterData"}),
+            UrlRedirect = Url.Action("Index", "Log", new { Area = "MasterData" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
 
-        formView.AddToolBarAction(btnLog);
+        gridView.AddToolBarAction(btnLog);
 
-        formView.OnRenderAction += OnRenderAction;
+        var btnSettings = new UrlRedirectAction
+        {
+            Name = "btnAppSettings",
+            ToolTip = Translate.Key("Application Options"),
+            Icon = IconType.Code,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Application Options"),
+            UrlRedirect = Url.Action("Index", "Options", new { Area = "MasterData" }),
+            Order = 12,
+            CssClass = BootstrapHelper.PullRight
+        };
 
-        return formView;
+        gridView.AddToolBarAction(btnSettings);
+
+        var btnResources = new UrlRedirectAction
+        {
+            Name = "btnResources",
+            ToolTip = Translate.Key("Resources"),
+            Icon = IconType.Globe,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            TitlePopUp = Translate.Key("Resources"),
+            UrlRedirect = Url.Action("Index", "Resources", new { Area = "MasterData" }),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        gridView.AddToolBarAction(btnResources);
+
+        gridView.AddToolBarAction(new SubmitAction()
+        {
+            Name = "btnDeleteMetadata",
+            Order = 0,
+            Icon = IconType.Trash,
+            Text = Translate.Key("Delete Selected"),
+            IsGroup = false,
+            ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
+            ShowAsButton = true,
+            FormAction = Url.Action("Delete", "Element")
+        });
+
+        gridView.OnRenderAction += OnRenderAction;
+
+        return gridView;
     }
 
-    public ActionResult Theme()
+    public IActionResult Theme()
     {
         var theme = _themeService.GetTheme();
 
         _themeService.SetTheme(theme == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light);
 
-        return Redirect(nameof(Index));
+        return RedirectToAction(nameof(Index));
     }
 
-    private JJFormView GetFormView()
+    public IActionResult Delete()
+    {
+        var formView = GetEntityFormView();
+
+        var selectedGridValues = formView.GetSelectedGridValues();
+
+        selectedGridValues
+            .Select(value => value["name"]!.ToString()!)
+            .ToList()
+            .ForEach(metadata => _elementService.DataDictionaryRepository.Delete(metadata));
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private JJGridView GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var formView = _elementService.GetFormView();
-        formView.FormElement.Title = $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
-        
-        return formView;
+        var gridView = _elementService.GetFormView();
+        gridView.FormElement.Title =
+            $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
+
+        return gridView;
     }
-
-
 }

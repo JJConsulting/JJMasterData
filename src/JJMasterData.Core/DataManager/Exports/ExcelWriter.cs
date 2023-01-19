@@ -3,12 +3,12 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -64,7 +64,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = new Factory(FieldManager.DataAccess);
+            var factory = FieldManager.Expression.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
@@ -125,7 +125,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         {
             if (DataSource.Columns.Contains(field.Name))
             {
-                value = FieldManager.FormatVal(row[field.Name], field);
+                value = FieldManager.FormatValue(field, row[field.Name]);
             }
         }
 
@@ -149,7 +149,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             args.DataRow = row;
             args.Sender = new JJText(value);
             OnRenderCell.Invoke(this, args);
-            value = args.ResultHtml;
+            value = args.HtmlResult;
         }
 
         return value;

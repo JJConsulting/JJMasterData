@@ -1,23 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataDictionary.Services.Abstractions;
 
 public abstract class BaseService
 {
     private readonly IValidationDictionary _validationDictionary;
-    private DictionaryDao _dictionaryDao;
 
-    public DictionaryDao DicDao => _dictionaryDao ??= new DictionaryDao();
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
 
-    protected BaseService(IValidationDictionary validationDictionary)
+    protected BaseService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
     {
         _validationDictionary = validationDictionary;
+        DataDictionaryRepository = dataDictionaryRepository;
     }
 
     protected void AddError(string field, string message)
@@ -34,7 +35,7 @@ public abstract class BaseService
 
     public FormElement GetFormElement(string dictionaryName)
     {
-        var dicParser = DicDao.GetDictionary(dictionaryName);
+        var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
         return dicParser.GetFormElement();
     }
 
@@ -62,7 +63,7 @@ public abstract class BaseService
                 AddError(nameof(name), Translate.Key($"The [Name] field contains an invalid character({c})"));
         }
 
-        string nameNoAccents = StringManager.NoAccents(name);
+        string nameNoAccents = StringManager.GetStringWithoutAccents(name);
         if (!nameNoAccents.Equals(name))
             AddError(nameof(name), Translate.Key("The [Name] field cannot contain accents."));
 
@@ -98,10 +99,10 @@ public abstract class BaseService
 
     public Dictionary<string, string> GetElementList()
     {
-        var dicElement = new Dictionary<string, string>();
-        dicElement.Add(string.Empty, Translate.Key("--Select--"));
+        var dicElement = new Dictionary<string, string> { { string.Empty, Translate.Key("--Select--") } };
 
-        string[] list = DicDao.GetListDictionaryName();
+        var list = DataDictionaryRepository.GetNameList();
+        
         foreach (string name in list)
         {
             dicElement.Add(name, name);
@@ -109,5 +110,4 @@ public abstract class BaseService
 
         return dicElement;
     }
-
 }

@@ -8,25 +8,23 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElementDataFile
 {
     /// <summary>
-    /// Caminnho físico onde será gravado o arquivo
+    /// Physical path where the file will be saved
     /// </summary>
     [DataMember(Name = "folderPath")]
     public string FolderPath { get; set; }
 
     /// <summary>
-    /// Tamanho máximo do arquivo em bytes
+    /// Maximum file size in bytes
     /// </summary>
     [DataMember(Name = "maxFileSize")]
     public int MaxFileSize { get; set; }
-
-    /// <summary>
-    /// Habilita Drag and Drop
-    /// </summary>
+    
+    
     [DataMember(Name = "dragDrop")]
     public bool DragDrop { get; set; }
 
     /// <summary>
-    /// Tipod de extensão permitida, separados por virgula.
+    /// Allowed extension types, separated by a comma.
     /// Default: *
     /// </summary>
     /// <remarks>
@@ -43,14 +41,14 @@ public class FormElementDataFile
     public bool MultipleFile { get; set; }
 
     /// <summary>
-    /// Exportar o nome do arquivo com link para download
+    /// Export file name with download link
     /// </summary>
     [DataMember(Name = "exportAsLink")]
     public bool ExportAsLink { get; set; }
 
 
     /// <summary>
-    /// Pré-Visualizar imagens no formato galeria
+    /// Preview images in gallery format
     /// </summary>
     [DataMember(Name = "viewGallery")]
     public bool ViewGallery { get; set; }

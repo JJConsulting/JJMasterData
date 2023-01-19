@@ -3,14 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Net;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
-//not remove
 
 namespace JJMasterData.Commons.Exceptions;
 
-public class ExceptionManager
+public static class ExceptionManager
 {
     public static ResponseLetter GetResponse(Exception ex)
     {
@@ -21,7 +20,7 @@ public class ExceptionManager
                 err.Message = exAccess.Message;
                 err.Status = (int)HttpStatusCode.Unauthorized;
                 break;
-            case DataDictionaryException dcEx:
+            case JJMasterDataException dcEx:
                 err.Message = dcEx.Message;
                 err.Status = (int)HttpStatusCode.BadRequest;
                 Log.AddError(ex.Message);
@@ -35,12 +34,12 @@ public class ExceptionManager
                 err.ValidationList.Add("DB", errMsg);
                 break;
             }
-            case KeyNotFoundException or null:
-                err.Message = ex?.Message ?? "Page not found.";
+            case KeyNotFoundException exNotFound:
+                err.Message = exNotFound.Message ?? "Page not found.";
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
-                Log.AddError(ex.Message);
+                Log.AddError(ex, ex.Message);
                 err.Message = ex.Message;
                 err.Status = (int)HttpStatusCode.InternalServerError;
                 break;
@@ -51,40 +50,36 @@ public class ExceptionManager
 
     public static string GetMessage(SqlException ex)
     {
-#if DEBUG
-        Translate.Key("Debug");
-        return ex.Message;
-#else
         string message;
-        if (ex.Number == 547)
-            message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
-        else if (ex.Number == 2627 || ex.Number == 2601)
-            message = Translate.Key("Record already registered.");
-        else if (ex.Number == 170)
-            message = Translate.Key("Invalid character.");
-        else if (ex.Number >= 50000)
-            message = ex.Message;
-        else
-            message = Translate.Key("Unexpected error.");
+        switch (ex.Number)
+        {
+            case 547:
+                message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
+                break;
+            case 2627 or 2601:
+                message = Translate.Key("Record already registered.");
+                break;
+            case 170:
+                message = Translate.Key("Invalid character.");
+                break;
+            case >= 50000:
+                message = ex.Message;
+                break;
+            default:
+                message = Translate.Key("Unexpected error.");
+                Log.AddError(ex.ToString());
+                break;
+        }
 
         return message;
-#endif
     }
 
     public static string GetMessage(Exception ex)
     {
-        string message;
         if (ex is SqlException exSql)
-        {
-            message = GetMessage(exSql);
-        }
-        else
-        {
-            message = ex.Message;
-        }
-
-        return message;
+            return GetMessage(exSql);
+        
+        return ex.Message;
     }
-
 
 }

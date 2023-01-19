@@ -1,5 +1,7 @@
-﻿@using JJMasterData.Commons.Dao.Entity
-@model ApiViewModel
+﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
 <partial name="_Menu"/>
 
@@ -35,7 +37,7 @@
             <tbody>
                 <tr class="text-info jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableGetAll", Model.ApiSettings.EnableGetAll, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableGetAll", Model.MetadataApiOptions.EnableGetAll, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableGetAll">@Translate.Key("GET")</label>
@@ -46,7 +48,7 @@
                 </tr>
                 <tr class="text-info jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableGetDetail", Model.ApiSettings.EnableGetDetail, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableGetDetail", Model.MetadataApiOptions.EnableGetDetail, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableGetDetail">@Translate.Key("GET")</label>
@@ -57,7 +59,7 @@
                 </tr>
                 <tr class="text-success jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableAdd", Model.ApiSettings.EnableAdd, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableAdd", Model.MetadataApiOptions.EnableAdd, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableAdd">@Translate.Key("POST")</label>
@@ -68,7 +70,7 @@
                 </tr>
                 <tr class="text-primary jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableUpdate", Model.ApiSettings.EnableUpdate, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableUpdate", Model.MetadataApiOptions.EnableUpdate, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableUpdate">@Translate.Key("PUT")</label>
@@ -79,7 +81,7 @@
                 </tr>
                 <tr class="text-primary jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableUpdatePart", Model.ApiSettings.EnableUpdatePart, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableUpdatePart", Model.MetadataApiOptions.EnableUpdatePart, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableUpdatePart">@Translate.Key("PATCH")</label>
@@ -90,7 +92,7 @@
                 </tr>
                 <tr class="text-danger jjgrid-action">
                     <td class="jjselect">
-                        @Html.CheckBox("EnableDel", Model.ApiSettings.EnableDel, new { disabled = "disabled" })
+                        @Html.CheckBox("EnableDel", Model.MetadataApiOptions.EnableDel, new { disabled = "disabled" })
                     </td>
                     <td>
                         <label for="EnableDel">@Translate.Key("DEL")</label>
@@ -108,21 +110,21 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-5">
                     <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("ApplyUserIdOn")</label>
                     @Html.DropDownList("ApplyUserIdOn", new[] {
-                        new SelectListItem { Text = Model.ApiSettings.ApplyUserIdOn, Value = Model.ApiSettings.ApplyUserIdOn }
+                        new SelectListItem { Text = Model.MetadataApiOptions.ApplyUserIdOn, Value = Model.MetadataApiOptions.ApplyUserIdOn }
                     }, "(No Apply)", new { @class = "form-control", disabled = "disabled" })
                     <span id="helpBlock" class="help-block">@Translate.Key("Aways apply UserId (from login) as filter and default value on set.")</span>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " for="AFormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("JsonFormat")</label>
-                    @Html.TextBox("FormatType", Model.ApiSettings.FormatType, new { @class = "form-control", disabled = "disabled" })
+                    @Html.TextBox("FormatType", Model.MetadataApiOptions.FormatType, new { @class = "form-control", disabled = "disabled" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="IsSync" @BootstrapHelper.GetDataToggle("tooltip") title="Utilizado no sincronismo?">@Translate.Key("Sync")</label>
-                    @Html.TextBox("IsSync", (string)(Model.IsSync ? Translate.Key("Yes") : Translate.Key("No")), new { @class = "form-control", disabled = "disabled" })
+                    @Html.TextBox("IsSync", Model.IsSync ? Translate.Key("Yes") : Translate.Key("No"), new { @class = "form-control", disabled = "disabled" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
                     <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="Modo do sincronismo">@Translate.Key("Mode")</label>
-                    @Html.TextBox("Mode", (SyncMode)Model.Mode, new { @class = "form-control", disabled = "disabled" })
+                    @Html.TextBox("Mode", Model.Mode, new { @class = "form-control", disabled = "disabled" })
                 </div>
             </div>
         </div>

@@ -1,127 +1,118 @@
-﻿using System;
+﻿using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Language;
-using JJMasterData.Commons.Settings;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.DictionaryDAL;
-using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using JJMasterData.Core.WebComponents;
-using Newtonsoft.Json;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DI;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
-    public ElementService(IValidationDictionary validationDictionary) : base(validationDictionary)
+    private readonly IEntityRepository _entityRepository;
+    public ElementService(IValidationDictionary validationDictionary, 
+                          IEntityRepository entityRepository, 
+                          IDataDictionaryRepository dataDictionaryRepository) 
+        : base(validationDictionary, dataDictionaryRepository)
     {
+        _entityRepository = entityRepository;
     }
 
     #region Exec Scripts GET/SET/TABLE
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var factory = DicDao.Factory;
-        FormElement formElement = DicDao.GetFormElement(id);
-        List<string> listScripts = new List<string>();
-
-        listScripts.Add(factory.Provider.GetCreateTableScript(formElement));
-        listScripts.Add(factory.Provider.GetReadProcedureScript(formElement));
-        listScripts.Add(factory.Provider.GetWriteProcedureScript(formElement));
-
-        return listScripts;
-    }
-
-    public List<string> GetScriptsDefault()
-    {
-        var factory = DicDao.Factory;
-        var element = factory.GetStructure();
-
-        var scriptsList = new List<string>
+        var dictionary = DataDictionaryRepository.GetMetadata(id);
+        var element = dictionary.Table;
+        var listScripts = new List<string>
         {
-            factory.Provider.GetCreateTableScript(element),
-            factory.Provider.GetReadProcedureScript(element),
-            factory.Provider.GetWriteProcedureScript(element)
+            _entityRepository.GetScriptCreateTable(element),
+            _entityRepository.GetScriptReadProcedure(element),
+            _entityRepository.GetScriptWriteProcedure(element)
         };
 
-        return scriptsList;
+        return listScripts;
     }
 
 
     public void ExecScripts(string id, string scriptExec)
     {
-        var factory = DicDao.Factory;
-        var formElement = DicDao.GetFormElement(id);
+        var dictionary = DataDictionaryRepository.GetMetadata(id);
+        var element = dictionary.Table;
 
         switch (scriptExec)
         {
             case "Exec":
                 var sql = new StringBuilder();
-                sql.AppendLine(factory.Provider.GetWriteProcedureScript(formElement));
-                sql.AppendLine(factory.Provider.GetReadProcedureScript(formElement));
-
-                var dataAccess = JJService.DataAccess;
-                dataAccess.ExecuteBatch(sql.ToString());
+                sql.AppendLine(_entityRepository.GetScriptWriteProcedure(element));
+                sql.AppendLine(_entityRepository.GetScriptReadProcedure(element));
+                _entityRepository.ExecuteBatch(sql.ToString());
                 break;
             case "ExecAll":
-                factory.CreateDataModel(formElement);
+                _entityRepository.CreateDataModel(element);
                 break;
         }
-
     }
 
     public void ExecScriptsMasterData()
     {
-        var dataAccess = JJService.DataAccess;
-        var factory = DicDao.Factory;
-        var element = DicDao.Factory.GetStructure();
-
-        DicDao.CreateStructure();
-        dataAccess.ExecuteBatch(factory.Provider.GetReadProcedureScript(element));
+        DataDictionaryRepository.CreateStructureIfNotExists();
     }
 
     #endregion
 
     #region Add Dictionary
 
-    public FormElement CreateEntity(string tableName, bool importFields)
+    public Element CreateEntity(string tableName, bool importFields)
     {
         if (!ValidateEntity(tableName, importFields))
             return null;
 
-        FormElement formElement;
+        Element element;
         if (importFields)
         {
-            var element = DicDao.GetElementFromTable(tableName);
-            formElement = new FormElement(element);
+            element = _entityRepository.GetElementFromTable(tableName);
         }
         else
         {
-            formElement = new FormElement();
+            element  = new Element
+            {
+                TableName = tableName,
+                Name = GetDictionaryName(tableName),
+                CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
+                CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
+            };
         }
+        
+        var metadata = new Metadata
+        {
+            Table = element.DeepCopy(),
+            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
+        };
 
-        formElement.TableName = tableName;
-        formElement.Name = GetDictionaryName(tableName);
-        formElement.CustomProcNameGet = JJMasterDataSettings.GetDefaultProcNameGet(tableName);
-        formElement.CustomProcNameSet = JJMasterDataSettings.GetDefaultProcNameSet(tableName);
+        DataDictionaryRepository.InsertOrReplace(metadata);
 
-        DicDao.SetFormElement(formElement);
-
-        return formElement;
+        return element;
     }
 
     public bool ValidateEntity(string tableName, bool importFields)
     {
         if (ValidateName(tableName))
         {
-            if (DicDao.HasDictionary(tableName))
+            if (DataDictionaryRepository.Exists(tableName))
             {
                 AddError("Name", Translate.Key("There is already a dictionary with the name ") + tableName);
             }
@@ -129,7 +120,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var dataAccess = JJService.DataAccess;
+            var dataAccess = JJService.EntityRepository;
             if (!dataAccess.TableExists(tableName))
                 AddError("Name", Translate.Key("Table not found"));
 
@@ -164,9 +155,9 @@ public class ElementService : BaseService
     {
         if (ValidateEntity(newName))
         {
-            var dicParser = DicDao.GetDictionary(originName);
+            var dicParser = DataDictionaryRepository.GetMetadata(originName);
             dicParser.Table.Name = newName;
-            DicDao.SetDictionary(dicParser);
+            DataDictionaryRepository.InsertOrReplace(dicParser);
 
         }
 
@@ -183,68 +174,62 @@ public class ElementService : BaseService
             AddError("Name", Translate.Key("Mandatory dictionary name field"));
         }
 
-        if (DicDao.HasDictionary(name))
+        if (DataDictionaryRepository.Exists(name))
         {
             AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
         }
-
 
         return IsValid;
     }
 
 
-
-    public JJFormView GetFormView()
+    public JJGridView GetFormView()
     {
-        var element = DicDao.Factory.GetStructure();
+        var element = new Element(JJServiceCore.Options.DataDictionaryTableName, "Data Dictionaries");
+        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
+        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
+
         var formElement = new FormElement(element);
-
+        formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
+        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("1", "Yes"));
+        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
-        formElement.Fields["name"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["namefilter"].VisibleExpression = "exp:{pagestate} = 'FILTER'";
+        
+        var gridView = new JJGridView(formElement)
+        {
+            Name = "List",
+            FilterAction =
+            {
+                ExpandedByDefault = true
+            }
+        };
+        
+        gridView.MaintainValuesOnLoad = true;
+        gridView.EnableMultSelect = true;
+        gridView.ExportAction.SetVisible(false);
+        
+        if (!gridView.CurrentFilter.ContainsKey("type"))
+            gridView.CurrentFilter.Add("type", "F");
 
-        formElement.Fields["json"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-        formElement.Fields["json"].Component = FormComponent.TextArea;
-        formElement.Fields["json"].Export = false;
+        gridView.OnDataLoad += FormViewOnDataLoad;
 
-        formElement.Fields["type"].VisibleExpression = "val:0";
-        formElement.Fields["type"].DefaultValue = "val:F";
-        formElement.Fields["type"].Component = FormComponent.ComboBox;
-        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("F", "Form"));
-        formElement.Fields["type"].DataItem.Itens.Add(new DataItemValue("T", "Table"));
-
-        formElement.Fields["owner"].VisibleExpression = "exp:{pagestate} = 'VIEW'";
-
-        formElement.Fields["sync"].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields["sync"].Component = FormComponent.ComboBox;
-        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("1", "Yes"));
-        formElement.Fields["sync"].DataItem.Itens.Add(new DataItemValue("0", "No"));
-
-        formElement.Fields["modified"].Component = FormComponent.DateTime;
-
-        var formView = new JJFormView(formElement);
-        formView.Name = "List";
-        formView.FilterAction.ExpandedByDefault = true;
-        formView.DataPanel.FormCols = 2;
-        formView.MaintainValuesOnLoad = true;
-        formView.EnableMultSelect = true;
-        formView.ExportAction.SetVisible(false);
-        formView.EditAction.SetVisible(false);
-        formView.InsertAction.SetVisible(false);
-        formView.DeleteAction.SetVisible(false);
-        formView.DeleteSelectedRowsAction.SetVisible(true);
-        formView.DeleteSelectedRowsAction.ConfirmationMessage = "Are you sure you want to DELETE all selected records?";
-
-        formView.ViewAction.IsGroup = true;
-        formView.ViewAction.Text = "Details";
-        formView.ViewAction.ToolTip = null;
-
-        if (!formView.CurrentFilter.ContainsKey("type"))
-            formView.CurrentFilter.Add("type", "F");
-
-        return formView;
+        return gridView;
     }
 
+    private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    {
+        int tot = e.Tot;
+        var filter = DataDictionaryFilter.GetInstance(e.Filters);
+        string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
+        var list = DataDictionaryRepository.GetMetadataInfoList(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot); 
+        e.DataSource = list.ToDataTable();
+        e.Tot = tot;
+    }
 
     #endregion
 
@@ -253,13 +238,12 @@ public class ElementService : BaseService
     {
         string prop = "public @PropType @PropName { get; set; } ";
 
-        var dicDao = new DictionaryDao();
-        var dicParser = dicDao.GetDictionary(dicName);
+        var dicParser = DataDictionaryRepository.GetMetadata(dicName);
         var propsBuilder = new StringBuilder();
 
         foreach (var item in dicParser.Table.Fields.ToList())
         {
-            var nameProp = StringManager.NoAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
             var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 
@@ -283,7 +267,7 @@ public class ElementService : BaseService
     {
         return dataTypeField switch
         {
-            FieldType.Date or FieldType.DateTime => "DateTime",
+            FieldType.Date or FieldType.DateTime or FieldType.DateTime2 => "DateTime",
             FieldType.Float => "double",
             FieldType.Int => "int",
             FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
@@ -303,7 +287,17 @@ public class ElementService : BaseService
     }
     #endregion
 
-    public byte[] Export(List<Hashtable> selectedRows)
+    public byte[] ExportSingleRow(Hashtable row)
+    {
+        string dictionaryName = row["name"].ToString();
+        var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
+
+        string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+
+        return Encoding.ASCII.GetBytes(json);
+    }
+
+    public byte[] ExportMultipleRows(List<Hashtable> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
@@ -311,8 +305,8 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var dicParser = DicDao.GetDictionary(dictionaryName);
-                string json = JsonConvert.SerializeObject(dicParser, Formatting.Indented);
+                var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
+                string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
                 using var streamWriter = new StreamWriter(jsonFile.Open());
@@ -324,14 +318,18 @@ public class ElementService : BaseService
 
     public bool Import(Stream file)
     {
-        string json = new StreamReader(file).ReadToEnd();
-        var dicParser = JsonConvert.DeserializeObject<DicParser>(json);
-        DicDao.SetDictionary(dicParser);
+        file.Seek(0, SeekOrigin.Begin);
+        using var reader = new StreamReader(file);
+        var dicParser = JsonConvert.DeserializeObject<Metadata>(reader.ReadToEnd());
+        DataDictionaryRepository.InsertOrReplace(dicParser);
         //TODO: Validation
         //AddError("Name", "Campo nome do dicionário obrigatório");
 
         return IsValid;
     }
 
-    public bool JJMasterDataTableExists() => JJService.DataAccess.TableExists(JJService.Settings.TableName);
+    public void CreateStructureIfNotExists()
+    {
+        DataDictionaryRepository.CreateStructureIfNotExists();
+    }
 }

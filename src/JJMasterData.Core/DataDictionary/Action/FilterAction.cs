@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Action;
 

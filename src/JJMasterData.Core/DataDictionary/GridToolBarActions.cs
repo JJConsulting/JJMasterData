@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.Core.DataDictionary;

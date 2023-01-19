@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Web;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.WebComponents;
-using JJMasterData.Web.Controllers;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -19,9 +19,9 @@ public class LookupController : MasterDataController
         if (string.IsNullOrEmpty(p))
             throw new ArgumentNullException();
 
-        string elementName = null;
-        string fieldKey = null;
-        string objid = null;
+        string? elementName = null;
+        string? fieldKey = null;
+        string? objid = null;
         bool enableAction = false;
 
         var filters = new Hashtable();
@@ -35,17 +35,19 @@ public class LookupController : MasterDataController
             else if ("objid".Equals(key.ToLower()))
                 objid = parms.Get(key);
             else if ("enableaction".Equals(key.ToLower()))
-                enableAction = parms.Get(key).Equals("1");
+                enableAction = parms.Get(key)!.Equals("1");
             else
                 filters.Add(key, parms.Get(key));
         }
             
         if (elementName == null | objid == null)
-            throw new Exception(Translate.Key("Invalid Parameter"));
+            throw new JJMasterDataException(Translate.Key("Invalid Parameter"));
 
         //FormView
-        var form = new JJFormView(elementName);
-        form.ShowTitle = false;
+        var form = new JJFormView(elementName)
+        {
+            ShowTitle = false
+        };
 
         //Actions
         if (!enableAction)
@@ -87,7 +89,7 @@ public class LookupController : MasterDataController
         //Filters
         foreach (DictionaryEntry filter in filters)
         {
-            form.SetCurrentFilter(filter.Key.ToString(), filter.Value.ToString());
+            form.SetCurrentFilter(filter.Key.ToString(), filter.Value?.ToString());
         }
 
         ViewBag.HtmlPage = form.GetHtml();

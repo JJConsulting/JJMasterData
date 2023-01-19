@@ -1,35 +1,33 @@
-﻿@model FormElementField
+﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FormElementField
 
 @{
-    if (Model.DataItem.ElementMap == null)
-    {
-        Model.DataItem.ElementMap = new DataElementMap();
-        Model.DataItem.ElementMap.ElementName = "pan";
-    }
+    Model.DataItem!.ElementMap ??= new DataElementMap();
 }
 
 @functions
 {
-
-    async Task ElementMap()
+    void ElementMap()
     {
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("Field Key")</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.FieldKey,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.FieldKey,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-4">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Key")">@Translate.Key("Field Description")</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.FieldDescription,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.FieldDescription,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
         </div>
     }
 
-    async Task Filters()
+    void Filters()
     {
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4">
@@ -55,14 +53,14 @@
 
                 <table class="table table-bordered table-hover">
                     <tbody>
-                    @for (int i = 0; i < Model.DataItem.ElementMap.MapFilters.Count; i++)
+                    @for (int i = 0; i < Model.DataItem!.ElementMap.MapFilters.Count; i++)
                     {
                         DataElementMapFilter mapFilter = Model.DataItem.ElementMap.MapFilters[i];
                         <tr>
                             <td>
                                 @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
-                                @Html.HiddenFor(x => x.DataItem.ElementMap.MapFilters[i].FieldName, mapFilter.FieldName)
-                                @Html.HiddenFor(x => x.DataItem.ElementMap.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
+                                @Html.HiddenFor(x => x.DataItem!.ElementMap.MapFilters[i].FieldName, mapFilter.FieldName)
+                                @Html.HiddenFor(x => x.DataItem!.ElementMap.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
                             </td>
                             <td style="width:80px;" align="center">
                                 <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
@@ -117,7 +115,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Replace the field value with a description of the combination when displaying a grid")">@Translate.Key("ReplaceTextOnGrid")</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem.ReplaceTextOnGrid, new[]
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
         {
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
             new SelectListItem { Text = Translate.Key("No"), Value = "false" }
@@ -127,14 +125,14 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label " for="cboLkElementName" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Dictionary Name")">@Translate.Key("ElementName")</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.ElementName,
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.ElementName,
             new SelectList(ViewBag.ElementNameList, "Key", "Value"),
             new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label " for="cboLkEnableElementActions" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Enable / Disable dictionary actions")">@Translate.Key("EnableElementActions")</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem.ElementMap.EnableElementActions, new[]
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.EnableElementActions, new[]
         {
             new SelectListItem { Text = Translate.Key("No"), Value = "false" },
             new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
@@ -155,7 +153,7 @@
                     <div class="accordion-body">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await ElementMap();}
+                                @{ ElementMap();}
                             </div>
                         </div>
                     </div>
@@ -174,7 +172,7 @@
                     <div class="accordion-body">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await Filters(); }
+                                @{ Filters(); }
                             </div>
                         </div>
                     </div>
@@ -194,7 +192,7 @@
                      <div class="@BootstrapHelper.PanelBody"> 
                          <div class="container-fluid"> 
                              <div class="row"> 
-                                 @{ await ElementMap(); } 
+                                 @{ ElementMap(); } 
                              </div> 
                          </div> 
                      </div> 
@@ -212,7 +210,7 @@
                     <div class="@BootstrapHelper.PanelBody">
                         <div class="container-fluid">
                             <div class="row">
-                                @{ await Filters(); }
+                                @{ Filters(); }
                             </div>
                         </div>
                     </div>

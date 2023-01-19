@@ -1,7 +1,7 @@
-﻿@using JJMasterData.Web.Extensions
-@model JJGridView
+﻿@using JJMasterData.Web.TagHelpers
+@model JJMasterData.Web.Areas.MasterData.Models.ViewModels.FormViewModel
 
 @using (Html.BeginForm())
 {
-    @Model.GetHtmlString()
+    <jj-form-view element-name="@Model.DictionaryName" configure="Model.Configure"/>
 }

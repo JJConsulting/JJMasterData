@@ -1,5 +1,8 @@
 ﻿
 @using JJMasterData.Web.Extensions
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
 @model JJMasterData.Core.DataDictionary.Action.BasicAction
 
 
@@ -29,7 +32,7 @@
                 DataItem =
                 {
                     ShowImageLegend = true,
-                    Itens = IconHelper.GetListImages()
+                    Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
                 },
                 SelectedValue = ((int)Model.Icon).ToString(),
                 Name = "Icon"

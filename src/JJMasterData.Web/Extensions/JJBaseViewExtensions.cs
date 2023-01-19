@@ -1,4 +1,4 @@
-using JJMasterData.Core.WebComponents;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Html;
 
 namespace JJMasterData.Web.Extensions;

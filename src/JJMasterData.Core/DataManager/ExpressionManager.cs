@@ -3,14 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
-using JJMasterData.Commons.Language;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Protheus;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Web.Http;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -18,27 +20,31 @@ public class ExpressionManager
 {
     #region "Properties"
 
-    /// <summary>
-    /// User specified values.
-    /// Use to replace values that support expressions.
-    /// </summary>
-    /// <remarks>
-    /// Key = Field name, Value= Field value
-    /// </remarks>
+    private JJHttpContext _currentContext;
+    private IEntityRepository _entityRepository;
+
+    internal JJHttpContext CurrentContext
+    {
+        get => _currentContext ??= JJHttpContext.GetInstance();
+        set => _currentContext = value;
+    } 
+
+    internal IEntityRepository EntityRepository
+    {
+        get => _entityRepository ??= JJService.EntityRepository;
+        set => _entityRepository = value;
+    }
+
     public Hashtable UserValues { get; set; }
-
-    private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
-
-    private IDataAccess DataAccess { get; set; }
 
     #endregion
 
     #region "Constructors"
 
-    public ExpressionManager(Hashtable userValues, IDataAccess dataAccess)
+    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository)
     {
         UserValues = userValues;
-        DataAccess = dataAccess;
+        EntityRepository = entityRepository;
     }
 
     #endregion
@@ -104,7 +110,7 @@ public class ExpressionManager
 
             if (interval.Begin == '{' && interval.End == '}')
             {
-                parsedExpression = parsedExpression.Replace(string.Format("{{{0}}}", field), val);
+                parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
             }
             else
             {
@@ -157,7 +163,7 @@ public class ExpressionManager
         else if (expression.StartsWith("sql:"))
         {
             string exp = ParseExpression(expression, state, false, formValues);
-            object obj = DataAccess.GetResult(exp);
+            object obj = EntityRepository.GetResult(exp);
             result = ParseBool(obj);
         }
         else
@@ -211,16 +217,16 @@ public class ExpressionManager
                 }
                 catch (Exception ex)
                 {
-                    var errMsg = new StringBuilder();
-                    errMsg.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
-                    errMsg.Append(ex.Message);
-                    Log.AddError(errMsg.ToString());
+                    var message = new StringBuilder();
+                    message.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
+                    message.Append(ex.Message);
+                    Log.AddError(ex, message.ToString());
                 }
             }
             else if (expression.StartsWith("sql:"))
             {
                 string exp = ParseExpression(expression, state, false, formValues);
-                object obj = DataAccess.GetResult(exp);
+                object obj = EntityRepository.GetResult(exp);
                 if (obj != null)
                     retVal = obj.ToString();
             }
@@ -228,7 +234,7 @@ public class ExpressionManager
             {
                 string[] exp = expression.Replace("\"", "").Replace("'", "").Split(',');
                 if (exp.Length < 3)
-                    throw new Exception(Translate.Key("Invalid Protheus Request"));
+                    throw new JJMasterDataException(Translate.Key("Invalid Protheus Request"));
 
                 string urlProtheus = ParseExpression(exp[0], state, false, formValues);
                 string functionName = ParseExpression(exp[1], state, false, formValues);
@@ -240,53 +246,51 @@ public class ExpressionManager
             }
             else
             {
-                var sErr = new StringBuilder();
-                sErr.Append(Translate.Key("Expression not started with"));
-                sErr.Append(" [val, exp, sql or protheus]. ");
-                sErr.Append(Translate.Key("Field"));
-                sErr.Append(": ");
-                sErr.Append(f.Name);
-                sErr.Append(Translate.Key("Content"));
-                sErr.Append(": ");
-                sErr.Append(expression);
-                throw new ArgumentException(sErr.ToString());
+                var errorMessage = new StringBuilder();
+                errorMessage.Append(Translate.Key("Expression not started with"));
+                errorMessage.Append(" [val, exp, sql or protheus]. ");
+                errorMessage.Append(Translate.Key("Field"));
+                errorMessage.Append(": ");
+                errorMessage.Append(f.Name);
+                errorMessage.Append(Translate.Key("Content"));
+                errorMessage.Append(": ");
+                errorMessage.Append(expression);
+                throw new ArgumentException(errorMessage.ToString());
             }
         }
-        catch (ProtheusException pe)
+        catch (ProtheusException ex)
         {
-            var sErr = new StringBuilder();
-            sErr.Append(Translate.Key("Error retrieving expression in Protheus integration."));
-            sErr.Append(" ");
-            sErr.Append(Translate.Key("Field"));
-            sErr.Append(": ");
-            sErr.AppendLine(f.Name);
-            sErr.Append(pe.Message);
-            throw new Exception(sErr.ToString());
+            var errorMessage = new StringBuilder();
+            errorMessage.Append(Translate.Key("Error retrieving expression in Protheus integration."));
+            errorMessage.Append(" ");
+            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.Append(": ");
+            errorMessage.AppendLine(f.Name);
+            errorMessage.Append(ex.Message);
+            var exception = new JJMasterDataException(errorMessage.ToString(), ex);
+            Log.AddError(exception, exception.Message);
+            throw exception;
         }
         catch (Exception ex)
         {
-            var sErr = new StringBuilder();
-            sErr.AppendLine(Translate.Key("Error retrieving expression or trigger."));
-            sErr.Append(Translate.Key("Field"));
-            sErr.Append(": ");
-            sErr.AppendLine(f.Name);
+            var errorMessage = new StringBuilder();
+            errorMessage.AppendLine(Translate.Key("Error retrieving expression or trigger."));
+            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.Append(": ");
+            errorMessage.AppendLine(f.Name);
+        
+            var exception = new JJMasterDataException(errorMessage.ToString(), ex);
+            
+            Log.AddError(exception, exception.Message);
 
-            var sErrLog = new StringBuilder(sErr.ToString());
-            sErrLog.Append(Translate.Key("Expression"));
-            sErrLog.Append(": ");
-            sErrLog.AppendLine(expression);
-            sErrLog.Append(Translate.Key("Detail Message"));
-            sErrLog.Append(": ");
-            sErrLog.AppendLine(ex.Message);
-            Log.AddError(sErrLog.ToString());
+            throw exception;
 
-            throw new Exception(sErr.ToString(), ex);
         }
         return retVal;
     }
 
 
-    public bool ParseBool(object value)
+    public static bool ParseBool(object value)
     {
         if (value == null)
             return false;

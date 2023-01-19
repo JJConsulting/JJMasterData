@@ -1,16 +1,16 @@
-﻿using JJMasterData.Commons.Dao;
-using JJMasterData.Commons.Dao.Entity;
+﻿using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
 
 [CollectionDefinition("ElementController", DisableParallelization = true)]
 [Order(0)]
-public class ElementControllerTest : IClassFixture<JJMasterDataWebAppFactory<Program>>
+public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory>
 {
     private readonly HttpClient _client;
 
-    public ElementControllerTest(JJMasterDataWebAppFactory<Program> factory)
+    public ElementControllerTest(JJMasterDataWebExampleAppFactory factory)
     {
         factory.EnsureServer();
         _client = factory.CreateClient();
@@ -44,9 +44,9 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebAppFactory<Pro
         };
 
         var dataAccess = new DataAccess();
-        var provider = new MSSQLProvider();
+        var provider = new EntityRepository();
         
-        string script = provider.GetCreateTableScript(element);
+        string script = provider.GetScriptCreateTable(element);
 
         if (dataAccess.TableExists(element.TableName))
             dataAccess.SetCommand($"DROP TABLE {element.TableName}");

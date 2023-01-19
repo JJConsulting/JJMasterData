@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Web.Controllers;
-using JJMasterData.Web.Models;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -10,10 +9,11 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class EntityController : DataDictionaryController
 {
     private readonly EntityService _entityService;
-
-    public EntityController(EntityService entityService)
+    private readonly IFormEventResolver? _resolver;
+    public EntityController(EntityService entityService, IFormEventResolver? resolver = null)
     {
         _entityService = entityService;
+        _resolver = resolver;
     }
 
     public ActionResult Index(string dictionaryName)
@@ -51,7 +51,7 @@ public class EntityController : DataDictionaryController
             MenuId = "Entity",
             DictionaryName = dictionaryName,
             FormElement = _entityService.GetFormElement(dictionaryName),
-            FormEvent = FormEventManager.GetFormEvent(dictionaryName),
+            FormEvent = _resolver?.GetFormEvent(dictionaryName),
             ReadOnly = readOnly
         };
 
