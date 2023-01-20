@@ -86,7 +86,7 @@ public class JJCollapsePanel : JJBaseView
     {
         var h2 = new HtmlBuilder(HtmlTag.H2)
         .WithCssClass(
-            $"accordion-header bg-{Color.ToString().ToLower().Replace("default", "jjmasterdata")}")
+            $"accordion-header ")
         .WithAttribute("id", $"heading-{Name.ToLower()}")
         .AppendElement(HtmlTag.Button, button =>
         {

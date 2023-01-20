@@ -80,10 +80,12 @@ public abstract class BaseProvider
             commandType = (CommandOperation)nret;
         }
 
-        if (newFields == null) return commandType;
+        if (newFields == null) 
+            return commandType;
         foreach (DictionaryEntry entry in newFields)
         {
-            if (!element.Fields.ContainsKey(entry.Key.ToString())) continue;
+            if (!element.Fields.ContainsKey(entry.Key.ToString())) 
+                continue;
 
             if (values.Contains(entry.Key))
                 values[entry.Key] = entry.Value;
