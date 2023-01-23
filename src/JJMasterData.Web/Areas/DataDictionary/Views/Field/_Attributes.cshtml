@@ -3,14 +3,14 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 
-@if (Model.Component == FormComponent.Text |
-     Model.Component == FormComponent.Number |
-     Model.Component == FormComponent.Password |
-     Model.Component == FormComponent.Email |
-     Model.Component == FormComponent.Cnpj |
-     Model.Component == FormComponent.Cpf |
-     Model.Component == FormComponent.CnpjCpf |
-     Model.Component == FormComponent.Cep)
+@if (Model.Component is FormComponent.Text 
+        or FormComponent.Number 
+        or FormComponent.Password
+        or FormComponent.Email 
+        or FormComponent.Cnpj 
+        or FormComponent.Cpf 
+        or FormComponent.CnpjCpf 
+        or FormComponent.Cep)
 {
     <div class="@BootstrapHelper.FormGroup col-sm-3">
         <label class="@BootstrapHelper.Label" for="txtPlaceHolder">@Translate.Key("Placeholder")</label>
@@ -47,4 +47,27 @@
             <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@Translate.Key("Search...")" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
         </div>
         break;
+        case FormComponent.Date:
+        case FormComponent.DateTime:
+        case FormComponent.Hour:
+            bool @checked = Model.GetAttr(FormElementField.AutocompletePickerAttribute) == "1";
+            <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <label
+                    class="@BootstrapHelper.Label " 
+                    @BootstrapHelper.GetDataToggle("tooltip") 
+                    title="@Translate.Key("When opening the picker, fill the input with today's date.")" 
+                    for="@FormElementField.AutocompletePickerAttribute">@Translate.Key("Autocomplete")</label>
+                <br/>
+                <input class="form-control" 
+                       data-toggle="toggle" 
+                       data-on="@Translate.Key("Yes")"
+                       data-off="@Translate.Key("No")" 
+                       id="@FormElementField.AutocompletePickerAttribute" 
+                       name="@FormElementField.AutocompletePickerAttribute" 
+                       maxlength="200" 
+                       value="1"
+                       @(@checked ? "checked" : string.Empty)
+                       type="checkbox">
+            </div>
+            break;
 }

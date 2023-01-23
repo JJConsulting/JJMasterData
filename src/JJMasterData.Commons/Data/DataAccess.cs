@@ -618,24 +618,24 @@ public class DataAccess
             
             using (dbCommand.Connection)
             {
-                using var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow);
-
-                while (dr.Read())
+                using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    retCollection = new Hashtable();
-                    int nQtd = 0;
-
-                    while (nQtd < dr.FieldCount)
+                    while (dr.Read())
                     {
-                        string fieldName = dr.GetName(nQtd);
-                        if (retCollection.ContainsKey(fieldName))
-                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                        retCollection = new Hashtable();
+                        int nQtd = 0;
 
-                        retCollection.Add(fieldName, dr.GetValue(nQtd));
-                        nQtd += 1;
+                        while (nQtd < dr.FieldCount)
+                        {
+                            string fieldName = dr.GetName(nQtd);
+                            if (retCollection.ContainsKey(fieldName))
+                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                            retCollection.Add(fieldName, dr.GetValue(nQtd));
+                            nQtd += 1;
+                        }
                     }
                 }
-
                 foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
@@ -661,20 +661,22 @@ public class DataAccess
             dbCommand.Connection = await GetConnectionAsync();
             using (dbCommand.Connection)
             {
-                using var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow);
-                while (await dataReader.ReadAsync())
+                using (var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow))
                 {
-                    result = new Hashtable();
-                    int count = 0;
-
-                    while (count < dataReader.FieldCount)
+                    while (await dataReader.ReadAsync())
                     {
-                        string fieldName = dataReader.GetName(count);
-                        if (result.ContainsKey(fieldName))
-                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+                        result = new Hashtable();
+                        int count = 0;
 
-                        result.Add(fieldName, dataReader.GetValue(count));
-                        count += 1;
+                        while (count < dataReader.FieldCount)
+                        {
+                            string fieldName = dataReader.GetName(count);
+                            if (result.ContainsKey(fieldName))
+                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                            result.Add(fieldName, dataReader.GetValue(count));
+                            count += 1;
+                        }
                     }
                 }
 

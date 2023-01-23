@@ -19,7 +19,7 @@ public class FormElementField : ElementField
     public const string RowsAttribute = "rows";
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
-
+    public const string AutocompletePickerAttribute = "autocompletePicker";
     private FormElementFieldActions? _actions;
     
     [DataMember(Name = "component")] 

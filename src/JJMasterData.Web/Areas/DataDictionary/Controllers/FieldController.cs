@@ -233,25 +233,31 @@ public class FieldController : DataDictionaryController
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
         field.Attributes = new Hashtable();
-        if (field.Component == FormComponent.Text |
-            field.Component == FormComponent.Number |
-            field.Component == FormComponent.Password |
-            field.Component == FormComponent.Email |
-            field.Component == FormComponent.Cnpj |
-            field.Component == FormComponent.Cpf |
-            field.Component == FormComponent.CnpjCpf |
-            field.Component == FormComponent.Cep)
+        switch (field.Component)
         {
-            field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
-        }
-        else if (field.Component == FormComponent.TextArea)
-        {
-            field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
-        }
-        else if (field.Component == FormComponent.Lookup)
-        {
-            field.SetAttr(FormElementField.PopUpSizeAttribute, Request.Form["cboLkPopUpSize"].ToString());
-            field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());
+            case FormComponent.Text 
+                or FormComponent.Number 
+                or FormComponent.Password 
+                or FormComponent.Email 
+                or FormComponent.Cnpj 
+                or FormComponent.Cpf 
+                or FormComponent.CnpjCpf 
+                or FormComponent.Cep:
+                field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
+                break;
+            case FormComponent.TextArea:
+                field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
+                break;
+            case FormComponent.Lookup:
+                field.SetAttr(FormElementField.PopUpSizeAttribute, Request.Form["cboLkPopUpSize"].ToString());
+                field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());
+                break;
+            case FormComponent.Date 
+                or FormComponent.DateTime
+                or FormComponent.Hour:
+                field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute].ToString());
+                break;
+                
         }
     }
 
