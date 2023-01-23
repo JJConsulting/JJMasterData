@@ -475,7 +475,9 @@ function jjloadform(event, prefixSelector) {
         time_24hr: true,
         dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
         onOpen: function (selectedDates, dateStr, instance) {
-            instance.setDate(Date.now());
+            if (instance.input.getAttribute("autocompletePicker") == 1) {
+                instance.setDate(Date.now());
+            }
         },
         locale: localeCode
     });
@@ -486,7 +488,9 @@ function jjloadform(event, prefixSelector) {
         altInput: false,
         dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
         onOpen: function (selectedDates, dateStr, instance) {
-            instance.setDate(Date.now());
+            if (instance.input.getAttribute("autocompletePicker") == 1) {
+                instance.setDate(Date.now());
+            }
         },
         locale: localeCode
     });
@@ -499,7 +503,9 @@ function jjloadform(event, prefixSelector) {
         dateFormat: "H:i",
         time_24hr: true,
         onOpen: function (selectedDates, dateStr, instance) {
-            instance.setDate(Date.now());
+            if (instance.input.getAttribute("autocompletePicker") == 1) {
+                instance.setDate(Date.now());
+            }
         },
         locale: localeCode
     });
