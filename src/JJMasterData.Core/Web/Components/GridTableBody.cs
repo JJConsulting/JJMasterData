@@ -310,7 +310,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private JJCheckBox GetMultiSelect(DataRow row, int index, Hashtable values)
+    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -320,6 +320,7 @@ internal class GridTableBody
         {
             Name = "jjchk_" + index,
             Value = Cript.Cript64(pkValues),
+            Text = string.Empty,
             IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsValue(pkValues))
         };
 

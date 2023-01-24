@@ -44,6 +44,7 @@ public class JJCheckBox : JJBaseControl
         return check;
     }
 
+
     internal override HtmlBuilder RenderHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -56,9 +57,8 @@ public class JJCheckBox : JJBaseControl
 
     private HtmlBuilder GetInputHtml()
     {
-
         var div = new HtmlBuilder(HtmlTag.Div);
-        
+
         div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {
             label.AppendText(Text);
@@ -76,7 +76,7 @@ public class JJCheckBox : JJBaseControl
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
-
+        
         return div;
     }
     
