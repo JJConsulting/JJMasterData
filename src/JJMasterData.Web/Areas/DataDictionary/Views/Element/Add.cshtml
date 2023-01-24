@@ -1,16 +1,11 @@
-﻿@using JJMasterData.Web.Services
-@using JJMasterData.Commons.Localization
+﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@inject ThemeService ThemeService;
 
-@{
-    var logo = ThemeService.GetLogoPath();
-}
 
 <div class="page-header">
     <h1>
-        <img alt="JJMasterData" style="width:8%;height:8%;" src="~/@logo"><small>@Translate.Key("Add Dictionary")</small>
+        <img alt="JJMasterData" style="width:8%;height:8%;" src="~/images/JJMasterData.png"><small>@Translate.Key("Add Dictionary")</small>
     </h1>
 </div>
 

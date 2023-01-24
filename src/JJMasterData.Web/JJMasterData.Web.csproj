@@ -42,10 +42,7 @@
     <ItemGroup>
         <ProjectReference Include="..\JJMasterData.Core\JJMasterData.Core.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Properties\launchSettings.json" />
-    </ItemGroup>
+    
 
     <ItemGroup>
         <None Include="..\..\JJMasterData.png">

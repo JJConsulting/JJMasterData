@@ -25,7 +25,6 @@ Add the following lines to your _Layout.cshtml <head>
 ```html
 <partial name="_MasterDataStylesheets"/>
 <partial name="_MasterDataScripts"/>
-<partial name="_MasterDataTheme"/>
 ```
 **IMPORTANT**: If you have Bootstrap and jQuery installed, remove it from your _Layout.cshtml both CSS and JS,
 JJMasterData already have Bootstrap and jQuery installed. You can choose Bootstrap 3, 4 and 5 using <xref:JJMasterData.Commons.Options.JJMasterDataOptions>.

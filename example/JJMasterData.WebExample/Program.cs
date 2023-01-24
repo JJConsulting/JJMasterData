@@ -19,7 +19,6 @@ public class Program
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithMongoDbDataDictionary()
             .WithFormEventResolver()
             .WithPdfExportation();
         

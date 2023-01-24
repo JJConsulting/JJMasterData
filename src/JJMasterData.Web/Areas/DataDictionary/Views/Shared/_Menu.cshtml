@@ -1,6 +1,4 @@
-﻿@inject ThemeService ThemeService
-@using JJMasterData.Web.Services
-@using Microsoft.AspNetCore.Html
+﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
@@ -47,7 +45,7 @@
 <div id="jjmenu">
     <div class="page-header">
         <h1>
-            <img alt="JJMasterData" src="~/@ThemeService.GetLogoPath()" style="width:7%;height:7%" />
+            <img alt="JJMasterData" src="~/images/JJMasterData.png" style="width:7%;height:7%" />
             <small>@Model.DictionaryName</small>
         </h1>
     </div>
