@@ -1277,10 +1277,10 @@ public class JJGridView : JJBaseView
 
         string[] pkList = inputHidden.Split(',');
 
-        List<FormElementField> pkFields = PrimaryKeyFields;
+        var pkFields = PrimaryKeyFields;
         foreach (string pk in pkList)
         {
-            Hashtable values = new();
+            var values = new Hashtable();
             string descriptval = Cript.Descript64(pk);
             string[] ids = descriptval.Split(';');
             for (int i = 0; i < pkFields.Count; i++)

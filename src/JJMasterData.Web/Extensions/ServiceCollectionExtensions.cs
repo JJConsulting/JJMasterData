@@ -203,7 +203,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<RelationsService>();
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
-        services.AddTransient<ThemeService>();
         services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
     }

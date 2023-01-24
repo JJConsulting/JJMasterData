@@ -20,11 +20,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
-    private readonly ThemeService _themeService;
 
-    public ElementController(ElementService elementService, ThemeService themeService)
+    public ElementController(ElementService elementService)
     {
-        _themeService = themeService;
         _elementService = elementService;
     }
 
@@ -245,20 +243,6 @@ public class ElementController : DataDictionaryController
         };
         gridView.AddToolBarAction(btnExport);
 
-        var themeMode = _themeService.GetTheme();
-        var btnTheme = new UrlRedirectAction
-        {
-            Name = "btnTheme",
-            ToolTip = themeMode == ThemeMode.Light ? Translate.Key("Dark Theme") : Translate.Key("Light Theme"),
-            Icon = themeMode == ThemeMode.Light ? IconType.MoonO : IconType.SunO,
-            ShowAsButton = true,
-            UrlRedirect = Url.Action("Theme"),
-            Order = 12,
-            CssClass = BootstrapHelper.PullRight
-        };
-
-        gridView.AddToolBarAction(btnTheme);
-
         var btnAbout = new UrlRedirectAction
         {
             Name = "btnAbout",
@@ -335,16 +319,7 @@ public class ElementController : DataDictionaryController
 
         return gridView;
     }
-
-    public IActionResult Theme()
-    {
-        var theme = _themeService.GetTheme();
-
-        _themeService.SetTheme(theme == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light);
-
-        return RedirectToAction(nameof(Index));
-    }
-
+    
     public IActionResult Delete()
     {
         var formView = GetEntityFormView();
@@ -364,7 +339,7 @@ public class ElementController : DataDictionaryController
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var gridView = _elementService.GetFormView();
         gridView.FormElement.Title =
-            $"<img src=\"{baseUrl}/{_themeService.GetLogoPath()}\" style=\"width:8%;height:8%;\"/>";
+            $"<img src=\"{baseUrl}/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
 
         return gridView;
     }

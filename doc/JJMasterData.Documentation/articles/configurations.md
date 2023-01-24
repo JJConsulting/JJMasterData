@@ -25,7 +25,6 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
     "PrefixGetProc": "jj_get{tablename}",
     "PrefixSetProc": "jj_set{tablename}",
     "BootstrapVersion":5,
-    "Theme": "dark-blue",
     "Logger": {
       "Table": {
         "Name": "tb_masterdata_log"
