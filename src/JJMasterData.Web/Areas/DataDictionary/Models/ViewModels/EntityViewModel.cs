@@ -11,5 +11,5 @@ public class EntityViewModel : DataDictionaryViewModel
     public bool IsPythonFormEvent => FormEvent != null && FormEvent.GetType().ToString().Contains('$');
     public bool ReadOnly { get; set; }
     public object HtmlAttributes =>
-        ReadOnly ? new { @class = "form-control", @readonly = "readonly" } : new { @class = "form-control" };
+        ReadOnly ? new { @class = "form-control", disabled="disabled"} : new { @class = "form-control" };
 }
