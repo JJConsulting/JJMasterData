@@ -55,6 +55,14 @@ internal static class FormFactory
 
     private static void AddFormEvent(JJFormView form, IFormEvent formEvent)
     {
+        form.OnBeforeDelete += formEvent.OnBeforeDelete;
+        form.OnBeforeInsert += formEvent.OnBeforeInsert;
+        form.OnBeforeUpdate += formEvent.OnBeforeInsert;
+
+        form.OnAfterDelete += formEvent.OnAfterDelete;
+        form.OnAfterInsert += formEvent.OnAfterInsert;
+        form.OnAfterUpdate += formEvent.OnAfterUpdate;
+
         form.DataImp.OnBeforeImport += formEvent.OnBeforeImport;
     }
 
