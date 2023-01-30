@@ -17,7 +17,7 @@
         <Version>3.1.1</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
-        <Product>JJMasterData.Web - Mars Version</Product>
+        <Product>JJMasterData.Web - Saturn Version</Product>
     </PropertyGroup>
 
     <ItemGroup>

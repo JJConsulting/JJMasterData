@@ -48,7 +48,7 @@
     <Company>JJ Consulting</Company>
     <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Product>JJMasterData.Core - Mars Version</Product>
+    <Product>JJMasterData.Core - Saturn Version</Product>
     <Description>JJMasterData library to render JJMasterData's components.</Description>
     <PackageIcon>JJMasterData.png</PackageIcon>
   </PropertyGroup>
