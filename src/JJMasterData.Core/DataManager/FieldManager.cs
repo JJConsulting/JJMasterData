@@ -90,7 +90,7 @@ public class FieldManager
         switch (field.Component)
         {
             case FormComponent.ComboBox 
-            when field.DataItem.ReplaceTextOnGrid || field.DataItem.ShowImageLegend:
+            when field.DataItem!.ReplaceTextOnGrid || field.DataItem.ShowImageLegend:
             {
                 var comboBox = (JJComboBox)GetField(field, PageState.List, values, value);
                 valueString = comboBox.GetDescription() ?? value.ToString();
@@ -136,7 +136,7 @@ public class FieldManager
 
         string valueString = value.ToString();
         if (string.IsNullOrEmpty(valueString))
-            return "";
+            return string.Empty;
 
         FieldType type = field.DataType;
         switch (field.Component)
