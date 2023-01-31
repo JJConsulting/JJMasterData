@@ -21,7 +21,8 @@ namespace JJMasterData.Core.Web.Html
         /// </summary>
         public HtmlBuilder WithAttribute(string name, string value)
         {
-            _attributes.Add(name, value);
+            if(!_attributes.ContainsKey(name))
+                _attributes.Add(name, value);
             return this;
         }
 
