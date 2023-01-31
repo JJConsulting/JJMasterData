@@ -25,7 +25,7 @@ public class FieldManager
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
-    public ExpressionManager Expression { get; private set; }
+    public ExpressionManager ExpressionManager { get; private set; }
 
     #endregion
 
@@ -34,9 +34,15 @@ public class FieldManager
     public FieldManager(FormElement formElement, ExpressionManager expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Expression = expression ?? throw new ArgumentNullException(nameof(expression));
+        ExpressionManager = expression ?? throw new ArgumentNullException(nameof(expression));
         Name = "jjpainel_" + formElement.Name.ToLower();
     }
+    
+    public FieldManager(string name, FormElement formElement, ExpressionManager expressionManager) : this(formElement, expressionManager)
+    {
+        Name = name;
+    }
+
 
     #endregion
 
@@ -45,7 +51,7 @@ public class FieldManager
         if (action == null)
             throw new ArgumentNullException(nameof(action), "action can not be null");
 
-        return Expression.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
+        return ExpressionManager.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
     }
 
 
@@ -54,7 +60,7 @@ public class FieldManager
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        return Expression.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
+        return ExpressionManager.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
     }
 
     public bool IsEnable(FormElementField field, PageState state, Hashtable formValues)
@@ -65,7 +71,7 @@ public class FieldManager
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        return Expression.GetBoolValue(field.EnableExpression, field.Name, state, formValues);
+        return ExpressionManager.GetBoolValue(field.EnableExpression, field.Name, state, formValues);
     }
 
     /// <summary>
@@ -205,17 +211,17 @@ public class FieldManager
         return valueString;
     }
 
-    public JJBaseControl GetField(FormElementField f, PageState pageState, Hashtable formValues, object value = null)
+    public JJBaseControl GetField(FormElementField field, PageState pageState, Hashtable formValues, object value = null)
     {
-        if (pageState == PageState.Filter & f.Filter.Type == FilterMode.Range)
+        if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            return JJTextRange.GetInstance(f, formValues);
+            return JJTextRange.GetInstance(field, formValues);
         }
         
-        var expOptions = new ExpressionOptions(Expression.UserValues, formValues, pageState, Expression.EntityRepository);
+        var expOptions = new ExpressionOptions(ExpressionManager.UserValues, formValues, pageState, ExpressionManager.EntityRepository);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
 
-        return controlFactory.CreateControl(f, value);
+        return controlFactory.CreateControl(field, value);
     }
 
     public bool IsRange(FormElementField field, PageState pageState)

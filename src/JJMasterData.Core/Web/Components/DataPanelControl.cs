@@ -282,7 +282,7 @@ internal class DataPanelControl
             field.CssClass = "is-invalid";
         }
 
-        if (f.AutoPostBack & (PageState == PageState.Insert | PageState == PageState.Update))
+        if (f.AutoPostBack && PageState is PageState.Insert or PageState.Update)
         {
             field.SetAttr("onchange", GetScriptReload(f));
         }
@@ -291,8 +291,7 @@ internal class DataPanelControl
         {
             if (field is JJTextGroup textGroup)
             {
-                if (f.Filter.Type == FilterMode.MultValuesContain ||
-                    f.Filter.Type == FilterMode.MultValuesEqual)
+                if (f.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
                 {
                     textGroup.Attributes.Add("data-role", "tagsinput");
                     textGroup.MaxLength = 0;
@@ -300,7 +299,7 @@ internal class DataPanelControl
             }
             else if (field is JJComboBox comboBox)
             {
-                if (f.Filter.IsRequired || f.Filter.Type == FilterMode.MultValuesEqual || f.Filter.Type == FilterMode.MultValuesContain)
+                if (f.Filter.IsRequired || f.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
                 else
                     comboBox.DataItem.FirstOption = FirstOptionMode.All;
