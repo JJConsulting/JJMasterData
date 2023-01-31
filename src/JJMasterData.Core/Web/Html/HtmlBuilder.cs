@@ -98,7 +98,7 @@ public partial class HtmlBuilder
         html.Append('>');
         html.Append(GetHtmlContent(tabCount));
 
-        if (tabCount > 0)
+        if (tabCount > 0 && Tag.TagName != HtmlTag.TextArea)
         {
             html.AppendLine().Append(' ', tabCount * 2);
         }
