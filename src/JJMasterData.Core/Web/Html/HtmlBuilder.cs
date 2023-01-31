@@ -96,13 +96,19 @@ public partial class HtmlBuilder
         }
 
         html.Append('>');
-        html.Append(GetHtmlContent(tabCount));
 
-        if (tabCount > 0 && Tag.TagName != HtmlTag.TextArea)
+        if (Tag.TagName == HtmlTag.TextArea)
         {
-            html.AppendLine().Append(' ', tabCount * 2);
+            html.Append(GetHtmlContent(0));
         }
-
+        else
+        {
+            html.Append(GetHtmlContent(tabCount));
+            
+            if (tabCount > 0)
+                html.AppendLine().Append(' ', tabCount * 2);
+        }
+       
         html.Append("</");
         html.Append(Tag.TagName.ToString().ToLower());
         html.Append('>');
