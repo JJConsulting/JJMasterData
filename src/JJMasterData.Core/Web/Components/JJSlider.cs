@@ -30,12 +30,13 @@ public class JJSlider : JJBaseControl
     internal override HtmlBuilder RenderHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass("row")
             .WithCssClass(CssClass)
-            .AppendElement(HtmlTag.Div, row =>
+            .AppendElement(HtmlTag.Div, col =>
             {
-                row.WithCssClass(ShowInput ? "col-sm-9" : "col-sm-12");
-                row.WithCssClassIf(BootstrapHelper.Version > 3, "d-flex justify-content-end align-items-center");
-                row.AppendElement(GetHtmlSlider());
+                col.WithCssClass(ShowInput ? "col-sm-9" : "col-sm-12");
+                col.WithCssClassIf(BootstrapHelper.Version > 3, "d-flex justify-content-end align-items-center");
+                col.AppendElement(GetHtmlSlider());
             });
 
         if (ShowInput)
