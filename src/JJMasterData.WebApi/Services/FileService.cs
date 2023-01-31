@@ -2,7 +2,6 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 
@@ -42,6 +41,7 @@ public class FileService
         
         return fileStream;
     }
+    
     public void SetDictionaryFile(string elementName, string fieldName, string pkValues, IFormFile file)
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
@@ -56,13 +56,13 @@ public class FileService
 
         SetEntityFile(formElement, field, pkValues, file.FileName);
     }
+    
     private void SetEntityFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-
         var values = _entityRepository.GetFields(formElement, primaryKeys);
 
-        if (field.DataFile.MultipleFile)
+        if (field.DataFile!.MultipleFile)
         {
             var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
 
@@ -79,17 +79,16 @@ public class FileService
 
         _entityRepository.SetValues(formElement, values);
     }
-    private static void SetPhysicalFile(FormElement formElement, FormElementField field, string pkValues,
-        IFormFile file)
+    
+    private static void SetPhysicalFile(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
     {
         var builder = new FormFilePathBuilder(formElement);
-
         var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
         
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
 
-        if (!field.DataFile.MultipleFile)
+        if (field.DataFile!.MultipleFile)
         {
             foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
             {
@@ -102,6 +101,7 @@ public class FileService
 
         file.CopyToAsync(fileStream);
     }
+    
     public void DeleteFile(string elementName, string fieldName, string pkValues, string fileName)
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
@@ -116,6 +116,7 @@ public class FileService
         DeletePhysicalFile(formElement, field, pkValues, fileName);
         DeleteEntityFile(formElement, field, pkValues, fileName);
     }
+    
     private void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var builder = new FormFilePathBuilder(formElement);
@@ -129,13 +130,14 @@ public class FileService
         else
             throw new KeyNotFoundException(Translate.Key("File not found"));
     }
+    
     private void DeleteEntityFile(Element element, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(element, pkValues, ',');
 
         var values = _entityRepository.GetFields(element, primaryKeys);
 
-        if (field.DataFile.MultipleFile)
+        if (field.DataFile!.MultipleFile)
         {
             var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
 
@@ -153,6 +155,7 @@ public class FileService
 
         _entityRepository.SetValues(element, values);
     }
+    
     public void RenameFile(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
         var metadata = _dictionaryRepository.GetMetadata(elementName);
@@ -167,6 +170,7 @@ public class FileService
         RenamePhysicalFile(formElement, field, pkValues, oldName, newName);
         RenameEntityFile(formElement,field, pkValues, oldName, newName);
     }
+    
     private static void RenamePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
     {
         var builder = new FormFilePathBuilder(formElement);
@@ -181,6 +185,7 @@ public class FileService
         else
             throw new KeyNotFoundException(Translate.Key("File not found"));
     }
+    
     private void RenameEntityFile(FormElement formElement, FormElementField field, string pkValues, string oldName,
         string newName)
     {
@@ -188,7 +193,7 @@ public class FileService
 
         var values = _entityRepository.GetFields(formElement, primaryKeys);
 
-        if (field.DataFile.MultipleFile)
+        if (field.DataFile!.MultipleFile)
         {
             var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
 
@@ -196,7 +201,6 @@ public class FileService
             currentFiles.Add(newName);
             
             values[field.Name] = string.Join(",", currentFiles);
-            
         }
         else
         {
