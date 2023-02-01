@@ -69,7 +69,7 @@ internal class FormValues
                 }
             }
              
-            if (value != null)
+            if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
             {
                 values.Add(f.Name, value);
             }
@@ -96,7 +96,7 @@ internal class FormValues
             DataHelper.CopyIntoHash(ref newvalues, requestedValues, true);
         }
         
-        _formManager ??= new FormManager(FormElement, FieldManager.Expression);
+        _formManager ??= new FormManager(FormElement, FieldManager.ExpressionManager);
         return _formManager.MergeWithExpressionValues(newvalues, state, !CurrentContext.IsPostBack);
     }
 

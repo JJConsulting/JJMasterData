@@ -37,7 +37,7 @@ public class TextWriter : BaseWriter, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = FieldManager.Expression.EntityRepository;
+            var factory = FieldManager.ExpressionManager.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));

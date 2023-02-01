@@ -74,11 +74,11 @@ public class JJFormUpload : JJBaseView
     public bool ViewGallery { get; set; }
 
     /// <summary>
-    /// Always apply changes to disk files,
-    /// if false, keep it in memory
-    /// (default is true)
+    /// Always apply changes to the file system.
+    /// If false, keep it in the memory.
+    /// (The default value is true.)
     /// </summary>
-    public bool AutoSave { get; set; }
+    public bool AutoSave { get; set; } = true;
 
     /// <summary>
     /// Full Directory Path.

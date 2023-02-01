@@ -69,8 +69,12 @@ namespace JJMasterData.Core.Web.Html
         /// </summary>
         public HtmlBuilder AppendText(string rawText)
         {
-            var childElement = new HtmlBuilder(rawText);
-            AppendElement(childElement);
+            if (!string.IsNullOrEmpty(rawText))
+            {
+                var childElement = new HtmlBuilder(rawText);
+                AppendElement(childElement);
+            }
+                
             return this;
         }
 

@@ -59,7 +59,7 @@ public class FieldService : BaseService
             field.Component == FormComponent.Search |
             field.Component == FormComponent.Lookup)
         {
-            switch (field.DataItem.DataItemType)
+            switch (field.DataItem!.DataItemType)
             {
                 case DataItemType.Dictionary:
                     field.DataFile = null;
@@ -125,7 +125,10 @@ public class FieldService : BaseService
                 Translate.Key(
                     "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
 
-        if (field.DataType is not FieldType.Varchar or FieldType.NVarchar or FieldType.NText)
+        if (field.DataType != FieldType.Varchar && 
+            field.DataType != FieldType.NVarchar && 
+            field.DataType != FieldType.Text && 
+            field.DataType != FieldType.NText)
         {
             if (field.Filter.Type is FilterMode.Contain)
             {
@@ -291,7 +294,7 @@ public class FieldService : BaseService
 
     public bool AddElementMapFilter(FormElementField field, DataElementMapFilter mapFilter)
     {
-        var elementMap = field.DataItem.ElementMap;
+        var elementMap = field.DataItem!.ElementMap;
 
         if (string.IsNullOrEmpty(mapFilter.FieldName))
             AddError(nameof(mapFilter.FieldName), Translate.Key("Required filter field"));
@@ -370,7 +373,7 @@ public class FieldService : BaseService
         var dicFields = new Dictionary<string, string>();
         dicFields.Add(string.Empty, Translate.Key("--Select--"));
 
-        var map = currentField.DataItem.ElementMap;
+        var map = currentField.DataItem!.ElementMap;
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
