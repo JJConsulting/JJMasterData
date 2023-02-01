@@ -4,13 +4,13 @@
 @model FormElementField
 
 @if (Model.Component is FormComponent.Text 
-        or FormComponent.Number 
-        or FormComponent.Password
-        or FormComponent.Email 
-        or FormComponent.Cnpj 
-        or FormComponent.Cpf 
-        or FormComponent.CnpjCpf 
-        or FormComponent.Cep)
+    or FormComponent.Number 
+    or FormComponent.Password
+    or FormComponent.Email 
+    or FormComponent.Cnpj 
+    or FormComponent.Cpf 
+    or FormComponent.CnpjCpf 
+    or FormComponent.Cep)
 {
     <div class="@BootstrapHelper.FormGroup col-sm-3">
         <label class="@BootstrapHelper.Label" for="txtPlaceHolder">@Translate.Key("Placeholder")</label>
@@ -22,13 +22,13 @@
 {
     case FormComponent.Slider or FormComponent.Number:
         <div class="col-sm-2">
-        <label asp-for="MinValue" title="@Translate.Key("Minimum Value")" class="@BootstrapHelper.Label">@Translate.Key("Minimum Value")</label>
-        <input class="form-control jjdecimal" type="number" asp-for="MinValue"/>
-    </div>
-    <div class="col-sm-2">
-        <label asp-for="MaxValue" title="@Translate.Key("Maximum Value")"  class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
-        <input class="form-control jjdecimal" type="number" asp-for="MaxValue"/>
-    </div>
+            <label asp-for="MinValue" title="@Translate.Key("Minimum Value")" class="@BootstrapHelper.Label">@Translate.Key("Minimum Value")</label>
+            <input class="form-control jjdecimal" type="number" asp-for="MinValue"/>
+        </div>
+        <div class="col-sm-2">
+            <label asp-for="MaxValue" title="@Translate.Key("Maximum Value")" class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
+            <input class="form-control jjdecimal" type="number" asp-for="MaxValue"/>
+        </div>
         break;
     case FormComponent.TextArea:
         <div class="@BootstrapHelper.FormGroup col-sm-2">
@@ -47,27 +47,29 @@
             <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@Translate.Key("Search...")" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
         </div>
         break;
-        case FormComponent.Date:
-        case FormComponent.DateTime:
-        case FormComponent.Hour:
-            bool @checked = Model.GetAttr(FormElementField.AutocompletePickerAttribute) == "1";
-            <div class="@BootstrapHelper.FormGroup col-sm-4">
-                <label
-                    class="@BootstrapHelper.Label " 
-                    @BootstrapHelper.GetDataToggle("tooltip") 
-                    title="@Translate.Key("When opening the picker, fill the input with today's date.")" 
-                    for="@FormElementField.AutocompletePickerAttribute">@Translate.Key("Autocomplete")</label>
-                <br/>
-                <input class="form-control" 
-                       data-toggle="toggle" 
-                       data-on="@Translate.Key("Yes")"
-                       data-off="@Translate.Key("No")" 
-                       id="@FormElementField.AutocompletePickerAttribute" 
-                       name="@FormElementField.AutocompletePickerAttribute" 
-                       maxlength="200" 
-                       value="1"
-                       @(@checked ? "checked" : string.Empty)
-                       type="checkbox">
-            </div>
-            break;
+    case FormComponent.Date:
+    case FormComponent.DateTime:
+    case FormComponent.Hour:
+        bool @checked = Model.GetAttr(FormElementField.AutocompletePickerAttribute) == "1";
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <label
+                class="@BootstrapHelper.Label "
+                @BootstrapHelper.GetDataToggle("tooltip")
+                title="@Translate.Key("When opening the picker, fill the input with today's date.")"
+                for="@FormElementField.AutocompletePickerAttribute">
+                @Translate.Key("Autocomplete")
+            </label>
+            <br/>
+            <input class="form-control"
+                   data-toggle="toggle"
+                   data-on="@Translate.Key("Yes")"
+                   data-off="@Translate.Key("No")"
+                   id="@FormElementField.AutocompletePickerAttribute"
+                   name="@FormElementField.AutocompletePickerAttribute"
+                   maxlength="200"
+                   value="1"
+                   @(@checked ? "checked" : string.Empty)
+                   type="checkbox">
+        </div>
+        break;
 }

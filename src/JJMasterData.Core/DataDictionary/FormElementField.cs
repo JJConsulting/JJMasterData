@@ -30,40 +30,38 @@ public class FormElementField : ElementField
     /// </remarks>
     [DataMember(Name = "visibleExpression")]
     public string? VisibleExpression { get; set; }
-
-    /// <summary>
-    /// Expression on runtime
-    /// </summary>
+    
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "enableExpression")]
     public string? EnableExpression { get; set; }
-
+    
+    
     /// <summary>
-    /// Ordem do campo
+    /// Field position in a line
     /// </summary>
     [DataMember(Name = "order")]
     public int Order { get; set; }
     
-
     /// <summary>
-    /// Contador da linha, utilizado para quebrar a linha no form (classe row)
+    /// Line counter, used to break the line in the form (row class)
     /// </summary>
     /// <remarks>
-    /// Utilizado para especificar manualmente o tamanho dos campos no formulário
-    /// Exemplo:
+    /// Used to manually specify the size of fields on the form
+    /// Example:
     /// <code>
-    ///     //Linha 1 com um campo
+    ///     //This field is in line 1 
     ///     FormElementField f1 = FormElement.Fields["fieldname1"];
     ///     f1.LineGroup = 1;
     ///     f1.CssClass = "col-sm-12";
     ///     
-    ///     //Linha 2 com dois campos
+    ///     //This field is in line 2
     ///     FormElementField f2 = FormElement.Fields["fieldname2"];
     ///     f2.LineGroup = 2;
     ///     f2.CssClass = "col-sm-6";
-    ///     
+    /// 
+    ///     //This field is in line 2
     ///     FormElementField f3 = FormElement.Fields["fieldname3"];
     ///     f3.LineGroup = 2;
     ///     f3.CssClass = "col-sm-6";
@@ -100,7 +98,7 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [DataMember(Name = "attributes")]
-    public Hashtable Attributes { get; set; }
+    public Hashtable? Attributes { get; set; }
 
     /// <summary>
     /// Allows exporting the field (Default=true)
@@ -109,10 +107,10 @@ public class FormElementField : ElementField
     public bool Export { get; set; }
 
     /// <summary>
-    /// Valida valores possívelmente perigosos no request (Default=true)
+    /// Validates possibly dangerous values in the request for .NET Framework
     /// </summary>
     /// <remarks>
-    /// Importante para versões inferiores do .net habilitar o parametro: 
+    /// Important for lower versions of .NET Framework to enable the parameter: 
     /// httpRuntime requestValidationMode="4.5" ... 
     /// </remarks>
     [DataMember(Name = "validateRequest")]
@@ -131,59 +129,8 @@ public class FormElementField : ElementField
     [DataMember(Name = "autoPostBack")]
     public bool AutoPostBack { get; set; }
 
-    /// <summary>
-    /// Refaz a expressão sempre que um campo disparar o AutoPostBack
-    /// <para/> Expressão para um valor padrão
-    /// <para/> Tipo [val:] retorna um valor;
-    /// <para/> Tipo [exp:] retorna o resultado da expressão;
-    /// <para/> Tipo [sql:] retorna o resultado de um comando sql;
-    /// <para/> Tipo [protheus:] retorna o resultado de uma função do Protheus;
-    /// </summary>
-    /// <example>
-    /// <para/> Exemplo utilizando [val:] + texto
-    /// <para/> Exemplo1: val:a simple text;
-    /// <para/> Exemplo2: val:10000;
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "val:test";
-    /// </code>
-    /// <para/> Exemplo utilizando [exp:] + expressão
-    /// <para/> Exemplo1: exp:{field1};
-    /// <para/> Exemplo2: exp:({field1} + 10) * {field2};
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "exp:{UserId}";
-    /// </code>
-    /// <para/> Exemplo utilizando [sql:] + query
-    /// <para/> Exemplo1: sql:select 'foo';
-    /// <para/> Exemplo2: sql:select count(*) from table1;
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
-    /// </code>
-    /// <para/> Exemplo utilizando [protheus:] + "UrlProtheus", "NomeFunção", "Parametros"
-    /// <para/> Exemplo1: protheus:"http://localhost/jjmain.apw","u_test","";
-    /// <para/> Exemplo2: protheus:"http://localhost/jjmain.apw","u_test","{field1};parm2";
-    /// <code lang="c#">
-    /// var field = new ElementField();
-    /// field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vldpan', '1;2'";
-    /// </code>
-    /// *Importante: Para chamadas do Protheus aplicar o patch JJxFun e configurar a conexão http no Protheus
-    /// </example>
     /// <remarks>
-    /// <para/> Como montar uma expressão para ocultar ou exibir um objeto:
-    /// <para/>Campos do Formuário, UserValues ou Sessão = exp:{NOME_DO_CAMPO}
-    /// <para/>*Importante: 
-    /// O conteúdo entre {} (chaves) serão substituidos pelos valores atuais em tempo de execução.
-    /// Seguindo a ordem:
-    /// <para>1) UserValues (propriedade do objeto)</para>
-    /// <para>2) Campos do Formulário (nome do campo)</para>
-    /// <para>3) Palavras chaves (pagestate)</para>
-    /// <para>4) Sessão do usuário</para>
-    /// <para/>Exemplos de palavras chaves:
-    /// <para/>{pagestate} = Estado da página: {pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
-    /// <para/>{objname} = Nome do campo que disparou o evento de autopostback
-    /// Se o valor da trigger retorna nulo o mesmo será desconsiderado.
+    /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "triggerExpression")]
     public string? TriggerExpression { get; set; }
@@ -205,10 +152,7 @@ public class FormElementField : ElementField
     /// </remarks>
     [DataMember(Name = "panelId")]
     public int PanelId { get; set; }
-
-    /// <summary>
-    /// Ações do campo
-    /// </summary>
+    
     [DataMember(Name = "actions")]
     public FormElementFieldActions Actions
     {
@@ -217,7 +161,7 @@ public class FormElementField : ElementField
     }
 
     /// <summary>
-    /// Observação interna do desenvolvedor
+    /// Internal developer notes
     /// </summary>
     [DataMember(Name = "internalNotes")]
     public string? InternalNotes { get; set; }
@@ -233,8 +177,7 @@ public class FormElementField : ElementField
     /// </summary>
     [DataMember(Name = "maxValue")]
     public float? MaxValue { get; set; }
-
-
+    
     public FormElementField()
     {
         Component = FormComponent.Text;
@@ -300,41 +243,19 @@ public class FormElementField : ElementField
 
     public string? GetAttr(string key)
     {
-        if (Attributes.ContainsKey(key))
+        if (Attributes != null && Attributes.ContainsKey(key))
             return Attributes[key]?.ToString();
         return string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        if (Attributes.ContainsKey(key))
+        if (Attributes != null && Attributes.ContainsKey(key))
             Attributes[key] = value;
         else
-            Attributes.Add(key, value);
+            Attributes?.Add(key, value);
 
         if (string.IsNullOrEmpty(value.ToString()))
-            Attributes.Remove(key);
+            Attributes?.Remove(key);
     }
-
-    public ElementField DeepCopyField()
-    {
-        var field = new ElementField
-        {
-            FieldId = FieldId,
-            Name = Name,
-            Label = Label,
-            DataType = DataType,
-            Filter = Filter,
-            Size = Size,
-            DefaultValue = DefaultValue,
-            IsRequired = IsRequired,
-            IsPk = IsPk,
-            AutoNum = AutoNum,
-            DataBehavior = DataBehavior
-        };
-
-        return field;
-    }
-
-
 }
