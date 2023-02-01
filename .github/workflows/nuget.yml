@@ -28,6 +28,7 @@ jobs:
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           
           cd ../../..
+          
           cd src/JJMasterData.Core
           dotnet build -c release
           dotnet pack -c release --output="nuget"
@@ -35,21 +36,23 @@ jobs:
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           
           cd ../../..
+          
           cd src/JJMasterData.Web
           npm install
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
-          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           
           cd ../../..
+          
           cd src/Plugins/JJMasterData.Hangfire
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           
-          cd ../../..
+          cd ../../../..
+          
           cd src/Plugins/JJMasterData.Pdf
           dotnet build -c release
           dotnet pack -c release --output="nuget"
