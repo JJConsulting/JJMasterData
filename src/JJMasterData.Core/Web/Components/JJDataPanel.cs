@@ -29,7 +29,7 @@ public class JJDataPanel : JJBaseView
     #region "Properties"
 
     private FieldManager _fieldManager;
-    private FormUI _formUi;
+    private FormUI _formUI;
     private IEntityRepository _entityRepository;
 
     public IEntityRepository EntityRepository
@@ -45,7 +45,7 @@ public class JJDataPanel : JJBaseView
             if (_fieldManager == null)
             {
                 var expression = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement, expression);
+                _fieldManager = new FieldManager(Name, FormElement, expression);
             }
             return _fieldManager;
         }
@@ -57,17 +57,8 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public FormUI FormUI
     {
-        get
-        {
-            if (_formUi == null)
-                _formUi = new FormUI();
-
-            return _formUi;
-        }
-        internal set
-        {
-            _formUi = value;
-        }
+        get => _formUI ??= new FormUI();
+        internal set => _formUI = value;
     }
 
     /// <summary>
@@ -163,10 +154,10 @@ public class JJDataPanel : JJBaseView
         {
             if (Name.Equals(pnlname))
             {
-                var f = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
-                if (f != null)
+                var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
+                if (field != null)
                 {
-                    var jjSearchBox = FieldManager.GetField(f, PageState, Values);
+                    var jjSearchBox = FieldManager.GetField(field, PageState, Values);
                     jjSearchBox.GetHtml();
                 }
             }
@@ -243,7 +234,7 @@ public class JJDataPanel : JJBaseView
             {
                 string parsedPkval = Cript.Descript64(criptPkval);
                 var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
-                var entityRepository = FieldManager.Expression.EntityRepository;
+                var entityRepository = FieldManager.ExpressionManager.EntityRepository;
                 tempvalues =entityRepository.GetFields(FormElement, filters);
             }
         }
@@ -261,7 +252,7 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public void LoadValuesFromPK(Hashtable pks)
     {
-        var entityRepository = FieldManager.Expression.EntityRepository;
+        var entityRepository = FieldManager.ExpressionManager.EntityRepository;
         Values = entityRepository.GetFields(FormElement, pks);
     }
 
@@ -286,7 +277,7 @@ public class JJDataPanel : JJBaseView
     /// </returns>
     public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
     {
-        var formManager = new FormManager(FormElement, FieldManager.Expression);
+        var formManager = new FormManager(FormElement, FieldManager.ExpressionManager);
         return formManager.ValidateFields(values, pageState, enableErrorLink);
     }
 
@@ -307,7 +298,7 @@ public class JJDataPanel : JJBaseView
 
         if (action is UrlRedirectAction urlAction)
         {
-            string parsedUrl = FieldManager.Expression.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
+            string parsedUrl = FieldManager.ExpressionManager.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
             var result = new Hashtable();
             result.Add("UrlAsPopUp", urlAction.UrlAsPopUp);
             result.Add("TitlePopUp", urlAction.TitlePopUp);

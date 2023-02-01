@@ -170,7 +170,7 @@ internal class DataPanelGroup
     private bool IsEnabled(FormElementPanel panel)
     {
         var fieldManager = DataPanelControl.FieldManager;
-        bool panelEnable = fieldManager.Expression.GetBoolValue(
+        bool panelEnable = fieldManager.ExpressionManager.GetBoolValue(
             panel.EnableExpression, "Panel " + panel.Title, DataPanelControl.PageState, DataPanelControl.Values);
 
         return panelEnable;
@@ -179,7 +179,7 @@ internal class DataPanelGroup
     private bool IsVisible(FormElementPanel panel)
     {
         var fieldManager = DataPanelControl.FieldManager;
-        bool panelEnable = fieldManager.Expression.GetBoolValue(
+        bool panelEnable = fieldManager.ExpressionManager.GetBoolValue(
             panel.VisibleExpression, "Panel " + panel.Title, DataPanelControl.PageState, DataPanelControl.Values);
 
         return panelEnable;

@@ -182,7 +182,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_actionManager == null)
-                _actionManager = new ActionManager(FormElement, FieldManager.Expression, Name);
+                _actionManager = new ActionManager(FormElement, FieldManager.ExpressionManager, Name);
 
             return _actionManager;
         }
@@ -195,7 +195,7 @@ public class JJGridView : JJBaseView
             if (_fieldManager == null)
             {
                 var exp = new ExpressionManager(UserValues, EntityRepository);
-                _fieldManager = new FieldManager(FormElement, exp);
+                _fieldManager = new FieldManager(Name, FormElement, exp);
             }
             return _fieldManager;
         }

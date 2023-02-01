@@ -101,7 +101,7 @@ internal class GridFilter
             }
         }
 
-        var formManager = new FormManager(GridView.FormElement, GridView.FieldManager.Expression);
+        var formManager = new FormManager(GridView.FormElement, GridView.FieldManager.ExpressionManager);
         _currentFilter = formManager.MergeWithDefaultValues(values, PageState.List);
         
         JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
