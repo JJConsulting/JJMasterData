@@ -47,8 +47,11 @@ public static class FieldValidator
 
                 break;
             case FormComponent.Hour:
+
+                var hourFormat = value.Length == 5 ? "HH:mm" : "HH:mm:ss";
+
                 var valid = DateTime.TryParseExact(value,
-                    "HH:mm",
+                    hourFormat,
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.None,
                     out _);
@@ -56,6 +59,7 @@ public static class FieldValidator
                 {
                     return Translate.Key("{0} field has an invalid time", fieldName);
                 }
+
 
                 break;
             case FormComponent.Cnpj:
