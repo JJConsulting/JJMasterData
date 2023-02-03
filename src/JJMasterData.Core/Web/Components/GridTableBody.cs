@@ -37,31 +37,40 @@ internal class GridTableBody
         return tbody;
     }
 
-    private IEnumerable<HtmlBuilder> GetRowsList(bool isAjax = false)
+    private IEnumerable<HtmlBuilder> GetRowsList()
     {
         var rows = GridView.DataSource.Rows;
         
         for (int i = 0; i < rows.Count; i++)
         {
-            yield return GetRowHtmlElement(rows[i], i, isAjax);
+            yield return GetRowHtml(rows[i],i);
         }
     }
 
-    internal HtmlBuilder GetRowHtmlElement(DataRow row, int index, bool isAjax)
+    internal HtmlBuilder GetRowHtml(DataRow row, int index)
+    {
+        var html = new HtmlBuilder(HtmlTag.Tr);
+        var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
+        var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
+
+        html.WithAttribute("id", $"row{index}");
+        bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultSelect);
+        html.WithCssClassIf(enableGridAction, "jjgrid-action");
+
+        html.AppendRange(GetTdHtmlList(row,index));
+        
+        return html;
+    }
+    
+    internal IEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
     {
         var values = GetValues(row);
 
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        var html = new HtmlBuilder(!isAjax ? HtmlTag.Tr : HtmlTag.Div);
-
-        if (!isAjax)
-        {
-            html.WithAttribute("id", $"row{index}");
-            bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultSelect);
-            html.WithCssClassIf(enableGridAction, "jjgrid-action");
-        }
+        var html = new List<HtmlBuilder>();
+        
 
         string onClickScript = GetOnClickScript(values, defaultAction);
         
@@ -71,7 +80,7 @@ internal class GridTableBody
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jjselect");
             td.AppendElement(checkBox);
-            html.AppendElement(td);
+            html.Add(td);
 
             if (!GridView.EnableEditMode && onClickScript == string.Empty)
             {
@@ -80,8 +89,8 @@ internal class GridTableBody
             }
         }
 
-        html.AppendRange(GetVisibleFieldsHtmlList(row, index, values, onClickScript));
-        html.AppendRange(GetActionsHtmlList(values));
+        html.AddRange(GetVisibleFieldsHtmlList(row, index, values, onClickScript));
+        html.AddRange(GetActionsHtmlList(values));
 
         return html;
     }
@@ -146,8 +155,11 @@ internal class GridTableBody
         var div = new HtmlBuilder(HtmlTag.Div);
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
-        if ((field.Component == FormComponent.ComboBox | field.Component == FormComponent.CheckBox |
-             field.Component == FormComponent.Search) & values.Contains(field.Name))
+        if (field.Component 
+                is FormComponent.ComboBox 
+                or FormComponent.CheckBox 
+                or FormComponent.Search
+            && values.Contains(field.Name))
         {
             value = values[field.Name].ToString();
         }

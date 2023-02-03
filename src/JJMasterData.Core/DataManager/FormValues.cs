@@ -21,39 +21,39 @@ internal class FormValues
         FieldManager = fieldManager;
     }
 
-    public Hashtable RequestFormValues(PageState state, string prefix = null)
+    public Hashtable RequestFormValues(PageState state, string prefix = "")
     {
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var f in FormElement.Fields)
+        foreach (var field in FormElement.Fields)
         {
-            var objname = (prefix == null ? prefix : string.Empty) + f.Name;
-            var value = f.ValidateRequest ? CurrentContext.Request.Form(objname) : CurrentContext.Request.GetUnvalidated(objname);
+            var fieldName = (prefix ?? string.Empty) + field.Name;
+            var value = field.ValidateRequest ? CurrentContext.Request.Form(fieldName) : CurrentContext.Request.GetUnvalidated(fieldName);
 
-            switch (f.Component)
+            switch (field.Component)
             {
                 case FormComponent.Search:
                 {
-                    var search = (JJSearchBox)FieldManager.GetField(f, state, values);
+                    var search = (JJSearchBox)FieldManager.GetField(field, state, values);
                     search.AutoReloadFormFields = true;
                     value = search.SelectedValue;
                     break;
                 }
                 case FormComponent.Lookup:
                 {
-                    var lookup = (JJLookup)FieldManager.GetField(f, state, values);
+                    var lookup = (JJLookup)FieldManager.GetField(field, state, values);
                     lookup.AutoReloadFormFields = true;
                     value = lookup.SelectedValue;
                     break;
                 }
                 default:
                 {
-                    if (f.Component is FormComponent.Number or FormComponent.Currency)
+                    if (field.Component is FormComponent.Number or FormComponent.Currency)
                     {
                         string requestType = CurrentContext.Request.QueryString("t");
-                        if (value != null && "reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType))
+                        if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType)))
                         {
                             if (double.TryParse(value?.ToString(), out var numericValue))
                                 value = numericValue;
@@ -61,9 +61,9 @@ internal class FormValues
                                 value = 0;
                         }
                     }
-                    else if (f.Component == FormComponent.CheckBox)
+                    else if (field.Component == FormComponent.CheckBox)
                     {
-                        value ??= CurrentContext.Request.Form(objname + "_hidden") ?? "0";
+                        value ??= CurrentContext.Request.Form(fieldName + "_hidden") ?? "0";
                     }
                     break;
                 }
@@ -71,7 +71,7 @@ internal class FormValues
              
             if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
             {
-                values.Add(f.Name, value);
+                values.Add(field.Name, value);
             }
         }
 
@@ -86,18 +86,18 @@ internal class FormValues
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var newvalues = new Hashtable();
-        DataHelper.CopyIntoHash(ref newvalues, values, true);
+        var newValues = new Hashtable();
+        DataHelper.CopyIntoHash(ref newValues, values, true);
         
         if (CurrentContext.IsPostBack && autoReloadFormFields)
         {
             _formValues ??= new FormValues(FieldManager);
             var requestedValues = _formValues.RequestFormValues(state, prefix);
-            DataHelper.CopyIntoHash(ref newvalues, requestedValues, true);
+            DataHelper.CopyIntoHash(ref newValues, requestedValues, true);
         }
         
         _formManager ??= new FormManager(FormElement, FieldManager.ExpressionManager);
-        return _formManager.MergeWithExpressionValues(newvalues, state, !CurrentContext.IsPostBack);
+        return _formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPostBack);
     }
 
 }

@@ -392,9 +392,9 @@ public class JJFormView : JJGridView
         if (formAction.Equals("OK"))
         {
             var values = GetFormValues();
-            var erros = InsertFormValues(values);
+            var errors = InsertFormValues(values);
 
-            if (erros.Count == 0)
+            if (errors.Count == 0)
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
@@ -406,13 +406,14 @@ public class JJFormView : JJGridView
                 {
                     pageState = PageState.Insert;
 
-                    var alert = new JJAlert();
-                    alert.Name = $"pnl_insertmsg_{Name}";
+                    var alert = new JJAlert
+                    {
+                        Name = $"pnl_insertmsg_{Name}",
+                        Color = PanelColor.Success,
+                        ShowIcon = true,
+                        Icon = IconType.CheckCircleO
+                    };
                     alert.Messages.Add(Translate.Key("Record added successfully"));
-                    alert.Color = PanelColor.Success;
-                    alert.ShowIcon = true;
-                    alert.Icon = IconType.CheckCircleO;
-
                     var alertHtml = alert.GetHtmlBuilder();
                     alertHtml.AppendElement(HtmlTag.Div, div =>
                     {
@@ -430,7 +431,7 @@ public class JJFormView : JJGridView
             }
   
             pageState = PageState.Insert;
-            return GetHtmlDataPainel(values, erros, pageState, true);
+            return GetHtmlDataPainel(values, errors, pageState, true);
 
         }
 

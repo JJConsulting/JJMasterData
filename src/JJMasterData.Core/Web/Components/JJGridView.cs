@@ -642,6 +642,8 @@ public class JJGridView : JJBaseView
         
         string requestType = CurrentContext.Request.QueryString("t");
 
+        SetDataSource();
+        
         if (CheckForExportation(requestType)) 
             return null;
         
@@ -650,9 +652,7 @@ public class JJGridView : JJBaseView
         
         if (CheckForSelectAllRows(requestType)) 
             return null;
-        
-        GetDataTable();
-        
+
         var html = new HtmlBuilder(HtmlTag.Div);
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
@@ -757,8 +757,14 @@ public class JJGridView : JJBaseView
             {
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[rowIndex];
-                string responseHtml = table.Body.GetRowHtmlElement(row, rowIndex, true).ToString();
 
+                string responseHtml = string.Empty;
+                
+                foreach (var td in table.Body.GetTdHtmlList(row, rowIndex))
+                {
+                    responseHtml += td.ToString();
+                }
+                
                 CurrentContext.Response.SendResponse(responseHtml);
             }
 
@@ -1165,22 +1171,26 @@ public class JJGridView : JJBaseView
     /// </returns>
     public DataTable GetDataTable()
     {
-        int tot = 0;
+        SetDataSource();
+        
+        return DataSource;
+    }
+
+    private void SetDataSource(int totalOfRecords = 0)
+    {
         if (_dataSource == null || IsUserSetDataSource)
         {
-            _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage, ref tot);
-            TotalRecords = tot;
+            _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage, ref totalOfRecords);
+            TotalRecords = totalOfRecords;
 
             //Se estiver paginando e não retornar registros volta para pagina inicial
             if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
             {
                 CurrentPage = 1;
-                _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage, ref tot);
-                TotalRecords = tot;
+                _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage, ref totalOfRecords);
+                TotalRecords = totalOfRecords;
             }
         }
-
-        return DataSource;
     }
 
     private DataTable GetDataTable(Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
