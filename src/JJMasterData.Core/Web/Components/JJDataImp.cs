@@ -67,7 +67,7 @@ public class JJDataImp : JJBaseProcess
 
     public JJDataImp(FormElement formElement) : this()
     {
-        FormElement = formElement;
+        WebComponentFactory.SetDataImpParams(this, formElement);
     }
 
     #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Args;
@@ -30,7 +31,7 @@ namespace JJMasterData.Core.Web.Factories
             return dataImp;
         }
         
-        internal static void SetDataImpParams(JJDataImp dataPanel, string elementName)
+        internal static void SetDataImpParams(JJDataImp dataImp, string elementName)
         {
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName));
@@ -42,9 +43,25 @@ namespace JJMasterData.Core.Web.Factories
             
             var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(elementName);
             formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+
+            if (formEvent != null) 
+                dataImp.OnBeforeImport += formEvent.OnBeforeImport;
             
-            dataPanel.FormElement = metadata.GetFormElement();
-            dataPanel.ProcessOptions = metadata.Options.ToolBarActions.ImportAction.ProcessOptions;
+            dataImp.FormElement = metadata.GetFormElement();
+            dataImp.ProcessOptions = metadata.Options.ToolBarActions.ImportAction.ProcessOptions;
+        }
+        
+        internal static void SetDataImpParams(JJDataImp dataImp, FormElement formElement)
+        {
+            if (formElement is null)
+                throw new ArgumentNullException(nameof(formElement));
+
+            var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(formElement.Name);
+
+            if (formEvent != null) 
+                dataImp.OnBeforeImport += formEvent.OnBeforeImport;
+            
+            dataImp.FormElement = formElement;
         }
 
     }

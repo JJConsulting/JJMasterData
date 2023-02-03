@@ -106,7 +106,8 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_dataImp != null) return _dataImp;
+            if (_dataImp != null) 
+                return _dataImp;
 
             _dataImp = new JJDataImp(FormElement)
             {

@@ -62,9 +62,5 @@ internal static class FormFactory
         form.OnAfterDelete += formEvent.OnAfterDelete;
         form.OnAfterInsert += formEvent.OnAfterInsert;
         form.OnAfterUpdate += formEvent.OnAfterUpdate;
-
-        form.DataImp.OnBeforeImport += formEvent.OnBeforeImport;
     }
-
-
 }

@@ -12,47 +12,29 @@ namespace JJMasterData.Core.Web.Components;
 
 public abstract class JJBaseProcess : JJBaseView
 {
-    private string _keyProcess;
+    private string _processKey;
     private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
     private FormManager _formManager;
     private ExpressionManager _expressionManager;
     IEntityRepository _entityRepository;
 
-    internal ExpressionManager ExpressionManager
-    {
-        get
-        {
-            if (_expressionManager == null)
-                _expressionManager = new ExpressionManager(UserValues, EntityRepository);
-
-            return _expressionManager;
-        }
-    }
+    internal ExpressionManager ExpressionManager => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
 
     internal IEntityRepository EntityRepository
     {
-        get
-        {
-            if (_entityRepository == null)
-                _entityRepository = JJService.EntityRepository;
-
-            return _entityRepository;
-        }
-        set
-        {
-            _entityRepository = value;
-        }
+        get => _entityRepository ??= JJService.EntityRepository;
+        set => _entityRepository = value;
     }
 
     internal string ProcessKey
     {
         get
         {
-            if (string.IsNullOrEmpty(_keyProcess))
-                _keyProcess = BuildProcessKey();
+            if (string.IsNullOrEmpty(_processKey))
+                _processKey = BuildProcessKey();
 
-            return _keyProcess;
+            return _processKey;
         }
     }
 
