@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
 
@@ -14,7 +15,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 public class JJValidationSummary : JJBaseView
 {
-    public List<string> Errors { get; set; }
+    public IList<string> Errors { get; set; }
 
     /// <summary>
     /// Panel title
@@ -36,20 +37,20 @@ public class JJValidationSummary : JJBaseView
         ShowCloseButton = true;
     }
 
-    public JJValidationSummary(Hashtable listError) : this()
+    public JJValidationSummary(IDictionary errors) : this()
     {
-        if (listError != null)
+        if (errors != null)
         {
-            foreach (DictionaryEntry err in listError)
+            foreach (DictionaryEntry err in errors)
             {
                 Errors.Add(err.Value.ToString());
             }
         }
     }
 
-    public JJValidationSummary(List<string> listError) : this()
+    public JJValidationSummary(IEnumerable<string> errors) : this()
     {
-        Errors = listError;
+        Errors = errors.ToList();
     }
 
     public JJValidationSummary(string error) : this()
@@ -59,7 +60,7 @@ public class JJValidationSummary : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        var alert = new JJAlert()
+        var alert = new JJAlert
         {
             Color = PanelColor.Danger,
             Icon = IconType.ExclamationTriangle,

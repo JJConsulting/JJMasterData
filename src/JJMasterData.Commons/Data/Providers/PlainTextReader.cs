@@ -49,7 +49,7 @@ public class PlainTextReader
             conn.ConnectionString = dataAccess.ConnectionString;
             conn.Open();
 
-            DbCommand dbCmd = providerFactory.CreateCommand();
+            using var dbCmd = providerFactory.CreateCommand();
             if (dbCmd == null)
                 throw new JJMasterDataException("Error on create DbCommand");
 
@@ -69,7 +69,7 @@ public class PlainTextReader
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
             dbCmd.CommandTimeout = dataAccess.TimeOut;
-            DbDataReader dr = dbCmd.ExecuteReader();
+            var dr = dbCmd.ExecuteReader();
 
             int col = 0;
             int qtd = 0;
