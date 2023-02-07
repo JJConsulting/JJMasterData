@@ -55,7 +55,7 @@ public class JJSearchBox : JJBaseControl
     internal string Id
     {
         get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-    } 
+    }
 
     internal IEntityRepository EntityRepository
     {
@@ -211,7 +211,7 @@ public class JJSearchBox : JJBaseControl
         var search = new JJSearchBox
         {
             Name = f.Name,
-            SelectedValue = (string)value,
+            SelectedValue = value?.ToString(),
             Visible = true,
             DataItem = f.DataItem,
             AutoReloadFormFields = false,
@@ -220,6 +220,7 @@ public class JJSearchBox : JJBaseControl
             EntityRepository = expOptions.EntityRepository,
             UserValues = expOptions.UserValues
         };
+
         search.Attributes.Add("pnlname", panelName);
 
         return search;

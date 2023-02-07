@@ -574,7 +574,7 @@ public class JJGridView : JJBaseView
 
     private string SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.Form("selectedrows_" + Name);
+        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selectedrows_" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
 

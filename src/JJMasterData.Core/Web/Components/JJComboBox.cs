@@ -75,11 +75,10 @@ public class JJComboBox : JJBaseControl
             DataItem = f.DataItem,
             FormValues = expOptions.FormValues,
             PageState = expOptions.PageState,
+            SelectedValue = value?.ToString(),
             UserValues = expOptions.UserValues,
             EntityRepository = expOptions.EntityRepository
         };
-        if (value != null)
-            cbo.SelectedValue = value.ToString();
 
         return cbo;
     }
