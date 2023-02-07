@@ -11,10 +11,10 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.2</AssemblyVersion>
-        <FileVersion>3.1.2</FileVersion>
-        <PackageVersion>3.1.2</PackageVersion>
-        <Version>3.1.2</Version>
+        <AssemblyVersion>3.1.3</AssemblyVersion>
+        <FileVersion>3.1.3</FileVersion>
+        <PackageVersion>3.1.3</PackageVersion>
+        <Version>3.1.3</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Saturn Version</Product>
