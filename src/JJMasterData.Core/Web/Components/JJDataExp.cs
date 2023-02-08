@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
@@ -207,15 +208,7 @@ public class JJDataExp : JJBaseProcess
         exporter.DataSource = dt;
         exporter.CurrentContext = HttpContext.Current;
         exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
-        Task.Run(async () => await exporter.RunWorkerAsync(CancellationToken.None));
-
-        var download = new JJDownloadFile
-        {
-            FilePath = exporter.FolderPath
-        };
-
-        download.DirectDownload();
+        BackgroundTask.Run(ProcessKey, exporter);
     }
 
     internal void ExportFileInBackground(Hashtable filter, string order)
@@ -226,7 +219,7 @@ public class JJDataExp : JJBaseProcess
         exporter.CurrentOrder = order;
         exporter.CurrentContext = HttpContext.Current;
         exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
-        
+
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
