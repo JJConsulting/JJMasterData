@@ -111,7 +111,6 @@ internal class WebControlFactory
 
                 break;
         }
-
         baseView.ReadOnly = f.DataBehavior == FieldBehavior.ViewOnly && ExpressionOptions.PageState != PageState.Filter;
 
 

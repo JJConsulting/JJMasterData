@@ -276,7 +276,7 @@ internal class DataPanelControl
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             field.Name = FieldNamePrefix + f.Name;
 
-        field.Enabled = FieldManager.IsEnable(f, PageState, Values);
+        field.Enabled = FieldManager.IsEnabled(f, PageState, Values);
         if (BootstrapHelper.Version > 3 && Erros != null && Erros.Contains(f.Name))
         {
             field.CssClass = "is-invalid";

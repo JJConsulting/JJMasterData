@@ -63,7 +63,7 @@ public class FieldManager
         return ExpressionManager.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
     }
 
-    public bool IsEnable(FormElementField field, PageState state, Hashtable formValues)
+    public bool IsEnabled(FormElementField field, PageState state, Hashtable formValues)
     {
         if (state == PageState.View)
             return false;
@@ -220,8 +220,11 @@ public class FieldManager
         
         var expOptions = new ExpressionOptions(ExpressionManager.UserValues, formValues, pageState, ExpressionManager.EntityRepository);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
+        var control = controlFactory.CreateControl(field, value);
 
-        return controlFactory.CreateControl(field, value);
+        control.Enabled = IsEnabled(field, pageState, formValues);
+
+        return control;
     }
 
     public bool IsRange(FormElementField field, PageState pageState)

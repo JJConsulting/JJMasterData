@@ -1348,18 +1348,18 @@ public class JJGridView : JJBaseView
         foreach (var row in values)
         {
             line++;
-            foreach (var f in FormElement.Fields)
+            foreach (var field in FormElement.Fields)
             {
-                bool enable = FieldManager.IsEnable(f, PageState.List, row);
-                bool visible = FieldManager.IsVisible(f, PageState.List, row);
-                if (enable && visible && f.DataBehavior != FieldBehavior.ViewOnly)
+                bool enabled = FieldManager.IsEnabled(field, PageState.List, row);
+                bool visible = FieldManager.IsVisible(field, PageState.List, row);
+                if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
-                    string val = "";
-                    if (row[f.Name] != null)
-                        val = row[f.Name].ToString();
+                    string val = string.Empty;
+                    if (row[field.Name] != null)
+                        val = row[field.Name].ToString();
 
-                    string objname = GetFieldName(f.Name, row);
-                    string err = FieldValidator.ValidateField(f, objname, val);
+                    string objname = GetFieldName(field.Name, row);
+                    string err = FieldValidator.ValidateField(field, objname, val);
                     if (!string.IsNullOrEmpty(err))
                     {
                         string errMsg = $"{Translate.Key("Line")} {line}: {err}";
