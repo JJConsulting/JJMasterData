@@ -34,7 +34,7 @@ public class FormFilePathBuilder
         if (string.IsNullOrEmpty(path))
             throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
 
-        string separator = Path.DirectorySeparatorChar.ToString();
+        char separator = Path.DirectorySeparatorChar;
 
         string appPath = FileIO.GetApplicationPath().TrimEnd(separator);
 
