@@ -243,13 +243,13 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            html = GetSearchBoxHtmlElement();
+            html = GetSearchBoxHtml();
         }
 
         return html;
     }
 
-    private HtmlBuilder GetSearchBoxHtmlElement()
+    private HtmlBuilder GetSearchBoxHtml()
     {
         if (DataItem == null)
             throw new ArgumentException(Translate.Key("[DataItem] property not set"), Name);

@@ -103,15 +103,16 @@ public class JJComboBox : JJBaseControl
         }
         else
         {
-            return GetSelectElement(values);
+            return GetSelectHtml(values);
         }
 
 
     }
 
-    private HtmlBuilder GetSelectElement(IEnumerable<DataItemValue> values)
+    private HtmlBuilder GetSelectHtml(IEnumerable<DataItemValue> values)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
+            .WithCssClass(CssClass)
             .WithCssClass("form-control ")
             .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
             .WithNameAndId(Name)

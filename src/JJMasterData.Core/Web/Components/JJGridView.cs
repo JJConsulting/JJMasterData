@@ -658,7 +658,7 @@ public class JJGridView : JJBaseView
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
         
-        html.AppendText(GetHtmlScript());
+        html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs());
 
         html.AppendElement(Table.GetHtmlElement());
@@ -874,7 +874,7 @@ public class JJGridView : JJBaseView
         return alert.GetHtmlBuilder();
     }
 
-    private string GetHtmlScript()
+    private string GetScriptHtml()
     {
         var script = new StringBuilder();
 

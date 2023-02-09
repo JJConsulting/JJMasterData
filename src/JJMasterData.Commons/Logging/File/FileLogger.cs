@@ -56,15 +56,12 @@ public class FileLogger : ILogger
 
         string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
 
-        Task.Run(async () =>
-        {
-            await semaphoreSlim.WaitAsync();
+        semaphoreSlim.Wait();
 
-            using var writer = new StreamWriter(path, true);
-            await writer.WriteAsync(record);
+        using var writer = new StreamWriter(path, true);
+        writer.Write(record);
 
-            semaphoreSlim.Release();
-        });
+        semaphoreSlim.Release();
     }
 
     private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
