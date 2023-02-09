@@ -42,8 +42,9 @@ public class FileLogger : ILogger
     /// <param name="state">The event's state.</param>
     /// <param name="exception">The event's exception. An instance of <see cref="Exception" /></param>
     /// <param name="formatter">A delegate that formats </param>
-    public async void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
+
         if (!IsEnabled(logLevel))
             return;
 
@@ -55,13 +56,15 @@ public class FileLogger : ILogger
 
         string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
 
-        await semaphoreSlim.WaitAsync();
+        Task.Run(async () =>
+        {
+            await semaphoreSlim.WaitAsync();
 
-        using var writer = new StreamWriter(path, true);
-        await writer.WriteAsync(record);
+            using var writer = new StreamWriter(path, true);
+            await writer.WriteAsync(record);
 
-        semaphoreSlim.Release();
-
+            semaphoreSlim.Release();
+        });
     }
 
     private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
