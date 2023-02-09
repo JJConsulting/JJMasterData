@@ -12,7 +12,8 @@ namespace JJMasterData.Commons.Logging.File;
 public class FileLogger : ILogger
 {
     private readonly FileLoggerProvider _fileLoggerProvider;
-    private static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+    private static readonly object locker = new();
+
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
@@ -22,7 +23,7 @@ public class FileLogger : ILogger
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;
- 
+
     /// <summary>
     /// Whether to log the entry.
     /// </summary>
@@ -32,7 +33,7 @@ public class FileLogger : ILogger
     {
         return logLevel != LogLevel.None;
     }
-    
+
     /// <summary>
     /// Used to log the entry.
     /// </summary>
@@ -56,15 +57,14 @@ public class FileLogger : ILogger
 
         string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
 
-        semaphoreSlim.Wait();
-
-        using var writer = new StreamWriter(path, true);
-        writer.Write(record);
-
-        semaphoreSlim.Release();
+        lock (locker)
+        {
+            using var writer = new StreamWriter(path, true);
+            writer.Write(record);
+        }
     }
 
-    private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
+    private string GetLogRecord(LogLevel logLevel, string eventName, string message, Exception exception)
     {
         var log = new StringBuilder();
 
@@ -75,7 +75,7 @@ public class FileLogger : ILogger
         {
             log.AppendFormat(" [{0}] ", eventName);
         }
-        
+
         log.AppendFormat(" {0} ", message);
 
         if (exception != null)
