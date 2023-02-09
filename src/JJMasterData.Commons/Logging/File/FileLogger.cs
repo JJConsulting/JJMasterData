@@ -12,7 +12,7 @@ namespace JJMasterData.Commons.Logging.File;
 public class FileLogger : ILogger
 {
     private readonly FileLoggerProvider _fileLoggerProvider;
- 
+    private static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
@@ -42,36 +42,26 @@ public class FileLogger : ILogger
     /// <param name="state">The event's state.</param>
     /// <param name="exception">The event's exception. An instance of <see cref="Exception" /></param>
     /// <param name="formatter">A delegate that formats </param>
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public async void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         if (!IsEnabled(logLevel))
             return;
 
-        Task.Run(async() =>
-        {
-            var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
-            var directory = Path.GetDirectoryName(path);
+        var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
+        var directory = Path.GetDirectoryName(path);
 
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory!);
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory!);
 
-            string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
+        string record = GetLogRecord(logLevel, eventId.Name, formatter(state, exception), exception);
 
-            int retry = 0;
-            do
-            {
-                try
-                {
-                    using var writer = new StreamWriter(path, true);
-                    await writer.WriteAsync(record);
-                }
-                catch (IOException)
-                {
-                    Thread.Sleep(1000);
-                    retry++;
-                }
-            } while (FileIO.IsFileLocked(path) && retry < 5);
-        });
+        await semaphoreSlim.WaitAsync();
+
+        using var writer = new StreamWriter(path, true);
+        await writer.WriteAsync(record);
+
+        semaphoreSlim.Release();
+
     }
 
     private string GetLogRecord(LogLevel logLevel,string eventName, string message, Exception exception)
