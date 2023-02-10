@@ -11,15 +11,19 @@ public static class JJServiceBuilderExtensions
 {
     public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(filePath, optional: false, reloadOnChange: true)
-            .Build();
-
+        string basePath = Directory.GetCurrentDirectory();
         var builder = new JJServiceBuilder(services);
         
-        builder.AddDefaultServices(configuration);
-        builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
+        if (File.Exists(Path.Combine(basePath, filePath)))
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile(filePath, optional: false, reloadOnChange: true)
+                .Build();
+            
+            builder.AddDefaultServices(configuration);
+            builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
+        }
         
         return builder;
     }
