@@ -116,7 +116,7 @@ public static class DataHelper
     {
         var formValues = row.Table.Columns
             .Cast<DataColumn>()
-            .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()]);
+            .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()], StringComparer.InvariantCultureIgnoreCase);
 
         return ParsePkValues(formElement, formValues, separator);
     }
