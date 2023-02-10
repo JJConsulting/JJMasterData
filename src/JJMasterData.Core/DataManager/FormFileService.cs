@@ -92,7 +92,7 @@ internal class FormFileService
 
         if (AutoSave & !string.IsNullOrEmpty(FolderPath))
         {
-            File.Move(FolderPath + currentName, FolderPath + newName);
+            File.Move(Path.Combine(FolderPath,currentName), Path.Combine(FolderPath, newName));
         }
         else
         {

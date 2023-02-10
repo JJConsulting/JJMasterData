@@ -120,6 +120,20 @@ public class JJFormUpload : JJBaseView
             _gridView.ShowHeaderWhenEmpty = false;
 
             _gridView.AddGridAction(DownloadAction);
+
+            _gridView.OnRenderAction += (object sender, ActionEventArgs args) =>
+            {
+                if(args.Action.Name.Equals(_downloadAction.Name))
+                {
+                    var fileName = args.FieldValues["Name"].ToString();
+                    var isInMemory = Service.GetFile(fileName).IsInMemory;
+                    if (isInMemory)
+                    {
+                        args.LinkButton.Enabled = false;
+                    }
+                }
+            };
+
             _gridView.AddGridAction(RenameAction);
             _gridView.AddGridAction(DeleteAction);
             return _gridView;
