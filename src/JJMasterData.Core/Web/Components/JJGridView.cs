@@ -627,7 +627,7 @@ public class JJGridView : JJBaseView
             return GetLookupHtml(lookupRoute);
 
         html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
-        html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtmlBuilder);
+        html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtml);
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
         html.AppendElement(GetTableHtmlBuilder());
@@ -813,7 +813,7 @@ public class JJGridView : JJBaseView
 
     internal HtmlBuilder GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlElement();
 
-    public string GetFilterHtml() => Filter.GetFilterHtmlBuilder().ToString();
+    public string GetFilterHtml() => Filter.GetFilterHtml().ToString();
 
     public string GetToolbarHtml() => GetToolbarHtmlBuilder().ToString();
 

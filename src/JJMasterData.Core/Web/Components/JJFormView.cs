@@ -216,7 +216,7 @@ public class JJFormView : JJGridView
             }
             else if (Name.Equals(pnlname))
             {
-                Filter.GetFilterHtmlBuilder();
+                Filter.GetFilterHtml();
             }
             else
             {

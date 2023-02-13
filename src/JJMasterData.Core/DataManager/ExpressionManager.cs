@@ -49,7 +49,11 @@ public class ExpressionManager
 
     #endregion
 
-    public string ParseExpression(string expression, PageState state, bool quotationMarks, Hashtable formValues, ExpressionManagerInterval interval = null)
+    public string ParseExpression(string expression,
+                                  PageState state,
+                                  bool quotationMarks,
+                                  Hashtable values,
+                                  ExpressionManagerInterval interval = null)
     {
         if (expression == null)
             return null;
@@ -72,14 +76,14 @@ public class ExpressionManager
             {
                 val = $"{UserValues[field]}";
             }
-            else if (formValues != null && formValues.Contains(field))
-            {
-                var objVal = formValues[field];
-                val = objVal != null ? $"{objVal}" : "";
-            }
             else if ("pagestate".Equals(field.ToLower()))
             {
                 val = $"{state}";
+            }
+            else if (values != null && values.Contains(field))
+            {
+                var objVal = values[field];
+                val = objVal != null ? $"{objVal}" : "";
             }
             else if ("objname".Equals(field.ToLower()))
             {

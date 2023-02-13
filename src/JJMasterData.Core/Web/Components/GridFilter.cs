@@ -107,7 +107,7 @@ internal class GridFilter
         JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
     
-    public HtmlBuilder GetFilterHtmlBuilder()
+    public HtmlBuilder GetFilterHtml()
     {
         bool isVisible = GridView.FieldManager.IsVisible(
             GridView.FilterAction, PageState.List, GridView.DefaultValues);
@@ -115,16 +115,16 @@ internal class GridFilter
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        if (GridView.FilterAction.ShowAsCollapse &
+        if (GridView.FilterAction.ShowAsCollapse &&
             GridView.FilterAction.EnableScreenSearch)
         {
-            return GetHtmlFilterScreen().RenderHtml();
+            return GetFilterScreenHtml().RenderHtml();
         }
 
-        return GetHtmlFilterDefault();
+        return GetDefautFilterHtml();
     }
 
-    private HtmlBuilder GetHtmlFilterDefault()
+    private HtmlBuilder GetDefautFilterHtml()
     {
         string requestType = CurrentContext.Request.QueryString("t");
         string objName = CurrentContext.Request.QueryString("objname");
@@ -147,7 +147,7 @@ internal class GridFilter
 
         var action = GridView.FilterAction;
         var fields = GridView.FormElement.Fields.ToList().FindAll(
-            x => x.Filter.Type != FilterMode.None && !x.VisibleExpression.Equals("val:0"));
+            field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
 
         foreach(var field in fields)
         {
@@ -156,7 +156,7 @@ internal class GridFilter
         }
 
         if (fields.Count == 0)
-            return new HtmlBuilder("");
+            return new HtmlBuilder(string.Empty);
 
         var values = GetCurrentFilter();
 
@@ -234,7 +234,7 @@ internal class GridFilter
     }
 
 
-    private JJCollapsePanel GetHtmlFilterScreen()
+    private JJCollapsePanel GetFilterScreenHtml()
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
