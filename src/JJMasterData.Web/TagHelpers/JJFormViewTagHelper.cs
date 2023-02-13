@@ -6,28 +6,38 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJFormViewTagHelper : TagHelper
 {
-    [HtmlAttributeName("name")] 
-    public string? Name { get; set; }
     
     [HtmlAttributeName("element-name")] 
     public string? ElementName { get; set; }
-    
+
+    [HtmlAttributeName("form-element")]
+    public FormElement? FormElement { get; set; }
+
     [HtmlAttributeName("configure")] 
     public Action<JJFormView>? Configure { get; set; }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var form = new JJFormView(ElementName ?? throw new ArgumentNullException(nameof(ElementName)));
 
-        if (!string.IsNullOrEmpty(Name))
+        JJFormView formView;
+
+        if(ElementName is not null)
         {
-            form.Name = Name;
+            formView = new JJFormView(ElementName);
+        }
+        else if(FormElement is not null)
+        {
+            formView = new JJFormView(FormElement);
+        }
+        else
+        {
+            throw new InvalidOperationException("Please set ElementName or FormElement at your JJFormView TagHelper.");
         }
 
-        Configure?.Invoke(form);
+        Configure?.Invoke(formView);
         
         output.TagMode = TagMode.StartTagAndEndTag;
-        output.Content.SetHtmlContent(form.GetHtml());
+        output.Content.SetHtmlContent(formView.GetHtml());
         return Task.CompletedTask;
     }
 }
