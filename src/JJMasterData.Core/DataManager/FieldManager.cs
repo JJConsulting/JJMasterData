@@ -54,7 +54,6 @@ public class FieldManager
         return ExpressionManager.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
     }
 
-
     public bool IsVisible(FormElementField field, PageState state, Hashtable formValues)
     {
         if (field == null)
@@ -158,8 +157,8 @@ public class FieldManager
                 {
                     case FieldType.Float:
                     {
-                        if (double.TryParse(stringValue, out double nVal))
-                            stringValue = nVal.ToString("N" + field.NumberOfDecimalPlaces);
+                        if (double.TryParse(stringValue, NumberStyles.Number, CultureInfo.InvariantCulture, out double doubleValue))
+                            stringValue = doubleValue.ToString("N" + field.NumberOfDecimalPlaces);
                         break;
                     }
                     case FieldType.Int when !field.IsPk:
@@ -171,7 +170,7 @@ public class FieldManager
                 }
                 break;
             case FormComponent.Currency:
-                if (double.TryParse(stringValue, out var currencyValue))
+                if (double.TryParse(stringValue, NumberStyles.Number, CultureInfo.InvariantCulture, out var currencyValue))
                 {
                     var cultureInfo = CultureInfo.CurrentCulture;
                     var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
