@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
-    <PackageVersion>3.1.7</PackageVersion>
+    <PackageVersion>3.1.8</PackageVersion>
     <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
     <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>    </PackageReleaseNotes>
-    <AssemblyVersion>3.1.7</AssemblyVersion>
+    <AssemblyVersion>3.1.8</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -44,7 +44,7 @@
   
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.1.7</Version>
+    <Version>3.1.8</Version>
     <Company>JJ Consulting</Company>
     <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
