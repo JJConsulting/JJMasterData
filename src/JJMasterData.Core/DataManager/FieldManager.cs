@@ -43,7 +43,6 @@ public class FieldManager
         Name = name;
     }
 
-
     #endregion
 
     public bool IsVisible(BasicAction action, PageState state, Hashtable formValues)
@@ -157,7 +156,7 @@ public class FieldManager
                 {
                     case FieldType.Float:
                     {
-                        if (double.TryParse(stringValue, NumberStyles.Number, CultureInfo.InvariantCulture, out double doubleValue))
+                        if (double.TryParse(stringValue, out double doubleValue))
                             stringValue = doubleValue.ToString("N" + field.NumberOfDecimalPlaces);
                         break;
                     }
@@ -170,7 +169,7 @@ public class FieldManager
                 }
                 break;
             case FormComponent.Currency:
-                if (double.TryParse(stringValue, NumberStyles.Number, CultureInfo.InvariantCulture, out var currencyValue))
+                if (double.TryParse(stringValue, out var currencyValue))
                 {
                     var cultureInfo = CultureInfo.CurrentCulture;
                     var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
