@@ -4,9 +4,6 @@
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration;
 
-@{
-    string bootstrapTheme = Configuration.GetJJMasterData("Theme") ?? "default";
-}
 
 <link rel="stylesheet preload prefetch" href="~/css/fontawesome/all.min.css" />
 <link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-font-face.min.css" />
