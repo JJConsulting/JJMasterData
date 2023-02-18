@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using System;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Commons.Util;
@@ -8,6 +9,7 @@ namespace JJMasterData.Commons.Util;
 /// </summary>
 public class Cript
 {
+    private const string SecretKeyErrorMessage = "You must config or pass a secret key";
     private static DesEncryptionService _desEncryptionService;
     private static ReportPortalEnigmaService _reportPortalEnigmaService;
 
@@ -25,9 +27,14 @@ public class Cript
         return Cript64(value, JJService.Options.SecretKey);
     }
 
-
     public static string Cript64(string value, string secretKey)
     {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        if (string.IsNullOrEmpty(secretKey))
+            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
+
         return DesEncryptionService.EncryptString(value, secretKey);
     }
 
@@ -42,6 +49,12 @@ public class Cript
 
     public static string Descript64(string value, string secretKey)
     {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        if (string.IsNullOrEmpty(secretKey))
+            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
+        
         return DesEncryptionService.DecryptString(value, secretKey);
     }
 
@@ -67,11 +80,17 @@ public class Cript
 
     public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
     {
+        if (string.IsNullOrEmpty(secretKey))
+            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
+        
         return ReportPortalEnigmaService.EncryptString(message, secretKey);
     }
 
     public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
     {
+        if (string.IsNullOrEmpty(secretKey))
+            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
+        
         return ReportPortalEnigmaService.DecryptString(message, secretKey);
     }
 }
