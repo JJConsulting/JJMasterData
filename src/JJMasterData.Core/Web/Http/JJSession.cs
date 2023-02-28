@@ -3,8 +3,11 @@
 using System.Web;
 #endif
 using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Http;
 
+
+#if NET || NETSTANDARD
+using Microsoft.AspNetCore.Http;
+#endif
 // ReSharper disable RedundantNameQualifier
 
 namespace JJMasterData.Core.Web.Http;

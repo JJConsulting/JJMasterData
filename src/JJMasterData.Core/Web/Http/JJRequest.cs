@@ -3,7 +3,9 @@
 using System.Web;
 #endif
 
+#if NET || NETSTANDARD
 using Microsoft.AspNetCore.Http;
+#endif
 
 #if NET || NETSTANDARD
 using Microsoft.AspNetCore.Http.Extensions;
