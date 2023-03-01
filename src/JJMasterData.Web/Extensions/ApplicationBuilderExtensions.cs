@@ -1,6 +1,7 @@
+using JJMasterData.Commons.Extensions;
 using Microsoft.AspNetCore.Builder;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Web.Extensions;
 
 public static class ApplicationBuilderExtensions
 {

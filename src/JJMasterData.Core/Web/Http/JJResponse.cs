@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿#if NET || NETSTANDARD
+using Microsoft.AspNetCore.Http;
+#endif
 
 // ReSharper disable RedundantNameQualifier
 
