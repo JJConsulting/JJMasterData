@@ -22,7 +22,7 @@ public class JJAlertTagHelper : TagHelper
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var alert = new JJAlert
         {
@@ -36,10 +36,15 @@ public class JJAlertTagHelper : TagHelper
 
         if(!string.IsNullOrEmpty(Message))
             alert.Messages.Add(Message);
-        
+
+        var content = (await output.GetChildContentAsync()).GetContent();
+
+        if (!string.IsNullOrEmpty(content))
+            alert.Messages.Add(content);
+
+       
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(alert.GetHtml());
         
-        return Task.CompletedTask;
     }
 }
