@@ -18,7 +18,7 @@ public static class LoggingBuilderExtensions
     public static ILoggingBuilder AddFileLoggerProvider(this ILoggingBuilder builder)
     {
         builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
-        LoggerProviderOptions.RegisterProviderOptions<DbLoggerOptions, FileLoggerProvider>(builder.Services);
+        LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(builder.Services);
         return builder;
     }
 }
