@@ -41,8 +41,7 @@ public class JJAlert : JJBaseView
             html.AppendElement(new JJIcon(Icon));
 
         if (!string.IsNullOrEmpty(Title))
-            html.AppendElement(HtmlTag.B)
-                .AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}");
+            html.AppendElement(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}"));
 
         if (Messages != null)
         {
