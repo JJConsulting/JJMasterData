@@ -59,11 +59,8 @@ public class JJCheckBox : JJBaseControl
     {
         var div = new HtmlBuilder(HtmlTag.Div);
 
-        div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
-        {
-            label.AppendText(Text);
-        });
-
+        div.WithCssClass("form-check");
+        
         div.AppendElement(HtmlTag.Input, input =>
         {
             input.WithAttributes(Attributes)
@@ -75,6 +72,12 @@ public class JJCheckBox : JJBaseControl
                 .WithToolTip(Translate.Key(ToolTip))
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
+        });
+        
+        div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
+        {
+            label.WithAttribute("for", Name);
+            label.AppendText(Text);
         });
         
         return div;
