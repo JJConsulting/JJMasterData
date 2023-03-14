@@ -294,7 +294,7 @@ public class ElementService : BaseService
 
         string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
 
-        return Encoding.ASCII.GetBytes(json);
+        return Encoding.Default.GetBytes(json);
     }
 
     public byte[] ExportMultipleRows(List<Hashtable> selectedRows)
