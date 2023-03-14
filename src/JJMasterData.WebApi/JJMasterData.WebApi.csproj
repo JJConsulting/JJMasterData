@@ -5,10 +5,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <AssemblyVersion>3.1.10</AssemblyVersion>
-    <FileVersion>3.1.10</FileVersion>
+    <AssemblyVersion>3.1.11</AssemblyVersion>
+    <FileVersion>3.1.11</FileVersion>
     <IsPackable>true</IsPackable>
-    <PackageVersion>3.1.10</PackageVersion>
+    <PackageVersion>3.1.11</PackageVersion>
     <LangVersion>11</LangVersion>
   </PropertyGroup>
 
