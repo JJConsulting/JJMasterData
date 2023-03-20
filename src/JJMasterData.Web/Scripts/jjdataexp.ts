@@ -27,12 +27,12 @@
         // @ts-ignore
         var spinner = new Spinner(options).spin(target);
     }
-    
-    static checkProcess(objname, intervalId) {
+
+    static async checkProcess(objname) {
         showWaitOnPost = false;
 
-        var form = $("form");
-        var formUrl = form.attr("action");
+        const form = $("form");
+        let formUrl = form.attr("action");
         if (formUrl.includes("?"))
             formUrl += "&t=tableexp";
         else
@@ -40,35 +40,51 @@
 
         formUrl += "&gridName=" + objname;
         formUrl += "&exptype=checkProcess";
+        
+        try{
+            const response = await fetch(formUrl);
+            const data = await response.json();
 
-        fetch(formUrl)
-            .then(response => response.json())
-            .then(function (data) {
-                if (data.FinishedMessage) {
-                    clearInterval(intervalId);
-                    showWaitOnPost = true;
-                    $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
-                    $("#dataexp_spinner_" + objname).hide();
-                    const linkFile = $("#export_link_" + objname)[0];
-                    if (linkFile)
-                        linkFile.click();
-                } else {
-                    $("#divMsgProcess").css("display", "");
-                    $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
-                    $("#lblStartDate").text(data.StartDate);
-                    $("#lblResumeLog").text(data.Message);
-                }
-            });
+            if (data.FinishedMessage) {
+                showWaitOnPost = true;
+                $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
+                $("#dataexp_spinner_" + objname).hide();
+                const linkFile = $("#export_link_" + objname)[0];
+                if (linkFile)
+                    linkFile.click();
+
+                return true;
+            } else {
+                $("#divMsgProcess").css("display", "");
+                $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
+                $("#lblStartDate").text(data.StartDate);
+                $("#lblResumeLog").text(data.Message);
+
+                return false;
+            }
+        }
+        catch(e){
+            showWaitOnPost = true;
+            $("#dataexp_spinner_" + objname).hide();
+            $("#export_modal_" + objname + " .modal-body").html(e.message);
+            
+            return false;
+        }
+
     }
 
-    static startProcess(objname) {
+    static async startProcess(objname) {
         JJDataExp.setLoadMessage();
-        let intervalId = setInterval(function () {
-            JJDataExp.checkProcess(objname, intervalId);
-        }, (3 * 1000));
+        
+        var isCompleted : boolean = false;
+        
+        while(!isCompleted){
+            isCompleted = await JJDataExp.checkProcess(objname);
+            await sleep(3000);
+        }
     }
 
-    static stopProcess(objid, stopStr) {
+    static async stopProcess(objid, stopStr) {
         $("#divMsgProcess").html(stopStr);
         showWaitOnPost = false;
         var frm = $("form");
@@ -81,7 +97,7 @@
         surl += "&gridName=" + objid;
         surl += "&exptype=stopProcess";
 
-        fetch(surl);
+        await fetch(surl);
     }
 
     static openExportUI(objid) {
@@ -115,8 +131,7 @@
 
                 if (bootstrapVersion < 5) {
                     $("#export_modal_" + objid).modal();
-                }
-                else {
+                } else {
                     const modal = new bootstrap.Modal("#export_modal_" + objid, {});
                     modal.show();
                 }

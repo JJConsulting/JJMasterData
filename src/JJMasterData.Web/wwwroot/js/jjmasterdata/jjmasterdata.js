@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     jjloadform("load", null);
@@ -41,54 +50,69 @@ class JJDataExp {
         var target = document.getElementById('impSpin');
         var spinner = new Spinner(options).spin(target);
     }
-    static checkProcess(objname, intervalId) {
-        showWaitOnPost = false;
-        var form = $("form");
-        var formUrl = form.attr("action");
-        if (formUrl.includes("?"))
-            formUrl += "&t=tableexp";
-        else
-            formUrl += "?t=tableexp";
-        formUrl += "&gridName=" + objname;
-        formUrl += "&exptype=checkProcess";
-        fetch(formUrl)
-            .then(response => response.json())
-            .then(function (data) {
-            if (data.FinishedMessage) {
-                clearInterval(intervalId);
-                showWaitOnPost = true;
-                $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
-                $("#dataexp_spinner_" + objname).hide();
-                const linkFile = $("#export_link_" + objname)[0];
-                if (linkFile)
-                    linkFile.click();
+    static checkProcess(objname) {
+        return __awaiter(this, void 0, void 0, function* () {
+            showWaitOnPost = false;
+            const form = $("form");
+            let formUrl = form.attr("action");
+            if (formUrl.includes("?"))
+                formUrl += "&t=tableexp";
+            else
+                formUrl += "?t=tableexp";
+            formUrl += "&gridName=" + objname;
+            formUrl += "&exptype=checkProcess";
+            try {
+                const response = yield fetch(formUrl);
+                const data = yield response.json();
+                if (data.FinishedMessage) {
+                    showWaitOnPost = true;
+                    $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
+                    $("#dataexp_spinner_" + objname).hide();
+                    const linkFile = $("#export_link_" + objname)[0];
+                    if (linkFile)
+                        linkFile.click();
+                    return true;
+                }
+                else {
+                    $("#divMsgProcess").css("display", "");
+                    $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
+                    $("#lblStartDate").text(data.StartDate);
+                    $("#lblResumeLog").text(data.Message);
+                    return false;
+                }
             }
-            else {
-                $("#divMsgProcess").css("display", "");
-                $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
-                $("#lblStartDate").text(data.StartDate);
-                $("#lblResumeLog").text(data.Message);
+            catch (e) {
+                showWaitOnPost = true;
+                $("#dataexp_spinner_" + objname).hide();
+                $("#export_modal_" + objname + " .modal-body").html(e.message);
+                return false;
             }
         });
     }
     static startProcess(objname) {
-        JJDataExp.setLoadMessage();
-        let intervalId = setInterval(function () {
-            JJDataExp.checkProcess(objname, intervalId);
-        }, (3 * 1000));
+        return __awaiter(this, void 0, void 0, function* () {
+            JJDataExp.setLoadMessage();
+            var isCompleted = false;
+            while (!isCompleted) {
+                isCompleted = yield JJDataExp.checkProcess(objname);
+                yield sleep(3000);
+            }
+        });
     }
     static stopProcess(objid, stopStr) {
-        $("#divMsgProcess").html(stopStr);
-        showWaitOnPost = false;
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=tableexp";
-        else
-            surl += "?t=tableexp";
-        surl += "&gridName=" + objid;
-        surl += "&exptype=stopProcess";
-        fetch(surl);
+        return __awaiter(this, void 0, void 0, function* () {
+            $("#divMsgProcess").html(stopStr);
+            showWaitOnPost = false;
+            var frm = $("form");
+            var surl = frm.attr("action");
+            if (surl.includes("?"))
+                surl += "&t=tableexp";
+            else
+                surl += "?t=tableexp";
+            surl += "&gridName=" + objid;
+            surl += "&exptype=stopProcess";
+            yield fetch(surl);
+        });
     }
     static openExportUI(objid) {
         var frm = $("form");
@@ -1776,6 +1800,7 @@ var jjutil = (function () {
         }
     };
 })();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 var _a, _b;
 var showWaitOnPost = true;
 var bootstrapVersion = 3;

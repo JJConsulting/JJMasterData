@@ -2,12 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
-    <PackageVersion>3.1.11</PackageVersion>
-    <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
-    <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>    </PackageReleaseNotes>
-    <AssemblyVersion>3.1.11</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,18 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\JJMasterData.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
@@ -44,13 +27,8 @@
   
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.1.11</Version>
-    <Company>JJ Consulting</Company>
-    <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Product>JJMasterData.Core - Saturn Version</Product>
     <Description>JJMasterData library to render JJMasterData's components.</Description>
-    <PackageIcon>JJMasterData.png</PackageIcon>
   </PropertyGroup>
    
    <PropertyGroup>

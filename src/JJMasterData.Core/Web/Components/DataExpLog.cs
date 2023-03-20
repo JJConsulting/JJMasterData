@@ -32,6 +32,8 @@ internal class DataExpLog
 
             div.AppendText(Translate.Key("Exportation started on"));
 
+            div.AppendText(" ");
+            
             div.AppendElement(HtmlTag.Span, span =>
             {
                 span.WithAttribute("id", "lblStartDate");

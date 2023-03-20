@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 		.github\workflows\docs.yml = .github\workflows\docs.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebExample", "example\JJMasterData.WebExample\JJMasterData.WebExample.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"

@@ -12,6 +12,7 @@
       <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
       <AssemblyVersion>1.0.2</AssemblyVersion>
       <FileVersion>1.0.2</FileVersion>
+      
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,11 +25,20 @@
   </ItemGroup>
 
   <ItemGroup>
-      <None Include="..\..\..\JJMasterData.png">
+      <None Include="../../../JJMasterData.png">
           <Pack>True</Pack>
           <PackagePath>\</PackagePath>
       </None>
+      <None Remove="../../JJMasterData.png"/>
   </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../../../README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Remove="../../README.md"/>
+    </ItemGroup>
 
   <ItemGroup>
     <None Remove="Fonts\fontawesome-webfont.ttf" />
