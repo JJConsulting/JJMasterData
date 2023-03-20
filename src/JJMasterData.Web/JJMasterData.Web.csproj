@@ -39,6 +39,12 @@
       <Content Update="Scripts\tsconfig.json" Pack="false">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Content>
+        <Content Update="package.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+        <Content Update="package-lock.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>
