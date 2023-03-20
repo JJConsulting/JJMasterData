@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Documentation", "doc\JJMasterData.Documentation\JJMasterData.Documentation.csproj", "{B564D529-DA46-4713-ACA5-BB7F6B9B32D9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{59427CF1-D6B7-4779-9E62-4717C5763762}"
+	ProjectSection(SolutionItems) = preProject
+		src\Plugins\Directory.Build.props = src\Plugins\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Hangfire", "src\Plugins\JJMasterData.Hangfire\JJMasterData.Hangfire.csproj", "{3E777E1F-A8C0-4175-9694-FE27E549E814}"
 EndProject

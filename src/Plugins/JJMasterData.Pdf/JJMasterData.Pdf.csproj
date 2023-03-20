@@ -25,22 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-      <None Include="../../../JJMasterData.png">
-          <Pack>True</Pack>
-          <PackagePath>\</PackagePath>
-      </None>
-      <None Remove="../../JJMasterData.png"/>
-  </ItemGroup>
-
-    <ItemGroup>
-        <None Include="../../../README.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
-        <None Remove="../../README.md"/>
-    </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Fonts\fontawesome-webfont.ttf" />
     <EmbeddedResource Include="Fonts\fontawesome-webfont.ttf" />
   </ItemGroup>

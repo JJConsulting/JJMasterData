@@ -19,25 +19,10 @@
 		<PackageReference Include="Hangfire.Console" Version="1.4.2" />
 		<PackageReference Include="Hangfire.Core" Version="1.7.30" />
 	</ItemGroup>
-
-
-	<ItemGroup>
-		<None Include="..\..\..\JJMasterData.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="..\..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
 		<ProjectReference Include="..\..\JJMasterData.Core\JJMasterData.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\..\..\JJMasterData.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
 	</ItemGroup>
 
 </Project>
