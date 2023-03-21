@@ -57,7 +57,7 @@ internal static class FormFactory
     {
         form.OnBeforeDelete += formEvent.OnBeforeDelete;
         form.OnBeforeInsert += formEvent.OnBeforeInsert;
-        form.OnBeforeUpdate += formEvent.OnBeforeInsert;
+        form.OnBeforeUpdate += formEvent.OnBeforeUpdate;
 
         form.OnAfterDelete += formEvent.OnAfterDelete;
         form.OnAfterInsert += formEvent.OnAfterInsert;
