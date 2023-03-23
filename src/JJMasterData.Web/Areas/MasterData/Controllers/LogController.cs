@@ -82,6 +82,7 @@ public class LogController : Controller
             Icon = IconType.Trash,
             Text = Translate.Key("Clear Log"),
             ShowAsButton = true,
+            ConfirmationMessage = Translate.Key("Do you want to clear ALL logs?"),
             UrlRedirect = Url.Action("ClearAll")
         };
 

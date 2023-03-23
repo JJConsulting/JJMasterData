@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <Folder Include="Metadata" />
+      <Folder Include="Views" />
       <Folder Include="wwwroot\" />
 
     </ItemGroup>
@@ -18,6 +19,10 @@
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj" />
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.Pdf\JJMasterData.Pdf.csproj" />
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.Python\JJMasterData.Python.csproj" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Error\Index.cshtml" />
     </ItemGroup>
   
 </Project>

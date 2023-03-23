@@ -3,18 +3,18 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.12</AssemblyVersion>
-        <FileVersion>3.1.12</FileVersion>
-        <PackageVersion>3.1.12</PackageVersion>
-        <Version>3.1.12</Version>
+        <AssemblyVersion>3.1.13</AssemblyVersion>
+        <FileVersion>3.1.13</FileVersion>
+        <PackageVersion>3.1.13</PackageVersion>
+        <Version>3.1.13</Version>
         <Company>JJ Consulting</Company>
     	<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     	<PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>
-            - Fixed JJDataExp not working correctly with long queries.
-            - Added missing icons when editing UIOptions at JJMasterData.Web
-            - Remove tsconfig.json from NuGet package
-            - Added Directory.Build.props to source control
+            - Fixed form values not being removed when null or empty
+            - Added a confirmation beforing deleting all database logs
+            - Removed package.json and package-lock.json from NuGet package
+            - Moved ErrorController from JJMasterData.Web to JJMasterData.WebExample, consumers of the package should implement their own error page
         </PackageReleaseNotes>
  </PropertyGroup>
     <ItemGroup>

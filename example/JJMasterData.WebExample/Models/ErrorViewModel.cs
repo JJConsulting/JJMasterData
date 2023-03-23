@@ -1,6 +1,6 @@
 using static System.Environment;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.WebExample.Models;
 
 public class ErrorViewModel
 {
