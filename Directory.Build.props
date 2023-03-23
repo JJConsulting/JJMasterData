@@ -3,18 +3,16 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.13</AssemblyVersion>
-        <FileVersion>3.1.13</FileVersion>
-        <PackageVersion>3.1.13</PackageVersion>
-        <Version>3.1.13</Version>
+        <AssemblyVersion>3.1.14</AssemblyVersion>
+        <FileVersion>3.1.14</FileVersion>
+        <PackageVersion>3.1.14</PackageVersion>
+        <Version>3.1.14</Version>
         <Company>JJ Consulting</Company>
     	<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     	<PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>
-            - Fixed form values not being removed when null or empty
-            - Added a confirmation beforing deleting all database logs
-            - Removed package.json and package-lock.json from NuGet package
-            - Moved ErrorController from JJMasterData.Web to JJMasterData.WebExample, consumers of the package should implement their own error page
+         - bugfix: Field actions not working as intented
+         - bugfix: JJGridView DataSource is not updated after a grid action
         </PackageReleaseNotes>
  </PropertyGroup>
     <ItemGroup>
