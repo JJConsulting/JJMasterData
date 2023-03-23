@@ -122,7 +122,7 @@ internal class WebControlFactory
         var actions = f.Actions.GetAll().FindAll(x => x.IsVisible);
         foreach (BasicAction action in actions)
         {
-            var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState, PanelName);
+            var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState, f.Name);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
