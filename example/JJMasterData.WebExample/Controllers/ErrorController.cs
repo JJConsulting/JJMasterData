@@ -1,11 +1,10 @@
 ﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Web.Models;
+using JJMasterData.WebExample.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Web.Controllers;
+namespace JJMasterData.WebExample.Controllers;
 
 public class ErrorController : Controller
 {

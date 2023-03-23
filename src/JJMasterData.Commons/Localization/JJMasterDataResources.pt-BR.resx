@@ -3393,4 +3393,7 @@
   <data name="Get Class" xml:space="preserve">
     <value>Obter Classe</value>
   </data>
+  <data name="Do you want to clear ALL logs?" xml:space="preserve">
+    <value>Você deseja limpar TODOS os logs?</value>
+  </data>
 </root>

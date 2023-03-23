@@ -1,4 +1,3 @@
-using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;

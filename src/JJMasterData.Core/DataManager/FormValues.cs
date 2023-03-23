@@ -70,7 +70,7 @@ internal class FormValues
                     }
             }
 
-            if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
+            if (value != null)
             {
                 values.Add(field.Name, value);
             }
