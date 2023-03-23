@@ -642,8 +642,6 @@ public class JJGridView : JJBaseView
         AssertProperties();
         
         string requestType = CurrentContext.Request.QueryString("t");
-
-        SetDataSource();
         
         if (CheckForExportation(requestType)) 
             return null;
@@ -660,6 +658,8 @@ public class JJGridView : JJBaseView
         
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs());
+
+        SetDataSource();
 
         html.AppendElement(Table.GetHtmlElement());
 
