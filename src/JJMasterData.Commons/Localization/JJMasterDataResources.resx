@@ -14,4 +14,13 @@
     <data name="Do you want to clear ALL logs?" xml:space="preserve">
         <value />
     </data>
+    <data name="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table." xml:space="preserve">
+        <value />
+    </data>
+    <data name="Before starting the process" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Multiselect" xml:space="preserve">
+        <value />
+    </data>
 </root>

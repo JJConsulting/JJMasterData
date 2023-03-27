@@ -74,6 +74,7 @@ public class JJComboBox : JJBaseControl
             Visible = true,
             DataItem = f.DataItem,
             FormValues = expOptions.FormValues,
+            MultiSelect = f.DataItem!.EnableMultiSelect,
             PageState = expOptions.PageState,
             SelectedValue = value?.ToString(),
             UserValues = expOptions.UserValues,
@@ -92,21 +93,15 @@ public class JJComboBox : JJBaseControl
 
         if (values == null)
             throw new ArgumentException(Translate.Key("Data source not defined for combo"), Name);
-
-
-
+        
         if (ReadOnly)
         {
             var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));
             return combobox;
         }
-        else
-        {
-            return GetSelectHtml(values);
-        }
 
-
+        return GetSelectHtml(values);
     }
 
     private HtmlBuilder GetSelectHtml(IEnumerable<DataItemValue> values)
@@ -116,8 +111,9 @@ public class JJComboBox : JJBaseControl
             .WithCssClass("form-control ")
             .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
+            .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "title", Translate.Key("All"))
-            .WithAttributeIf(MultiSelect, "data-live-search", "true")
+            .WithAttributeIf(MultiSelect && PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithAttribute("data-style", "form-control")
@@ -141,9 +137,16 @@ public class JJComboBox : JJBaseControl
         {
             var label = IsManualValues() ? Translate.Key(value.Description) : value.Description;
 
+            var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
+            
+            if (MultiSelect && SelectedValue != null)
+            {
+                isSelected = SelectedValue.Split(',').Contains(value.Id);
+            }
+            
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
-                .WithAttributeIf(SelectedValue != null && SelectedValue.Equals(value.Id), "selected", "selected")
+                .WithAttributeIf(isSelected, "selected")
                 .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
                 .AppendText(label);
 
