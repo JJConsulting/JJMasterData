@@ -3396,4 +3396,10 @@
   <data name="Do you want to clear ALL logs?" xml:space="preserve">
     <value>Você deseja limpar TODOS os logs?</value>
   </data>
+  <data name="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table." xml:space="preserve">
+    <value>Tenha cuidado ao usar esta opção. Você provavelmente deve usar esta opção apenas para campos WriteOnly ou armazenar os valores em outra tabela.</value>
+  </data>
+  <data name="Multiselect" xml:space="preserve">
+    <value>Multiseleção</value>
+  </data>
 </root>

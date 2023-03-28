@@ -125,7 +125,7 @@
         <hr/>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("List Type")">@Translate.Key("ListType")</label>
         <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
@@ -148,7 +148,7 @@
         </select>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Replace the field value with a description of the combination when displaying a grid")">@Translate.Key("ReplaceTextOnGrid")</label>
         @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
         {
@@ -158,14 +158,14 @@
             new { @class = "form-control form-select" })
     </div>
 
-    @if (Model.Component != FormComponent.Search)
+    @if (Model.Component is FormComponent.ComboBox)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divFirstOption">
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
             <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display text (All) as first option")">@Translate.Key("FirstOption")</label>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display images with text in the combo")">@Translate.Key("ShowImageLegend")</label>
         @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowImageLegend, new[]
         {
@@ -174,7 +174,19 @@
         },
             new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
-
+    
+    @if (Model.Component is FormComponent.ComboBox)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.")">
+                @Translate.Key("Multiselect")
+            </label>
+            <select class="form-control form-select" asp-for="DataItem!.EnableMultiSelect">
+                <option value="true">@Translate.Key("Yes")</option>
+                <option value="false">@Translate.Key("No")</option>
+            </select>
+        </div>
+    }
     <div id="divManualValues" class="col-sm-12" style="@(isManualVal ? "" : "display:none")">
         <table class="table table-striped table-bordered table-hover">
             <thead>
@@ -257,33 +269,12 @@
                             <span class="sr-only">@Translate.Key("Toggle Dropdown")</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(2);">2 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(3);">3 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(4);">4 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(5);">5 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(6);">6 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(7);">7 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(8);">8 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(9);">9 @Translate.Key("Lines")</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="javascript:addDataItem(10);">10 @Translate.Key("Lines")</a>
-                            </li>
+                           @for(var i = 2; i <= 10; i++)
+                           {
+                               <li class="dropdown-item">
+                                   <a href="javascript:addDataItem(@i);">@i @Translate.Key("Lines")</a>
+                               </li>
+                           }
                         </ul>
                     </div>
 

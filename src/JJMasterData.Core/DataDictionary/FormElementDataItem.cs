@@ -68,6 +68,12 @@ public class FormElementDataItem
     [DataMember(Name = "replacetextongrid")]
     public bool ReplaceTextOnGrid { get; set; }
 
+    /// <remarks>
+    /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
+    /// </remarks>
+    [DataMember(Name = "enableMultiSelect")]
+    public bool EnableMultiSelect { get; set; }
+    
     /// <summary>
     /// Permite incluir imagens na lista como legendas
     /// </summary>
