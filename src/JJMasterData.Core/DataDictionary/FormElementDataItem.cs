@@ -69,9 +69,9 @@ public class FormElementDataItem
     public bool ReplaceTextOnGrid { get; set; }
 
     /// <remarks>
-    /// Be careful when using this option, you will maybe use this option to WriteOnly fields or store the values in another table.
+    /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>
-    [DataMember(Name = "enableMultipleValues")]
+    [DataMember(Name = "enableMultiSelect")]
     public bool EnableMultiSelect { get; set; }
     
     /// <summary>
