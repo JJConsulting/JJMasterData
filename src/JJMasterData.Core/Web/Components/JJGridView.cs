@@ -643,6 +643,12 @@ public class JJGridView : JJBaseView
         
         string requestType = CurrentContext.Request.QueryString("t");
         
+        string currentAction = CurrentContext.Request["current_tableaction_" + Name];
+        
+        var error = ExecuteCurrentAction(ref currentAction);
+        
+        SetDataSource();
+        
         if (CheckForExportation(requestType)) 
             return null;
         
@@ -657,10 +663,8 @@ public class JJGridView : JJBaseView
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
         
         html.AppendText(GetScriptHtml());
-        html.AppendRange(GetHiddenInputs());
-
-        SetDataSource();
-
+        html.AppendRange(GetHiddenInputs(error, currentAction));
+        
         html.AppendElement(Table.GetHtmlElement());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
@@ -704,11 +708,9 @@ public class JJGridView : JJBaseView
         return false;
     }
 
-    private IEnumerable<HtmlBuilder> GetHiddenInputs()
+    private IEnumerable<HtmlBuilder> GetHiddenInputs(string error, string currentAction)
     {
         var elementList = new List<HtmlBuilder>();
-        
-        var (error,currentAction  ) = GetAndExecuteCurrentAction();
 
         if (!string.IsNullOrEmpty(error))
         {
@@ -821,10 +823,9 @@ public class JJGridView : JJBaseView
 
     public string GetTitleHtml() => GetTitle().GetHtml();
 
-    private (string currentAction,string error) GetAndExecuteCurrentAction()
+    private string ExecuteCurrentAction(ref string currentAction)
     {
         string error = string.Empty;
-        string currentAction = CurrentContext.Request["current_tableaction_" + Name];
         var actionMap = CurrentActionMap;
         var action = GetCurrentAction(actionMap);
 
@@ -842,7 +843,7 @@ public class JJGridView : JJBaseView
                 break;
         }
 
-        return (error, currentAction);
+        return error;
     }
 
     private void AssertProperties()
