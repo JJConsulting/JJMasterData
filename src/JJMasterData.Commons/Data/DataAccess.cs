@@ -127,19 +127,19 @@ public class DataAccess
 
     public DbConnection GetConnection()
     {
-        var _connection = Factory.CreateConnection();
+        var connection = Factory.CreateConnection();
 
         try
         {
-            _connection!.ConnectionString = ConnectionString;
-            _connection.Open();
+            connection!.ConnectionString = ConnectionString;
+            connection.Open();
         }
         catch (Exception ex)
         {
             throw new DataAccessException(ex);
         }
 
-        return _connection;
+        return connection;
     }
 
     public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
