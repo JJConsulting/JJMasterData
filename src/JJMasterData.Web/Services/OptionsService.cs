@@ -38,7 +38,7 @@ public class OptionsService : BaseService
             ConnectionString = connectionString
         };
 
-        return await dataAccess.TryConnectionAsync();
+        return await dataAccess.TryConnectionAsync(default);
     }
 
     public async Task SaveOptions(OptionsViewModel model)
