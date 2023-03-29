@@ -3,15 +3,16 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.15</AssemblyVersion>
-        <FileVersion>3.1.15</FileVersion>
-        <PackageVersion>3.1.15</PackageVersion>
-        <Version>3.1.15</Version>
+        <AssemblyVersion>3.1.16</AssemblyVersion>
+        <FileVersion>3.1.16</FileVersion>
+        <PackageVersion>3.1.16</PackageVersion>
+        <Version>3.1.16</Version>
         <Company>JJ Consulting</Company>
     	   <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     	   <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>
-         feat: Added multiselect option to JJComboBox
+         - bugfix: SetDataSource needs to be after executing a action and before the form checks. (#101)
+         - bugfix: Relationships view was not working as intented
         </PackageReleaseNotes>
  </PropertyGroup>
     <ItemGroup>
