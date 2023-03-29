@@ -1,25 +1,39 @@
-﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Core.Options;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
+var services = new ServiceCollection();
+
+var builder = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("appsettings.json", false, false);
+
 IConfiguration configuration = builder.Build();
 
+services.AddSingleton(configuration);
+
+services.AddJJMasterDataCore(coreOptions =>
+{
+    coreOptions.DataDictionaryTableName = configuration.GetJJMasterData().GetValue<string>("DataDictionaryTableName")!;
+}, commonsOptions =>
+{
+    commonsOptions.PrefixGetProc = configuration.GetJJMasterData().GetValue<string>("PrefixGetProc")!;
+    commonsOptions.PrefixSetProc = configuration.GetJJMasterData().GetValue<string>("PrefixSetProc")!;
+});
+
 var path = configuration.GetValue<string>("DictionaryPath");
+
+var serviceProvider = services.BuildServiceProvider().UseJJMasterData();
 
 Console.WriteLine(AppContext.BaseDirectory);
 Console.WriteLine("Starting Process...\n");
 
 var start = DateTime.Now;
-IEntityRepository entityRepository = new EntityRepository();
-var options = Options.Create(new JJMasterDataCoreOptions());
-var dicDao = new SqlDataDictionaryRepository(entityRepository, options);
-var databaseDictionaries = dicDao.GetMetadataList(false);
+
+var repository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
+var databaseDictionaries = repository.GetMetadataList(false);
 var folderDictionaries = new List<Metadata>();
 
 if (path != null)
@@ -33,7 +47,7 @@ if (path != null)
         if (dicParser != null)
         {
             Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
-            dicDao.InsertOrReplace(dicParser);
+            repository.InsertOrReplace(dicParser);
 
             folderDictionaries.Add(dicParser);
         }
@@ -45,7 +59,7 @@ foreach (var dicParser in databaseDictionaries)
     if (!folderDictionaries.Exists(dic => dic.Table.Name.Equals(dicParser.Table.Name)))
     {
         Console.WriteLine($"DelDictionary: {dicParser.Table.Name}");
-        dicDao.Delete(dicParser.Table.Name);
+        repository.Delete(dicParser.Table.Name);
 
     }
 }
