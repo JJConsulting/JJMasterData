@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
@@ -126,36 +127,36 @@ public class DataAccess
 
     public DbConnection GetConnection()
     {
-        var _connection = Factory.CreateConnection();
+        var connection = Factory.CreateConnection();
 
         try
         {
-            _connection!.ConnectionString = ConnectionString;
-            _connection.Open();
+            connection!.ConnectionString = ConnectionString;
+            connection.Open();
         }
         catch (Exception ex)
         {
             throw new DataAccessException(ex);
         }
 
-        return _connection;
+        return connection;
     }
 
-    public async Task<DbConnection> GetConnectionAsync()
+    public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
-        var _connection = Factory.CreateConnection();
+        var connection = Factory.CreateConnection();
 
         try
         {
-            _connection!.ConnectionString = ConnectionString;
-            await _connection.OpenAsync();
+            connection!.ConnectionString = ConnectionString;
+            await connection.OpenAsync(cancellationToken);
         }
         catch (Exception ex)
         {
             throw new DataAccessException(ex);
         }
 
-        return _connection;
+        return connection;
     }
 
     /// <summary>
@@ -211,34 +212,35 @@ public class DataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(string)"/>
-    public async Task<DataTable> GetDataTableAsync(string sql)
+    public async Task<DataTable> GetDataTableAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await GetDataTableAsync(new DataAccessCommand(sql));
+        return await GetDataTableAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd)
+    ///<remarks>Cancellation token not supported at Fill method. https://github.com/dotnet/runtime/issues/22109.</remarks>
+    public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         var dt = new DataTable();
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync();
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
             using (dbCommand.Connection)
             {
                 using (var dataAdapter = Factory.CreateDataAdapter())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     dataAdapter!.SelectCommand = dbCommand;
                     dataAdapter.Fill(dt);
                 }
                 
                 if (cmd.Parameters != null)
                 {
-                    foreach (var param in cmd.Parameters)
+                    foreach (var param in cmd.Parameters.Where(param => param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
                     {
-                        if (param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                            param.Value = dbCommand.Parameters[param.Name].Value;
+                        param.Value = dbCommand.Parameters[param.Name].Value;
                     }
                 }
             }
@@ -323,23 +325,23 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="GetResult(string)"/>
-    public async Task<object> GetResultAsync(string sql)
+    public async Task<object> GetResultAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await GetResultAsync(new DataAccessCommand(sql));
+        return await GetResultAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
-    public async Task<object> GetResultAsync(DataAccessCommand cmd)
+    public async Task<object> GetResultAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         object scalarResult;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync();
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
         
             using (dbCommand.Connection)
             {
-                scalarResult = await dbCommand.ExecuteScalarAsync();
+                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -419,17 +421,17 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
-    public async Task<int> SetCommandAsync(DataAccessCommand cmd)
+    public async Task<int> SetCommandAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         int rowsAffected;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync();
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
             using (dbCommand.Connection)
             {
-                rowsAffected = await dbCommand.ExecuteNonQueryAsync();
+                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -484,12 +486,12 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands)
+    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
         DataAccessCommand currentCommand = null;
 
-        var connection = await GetConnectionAsync();
+        var connection = await GetConnectionAsync(cancellationToken);
         using (connection)
         {
             using var transaction = connection.BeginTransaction();
@@ -503,7 +505,7 @@ public class DataAccess
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = transaction;
 
-                    numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync();
+                    numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
                 }
 
                 transaction.Commit();
@@ -527,9 +529,9 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="SetCommand(string)"/>
-    public async Task<int> SetCommandAsync(string sql)
+    public async Task<int> SetCommandAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await SetCommandAsync(new DataAccessCommand(sql));
+        return await SetCommandAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     /// <summary>Runs one or more commands on the database with transactions.</summary>
@@ -544,11 +546,11 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>
-    public async Task<int> SetCommandAsync(IEnumerable<string> sqlList)
+    public async Task<int> SetCommandAsync(IEnumerable<string> sqlList, CancellationToken cancellationToken = default)
     {
         var commandList = sqlList.Select(sql => new DataAccessCommand(sql));
 
-        int numberOfRowsAffected = await SetCommandAsync(commandList);
+        int numberOfRowsAffected = await SetCommandAsync(commandList, cancellationToken);
         return numberOfRowsAffected;
     }
 
@@ -597,7 +599,7 @@ public class DataAccess
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
 
     /// <inheritdoc cref="GetFields(string)"/>
-    public Task<Hashtable> GetFieldsAsync(string sql) => GetFieldsAsync(new DataAccessCommand(sql));
+    public Task<Hashtable> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) => GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
 
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
@@ -652,18 +654,18 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command)
+    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         Hashtable result = null;
         try
         {
             using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync();
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
             using (dbCommand.Connection)
             {
-                using (var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow))
+                using (var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
-                    while (await dataReader.ReadAsync())
+                    while (await dataReader.ReadAsync(cancellationToken))
                     {
                         result = new Hashtable();
                         int count = 0;
@@ -726,9 +728,9 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="TableExists"/>
-    public async Task<bool> TableExistsAsync(string tableName)
+    public async Task<bool> TableExistsAsync(string tableName, CancellationToken cancellationToken = default)
     {
-        var result = (int)await GetResultAsync(GetTableExistsCommand(tableName)) == 1;
+        var result = (int)await GetResultAsync(GetTableExistsCommand(tableName), cancellationToken) == 1;
         return result;
     }
 
@@ -774,7 +776,7 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="TryConnection"/>
-    public async Task<(bool, string)> TryConnectionAsync()
+    public async Task<(bool, string)> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
         bool result;
         DbConnection connection = null;
@@ -783,7 +785,7 @@ public class DataAccess
         {
             connection = Factory.CreateConnection();
             connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
             result = true;
         }
         catch (Exception ex)
@@ -854,7 +856,7 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="ExecuteBatch(string)"/>
-    public async Task<bool> ExecuteBatchAsync(string script)
+    public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
     {
         string markpar = "GO";
         if (ConnectionProvider == DataAccessProviderType.Oracle.GetDescription() ||
@@ -886,7 +888,7 @@ public class DataAccess
             }
         }
 
-        await SetCommandAsync(sqlList);
+        await SetCommandAsync(sqlList, cancellationToken);
         return await Task.FromResult(true);
     }
 
