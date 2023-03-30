@@ -3,16 +3,15 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.16</AssemblyVersion>
-        <FileVersion>3.1.16</FileVersion>
-        <PackageVersion>3.1.16</PackageVersion>
-        <Version>3.1.16</Version>
+        <AssemblyVersion>3.1.17</AssemblyVersion>
+        <FileVersion>3.1.17</FileVersion>
+        <PackageVersion>3.1.17</PackageVersion>
+        <Version>3.1.17</Version>
         <Company>JJ Consulting</Company>
     	   <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     	   <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>
-         - bugfix: SetDataSource needs to be after executing a action and before the form checks. (#101)
-         - bugfix: Relationships view was not working as intented
+         - feat: Added cancellation token support to DataAccess
         </PackageReleaseNotes>
  </PropertyGroup>
     <ItemGroup>
