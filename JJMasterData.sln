@@ -47,10 +47,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.SourceControl"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-4493-BAAA-277D13A85DB8}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\nuget.yml = .github\workflows\nuget.yml
+		Directory.Build.props = Directory.Build.props
 		.github\workflows\docs.yml = .github\workflows\docs.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
-		Directory.Build.props = Directory.Build.props
+		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebExample", "example\JJMasterData.WebExample\JJMasterData.WebExample.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
@@ -60,15 +60,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppSettings", "AppSettings"
 		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.MongoDB", "src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj", "{F3309B09-66B6-41DC-9624-DE50F6600CF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.MongoDB", "src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj", "{F3309B09-66B6-41DC-9624-DE50F6600CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.JsonSchema", "src\Plugins\JJMasterData.JsonSchema\JJMasterData.JsonSchema.csproj", "{42027A67-DF64-4FCE-A5BE-EA9D187276B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.JsonSchema", "src\Plugins\JJMasterData.JsonSchema\JJMasterData.JsonSchema.csproj", "{42027A67-DF64-4FCE-A5BE-EA9D187276B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xunit", "Xunit", "{486B5AB6-BCEF-4B86-8541-22D3146C301B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{98258DC9-8941-48AA-A5B8-4266CE09AA59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.Xunit", "src\Plugins\JJMasterData.Xunit\JJMasterData.Xunit.csproj", "{8A0BB333-8860-4386-A74C-E3569D869761}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Xunit", "src\Plugins\JJMasterData.Xunit\JJMasterData.Xunit.csproj", "{8A0BB333-8860-4386-A74C-E3569D869761}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Brazil", "Brazil", "{E8FF3A3D-3CA8-419D-8979-878DECA35873}"
 EndProject
@@ -76,15 +76,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xunit", "Xunit", "{70D007E8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Brazil", "Brazil", "{B6033FAA-2851-47E9-908F-8E6650106602}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.ReceitaFederal", "src\Plugins\JJMasterData.ReceitaFederal\JJMasterData.ReceitaFederal.csproj", "{62CAAFCD-1856-417A-A23F-92A332B67236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.ReceitaFederal", "src\Plugins\JJMasterData.ReceitaFederal\JJMasterData.ReceitaFederal.csproj", "{62CAAFCD-1856-417A-A23F-92A332B67236}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.Xunit.Test", "src\Plugins\test\JJMasterData.Xunit.Test\JJMasterData.Xunit.Test.csproj", "{819AEDEB-F0DC-47C5-8594-87512C6007FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Xunit.Test", "src\Plugins\test\JJMasterData.Xunit.Test\JJMasterData.Xunit.Test.csproj", "{819AEDEB-F0DC-47C5-8594-87512C6007FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.ReceitaFederal.Test", "src\Plugins\test\JJMasterData.ReceitaFederal.Test\JJMasterData.ReceitaFederal.Test.csproj", "{BE2BB040-D2D8-4485-A5F6-5FCD6022A48D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.ReceitaFederal.Test", "src\Plugins\test\JJMasterData.ReceitaFederal.Test\JJMasterData.ReceitaFederal.Test.csproj", "{BE2BB040-D2D8-4485-A5F6-5FCD6022A48D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.WebApi", "src\JJMasterData.WebApi\JJMasterData.WebApi.csproj", "{27C38469-4501-4334-9A0B-FF5557636C30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebApi", "src\JJMasterData.WebApi\JJMasterData.WebApi.csproj", "{27C38469-4501-4334-9A0B-FF5557636C30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.WebApi.Test", "test\JJMasterData.WebApi.Test\JJMasterData.WebApi.Test.csproj", "{13EC3E0B-2540-4210-B816-26F57865891B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebApi.Test", "test\JJMasterData.WebApi.Test\JJMasterData.WebApi.Test.csproj", "{13EC3E0B-2540-4210-B816-26F57865891B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

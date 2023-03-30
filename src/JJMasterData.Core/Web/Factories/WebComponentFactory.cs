@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
@@ -7,7 +10,7 @@ using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories
 {
-    internal static class WebComponentFactory
+    public static class WebComponentFactory
     {
         public static JJDataPanel CreateDataPanel(string elementName)
         {
@@ -17,6 +20,21 @@ namespace JJMasterData.Core.Web.Factories
         public static JJGridView CreateGridView(string elementName)
         {
             return GridViewFactory.CreateGridView(elementName);
+        }
+
+        public static JJGridView CreateGridView(FormElement formElement)
+        {
+            return GridViewFactory.CreateGridView(formElement);
+        }
+
+        public static JJGridView CreateGridView(DataTable dataTable)
+        {
+            return GridViewFactory.CreateGridView(dataTable);
+        }
+
+        public static JJGridView CreateGridView<T>(IEnumerable<T> list)
+        {
+            return GridViewFactory.CreateGridView(list);
         }
 
         public static JJFormView CreateFormView(string elementName)

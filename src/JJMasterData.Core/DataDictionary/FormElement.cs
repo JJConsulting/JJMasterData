@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -61,21 +64,20 @@ public class FormElement : Element
         }
     }
 
-    public FormElement(DataTable schema)
+    public FormElement(DataTable schema) : this()
     {
         if (schema == null)
-            throw new ArgumentNullException(nameof(schema), Translate.Key("DataTable schema is null"));
+            throw new ArgumentNullException(nameof(schema), "DataTable schema cannot be null");
 
         Name = schema.TableName;
         TableName = schema.TableName;
         Title = schema.TableName;
-        Panels = new List<FormElementPanel>();
-        Fields = new FormElementList(base.Fields, _formFields);
+
         foreach (DataColumn col in schema.Columns)
         {
             var field = new ElementField
             {
-                Name = col.Caption,
+                Name = col.ColumnName,
                 Label = col.Caption.Replace("::ASC", "").Replace("::DESC", ""),
                 Size = col.MaxLength,
                 IsRequired = !col.AllowDBNull,
@@ -83,40 +85,46 @@ public class FormElement : Element
             };
 
             var type = col.DataType;
-            if (type == typeof(int) ||
-                type == typeof(short) ||
-                type == typeof(int) ||
-                type == typeof(long) ||
-                type == typeof(ushort) ||
-                type == typeof(uint) ||
-                type == typeof(ulong) ||
-                type == typeof(float))
-            {
-                field.DataType = FieldType.Int;
-            }
-            else if (type == typeof(decimal) ||
-                     type == typeof(double))
-            {
-                field.DataType = FieldType.Float;
-            }
-            else if (type == typeof(DateTime))
-            {
-                field.DataType = FieldType.Date;
-            }
-            else if (type == typeof(TimeSpan))
-            {
-                field.DataType = FieldType.DateTime;
-            }
-            else
-            {
-                field.DataType = FieldType.NVarchar;
-            }
+
+            SetFieldType(field, type);
 
             AddField(field);
         }
     }
 
-    private void AddField(ElementField field)
+    protected void SetFieldType(ElementField field, Type type)
+    {
+        if (type == typeof(int) ||
+            type == typeof(short) ||
+            type == typeof(int) ||
+            type == typeof(long) ||
+            type == typeof(ushort) ||
+            type == typeof(uint) ||
+            type == typeof(ulong) ||
+            type == typeof(float))
+        {
+            field.DataType = FieldType.Int;
+        }
+        else if (type == typeof(decimal) ||
+                 type == typeof(double))
+        {
+            field.DataType = FieldType.Float;
+        }
+        else if (type == typeof(DateTime))
+        {
+            field.DataType = FieldType.Date;
+        }
+        else if (type == typeof(TimeSpan))
+        {
+            field.DataType = FieldType.DateTime;
+        }
+        else
+        {
+            field.DataType = FieldType.NVarchar;
+        }
+    }
+
+    protected void AddField(ElementField field)
     {
         base.Fields.Add(field);
         _formFields.Add(new FormElementField(field));
