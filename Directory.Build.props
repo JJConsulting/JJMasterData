@@ -3,15 +3,15 @@
         <PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
         <RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageIcon>JJMasterData.png</PackageIcon>
-        <AssemblyVersion>3.1.17</AssemblyVersion>
-        <FileVersion>3.1.17</FileVersion>
-        <PackageVersion>3.1.17</PackageVersion>
-        <Version>3.1.17</Version>
+        <AssemblyVersion>3.1.18</AssemblyVersion>
+        <FileVersion>3.1.18</FileVersion>
+        <PackageVersion>3.1.18</PackageVersion>
+        <Version>3.1.18</Version>
         <Company>JJ Consulting</Company>
     	   <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
     	   <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>
-         - feat: Added cancellation token support to DataAccess
+         - feat: Added GridView TagHelper, GridViewFactory overloads and GridView Enumerable overload.
         </PackageReleaseNotes>
  </PropertyGroup>
     <ItemGroup>
