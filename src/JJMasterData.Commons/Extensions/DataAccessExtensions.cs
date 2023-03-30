@@ -16,7 +16,7 @@ public static class DataAccessExtensions
         return dataAccess.GetFields(cmd).ToModel<T>();
     }
 
-    public static async Task<T> GetModelAsync<T>(this DataAccess dataAccess, DataAccessCommand cmd, CancellationToken cancellationToken)
+    public static async Task<T> GetModelAsync<T>(this DataAccess dataAccess, DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         var result = await dataAccess.GetFieldsAsync(cmd, cancellationToken);
         return result.ToModel<T>();
@@ -27,7 +27,7 @@ public static class DataAccessExtensions
         return dataAccess.GetDataTable(cmd).ToModelList<T>();
     }
     
-    public static async IAsyncEnumerable<T> GetModelAsyncEnumerable<T>(this DataAccess dataAccess, DataAccessCommand cmd, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public static async IAsyncEnumerable<T> GetModelAsyncEnumerable<T>(this DataAccess dataAccess, DataAccessCommand cmd, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var dataTable = await dataAccess.GetDataTableAsync(cmd, cancellationToken);
         var result = dataTable.ToModelList<T>();
