@@ -1,3 +1,4 @@
+using System.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;

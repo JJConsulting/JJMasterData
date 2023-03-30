@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace JJMasterData.Commons.Extensions
@@ -11,9 +12,21 @@ namespace JJMasterData.Commons.Extensions
             if (member is null)
                 throw new ArgumentNullException(nameof(member));
 
-            var displayAttribute = member.GetCustomAttribute<DisplayNameAttribute>();
+            var displayAttribute = member.GetCustomAttribute<DisplayAttribute>();
 
-            return displayAttribute is not null ? displayAttribute.DisplayName : member.Name;
+            if (displayAttribute != null)
+            {
+                return displayAttribute.Name;
+            }
+
+            var displayNameAttribute = member.GetCustomAttribute<DisplayNameAttribute>();
+
+            if (displayNameAttribute != null)
+            {
+                return displayNameAttribute.DisplayName;
+            }
+
+            return member.Name;
         }
     }
 }

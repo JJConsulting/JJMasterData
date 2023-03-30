@@ -77,7 +77,7 @@ public class FormElement : Element
         {
             var field = new ElementField
             {
-                Name = col.Caption,
+                Name = col.ColumnName,
                 Label = col.Caption.Replace("::ASC", "").Replace("::DESC", ""),
                 Size = col.MaxLength,
                 IsRequired = !col.AllowDBNull,
@@ -135,34 +135,4 @@ public class FormElement : Element
         return Panels.Find(x => x.PanelId == id);
     }
 
-}
-
-public class FormElement<T> : FormElement
-{
-    public FormElement() : base()
-    {
-        var properties = typeof(T).GetProperties();
-
-        Name = typeof(T).Name;
-        TableName = typeof(T).Name;
-        Title = typeof(T).Name;
-
-        foreach (var property in properties)
-        {
-            var field = new ElementField
-            {
-                Name = property.Name,
-                Label = property.GetDisplayName(),
-                Size = 255, 
-                IsRequired = false, 
-                IsPk = false 
-            };
-
-            var type = property.PropertyType;
-
-            SetFieldType(field, type);
-
-            AddField(field);
-        }
-    }
 }
