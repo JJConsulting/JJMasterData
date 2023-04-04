@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.9</Version>
+		<Version>3.1.19</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -11,7 +11,8 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- feat: Added GridView TagHelper, GridViewFactory overloads and GridView Enumerable overload.
+			- feat: Added to importation help information about MultiSelect DataItem.
+			- feat: Moved IWritableOptions to JJMasterData.Commons
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>

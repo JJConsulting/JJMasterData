@@ -243,36 +243,53 @@ internal class DataImpHelp
         return text.ToString();
     }
 
-    private string GetHtmlComboHelp(FormElementField f)
+    private string GetHtmlComboHelp(FormElementField field)
     {
         var defaultValues = DataImp.FormManager.GetDefaultValues(null, PageState.Import);
         var userValues = DataImp.ExpressionManager.UserValues;
-        var entityrepository = DataImp.ExpressionManager.EntityRepository;
-        var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, entityrepository);
-        var cbo = JJComboBox.GetInstance(f, expOptions, null);
-        var itens = cbo.GetValues();
-        if (itens.Count == 0)
+        var repository = DataImp.ExpressionManager.EntityRepository;
+        var expOptions = new ExpressionOptions(userValues, defaultValues, PageState.Import, repository);
+        var comboBox = JJComboBox.GetInstance(field, expOptions, null);
+        var items = comboBox.GetValues();
+
+        if (items.Count == 0)
             return string.Empty;
 
-        bool isFirst = true;
-        var sValues = new StringBuilder();
-        sValues.Append("<span class=\"small\">(");
-        foreach (DataItemValue item in itens)
+        var isFirst = true;
+
+        var span = new HtmlBuilder(HtmlTag.Span);
+        span.WithCssClass("small");
+        span.AppendElement(HtmlTag.Span, span =>
         {
-            if (isFirst)
-                isFirst = false;
-            else
-                sValues.Append(", ");
+            span.AppendText("(");
 
-            sValues.Append("<b>");
-            sValues.Append(item.Id);
-            sValues.Append("</b>");
-            sValues.Append("=");
-            sValues.Append(item.Description.Trim());
-        }
-        sValues.Append(")</span>");
+   
+            foreach (var item in items)
+            {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    span.AppendText(", ");
 
-        return sValues.ToString();
+                span.AppendElement(HtmlTag.B, b =>
+                {
+                    b.AppendText(item.Id);
+                });
+
+                span.AppendText("=");
+                span.AppendText(item.Description.Trim());
+            }
+
+            span.AppendText(").");
+
+            if (field.DataItem!.EnableMultiSelect)
+            {
+                span.AppendText(" " + Translate.Key("To select more than one item, enter the desired values separated by a comma."));
+            }
+        });
+
+
+        return span.ToString();
     }
 
     private JJLinkButton GetBackButton()

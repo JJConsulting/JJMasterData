@@ -47,7 +47,6 @@ public class WritableJsonOptionsTests
     [Fact]
     public async Task UpdateAsync_WhenFileDoesNotExist_CreatesNewFileWithCorrectSection()
     {
-        // Arrange
         Cleanup();
 
         var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, Section, FilePath);
@@ -60,10 +59,8 @@ public class WritableJsonOptionsTests
             };
         });
 
-        // Act
         await writableOptions.UpdateAsync(applyChanges);
 
-        // Assert
         Assert.True(File.Exists(FilePath));
 
         var content = await File.ReadAllTextAsync(FilePath);
@@ -77,7 +74,7 @@ public class WritableJsonOptionsTests
         Assert.NotNull(section);
         Assert.NotEmpty(section.ToString());
 
-        var options = jObject["Logging"].ToObject<LoggingOptions>();
+        var options = jObject["Logging"]!.ToObject<LoggingOptions>();
         Assert.NotNull(options);
         Assert.Equal(LogLevel.Critical, options.Console.LogLevel["Bar"]);
 
