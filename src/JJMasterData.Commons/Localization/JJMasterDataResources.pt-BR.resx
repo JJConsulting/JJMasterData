@@ -3402,4 +3402,8 @@
   <data name="Multiselect" xml:space="preserve">
     <value>Multiseleção</value>
   </data>
+  <data name="To select more than one item, enter the desired values separated by a comma." xml:space="preserve">
+    <value>Para selecionar mais de um item, coloque os desejados valores separados por vírgula.</value>
+    <comment>JJMasterData.Core</comment>
+  </data>
 </root>

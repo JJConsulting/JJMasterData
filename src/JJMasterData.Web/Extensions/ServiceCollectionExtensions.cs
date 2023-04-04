@@ -6,7 +6,6 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Authorization;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Models;
-using JJMasterData.Web.Models.Abstractions;
 using JJMasterData.Web.Services;
 using JJMasterData.Web.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Options.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Options;
 
@@ -207,16 +208,4 @@ public static class ServiceCollectionExtensions
         services.AddTransient<AboutService>();
     }
 
-    public static void ConfigureWritableOptions<T>(
-        this IServiceCollection services,
-        IConfigurationSection section,
-        string file) where T : class, new()
-    {
-        services.Configure<T>(section);
-        services.AddTransient<IWritableOptions<T>>(provider =>
-        {
-            var options = provider.GetService<IOptionsMonitor<T>>()!;
-            return new WritableJsonOptions<T>(options, section.Key, file);
-        });
-    }
 }

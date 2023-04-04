@@ -1,9 +1,14 @@
-using JJMasterData.Web.Models.Abstractions;
+#nullable enable 
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Options.Abstractions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace JJMasterData.Web.Models;
+namespace JJMasterData.Commons.Options;
 
 public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
 {
@@ -32,7 +37,11 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
         
         if (!File.Exists(FilePath))
         {
+#if NET
             await using var stream = new StreamWriter(FilePath, true);
+#else
+            using var stream = new StreamWriter(FilePath, true);
+#endif
             await stream.WriteLineAsync("{}");
             await stream.FlushAsync();
             stream.Close();
@@ -40,7 +49,12 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
         }
         else
         {
-            jObject = JsonConvert.DeserializeObject<JObject>(await File.ReadAllTextAsync(FilePath));
+#if NET
+            var content = await File.ReadAllTextAsync(FilePath);
+#else
+            var content = File.ReadAllText(FilePath);
+#endif
+            jObject = JsonConvert.DeserializeObject<JObject>(content);
         }
         
         if (jObject != null && jObject.TryGetValue(_section, out var section))
@@ -52,13 +66,22 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
             sectionObject = Value;
         }
 
-        applyChanges(sectionObject!);
+        sectionObject ??= new T();
+
+        applyChanges(sectionObject);
 
         if (jObject != null)
         {
             jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
 
-            await File.WriteAllTextAsync(FilePath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+            var serializedObject = JsonConvert.SerializeObject(jObject, Formatting.Indented);
+
+#if NET
+            await File.WriteAllTextAsync(FilePath, serializedObject);
+#else
+            File.WriteAllText(FilePath, serializedObject);
+#endif
+
         }
     }
 }
