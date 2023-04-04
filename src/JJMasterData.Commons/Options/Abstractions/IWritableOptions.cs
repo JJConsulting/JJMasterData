@@ -1,6 +1,8 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Web.Models.Abstractions;
+namespace JJMasterData.Commons.Options.Abstractions;
 
 public interface IWritableOptions<out T> : IOptionsSnapshot<T> where T : class, new()
 {
