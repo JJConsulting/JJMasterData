@@ -201,7 +201,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IndexesService>();
         services.AddTransient<UIOptionsService>();
         services.AddTransient<PanelService>();
-        services.AddTransient<RelationsService>();
+        services.AddTransient<RelationshipsService>();
         services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<OptionsService>();

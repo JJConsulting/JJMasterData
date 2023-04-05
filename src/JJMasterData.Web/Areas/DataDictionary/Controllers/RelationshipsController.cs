@@ -8,18 +8,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 [Area("DataDictionary")]
-public class RelationsController : DataDictionaryController
+public class RelationshipsController : DataDictionaryController
 {
-    private readonly RelationsService _relationsService;
+    private readonly RelationshipsService _relationshipsService;
 
-    public RelationsController(RelationsService relationsService)
+    public RelationshipsController(RelationshipsService relationshipsService)
     {
-        _relationsService = relationsService;
+        _relationshipsService = relationshipsService;
     }
 
     public ActionResult Index(string dictionaryName)
     {
-        List<ElementRelation> listRelation = _relationsService.GetFormElement(dictionaryName).Relations;
+        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships;
         PopulateViewBag(dictionaryName);
 
         return View(listRelation);
@@ -27,80 +27,80 @@ public class RelationsController : DataDictionaryController
 
     public ActionResult Detail(string dictionaryName, string index)
     {
-        ElementRelation elementRelation;
+        ElementRelationship elementRelationship;
         if (!string.IsNullOrEmpty(index))
-            elementRelation = _relationsService.GetFormElement(dictionaryName).Relations[int.Parse(index)];
+            elementRelationship = _relationshipsService.GetFormElement(dictionaryName).Relationships[int.Parse(index)];
         else
-            elementRelation = new ElementRelation();
+            elementRelationship = new ElementRelationship();
 
         PopulatePkTable();
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelation.ChildElement);
+        PopulateFkColumn(elementRelationship.ChildElement);
         ViewBag.Index = index;
 
-        return View(elementRelation);
+        return View(elementRelationship);
     }
 
     [HttpPost]
-    public ActionResult CreateRelation(string dictionaryName, string? index, ElementRelation elementRelation, string pk, string fk)
+    public ActionResult CreateRelation(string dictionaryName, string? index, ElementRelationship elementRelationship, string pk, string fk)
     {
 
-        if (_relationsService.ValidateFinallyAddRelation(elementRelation, pk, fk))
+        if (_relationshipsService.ValidateFinallyAddRelation(elementRelationship, pk, fk))
         {
-            elementRelation.Columns.Add(new ElementRelationColumn(pk, fk));
+            elementRelationship.Columns.Add(new ElementRelationColumn(pk, fk));
         }
         else
         {
-            var summary = _relationsService.GetValidationSummary();
+            var summary = _relationshipsService.GetValidationSummary();
             ViewBag.ErrorItem = summary.GetHtml();
         }
 
         PopulatePkTable();
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelation.ChildElement);
+        PopulateFkColumn(elementRelationship.ChildElement);
         if (index != null) 
             ViewBag.Index = index;
 
-        return View("Detail", elementRelation);
+        return View("Detail", elementRelationship);
     }
 
     [HttpPost]
-    public ActionResult SaveRelation(string dictionaryName, ElementRelation elementRelation, string? index)
+    public ActionResult SaveRelation(string dictionaryName, ElementRelationship elementRelationship, string? index)
     {
 
-        if (_relationsService.ValidateFields(elementRelation, dictionaryName, index))
+        if (_relationshipsService.ValidateFields(elementRelationship, dictionaryName, index))
         {
-            _relationsService.Save(elementRelation, index, dictionaryName);
+            _relationshipsService.Save(elementRelationship, index, dictionaryName);
             return Json(new { success = true });
         }
 
-        var jjSummary = _relationsService.GetValidationSummary();
+        var jjSummary = _relationshipsService.GetValidationSummary();
         return Json(new { success = false, errorMessage = jjSummary.GetHtml() });
 
     }
 
     [HttpPost]
-    public ActionResult DeleteRelation(string dictionaryName, string index, string indexRelation, ElementRelation elementRelation)
+    public ActionResult DeleteRelation(string dictionaryName, string index, string indexRelation, ElementRelationship elementRelationship)
     {
         int indexRelationConvert = int.Parse(indexRelation);
-        elementRelation.Columns.Remove(elementRelation.Columns[indexRelationConvert]);
+        elementRelationship.Columns.Remove(elementRelationship.Columns[indexRelationConvert]);
 
         PopulatePkTable();
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelation.ChildElement);
+        PopulateFkColumn(elementRelationship.ChildElement);
         ViewBag.Index = index;
 
-        return View("Detail", elementRelation);
+        return View("Detail", elementRelationship);
     }
 
     [HttpPost]
     public ActionResult Index(string dictionaryName, string filter)
     {
 
-        List<ElementRelation> listRelation = _relationsService.GetFormElement(dictionaryName).Relations;
+        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships;
         listRelation = listRelation.Where(l => l.Columns.Any(x => x.FkColumn.Contains(filter.ToUpper()) || x.PkColumn.Contains(filter.ToUpper()))).ToList();
 
         PopulateViewBag(dictionaryName);
@@ -109,35 +109,35 @@ public class RelationsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Detail(string dictionaryName, ElementRelation elementRelation, string? index)
+    public ActionResult Detail(string dictionaryName, ElementRelationship elementRelationship, string? index)
     {
         PopulatePkTable();
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
-        elementRelation.Title = PopulateFkColumn(elementRelation.ChildElement);
+        elementRelationship.Title = PopulateFkColumn(elementRelationship.ChildElement);
         if (index != null) 
             ViewBag.Index = index;
-        return View(elementRelation);
+        return View(elementRelationship);
     }
 
     [HttpPost]
     public ActionResult Delete(string dictionaryName, string index)
     {
-        _relationsService.Delete(dictionaryName, index);
+        _relationshipsService.Delete(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)
     {
-        _relationsService.MoveDown(dictionaryName, index);
+        _relationshipsService.MoveDown(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveUp(string dictionaryName, string index)
     {
-        _relationsService.MoveUp(dictionaryName, index);
+        _relationshipsService.MoveUp(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
@@ -149,7 +149,7 @@ public class RelationsController : DataDictionaryController
 
     public void PopulatePkColumn(string dictionaryName)
     {
-        FormElement formElement = _relationsService.GetFormElement(dictionaryName);
+        FormElement formElement = _relationshipsService.GetFormElement(dictionaryName);
         List<SelectListItem> listItem = new List<SelectListItem>();
 
         foreach (var field in formElement.Fields)
@@ -171,7 +171,7 @@ public class RelationsController : DataDictionaryController
         }
         else
         {
-            Metadata dicParser = _relationsService.DataDictionaryRepository.GetMetadata(childElement);
+            Metadata dicParser = _relationshipsService.DataDictionaryRepository.GetMetadata(childElement);
             title = dicParser.Form.Title;
             foreach (var field in dicParser.Table.Fields)
             {
@@ -188,7 +188,7 @@ public class RelationsController : DataDictionaryController
     public void PopulatePkTable()
     {
         var listItem = new List<SelectListItem>();
-        IEnumerable<string> list = _relationsService.DataDictionaryRepository.GetNameList();
+        IEnumerable<string> list = _relationshipsService.DataDictionaryRepository.GetNameList();
 
         foreach (string name in list)
         {

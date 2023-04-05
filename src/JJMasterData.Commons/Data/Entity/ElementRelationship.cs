@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data.Entity;
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
 [DataContract]
-public class ElementRelation
+public class ElementRelationship
 {
     [DataMember(Name = "childElement")]
     public string ChildElement { get; set; }
@@ -25,21 +25,21 @@ public class ElementRelation
     public bool DeleteOnCascade { get; set; }
 
     [DataMember(Name = "viewType")]
-    public RelationType ViewType { get; set; }
+    public RelationshipType ViewType { get; set; }
 
     [DataMember(Name = "title")]
     public string Title { get; set; }
 
-    public ElementRelation()
+    public ElementRelationship()
     {
         Columns = new List<ElementRelationColumn>();
     }
 
-    public ElementRelation(string childElement, params ElementRelationColumn[] columns)
+    public ElementRelationship(string childElement, params ElementRelationColumn[] columns)
     {
         Columns = new List<ElementRelationColumn>();
         ChildElement = childElement;
-        ViewType = RelationType.List;
+        ViewType = RelationshipType.List;
         if (columns != null)
             Columns.AddRange(columns);
     }

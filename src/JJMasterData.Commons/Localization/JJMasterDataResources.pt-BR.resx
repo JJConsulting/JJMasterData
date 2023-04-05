@@ -1953,7 +1953,7 @@
     <value>Nenhum registro localizado</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="No relations found" xml:space="preserve">
+  <data name="No relationships found" xml:space="preserve">
     <value>Nenhuma relação encontrada</value>
     <comment>JJMasterDataWeb</comment>
   </data>

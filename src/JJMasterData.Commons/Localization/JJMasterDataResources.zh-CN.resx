@@ -1953,7 +1953,7 @@
     <value>没有找到记录</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="No relations found" xml:space="preserve">
+  <data name="No relationships found" xml:space="preserve">
     <value>未找到任何关系</value>
     <comment>JJMasterDataWeb</comment>
   </data>

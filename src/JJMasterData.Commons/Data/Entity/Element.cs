@@ -12,7 +12,6 @@ namespace JJMasterData.Commons.Data.Entity;
 [DataContract]
 public class Element 
 {
-
     /// <summary>
     /// Dictionary Name
     /// </summary>
@@ -37,10 +36,10 @@ public class Element
     public List<ElementIndex> Indexes { get; set; }
 
     /// <summary>
-    /// Relations List
+    /// Relationships List
     /// </summary>
     [DataMember(Name = "relations")]
-    public List<ElementRelation> Relations { get; set; }
+    public List<ElementRelationship> Relationships { get; set; }
 
     /// <summary>
     /// Table Name
@@ -84,7 +83,7 @@ public class Element
     {
         Fields = new ElementList();
         Indexes = new List<ElementIndex>();
-        Relations = new List<ElementRelation>();
+        Relationships = new List<ElementRelationship>();
         SyncMode = SyncMode.Online;
         Sync = false;
     }

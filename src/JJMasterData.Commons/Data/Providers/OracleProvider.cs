@@ -90,7 +90,7 @@ public class OracleProvider : BaseProvider
         sSql.AppendLine(")");
         sSql.AppendLine("/");
         sSql.AppendLine("");
-        sSql.AppendLine(GetRelationScript(element));
+        sSql.AppendLine(GetRelationshipsScript(element));
         sSql.AppendLine("");
 
         int nIndex = 1;
@@ -145,15 +145,15 @@ public class OracleProvider : BaseProvider
         return sSql.ToString();
     }
 
-    private string GetRelationScript(Element element)
+    private string GetRelationshipsScript(Element element)
     {
-        StringBuilder sSql = new StringBuilder();
+        var sql = new StringBuilder();
 
-        if (element.Relations.Count > 0)
+        if (element.Relationships.Count > 0)
         {
-            sSql.AppendLine("-- RELATIONS");
+            sql.AppendLine("-- RELATIONSHIPS");
             var listContraint = new List<string>();
-            foreach (var r in element.Relations)
+            foreach (var r in element.Relationships)
             {
                 string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
 
@@ -178,57 +178,57 @@ public class OracleProvider : BaseProvider
                     }
                 }
 
-                sSql.Append("ALTER TABLE ");
-                sSql.AppendLine(r.ChildElement);
-                sSql.Append("ADD CONSTRAINT ");
-                sSql.Append(contraintName);
-                sSql.AppendLine(" ");
-                sSql.Append(TAB);
-                sSql.Append("FOREIGN KEY (");
+                sql.Append("ALTER TABLE ");
+                sql.AppendLine(r.ChildElement);
+                sql.Append("ADD CONSTRAINT ");
+                sql.Append(contraintName);
+                sql.AppendLine(" ");
+                sql.Append(TAB);
+                sql.Append("FOREIGN KEY (");
 
                 for (int rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
-                        sSql.Append(", ");
+                        sql.Append(", ");
 
-                    sSql.Append("[");
-                    sSql.Append(r.Columns[rc].FkColumn);
-                    sSql.Append("]");
+                    sql.Append("[");
+                    sql.Append(r.Columns[rc].FkColumn);
+                    sql.Append("]");
                 }
-                sSql.AppendLine(")");
-                sSql.Append(TAB);
-                sSql.Append("REFERENCES ");
-                sSql.Append(element.TableName);
-                sSql.Append(" (");
+                sql.AppendLine(")");
+                sql.Append(TAB);
+                sql.Append("REFERENCES ");
+                sql.Append(element.TableName);
+                sql.Append(" (");
                 for (int rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
-                        sSql.Append(", ");
+                        sql.Append(", ");
 
-                    sSql.Append(r.Columns[rc].PkColumn);
+                    sql.Append(r.Columns[rc].PkColumn);
                 }
-                sSql.Append(")");
+                sql.Append(")");
 
                 if (r.UpdateOnCascade)
                 {
-                    sSql.AppendLine("");
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("ON UPDATE CASCADE ");
+                    sql.AppendLine("");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (r.DeleteOnCascade)
                 {
-                    sSql.AppendLine("");
-                    sSql.Append(TAB).Append(TAB);
-                    sSql.Append("ON DELETE CASCADE ");
+                    sql.AppendLine("");
+                    sql.Append(TAB).Append(TAB);
+                    sql.Append("ON DELETE CASCADE ");
                 }
 
-                sSql.AppendLine("");
-                sSql.AppendLine("/");
+                sql.AppendLine("");
+                sql.AppendLine("/");
             }
         }
 
-        return sSql.ToString();
+        return sql.ToString();
     }
 
     public override string GetWriteProcedureScript(Element element)

@@ -16,7 +16,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController : MasterDataController
 {
     private string? _dictionaryName;
-    private RelationType _relationType;
+    private RelationshipType _relationshipType;
     private Hashtable? _relationValues;
 
     public ActionResult Index(string parameters)
@@ -27,9 +27,9 @@ public class InternalRedirectController : MasterDataController
         
         InternalRedirectViewModel model;
         
-        switch (_relationType)
+        switch (_relationshipType)
         {
-            case RelationType.List:
+            case RelationshipType.List:
                 {
                     var form = new JJFormView(_dictionaryName)
                     {
@@ -45,7 +45,7 @@ public class InternalRedirectController : MasterDataController
                     model = new(form.GetHtml(), false);
                     break;
                 }
-            case RelationType.View:
+            case RelationshipType.View:
                 {
                     var panel = new JJDataPanel(_dictionaryName)
                     {
@@ -59,7 +59,7 @@ public class InternalRedirectController : MasterDataController
                     model = new(panel.GetHtml(), false);
                     break;
                 }
-            case RelationType.Update:
+            case RelationshipType.Update:
                 {
                     var panel = new JJDataPanel(_dictionaryName)
                     {
@@ -130,7 +130,7 @@ public class InternalRedirectController : MasterDataController
             throw new ArgumentNullException();
 
         _dictionaryName = null;
-        _relationType = RelationType.List;
+        _relationshipType = RelationshipType.List;
         _relationValues = new Hashtable();
         var @params = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(parameters));
         _dictionaryName = @params.Get("formname");
@@ -142,7 +142,7 @@ public class InternalRedirectController : MasterDataController
                     _dictionaryName = @params.Get(key);
                     break;
                 case "viewtype":
-                    _relationType = (RelationType)int.Parse(@params.Get(key) ?? string.Empty);
+                    _relationshipType = (RelationshipType)int.Parse(@params.Get(key) ?? string.Empty);
                     break;
                 default:
                     _relationValues.Add(key, @params.Get(key));

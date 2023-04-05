@@ -2,14 +2,14 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model JJMasterData.Commons.Data.Entity.ElementRelation
+@model JJMasterData.Commons.Data.Entity.ElementRelationship
 
 <script type="text/javascript">
 
     function cmdSave() {
         var frm = $('form');
         $.ajax({
-            url: '@Url.Action("SaveRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName })',
+            url: '@Url.Action("SaveRelation", "Relationships", new { dictionaryName = ViewBag.DictionaryName })',
             data: frm.serialize(),
             type: "POST",
             dataType: "json",
@@ -27,7 +27,7 @@
 
     function populateFkColumn() {
         messageWait.show();
-        var url = '@Url.Action("Detail", "Relations", new { dictionaryName = ViewBag.DictionaryName })';
+        var url = '@Url.Action("Detail", "Relationships", new { dictionaryName = ViewBag.DictionaryName })';
         $("form:first").attr("action", url).submit();
     }
 
@@ -70,7 +70,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
-                    <select asp-for="ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
+                    <select asp-for="ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipType>()"></select>
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
 
     <div class="row">
         <div class="col-sm-4">
-            <button id="btnAddRelation" type="submit" class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("CreateRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName })">
+            <button id="btnAddRelation" type="submit" class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("CreateRelation", "Relationships", new { dictionaryName = ViewBag.DictionaryName })">
                 <span class="fa fa-plus-square-o"></span>
                 &nbsp;@Translate.Key("Add Relation")
             </button>
@@ -146,7 +146,7 @@
                                 @Html.HiddenFor(model => model.Columns[index].FkColumn)
                             </td>
                             <td align="center" valign="middle" style="width:60px;">
-                                <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" formaction="@Url.Action("DeleteRelation", "Relations", new { dictionaryName = ViewBag.DictionaryName, indexRelation = index })" class="btn btn-link" data-original-title="@Translate.Key("Delete")">
+                                <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" formaction="@Url.Action("DeleteRelation", "Relationships", new { dictionaryName = ViewBag.DictionaryName, indexRelation = index })" class="btn btn-link" data-original-title="@Translate.Key("Delete")">
                                     <span class="fa fa-trash"></span>
                                 </button>
                             </td>

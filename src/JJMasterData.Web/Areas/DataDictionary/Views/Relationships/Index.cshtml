@@ -3,7 +3,7 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model List<JJMasterData.Commons.Data.Entity.ElementRelation>
+@model List<JJMasterData.Commons.Data.Entity.ElementRelationship>
 
 
 @section Scripts{
@@ -56,7 +56,7 @@
 {
     <div class="row">
         <div class="col-sm-8">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="popup.show('ElementRelation', '@Url.Action("Detail","Relations",new {dictionaryName = ViewBag.DictionaryName })');">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="popup.show('ElementRelation', '@Url.Action("Detail","Relationships",new {dictionaryName = ViewBag.DictionaryName })');">
                 <span class="fa fa-plus-circle"></span>
                 <span>&nbsp;@Translate.Key("New")</span>
             </button>
@@ -113,16 +113,16 @@
                             @Html.HiddenFor(model => model[index].DeleteOnCascade)
                         </td>
                         <td align="center" valign="middle" width="180px">
-                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveUp","Relations", new {dictionaryName = ViewBag.DictionaryName,index })" data-original-title="@Translate.Key("Move Up")">
+                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveUp","Relationships", new {dictionaryName = ViewBag.DictionaryName,index })" data-original-title="@Translate.Key("Move Up")">
                                 <span class="fa fa-arrow-up"></span>
                             </button>
-                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveDown","Relations", new {dictionaryName = ViewBag.DictionaryName,index })" data-original-title="@Translate.Key("Move Down")">
+                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveDown","Relationships", new {dictionaryName = ViewBag.DictionaryName,index })" data-original-title="@Translate.Key("Move Down")">
                                 <span class="fa fa-arrow-down"></span>
                             </button>
-                            <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="popup.show('ElementRelation', '@Url.Action("Detail","Relations",new {dictionaryName = ViewBag.DictionaryName,index })');" data-original-title="@Translate.Key("Edit")">
+                            <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="popup.show('ElementRelation', '@Url.Action("Detail","Relationships",new {dictionaryName = ViewBag.DictionaryName,index })');" data-original-title="@Translate.Key("Edit")">
                                 <span class="fa fa-pencil"></span>
                             </button>
-                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteRelation('@Url.Action("Delete","Relations", new {dictionaryName = ViewBag.DictionaryName,index})')" data-original-title="@Translate.Key("Delete")">
+                            <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteRelation('@Url.Action("Delete","Relationships", new {dictionaryName = ViewBag.DictionaryName,index})')" data-original-title="@Translate.Key("Delete")">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>
