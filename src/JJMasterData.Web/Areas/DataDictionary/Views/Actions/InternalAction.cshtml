@@ -86,7 +86,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
-                    <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationType>()"></select>
+                    <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipType>()"></select>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4">

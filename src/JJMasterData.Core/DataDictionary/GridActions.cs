@@ -32,6 +32,10 @@ public class GridActions
     [DataMember(Name = "internalActions")]
     private List<InternalAction> InternalActions { get; set; }
 
+    [DataMember(Name = "jsActions")]
+    private List<ScriptAction> JsActions { get; set; }
+
+    
     public GridActions()
     {
         ViewAction = new ViewAction();
@@ -41,6 +45,7 @@ public class GridActions
         UrlRedirectActions = new List<UrlRedirectAction>();
         InternalActions = new List<InternalAction>();
         PythonActions = new List<PythonScriptAction>();
+        JsActions = new List<ScriptAction>();
     }
 
     public void Set(BasicAction action)
@@ -105,6 +110,18 @@ public class GridActions
             }
             InternalActions.Add(internalAction);    
         }
+        else if (action is ScriptAction jsAction)
+        {
+            for (int i = 0; i < JsActions.Count; i++)
+            {
+                if (JsActions[i].Name.Equals(action.Name))
+                {
+                    JsActions[i] = jsAction;
+                    return;
+                }
+            }
+            JsActions.Add(jsAction);    
+        }
         else
         {
             throw new ArgumentException(Translate.Key("Invalid Action"));
@@ -134,6 +151,12 @@ public class GridActions
         ValidateAction(action);
         InternalActions.Add(action);
     }
+    
+    public void Add(ScriptAction action)
+    {
+        ValidateAction(action);
+        JsActions.Add(action);
+    }
 
     public void Remove(SqlCommandAction action)
     {
@@ -158,6 +181,13 @@ public class GridActions
         ValidateAction(action);
         InternalActions.Remove(action);
     }
+    
+    public void Remove(ScriptAction action)
+    {
+        ValidateAction(action);
+        JsActions.Remove(action);
+    }
+
 
     public void Remove(BasicAction action)
     {
@@ -176,6 +206,10 @@ public class GridActions
         else if (action is InternalAction acInternal)
         {
             Remove(acInternal);
+        }
+        else if (action is ScriptAction acJs)
+        {
+            Remove(acJs);
         }
         else
         {
@@ -222,6 +256,10 @@ public class GridActions
         if (action != null)
             return action;
 
+        action = JsActions.Find(x => x.Name.Equals(name));
+        if (action != null)
+            return action;
+        
         action = PythonActions.Find(x => x.Name.Equals(name));
         if (action != null)
             return action;
@@ -241,33 +279,32 @@ public class GridActions
     {
         var listAction = new List<BasicAction>();
 
-        if (ViewAction != null)
+        if (ViewAction is not  null)
             listAction.Add(ViewAction);
 
-        if (EditAction != null)
+        if (EditAction is not null)
             listAction.Add(EditAction);
 
-        if (DeleteAction != null)
+        if (DeleteAction is not  null)
             listAction.Add(DeleteAction);
 
-        if (CommandActions != null && CommandActions.Count > 0)
+        if (CommandActions is { Count: > 0 })
             listAction.AddRange(CommandActions.ToArray());
 
-        if (PythonActions != null && PythonActions.Count > 0)
+        if (PythonActions is { Count: > 0 })
             listAction.AddRange(PythonActions.ToArray());
 
-        if (UrlRedirectActions != null && UrlRedirectActions.Count > 0)
+        if (UrlRedirectActions is { Count: > 0 })
             listAction.AddRange(UrlRedirectActions.ToArray());
 
-        if (InternalActions != null && InternalActions.Count > 0)
+        if (InternalActions is { Count: > 0 })
             listAction.AddRange(InternalActions.ToArray());
 
+        if (JsActions is { Count: > 0 })
+            listAction.AddRange(JsActions.ToArray());
+        
         return listAction.OrderBy(x => x.Order).ToList();
     }
 
-    public int Count
-    {
-        get { return GetAll().FindAll(x => x.IsVisible).Count; }
-    }
-
+    public int Count => GetAll().FindAll(x => x.IsVisible).Count;
 }

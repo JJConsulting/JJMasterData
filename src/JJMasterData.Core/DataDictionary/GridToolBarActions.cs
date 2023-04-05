@@ -50,6 +50,9 @@ public class GridToolBarActions
     [DataMember(Name = "internalActions")]
     private List<InternalAction> InternalActions { get; set; }
 
+    [DataMember(Name = "jsActions")]
+    private List<ScriptAction> JsActions { get; set; }
+    
     public GridToolBarActions()
     {
         InsertAction = new InsertAction();
@@ -65,6 +68,7 @@ public class GridToolBarActions
         UrlRedirectActions = new List<UrlRedirectAction>();
         InternalActions = new List<InternalAction>();
         PythonActions = new List<PythonScriptAction>();
+        JsActions = new List<ScriptAction>();
     }
 
 
@@ -154,6 +158,18 @@ public class GridToolBarActions
             }
             InternalActions.Add(internalAction);
         }
+        else if (action is ScriptAction scriptAction)
+        {
+            for (int i = 0; i < JsActions.Count; i++)
+            {
+                if (JsActions[i].Name.Equals(action.Name))
+                {
+                    JsActions[i] = scriptAction;
+                    return;
+                }
+            }
+            JsActions.Add(scriptAction);
+        }
         else
         {
             throw new ArgumentException(Translate.Key("Invalid Action"));
@@ -184,6 +200,12 @@ public class GridToolBarActions
         ValidateAction(action);
         InternalActions.Add(action);
     }
+    
+    public void Add(ScriptAction action)
+    {
+        ValidateAction(action);
+        JsActions.Add(action);
+    }
 
     public void Add(BasicAction action)
     {
@@ -193,10 +215,12 @@ public class GridToolBarActions
             Add(urlAction);
         else if (action is InternalAction internalAction)
             Add(internalAction);
+        else if (action is ScriptAction scriptAction)
+            Add(scriptAction);
         else
             throw new ArgumentException(Translate.Key("Invalid Action"));
     }
-
+    
     public void Remove(SqlCommandAction action)
     {
         ValidateAction(action);
@@ -219,6 +243,11 @@ public class GridToolBarActions
         ValidateAction(action);
         InternalActions.Remove(action);
     }
+    public void Remove(ScriptAction action)
+    {
+        ValidateAction(action);
+        JsActions.Remove(action);
+    }
 
     public void Remove(BasicAction action)
     {
@@ -237,6 +266,10 @@ public class GridToolBarActions
         else if (action is PythonScriptAction acPython)
         {
             Remove(acPython);
+        }
+        else if (action is ScriptAction jScriptAction)
+        {
+            Remove(jScriptAction);
         }
         else
         {
@@ -269,7 +302,7 @@ public class GridToolBarActions
     {
         var listAction = new List<BasicAction>();
 
-        if (InsertAction != null)
+        if (InsertAction is not null)
         {
             listAction.Add(InsertAction);
         }
@@ -279,7 +312,7 @@ public class GridToolBarActions
             listAction.Add(InsertAction);
         }
 
-        if (LegendAction != null)
+        if (LegendAction is not null)
         {
             listAction.Add(LegendAction);
         }
@@ -289,7 +322,7 @@ public class GridToolBarActions
             listAction.Add(LegendAction);
         }
 
-        if (RefreshAction != null)
+        if (RefreshAction is not null)
         {
             listAction.Add(RefreshAction);
         }
@@ -299,7 +332,7 @@ public class GridToolBarActions
             listAction.Add(RefreshAction);
         }
 
-        if (FilterAction != null)
+        if (FilterAction is not null)
         {
             listAction.Add(FilterAction);
         }
@@ -309,7 +342,7 @@ public class GridToolBarActions
             listAction.Add(FilterAction);
         }
 
-        if (ImportAction != null)
+        if (ImportAction is not null)
         {
             listAction.Add(ImportAction);
         }
@@ -319,7 +352,7 @@ public class GridToolBarActions
             listAction.Add(ImportAction);
         }
 
-        if (ExportAction != null)
+        if (ExportAction is not null)
         {
             listAction.Add(ExportAction);
         }
@@ -329,7 +362,7 @@ public class GridToolBarActions
             listAction.Add(ExportAction);
         }
 
-        if (ConfigAction != null)
+        if (ConfigAction is not null)
         {
             listAction.Add(ConfigAction);
         }
@@ -339,7 +372,7 @@ public class GridToolBarActions
             listAction.Add(ConfigAction);
         }
 
-        if (SortAction != null)
+        if (SortAction is not null)
         {
             listAction.Add(SortAction);
         }
@@ -349,7 +382,7 @@ public class GridToolBarActions
             listAction.Add(SortAction);
         }
 
-        if (LogAction != null)
+        if (LogAction is not null)
         {
             listAction.Add(LogAction);
         }
@@ -360,18 +393,21 @@ public class GridToolBarActions
         }
 
 
-        if (CommandActions != null && CommandActions.Count > 0)
+        if (CommandActions is { Count: > 0 })
             listAction.AddRange(CommandActions.ToArray());
 
-        if (PythonActions != null && PythonActions.Count > 0)
+        if (PythonActions is { Count: > 0 })
             listAction.AddRange(PythonActions.ToArray());
 
-        if (UrlRedirectActions != null && UrlRedirectActions.Count > 0)
+        if (UrlRedirectActions is { Count: > 0 })
             listAction.AddRange(UrlRedirectActions.ToArray());
 
-        if (InternalActions != null && InternalActions.Count > 0)
+        if (InternalActions is { Count: > 0 })
             listAction.AddRange(InternalActions.ToArray());
 
+        if (JsActions is { Count: > 0 })
+            listAction.AddRange(JsActions.ToArray());
+        
         return listAction.OrderBy(x => x.Order).ToList();
     }
 

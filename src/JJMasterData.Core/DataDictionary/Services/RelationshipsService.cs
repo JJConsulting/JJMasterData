@@ -7,26 +7,26 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class RelationsService : BaseService
+public class RelationshipsService : BaseService
 {
-    public RelationsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    public RelationshipsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
         : base(validationDictionary, dataDictionaryRepository)
     {
     }
 
-    public void Save(ElementRelation elementRelation, string sIndex, string dictionaryName)
+    public void Save(ElementRelationship elementRelationship, string sIndex, string dictionaryName)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relations;
+        var relations = dictionary.Table.Relationships;
 
         if (!string.IsNullOrEmpty(sIndex))
         {
             int index = int.Parse(sIndex);
-            relations[index] = elementRelation;
+            relations[index] = elementRelationship;
         }
         else
         {
-            relations.Add(elementRelation);
+            relations.Add(elementRelationship);
         }
 
         DataDictionaryRepository.InsertOrReplace(dictionary);
@@ -90,40 +90,40 @@ public class RelationsService : BaseService
         return IsValid;
     }
 
-    public bool ValidateFields(ElementRelation elementRelation, string dictionaryName, string sIndex)
+    public bool ValidateFields(ElementRelationship elementRelationship, string dictionaryName, string sIndex)
     {
-        if (string.IsNullOrWhiteSpace(elementRelation.ChildElement))
+        if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
             AddError("", Translate.Key("Mandatory <b>PKTable </b> field"));
 
         if (IsValid)
         {
-            if (elementRelation.Columns.Count == 0)
+            if (elementRelationship.Columns.Count == 0)
                 AddError("", Translate.Key("No relationship registered."));
         }
 
         if (IsValid)
         {
-            foreach (var r in elementRelation.Columns)
+            foreach (var r in elementRelationship.Columns)
             {
-                ValidateRelation(elementRelation.ChildElement, r.PkColumn, r.FkColumn);
+                ValidateRelation(elementRelationship.ChildElement, r.PkColumn, r.FkColumn);
             }
         }
 
         if (IsValid && string.IsNullOrEmpty(sIndex))
         {
-            List<ElementRelation> listRelation = GetFormElement(dictionaryName).Relations.FindAll(x => x.ChildElement.Equals(elementRelation.ChildElement));
+            List<ElementRelationship> listRelation = GetFormElement(dictionaryName).Relationships.FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (listRelation.Count > 0)
-                AddError("", Translate.Key("There is already a relationship registered for ") + elementRelation.ChildElement);
+                AddError("", Translate.Key("There is already a relationship registered for ") + elementRelationship.ChildElement);
         }
 
         return IsValid;
     }
 
-    public bool ValidateFinallyAddRelation(ElementRelation elementRelation, string pkColumnName, string fkColumnName)
+    public bool ValidateFinallyAddRelation(ElementRelationship elementRelationship, string pkColumnName, string fkColumnName)
     {
-        if (ValidateRelation(elementRelation.ChildElement, pkColumnName, fkColumnName))
+        if (ValidateRelation(elementRelationship.ChildElement, pkColumnName, fkColumnName))
         {
-            var list = elementRelation.Columns.FindAll(x =>
+            var list = elementRelationship.Columns.FindAll(x =>
                 x.PkColumn.Equals(pkColumnName) &&
                 x.FkColumn.Equals(fkColumnName));
 
@@ -139,8 +139,8 @@ public class RelationsService : BaseService
     public void Delete(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        ElementRelation elementRelation = dictionary.Table.Relations[int.Parse(index)];
-        dictionary.Table.Relations.Remove(elementRelation);
+        ElementRelationship elementRelationship = dictionary.Table.Relationships[int.Parse(index)];
+        dictionary.Table.Relationships.Remove(elementRelationship);
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
@@ -148,13 +148,13 @@ public class RelationsService : BaseService
     public void MoveDown(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relations;
+        var relations = dictionary.Table.Relationships;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
         {
-            ElementRelation elementRelation = relations[indexToMoveDown + 1];
+            ElementRelationship elementRelationship = relations[indexToMoveDown + 1];
             relations[indexToMoveDown + 1] = relations[indexToMoveDown];
-            relations[indexToMoveDown] = elementRelation;
+            relations[indexToMoveDown] = elementRelationship;
 
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
@@ -164,13 +164,13 @@ public class RelationsService : BaseService
     public void MoveUp(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relations;
+        var relations = dictionary.Table.Relationships;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
-            ElementRelation elementRelation = relations[indexToMoveUp - 1];
+            ElementRelationship elementRelationship = relations[indexToMoveUp - 1];
             relations[indexToMoveUp - 1] = relations[indexToMoveUp];
-            relations[indexToMoveUp] = elementRelation;
+            relations[indexToMoveUp] = elementRelationship;
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }

@@ -735,7 +735,7 @@ public class JJFormView : JJGridView
     private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        var relations = FormElement.Relations.FindAll(x => x.ViewType != RelationType.None);
+        var relationships = FormElement.Relationships.FindAll(x => x.ViewType != RelationshipType.None);
 
         var painel = DataPanel;
         painel.PageState = pageState;
@@ -746,7 +746,7 @@ public class JJFormView : JJGridView
         if (ShowTitle)
             html.AppendElement(GetTitle());
 
-        if (relations.Count == 0)
+        if (relationships.Count == 0)
         {
             html.AppendElement(painel);
 
@@ -777,7 +777,7 @@ public class JJFormView : JJGridView
         }
 
         var dicRepository = JJServiceCore.DataDictionaryRepository;
-        foreach (var relation in relations)
+        foreach (var relation in relationships)
         {
             var dic = dicRepository.GetMetadata(relation.ChildElement);
             var childElement = dic.GetFormElement();
@@ -788,7 +788,7 @@ public class JJFormView : JJGridView
                 filter.Add(col.FkColumn, values[col.PkColumn]);
             }
 
-            if (relation.ViewType == RelationType.View)
+            if (relation.ViewType == RelationshipType.View)
             {
                 var childvalues = EntityRepository.GetFields(childElement, filter);
                 var chieldView = new JJDataPanel(childElement)
@@ -807,7 +807,7 @@ public class JJFormView : JJGridView
 
                 html.AppendElement(chieldView);
             }
-            else if (relation.ViewType == RelationType.List)
+            else if (relation.ViewType == RelationshipType.List)
             {
                 var childGrid = new JJFormView(childElement)
                 {

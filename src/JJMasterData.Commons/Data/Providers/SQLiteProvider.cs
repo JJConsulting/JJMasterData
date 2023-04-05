@@ -142,15 +142,15 @@ public class ProviderSQLite : BaseProvider
         return sSql.ToString();
     }
 
-    private string GetRelationScript(Element element)
+    private string GetRelationshipsScript(Element element)
     {
         StringBuilder sSql = new StringBuilder();
 
-        if (element.Relations.Count > 0)
+        if (element.Relationships.Count > 0)
         {
-            sSql.AppendLine("-- RELATIONS");
+            sSql.AppendLine("-- RELATIONSHIPS");
             var listConstraint = new List<string>();
-            foreach (var r in element.Relations)
+            foreach (var r in element.Relationships)
             {
                 string constraintName = $"FK_{r.ChildElement}_{element.TableName}";
                 if (!listConstraint.Contains(constraintName))

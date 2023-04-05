@@ -95,7 +95,7 @@ public class SqlServerProvider : BaseProvider
 
         sql.AppendLine("");
 
-        sql.AppendLine(GetRelationScript(element));
+        sql.AppendLine(GetRelationshipsScript(element));
         sql.AppendLine("");
 
         int counter = 1;
@@ -134,15 +134,15 @@ public class SqlServerProvider : BaseProvider
         return sql.ToString();
     }
 
-    private string GetRelationScript(Element element)
+    private string GetRelationshipsScript(Element element)
     {
         var sql = new StringBuilder();
 
-        if (element.Relations.Count > 0)
+        if (element.Relationships.Count > 0)
         {
-            sql.AppendLine("-- RELATIONS");
+            sql.AppendLine("-- RELATIONSHIPS");
             var listContraint = new List<string>();
-            foreach (var r in element.Relations)
+            foreach (var r in element.Relationships)
             {
                 string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
 
