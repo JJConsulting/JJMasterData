@@ -100,6 +100,7 @@ public static class ServiceCollectionExtensions
             var wrapperOptions = wrapper.JJMasterDataWeb;
             options.LayoutPath = wrapperOptions.LayoutPath;
             options.PopUpLayoutPath = wrapperOptions.PopUpLayoutPath;
+            options.UseCustomBootstrap = wrapperOptions.UseCustomBootstrap;
         }
 
         void ConfigureConnectionStrings(ConnectionStrings options)
