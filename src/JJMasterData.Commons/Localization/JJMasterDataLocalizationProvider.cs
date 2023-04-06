@@ -16,7 +16,8 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IEntityRepository EntityRepository { get; }
 
-    public JJMasterDataLocalizationProvider(IEntityRepository entityRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public JJMasterDataLocalizationProvider(IEntityRepository entityRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         StringLocalizer = stringLocalizer;
@@ -25,48 +26,58 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
     public IDictionary<string, string> GetLocalizedStrings(string culture)
     {
         string tableName = JJService.Options.ResourcesTableName;
-        
+
         if (string.IsNullOrEmpty(tableName))
-            return new Dictionary<string,string>();
+            return new Dictionary<string, string>();
+
         if (string.IsNullOrEmpty(JJMasterDataCommonsOptions.GetConnectionString()))
-            return new Dictionary<string,string>();
+            return new Dictionary<string, string>();
 
-        var element = GetElement(tableName);
-        if (!EntityRepository.TableExists(element.TableName))
-            EntityRepository.CreateDataModel(element);
-        
-        var stringLocalizerValues = GetStringLocalizerValues();
-        var databaseValues = GetDatabaseValues(element, culture);
-
-        if (databaseValues.Count > 0)
+        try
         {
-            foreach (var dbValue in databaseValues.ToList())
+            var element = GetElement(tableName);
+            if (!EntityRepository.TableExists(element.TableName))
+                EntityRepository.CreateDataModel(element);
+
+            var stringLocalizerValues = GetStringLocalizerValues();
+            var databaseValues = GetDatabaseValues(element, culture);
+
+            if (databaseValues.Count > 0)
             {
-                stringLocalizerValues[dbValue.Key] = dbValue.Value;
+                foreach (var dbValue in databaseValues.ToList())
+                {
+                    stringLocalizerValues[dbValue.Key] = dbValue.Value;
+                }
+                return stringLocalizerValues;
             }
+
+            if (stringLocalizerValues?.Count > 0)
+                SetDatabaseValues(element, ConvertDictionaryToHashtableList(stringLocalizerValues, culture));
 
             return stringLocalizerValues;
         }
-        
-        if (stringLocalizerValues?.Count > 0)
+        catch
         {
-            SetDatabaseValues(element, ConvertDictionaryToHashtableList(stringLocalizerValues,culture));
+            return new Dictionary<string, string>();
         }
-        
-        return stringLocalizerValues;
     }
+
     private void SetDatabaseValues(Element element, IEnumerable<Hashtable> values)
     {
         foreach (var value in values)
             EntityRepository.SetValues(element, value);
     }
-    private static IEnumerable<Hashtable> ConvertDictionaryToHashtableList(IDictionary<string,string> dictionary, string culture)
+
+    private static IEnumerable<Hashtable> ConvertDictionaryToHashtableList(IDictionary<string, string> dictionary,
+        string culture)
     {
-        return dictionary.Select(pair => new Hashtable {                
+        return dictionary.Select(pair => new Hashtable
+        {
             { "cultureCode", culture },
             { "resourceKey", pair.Key },
-            { "resourceValue",  pair.Value },
-            { "resourceOrigin", "JJMasterData" } }).ToList();
+            { "resourceValue", pair.Value },
+            { "resourceOrigin", "JJMasterData" }
+        }).ToList();
     }
 
     private Dictionary<string, string> GetStringLocalizerValues()
@@ -88,6 +99,7 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
             return new Dictionary<string, string>();
         }
     }
+
     private Dictionary<string, string> GetDatabaseValues(Element element, string culture)
     {
         var values = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -97,12 +109,15 @@ public class JJMasterDataLocalizationProvider : ILocalizationProvider
         {
             values.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
         }
+
         return values;
     }
+
     public static Element GetElement()
     {
         return GetElement(JJService.Options.ResourcesTableName);
     }
+
     private static Element GetElement(string tablename)
     {
         var element = new Element
