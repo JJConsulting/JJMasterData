@@ -1,7 +1,9 @@
 ﻿@using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Web.Options
+@using Microsoft.Extensions.Options
 
-@inject IOptions<JJMasterDataWebOptions> Options;
+@inject IOptions<JJMasterDataWebOptions> Options
 
 <link rel="stylesheet preload prefetch" href="~/css/fontawesome/all.min.css" />
 <link rel="stylesheet preload prefetch" href="~/css/fontawesome/v4-font-face.min.css" />
@@ -13,7 +15,7 @@
         @if (!Options.Value.UseCustomBootstrap)
         {
             <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap.min.css" />
-            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap-theme.css?v=6" />    
+            <link rel="Stylesheet" href="~/css/bootstrap/bootstrap3/bootstrap-theme.css?v=6" />
         }
         <link rel="Stylesheet" href="~/css/bootstrap/bootstrap-toggle/bootstrap-toggle.min.css" />
         <link rel="stylesheet" href="~/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
