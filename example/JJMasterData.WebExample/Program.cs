@@ -21,7 +21,7 @@ public class Program
             .WithPdfExportation();
             
             //.WithMongoDbDataDictionary();
-            // .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
+            //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>

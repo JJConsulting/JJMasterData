@@ -19,6 +19,8 @@
     href: expressions.md
   - name: Reserved Keywords
     href: reserved_keywords.md
+  - name: Customizing Layout
+    href: customizing_layout.md
 - name: Tutorials
   items:
   - name: Creating your first dictionary
