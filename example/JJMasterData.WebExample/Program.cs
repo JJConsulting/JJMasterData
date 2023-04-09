@@ -26,7 +26,7 @@ public class Program
         //You can also:
         // builder.Services.AddJJMasterDataWeb(options =>
         // {
-        //     options.JJMasterData.BootstrapVersion = 5;
+        //     options.JJMasterDataCore.BootstrapVersion = 5;
         // });
         
         var app = builder.Build();

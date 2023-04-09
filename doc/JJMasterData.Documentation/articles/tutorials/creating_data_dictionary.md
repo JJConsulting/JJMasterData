@@ -9,7 +9,7 @@ for that see the system [configurations](../configurations.md).
 
 # Creating a Data Dictionary 
 
-You can start through the link /pt-br/DataDictionary.
+You can start through the link `/en-us/DataDictionary`.
 The New icon will allow you to create your metadata and generate scripts for your tables.
 
 With JJMasterData you will be able to import or create your table and organize it into dictionaries and later displayed in metadata.
