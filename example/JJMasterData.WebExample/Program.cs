@@ -48,8 +48,11 @@ public class Program
         app.UseRouting();
         app.MapRazorPages();
         app.UseAuthorization();
-        app.UseJJMasterDataWeb()
-            .RequireAuthorization("MasterDataPolicy");
+        app.UseJJMasterDataWeb();
+        app.MapJJMasterData(options =>
+        {
+        
+        }).WithMetadata().RequireAuthorization("MasterDataPolicy");
         
         app.Run();
     }

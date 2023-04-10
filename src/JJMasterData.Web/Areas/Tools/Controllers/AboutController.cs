@@ -1,13 +1,14 @@
 using System.Reflection;
 using JJMasterData.Core.Web;
-using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
+using JJMasterData.Web.Areas.MasterData.Controllers;
+using JJMasterData.Web.Areas.Tools.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JJMasterData.Web.Areas.MasterData.Controllers;
+namespace JJMasterData.Web.Areas.Tools.Controllers;
 
 
-public class AboutController : MasterDataController
+public class AboutController : ToolsController
 {
     private AboutService Service { get; }
     

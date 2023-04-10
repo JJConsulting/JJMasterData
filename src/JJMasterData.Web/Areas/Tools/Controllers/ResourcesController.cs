@@ -1,13 +1,14 @@
 ﻿using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Web.Areas.MasterData.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Web.Areas.MasterData.Controllers;
+namespace JJMasterData.Web.Areas.Tools.Controllers;
 
-public class ResourcesController : MasterDataController
+public class ResourcesController : ToolsController
 {
     private readonly ResourcesService _resourcesService;
     private readonly RequestLocalizationOptions _options;

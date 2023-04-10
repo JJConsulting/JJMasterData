@@ -6,14 +6,14 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
-using Microsoft.AspNetCore.Authorization;
+using JJMasterData.Web.Areas.MasterData.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Web.Areas.MasterData.Controllers;
+namespace JJMasterData.Web.Areas.Tools.Controllers;
 
-public class LogController : MasterDataController
+public class LogController : ToolsController
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }

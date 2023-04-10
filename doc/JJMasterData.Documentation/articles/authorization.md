@@ -1,5 +1,5 @@
 <h1>
-    Authentication
+    Authorization
     <small> How to secure your routes on JJ MasterData</small>
 </h1>
 
@@ -7,17 +7,16 @@ JJMasterData uses 3 areas on your routes:
 
 - **DataDictionary** It's used to manage forms that only the admin should access;
 - **MasterData** Is used to render a form, you must check if user has access;
-- **Log** It's show all JJMasterData application log
+- **Tools** It's used to configure JJMasterData dependencies, like i18n and logging;
 
 Keep in mind that the end-user only access the MasterData Area.<br>
-Log is used just on the Log Controller if you are using JJMasterData default log. 
-
 
 You can also inject your custom attributes or policy for routes using:
 ```cs
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseJJMasterDataWeb()
+app.UseJJMasterDataWeb();
+app.MapJJMasterData()
     .RequireAuthorization("MasterDataPolicy");
 ```
 If you are not familiarized with the concept of policies, please check this [link](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0).

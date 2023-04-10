@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 
-namespace JJMasterData.Web.Areas.MasterData.Models;
+namespace JJMasterData.Web.Areas.Tools.Models;
 
 public class ConnectionString
 {
