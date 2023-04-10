@@ -13,9 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
-[Authorize(Policy = "Log")]
-public class LogController : Controller
+public class LogController : MasterDataController
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }

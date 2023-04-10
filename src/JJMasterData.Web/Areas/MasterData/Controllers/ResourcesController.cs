@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class ResourcesController : MasterDataController
 {
     private readonly ResourcesService _resourcesService;

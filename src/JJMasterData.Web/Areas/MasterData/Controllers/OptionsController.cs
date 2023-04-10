@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class OptionsController : MasterDataController
 {
     private OptionsService Service { get; }

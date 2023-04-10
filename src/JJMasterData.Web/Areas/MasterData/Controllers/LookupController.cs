@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class LookupController : MasterDataController
 {
     // GET: MasterData/Lookup

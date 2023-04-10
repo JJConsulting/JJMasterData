@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;

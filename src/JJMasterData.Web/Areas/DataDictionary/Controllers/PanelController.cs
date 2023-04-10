@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class PanelController : DataDictionaryController
 {
     private readonly PanelService _panelService;

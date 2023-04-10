@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class ApiController : DataDictionaryController
 {
     private readonly ApiService _apiService;

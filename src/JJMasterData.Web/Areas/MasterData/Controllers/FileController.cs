@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class FileController : MasterDataController
 {
     public IActionResult Download(string filePath)

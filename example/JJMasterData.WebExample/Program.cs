@@ -1,6 +1,7 @@
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
+using JJMasterData.WebExample.Authorization;
 
 namespace JJMasterData.WebExample;
 
@@ -19,7 +20,6 @@ public class Program
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
             .WithPdfExportation();
-            
             //.WithMongoDbDataDictionary();
             //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
@@ -29,8 +29,15 @@ public class Program
         //     options.JJMasterDataCore.BootstrapVersion = 5;
         // });
         
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("MasterDataPolicy", policy =>
+            {
+                policy.AddRequirements(new AllowAnonymousAuthorizationRequirement());
+            });
+        });
+        
         var app = builder.Build();
-
         if (app.Environment.IsProduction())
             app.UseHsts();
 
@@ -40,8 +47,10 @@ public class Program
         app.UseStaticFiles();
         app.UseRouting();
         app.MapRazorPages();
-        app.UseJJMasterDataWeb();
         app.UseAuthorization();
+        app.UseJJMasterDataWeb()
+            .RequireAuthorization("MasterDataPolicy");
+        
         app.Run();
     }
 }

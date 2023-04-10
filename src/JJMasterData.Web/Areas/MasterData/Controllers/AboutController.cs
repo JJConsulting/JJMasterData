@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
+
 public class AboutController : MasterDataController
 {
     private AboutService Service { get; }

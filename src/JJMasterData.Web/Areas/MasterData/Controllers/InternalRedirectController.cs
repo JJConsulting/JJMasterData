@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class InternalRedirectController : MasterDataController
 {
     private string? _dictionaryName;

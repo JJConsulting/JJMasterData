@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class EntityController : DataDictionaryController
 {
     private readonly EntityService _entityService;

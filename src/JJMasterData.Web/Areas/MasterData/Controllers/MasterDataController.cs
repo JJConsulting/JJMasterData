@@ -3,5 +3,5 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Authorize(Policy = "MasterData")]
+[Area("MasterData")]
 public abstract class MasterDataController : Controller { }
