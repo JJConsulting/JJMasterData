@@ -49,10 +49,8 @@ public class Program
         app.MapRazorPages();
         app.UseAuthorization();
         app.UseJJMasterDataWeb();
-        app.MapJJMasterData(options =>
-        {
-        
-        }).WithMetadata().RequireAuthorization("MasterDataPolicy");
+        app.MapJJMasterData()
+            .RequireAuthorization("MasterDataPolicy");
         
         app.Run();
     }
