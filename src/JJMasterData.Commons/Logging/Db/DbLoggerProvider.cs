@@ -13,7 +13,7 @@ public class DbLoggerProvider : ILoggerProvider
     internal readonly DbLoggerOptions Options;
     internal readonly IEntityRepository Repository;
  
-    public DbLoggerProvider(IOptions<DbLoggerOptions> options, IServiceProvider serviceProvider)
+    public DbLoggerProvider(IOptionsSnapshot<DbLoggerOptions> options, IServiceProvider serviceProvider)
     {
         Options = options.Value;
 

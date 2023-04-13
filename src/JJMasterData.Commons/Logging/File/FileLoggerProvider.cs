@@ -8,7 +8,7 @@ public class FileLoggerProvider : ILoggerProvider
 {
     internal readonly FileLoggerOptions Options;
 
-    public FileLoggerProvider(IOptions<FileLoggerOptions> options)
+    public FileLoggerProvider(IOptionsSnapshot<FileLoggerOptions> options)
     {
         Options = options.Value;
     }
