@@ -6,14 +6,14 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Web.Areas.MasterData.Controllers;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Web.Areas.Tools.Controllers;
+namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class LogController : ToolsController
+public class LogController : DataDictionaryController
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }
@@ -34,8 +34,10 @@ public class LogController : ToolsController
             EntityRepository.CreateDataModel(LoggerElement);
         }
 
-        var gridView = GetLoggingGridView();
-        return View(gridView);
+        var formElement = GetFormElement();
+        var model = new LogViewModel(formElement, ConfigureGridView);
+        
+        return View(model);
     }
 
     [HttpGet]
@@ -48,32 +50,9 @@ public class LogController : ToolsController
         return RedirectToAction("Index");
     }
 
-    private JJGridView GetLoggingGridView()
+    private void ConfigureGridView(JJGridView gridView)
     {
-        var formElement = new FormElement(LoggerElement)
-        {
-            Title = Translate.Key("Application Log"),
-            SubTitle = string.Empty
-        };
-
-        formElement.Fields["Id"].VisibleExpression = "val:0";
-
-        var logLevel = formElement.Fields[Options.LevelColumnName];
-        logLevel.Component = FormComponent.ComboBox;
-        
-        logLevel.DataItem!.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
-        
-        var gridView = new JJGridView(formElement)
-        {
-            CurrentOrder = $"{Options.CreatedColumnName} DESC"
-        };
-
+        gridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
         var btnClearAll = new UrlRedirectAction
         {
             Name = "btnClearLog",
@@ -86,9 +65,8 @@ public class LogController : ToolsController
 
         gridView.OnRenderCell += OnRenderCell;
         gridView.AddToolBarAction(btnClearAll);
-
-        return gridView;
     }
+    
     private void OnRenderCell(object? sender, GridCellEventArgs e)
     {
         string? message;
@@ -103,5 +81,31 @@ public class LogController : ToolsController
 
         e.HtmlResult = message;
     }
+
+    private FormElement GetFormElement()
+    {
+        var formElement = new FormElement(LoggerElement)
+        {
+            Title = Translate.Key("Application Log"),
+            SubTitle = string.Empty
+        };
+
+        formElement.Fields["Id"].VisibleExpression = "val:0";
+
+        var logLevel = formElement.Fields[Options.LevelColumnName];
+        logLevel.Component = FormComponent.ComboBox;
+
+        logLevel.DataItem!.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
+        logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
+        
+        return formElement;
+    }
+
+
     
 }

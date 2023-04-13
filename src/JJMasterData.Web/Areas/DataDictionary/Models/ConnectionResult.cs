@@ -1,4 +1,4 @@
-namespace JJMasterData.Web.Areas.Tools.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 public class ConnectionResult
 {

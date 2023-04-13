@@ -46,4 +46,16 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\MasterData\Views\About\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\MasterData\Views\Resources\Index.cshtml" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <AdditionalFiles Include="Areas\DataDictionary\Views\About\Index.cshtml" />
+      <AdditionalFiles Include="Areas\DataDictionary\Views\Options\Index.cshtml" />
+      <AdditionalFiles Include="Areas\DataDictionary\Views\Options\_ConnectionString.cshtml" />
+      <AdditionalFiles Include="Areas\DataDictionary\Views\Resources\Index.cshtml" />
+    </ItemGroup>
 </Project>

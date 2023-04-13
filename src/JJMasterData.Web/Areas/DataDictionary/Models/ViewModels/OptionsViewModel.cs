@@ -2,7 +2,7 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Web.Areas.Tools.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class OptionsViewModel
 {
