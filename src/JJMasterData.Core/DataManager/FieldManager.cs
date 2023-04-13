@@ -381,7 +381,6 @@ public class FieldManager
                         if (val != null)
                             newvalues.Add(f.Name, val);
                     }
-                    continue;
                 }
 
                 objname = prefix + f.Name;
