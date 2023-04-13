@@ -6,11 +6,11 @@ namespace JJMasterData.Commons.Logging.File;
 [ProviderAlias("File")]
 public class FileLoggerProvider : ILoggerProvider
 {
-    internal readonly FileLoggerOptions Options;
+    internal readonly IOptionsMonitor<FileLoggerOptions> Options;
 
-    public FileLoggerProvider(IOptionsSnapshot<FileLoggerOptions> options)
+    public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
     {
-        Options = options.Value;
+        Options = options;
     }
  
     /// <summary>

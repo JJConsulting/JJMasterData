@@ -46,21 +46,23 @@ public class DbLogger : ILogger
             return;
 
         var now = DateTime.Now;
-        
+
+        var options = _dbLoggerProvider.Options.CurrentValue;
+
         var values = new Hashtable
         {
-            [_dbLoggerProvider.Options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
-            [_dbLoggerProvider.Options.LevelColumnName] = (int)logLevel,
-            [_dbLoggerProvider.Options.EventColumnName] = eventId.Name,
-            [_dbLoggerProvider.Options.MessageColumnName] = GetMessage(eventId, formatter(state, exception), exception),
+            [options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
+            [options.LevelColumnName] = (int)logLevel,
+            [options.EventColumnName] = eventId.Name,
+            [options.MessageColumnName] = GetMessage(eventId, formatter(state, exception), exception),
         };
         
-        var element = DbLoggerElement.GetInstance(_dbLoggerProvider.Options);
+        var element = DbLoggerElement.GetInstance(options);
 
         
         if (!_tableExists)
         {
-            if (!_dbLoggerProvider.Repository.TableExists(_dbLoggerProvider.Options.TableName))
+            if (!_dbLoggerProvider.Repository.TableExists(options.TableName))
             {
                 _dbLoggerProvider.Repository.CreateDataModel(element);
             }

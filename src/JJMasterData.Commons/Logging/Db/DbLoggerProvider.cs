@@ -10,12 +10,12 @@ namespace JJMasterData.Commons.Logging.Db;
 [ProviderAlias("Database")]
 public class DbLoggerProvider : ILoggerProvider
 {
-    internal readonly DbLoggerOptions Options;
+    internal readonly IOptionsMonitor<DbLoggerOptions> Options;
     internal readonly IEntityRepository Repository;
  
-    public DbLoggerProvider(IOptionsSnapshot<DbLoggerOptions> options, IServiceProvider serviceProvider)
+    public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IServiceProvider serviceProvider)
     {
-        Options = options.Value;
+        Options = options;
 
         using var scope = serviceProvider.CreateScope();
         Repository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();

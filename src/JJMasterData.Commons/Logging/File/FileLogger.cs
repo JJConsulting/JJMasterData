@@ -49,7 +49,7 @@ public class FileLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.FileName);
+        var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.CurrentValue.FileName);
         var directory = Path.GetDirectoryName(path);
 
         if (!Directory.Exists(directory))
