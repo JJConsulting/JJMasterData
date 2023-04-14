@@ -16,8 +16,8 @@ public class JJMasterDataWebOptions
     /// Default value: false (Generate a link to the default bootstrap layout)
     /// </summary>
     /// <remarks>
-    /// False = Will be added a default bootstrap.min.css in stylesheets
-    /// True = Nothing will be added by default, and a custom bootstrap.css must be added
+    /// False = A default bootstrap.min.css will be added in stylesheets
+    /// True = Bootstrap will not be added by default, and a custom bootstrap.css must be included
     /// </remarks>
     public bool UseCustomBootstrap { get; set; }
 }

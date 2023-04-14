@@ -8,7 +8,6 @@ using System.Collections;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class FieldController : DataDictionaryController
 {
     private readonly FieldService _fieldService;

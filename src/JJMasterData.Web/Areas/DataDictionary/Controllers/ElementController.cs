@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
@@ -36,7 +35,7 @@ public class ElementController : DataDictionaryController
         }
         catch (DataAccessException)
         {
-            return RedirectToAction("Index", "Options", new { Area = "MasterData", isFullscreen = true });
+            return RedirectToAction("Index", "Options", new { Area = "DataDictionary", isFullscreen = true });
         }
     }
 
@@ -251,7 +250,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("About"),
-            UrlRedirect = Url.Action("Index", "About", new { Area = "MasterData" }),
+            UrlRedirect = Url.Action("Index", "About", new { Area = "DataDictionary" }),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -266,7 +265,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Log"),
-            UrlRedirect = Url.Action("Index", "Log", new { Area = "MasterData" }),
+            UrlRedirect = Url.Action("Index", "Log", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -281,7 +280,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Application Options"),
-            UrlRedirect = Url.Action("Index", "Options", new { Area = "MasterData" }),
+            UrlRedirect = Url.Action("Index", "Options", new { Area = "DataDictionary" }),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
         };
@@ -296,7 +295,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlAsPopUp = true,
             TitlePopUp = Translate.Key("Resources"),
-            UrlRedirect = Url.Action("Index", "Resources", new { Area = "MasterData" }),
+            UrlRedirect = Url.Action("Index", "Resources", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };

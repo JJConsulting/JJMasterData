@@ -5,10 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Web.Areas.MasterData.Controllers;
+namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("MasterData")]
-public class ResourcesController : MasterDataController
+public class ResourcesController : DataDictionaryController
 {
     private readonly ResourcesService _resourcesService;
     private readonly RequestLocalizationOptions _options;

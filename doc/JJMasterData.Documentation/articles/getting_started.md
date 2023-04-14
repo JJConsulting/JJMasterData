@@ -31,8 +31,11 @@ Add the following lines to your Program.cs
 //This line will add JJMasterData required services.
 builder.Services.AddJJMasterDataWeb();
 
-//Add this line before specifing your default route. It will use the required services and add the RCL routes.
+//It will use the required services.
 app.UseJJMasterDataWeb();
+
+//Add this line before specifing default route.
+app.MapJJMasterData();
 ```
 
 ## 4. Navigate on Data Dictionary

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class UIOptionsController : DataDictionaryController
 {
     private readonly UIOptionsService? _optionsService;

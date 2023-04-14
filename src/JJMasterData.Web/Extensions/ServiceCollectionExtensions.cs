@@ -3,8 +3,6 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Web.Authorization;
-using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using JJMasterData.Web.Hosting;
@@ -13,12 +11,11 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Options.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Options;
 
 namespace JJMasterData.Web.Extensions;
@@ -70,9 +67,9 @@ public static class ServiceCollectionExtensions
     }
 
     public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
-        Action<JJConfigurationOptions> configureOptions)
+        Action<JJMasterDataConfigurationOptions> configureOptions)
     {
-        var wrapper = new JJConfigurationOptions();
+        var wrapper = new JJMasterDataConfigurationOptions();
 
         configureOptions(wrapper);
 
@@ -132,23 +129,11 @@ public static class ServiceCollectionExtensions
         services.AddSystemWebAdapters();
         services.AddDistributedMemoryCache();
         services.AddJJMasterDataServices();
-        services.AddUrlRequestCultureProvider();
-        services.AddAnonymousAuthorization();
+        services.AddRequestUrlCultureProvider();
     }
 
-    internal static void AddAnonymousAuthorization(this IServiceCollection services)
-    {
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("MasterData",
-                policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
-            options.AddPolicy("DataDictionary",
-                policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
-            options.AddPolicy("Log", policy => policy.AddRequirements(new AllowAnonymousAuthorizationRequirement()));
-        });
-    }
 
-    internal static void AddUrlRequestCultureProvider(this IServiceCollection services,
+    internal static void AddRequestUrlCultureProvider(this IServiceCollection services,
         params CultureInfo[]? supportedCultures)
     {
         if (supportedCultures == null || supportedCultures.Length == 0)

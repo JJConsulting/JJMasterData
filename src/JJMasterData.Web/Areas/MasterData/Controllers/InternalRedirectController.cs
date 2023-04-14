@@ -6,13 +6,12 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
+using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-[Area("MasterData")]
 public class InternalRedirectController : MasterDataController
 {
     private string? _dictionaryName;

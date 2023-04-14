@@ -1,4 +1,4 @@
-namespace JJMasterData.Web.Areas.MasterData.Models.ViewModels;
+namespace JJMasterData.Web.Areas.MasterData.Models;
 
 public class InternalRedirectViewModel
 {

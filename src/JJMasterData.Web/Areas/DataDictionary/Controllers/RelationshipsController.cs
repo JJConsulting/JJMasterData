@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("DataDictionary")]
 public class RelationshipsController : DataDictionaryController
 {
     private readonly RelationshipsService _relationshipsService;

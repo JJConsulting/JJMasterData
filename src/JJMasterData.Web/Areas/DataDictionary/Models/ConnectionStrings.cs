@@ -1,5 +1,5 @@
 
-namespace JJMasterData.Web.Areas.MasterData.Models;
+namespace JJMasterData.Web.Areas.DataDictionary.Models;
 
 /// <summary>
 /// Data representation of the ConnectionStrings of Microsoft.Extensions.Configuration.IConfiguration />

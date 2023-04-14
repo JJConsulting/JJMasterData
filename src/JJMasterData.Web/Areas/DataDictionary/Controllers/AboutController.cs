@@ -1,13 +1,13 @@
 using System.Reflection;
 using JJMasterData.Core.Web;
-using JJMasterData.Web.Areas.MasterData.Models.ViewModels;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JJMasterData.Web.Areas.MasterData.Controllers;
+namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-[Area("MasterData")]
-public class AboutController : MasterDataController
+
+public class AboutController : DataDictionaryController
 {
     private AboutService Service { get; }
     

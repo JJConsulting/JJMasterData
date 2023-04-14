@@ -11,8 +11,8 @@
     href: logging.md
   - name: Internationalization
     href: internationalization.md
-  - name: Authentication
-    href: authentication.md
+  - name: Authorization
+    href: authorization.md
   - name: Custom Rules
     href: custom_rules.md
   - name: Expressions
