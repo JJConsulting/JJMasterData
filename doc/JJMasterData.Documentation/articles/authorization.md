@@ -3,11 +3,10 @@
     <small> How to secure your routes on JJ MasterData</small>
 </h1>
 
-JJMasterData uses 3 areas on your routes: 
+JJMasterData uses 2 areas on your routes: 
 
 - **DataDictionary** It's used to manage forms that only the admin should access;
 - **MasterData** Is used to render a form, you must check if user has access;
-- **Tools** It's used to configure JJMasterData dependencies, like i18n and logging;
 
 Keep in mind that the end-user only access the MasterData Area.<br>
 
@@ -87,11 +86,6 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         if ("DataDictionary".ToLower().Equals(area?.ToLower()))
         {
             //TODO: admin required
-        }
-
-        if ("Log".ToLower().Equals(area?.ToLower()))
-        {
-            //TODO: access to log system
         }
 
         context.Fail();
