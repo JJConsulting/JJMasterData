@@ -45,7 +45,7 @@
         "files": [
           "example/JJMasterData.WebExample/**",
           "media/**",
-          "logo.svg",
+          "logo.png",
           "favicon.ico"
         ]
       }
@@ -65,6 +65,7 @@
     ],
     "dest": "_site",
     "globalMetadata": {
+      "_appName":"JJMasterData",
       "_disableContribution": false,
       "_enableSearch": "true",
       "_gitContribute": {
@@ -72,7 +73,8 @@
       },
       "_gitUrlPattern": "github",
       "_appTitle": "JJMasterData",
-      "_appFooter": "<div><span>(Saturn Version - 3.1)</span> - <a href='https://www.jjconsulting.tech' alt=''>&copy; 2023 JJConsulting. All rights reserved.</a></div>"
+      "_appFooter": "<div><span>Saturn Version - 3.1</span>",
+      "_copyrightFooter":"<a href='https://www.jjconsulting.tech' alt=''>&copy; 2023 JJConsulting. All rights reserved.</a></div>"
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
