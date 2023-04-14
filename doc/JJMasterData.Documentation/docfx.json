@@ -22,6 +22,9 @@
         }
       ],
       "dest": "lib",
+      "properties": {
+        "TargetFramework": "net6.0"
+      },
       "useMultiLevelToc": true,
       "disableGitFeatures": false,
       "disableDefaultFilter": false
@@ -72,9 +75,11 @@
         "branch": "main"
       },
       "_gitUrlPattern": "github",
+      "_disableSideFilter":true,
       "_appTitle": "JJMasterData",
-      "_appFooter": "<div><span>Saturn Version - 3.1</span>",
-      "_copyrightFooter":"<a href='https://www.jjconsulting.tech' alt=''>&copy; 2023 JJConsulting. All rights reserved.</a></div>"
+      "_appLogoPath": "logo.png",
+      "_appFooter": "Saturn Version - 3.1",
+      "_copyrightFooter":"<a href='https://www.jjconsulting.tech' alt=''>&copy; 2023 JJConsulting. All rights reserved.</a>"
     },
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
@@ -83,9 +88,8 @@
       "templates/singulinkfx"
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
-    "markdownEngineName": "markdig",
     "noLangKeyword": false,
-    "keepFileLink": false,
+    "keepFileLink": true,
     "cleanupCacheHistory": false,
     "disableGitFeatures": false
   }
