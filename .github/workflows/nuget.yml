@@ -6,6 +6,14 @@ on:
 jobs:
   nuget-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - JJMasterData.Commons
+          - JJMasterData.Core
+          - JJMasterData.Web
+          - Plugins/JJMasterData.Hangfire
+          - Plugins/JJMasterData.Pdf
 
     steps:
       - uses: actions/checkout@v2
@@ -18,26 +26,16 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v3.4.1
 
-      - name: NuGet Publish
-        strategy:
-          matrix:
-            project:
-              - JJMasterData.Commons
-              - JJMasterData.Core
-              - JJMasterData.Web
-              - Plugins/JJMasterData.Hangfire
-              - Plugins/JJMasterData.Pdf
-        steps:
-          - name: Restore NuGet packages
-            run: dotnet restore ${{ matrix.project }}
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ matrix.project }}
   
-          - name: Build and pack NuGet package
-            run: |
-              cd ${{ matrix.project }}
-              dotnet build -c release
-              dotnet pack -c release --output="nuget"
-              cd nuget
+      - name: Build and pack NuGet package
+        run: |
+          cd ${{ matrix.project }}
+          dotnet build -c release
+          dotnet pack -c release --output="nuget"
+          cd nuget
   
-          - name: Publish NuGet package
-            run: |
-              dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish NuGet package
+        run: |
+          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
