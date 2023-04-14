@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;
@@ -49,25 +50,20 @@ internal class FormValues
                         value = lookup.SelectedValue;
                         break;
                     }
-                default:
+                case FormComponent.Currency:
+                case FormComponent.Number:
+                    string requestType = CurrentContext.Request.QueryString("t");
+                    if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType)))
                     {
-                        if (field.Component is FormComponent.Number or FormComponent.Currency)
-                        {
-                            string requestType = CurrentContext.Request.QueryString("t");
-                            if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType)))
-                            {
-                                if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
-                                    value = numericValue;
-                                else
-                                    value = 0;
-                            }
-                        }
-                        else if (field.Component == FormComponent.CheckBox)
-                        {
-                            value ??= CurrentContext.Request.Form(fieldName + "_hidden") ?? "0";
-                        }
-                        break;
+                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
+                            value = numericValue;
+                        else
+                            value = 0;
                     }
+                    break;
+                case FormComponent.CheckBox:
+                    value ??= CurrentContext.Request.Form(fieldName + "_hidden") ?? "0";
+                    break;
             }
 
             if (value != null)

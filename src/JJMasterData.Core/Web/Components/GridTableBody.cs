@@ -159,6 +159,7 @@ internal class GridTableBody
                 is FormComponent.ComboBox 
                 or FormComponent.CheckBox 
                 or FormComponent.Search
+                or FormComponent.Number
             && values.Contains(field.Name))
         {
             value = values[field.Name].ToString();
