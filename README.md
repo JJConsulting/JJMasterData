@@ -42,7 +42,7 @@ https://user-images.githubusercontent.com/52143624/213810038-e966e8d9-f465-4f98-
 <br>
 
 ## Useful Links
-* [Library Documentation](https://portal.jjconsulting.com.br/jjdoc/articles/intro.html)
+* [Library Documentation](https://jjconsulting.tech/docs/JJMasterData)
 * [NuGet.Org](https://www.nuget.org/profiles/jjconsulting)
 * [Community Discord Server](https://discord.gg/s9F2ntBXnn)
 
