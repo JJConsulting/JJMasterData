@@ -6,14 +6,6 @@ on:
 jobs:
   nuget-push:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project:
-          - JJMasterData.Commons
-          - JJMasterData.Core
-          - JJMasterData.Web
-          - Plugins/JJMasterData.Hangfire
-          - Plugins/JJMasterData.Pdf
 
     steps:
       - uses: actions/checkout@v2
@@ -26,16 +18,44 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v3.4.1
 
-      - name: Restore NuGet packages
-        run: dotnet restore ${{ matrix.project }}
-  
-      - name: Build and pack NuGet package
+      - name: NuGet Publish
         run: |
-          cd ${{ matrix.project }}
+          
+          cd src/JJMasterData.Commons
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
-  
-      - name: Publish NuGet package
-        run: |
+          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          
+          cd ../../..
+          
+          cd src/JJMasterData.Core
+          dotnet build -c release
+          dotnet pack -c release --output="nuget"
+          cd nuget
+          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          
+          cd ../../..
+          
+          cd src/JJMasterData.Web
+          npm install
+          dotnet build -c release
+          dotnet pack -c release --output="nuget"
+          cd nuget
+          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+          cd ../../..
+          
+          cd src/Plugins/JJMasterData.Hangfire
+          dotnet build -c release
+          dotnet pack -c release --output="nuget"
+          cd nuget
+          dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          
+          cd ../../../..
+          
+          cd src/Plugins/JJMasterData.Pdf
+          dotnet build -c release
+          dotnet pack -c release --output="nuget"
+          cd nuget
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
