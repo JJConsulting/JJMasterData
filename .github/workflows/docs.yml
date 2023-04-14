@@ -14,5 +14,6 @@ jobs:
 
       - name: Publish DocFX website
         run: |
+               cd doc\JJMasterData.Documentation
                docfx build
                xcopy .\_site C:\WebSites\JJ\JJSiteInstitucional\docs\JJMasterData /s /e /y
