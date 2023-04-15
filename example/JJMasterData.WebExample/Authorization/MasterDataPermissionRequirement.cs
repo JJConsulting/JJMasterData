@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace JJMasterData.WebExample.Authorization;
 
-public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizationRequirement>, IAuthorizationRequirement
+public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizationRequirement>,
+    IAuthorizationRequirement
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IAuthorizationRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        IAuthorizationRequirement requirement)
     {
         var filterContext = context.Resource as DefaultHttpContext;
         var routeData = filterContext?.HttpContext.GetRouteData();
@@ -24,7 +26,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         if (routeData.Values.ContainsKey("id"))
             dictionaryName = routeData.Values["id"]!.ToString();
 
-        if ("MasterData".ToLower().Equals(area?.ToLower()))
+        if ("MasterData".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             if (HasDictionaryAccess(dictionaryName, context.User))
             {
@@ -32,15 +34,9 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
                 return Task.CompletedTask;
             }
         }
-
-        if ("DataDictionary".ToLower().Equals(area?.ToLower()))
+        else if ("DataDictionary".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             //TODO: admin required
-        }
-
-        if ("Log".ToLower().Equals(area?.ToLower()))
-        {
-            //TODO: access to log system
         }
 
         context.Fail();
@@ -52,5 +48,4 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         // Code omitted for brevity
         return true;
     }
-
 }

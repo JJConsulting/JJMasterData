@@ -43,7 +43,7 @@ After you will access the Entity window and you will find the following items:
 The next step is to access the Fields area, 
 where you can fill in and format the form fields.
 
-> [!INFO]
+> [!TIP]
 > After completing all required items, you must perform another action before the table is definitely created.
 > you will access the More option on the right side of the menu and click on Get Script,
 > in this way the scripts will be converted to an SQL script and will be displayed to you.
@@ -87,7 +87,7 @@ Advanced Settings in a component
 
 #### Expressions
 
-!include[expressions](../expressions.md)
+[!include[expressions](../expressions.md)]
 
 #### CssClass
 It's possible to insert several Css classes and create responsive layouts using Bootstrap's grid system. 
@@ -118,7 +118,7 @@ You can add this information by clicking the New button.
 
 ## Options
 Layout settings that can be performed on the form at runtime.<br>
-!include[expressions](ui_options.md)
+[!include[expressions](ui_options.md)]
 
 ## Actions
 Within the Actions tab you can configure the display of icons to edit your table. 

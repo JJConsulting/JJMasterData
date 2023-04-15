@@ -75,7 +75,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         if (routeData.Values.ContainsKey("id"))
             dictionaryName = routeData.Values["id"]!.ToString();
 
-        if ("MasterData".ToLower().Equals(area?.ToLower()))
+        if ("MasterData".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             if (HasDictionaryAccess(dictionaryName, context.User))
             {
@@ -83,15 +83,9 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
                 return Task.CompletedTask;
             }
         }
-
-        if ("DataDictionary".ToLower().Equals(area?.ToLower()))
+        else if ("DataDictionary".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             //TODO: admin required
-        }
-
-        if ("Log".ToLower().Equals(area?.ToLower()))
-        {
-            //TODO: access to log system
         }
 
         context.Fail();
