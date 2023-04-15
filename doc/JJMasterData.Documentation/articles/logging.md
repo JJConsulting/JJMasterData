@@ -30,5 +30,6 @@ We have two implementations of `ILogger`, these are `DbLogger` and `FileLogger`.
 ```
 
 At the root [LogLevel](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-7.0) property, 
-you can set the default LogLevel to log for all `ILogger` sources. If you set `LogLevel` inside a property, only that `ILogger` source will be affected.
+you can set the default LogLevel to log for all `ILogger` sources. <br>
+If you set `LogLevel` inside a property, only that `ILogger` source will be affected.<br>
 You can also specify the settings of each `ILogger` source in their respective properties. Check `DbLogger` and `FileLogger` API reference.

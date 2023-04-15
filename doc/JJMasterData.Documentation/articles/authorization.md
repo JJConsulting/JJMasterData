@@ -3,7 +3,7 @@
     <small> How to secure your routes on JJ MasterData</small>
 </h1>
 
-JJMasterData uses 2 areas on your routes: 
+JJMasterData uses 2 areas on your routes:
 
 - **DataDictionary** It's used to manage forms that only the admin should access;
 - **MasterData** Is used to render a form, you must check if user has access;
@@ -11,6 +11,7 @@ JJMasterData uses 2 areas on your routes:
 Keep in mind that the end-user only access the MasterData Area.<br>
 
 You can also inject your custom attributes or policy for routes using:
+
 ```cs
 app.UseAuthentication();
 app.UseAuthorization();
@@ -18,10 +19,14 @@ app.UseJJMasterDataWeb();
 app.MapJJMasterData()
     .RequireAuthorization("MasterDataPolicy");
 ```
-If you are not familiarized with the concept of policies, please check this [link](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0).
+
+If you are not familiarized with the concept of policies, please check
+this [link](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0).
 
 You will need in your application, implement a **authentication**  service, before implementing a **authorization** one.
-Please check [ASP.NET Core docs](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-6.0) for more information.
+Please
+check [ASP.NET Core docs](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-6.0)
+for more information.
 <br>
 In the example bellow, I'm using a basic cookie authentication to simplify the process.
 <br>
@@ -47,6 +52,7 @@ builder.Services.AddAuthorization(options =>
 ```
 
 MasterDataPermissionRequirement class example:
+
 ```csharp
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -74,7 +80,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         if (routeData.Values.ContainsKey("id"))
             dictionaryName = routeData.Values["id"]!.ToString();
 
-        if ("MasterData".ToLower().Equals(area?.ToLower()))
+        if ("MasterData".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             if (HasDictionaryAccess(dictionaryName, context.User))
             {
@@ -82,8 +88,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
                 return Task.CompletedTask;
             }
         }
-
-        if ("DataDictionary".ToLower().Equals(area?.ToLower()))
+        else if ("DataDictionary".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
             //TODO: admin required
         }
@@ -100,10 +105,13 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
 }
 ```
 
-If you want to protect specific actions or fields in your DataDictionary, you will need to implement your own [JJFormView](components/form_view.md) in your custom View or use the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface in the method OnInstanceCreated, customizing your JJFormView object. 
+If you want to protect specific actions or fields in your DataDictionary, you will need to implement your
+own [JJFormView](components/form_view.md) in your custom View or use
+the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface in the method OnInstanceCreated, customizing
+your JJFormView object.
 <br>
 [Learn more here.](custom_rules.md)
 
-> [!TIP] 
+> [!TIP]
 > Don't forget to secure every policy in **production**, this is just a example for learning purposes.
 
