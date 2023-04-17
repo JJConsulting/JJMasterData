@@ -15,36 +15,41 @@
 @if (BootstrapHelper.Version >= 4)
 {
     <div class="d-flex align-items-center justify-content-center vh-100">
-        <div class="text-center">
-            <h1 class="display-1 fw-bold">@Model.StatusCode</h1>
-            <p class="fs-3">
-                <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
-            </p>
-            <p class="lead">
-                @Model.Exception
-            </p>
-            @if (!Model.IsProduction)
-            {
+        <div class="vw-50 p-5 bg-light border rounded-3 text-center">
+            <div class="col-sm-12 text-danger">
+                    <span class="fa fa-times-circle fa-5x"></span>
+                </div>
+                <h1 class="display-1 fw-bold">@Model.StatusCode</h1>
+                <p class="fs-3">
+                    <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
+                </p>
+                <p class="lead">
+                    @Model.Exception
+                </p>
+                @if (!Model.IsProduction)
+                {
+                    <div class="container">
+                        <div class="col-sm-12">
+                            <jj-collapse-panel name="stacktrace" title="Stacktrace" expanded-by-default="true">
+                                <pre>@Model.StackTrace</pre>
+                            </jj-collapse-panel>
+                        </div>
+                    </div>
+                    <br/>
+                }
                 <div class="container">
-                    <div class="col-sm-12">
-                        <jj-collapse-panel name="stacktrace" title="Stacktrace" expanded-by-default="true">
-                            <pre>@Model.StackTrace</pre>
-                        </jj-collapse-panel>
+                    <div class="row justify-content-center">
+                        <div class="col-sm-12">
+                            <jj-link-button onclick="history.back()"
+                                            type="LinkButtonType.Button"
+                                            icon="Backward"
+                                            text="@Translate.Key("Back")"/>
+                        </div>
                     </div>
                 </div>
-                <br/>
-            }
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-sm-4">
-                        <jj-link-button onclick="history.back()" 
-                                        type="LinkButtonType.Button" 
-                                        icon="Backward" 
-                                        text="@Translate.Key("Back")"/>
-                    </div>
-                </div>
-            </div>
+         
         </div>
+   
     </div>
 }
 else
@@ -70,12 +75,12 @@ else
 
     <div class="con-sm-12">
         <p class="text-center">
-             <jj-link-button onclick="history.go(-1)" 
-                            type="LinkButtonType.Button" 
-                            icon="Backward" 
+            <jj-link-button onclick="history.go(-1)"
+                            type="LinkButtonType.Button"
+                            icon="Backward"
                             css-class="btn-primary"
-                            text="@Translate.Key("Back")"/>
-            
+                            text="@Translate.Key("Back")" />
+
         </p>
     </div>
 }
