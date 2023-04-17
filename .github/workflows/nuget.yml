@@ -20,11 +20,7 @@ jobs:
       - name: Restore NuGet packages
         run: |
           dotnet restore
-        
-      - name: Install NPM dependencies
-        run: |
-          npm i --prefix src/JJMasterData.Web
-
+    
   nuget-push:
     runs-on: ubuntu-latest
     needs: setup
@@ -36,10 +32,11 @@ jobs:
           - src/JJMasterData.Web
           - src/Plugins/JJMasterData.Hangfire
           - src/Plugins/JJMasterData.Pdf
-
     steps:
+      - uses: actions/checkout@v2
       - name: Build and pack NuGet package
         run: |
+          npm install --prefix src/JJMasterData.Web
           cd ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
