@@ -4,8 +4,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 7.0.x
+        
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3.4.1
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+        
+      - name: Install NPM dependencies
+        run: |
+          npm i --prefix src/JJMasterData.Web
+
   nuget-push:
     runs-on: ubuntu-latest
+    needs: setup
     strategy:
       matrix:
         project:
@@ -18,22 +37,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 7.0.x
-        
-      - name: Setup NodeJS
-        uses: actions/setup-node@v3.4.1
-
-      - name: Restore NuGet packages
-        run: |
-          cd ${{ matrix.project }}
-          dotnet restore
-  
       - name: Build and pack NuGet package
         run: |
-          npm i
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
