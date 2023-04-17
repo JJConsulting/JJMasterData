@@ -33,6 +33,7 @@ jobs:
   
       - name: Build and pack NuGet package
         run: |
+          npm i
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
