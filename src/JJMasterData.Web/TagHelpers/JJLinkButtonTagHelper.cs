@@ -23,7 +23,9 @@ public class JJLinkButtonTagHelper : TagHelper
     
     [HtmlAttributeName("type")]
     public LinkButtonType? Type { get; set; }
-    
+
+    [HtmlAttributeName("css-class")]
+    public string CssClass { get; set; }
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var link = new JJLinkButton
@@ -33,7 +35,8 @@ public class JJLinkButtonTagHelper : TagHelper
             UrlAction = UrlAction,
             Enabled = Enabled ?? true,
             Type = Type ?? LinkButtonType.Button,
-            ToolTip = Tooltip
+            ToolTip = Tooltip,
+            CssClass = CssClass
         };
 
         output.TagMode = TagMode.StartTagAndEndTag;

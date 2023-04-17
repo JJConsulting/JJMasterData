@@ -1,12 +1,7 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
-@model JJMasterData.WebExample.Models.ErrorViewModel
-
-@{
-    Layout = "_Layout";
-}
-
+@model ErrorViewModel
 
 <style>
     .jj-gap {
@@ -17,22 +12,10 @@
     } 
 </style>
 
-
-@{
-    var stacktracePanel = new JJCollapsePanel
-    {
-        Name = "stacktrace",
-        Title = "Stacktrace",
-        ExpandedByDefault = false,
-        HtmlContent = $"<pre>{Model.StackTrace}</pre>"
-    };
-}
-
 @if (BootstrapHelper.Version >= 4)
 {
     <div class="d-flex align-items-center justify-content-center vh-100">
         <div class="text-center">
-            <img class="img-responsive" style="width:25%;height: 25%" src="~/images/JJMasterDataLogo.png" alt="JJMasterData"/>
             <h1 class="display-1 fw-bold">@Model.StatusCode</h1>
             <p class="fs-3">
                 <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
@@ -44,7 +27,9 @@
             {
                 <div class="container">
                     <div class="col-sm-12">
-                        @Html.Raw(stacktracePanel.GetHtml())
+                        <jj-collapse-panel name="stacktrace" title="Stacktrace" expanded-by-default="true">
+                            <pre>@Model.StackTrace</pre>
+                        </jj-collapse-panel>
                     </div>
                 </div>
                 <br/>
@@ -52,14 +37,10 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-sm-4">
-                        <a onclick="history.back()" class="@BootstrapHelper.DefaultButton">
-                            <span class="fa fa-backward"></span>&nbsp; @Translate.Key("Back")
-                        </a>
-                    </div>
-                    <div class="col-sm-4">
-                        <a href="/en-us/DataDictionary/" class="@BootstrapHelper.DefaultButton">
-                            <span class="fa fa-home"></span>&nbsp; @Translate.Key("Home")
-                        </a>
+                        <jj-link-button onclick="history.back()" 
+                                        type="LinkButtonType.Button" 
+                                        icon="Backward" 
+                                        text="@Translate.Key("Back")"/>
                     </div>
                 </div>
             </div>
@@ -89,9 +70,12 @@ else
 
     <div class="con-sm-12">
         <p class="text-center">
-            <a href="javascript: history.go(-1);" class="btn btn-primary btn-lg">
-                @Translate.Key("Back")
-            </a>
+             <jj-link-button onclick="history.go(-1)" 
+                            type="LinkButtonType.Button" 
+                            icon="Backward" 
+                            css-class="btn-primary"
+                            text="@Translate.Key("Back")"/>
+            
         </p>
     </div>
 }
