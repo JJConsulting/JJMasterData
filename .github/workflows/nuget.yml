@@ -12,8 +12,8 @@ jobs:
           - src/JJMasterData.Commons
           - src/JJMasterData.Core
           - src/JJMasterData.Web
-          - Plugins/JJMasterData.Hangfire
-          - Plugins/JJMasterData.Pdf
+          - src/Plugins/JJMasterData.Hangfire
+          - src/Plugins/JJMasterData.Pdf
 
     steps:
       - uses: actions/checkout@v2
