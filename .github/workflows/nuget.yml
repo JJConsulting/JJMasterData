@@ -38,10 +38,9 @@ jobs:
           - src/Plugins/JJMasterData.Pdf
 
     steps:
-      - uses: actions/checkout@v2
-
       - name: Build and pack NuGet package
         run: |
+          cd ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
