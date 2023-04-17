@@ -34,14 +34,13 @@ jobs:
           - src/Plugins/JJMasterData.Pdf
     steps:
       - uses: actions/checkout@v2
-      - name: Build and pack NuGet package
+      - name: Build and publish NuGet package
         run: |
           npm install --prefix src/JJMasterData.Web
           cd ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
           cd nuget
-  
-      - name: Publish NuGet package
-        run: |
           dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+          
