@@ -16,7 +16,8 @@ jobs:
         uses: actions/setup-node@v3.4.1
 
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: |
+          dotnet restore
         
       - name: Install NPM dependencies
         run: |
