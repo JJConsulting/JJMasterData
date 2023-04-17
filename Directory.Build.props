@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.20</Version>
+		<Version>3.1.21</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -11,12 +11,7 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-                        - bugfix: i18n now works without a database
-		        - feat: You can now add a custom bootstrap css
-		        - docs: Added docs about authorization
-			- breaking_change: You need to call now `MapJJMasterData()` to configure routes
-			- bugfix: Fixed number formatting
-			- bugfix: DbLogger and FileLogger now uses `IOptionsMonitor` instead of `IOptions` 
+                        - feat: Added default error page.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
