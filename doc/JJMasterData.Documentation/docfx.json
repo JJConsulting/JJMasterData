@@ -72,7 +72,8 @@
       "_disableContribution": false,
       "_enableSearch": "true",
       "_gitContribute": {
-        "branch": "main"
+        "branch": "main",
+        "apiSpecFolder": "../../src"
       },
       "_gitUrlPattern": "github",
       "_disableSideFilter":true,
