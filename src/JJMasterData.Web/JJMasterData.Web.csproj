@@ -7,10 +7,11 @@
         <OutputType>Library</OutputType>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-        <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Saturn Version</Product>
+        <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
+        <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>       
     </PropertyGroup>
     
     <ItemGroup>
@@ -35,7 +36,7 @@
         <EmbeddedResource Include="Scripts\**\*.ts" />
     </ItemGroup>
     
-    <ItemGroup>
+	<ItemGroup>
       <Content Update="Scripts\tsconfig.json" Pack="false">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Content>
@@ -45,17 +46,5 @@
         <Content Update="package-lock.json" Pack="false">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Areas\MasterData\Views\About\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\MasterData\Views\Resources\Index.cshtml" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <AdditionalFiles Include="Areas\DataDictionary\Views\About\Index.cshtml" />
-      <AdditionalFiles Include="Areas\DataDictionary\Views\Options\Index.cshtml" />
-      <AdditionalFiles Include="Areas\DataDictionary\Views\Options\_ConnectionString.cshtml" />
-      <AdditionalFiles Include="Areas\DataDictionary\Views\Resources\Index.cshtml" />
     </ItemGroup>
 </Project>
