@@ -469,3 +469,8 @@ table td {
     text-align: center;
     margin-block-start: 30px;
 }
+
+#contribution {
+    float: right;
+    margin-top: 1.1em;
+}

@@ -39,10 +39,20 @@
                 {{>partials/searchResults}}
                 {{/_enableSearch}}
 
+ 
+
                 <div role="main" class="hide-when-search" >
                     {{^_disableBreadcrumb}}
                         {{>partials/breadcrumb}}
                     {{/_disableBreadcrumb}}
+
+                   {{^_disableContribution}}
+                         <div id="contribution">
+                             {{#docurl}}
+                               <a href="{{docurl}}" class="contribution-link">{{__global.improveThisDoc}}</a>
+                             {{/docurl}}
+                         </div>
+                    {{/_disableContribution}}
 
                     <article class="content wrap" id="_content" data-uid="{{uid}}">
                       {{!body}}
