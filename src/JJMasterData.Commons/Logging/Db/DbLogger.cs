@@ -1,7 +1,9 @@
 #nullable enable
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
@@ -10,13 +12,16 @@ public class DbLogger : ILogger
 {
     private readonly DbLoggerProvider _dbLoggerProvider;
     private bool _tableExists;
- 
+    private readonly BlockingCollection<LogMessage> _queue;
+
     /// <summary>
     /// Creates a new instance of <see cref="DbLogger" />.
     /// </summary>
     public DbLogger(DbLoggerProvider dbLoggerProvider)
     {
         _dbLoggerProvider = dbLoggerProvider;
+        _queue = new BlockingCollection<LogMessage>();
+        Task.Factory.StartNew(LogAtDatabase, TaskCreationOptions.LongRunning);
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;
@@ -44,33 +49,41 @@ public class DbLogger : ILogger
     {
         if (!IsEnabled(logLevel))
             return;
-
-        var now = DateTime.Now;
-
-        var options = _dbLoggerProvider.Options.CurrentValue;
-
-        var values = new Hashtable
-        {
-            [options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
-            [options.LevelColumnName] = (int)logLevel,
-            [options.EventColumnName] = eventId.Name,
-            [options.MessageColumnName] = GetMessage(eventId, formatter(state, exception), exception),
-        };
         
-        var element = DbLoggerElement.GetInstance(options);
-
-        
-        if (!_tableExists)
+        var message = new LogMessage(logLevel, eventId, state!, exception, (s, e) => formatter((TState)s, e));
+        _queue.Add(message);
+    }
+    
+    private void LogAtDatabase()
+    {
+        foreach (var message in _queue.GetConsumingEnumerable())
         {
-            if (!_dbLoggerProvider.Repository.TableExists(options.TableName))
+            var now = DateTime.Now;
+
+            var options = _dbLoggerProvider.Options.CurrentValue;
+
+            var values = new Hashtable
             {
-                _dbLoggerProvider.Repository.CreateDataModel(element);
-            }
-
-            _tableExists = true;
-        }
+                [options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
+                [options.LevelColumnName] = (int)message.LogLevel,
+                [options.EventColumnName] = message.EventId.Name,
+                [options.MessageColumnName] = GetMessage(message.EventId, message.Formatter(message.State, message.Exception), message.Exception),
+            };
         
-        _dbLoggerProvider.Repository.Insert(element, values);
+            var element = DbLoggerElement.GetInstance(options);
+            
+            if (!_tableExists)
+            {
+                if (!_dbLoggerProvider.Repository.TableExists(options.TableName))
+                {
+                    _dbLoggerProvider.Repository.CreateDataModel(element);
+                }
+
+                _tableExists = true;
+            }
+        
+            _dbLoggerProvider.Repository.Insert(element, values);
+        }
     }
 
     private string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
