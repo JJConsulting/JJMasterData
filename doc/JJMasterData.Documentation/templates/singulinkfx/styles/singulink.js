@@ -48,4 +48,8 @@ $(function() {
     }
 
     setTimeout(scrollToc, 500);
+
+    if (window.location.href.indexOf("lib") !== -1) {
+        document.getElementById("contribution").style.display = "none"
+    }
 });
