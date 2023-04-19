@@ -73,7 +73,7 @@
       "_enableSearch": true,
       "_gitContribute": {
         "branch": "main",
-        "apiSpecFolder":"lib",
+        "apiSpecFolder":"doc",
         "repo": "https://github.com/jjconsulting/JJMasterData"
       },
       "_gitUrlPattern": "github",
