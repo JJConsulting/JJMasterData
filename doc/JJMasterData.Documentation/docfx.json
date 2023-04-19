@@ -70,9 +70,10 @@
     "globalMetadata": {
       "_appName":"JJMasterData",
       "_disableContribution": false,
-      "_enableSearch": "true",
+      "_enableSearch": true,
       "_gitContribute": {
         "branch": "main",
+        "apiSpecFolder":"lib",
         "repo": "https://github.com/jjconsulting/JJMasterData"
       },
       "_gitUrlPattern": "github",
