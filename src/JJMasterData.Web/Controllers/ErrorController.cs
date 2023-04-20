@@ -21,7 +21,7 @@ public class ErrorController : Controller
             Message = ReasonPhrases.GetReasonPhrase(statusCode ?? 500),
             StatusCode = statusCode ?? 500,
             Exception = exceptionHandler?.Error.Message ?? Translate.Key("Page not found"),
-            StackTrace = exceptionHandler?.Error.StackTrace ?? Translate.Key("No stacktrace available.")
+            StackTrace = exceptionHandler?.Error.StackTrace
         };
         
         logger?.LogError(exceptionHandler?.Error, exceptionHandler?.Error.Message);
