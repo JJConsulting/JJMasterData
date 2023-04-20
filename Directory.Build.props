@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.22</Version>
+		<Version>3.1.23</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -11,8 +11,8 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			- bugfix: Added conditional to InputType.Number, fixing JJTextBox
-                        - feat: DbLogger and FileLogger now run in background
+			- bugfix: Fixes at the error page
+                        - feat: New JJMasterDataLogo
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
