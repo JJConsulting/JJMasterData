@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-<img width=25% src="../media/JJMasterDataLogo.png"/>
+<img width=15% src="../media/JJMasterDataLogo.png"/>
     <br>
     JJMasterData
   <br>
