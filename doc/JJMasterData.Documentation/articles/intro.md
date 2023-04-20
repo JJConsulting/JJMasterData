@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-<img width=15% src="../media/JJMasterDataLogoVertical.png"/>
+<img width=25% src="../media/JJMasterDataLogoVertical.png"/>
 </h1>
 
 ## Why did we create?

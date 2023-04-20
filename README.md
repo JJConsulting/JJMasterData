@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-<img width=15% src="doc/JJMasterData.Documentation/media/JJMasterDataLogoVertical.png"/>
+<img width=25% src="doc/JJMasterData.Documentation/media/JJMasterDataLogoVertical.png"/>
 </h1>
 <p align="center">
   <a href="https://img.shields.io/badge/.NET-5C2D91">
