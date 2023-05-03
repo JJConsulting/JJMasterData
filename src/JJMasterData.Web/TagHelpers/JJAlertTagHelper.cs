@@ -22,13 +22,19 @@ public class JJAlertTagHelper : TagHelper
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
+
+    [HtmlAttributeName("closebutton")]
+    public bool ShowCloseButton { get; set; }
+
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var alert = new JJAlert
         {
             Color = Color,
             Icon = Icon,
-            Title = Title
+            Title = Title,
+            ShowCloseButton = ShowCloseButton
         };
 
         if (Messages != null)
