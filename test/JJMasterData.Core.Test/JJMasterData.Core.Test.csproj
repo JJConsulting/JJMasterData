@@ -4,16 +4,14 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-
     <LangVersion>11</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="Xunit.DependencyInjection" Version="8.6.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -26,18 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\JJMasterData.Core\JJMasterData.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="DataDictionary\__init__.py" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Metadata\Example.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

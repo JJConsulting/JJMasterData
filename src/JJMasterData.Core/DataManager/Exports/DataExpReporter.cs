@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Tasks.Progress;
+﻿using System;
+using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -31,7 +32,6 @@ public class DataExpReporter : ProgressReporter
     private void UpdatePercentage()
     {
         if (TotalRecords > 0 && TotalProcessed > 0)
-            Percentage = (int)((TotalProcessed / (double)TotalRecords) * 100);
-
+            Percentage = (int)Math.Round((TotalProcessed / (double)TotalRecords) * 100);
     }
 }

@@ -1,4 +1,5 @@
 using JJMasterData.Core.Extensions;
+using JJMasterData.Hangfire;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
@@ -19,6 +20,7 @@ public class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
+            .WithHangfire()
             .WithPdfExportation();
             //.WithMongoDbDataDictionary();
             //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
