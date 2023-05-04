@@ -20,7 +20,6 @@ public class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
-            .WithHangfire()
             .WithPdfExportation();
             //.WithMongoDbDataDictionary();
             //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");

@@ -15,7 +15,6 @@
   
     <ItemGroup>
       <ProjectReference Include="..\..\src\JJMasterData.Web\JJMasterData.Web.csproj" />
-      <ProjectReference Include="..\..\src\Plugins\JJMasterData.Hangfire\JJMasterData.Hangfire.csproj" />
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj" />
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.Pdf\JJMasterData.Pdf.csproj" />
       <ProjectReference Include="..\..\src\Plugins\JJMasterData.Python\JJMasterData.Python.csproj" />
