@@ -65,7 +65,7 @@ public sealed class BackgroundTask : IBackgroundTask
             return false;
 
         var connection = JobStorage.Current.GetConnection();
-        JobData jobData = connection.GetJobData(taskWrapper.JobId);
+        var jobData = connection.GetJobData(taskWrapper.JobId);
 
         return jobData.State.Equals(ProcessingState.StateName);
     }

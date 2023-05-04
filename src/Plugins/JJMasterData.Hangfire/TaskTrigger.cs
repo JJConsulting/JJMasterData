@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
@@ -17,20 +16,11 @@ namespace JJMasterData.Hangfire;
 internal class TaskTrigger
 {
     private BackgroundTask _backgroundTask;
-    public BackgroundTask BackgroundTask
-    {
-        get
-        {
-            if (_backgroundTask == null)
-                _backgroundTask = new BackgroundTask();
-
-            return _backgroundTask;
-        }
-    }
+    public BackgroundTask BackgroundTask => _backgroundTask ??= new BackgroundTask();
 
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {
-        string jobId = null;
+        string jobId;
         var token = CancellationToken.None;
 
         if (worker is IPdfWriter)
