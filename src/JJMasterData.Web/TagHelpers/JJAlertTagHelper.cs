@@ -23,7 +23,7 @@ public class JJAlertTagHelper : TagHelper
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
 
-    [HtmlAttributeName("closebutton")]
+    [HtmlAttributeName("show-close-button")]
     public bool ShowCloseButton { get; set; }
 
 
