@@ -1,5 +1,4 @@
 using JJMasterData.Core.Extensions;
-using JJMasterData.Hangfire;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
