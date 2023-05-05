@@ -66,7 +66,11 @@ public static class ExceptionManager
                 message = ex.Message;
                 break;
             default:
+#if DEBUG
+                message = ex.Message;
+#else
                 message = Translate.Key("Unexpected error.");
+#endif
                 Log.AddError(ex.ToString());
                 break;
         }

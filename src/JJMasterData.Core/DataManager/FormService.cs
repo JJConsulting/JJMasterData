@@ -101,11 +101,15 @@ public class FormService
         return result;
     }
 
-    public FormLetter Insert(Hashtable values)
+    public FormLetter Insert(Hashtable values, bool validateFields = true)
     {
-        var errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
-        var result = new FormLetter(errors);
+        Hashtable errors;
+        if (validateFields)
+            errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
+        else
+            errors = new Hashtable();
 
+        var result = new FormLetter(errors);
         if (OnBeforeInsert != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);

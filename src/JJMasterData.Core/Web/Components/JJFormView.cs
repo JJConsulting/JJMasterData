@@ -908,7 +908,7 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
     {
-        var result = Service.Insert(values);
+        var result = Service.Insert(values, validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
