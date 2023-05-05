@@ -2329,8 +2329,8 @@
     <value>Campo PkColumn obrigatório</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Required PkTableName Field" xml:space="preserve">
-    <value>Campo PkTableName obrigatório</value>
+  <data name="Required ChildElement Field" xml:space="preserve">
+    <value>Campo ChildElement obrigatório</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Required table name field" xml:space="preserve">

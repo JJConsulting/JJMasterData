@@ -790,6 +790,7 @@ public class JJFormView : JJGridView
 
             if (relation.ViewType == RelationshipType.View)
             {
+                
                 var childvalues = EntityRepository.GetFields(childElement, filter);
                 var chieldView = new JJDataPanel(childElement)
                 {
@@ -797,15 +798,22 @@ public class JJFormView : JJGridView
                     PageState = PageState.View,
                     UserValues = UserValues,
                     Values = childvalues,
-                    RenderPanelGroup = true
+                    RenderPanelGroup = false
                 };
-
+                
                 if (dic.Options != null)
                 {
                     chieldView.FormUI = dic.Options.Form;
                 }
 
-                html.AppendElement(chieldView);
+                var collapse = new JJCollapsePanel
+                {
+                    Name = "collapse_" + chieldView.Name,
+                    Title = relation.Title,
+                    HtmlBuilderContent = chieldView.GetHtmlBuilder()
+                };
+                
+                html.AppendElement(collapse);
             }
             else if (relation.ViewType == RelationshipType.List)
             {

@@ -2329,8 +2329,8 @@
     <value>必需的 PkColumn 字段</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Required PkTableName Field" xml:space="preserve">
-    <value>必需的 PkTableName 字段</value>
+  <data name="Required ChildElement Field" xml:space="preserve">
+    <value>必需的 ChildElement 字段</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Required table name field" xml:space="preserve">
