@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
 
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
-/// Dados do formuário, herda de Element
+/// Form data
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
@@ -32,20 +28,24 @@ public class FormElement : Element
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
 
+    [DataMember(Name = "relationshipsLayout")]
+    public FormElementRelationshipList Relationships2 { get; set; }
 
     public FormElement()
     {
         Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
+        Relationships2 = new FormElementRelationshipList(base.Relationships);
     }
 
-    public FormElement(Element element)
+    public FormElement(Element element) 
     {
         Name = element.Name;
         TableName = element.TableName;
         Info = element.Info;
         Indexes = element.Indexes;
-        Relationships = element.Relationships;
+        base.Relationships = element.Relationships;
+        Relationships2 = new FormElementRelationshipList(base.Relationships);
         CustomProcNameGet = element.CustomProcNameGet;
         CustomProcNameSet = element.CustomProcNameSet;
         Sync = element.Sync;
