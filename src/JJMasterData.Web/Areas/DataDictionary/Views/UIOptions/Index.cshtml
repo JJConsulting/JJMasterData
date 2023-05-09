@@ -5,6 +5,11 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model MetadataOptions
 
+
+@{
+    ViewData["Title"] = $"{ViewBag.DictionaryName} - Options";
+}
+
 <style>
     input[type=checkbox] {
         margin: 2px 0 0;

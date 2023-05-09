@@ -4,6 +4,10 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsDetailsViewModel
 
+@{
+    ViewData["Title"] = $"{Model.DictionaryName} - Relationships";
+}
+
 @section Scripts{
     <script type="text/javascript">
         function saveForm() {

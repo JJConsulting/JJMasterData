@@ -1,6 +1,10 @@
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @model LogViewModel
 
+@{
+    ViewData["Title"] = $"Log";
+}
+
 @using (Html.BeginForm())
 {
     <jj-grid-view form-element="Model.FormElement" configure="Model.Configuration"/>

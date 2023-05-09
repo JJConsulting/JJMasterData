@@ -4,22 +4,22 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationship
 {
-    public bool IsOwner { get; private set; }
+    public bool IsParent { get; private set; }
 
-    public ElementRelationship ElementRelation { get; set; }
+    public ElementRelationship ElementRelationship { get; set; }
 
     public FormElementPanel Panel { get; set; }
 
-    internal FormElementRelationship(bool isOwner = false)
+    internal FormElementRelationship(bool isParent = false)
     {
-        IsOwner = isOwner;
+        IsParent = isParent;
         Panel = new FormElementPanel();
         Panel.VisibleExpression = "val:0";
     }
 
-    public FormElementRelationship(ElementRelationship elementRelation) : this()
+    public FormElementRelationship(ElementRelationship elementRelationship) : this()
     {
-        ElementRelation = elementRelation;
+        ElementRelationship = elementRelationship;
     }
 
 }

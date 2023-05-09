@@ -5,42 +5,11 @@
 @using JJMasterData.Core.Web.Components
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
-@inject RazorPartialRendererService RendererService;
+@{
+    ViewData["Title"] = $"{Model.DictionaryName} - Entity";
+}
 
 <partial name="_Menu"></partial>
-
-@{
-    var dataDictionaryPanel = new JJCollapsePanel
-    {
-        Name = "dataDictionaryPanel",
-        Title = Translate.Key("Data Dictionary"),
-        HtmlContent = await RendererService.ToStringAsync("_DataDictionaryPanel", Model),
-        ExpandedByDefault = true
-    };
-}
-
-@{
-    var formPanel = new JJCollapsePanel
-    {
-        Name = "formPanel",
-        Title = Translate.Key("Form"),
-        HtmlContent = await RendererService.ToStringAsync("_FormPanel", Model),
-        ExpandedByDefault = true
-    };
-}
-
-@{
-    var eventsPanel = new JJCollapsePanel
-    {
-        Name = "eventsPanel",
-        Title = Translate.Key("Events"),
-        HtmlContent = await RendererService.ToStringAsync("_EventsPanel", Model),
-        ExpandedByDefault = true
-    };
-}
-
-
-
 
 @using (Html.BeginForm("Edit", "Entity", FormMethod.Post))
 {
@@ -60,15 +29,20 @@
     </div>
     <br>
 
-    @Html.Raw(dataDictionaryPanel.GetHtml())
+    <jj-collapse-panel  name="dataDictionary" icon="Book" title="@Translate.Key("Data Dictionary")" expanded-by-default="true">
+        <partial name="_DataDictionaryPanel" model="Model"/>
+    </jj-collapse-panel>
 
-    @Html.Raw(formPanel.GetHtml())
+    <jj-collapse-panel name="formPanel" title="@Translate.Key("Form")" expanded-by-default="true">
+        <partial name="_FormPanel" model="Model"/>
+    </jj-collapse-panel>
 
     if (Model.FormEvent != null)
     {
-        @Html.Raw(eventsPanel.GetHtml())
+        <jj-collapse-panel name="eventsPanel" title="@Translate.Key("Events")" expanded-by-default="true">
+            <partial name="_EventsPanel" model="Model"/>
+        </jj-collapse-panel>
     }
-    
     <input asp-for="DictionaryName" hidden="hidden"/>
 
     <br />

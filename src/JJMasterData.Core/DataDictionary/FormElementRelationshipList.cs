@@ -57,8 +57,8 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public void Add(FormElementRelationship item)
     {
-        if (item?.ElementRelation != null)
-            baseRelationships.Add(item.ElementRelation);
+        if (item?.ElementRelationship != null)
+            baseRelationships.Add(item.ElementRelationship);
 
         formRelationships.Add(item);
     }
@@ -76,14 +76,14 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public void CopyTo(FormElementRelationship[] array, int arrayIndex)
     {
-        baseRelationships.CopyTo(array.Select(x => x.ElementRelation).ToArray(), arrayIndex);
+        baseRelationships.CopyTo(array.Select(x => x.ElementRelationship).ToArray(), arrayIndex);
         formRelationships.CopyTo(array, arrayIndex);
     }
 
     public bool Remove(FormElementRelationship item)
     {
-        if (item?.ElementRelation != null)
-            baseRelationships.Remove(item.ElementRelation);
+        if (item?.ElementRelationship != null)
+            baseRelationships.Remove(item.ElementRelationship);
 
         return formRelationships.Remove(item);
     }
@@ -108,8 +108,8 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     public void Insert(int index, FormElementRelationship item)
     {
          formRelationships.Insert(index, item);
-         if (item?.ElementRelation != null)
-            baseRelationships.Insert(index, item.ElementRelation);
+         if (item?.ElementRelationship != null)
+            baseRelationships.Insert(index, item.ElementRelationship);
     }
 
     public void RemoveAt(int index)
@@ -117,8 +117,8 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         var item = formRelationships[index];
 
         formRelationships.Remove(item);
-        if (item?.ElementRelation != null)
-            baseRelationships.Remove(item.ElementRelation);
+        if (item?.ElementRelationship != null)
+            baseRelationships.Remove(item.ElementRelationship);
     }
 
     public FormElementRelationship this[int index]
@@ -130,7 +130,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         set
         {
             formRelationships[index] = value;
-            baseRelationships[index] = value.ElementRelation;
+            baseRelationships[index] = value.ElementRelationship;
         }
     }
 

@@ -4,6 +4,10 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementPanel
 
+@{
+    ViewData["Title"] = $"{ViewBag.DictionaryName} - Panels";
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
         sortableGrid();

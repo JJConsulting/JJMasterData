@@ -84,14 +84,14 @@
         {
             <tr>
                 <td>
-                    @item.ChildElement
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelation.ChildElement)
+                    <a href="@Url.Action("Index","Entity", new {dictionaryName = item.ChildElement})" target="_blank">@item.ChildElement</a>
+                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.ChildElement)
                 </td>
                 <td>
                     @for (var i = 0; i < item.Columns.Count; i++)
                     {
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelation.Columns[i].PkColumn)
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelation.Columns[i].FkColumn)
+                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[i].PkColumn)
+                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[i].FkColumn)
 
                         <text>
                             @(item.Columns[i].PkColumn)
@@ -103,17 +103,21 @@
                 </td>
                 <td>
                     @item.UpdateOnCascade
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelation.UpdateOnCascade)
+                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.UpdateOnCascade)
                 </td>
                 <td>
                     @item.DeleteOnCascade
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelation.DeleteOnCascade)
+                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.DeleteOnCascade)
                 </td>
-                <td>
-                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="popup.show('@Translate.Key("Edit Relationship")', '@Url.Action("Detail", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })');" data-original-title="@Translate.Key("Edit")">
+                <td style="text-align: center;">
+                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" 
+                            onclick="popup.show('@Translate.Key("Edit Relationship")', '@Url.Action("Detail", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })');" 
+                            data-original-title="@Translate.Key("Edit")">
                         <span class="fa fa-pencil"></span>
                     </button>
-                    <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })')" data-original-title="@Translate.Key("Delete")">
+                    <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" 
+                            onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })')"
+                            data-original-title="@Translate.Key("Delete")">
                         <span class="fa fa-trash"></span>
                     </button>
                 </td>
