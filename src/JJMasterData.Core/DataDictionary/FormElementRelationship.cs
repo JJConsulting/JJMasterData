@@ -14,6 +14,7 @@ public class FormElementRelationship
     {
         IsOwner = isOwner;
         Panel = new FormElementPanel();
+        Panel.VisibleExpression = "val:0";
     }
 
     public FormElementRelationship(ElementRelationship elementRelation) : this()

@@ -18,7 +18,7 @@ public class RelationshipsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships;
+        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships.GetElementRelationships();
         PopulateViewBag(dictionaryName);
 
         return View(listRelation);
@@ -26,19 +26,17 @@ public class RelationshipsController : DataDictionaryController
 
     public ActionResult Detail(string dictionaryName, string index)
     {
-        ElementRelationship elementRelationship;
-        if (!string.IsNullOrEmpty(index))
-            elementRelationship = _relationshipsService.GetFormElement(dictionaryName).Relationships[int.Parse(index)];
-        else
-            elementRelationship = new ElementRelationship();
+        var formElement = _relationshipsService.GetFormElement(dictionaryName);
+        var relationships = formElement.Relationships.GetElementRelationships();
+        var relation = !string.IsNullOrEmpty(index) ? relationships[int.Parse(index)] : new ElementRelationship();
 
         PopulatePkTable();
         PopulateViewBag(dictionaryName);
         PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelationship.ChildElement);
+        PopulateFkColumn(relation.ChildElement);
         ViewBag.Index = index;
 
-        return View(elementRelationship);
+        return View(relation);
     }
 
     [HttpPost]
@@ -99,7 +97,7 @@ public class RelationshipsController : DataDictionaryController
     public ActionResult Index(string dictionaryName, string filter)
     {
 
-        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships;
+        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships.GetElementRelationships();
         listRelation = listRelation.Where(l => l.Columns.Any(x => x.FkColumn.Contains(filter.ToUpper()) || x.PkColumn.Contains(filter.ToUpper()))).ToList();
 
         PopulateViewBag(dictionaryName);

@@ -122,7 +122,7 @@ public class RelationshipsService : BaseService
 
         if (IsValid && string.IsNullOrEmpty(sIndex))
         {
-            List<ElementRelationship> listRelation = GetFormElement(dictionaryName).Relationships.FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
+            List<ElementRelationship> listRelation = GetFormElement(dictionaryName).Relationships.GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (listRelation.Count > 0)
                 AddError("", Translate.Key("There is already a relationship registered for ") + elementRelationship.ChildElement);
         }

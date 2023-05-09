@@ -11,24 +11,32 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
     private IList<FormElementRelationship> formRelationships;
-    private IList<ElementRelationship> baseRelationships;
+    private List<ElementRelationship> baseRelationships;
 
-    public FormElementRelationshipList()
-    {
-        baseRelationships = new List<ElementRelationship>();
-        formRelationships = new List<FormElementRelationship>();
-        formRelationships.Add(new FormElementRelationship(true));
-    }
+    //public FormElementRelationshipList()
+    //{
+    //    baseRelationships = new List<ElementRelationship>();
+    //    formRelationships = new List<FormElementRelationship>();
+    //    formRelationships.Add(new FormElementRelationship(true));
+    //}
 
-    public FormElementRelationshipList(IList<ElementRelationship> baseFields)
+    public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
         baseRelationships = baseFields;
         formRelationships = new List<FormElementRelationship>();
-        formRelationships.Add(new FormElementRelationship(true));
-        foreach (var relation in baseFields)
+        if (baseFields.Count > 0)
         {
-            formRelationships.Add(new FormElementRelationship(relation));
+            formRelationships.Add(new FormElementRelationship(true));
+            foreach (var relation in baseFields)
+            {
+                formRelationships.Add(new FormElementRelationship(relation));
+            }
         }
+    }
+
+    public List<ElementRelationship> GetElementRelationships()
+    {
+        return baseRelationships;
     }
 
     #region Implementation of IEnumerable

@@ -28,14 +28,14 @@ public class FormElement : Element
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
 
-    [DataMember(Name = "relationshipsLayout")]
-    public FormElementRelationshipList Relationships2 { get; set; }
+    [DataMember(Name = "relations")]
+    public new FormElementRelationshipList Relationships { get; set; }
 
     public FormElement()
     {
         Fields = new FormElementList(base.Fields, _formFields);
         Panels = new List<FormElementPanel>();
-        Relationships2 = new FormElementRelationshipList(base.Relationships);
+        Relationships = new FormElementRelationshipList(base.Relationships);
     }
 
     public FormElement(Element element) 
@@ -45,7 +45,7 @@ public class FormElement : Element
         Info = element.Info;
         Indexes = element.Indexes;
         base.Relationships = element.Relationships;
-        Relationships2 = new FormElementRelationshipList(base.Relationships);
+        Relationships = new FormElementRelationshipList(base.Relationships);
         CustomProcNameGet = element.CustomProcNameGet;
         CustomProcNameSet = element.CustomProcNameSet;
         Sync = element.Sync;

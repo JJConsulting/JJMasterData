@@ -735,7 +735,7 @@ public class JJFormView : JJGridView
     private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        var relationships = FormElement.Relationships.FindAll(x => x.ViewType != RelationshipType.None);
+        var relationships = FormElement.Relationships.GetElementRelationships().FindAll(x => x.ViewType != RelationshipType.None);
 
         var painel = DataPanel;
         painel.PageState = pageState;
