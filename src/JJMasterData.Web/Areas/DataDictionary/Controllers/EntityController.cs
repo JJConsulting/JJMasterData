@@ -45,10 +45,8 @@ public class EntityController : DataDictionaryController
 
     private EntityViewModel Populate(string dictionaryName, bool readOnly)
     {
-        var viewModel = new EntityViewModel
+        var viewModel = new EntityViewModel(menuId:"Entity", dictionaryName:dictionaryName)
         {
-            MenuId = "Entity",
-            DictionaryName = dictionaryName,
             FormElement = _entityService.GetFormElement(dictionaryName),
             FormEvent = _resolver?.GetFormEvent(dictionaryName),
             ReadOnly = readOnly

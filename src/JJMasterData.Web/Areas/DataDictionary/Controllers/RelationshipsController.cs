@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -18,58 +19,56 @@ public class RelationshipsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships.GetElementRelationships();
-        PopulateViewBag(dictionaryName);
+        var relationships = _relationshipsService.GetFormElement(dictionaryName).Relationships;
 
-        return View(listRelation);
+        var model = CreateListViewModel(dictionaryName, relationships);
+        
+        return View(model);
     }
 
-    public ActionResult Detail(string dictionaryName, string index)
+    public ActionResult Detail(string dictionaryName, int? selectedIndex)
     {
         var formElement = _relationshipsService.GetFormElement(dictionaryName);
         var relationships = formElement.Relationships.GetElementRelationships();
-        var relation = !string.IsNullOrEmpty(index) ? relationships[int.Parse(index)] : new ElementRelationship();
+        var relationship = selectedIndex != null ? relationships[selectedIndex.Value] : new ElementRelationship();
 
-        PopulatePkTable();
-        PopulateViewBag(dictionaryName);
-        PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(relation.ChildElement);
-        ViewBag.Index = index;
+        var model = CreateDetailsViewModel(dictionaryName, relationship, selectedIndex);
 
-        return View(relation);
+        return View(model);
+    }
+    
+    [HttpPost]
+    public ActionResult Detail(RelationshipsDetailsViewModel model)
+    {
+        var newModel = CreateDetailsViewModel(model.DictionaryName, model.Relationship, model.SelectedIndex);
+        return View(newModel);
     }
 
     [HttpPost]
-    public ActionResult CreateRelation(string dictionaryName, string? index, ElementRelationship elementRelationship, string pk, string fk)
+    public ActionResult CreateRelation(string dictionaryName, ElementRelationship elementRelationship, string pk, string fk)
     {
 
+        var model = CreateDetailsViewModel(dictionaryName, elementRelationship);
+        
         if (_relationshipsService.ValidateFinallyAddRelation(dictionaryName, elementRelationship, pk, fk))
         {
             elementRelationship.Columns.Add(new ElementRelationColumn(pk, fk));
         }
         else
         {
-            var summary = _relationshipsService.GetValidationSummary();
-            ViewBag.ErrorItem = summary.GetHtml();
+            model.ValidationSummary =  _relationshipsService.GetValidationSummary();
         }
-
-        PopulatePkTable();
-        PopulateViewBag(dictionaryName);
-        PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelationship.ChildElement);
-        if (index != null) 
-            ViewBag.Index = index;
-
-        return View("Detail", elementRelationship);
+        
+        return View("Detail", model);
     }
 
     [HttpPost]
-    public ActionResult SaveRelation(string dictionaryName, ElementRelationship elementRelationship, string? index)
+    public ActionResult SaveRelation(RelationshipsDetailsViewModel model)
     {
 
-        if (_relationshipsService.ValidateFields(elementRelationship, dictionaryName, index))
+        if (_relationshipsService.ValidateFields(model.Relationship, model.DictionaryName, model.SelectedIndex))
         {
-            _relationshipsService.Save(elementRelationship, index, dictionaryName);
+            _relationshipsService.Save(model.Relationship, model.SelectedIndex, model.DictionaryName);
             return Json(new { success = true });
         }
 
@@ -79,42 +78,11 @@ public class RelationshipsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult DeleteRelation(string dictionaryName, string index, string indexRelation, ElementRelationship elementRelationship)
+    public ActionResult DeleteRelation(RelationshipsDetailsViewModel model, int selectedIndex)
     {
-        int indexRelationConvert = int.Parse(indexRelation);
-        elementRelationship.Columns.Remove(elementRelationship.Columns[indexRelationConvert]);
+        model.Relationship.Columns.RemoveAt(selectedIndex);
 
-        PopulatePkTable();
-        PopulateViewBag(dictionaryName);
-        PopulatePkColumn(dictionaryName);
-        PopulateFkColumn(elementRelationship.ChildElement);
-        ViewBag.Index = index;
-
-        return View("Detail", elementRelationship);
-    }
-
-    [HttpPost]
-    public ActionResult Index(string dictionaryName, string filter)
-    {
-
-        List<ElementRelationship> listRelation = _relationshipsService.GetFormElement(dictionaryName).Relationships.GetElementRelationships();
-        listRelation = listRelation.Where(l => l.Columns.Any(x => x.FkColumn.Contains(filter.ToUpper()) || x.PkColumn.Contains(filter.ToUpper()))).ToList();
-
-        PopulateViewBag(dictionaryName);
-
-        return View(listRelation);
-    }
-
-    [HttpPost]
-    public ActionResult Detail(string dictionaryName, ElementRelationship elementRelationship, string? index)
-    {
-        PopulatePkTable();
-        PopulateViewBag(dictionaryName);
-        PopulatePkColumn(dictionaryName);
-        elementRelationship.Title = PopulateFkColumn(elementRelationship.ChildElement);
-        if (index != null) 
-            ViewBag.Index = index;
-        return View(elementRelationship);
+        return View("Detail", model);
     }
 
     [HttpPost]
@@ -138,61 +106,60 @@ public class RelationshipsController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(string dictionaryName)
+    private RelationshipsListViewModel CreateListViewModel(string dictionaryName, FormElementRelationshipList relationships)
     {
-        ViewBag.DictionaryName = dictionaryName;
-        ViewBag.MenuId = "Relations";
+        return new RelationshipsListViewModel(dictionaryName, "Relationships")
+        {
+            Relationships = relationships
+        };
+    }
+    
+    private RelationshipsDetailsViewModel CreateDetailsViewModel(
+        string dictionaryName,
+        ElementRelationship relationship, int? selectedIndex = null)
+    {
+        return new RelationshipsDetailsViewModel(dictionaryName, "Relationships")
+        {
+            Relationship = relationship,
+            ElementsSelectList = GetElementsSelectList(),
+            PrimaryKeysSelectList = GetPrimaryKeysSelectList(dictionaryName),
+            ForeignKeysSelectList = GetForeignKeysSelectList(relationship.ChildElement),
+            SelectedIndex = selectedIndex
+        };
     }
 
-    public void PopulatePkColumn(string dictionaryName)
+    public List<SelectListItem> GetPrimaryKeysSelectList(string dictionaryName)
     {
-        FormElement formElement = _relationshipsService.GetFormElement(dictionaryName);
-        List<SelectListItem> listItem = new List<SelectListItem>();
+        var formElement = _relationshipsService.GetFormElement(dictionaryName);
+        var selectList = formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)).ToList();
 
-        foreach (var field in formElement.Fields)
-        {
-            listItem.Add(new SelectListItem(field.Name, field.Name));
-        }
-
-        ViewBag.PkColumn = listItem;
+        return selectList;
     }
 
-    private string PopulateFkColumn(string childElement)
+    private List<SelectListItem> GetForeignKeysSelectList(string childDictionaryName)
     {
-        List<SelectListItem> listItem = new List<SelectListItem>();
-
-        string title = "";
-        if (string.IsNullOrEmpty(childElement))
+        var selectList = new List<SelectListItem>();
+        
+        if (string.IsNullOrEmpty(childDictionaryName))
         {
-            listItem.Add(new SelectListItem(Translate.Key("(Select)"), ""));
+            selectList.Add(new SelectListItem(Translate.Key("(Select)"), ""));
         }
         else
         {
-            Metadata dicParser = _relationshipsService.DataDictionaryRepository.GetMetadata(childElement);
-            title = dicParser.Form.Title;
-            foreach (var field in dicParser.Table.Fields)
-            {
-                listItem.Add(new SelectListItem(field.Name, field.Name));
-            }
-
+            var dicParser = _relationshipsService.DataDictionaryRepository.GetMetadata(childDictionaryName);
+            selectList.AddRange(dicParser.Table.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
-        ViewBag.FkColumn = listItem;
-        return title;
-
+        return selectList;
     }
 
-    public void PopulatePkTable()
+    private List<SelectListItem> GetElementsSelectList()
     {
-        var listItem = new List<SelectListItem>();
         IEnumerable<string> list = _relationshipsService.DataDictionaryRepository.GetNameList();
 
-        foreach (string name in list)
-        {
-            listItem.Add(new SelectListItem(name, name));
-        }
+        var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
 
-        ViewBag.PkTable = listItem;
+       return selectList;
     }
 
 }

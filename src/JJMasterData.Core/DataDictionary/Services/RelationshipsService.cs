@@ -15,15 +15,14 @@ public class RelationshipsService : BaseService
     {
     }
 
-    public void Save(ElementRelationship elementRelationship, string sIndex, string dictionaryName)
+    public void Save(ElementRelationship elementRelationship, int? index, string dictionaryName)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relations = dictionary.Table.Relationships;
 
-        if (!string.IsNullOrEmpty(sIndex))
+        if (index != null)
         {
-            int index = int.Parse(sIndex);
-            relations[index] = elementRelationship;
+            relations[index.Value] = elementRelationship;
         }
         else
         {
@@ -101,7 +100,7 @@ public class RelationshipsService : BaseService
     }
 
 
-    public bool ValidateFields(ElementRelationship elementRelationship, string dictionaryName, string sIndex)
+    public bool ValidateFields(ElementRelationship elementRelationship, string dictionaryName, int? index)
     {
         if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
             AddError("", Translate.Key("Mandatory <b>PKTable </b> field"));
@@ -120,7 +119,7 @@ public class RelationshipsService : BaseService
             }
         }
 
-        if (IsValid && string.IsNullOrEmpty(sIndex))
+        if (IsValid && index == null)
         {
             List<ElementRelationship> listRelation = GetFormElement(dictionaryName).Relationships.GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (listRelation.Count > 0)

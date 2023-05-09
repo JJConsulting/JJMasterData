@@ -12,6 +12,9 @@ public class JJLinkButtonTagHelper : TagHelper
     [HtmlAttributeName("url-action")]
     public string? UrlAction { get; set; }
     
+    [HtmlAttributeName("on-client-click")]
+    public string? OnClientClick { get; set; }
+    
     [HtmlAttributeName("enabled")]
     public bool? Enabled { get; set; }
     
@@ -33,6 +36,7 @@ public class JJLinkButtonTagHelper : TagHelper
             Text = Text,
             IconClass = Icon.GetCssClass(),
             UrlAction = UrlAction,
+            OnClientClick = OnClientClick,
             Enabled = Enabled ?? true,
             Type = Type ?? LinkButtonType.Button,
             ToolTip = Tooltip,

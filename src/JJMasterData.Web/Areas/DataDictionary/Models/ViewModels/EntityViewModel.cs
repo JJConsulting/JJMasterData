@@ -12,4 +12,8 @@ public class EntityViewModel : DataDictionaryViewModel
     public bool ReadOnly { get; set; }
     public object HtmlAttributes =>
         ReadOnly ? new { @class = "form-control", disabled="disabled"} : new { @class = "form-control" };
+
+    public EntityViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    {
+    }
 }
