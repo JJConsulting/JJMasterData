@@ -1,51 +1,59 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsDetailsViewModel
 
-<script type="text/javascript">
+@section Scripts{
+    <script type="text/javascript">
+        function saveForm() {
+            const form = document.querySelector('form');
+            fetch('@Url.Action("SaveRelation", "Relationships")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(new FormData(form))
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    window.parent.popup.hide();
+                    window.parent.location.reload();
+                } else {
+                    document.querySelector('#divError').innerHTML = data.errorMessage;
+                }
+            })
+            .catch(error => {
+                document.querySelector('#divError').innerHTML = error;
+            });
+        }
+    
+        function populateFkColumn() {
+          messageWait.show();
+          document.querySelector('form').action = '@Url.Action("Detail", "Relationships")';
+          document.querySelector('form').submit();
+        }
+    </script>
+}
 
-    function saveForm() {
-        const form = document.querySelector('form');
-        fetch('@Url.Action("SaveRelation", "Relationships")', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams(new FormData(form))
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success === true) {
-                window.parent.popup.hide();
-                window.parent.location.reload();
-            } else {
-                document.querySelector('#divError').innerHTML = data.errorMessage;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
 
-    function populateFkColumn() {
-      messageWait.show();
-      document.querySelector('form').action = '@Url.Action("Detail", "Relationships")';
-      document.querySelector('form').submit();
-    }
-
-</script>
 @using (Html.BeginForm())
 {
-    @Html.HiddenFor(m=>m.DictionaryName)
-    @Html.HiddenFor(m=>m.SelectedIndex)
-    
+    @Html.HiddenFor(m => m.DictionaryName)
+    @Html.HiddenFor(m => m.SelectedIndex)
+    @Html.HiddenFor(m => m.MenuId)
 
     <div class="well">
         <div>
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Child element name")">@Translate.Key("ChildElement")</label>
+                    <label asp-for="Relationship.ChildElement"
+                           class="@BootstrapHelper.Label"
+                           data-bs-toggle="tooltip" data-toggle="tooltip"
+                           title="@Translate.Key("Child element name")">
+                        @Translate.Key("ChildElement")
+                    </label>
                     <select asp-for="Relationship.ChildElement"
                             onchange="populateFkColumn()"
                             class="form-control"
@@ -53,7 +61,7 @@
                     </select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="UpdateOnCascade">@Translate.Key("UpdateOnCascade")</label>
+                    <label asp-for="Relationship.UpdateOnCascade" class="@BootstrapHelper.Label "></label>
                     @Html.DropDownListFor(model => model.Relationship.UpdateOnCascade, new[]
                     {
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" },
@@ -61,7 +69,7 @@
                     }, new { @class = "form-control form-select" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Relationship.DeleteOnCascade">@Translate.Key("DeleteOnCascade")</label>
+                    <label asp-for="Relationship.DeleteOnCascade" class="@BootstrapHelper.Label "></label>
                     @Html.DropDownListFor(model => model.Relationship.DeleteOnCascade, new[]
                     {
                         new SelectListItem { Text = Translate.Key("No"), Value = "false" },
@@ -70,29 +78,22 @@
                 </div>
             </div>
         </div>
-        <!-- End Form -->
     </div>
 
-    <div class="row">
-        <div class="col-sm-12">
-            <h4>@Translate.Key("Relation")</h4>
-            <hr/>
-        </div>
-    </div>
+    <jj-title title="@Translate.Key("Relationship")" size="HeadingSize.H4"/>
 
     <div class="row">
-
         <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("PkColumn")</label>
-            <select name="pk"
+            <label asp-for="AddPrimaryKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
+            <select asp-for="AddPrimaryKeyName"
                     class="form-control form-select"
                     asp-items="Model.PrimaryKeysSelectList">
             </select>
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-5 required">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field")">@Translate.Key("FkColumn")</label>
-            <select name="fk"
+            <label asp-for="AddForeignKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
+            <select asp-for="AddForeignKeyName"
                     class="form-control form-select"
                     asp-items="Model.ForeignKeysSelectList">
             </select>
@@ -100,7 +101,7 @@
 
 
         <div class="col-sm-12">
-            @Model.ValidationSummary?.GetHtml()
+            @Html.Raw(Model.ValidationSummary?.GetHtml())
         </div>
     </div>
 
@@ -119,9 +120,9 @@
                 <thead>
                 <tr>
                     <th scope="col">@Translate.Key("Order")</th>
-                    <th scope="col">@Translate.Key("PkColumn")</th>
-                    <th scope="col">@Translate.Key("FkColumn")</th>
-                    <th scope="col">@Translate.Key("Delete")</th>
+                    <th scope="col">@Translate.Key("Primary Key")</th>
+                    <th scope="col">@Translate.Key("Foreign Key")</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -141,9 +142,9 @@
                                 @item.FkColumn
                                 @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
                             </td>
-                            <td align="center" valign="middle" style="width:60px;">
+                            <td align="center" style="width:60px;" valign="middle">
                                 <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title=""
-                                        formaction="@Url.Action("DeleteRelation", "Relationships", new {selectedIndex = index })" 
+                                        formaction="@Url.Action("DeleteRelation", "Relationships", new { columnIndex = index })"
                                         class="btn btn-link" data-original-title="@Translate.Key("Delete")">
                                     <span class="fa fa-trash"></span>
                                 </button>

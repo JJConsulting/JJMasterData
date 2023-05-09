@@ -10,6 +10,15 @@ public class DataDictionaryViewModel
     
     public JJValidationSummary? ValidationSummary { get; set; }
 
+#pragma warning disable CS8618
+    // ReSharper disable once UnusedMember.Global
+    // Reason: Used for model binding.
+    protected DataDictionaryViewModel()
+#pragma warning restore CS8618
+    {
+        
+    }
+    
     public DataDictionaryViewModel(string dictionaryName, string menuId)
     {
         DictionaryName = dictionaryName;

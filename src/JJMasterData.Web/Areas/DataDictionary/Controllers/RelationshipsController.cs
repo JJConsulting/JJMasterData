@@ -45,50 +45,59 @@ public class RelationshipsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult CreateRelation(string dictionaryName, ElementRelationship elementRelationship, string pk, string fk)
+    public ActionResult CreateRelation(RelationshipsDetailsViewModel model)
     {
-
-        var model = CreateDetailsViewModel(dictionaryName, elementRelationship);
-        
-        if (_relationshipsService.ValidateFinallyAddRelation(dictionaryName, elementRelationship, pk, fk))
+        if (_relationshipsService.ValidateFinallyAddRelation(model.DictionaryName, model.Relationship, model.AddPrimaryKeyName!, model.AddForeignKeyName!))
         {
-            elementRelationship.Columns.Add(new ElementRelationColumn(pk, fk));
+            model.Relationship.Columns.Add(new ElementRelationshipColumn(model.AddPrimaryKeyName!,  model.AddForeignKeyName!));
         }
         else
         {
-            model.ValidationSummary =  _relationshipsService.GetValidationSummary();
+            model.ValidationSummary = _relationshipsService.GetValidationSummary();
         }
         
+        PopulateSelectLists(model);
+
         return View("Detail", model);
     }
 
     [HttpPost]
     public ActionResult SaveRelation(RelationshipsDetailsViewModel model)
     {
-
         if (_relationshipsService.ValidateFields(model.Relationship, model.DictionaryName, model.SelectedIndex))
         {
             _relationshipsService.Save(model.Relationship, model.SelectedIndex, model.DictionaryName);
             return Json(new { success = true });
         }
 
+        PopulateSelectLists(model);
+        
         var jjSummary = _relationshipsService.GetValidationSummary();
         return Json(new { success = false, errorMessage = jjSummary.GetHtml() });
-
     }
 
     [HttpPost]
-    public ActionResult DeleteRelation(RelationshipsDetailsViewModel model, int selectedIndex)
+    public ActionResult DeleteRelation(RelationshipsDetailsViewModel model, int columnIndex)
     {
-        model.Relationship.Columns.RemoveAt(selectedIndex);
+        model.Relationship.Columns.RemoveAt(columnIndex);
+
+        PopulateSelectLists(model);
 
         return View("Detail", model);
     }
 
-    [HttpPost]
-    public ActionResult Delete(string dictionaryName, string index)
+    private void PopulateSelectLists(RelationshipsDetailsViewModel model)
     {
-        _relationshipsService.Delete(dictionaryName, index);
+        model.ElementsSelectList = GetElementsSelectList(model.Relationship.ChildElement);
+        model.ForeignKeysSelectList = GetForeignKeysSelectList(model.Relationship.ChildElement);
+        model.PrimaryKeysSelectList = GetPrimaryKeysSelectList(model.DictionaryName);
+    }
+
+    [HttpPost]
+    public ActionResult Delete(string dictionaryName, int selectedIndex)
+    {
+        _relationshipsService.Delete(dictionaryName, selectedIndex);
+
         return RedirectToAction("Index", new { dictionaryName });
     }
 
@@ -121,7 +130,7 @@ public class RelationshipsController : DataDictionaryController
         return new RelationshipsDetailsViewModel(dictionaryName, "Relationships")
         {
             Relationship = relationship,
-            ElementsSelectList = GetElementsSelectList(),
+            ElementsSelectList = GetElementsSelectList(relationship.ChildElement),
             PrimaryKeysSelectList = GetPrimaryKeysSelectList(dictionaryName),
             ForeignKeysSelectList = GetForeignKeysSelectList(relationship.ChildElement),
             SelectedIndex = selectedIndex
@@ -142,7 +151,7 @@ public class RelationshipsController : DataDictionaryController
         
         if (string.IsNullOrEmpty(childDictionaryName))
         {
-            selectList.Add(new SelectListItem(Translate.Key("(Select)"), ""));
+            selectList.Add(new SelectListItem(Translate.Key("(Select)"), string.Empty));
         }
         else
         {
@@ -153,13 +162,18 @@ public class RelationshipsController : DataDictionaryController
         return selectList;
     }
 
-    private List<SelectListItem> GetElementsSelectList()
+    private List<SelectListItem> GetElementsSelectList(string childDictionaryName)
     {
         IEnumerable<string> list = _relationshipsService.DataDictionaryRepository.GetNameList();
-
+        
         var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
+        
+        if (string.IsNullOrEmpty(childDictionaryName))
+        {
+            selectList.Insert(0,new SelectListItem(Translate.Key("(Select)"),string.Empty));
+        }
 
-       return selectList;
+        return selectList;
     }
 
 }

@@ -146,10 +146,10 @@ public class RelationshipsService : BaseService
     }
 
 
-    public void Delete(string dictionaryName, string index)
+    public void Delete(string dictionaryName, int index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        ElementRelationship elementRelationship = dictionary.Table.Relationships[int.Parse(index)];
+        ElementRelationship elementRelationship = dictionary.Table.Relationships[index];
         dictionary.Table.Relationships.Remove(elementRelationship);
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
@@ -162,9 +162,7 @@ public class RelationshipsService : BaseService
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
         {
-            ElementRelationship elementRelationship = relations[indexToMoveDown + 1];
-            relations[indexToMoveDown + 1] = relations[indexToMoveDown];
-            relations[indexToMoveDown] = elementRelationship;
+            (relations[indexToMoveDown + 1], relations[indexToMoveDown]) = (relations[indexToMoveDown], relations[indexToMoveDown + 1]);
 
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
