@@ -28,7 +28,7 @@ public class JJLinkButtonTagHelper : TagHelper
     public LinkButtonType? Type { get; set; }
 
     [HtmlAttributeName("css-class")]
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var link = new JJLinkButton

@@ -176,11 +176,14 @@ public class RelationshipsService : BaseService
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
-            ElementRelationship elementRelationship = relations[indexToMoveUp - 1];
-            relations[indexToMoveUp - 1] = relations[indexToMoveUp];
-            relations[indexToMoveUp] = elementRelationship;
+            (relations[indexToMoveUp - 1], relations[indexToMoveUp]) = (relations[indexToMoveUp], relations[indexToMoveUp - 1]);
+            
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }
 
+    public void Sort(string dictionaryName, string[] relationships)
+    {
+        //todo;
+    }
 }

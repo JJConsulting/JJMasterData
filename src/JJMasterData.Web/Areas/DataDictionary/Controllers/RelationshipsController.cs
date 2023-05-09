@@ -100,6 +100,14 @@ public class RelationshipsController : DataDictionaryController
 
         return RedirectToAction("Index", new { dictionaryName });
     }
+    
+    [HttpPost]
+    public ActionResult Sort(string dictionaryName, string[] relationships)
+    {
+        _relationshipsService.Sort(dictionaryName, relationships);
+        return Ok();
+    }
+    
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)

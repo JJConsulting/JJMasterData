@@ -1,0 +1,69 @@
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.Web
+
+@model RelationshipsListViewModel
+
+<script language="javascript" type="text/javascript">
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $("#sortable").sortable({
+               update: function () {
+                 const relationships = $(this).sortable('toArray');
+                 fetch(@Url.Action("Sort"), {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify({ relationships: relationships})
+                 })
+                 .then(response => response.json())
+                 .then(data => {
+                     if (!data.success) {
+                         messageBox.show("JJMasterData", data.message, 4);
+                     }
+                 })
+                 .catch(error => {
+                     messageWait.hide();
+                     if (error.message !== "") {
+                         const err = JSON.parse(error.message);
+                         if (err.status === 401) {
+                             document.forms[0].submit();
+                         } else {
+                             messageBox.show("JJMasterData", err.message, 4);
+                         }
+                     } else {
+                         messageBox.show("JJMasterData", error.message, 4);
+                     }
+                 });
+               }
+        }).disableSelection();
+    });
+
+</script>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <ul class="list-group jjsortable" id="sortable">
+            @for (var index = 0; index < Model.Relationships.Count; index++)
+            {
+                var relationship = Model.Relationships[index];
+                <li class="list-group-item" id="relationship-@index">
+                    <div style="height: 33px;">
+                        <div style="float: left; margin-top: 10px;">
+                            <span class="@(relationship.IsParent ? "fa-solid fa-crown" : "fa fa-align-left" )"></span>&nbsp;
+                            @(relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName + " (Parent)")
+                            &nbsp;
+                        </div>
+                        <div class=@BootstrapHelper.PullRight>
+                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="">
+                                <span class="fa fa-pencil"></span>
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+
+    </div>
+</div>
