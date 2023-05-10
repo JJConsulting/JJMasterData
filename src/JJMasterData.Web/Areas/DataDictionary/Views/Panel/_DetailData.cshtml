@@ -1,0 +1,35 @@
+@using JJMasterData.Core.Web
+@using JJMasterData.Commons.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FormElementPanel
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <label class="@BootstrapHelper.Label" asp-for="Layout">@Translate.Key("Layout")</label>
+        <select asp-for="Layout" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelLayout>()"></select>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <label class="@BootstrapHelper.Label" asp-for="Color" >@Translate.Key("Color")</label>
+        <select asp-for="Color" class="form-control form-select" asp-items="Html.GetEnumSelectList<PanelColor>()"></select>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divExpandedByDefault">
+        <label class="@BootstrapHelper.Label" asp-for="ExpandedByDefault" >@Translate.Key("Expanded By Default")</label>
+        @Html.DropDownListFor(m => m.ExpandedByDefault, new[]
+        {
+            new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
+            new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+        },
+            new { @class = "form-control form-select" })
+    </div>
+</div>
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-4">
+        <label asp-for="Title" class="@BootstrapHelper.Label">@Translate.Key("Title")</label>
+        @Html.TextBoxFor(model => model.Title, new { maxlength = "64", @class = "form-control" })
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-8">
+        <label asp-for="SubTitle" class="@BootstrapHelper.Label">@Translate.Key("Sub Title")</label>
+        @Html.TextBoxFor(model => model.SubTitle, new { @class = "form-control" })
+    </div>
+</div>
