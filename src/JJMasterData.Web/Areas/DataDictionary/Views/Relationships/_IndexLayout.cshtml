@@ -11,31 +11,14 @@
         $("#sortable").sortable({
                update: function () {
                  const relationships = $(this).sortable('toArray');
-                 fetch('@Url.Action("Sort")', {
+                 fetch('@Url.Action("Sort", new {dictionaryName = Model.DictionaryName})', {
                      method: 'POST',
                      headers: {
                          'Content-Type': 'application/json'
                      },
-                     body: JSON.stringify({ relationships: relationships})
-                 })
-                 .then(response => response.json())
-                 .then(data => {
-                     if (!data.success) {
-                         messageBox.show("JJMasterData", data.message, 4);
-                     }
-                 })
-                 .catch(error => {
-                     messageWait.hide();
-                     if (error.message !== "") {
-                         const err = JSON.parse(error.message);
-                         if (err.status === 401) {
-                             document.forms[0].submit();
-                         } else {
-                             messageBox.show("JJMasterData", err.message, 4);
-                         }
-                     } else {
-                         messageBox.show("JJMasterData", error.message, 4);
-                     }
+                     body: JSON.stringify(relationships)
+                 }).catch(error => {
+                    messageBox.show("JJMasterData", error.message, 4);
                  });
                }
         }).disableSelection();
@@ -52,7 +35,9 @@
                 @for (var index = 0; index < Model.Relationships.Count; index++)
                 {
                     var relationship = Model.Relationships[index];
-                    <li class="list-group-item" id="relationship-@index">
+                    var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
+                    
+                    <li class="list-group-item" id="@id">
                         <div style="height: 33px;">
                             <div style="float: left; margin-top: 10px;">
                                 <span class="@(relationship.IsParent ? "fa-solid fa-crown" : "fa fa-align-left")"></span>&nbsp;

@@ -37,27 +37,13 @@ public class RelationshipsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Sort(string dictionaryName, string[] relationships)
+    public ActionResult Sort(string dictionaryName, [FromBody] string[] relationships)
     {
         _relationshipsService.Sort(dictionaryName, relationships);
         return Ok();
     }
 
-
-    [HttpPost]
-    public ActionResult MoveDown(string dictionaryName, string index)
-    {
-        _relationshipsService.MoveDown(dictionaryName, index);
-        return RedirectToAction("Index", new { dictionaryName });
-    }
-
-    [HttpPost]
-    public ActionResult MoveUp(string dictionaryName, string index)
-    {
-        _relationshipsService.MoveUp(dictionaryName, index);
-        return RedirectToAction("Index", new { dictionaryName });
-    }
-
+    
     private static RelationshipsListViewModel CreateListViewModel(string dictionaryName,
         FormElementRelationshipList relationships)
     {

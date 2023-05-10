@@ -131,18 +131,18 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public FormElementRelationship GetParent()
     {
-        return formRelationships.First(r => r.IsParent);
+        return formRelationships.FirstOrDefault(r => r.IsParent);
     }
     
-    private int GetParentIndex()
+    public int GetParentIndex()
     {
         return formRelationships.IndexOf(GetParent());
     }
     
-    private int GetIndexRelativeToParent(int index)
+    public int GetIndexRelativeToParent(int index)
     {
         var parentIndex = GetParentIndex();
 
-        return index < parentIndex ? index : parentIndex;
+        return index < parentIndex || parentIndex == -1 ? index : parentIndex;
     }
 }

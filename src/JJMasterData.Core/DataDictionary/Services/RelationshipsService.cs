@@ -1,7 +1,9 @@
 ﻿#nullable enable
+using System;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -183,40 +185,35 @@ public class RelationshipsService : BaseService
         dictionary.Form.Relationships.RemoveAt(index);
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
+    
 
-
-    public void MoveDown(string dictionaryName, string index)
+    public void Sort(string dictionaryName, IEnumerable<string> relationships)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relationships = dictionary.Table.Relationships;
-        int indexToMoveDown = int.Parse(index);
-        if (indexToMoveDown >= 0 && indexToMoveDown < relationships.Count - 1)
+        var formElement = dictionary.GetFormElement();
+
+        FormElementRelationship GetRelationship(string name)
         {
-            (relationships[indexToMoveDown + 1], relationships[indexToMoveDown]) =
-                (relationships[indexToMoveDown], relationships[indexToMoveDown + 1]);
+            if (name == "parent")
+            {
+                return formElement.Relationships.First(r => r.IsParent);
+            }
 
-            DataDictionaryRepository.InsertOrReplace(dictionary);
+            return formElement.Relationships.First(r => r.ElementRelationship?.ChildElement == name);
         }
-    }
+        
+        var newList = relationships.Select(GetRelationship).ToList();
 
-
-    public void MoveUp(string dictionaryName, string index)
-    {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relationships = dictionary.Table.Relationships;
-        int indexToMoveUp = int.Parse(index);
-        if (indexToMoveUp > 0)
+        for (int i = 0; i < formElement.Relationships.Count; i++)
         {
-            (relationships[indexToMoveUp - 1], relationships[indexToMoveUp]) =
-                (relationships[indexToMoveUp], relationships[indexToMoveUp - 1]);
-
-            DataDictionaryRepository.InsertOrReplace(dictionary);
+            formElement.Relationships[i] = newList[i];
         }
-    }
 
-    public void Sort(string dictionaryName, string[] relationships)
-    {
-        //todo;
+        dictionary.SetFormElement(formElement);
+        DataDictionaryRepository.InsertOrReplace(dictionary);
+    
+ 
+
     }
 
     public bool ValidatePanel(FormElementPanel panel)

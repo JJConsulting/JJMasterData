@@ -50,27 +50,22 @@
             <tr>
                 <td>
                     <a href="@Url.Action("Index", "Entity", new { dictionaryName = item.ChildElement })" target="_blank">@item.ChildElement</a>
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.ChildElement)
                 </td>
                 <td>
-                    @for (var j = 0; j < item.Columns.Count; j++)
+                    @foreach (var t in item.Columns)
                     {
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[j].PkColumn)
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[j].FkColumn)
-                        @item.Columns[j].PkColumn
+                        @t.PkColumn
                         <i class="fa-solid fa-arrow-right"></i>
-                        @item.Columns[j].FkColumn
+                        @t.FkColumn
 
                         <br/>
                     }
                 </td>
                 <td>
                     @item.UpdateOnCascade
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.UpdateOnCascade)
                 </td>
                 <td>
                     @item.DeleteOnCascade
-                    @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.DeleteOnCascade)
                 </td>
                 <td style="text-align: center;">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"

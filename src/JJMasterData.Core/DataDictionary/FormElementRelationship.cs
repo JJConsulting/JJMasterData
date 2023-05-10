@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿#nullable enable
+using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -9,7 +10,7 @@ public class FormElementRelationship
     public bool IsParent { get; set; }
 
     [DataMember(Name = "elementRelationship")]
-    public ElementRelationship ElementRelationship { get; set; }
+    public ElementRelationship? ElementRelationship { get; set; }
     
     [DataMember(Name = "viewType")]
     public RelationshipViewType ViewType { get; set; }
