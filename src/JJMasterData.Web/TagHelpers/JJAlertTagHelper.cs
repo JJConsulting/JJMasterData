@@ -26,13 +26,15 @@ public class JJAlertTagHelper : TagHelper
     [HtmlAttributeName("show-close-button")]
     public bool ShowCloseButton { get; set; }
 
-
+    [HtmlAttributeName("css-class")]
+    public string? CssClass { get; set; }
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var alert = new JJAlert
         {
             Color = Color,
             Icon = Icon,
+            CssClass = CssClass,
             Title = Title,
             ShowCloseButton = ShowCloseButton
         };

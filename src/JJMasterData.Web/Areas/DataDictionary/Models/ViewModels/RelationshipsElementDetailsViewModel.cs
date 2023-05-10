@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
-public class RelationshipsDetailsViewModel : DataDictionaryViewModel
+public class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
 {
     public required int? SelectedIndex { get; set; }
     public required ElementRelationship Relationship { get; set; }
@@ -19,12 +19,12 @@ public class RelationshipsDetailsViewModel : DataDictionaryViewModel
 
     // ReSharper disable once UnusedMember.Global
     // Reason: Used for model binding.
-    public RelationshipsDetailsViewModel()
+    public RelationshipsElementDetailsViewModel()
     {
         
     }
     
-    public RelationshipsDetailsViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public RelationshipsElementDetailsViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
     {
     }
 }

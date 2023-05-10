@@ -9,7 +9,7 @@
         $("#sortable").sortable({
                update: function () {
                  const relationships = $(this).sortable('toArray');
-                 fetch(@Url.Action("Sort"), {
+                 fetch('@Url.Action("Sort")', {
                      method: 'POST',
                      headers: {
                          'Content-Type': 'application/json'
@@ -56,7 +56,7 @@
                             &nbsp;
                         </div>
                         <div class=@BootstrapHelper.PullRight>
-                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="">
+                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="popup.show('Layout', '@Url.Action("LayoutDetails", "Relationships",new {dictionaryName = Model.DictionaryName, index})')">
                                 <span class="fa fa-pencil"></span>
                             </button>
                         </div>

@@ -10,12 +10,18 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationshipsService : BaseService
 {
-    public RelationshipsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    private readonly PanelService _panelService;
+
+    public RelationshipsService(
+        IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
+        PanelService panelService)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        _panelService = panelService;
     }
 
-    public void Save(ElementRelationship elementRelationship, int? index, string dictionaryName)
+    public void SaveElementRelationship(ElementRelationship elementRelationship, int? index, string dictionaryName)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relations = dictionary.Table.Relationships;
@@ -32,14 +38,33 @@ public class RelationshipsService : BaseService
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
-    public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName, string fkColumnName)
+    public void SaveFormElementRelationship(FormElementRelationship elementRelationship, int? index,
+        string dictionaryName)
+    {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var relations = dictionary.Form.Relationships;
+
+        if (index != null)
+        {
+            relations[index.Value] = elementRelationship;
+        }
+        else
+        {
+            relations.Add(elementRelationship);
+        }
+
+        DataDictionaryRepository.InsertOrReplace(dictionary);
+    }
+
+    public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName,
+        string fkColumnName)
     {
         if (string.IsNullOrEmpty(childElementName))
         {
             AddError("ChildElement", Translate.Key("Required ChildElement Field"));
             return IsValid;
         }
-        
+
         if (!DataDictionaryRepository.Exists(childElementName))
         {
             AddError("Entity", Translate.Key("Entity {0} not found", childElementName));
@@ -57,7 +82,7 @@ public class RelationshipsService : BaseService
             AddError("FkColumn", Translate.Key("Required FkColumn field"));
             return IsValid;
         }
-        
+
         ElementField? fkColumn = GetField(childElementName, fkColumnName);
         if (fkColumn == null)
         {
@@ -80,7 +105,8 @@ public class RelationshipsService : BaseService
 
         if (pkColumn.DataType != fkColumn.DataType)
         {
-            AddError("", Translate.Key("Column {0} has incompatible types with column {1}", pkColumnName, fkColumnName));
+            AddError("",
+                Translate.Key("Column {0} has incompatible types with column {1}", pkColumnName, fkColumnName));
             return IsValid;
         }
 
@@ -93,14 +119,15 @@ public class RelationshipsService : BaseService
         var element = dictionary.Table;
         if (element.Fields.ContainsKey(fieldName))
         {
-            return element.Fields[fieldName]; 
+            return element.Fields[fieldName];
         }
 
         return null;
     }
 
 
-    public bool ValidateFields(ElementRelationship elementRelationship, string dictionaryName, int? index)
+    public bool ValidateElementRelationship(ElementRelationship elementRelationship, string dictionaryName,
+        int? index)
     {
         if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
             AddError("", Translate.Key("Mandatory <b>PKTable </b> field"));
@@ -121,15 +148,19 @@ public class RelationshipsService : BaseService
 
         if (IsValid && index == null)
         {
-            List<ElementRelationship> listRelation = GetFormElement(dictionaryName).Relationships.GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
-            if (listRelation.Count > 0)
-                AddError("", Translate.Key("There is already a relationship registered for ") + elementRelationship.ChildElement);
+            var relationships = GetFormElement(dictionaryName).Relationships
+                .GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
+            if (relationships.Count > 0)
+                AddError("",
+                    Translate.Key("There is already a relationship registered for ") +
+                    elementRelationship.ChildElement);
         }
 
         return IsValid;
     }
 
-    public bool ValidateFinallyAddRelation(string dictionaryName, ElementRelationship elementRelationship, string pkColumnName, string fkColumnName)
+    public bool ValidateFinallyAddRelation(string dictionaryName, ElementRelationship elementRelationship,
+        string pkColumnName, string fkColumnName)
     {
         if (ValidateRelation(dictionaryName, elementRelationship.ChildElement, pkColumnName, fkColumnName))
         {
@@ -139,7 +170,6 @@ public class RelationshipsService : BaseService
 
             if (list.Count > 0)
                 AddError("", Translate.Key("Relationship already registered"));
-
         }
 
         return IsValid;
@@ -162,7 +192,8 @@ public class RelationshipsService : BaseService
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
         {
-            (relations[indexToMoveDown + 1], relations[indexToMoveDown]) = (relations[indexToMoveDown], relations[indexToMoveDown + 1]);
+            (relations[indexToMoveDown + 1], relations[indexToMoveDown]) =
+                (relations[indexToMoveDown], relations[indexToMoveDown + 1]);
 
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
@@ -176,8 +207,9 @@ public class RelationshipsService : BaseService
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
-            (relations[indexToMoveUp - 1], relations[indexToMoveUp]) = (relations[indexToMoveUp], relations[indexToMoveUp - 1]);
-            
+            (relations[indexToMoveUp - 1], relations[indexToMoveUp]) =
+                (relations[indexToMoveUp], relations[indexToMoveUp - 1]);
+
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }
@@ -185,5 +217,10 @@ public class RelationshipsService : BaseService
     public void Sort(string dictionaryName, string[] relationships)
     {
         //todo;
+    }
+
+    public bool ValidateFormElementRelationship(FormElementRelationship relationship)
+    {
+        return _panelService.ValidatePanel(relationship.Panel);
     }
 }

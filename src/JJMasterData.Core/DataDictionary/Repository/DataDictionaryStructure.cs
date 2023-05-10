@@ -43,7 +43,7 @@ public class DataDictionaryStructure
     
     public static void ApplyCompatibility(Metadata dicParser)
     {
-        if (dicParser == null || dicParser.Table == null)
+        if (dicParser?.Table == null)
             return;
 
         //Nairobi

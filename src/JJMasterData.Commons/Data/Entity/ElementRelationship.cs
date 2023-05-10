@@ -25,9 +25,11 @@ public class ElementRelationship
     public bool DeleteOnCascade { get; set; }
 
     [DataMember(Name = "viewType")]
+    [Obsolete]
     public RelationshipType ViewType { get; set; }
 
     [DataMember(Name = "title")]
+    [Obsolete]
     public string Title { get; set; }
 
     public ElementRelationship()
