@@ -6,7 +6,6 @@ using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
-
 [Serializable]
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
@@ -50,6 +49,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     {
         return GetEnumerator();
     }
+
     #endregion
 
 
@@ -68,16 +68,16 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         baseRelationships.Clear();
         formRelationships.Clear();
     }
-    
+
     public bool Contains(FormElementRelationship item)
     {
         return formRelationships.Contains(item);
     }
 
-    public void CopyTo(FormElementRelationship[] array, int arrayIndex)
+    public void CopyTo(FormElementRelationship[] array, int index)
     {
-        baseRelationships.CopyTo(array.Select(x => x.ElementRelationship).ToArray(), arrayIndex);
-        formRelationships.CopyTo(array, arrayIndex);
+        baseRelationships.CopyTo(array.Select(x => x.ElementRelationship).ToArray(), GetIndexRelativeToParent(index));
+        formRelationships.CopyTo(array, index);
     }
 
     public bool Remove(FormElementRelationship item)
@@ -88,15 +88,9 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         return formRelationships.Remove(item);
     }
 
-    public int Count
-    {
-        get { return formRelationships.Count; }
-    }
+    public int Count => formRelationships.Count;
 
-    public bool IsReadOnly
-    {
-        get { return formRelationships.IsReadOnly; }
-    }
+    public bool IsReadOnly => formRelationships.IsReadOnly;
 
     #endregion
 
@@ -107,9 +101,9 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public void Insert(int index, FormElementRelationship item)
     {
-         formRelationships.Insert(index, item);
-         if (item?.ElementRelationship != null)
-            baseRelationships.Insert(index, item.ElementRelationship);
+        formRelationships.Insert(index, item);
+        if (item?.ElementRelationship != null)
+            baseRelationships.Insert(GetIndexRelativeToParent(index), item.ElementRelationship);
     }
 
     public void RemoveAt(int index)
@@ -123,14 +117,32 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public FormElementRelationship this[int index]
     {
-        get
-        {
-            return formRelationships[index];
-        }
+        get => formRelationships[index];
         set
         {
-            formRelationships[index] = value; //Aqui o index é um
-            baseRelationships[index] = value.ElementRelationship; //Aqui o index é outro devido a ausência do Parent
+            formRelationships[index] = value;
+            
+            if (index != GetParentIndex())
+            {
+                baseRelationships[GetIndexRelativeToParent(index)] = value.ElementRelationship;
+            }
         }
+    }
+
+    public FormElementRelationship GetParent()
+    {
+        return formRelationships.First(r => r.IsParent);
+    }
+    
+    private int GetParentIndex()
+    {
+        return formRelationships.IndexOf(GetParent());
+    }
+    
+    private int GetIndexRelativeToParent(int index)
+    {
+        var parentIndex = GetParentIndex();
+
+        return index < parentIndex ? index : parentIndex;
     }
 }
