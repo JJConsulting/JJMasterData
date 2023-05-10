@@ -21,7 +21,6 @@
             .then(data => {
                 if (data.success === true) {
                     window.parent.popup.hide();
-                    window.parent.location.reload();
                 } else {
                     document.querySelector('#divError').innerHTML = data.errorMessage;
                 }
@@ -36,11 +35,14 @@
 
 <ul class="nav nav-tabs">
     <li id="navGeneral" class="nav-item active">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
+        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
     </li>
-    <li id="navBehavior" class="nav-item active">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@Translate.Key("Behavior")</a>
-    </li>
+    @if (!Model.IsParent)
+    {
+        <li id="navBehavior" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@Translate.Key("Behavior")</a>
+        </li>
+    }
     <li id="navAdvanced" class="nav-item">
         <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
     </li>
@@ -50,31 +52,36 @@
 {
     <input asp-for="DictionaryName" hidden/>
     <input asp-for="MenuId" hidden/>
+    <input asp-for="IsParent" hidden/>
     <input asp-for="Index" hidden/>
 
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade in active">
+        <div id="divGeneral" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
             <partial name="../Panel/_DetailData" model="Model.Panel"/>
         </div>
-
-        <div id="divBehavior" class="tab-pane fade">
-            <div class="row">
-                <div class="col-sm-6">
-                    <label asp-for="ViewType">@Translate.Key("View Type")</label>
-                    <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipType>()"></select>
-                </div>
-                <div style="margin-top: 5px"  class="col-sm-12">
-                    <jj-alert color="Info" title="@Translate.Key("Help")" icon="InfoCircle">
-                        <ul>
-                            <li>@Translate.Key("None -")</li>
-                            <li>@Translate.Key("List -")</li>
-                            <li>@Translate.Key("View -")</li>
-                            <li>@Translate.Key("Update -")</li>
-                        </ul>
-                    </jj-alert>
+        
+        @if (!Model.IsParent)
+        {
+            <div id="divBehavior" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label asp-for="ViewType">@Translate.Key("View Type")</label>
+                        <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+                    </div>
+                    <div style="margin-top: 5px"  class="col-sm-12">
+                        <jj-alert color="Info" title="@Translate.Key("Help")" icon="IconType.InfoCircle">
+                            <ul>
+                                <li>@Translate.Key("None -")</li>
+                                <li>@Translate.Key("List -")</li>
+                                <li>@Translate.Key("View -")</li>
+                                <li>@Translate.Key("Update -")</li>
+                            </ul>
+                        </jj-alert>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+
 
         <div id="divAdvanced" class="tab-pane fade">
             <partial name="../Panel/_DetailAdvanced" model="Model.Panel"/>

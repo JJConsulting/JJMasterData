@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
@@ -28,11 +29,10 @@ public class RelationshipsController : DataDictionaryController
         return View(model);
     }
 
-    [HttpPost]
+    [HttpDelete]
     public ActionResult Delete(string dictionaryName, int selectedIndex)
     {
         _relationshipsService.Delete(dictionaryName, selectedIndex);
-
         return RedirectToAction("Index", new { dictionaryName });
     }
 
@@ -58,7 +58,7 @@ public class RelationshipsController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private RelationshipsListViewModel CreateListViewModel(string dictionaryName,
+    private static RelationshipsListViewModel CreateListViewModel(string dictionaryName,
         FormElementRelationshipList relationships)
     {
         return new RelationshipsListViewModel(dictionaryName, "Relationships")
@@ -213,17 +213,9 @@ public class RelationshipsController : DataDictionaryController
     
     public IActionResult SaveRelationshipLayout(RelationshipsLayoutDetailsViewModel model, FormElementPanel panel)
     {
-
-        var formElement = _relationshipsService.DataDictionaryRepository.GetMetadata(model.DictionaryName).GetFormElement();
-
-        var relationship = formElement.Relationships[model.Index];
-
-        relationship.ViewType = model.ViewType;
-        relationship.Panel = panel;
-
-        if (_relationshipsService.ValidateFormElementRelationship(relationship))
+        if (_relationshipsService.ValidatePanel(panel))
         {
-            _relationshipsService.SaveFormElementRelationship(relationship, model.Index, model.DictionaryName);
+            _relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Index, model.DictionaryName);
             return Json(new { success = true });
         }
 
@@ -249,6 +241,4 @@ public class RelationshipsController : DataDictionaryController
     }
     
     #endregion
-
-
 }

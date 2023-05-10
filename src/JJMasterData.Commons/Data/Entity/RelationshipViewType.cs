@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Commons.Data.Entity;
 
-public enum RelationshipType
+public enum RelationshipViewType
 {
     None = 0,
     List = 1,

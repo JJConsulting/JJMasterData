@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -25,6 +26,7 @@ public class MetadataForm
     {
         Panels = new List<FormElementPanel>();
         FormFields = new List<MetadataFormField>();
+        Relationships = new FormElementRelationshipList(new List<ElementRelationship>());
     }
 
     public MetadataForm(FormElement e) : this()

@@ -129,13 +129,8 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         }
         set
         {
-            formRelationships[index] = value;
-            baseRelationships[index] = value.ElementRelationship;
+            formRelationships[index] = value; //Aqui o index é um
+            baseRelationships[index] = value.ElementRelationship; //Aqui o index é outro devido a ausência do Parent
         }
     }
-
-   
-
-   
- 
 }

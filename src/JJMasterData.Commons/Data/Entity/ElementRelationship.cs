@@ -26,7 +26,7 @@ public class ElementRelationship
 
     [DataMember(Name = "viewType")]
     [Obsolete]
-    public RelationshipType ViewType { get; set; }
+    public RelationshipViewType ViewType { get; set; }
 
     [DataMember(Name = "title")]
     [Obsolete]
@@ -41,7 +41,7 @@ public class ElementRelationship
     {
         Columns = new List<ElementRelationshipColumn>();
         ChildElement = childElement;
-        ViewType = RelationshipType.List;
+        ViewType = RelationshipViewType.List;
         if (columns != null)
             Columns.AddRange(columns);
     }

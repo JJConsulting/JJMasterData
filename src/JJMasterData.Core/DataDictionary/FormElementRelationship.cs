@@ -5,20 +5,25 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationship
 {
-    public bool IsParent { get; private set; }
+    [DataMember(Name = "isParent")]
+    public bool IsParent { get; set; }
 
+    [DataMember(Name = "elementRelationship")]
     public ElementRelationship ElementRelationship { get; set; }
     
     [DataMember(Name = "viewType")]
-    public RelationshipType ViewType { get; set; }
+    public RelationshipViewType ViewType { get; set; }
 
+    [DataMember(Name = "panel")]
     public FormElementPanel Panel { get; set; }
 
     internal FormElementRelationship(bool isParent = false)
     {
         IsParent = isParent;
-        Panel = new FormElementPanel();
-        Panel.VisibleExpression = "val:0";
+        Panel = new FormElementPanel
+        {
+            VisibleExpression = "val:1",
+        };
     }
 
     public FormElementRelationship(ElementRelationship elementRelationship) : this()

@@ -86,7 +86,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label">@Translate.Key("ViewType")</label>
-                    <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipType>()"></select>
+                    <select asp-for="ElementRedirect.ViewType" class="form-control form-select" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
@@ -135,7 +135,7 @@
                             @if (Model.ElementRedirect.RelationFields.Count == 0)
                             {
                                 <tr>
-                                    <td colspan="3">@Translate.Key("No relations found")</td>
+                                    <td colspan="3">@Translate.Key("No relationships found")</td>
                                 </tr>
                             }
                             @for (int i = 0; i < Model.ElementRedirect.RelationFields.Count; i++)

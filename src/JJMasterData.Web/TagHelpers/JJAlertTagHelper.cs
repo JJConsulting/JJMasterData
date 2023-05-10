@@ -21,7 +21,7 @@ public class JJAlertTagHelper : TagHelper
     public PanelColor Color { get; set; }
     
     [HtmlAttributeName("icon")]
-    public IconType Icon { get; set; }
+    public IconType? Icon { get; set; }
 
     [HtmlAttributeName("show-close-button")]
     public bool ShowCloseButton { get; set; }
@@ -33,11 +33,13 @@ public class JJAlertTagHelper : TagHelper
         var alert = new JJAlert
         {
             Color = Color,
-            Icon = Icon,
             CssClass = CssClass,
             Title = Title,
             ShowCloseButton = ShowCloseButton
         };
+
+        if (Icon is not null)
+            alert.Icon = Icon.Value;
 
         if (Messages != null)
             alert.Messages = Messages;

@@ -3,65 +3,29 @@
 @using JJMasterData.Core.Web.Components
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsListViewModel
 
+
 <script type="text/javascript">
-
-    function deleteRelationship(url) {
-        if (confirm('Are you sure you want to delete this relationship?')) {
-            fetch(url, {
-                method: 'POST'
-            })
-            .catch(error => {
-                messageBox.show('Error:', error);
-            });
-        }
-    }
-    
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("filter").addEventListener('keyup', function() {
-            let input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("filter");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("relationshipsTable");
-            tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        })
-    });
-
-</script>
+             function deleteRelationship(url) {
+                     if (confirm('Are you sure you want to delete this relationship?')) {
+                         fetch(url, {
+                             method: 'DELETE'
+                         })
+                         .catch(error => {
+                             console.log(error)
+                         });
+                     }
+                 }
+    </script>
 
 
-@{
-    var filterTextGroup = new JJTextGroup
-    {
-        Name = "filter",
-        PlaceHolder = Translate.Key("Search...")
-    };
-    filterTextGroup.Actions.Add(new JJLinkButton
-    {
-        OnClientClick = null,
-        IconClass = "fa fa-search"
-    });
-}
+
 
 <div class="row">
     <div class="col-sm-8">
         <jj-link-button icon="PlusCircle"
                         text="@Translate.Key("New")"
                         type="LinkButtonType.Button"
-                        on-client-click="popup.show('@Translate.Key("New Relationship")', '@Url.Action("Detail", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
-    </div>
-    <div class="col-sm-4">
-        @Html.Raw(filterTextGroup.GetHtml())
+                        on-client-click="popup.show('@Translate.Key("New Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
     </div>
 </div>
 <br/>
@@ -69,7 +33,7 @@
 <table id="relationshipsTable" class="table table-striped table-hover">
     <thead>
     <tr>
-        <th scope="col">@Translate.Key("ChildElement")</th>
+        <th scope="col">@Translate.Key("Relation")</th>
         <th scope="col">@Translate.Key("Columns")</th>
         <th scope="col">@Translate.Key("UpdateOnCascade")</th>
         <th scope="col">@Translate.Key("DeleteOnCascade")</th>
@@ -79,25 +43,24 @@
     <tbody>
     @if (Model.Relationships.Any())
     {
-        var index = 0;
-        foreach (var item in Model.Relationships.GetElementRelationships())
+        var list = Model.Relationships.GetElementRelationships();
+        for (var index = 0; index < list.Count; index++)
         {
+            var item = list[index];
             <tr>
                 <td>
-                    <a href="@Url.Action("Index","Entity", new {dictionaryName = item.ChildElement})" target="_blank">@item.ChildElement</a>
+                    <a href="@Url.Action("Index", "Entity", new { dictionaryName = item.ChildElement })" target="_blank">@item.ChildElement</a>
                     @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.ChildElement)
                 </td>
                 <td>
-                    @for (var i = 0; i < item.Columns.Count; i++)
+                    @for (var j = 0; j < item.Columns.Count; j++)
                     {
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[i].PkColumn)
-                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[i].FkColumn)
+                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[j].PkColumn)
+                        @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.Columns[j].FkColumn)
+                        @item.Columns[j].PkColumn
+                        <i class="fa-solid fa-arrow-right"></i>
+                        @item.Columns[j].FkColumn
 
-                        <text>
-                            @(item.Columns[i].PkColumn)
-                            <i class="fa-solid fa-arrow-right"></i>
-                            @(item.Columns[i].FkColumn)
-                        </text>
                         <br/>
                     }
                 </td>
@@ -110,28 +73,27 @@
                     @Html.HiddenFor(model => model.Relationships[index].ElementRelationship.DeleteOnCascade)
                 </td>
                 <td style="text-align: center;">
-                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" 
-                            onclick="popup.show('@Translate.Key("Edit Relationship")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })');" 
+                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
+                            onclick="popup.show('@Translate.Key("Edit Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })');"
                             data-original-title="@Translate.Key("Edit")">
                         <span class="fa fa-pencil"></span>
                     </button>
-                    <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" 
+                    <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
                             onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })')"
                             data-original-title="@Translate.Key("Delete")">
                         <span class="fa fa-trash"></span>
                     </button>
                 </td>
             </tr>
-            index++;
         }
     }
-    else
-    {
-        <tr>
-            <td colspan="5">
-                @Translate.Key("No relationships found.")
-            </td>
-        </tr>
-    }
+
     </tbody>
 </table>
+
+@if (!Model.Relationships.Any())
+{
+    <jj-alert color="Default" show-close-button="false">
+        @Translate.Key("No relationships found.")
+    </jj-alert>
+}

@@ -24,36 +24,37 @@ public class RelationshipsService : BaseService
     public void SaveElementRelationship(ElementRelationship elementRelationship, int? index, string dictionaryName)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relationships;
+        var relationships = dictionary.Form.Relationships ?? new FormElementRelationshipList(new List<ElementRelationship>());
 
+        var formElementRelationShip = new FormElementRelationship(elementRelationship);
+        
         if (index != null)
         {
-            relations[index.Value] = elementRelationship;
+            relationships[index.Value] = formElementRelationShip;
         }
         else
         {
-            relations.Add(elementRelationship);
+            relationships.Add(formElementRelationShip);
         }
 
+        dictionary.Form.Relationships = relationships;
+        
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
-    public void SaveFormElementRelationship(FormElementRelationship elementRelationship, int? index,
+    public void SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int index,
         string dictionaryName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Form.Relationships;
+        var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = metadata.GetFormElement();
 
-        if (index != null)
-        {
-            relations[index.Value] = elementRelationship;
-        }
-        else
-        {
-            relations.Add(elementRelationship);
-        }
+        var relationship = formElement.Relationships[index];
+        relationship.ViewType = viewType;
+        relationship.Panel = panel;
+        
+        metadata.Form.Relationships[index] = relationship;
 
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(metadata);
     }
 
     public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName,
@@ -179,8 +180,7 @@ public class RelationshipsService : BaseService
     public void Delete(string dictionaryName, int index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        ElementRelationship elementRelationship = dictionary.Table.Relationships[index];
-        dictionary.Table.Relationships.Remove(elementRelationship);
+        dictionary.Form.Relationships.RemoveAt(index);
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
@@ -188,12 +188,12 @@ public class RelationshipsService : BaseService
     public void MoveDown(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relationships;
+        var relationships = dictionary.Table.Relationships;
         int indexToMoveDown = int.Parse(index);
-        if (indexToMoveDown >= 0 && indexToMoveDown < relations.Count - 1)
+        if (indexToMoveDown >= 0 && indexToMoveDown < relationships.Count - 1)
         {
-            (relations[indexToMoveDown + 1], relations[indexToMoveDown]) =
-                (relations[indexToMoveDown], relations[indexToMoveDown + 1]);
+            (relationships[indexToMoveDown + 1], relationships[indexToMoveDown]) =
+                (relationships[indexToMoveDown], relationships[indexToMoveDown + 1]);
 
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
@@ -203,12 +203,12 @@ public class RelationshipsService : BaseService
     public void MoveUp(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relations = dictionary.Table.Relationships;
+        var relationships = dictionary.Table.Relationships;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
-            (relations[indexToMoveUp - 1], relations[indexToMoveUp]) =
-                (relations[indexToMoveUp], relations[indexToMoveUp - 1]);
+            (relationships[indexToMoveUp - 1], relationships[indexToMoveUp]) =
+                (relationships[indexToMoveUp], relationships[indexToMoveUp - 1]);
 
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
@@ -219,8 +219,8 @@ public class RelationshipsService : BaseService
         //todo;
     }
 
-    public bool ValidateFormElementRelationship(FormElementRelationship relationship)
+    public bool ValidatePanel(FormElementPanel panel)
     {
-        return _panelService.ValidatePanel(relationship.Panel);
+        return _panelService.ValidatePanel(panel);
     }
 }

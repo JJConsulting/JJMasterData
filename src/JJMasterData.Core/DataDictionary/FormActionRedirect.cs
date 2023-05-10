@@ -16,7 +16,7 @@ public class FormActionRedirect
     public List<FormActionRelationField> RelationFields { get; set; }
 
     [DataMember(Name = "viewType")]
-    public RelationshipType ViewType { get; set; }
+    public RelationshipViewType ViewType { get; set; }
 
     [DataMember(Name = "popupSize")]
     public PopupSize PopupSize { get; set; }
