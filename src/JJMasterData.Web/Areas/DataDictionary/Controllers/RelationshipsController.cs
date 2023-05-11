@@ -45,7 +45,7 @@ public class RelationshipsController : DataDictionaryController
     public ActionResult CreateRelation(string dictionaryName, string? index, ElementRelationship elementRelationship, string pk, string fk)
     {
 
-        if (_relationshipsService.ValidateFinallyAddRelation(elementRelationship, pk, fk))
+        if (_relationshipsService.ValidateFinallyAddRelation(dictionaryName, elementRelationship, pk, fk))
         {
             elementRelationship.Columns.Add(new ElementRelationColumn(pk, fk));
         }

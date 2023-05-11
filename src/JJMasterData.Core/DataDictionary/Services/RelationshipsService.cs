@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary.Repository;
+﻿#nullable enable
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
@@ -32,17 +33,17 @@ public class RelationshipsService : BaseService
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
-    public bool ValidateRelation(string childElement, string pkColumnName, string fkColumnName)
+    public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName, string fkColumnName)
     {
-        if (string.IsNullOrEmpty(childElement))
+        if (string.IsNullOrEmpty(childElementName))
         {
-            AddError("PkTableName", Translate.Key("Required PkTableName Field"));
+            AddError("ChildElement", Translate.Key("Required ChildElement Field"));
             return IsValid;
         }
         
-        if (!DataDictionaryRepository.Exists(childElement))
+        if (!DataDictionaryRepository.Exists(childElementName))
         {
-            AddError("Entity", Translate.Key("Entity {0} not found", childElement));
+            AddError("Entity", Translate.Key("Entity {0} not found", childElementName));
             return IsValid;
         }
 
@@ -57,23 +58,20 @@ public class RelationshipsService : BaseService
             AddError("FkColumn", Translate.Key("Required FkColumn field"));
             return IsValid;
         }
-
-        var dictionary = DataDictionaryRepository.GetMetadata(childElement);
-        var element = dictionary.Table;
-        if (!element.Fields.ContainsKey(fkColumnName))
+        
+        ElementField? fkColumn = GetField(childElementName, fkColumnName);
+        if (fkColumn == null)
         {
-            AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElement));
+            AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElementName));
             return IsValid;
         }
 
-        if (!element.Fields.ContainsKey(pkColumnName))
+        ElementField? pkColumn = GetField(dictionaryName, pkColumnName);
+        if (pkColumn == null)
         {
             AddError("", Translate.Key("Column {0} not found.", pkColumnName));
             return IsValid;
         }
-
-        ElementField fkColumn = element.Fields[fkColumnName];
-        ElementField pkColumn = element.Fields[pkColumnName];
 
         if (fkColumn.Filter.Type == FilterMode.None && !fkColumn.IsPk)
         {
@@ -90,6 +88,19 @@ public class RelationshipsService : BaseService
         return IsValid;
     }
 
+    private ElementField? GetField(string dictionaryName, string fieldName)
+    {
+        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var element = dictionary.Table;
+        if (element.Fields.ContainsKey(fieldName))
+        {
+            return element.Fields[fieldName]; 
+        }
+
+        return null;
+    }
+
+
     public bool ValidateFields(ElementRelationship elementRelationship, string dictionaryName, string sIndex)
     {
         if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
@@ -105,7 +116,7 @@ public class RelationshipsService : BaseService
         {
             foreach (var r in elementRelationship.Columns)
             {
-                ValidateRelation(elementRelationship.ChildElement, r.PkColumn, r.FkColumn);
+                ValidateRelation(dictionaryName, elementRelationship.ChildElement, r.PkColumn, r.FkColumn);
             }
         }
 
@@ -119,9 +130,9 @@ public class RelationshipsService : BaseService
         return IsValid;
     }
 
-    public bool ValidateFinallyAddRelation(ElementRelationship elementRelationship, string pkColumnName, string fkColumnName)
+    public bool ValidateFinallyAddRelation(string dictionaryName, ElementRelationship elementRelationship, string pkColumnName, string fkColumnName)
     {
-        if (ValidateRelation(elementRelationship.ChildElement, pkColumnName, fkColumnName))
+        if (ValidateRelation(dictionaryName, elementRelationship.ChildElement, pkColumnName, fkColumnName))
         {
             var list = elementRelationship.Columns.FindAll(x =>
                 x.PkColumn.Equals(pkColumnName) &&
