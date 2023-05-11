@@ -6,7 +6,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
 {
-    public required int? SelectedIndex { get; set; }
+    public required int? Id { get; set; }
     public required ElementRelationship Relationship { get; set; }
     public required List<SelectListItem>? PrimaryKeysSelectList { get; set; }
     public required List<SelectListItem>? ForeignKeysSelectList { get; set; }

@@ -43,16 +43,15 @@
     <tbody>
     @if (Model.Relationships.Any())
     {
-        var list = Model.Relationships.GetElementRelationships();
-        for (var index = 0; index < list.Count; index++)
+        var relationships = Model.Relationships.Where(r => !r.IsParent).ToList();
+        foreach (var relationship in relationships)
         {
-            var item = list[index];
             <tr>
                 <td>
-                    <a href="@Url.Action("Index", "Entity", new { dictionaryName = item.ChildElement })" target="_blank">@item.ChildElement</a>
+                    <a href="@Url.Action("Index", "Entity", new { dictionaryName = relationship.ElementRelationship!.ChildElement })" target="_blank">@relationship.ElementRelationship!.ChildElement</a>
                 </td>
                 <td>
-                    @foreach (var t in item.Columns)
+                    @foreach (var t in relationship.ElementRelationship!.Columns)
                     {
                         @t.PkColumn
                         <i class="fa-solid fa-arrow-right"></i>
@@ -62,19 +61,19 @@
                     }
                 </td>
                 <td>
-                    @item.UpdateOnCascade
+                    @relationship.ElementRelationship!.UpdateOnCascade
                 </td>
                 <td>
-                    @item.DeleteOnCascade
+                    @relationship.ElementRelationship!.DeleteOnCascade
                 </td>
                 <td style="text-align: center;">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="popup.show('@Translate.Key("Edit Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })');"
+                            onclick="popup.show('@Translate.Key("Edit Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })');"
                             data-original-title="@Translate.Key("Edit")">
                         <span class="fa fa-pencil"></span>
                     </button>
                     <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, selectedIndex = index })')"
+                            onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })')"
                             data-original-title="@Translate.Key("Delete")">
                         <span class="fa fa-trash"></span>
                     </button>

@@ -30,9 +30,9 @@ public class RelationshipsController : DataDictionaryController
     }
 
     [HttpDelete]
-    public ActionResult Delete(string dictionaryName, int selectedIndex)
+    public ActionResult Delete(string dictionaryName, int id)
     {
-        _relationshipsService.Delete(dictionaryName, selectedIndex);
+        _relationshipsService.Delete(dictionaryName, id);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
@@ -57,13 +57,12 @@ public class RelationshipsController : DataDictionaryController
 
     #region ElementDetails
 
-    public ActionResult ElementDetails(string dictionaryName, int? selectedIndex)
+    public ActionResult ElementDetails(string dictionaryName, int? id)
     {
         var formElement = _relationshipsService.GetFormElement(dictionaryName);
-        var relationships = formElement.Relationships.GetElementRelationships();
-        var relationship = selectedIndex != null ? relationships[selectedIndex.Value] : new ElementRelationship();
+        var relationship = id != null ? formElement.Relationships.GetById(id.Value).ElementRelationship! : new ElementRelationship();
 
-        var model = CreateElementDetailsViewModel(dictionaryName, relationship, selectedIndex);
+        var model = CreateElementDetailsViewModel(dictionaryName, relationship, id);
 
         return View("DetailElement", model);
     }
@@ -71,7 +70,7 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public ActionResult ElementDetails(RelationshipsElementDetailsViewModel model)
     {
-        var newModel = CreateElementDetailsViewModel(model.DictionaryName, model.Relationship, model.SelectedIndex);
+        var newModel = CreateElementDetailsViewModel(model.DictionaryName, model.Relationship, model.Id);
         return View("DetailElement", newModel);
     }
 
@@ -97,9 +96,9 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public ActionResult SaveRelationshipElement(RelationshipsElementDetailsViewModel model)
     {
-        if (_relationshipsService.ValidateElementRelationship(model.Relationship, model.DictionaryName, model.SelectedIndex))
+        if (_relationshipsService.ValidateElementRelationship(model.Relationship, model.DictionaryName, model.Id))
         {
-            _relationshipsService.SaveElementRelationship(model.Relationship, model.SelectedIndex, model.DictionaryName);
+            _relationshipsService.SaveElementRelationship(model.Relationship, model.Id, model.DictionaryName);
             return Json(new { success = true });
         }
 
@@ -128,15 +127,15 @@ public class RelationshipsController : DataDictionaryController
 
     private RelationshipsElementDetailsViewModel CreateElementDetailsViewModel(
         string dictionaryName,
-        ElementRelationship relationship, int? selectedIndex = null)
+        ElementRelationship relationship, int? id = null)
     {
         return new RelationshipsElementDetailsViewModel(dictionaryName, "Relationships")
         {
+            Id = id,
             Relationship = relationship,
             ElementsSelectList = GetElementsSelectList(relationship.ChildElement),
             PrimaryKeysSelectList = GetPrimaryKeysSelectList(dictionaryName),
-            ForeignKeysSelectList = GetForeignKeysSelectList(relationship.ChildElement),
-            SelectedIndex = selectedIndex
+            ForeignKeysSelectList = GetForeignKeysSelectList(relationship.ChildElement)
         };
     }
 
@@ -184,9 +183,9 @@ public class RelationshipsController : DataDictionaryController
     #region LayoutDetails
 
     [HttpGet]
-    public IActionResult LayoutDetails(string dictionaryName, int index)
+    public IActionResult LayoutDetails(string dictionaryName, int id)
     {
-        var model = CreateLayoutDetailsViewModel(dictionaryName, index);
+        var model = CreateLayoutDetailsViewModel(dictionaryName, id);
         return View("DetailLayout", model);
     }
     
@@ -201,7 +200,7 @@ public class RelationshipsController : DataDictionaryController
     {
         if (_relationshipsService.ValidatePanel(panel))
         {
-            _relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Index, model.DictionaryName);
+            _relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Id, model.DictionaryName);
             return Json(new { success = true });
         }
 
@@ -211,15 +210,15 @@ public class RelationshipsController : DataDictionaryController
 
     private RelationshipsLayoutDetailsViewModel CreateLayoutDetailsViewModel(
         string dictionaryName,
-        int index)
+        int id)
     {
         var formElement = (FormElement)_relationshipsService.DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        var relationship = formElement.Relationships[index];
+        var relationship = formElement.Relationships.GetById(id);
         
         return new RelationshipsLayoutDetailsViewModel(dictionaryName, "Relationships")
         {
-            Index = index,
+            Id = id,
             IsParent = relationship.IsParent,
             Panel = relationship.Panel,
             ViewType = relationship.ViewType

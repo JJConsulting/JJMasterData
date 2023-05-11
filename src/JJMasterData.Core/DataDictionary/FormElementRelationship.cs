@@ -6,6 +6,9 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationship
 {
+    [DataMember(Name = "id")]
+    public int Id { get; set; }
+    
     [DataMember(Name = "isParent")]
     public bool IsParent { get; set; }
 

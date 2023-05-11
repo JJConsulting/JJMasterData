@@ -23,20 +23,26 @@ public class RelationshipsService : BaseService
         _panelService = panelService;
     }
 
-    public void SaveElementRelationship(ElementRelationship elementRelationship, int? index, string dictionaryName)
+    public void SaveElementRelationship(ElementRelationship elementRelationship, int? id, string dictionaryName)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relationships = dictionary.Form.Relationships ?? new FormElementRelationshipList(new List<ElementRelationship>());
 
         var formElementRelationShip = new FormElementRelationship(elementRelationship);
         
-        if (index != null)
+        if (id != null)
         {
-            relationships[index.Value] = formElementRelationShip;
+            var index = relationships.GetIndexById(id.Value);
+            relationships[index] = formElementRelationShip;
         }
         else
         {
             relationships.Add(formElementRelationShip);
+        }
+
+        if (!relationships.Any(r => r.IsParent))
+        {
+            relationships.Add(new FormElementRelationship(true));
         }
 
         dictionary.Form.Relationships = relationships;
@@ -44,12 +50,14 @@ public class RelationshipsService : BaseService
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
-    public void SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int index,
+    public void SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
         string dictionaryName)
     {
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
         var formElement = metadata.GetFormElement();
 
+        var index = formElement.Relationships.GetIndexById(id);
+        
         var relationship = formElement.Relationships[index];
         relationship.ViewType = viewType;
         relationship.Panel = panel;
@@ -179,10 +187,18 @@ public class RelationshipsService : BaseService
     }
 
 
-    public void Delete(string dictionaryName, int index)
+    public void Delete(string dictionaryName, int id)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        dictionary.Form.Relationships.RemoveAt(index);
+        var relationship = dictionary.Form.Relationships.GetById(id);
+
+        dictionary.Form.Relationships.Remove(relationship);
+
+        if (dictionary.Form.Relationships.All(r => r.IsParent))
+        {
+            dictionary.Form.Relationships.Clear();
+        }
+        
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
     
