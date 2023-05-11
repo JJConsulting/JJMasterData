@@ -3,6 +3,10 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
+@{
+    ViewData["Title"] = $"{Model.DictionaryName} - API";
+}
+
 <partial name="_Menu"/>
 
 <style>

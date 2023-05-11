@@ -1,4 +1,6 @@
 @page
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.Web.TagHelpers
 
 @{
     ViewData["Title"] = "JJAlert";
@@ -14,5 +16,5 @@
 <jj-alert
     title="You can use all Bootstrap colors and FontAwesome icons."
     messages="@(new List<string>(){"And input", "A list of Strings"})"
-    icon="Empire"
+    icon="IconType.Empire"
     color="Info"/>

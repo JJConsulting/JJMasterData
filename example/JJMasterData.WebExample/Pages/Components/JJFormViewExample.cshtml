@@ -1,4 +1,5 @@
 @page
+@using JJMasterData.Core.DataDictionary
 @using JJMasterData.Core.DataDictionary.Repository.Abstractions
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Web.TagHelpers
@@ -27,7 +28,7 @@ else
 {
     <jj-alert 
         color="Danger" 
-        icon="Times" 
+        icon="IconType.Times" 
         title="Dictionary not found." 
         message="Please import Example.json. Check Intro for instructions."/>
 }

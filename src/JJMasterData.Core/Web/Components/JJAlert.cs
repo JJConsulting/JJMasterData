@@ -8,7 +8,7 @@ namespace JJMasterData.Core.Web.Components;
 public class JJAlert : JJBaseView
 {
     public PanelColor Color { get; set; }
-    public IconType Icon { get; set; }
+    public IconType? Icon { get; set; }
     public string Title { get; set; }
     public IList<string> Messages { get; set; }
     public bool ShowCloseButton { get; set; }
@@ -37,19 +37,22 @@ public class JJAlert : JJBaseView
         if (ShowCloseButton)
             html.AppendElement(GetCloseButton("alert"));
 
-        if (ShowIcon)
-            html.AppendElement(new JJIcon(Icon));
+        if (ShowIcon && Icon is not null)
+            html.AppendElement(new JJIcon(Icon.Value));
 
         if (!string.IsNullOrEmpty(Title))
             html.AppendElement(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}"));
 
-        if (Messages != null)
+        if (Messages == null) 
+            return html;
+
+        for (var index = 0; index < Messages.Count; index++)
         {
-            foreach (string message in Messages)
-            {
+            var message = Messages[index];
+            html.AppendText(Translate.Key(message));
+            
+            if(index > 0) 
                 html.AppendElement(HtmlTag.Br);
-                html.AppendText(Translate.Key(message));
-            }
         }
 
 

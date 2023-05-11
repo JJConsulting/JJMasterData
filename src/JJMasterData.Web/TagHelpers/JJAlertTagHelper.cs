@@ -21,21 +21,25 @@ public class JJAlertTagHelper : TagHelper
     public PanelColor Color { get; set; }
     
     [HtmlAttributeName("icon")]
-    public IconType Icon { get; set; }
+    public IconType? Icon { get; set; }
 
     [HtmlAttributeName("show-close-button")]
     public bool ShowCloseButton { get; set; }
 
-
+    [HtmlAttributeName("css-class")]
+    public string? CssClass { get; set; }
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var alert = new JJAlert
         {
             Color = Color,
-            Icon = Icon,
+            CssClass = CssClass,
             Title = Title,
             ShowCloseButton = ShowCloseButton
         };
+
+        if (Icon is not null)
+            alert.Icon = Icon.Value;
 
         if (Messages != null)
             alert.Messages = Messages;

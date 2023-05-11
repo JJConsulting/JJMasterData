@@ -16,7 +16,7 @@ public class ElementRelationship
     public string ChildElement { get; set; }
         
     [DataMember(Name = "columns")]
-    public List<ElementRelationColumn> Columns { get; set; }
+    public List<ElementRelationshipColumn> Columns { get; set; }
 
     [DataMember(Name = "updateOnCascade")]
     public bool UpdateOnCascade { get; set; }
@@ -25,21 +25,23 @@ public class ElementRelationship
     public bool DeleteOnCascade { get; set; }
 
     [DataMember(Name = "viewType")]
-    public RelationshipType ViewType { get; set; }
+    [Obsolete]
+    public RelationshipViewType ViewType { get; set; }
 
     [DataMember(Name = "title")]
+    [Obsolete]
     public string Title { get; set; }
 
     public ElementRelationship()
     {
-        Columns = new List<ElementRelationColumn>();
+        Columns = new List<ElementRelationshipColumn>();
     }
 
-    public ElementRelationship(string childElement, params ElementRelationColumn[] columns)
+    public ElementRelationship(string childElement, params ElementRelationshipColumn[] columns)
     {
-        Columns = new List<ElementRelationColumn>();
+        Columns = new List<ElementRelationshipColumn>();
         ChildElement = childElement;
-        ViewType = RelationshipType.List;
+        ViewType = RelationshipViewType.List;
         if (columns != null)
             Columns.AddRange(columns);
     }

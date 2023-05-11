@@ -1,0 +1,68 @@
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.Web
+@using JJMasterData.Web.TagHelpers
+@using JJMasterData.Commons.Localization
+
+@model RelationshipsListViewModel
+
+<script language="javascript" type="text/javascript">
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $("#sortable").sortable({
+               update: function () {
+                 const relationships = $(this).sortable('toArray');
+                 fetch('@Url.Action("Sort", new {dictionaryName = Model.DictionaryName})', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify(relationships)
+                 }).catch(error => {
+                    messageBox.show("JJMasterData", error.message, 4);
+                 });
+               }
+        }).disableSelection();
+    });
+
+</script>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <ul class="list-group jjsortable" id="sortable">
+            @if (Model.Relationships.Any())
+            {
+                @for (var index = 0; index < Model.Relationships.Count; index++)
+                {
+                    var relationship = Model.Relationships[index];
+                    var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
+                    
+                    <li class="list-group-item" id="@id">
+                        <div style="height: 33px;">
+                            <div style="float: left; margin-top: 10px;">
+                                <span class="@(relationship.IsParent ? "fa-solid fa-crown" : "fa fa-align-left")"></span>&nbsp;
+                                @(relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName)
+                                &nbsp;
+                            </div>
+                            <div class=@BootstrapHelper.PullRight>
+                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="popup.show('Layout', '@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })')">
+                                    <span class="fa fa-pencil"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                }
+            }
+            else
+            {
+                @if (!Model.Relationships.Any())
+                {
+                    <jj-alert color="Default" show-close-button="false">
+                        @Translate.Key("No relationships found.")
+                    </jj-alert>
+                }
+            }
+        </ul>
+
+    </div>
+</div>

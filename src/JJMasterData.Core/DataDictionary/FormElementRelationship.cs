@@ -1,25 +1,38 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+using System.Runtime.Serialization;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationship
 {
-    public bool IsOwner { get; private set; }
+    [DataMember(Name = "id")]
+    public int Id { get; set; }
+    
+    [DataMember(Name = "isParent")]
+    public bool IsParent { get; set; }
 
-    public ElementRelationship ElementRelation { get; set; }
+    [DataMember(Name = "elementRelationship")]
+    public ElementRelationship? ElementRelationship { get; set; }
+    
+    [DataMember(Name = "viewType")]
+    public RelationshipViewType ViewType { get; set; }
 
+    [DataMember(Name = "panel")]
     public FormElementPanel Panel { get; set; }
 
-    internal FormElementRelationship(bool isOwner = false)
+    internal FormElementRelationship(bool isParent = false)
     {
-        IsOwner = isOwner;
-        Panel = new FormElementPanel();
-        Panel.VisibleExpression = "val:0";
+        IsParent = isParent;
+        Panel = new FormElementPanel
+        {
+            VisibleExpression = "val:1",
+        };
     }
 
-    public FormElementRelationship(ElementRelationship elementRelation) : this()
+    public FormElementRelationship(ElementRelationship elementRelationship) : this()
     {
-        ElementRelation = elementRelation;
+        ElementRelationship = elementRelationship;
     }
 
 }

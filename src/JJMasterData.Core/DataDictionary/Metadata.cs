@@ -38,6 +38,8 @@ public class Metadata
             Panels = Form.Panels
         };
 
+        fe.Relationships = Form.Relationships;
+
         foreach (var item in Form.FormFields)
         {
             var field = fe.Fields[item.Name];
@@ -62,6 +64,7 @@ public class Metadata
             field.PanelId = item.PanelId;
             field.InternalNotes = item.InternalNotes;
         }
+
 
         return fe;
     }

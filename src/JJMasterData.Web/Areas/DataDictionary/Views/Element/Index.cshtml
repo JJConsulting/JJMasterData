@@ -1,6 +1,10 @@
 ﻿@using JJMasterData.Web.Extensions
 @model JJMasterData.Core.Web.Components.JJGridView;
 
+@{
+    ViewData["Title"] = $"Data Dictionaries";
+}
+
 @using (Html.BeginForm())
 {
     @Model.GetHtml().ToHtmlString()

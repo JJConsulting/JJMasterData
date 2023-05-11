@@ -1,0 +1,67 @@
+@using JJMasterData.Core.Web
+@using JJMasterData.Commons.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FormElementPanel
+
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-12">
+        <table style="border:0px;width:100%">
+            <tr>
+                <td style="width:45%">
+                    <label class="@BootstrapHelper.Label">@Translate.Key("Available Fields")</label>
+                </td>
+                <td style="width:70px"></td>
+                <td style="width:50%">
+                    <label class="@BootstrapHelper.Label required">@Translate.Key("Selected Fields")</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <select size="10" name="listEnabled" id="listEnabled" multiple="multiple" class="form-control form-select" ondblclick="addFields()">
+                        @foreach (FormElementField f in ViewBag.AvailableFields)
+                        {
+                            if (f.PanelId == 0)
+                            {
+                                <option value="@f.Name">@f.Name</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td align="middle">
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Select")" onclick="addFields();">
+                        <span class="fa fa-angle-double-right fa-fw fa-fw"></span>
+                    </button>
+                    <br/>
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Remove")" onclick="removeFields();">
+                        <span class="fa fa-angle-double-left fa-fw fa-fw"></span>
+                    </button>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <select size="10" name="listSelected" id="listSelected" multiple="multiple" class="form-control form-select" ondblclick="removeFields()">
+                            @foreach (FormElementField f in ViewBag.SelectedFields)
+                            {
+                                if (f.PanelId == Model.PanelId)
+                                {
+                                    <option value="@f.Name">@f.Name</option>
+                                }
+                            }
+                        </select>
+                        <span class="input-group-btn">
+                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Move up")" onclick="moveUp();">
+                                <span class="fa fa-arrow-circle-up fa-fw fa-fw"></span>
+                            </button>
+                            <br/>
+                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Move down")" onclick="moveDown();">
+                                <span class="fa fa-arrow-circle-down fa-fw fa-fw"></span>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+</div>

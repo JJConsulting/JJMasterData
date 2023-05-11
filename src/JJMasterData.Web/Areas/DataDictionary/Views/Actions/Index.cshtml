@@ -2,6 +2,11 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = $"{ViewBag.DictionaryName} - Actions";
+}
+
 <script lang="javascript" type="text/javascript">
     $(document).ready(function () {
         savePanelState();

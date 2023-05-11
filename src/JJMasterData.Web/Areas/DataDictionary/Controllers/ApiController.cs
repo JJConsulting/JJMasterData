@@ -48,11 +48,9 @@ public class ApiController : DataDictionaryController
     }
     private ApiViewModel PopulateViewModel(Metadata metadata)
     {
-        var model = new ApiViewModel
+        var model = new ApiViewModel(dictionaryName:metadata.Table.Name, menuId:"Api")
         {
             MetadataApiOptions = metadata.ApiOptions,
-            MenuId = "Api",
-            DictionaryName = metadata.Table.Name,
             Mode = metadata.Table.SyncMode,
             IsSync = metadata.Table.Sync,
             Fields = metadata.Table.Fields.ToList().FindAll(

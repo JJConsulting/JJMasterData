@@ -735,7 +735,7 @@ public class JJFormView : JJGridView
     private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        var relationships = FormElement.Relationships.GetElementRelationships().FindAll(x => x.ViewType != RelationshipType.None);
+        var relationships = FormElement.Relationships.GetElementRelationships().FindAll(x => x.ViewType != RelationshipViewType.None);
 
         var painel = DataPanel;
         painel.PageState = pageState;
@@ -788,7 +788,7 @@ public class JJFormView : JJGridView
                 filter.Add(col.FkColumn, values[col.PkColumn]);
             }
 
-            if (relation.ViewType == RelationshipType.View)
+            if (relation.ViewType == RelationshipViewType.View)
             {
                 
                 var childvalues = EntityRepository.GetFields(childElement, filter);
@@ -815,7 +815,7 @@ public class JJFormView : JJGridView
                 
                 html.AppendElement(collapse);
             }
-            else if (relation.ViewType == RelationshipType.List)
+            else if (relation.ViewType == RelationshipViewType.List)
             {
                 var childGrid = new JJFormView(childElement)
                 {

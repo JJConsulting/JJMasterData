@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Data.Entity;
 /// <remarks>2017-03-22 JJTeam</remarks>
 [Serializable]
 [DataContract]
-public class ElementRelationColumn
+public class ElementRelationshipColumn
 {
     [DataMember(Name = "pkcolumn")]
     public string PkColumn { get; set; }
@@ -18,12 +18,12 @@ public class ElementRelationColumn
     public string FkColumn { get; set; }
 
 
-    public ElementRelationColumn()
+    public ElementRelationshipColumn()
     {
 
     }
 
-    public ElementRelationColumn(string pkColumn, string fkColumn)
+    public ElementRelationshipColumn(string pkColumn, string fkColumn)
     {
         PkColumn = pkColumn;
         FkColumn = fkColumn;

@@ -65,7 +65,7 @@ public class PanelService : BaseService
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
-    private bool ValidatePanel(FormElementPanel panel)
+    public bool ValidatePanel(FormElementPanel panel)
     {
         if (string.IsNullOrWhiteSpace(panel.VisibleExpression))
             AddError(nameof(panel.VisibleExpression), "Required [VisibleExpression] panel");

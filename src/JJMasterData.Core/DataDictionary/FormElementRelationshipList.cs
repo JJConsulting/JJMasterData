@@ -6,50 +6,43 @@ using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
-
 [Serializable]
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
-    private IList<FormElementRelationship> formRelationships;
-    private List<ElementRelationship> baseRelationships;
-
-    //public FormElementRelationshipList()
-    //{
-    //    baseRelationships = new List<ElementRelationship>();
-    //    formRelationships = new List<FormElementRelationship>();
-    //    formRelationships.Add(new FormElementRelationship(true));
-    //}
+    private IList<FormElementRelationship> _formRelationships;
+    private List<ElementRelationship> _baseRelationships;
 
     public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
-        baseRelationships = baseFields;
-        formRelationships = new List<FormElementRelationship>();
+        _baseRelationships = baseFields;
+        _formRelationships = new List<FormElementRelationship>();
         if (baseFields.Count > 0)
         {
-            formRelationships.Add(new FormElementRelationship(true));
+            _formRelationships.Add(new FormElementRelationship(true));
             foreach (var relation in baseFields)
             {
-                formRelationships.Add(new FormElementRelationship(relation));
+                _formRelationships.Add(new FormElementRelationship(relation));
             }
         }
     }
 
     public List<ElementRelationship> GetElementRelationships()
     {
-        return baseRelationships;
+        return _baseRelationships;
     }
 
     #region Implementation of IEnumerable
 
     public IEnumerator<FormElementRelationship> GetEnumerator()
     {
-        return formRelationships.GetEnumerator();
+        return _formRelationships.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
+
     #endregion
 
 
@@ -57,85 +50,97 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public void Add(FormElementRelationship item)
     {
-        if (item?.ElementRelation != null)
-            baseRelationships.Add(item.ElementRelation);
+        if (item!.ElementRelationship != null)
+            _baseRelationships.Add(item.ElementRelationship);
 
-        formRelationships.Add(item);
+        SetId(item);
+
+        _formRelationships.Add(item);
+    }
+
+    private void SetId(FormElementRelationship item)
+    {
+        var highestId = _formRelationships.Any() ? _formRelationships.Max(x => x.Id) : 1;
+        item.Id = highestId + 1;
     }
 
     public void Clear()
     {
-        baseRelationships.Clear();
-        formRelationships.Clear();
-    }
-    
-    public bool Contains(FormElementRelationship item)
-    {
-        return formRelationships.Contains(item);
+        _baseRelationships.Clear();
+        _formRelationships.Clear();
     }
 
-    public void CopyTo(FormElementRelationship[] array, int arrayIndex)
+    public bool Contains(FormElementRelationship item)
     {
-        baseRelationships.CopyTo(array.Select(x => x.ElementRelation).ToArray(), arrayIndex);
-        formRelationships.CopyTo(array, arrayIndex);
+        return _formRelationships.Contains(item);
+    }
+
+    public void CopyTo(FormElementRelationship[] array, int index)
+    {
+        _formRelationships.CopyTo(array, index);
     }
 
     public bool Remove(FormElementRelationship item)
     {
-        if (item?.ElementRelation != null)
-            baseRelationships.Remove(item.ElementRelation);
+        if (item?.ElementRelationship != null)
+            _baseRelationships.Remove(item.ElementRelationship);
 
-        return formRelationships.Remove(item);
+        return _formRelationships.Remove(item);
     }
 
-    public int Count
-    {
-        get { return formRelationships.Count; }
-    }
+    public int Count => _formRelationships.Count;
 
-    public bool IsReadOnly
-    {
-        get { return formRelationships.IsReadOnly; }
-    }
+    public bool IsReadOnly => _formRelationships.IsReadOnly;
 
     #endregion
 
     public int IndexOf(FormElementRelationship item)
     {
-        return formRelationships.IndexOf(item);
+        return _formRelationships.IndexOf(item);
     }
 
     public void Insert(int index, FormElementRelationship item)
     {
-         formRelationships.Insert(index, item);
-         if (item?.ElementRelation != null)
-            baseRelationships.Insert(index, item.ElementRelation);
+        if (item?.ElementRelationship != null)
+            _baseRelationships.Add(item.ElementRelationship);
+        
+        SetId(item);
+        _formRelationships.Insert(index, item);
     }
 
     public void RemoveAt(int index)
     {
-        var item = formRelationships[index];
+        var item = _formRelationships[index];
 
-        formRelationships.Remove(item);
-        if (item?.ElementRelation != null)
-            baseRelationships.Remove(item.ElementRelation);
+        _formRelationships.Remove(item);
+        if (item?.ElementRelationship != null)
+            _baseRelationships.Remove(item.ElementRelationship);
     }
 
     public FormElementRelationship this[int index]
     {
-        get
-        {
-            return formRelationships[index];
-        }
+        get => _formRelationships[index];
         set
         {
-            formRelationships[index] = value;
-            baseRelationships[index] = value.ElementRelation;
+            _formRelationships[index] = value;
+
+            if (!value.IsParent)
+            {
+                var element = _baseRelationships.First(r => r == value.ElementRelationship);
+                var i = _baseRelationships.IndexOf(element);
+                _baseRelationships[i] = value.ElementRelationship;
+            }
         }
     }
 
-   
-
-   
- 
+    public FormElementRelationship GetById(int id)
+    {
+        return _formRelationships.First(r => r.Id == id);
+    }
+    
+    public int GetIndexById(int id)
+    {
+        var relationship = GetById(id);
+        return _formRelationships.IndexOf(relationship);
+    }
 }

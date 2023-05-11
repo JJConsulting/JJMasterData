@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -17,11 +18,15 @@ public class MetadataForm
 
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
-
+    
+    [DataMember(Name = "relationships")]
+    public FormElementRelationshipList Relationships { get; set; }
+    
     public MetadataForm()
     {
         Panels = new List<FormElementPanel>();
         FormFields = new List<MetadataFormField>();
+        Relationships = new FormElementRelationshipList(new List<ElementRelationship>());
     }
 
     public MetadataForm(FormElement e) : this()
@@ -29,6 +34,7 @@ public class MetadataForm
         Title = e.Title;
         SubTitle = e.SubTitle;
         Panels = e.Panels;
+        Relationships = e.Relationships;
         foreach (var f in e.Fields)
         {
             FormFields.Add(new MetadataFormField(f));
