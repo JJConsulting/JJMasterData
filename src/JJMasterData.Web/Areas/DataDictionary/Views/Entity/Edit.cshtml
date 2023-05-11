@@ -33,13 +33,13 @@
         <partial name="_DataDictionaryPanel" model="Model"/>
     </jj-collapse-panel>
 
-    <jj-collapse-panel name="formPanel" title="@Translate.Key("Form")" expanded-by-default="true">
+    <jj-collapse-panel name="formPanel" icon="AlignLeft" title="@Translate.Key("Form")" expanded-by-default="true">
         <partial name="_FormPanel" model="Model"/>
     </jj-collapse-panel>
 
     if (Model.FormEvent != null)
     {
-        <jj-collapse-panel name="eventsPanel" title="@Translate.Key("Events")" expanded-by-default="true">
+        <jj-collapse-panel name="eventsPanel" icon="Bolt" title="@Translate.Key("Events")" expanded-by-default="true">
             <partial name="_EventsPanel" model="Model"/>
         </jj-collapse-panel>
     }
