@@ -23,10 +23,10 @@ public class FormElementList : ICollection<FormElementField>
         _formFields = new List<FormElementField>();
     }
 
-    public FormElementList(ElementList baseFields, List<FormElementField> formFields)
+    public FormElementList(ElementList baseFields)
     {
         _baseFields = baseFields;
-        _formFields = formFields;
+        _formFields = new List<FormElementField>();
     }
 
     #region Implementation of IEnumerable

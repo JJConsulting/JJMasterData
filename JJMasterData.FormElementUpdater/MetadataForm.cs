@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater;
 
 [DataContract]
 public class MetadataForm

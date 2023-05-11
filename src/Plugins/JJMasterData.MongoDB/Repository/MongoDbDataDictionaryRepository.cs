@@ -11,7 +11,7 @@ namespace JJMasterData.MongoDB.Repository;
 
 public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 {
-    private readonly IMongoCollection<MongoDBMetadata> _metadataCollection;
+    private readonly IMongoCollection<MongoDBFormElement> _metadataCollection;
 
     public MongoDbDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
@@ -21,7 +21,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         var mongoDatabase = mongoClient.GetDatabase(
             options.Value.DatabaseName);
 
-        _metadataCollection = mongoDatabase.GetCollection<MongoDBMetadata>(
+        _metadataCollection = mongoDatabase.GetCollection<MongoDBFormElement>(
             options.Value.CollectionName);
     }
 
@@ -43,7 +43,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
     {
         var dbMetadataCollection =  _metadataCollection.Find(_ => true).ToList();
 
-        return dbMetadataCollection.Select(MongoDBMetadataMapper.FromMongoDBMetadata).ToList();
+        return dbMetadataCollection.Select(MongoDBFormElementMapper.FromMongoDBMetadata).ToList();
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
@@ -57,7 +57,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
 
-        IFindFluent<MongoDBMetadata, MongoDBMetadata> metadataFinder;
+        IFindFluent<MongoDBFormElement, MongoDBFormElement> metadataFinder;
 
         if (!bsonFilter.Any())
         {
@@ -95,7 +95,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
     public void InsertOrReplace(Metadata metadata)
     {
-        var mongoDbMetadata = MongoDBMetadataMapper.FromMetadata(metadata);
+        var mongoDbMetadata = MongoDBFormElementMapper.FromMetadata(metadata);
         
         mongoDbMetadata.LastModified = DateTime.Now;
 

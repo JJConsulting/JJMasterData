@@ -1,7 +1,6 @@
-using System;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater;
 
 [Serializable]
 [DataContract]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Commons.Data.Providers;
@@ -236,6 +237,11 @@ public class ProviderSQLite : BaseProvider
     public override string GetReadProcedureScript(Element element)
     {
         return null;
+    }
+
+    public override Task<Element> GetElementFromTableAsync(string tableName)
+    {
+        throw new NotImplementedException();
     }
 
     public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)

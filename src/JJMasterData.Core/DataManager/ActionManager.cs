@@ -42,8 +42,8 @@ internal class ActionManager
     {
         var elementRedirect = action.ElementRedirect;
         var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var dicParser = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
-        string popUpTitle = dicParser.Form.Title;
+        var formElement = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
+        string popUpTitle = formElement.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;

@@ -23,21 +23,21 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void DeleteAction(ref Metadata metadata, string originalName, ActionSource context, string fieldName = null)
+    private void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
     {
         if (originalName == null)
             return;
 
         if (context == ActionSource.Field)
         {
-            var field = metadata.GetFormElement().Fields[fieldName];
+            var field = formElement.Fields[fieldName];
             var action = field.Actions.Get(originalName);
             if (action != null)
                 field.Actions.Remove(action);
         }
         else if (context == ActionSource.Grid)
         {
-            var action = metadata.Options.GridActions.Get(originalName);
+            var action = formElement..Get(originalName);
             if (action != null)
                 metadata.Options.GridActions.Remove(action);
         }

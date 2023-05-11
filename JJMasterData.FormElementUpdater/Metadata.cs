@@ -1,10 +1,10 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater;
 
 [DataContract(Name = "elementInfo")]
 public class Metadata

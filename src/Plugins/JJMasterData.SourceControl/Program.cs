@@ -34,7 +34,7 @@ var start = DateTime.Now;
 
 var repository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
 var databaseDictionaries = repository.GetMetadataList(false);
-var folderDictionaries = new List<Metadata>();
+var folderDictionaries = new List<FormElement>();
 
 if (path != null)
 {
@@ -42,11 +42,11 @@ if (path != null)
     {
         var json = new StreamReader(file).ReadToEnd();
 
-        var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
+        var dicParser = JsonConvert.DeserializeObject<FormElement>(json);
 
         if (dicParser != null)
         {
-            Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
+            Console.WriteLine($"SetDictionary: {dicParser.Name}");
             repository.InsertOrReplace(dicParser);
 
             folderDictionaries.Add(dicParser);
@@ -56,10 +56,10 @@ if (path != null)
 
 foreach (var dicParser in databaseDictionaries)
 {
-    if (!folderDictionaries.Exists(dic => dic.Table.Name.Equals(dicParser.Table.Name)))
+    if (!folderDictionaries.Exists(dic => dic.Name.Equals(dicParser.Name)))
     {
-        Console.WriteLine($"DelDictionary: {dicParser.Table.Name}");
-        repository.Delete(dicParser.Table.Name);
+        Console.WriteLine($"DelDictionary: {dicParser.Name}");
+        repository.Delete(dicParser.Name);
 
     }
 }

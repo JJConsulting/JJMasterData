@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Policy;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
@@ -37,11 +39,16 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         _entityRepository = entityRepository;
         _options = options;
     }
-   
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
+
+    public Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
-        var list = new List<Metadata>();
+        throw new NotImplementedException();
+    }
+
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
+    public IEnumerable<FormElement> GetMetadataList(bool? sync = null)
+    {
+        var list = new List<FormElement>();
 
         var filter = new Hashtable();
         if (sync.HasValue)
@@ -51,38 +58,34 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         string currentName = "";
         int tot = 1;
         var dt = _entityRepository.GetDataTable(MasterDataElement, filter, orderBy, 10000, 1, ref tot);
-        Metadata currentParser = null;
+        
+        return ParseDataTable(dt, currentName, list);
+    }
+
+    public Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? sync = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static IEnumerable<FormElement> ParseDataTable(DataTable dt, string currentName, List<FormElement> list)
+    {
+        FormElement currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
             string name = row["name"].ToString();
             if (!currentName.Equals(name))
             {
-                DataDictionaryStructure.ApplyCompatibility(currentParser);
-
                 currentName = name;
-                list.Add(new Metadata());
-                currentParser = list[list.Count - 1];
+                list.Add(new FormElement());
             }
 
             string json = row["json"].ToString();
-            switch (row["type"].ToString()!)
+            currentParser = row["type"].ToString()! switch
             {
-                case "T":
-                    currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);
-                    break;
-                case "F":
-                    currentParser!.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-                    break;
-                case "L":
-                    currentParser!.Options = JsonConvert.DeserializeObject<MetadataOptions>(json);
-                    break;
-                case "A":
-                    currentParser!.ApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
-                    break;
-            }
+                "F" => JsonConvert.DeserializeObject<FormElement>(json),
+                _ => currentParser
+            };
         }
-
-        DataDictionaryStructure.ApplyCompatibility(currentParser);
 
         return list;
     }
@@ -90,7 +93,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
     public IEnumerable<string> GetNameList()
     {
-        int totalRecords = 10000;
+        var totalRecords = 10000;
         var filter = new Hashtable { { "type", "F" } };
 
         var dt = _entityRepository.GetDataTable(MasterDataElement, filter, null, totalRecords, 1, ref totalRecords);
@@ -100,8 +103,22 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         }
     }
 
+    public async IAsyncEnumerable<string> GetNameListAsync()
+    {
+        const int totalRecords = 10000;
+        var filter = new Hashtable { { "type", "F" } };
+
+        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1, totalRecords);
+        foreach (DataRow row in dt.Item1.Rows)
+        {
+            yield return row["name"].ToString();
+        }
+    }
+
+
+
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
-    public Metadata GetMetadata(string dictionaryName)
+    public FormElement GetMetadata(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
@@ -111,105 +128,69 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (dataTable.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
 
-        var metadata = new Metadata();
+        var formElement = new FormElement();
         foreach (DataRow row in dataTable.Rows)
         {
             string json = row["json"].ToString();
-            
-            switch (row["type"].ToString())
+
+            formElement = row["type"].ToString() switch
             {
-                case "T":
-                    metadata.Table = JsonConvert.DeserializeObject<Element>(json);
-                    break;
-                case "F":
-                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-                    break;
-                case "L":
-                    metadata.Options = JsonConvert.DeserializeObject<MetadataOptions>(json);
-                    break;
-                case "A":
-                    metadata.ApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
-                    break;
-            }
+                "F" => JsonConvert.DeserializeObject<FormElement>(json),
+                _ => formElement
+            };
         }
+        
 
-        DataDictionaryStructure.ApplyCompatibility(metadata);
-
-        return metadata;
+        return formElement;
     }
 
+
+
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
-    public void InsertOrReplace(Metadata metadata)
+    public void InsertOrReplace(FormElement metadata)
+    {
+        var values = GetFormElementHashtable(metadata);
+
+        _entityRepository.SetValues(MasterDataElement, values);
+    }
+
+    public async Task InsertOrReplaceAsync(FormElement metadata)
+    {
+        var values = GetFormElementHashtable(metadata);
+
+        await _entityRepository.SetValuesAsync(MasterDataElement, values);
+    }
+
+    private static Hashtable GetFormElementHashtable(FormElement metadata)
     {
         if (metadata == null)
             throw new ArgumentNullException(nameof(metadata));
 
-        if (metadata.Table == null)
-            throw new ArgumentNullException(nameof(metadata.Table));
+        if (metadata == null)
+            throw new ArgumentNullException(nameof(metadata));
 
-        if (string.IsNullOrEmpty(metadata.Table.Name))
-            throw new ArgumentNullException(nameof(metadata.Table.Name));
-        
-        string name = metadata.Table.Name;
-        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
+        if (string.IsNullOrEmpty(metadata.Name))
+            throw new ArgumentNullException(nameof(metadata.Name));
+
+        string name = metadata.Name;
 
         DateTime dNow = DateTime.Now;
 
+        string jsonForm = JsonConvert.SerializeObject(metadata);
+        
         var values = new Hashtable
         {
             { "name", name },
-            { "tablename", metadata.Table.TableName },
-            { "info", metadata.Table.Info },
-            { "type", "T" },
-            { "json", jsonTable },
-            { "sync", metadata.Table.Sync ? "1" : "0" },
+            { "tablename", metadata.TableName },
+            { "info", "" },
+            { "type", "F" },
+            { "owner", name },
+            { "json", jsonForm },
+            { "sync", metadata.Sync ? "1" : "0" },
             { "modified", dNow }
         };
-        _entityRepository.SetValues(MasterDataElement, values);
 
-        if (metadata.Form != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "F");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
-
-        if (metadata.Options != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Options);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "L");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
-
-        if (metadata.ApiOptions != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.ApiOptions);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("info", "");
-            values.Add("type", "A");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
+        return values;
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
@@ -226,13 +207,39 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var delFilter = new Hashtable();
-            delFilter.Add("name", dictionaryName);
-            delFilter.Add("type", row["type"].ToString());
+            var delFilter = new Hashtable
+            {
+                { "name", dictionaryName },
+                { "type", row["type"].ToString() }
+            };
             _entityRepository.Delete(MasterDataElement, delFilter);
         }
     }
-    
+
+    public async Task DeleteAsync(string dictionaryName)
+    {
+        if (string.IsNullOrEmpty(dictionaryName))
+            throw new ArgumentException();
+
+        var filters = new Hashtable { { "name", dictionaryName } };
+
+        var dataTable = await _entityRepository.GetDataTableAsync(MasterDataElement, filters);
+        if (dataTable.Rows.Count == 0)
+            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
+
+        foreach (DataRow row in dataTable.Rows)
+        {
+            var delFilter = new Hashtable
+            {
+                { "name", dictionaryName },
+                { "type", row["type"].ToString() }
+            };
+            await _entityRepository.DeleteAsync(MasterDataElement, delFilter);
+        }
+    }
+
+
+
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
     public bool Exists(string elementName)
     {
@@ -244,20 +251,46 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return count > 0;
     }
 
+    public async Task<bool> ExistsAsync(string dictionaryName)
+    {
+        if (string.IsNullOrEmpty(dictionaryName))
+            throw new ArgumentNullException(nameof(dictionaryName));
+
+        var filter = new Hashtable { { "name", dictionaryName } };
+        int count = await _entityRepository.GetCountAsync(MasterDataElement, filter);
+        return count > 0;
+    }
+    
     ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
     public void CreateStructureIfNotExists()
     {
         if(!_entityRepository.TableExists(MasterDataElement.Name))
             _entityRepository.CreateDataModel(MasterDataElement);
     }
+    
+    public async Task CreateStructureIfNotExistsAsync()
+    {
+        if(!await _entityRepository.TableExistsAsync(MasterDataElement.Name))
+            await _entityRepository.CreateDataModelAsync(MasterDataElement);
+    }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
-    public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    public IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var filters = filter.ToHashtable();
         filters.Add("type","F");
 
         var dt = _entityRepository.GetDataTable(MasterDataElement, filters, orderBy, recordsPerPage, currentPage, ref totalRecords); 
-        return dt.ToModelList<MetadataInfo>();
+        return dt.ToModelList<FormElementInfo>();
+    }
+    
+    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage,
+        int totalRecords)
+    {
+        var filters = filter.ToHashtable();
+        filters.Add("type","F");
+
+        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filters, orderBy, recordsPerPage, currentPage,  totalRecords); 
+        return dt.Item1.ToModelList<FormElementInfo>();
     }
 }

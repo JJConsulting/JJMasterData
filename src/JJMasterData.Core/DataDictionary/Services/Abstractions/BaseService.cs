@@ -35,8 +35,7 @@ public abstract class BaseService
 
     public FormElement GetFormElement(string dictionaryName)
     {
-        var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
-        return dicParser.GetFormElement();
+        return DataDictionaryRepository.GetMetadata(dictionaryName);
     }
 
     public bool ValidateName(string name)

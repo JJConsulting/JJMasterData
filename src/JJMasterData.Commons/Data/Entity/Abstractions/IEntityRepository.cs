@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Commons.Data.Entity.Abstractions;
 
@@ -28,6 +29,9 @@ public interface IEntityRepository
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
+    
+    /// <inheritdoc cref="GetListFieldsAsText"/>
+    // public Task<string> GetListFieldsAsTextAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
 
     /// <summary>
     /// Returns records from the database based on the filter.    
@@ -44,6 +48,9 @@ public interface IEntityRepository
     /// </returns>
     public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
+    /// <inheritdoc cref="GetDataTable(Element, IDictionary, string , int ,int , ref int)"/>
+    public Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int totalRecords);
+    
     /// <summary>
     /// Returns records from the database based on the filter.  
     /// </summary>
@@ -55,6 +62,11 @@ public interface IEntityRepository
     /// </returns>
     public DataTable GetDataTable(Element element, IDictionary filters);
 
+    
+    /// <inheritdoc cref=" GetDataTable(Element, IDictionary)"/>
+    public Task<DataTable> GetDataTableAsync(Element element, IDictionary filters);
+
+    
     /// <summary>
     /// Returns first record based on filter.  
     /// </summary>
@@ -66,6 +78,9 @@ public interface IEntityRepository
     /// </returns>
     public Hashtable GetFields(Element element, IDictionary filters);
 
+    /// <inheritdoc cref=" GetFieldsAsync(Element, IDictionary)"/>
+    public Task<Hashtable> GetFieldsAsync(Element element, IDictionary filters);
+    
     /// <summary>
     /// Returns the number of records in the database
     /// </summary>
@@ -76,6 +91,9 @@ public interface IEntityRepository
     /// </returns>
     public int GetCount(Element element, IDictionary filters);
 
+    /// <inheritdoc cref=" GetCount(Element, IDictionary)"/>
+    public Task<int> GetCountAsync(Element element, IDictionary filters);
+    
     /// <summary>
     /// Update a record in the database 
     /// [key(database field name), value(value to be stored in the database)].
@@ -85,6 +103,9 @@ public interface IEntityRepository
     /// <returns>Return the number of the rows affected</returns>
     public int Update(Element element, IDictionary values);
 
+    /// <inheritdoc cref="Update(Element, IDictionary)"/>
+    public Task<int> UpdateAsync(Element element, IDictionary values);
+    
     /// <summary>
     /// Delete records based on filter.  
     /// [key(database field), valor(value stored in database)].
@@ -94,6 +115,9 @@ public interface IEntityRepository
     /// <returns>Return the number of the rows affected</returns>
     public int Delete(Element element, IDictionary filters);
 
+    /// <inheritdoc cref="Delete(Element, IDictionary)"/>
+    public Task<int> DeleteAsync(Element element, IDictionary filters);
+    
     /// <summary>
     /// Add a record to the database.
     /// Return the id in the values ​​field as a reference
@@ -105,7 +129,10 @@ public interface IEntityRepository
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
     public void Insert(Element element, IDictionary values);
-
+    
+    /// <inheritdoc cref="Insert(Element, IDictionary)"/>
+    public Task InsertAsync(Element element, IDictionary values);
+    
     /// <summary>
     /// Insert or Update a record in the database.
     /// If it exists then update it, otherwise add.
@@ -119,6 +146,9 @@ public interface IEntityRepository
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
     public CommandOperation SetValues(Element element, IDictionary values);
+    
+    /// <inheritdoc cref="SetValues(Element, IDictionary)"/>
+    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary values);
 
     /// <summary>
     /// Set a record in the database.
@@ -135,12 +165,18 @@ public interface IEntityRepository
     /// </remarks>
     public CommandOperation SetValues(Element element, IDictionary values, bool ignoreResults);
 
+    /// <inheritdoc cref="SetValues(Element, IDictionary, bool)"/>
+    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary values, bool ignoreResults);
+    
     /// <summary>
     /// Create an element's tables and procedures
     /// </summary>
     /// <param name="element">Element with table data</param>
     public void CreateDataModel(Element element);
-
+    
+    /// <inheritdoc cref="CreateDataModel"/>
+    public Task CreateDataModelAsync(Element element);
+    
     /// <summary>
     /// Build a struture script to create table
     /// </summary>
@@ -161,6 +197,9 @@ public interface IEntityRepository
     /// </summary>
     public Element GetElementFromTable(string tableName);
 
+    /// <inheritdoc cref="GetElementFromTable(string)"/>
+    public Task<Element> GetElementFromTableAsync(string tableName);
+    
     ///<summary>
     ///Returns DataTable object populated by a query with parameters
     ///</summary>
@@ -170,6 +209,9 @@ public interface IEntityRepository
     ///</remarks>
     public DataTable GetDataTable(string sql);
 
+    /// <inheritdoc cref="GetDataTable(string)"/>
+    public Task<DataTable> GetDataTableAsync(string sql);
+    
     /// <summary>
     /// Returns a single sql command value with parameters
     /// </summary>
@@ -177,11 +219,18 @@ public interface IEntityRepository
     /// It's used to return sql expressions commands
     /// </remarks>
     public object GetResult(string sql);
+    
+        
+    /// <inheritdoc cref="GetResult"/>
+    public Task<object> GetResultAsync(string sql);
 
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
     public bool TableExists(string tableName);
+    
+    /// <inheritdoc cref="TableExists(string)"/>
+    public Task<bool> TableExistsAsync(string tableName);
 
     /// <summary>
     /// Execute the command in the database.
@@ -191,13 +240,20 @@ public interface IEntityRepository
     /// </remarks>
     public void SetCommand(string sql);
 
+    /// <inheritdoc cref="SetCommand(string)"/>
+    public Task SetCommandAsync(string sql);
+    
     /// <summary>
     /// Runs one or more commands on the database with transactions.
-    /// </summary>
+    /// </summary>>
     /// <remarks>
     /// It's used to run delete scripts
     /// </remarks>
     public int SetCommand(IEnumerable<string> sqlList);
+    
+        
+    /// <inheritdoc cref="SetCommand(IEnumerable)"/>
+    public Task<int> SetCommandAsync(IEnumerable<string> sqlList);
 
     /// <summary>
     /// Executes a database script.
@@ -205,4 +261,7 @@ public interface IEntityRepository
     /// <returns>Retorns true if the execution is successful.</returns>
     /// <remarks>It's used to exec struture scripts</remarks> 
     public bool ExecuteBatch(string script);
+    
+    /// <inheritdoc cref="ExecuteBatch"/>
+    public Task<bool> ExecuteBatchAsync(string script);
 }

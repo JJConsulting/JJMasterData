@@ -14,27 +14,23 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new();
-    
-    [DataMember(Name = "title")]
     public string Title { get; set; }
     
-    [DataMember(Name = "subTitle")]
     public string SubTitle { get; set; }
     
-    [DataMember(Name = "fields")]
     public new FormElementList Fields { get; private set; }
-
-    [DataMember(Name = "panels")]
+    
     public List<FormElementPanel> Panels { get; set; }
-
-    [DataMember(Name = "relations")]
+    
     public new FormElementRelationshipList Relationships { get; set; }
-
+    
+    public FormElementOptions Options { get; set; }
+    
     public FormElement()
     {
-        Fields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields);
         Panels = new List<FormElementPanel>();
+        Options = new FormElementOptions();
         Relationships = new FormElementRelationshipList(base.Relationships);
     }
 
@@ -52,7 +48,7 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        Fields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields);
         Panels = new List<FormElementPanel>();
         foreach (var f in element.Fields)
         {
@@ -122,8 +118,7 @@ public class FormElement : Element
 
     protected void AddField(ElementField field)
     {
-        base.Fields.Add(field);
-        _formFields.Add(new FormElementField(field));
+        Fields.Add(new FormElementField(field));
     }
 
     public FormElementPanel GetPanelById(int id)

@@ -60,7 +60,7 @@ namespace JJMasterData.Core.Web.Factories
             var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
             
             var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(elementName);
-            formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+            formEvent?.OnMetadataLoad(dataContext, new FormEventLoadEventArgs(metadata));
 
             if (formEvent != null) 
                 dataImp.OnBeforeImport += formEvent.OnBeforeImport;

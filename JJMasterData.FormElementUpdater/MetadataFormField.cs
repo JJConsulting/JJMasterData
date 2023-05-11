@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
+using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater;
 
 [DataContract]
 public class MetadataFormField

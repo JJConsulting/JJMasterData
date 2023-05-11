@@ -35,7 +35,7 @@ internal static class FormFactory
         var metadata = dictionaryRepository.GetMetadata(elementName);
         
         var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
-        formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+        formEvent?.OnMetadataLoad(dataContext, new FormEventLoadEventArgs(metadata));
         
         form.FormElement = metadata.GetFormElement();
         SetFormOptions(form, metadata.Options);

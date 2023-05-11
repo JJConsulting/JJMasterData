@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -22,7 +23,7 @@ public abstract class BaseProvider
     public abstract string GetWriteProcedureScript(Element element);
     public abstract string GetReadProcedureScript(Element element);
     public abstract Element GetElementFromTable(string tableName);
-
+    public abstract Task<Element> GetElementFromTableAsync(string tableName);
     public abstract DataAccessCommand GetInsertCommand(Element element, IDictionary values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, IDictionary values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary filters);
@@ -38,6 +39,23 @@ public abstract class BaseProvider
         if (newFields == null)
             return;
 
+        SetInsertValues(element, values, newFields);
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
+    public async Task InsertAsync(Element element, IDictionary values)
+    {
+        var command = GetInsertCommand(element, values);
+        var newFields = await DataAccess.GetFieldsAsync(command);
+
+        if (newFields == null)
+            return;
+
+        SetInsertValues(element, values, newFields);
+    }
+
+    private static void SetInsertValues(Element element, IDictionary values, Hashtable newFields)
+    {
         foreach (DictionaryEntry entry in newFields)
         {
             if (element.Fields.ContainsKey(entry.Key.ToString()))
@@ -57,14 +75,40 @@ public abstract class BaseProvider
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
+    
+    
+    ///<inheritdoc cref="IEntityRepository.Update(Element, IDictionary)"/>
+    public async Task<int> UpdateAsync(Element element, IDictionary values)
+    {
+        var cmd = GetUpdateCommand(element, values);
+        int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
+        return numberRowsAffected;
+    }
 
     ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary)"/>
     public CommandOperation SetValues(Element element, IDictionary values)
     {
-        var commandType = CommandOperation.None;
+        const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
         var newFields = DataAccess.GetFields(command);
 
+        return GetCommandOperation(element, values, command, commandType, newFields);
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary)"/>
+    public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary values)
+    {
+        const CommandOperation commandType = CommandOperation.None;
+        var command = GetInsertOrReplaceCommand(element, values);
+        var newFields = await DataAccess.GetFieldsAsync(command);
+
+        return GetCommandOperation(element, values, command, commandType, newFields);
+    }
+
+
+    private static CommandOperation GetCommandOperation(Element element, IDictionary values, DataAccessCommand command,
+        CommandOperation commandType, Hashtable newFields)
+    {
         var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
 
         if (ret.Value != DBNull.Value)
@@ -80,13 +124,10 @@ public abstract class BaseProvider
             commandType = (CommandOperation)nret;
         }
 
-        if (newFields == null) 
+        if (newFields == null)
             return commandType;
-        foreach (DictionaryEntry entry in newFields)
+        foreach (var entry in newFields.Cast<DictionaryEntry>().Where(entry => element.Fields.ContainsKey(entry.Key.ToString())))
         {
-            if (!element.Fields.ContainsKey(entry.Key.ToString())) 
-                continue;
-
             if (values.Contains(entry.Key))
                 values[entry.Key] = entry.Value;
 
@@ -105,6 +146,15 @@ public abstract class BaseProvider
 
         return SetValues(element, values);
     }
+    
+    ///<inheritdoc cref="IEntityRepository.SetValues(Element, IDictionary, bool)"/>
+    public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary values, bool ignoreResults)
+    {
+        if (ignoreResults)
+            return await SetValuesNoResultAsync(element, values);
+
+        return await SetValuesAsync(element, values);
+    }
 
     ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
     public int Delete(Element element, IDictionary filters)
@@ -113,14 +163,31 @@ public abstract class BaseProvider
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
+    
+    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
+    public async Task<int> DeleteAsync(Element element, IDictionary filters)
+    {
+        var cmd = GetDeleteCommand(element, filters);
+        int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
+        return numberRowsAffected;
+    }
 
     ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
     public Hashtable GetFields(Element element, IDictionary filters)
     {
-        DataAccessParameter pTot =
+        var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, "", 1, 1, ref pTot);
+        var cmd = GetReadCommand(element, filters, "", 1, 1, ref total);
         return DataAccess.GetFields(cmd);
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
+    public async Task<Hashtable> GetFieldsAsync(Element element, IDictionary filters)
+    {
+        var total =
+            new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var cmd = GetReadCommand(element, filters, "", 1, 1, ref total);
+        return await DataAccess.GetFieldsAsync(cmd);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Data.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
@@ -132,39 +199,87 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
-        DataAccessParameter pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
-        DataTable dt = DataAccess.GetDataTable(cmd);
+        var dt = DataAccess.GetDataTable(cmd);
         tot = 0;
-        if (pTot != null && pTot.Value != null && pTot.Value != DBNull.Value)
+        if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
             tot = (int)pTot.Value;
 
         return dt;
+    }
+    
+    
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Data.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
+    {
+        if (element == null)
+            throw new ArgumentNullException(nameof(element));
+
+        if (!ValidateOrderByClause(element, orderBy))
+            throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
+
+        var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
+        var dt = await DataAccess.GetDataTableAsync(cmd);
+        total = 0;
+        if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
+            total = (int)pTot.Value;
+
+        return (dt, total);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
     public DataTable GetDataTable(Element element, IDictionary filters)
     {
-        int tot = 1;
+        var tot = 1;
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
+    public async Task<DataTable> GetDataTableAsync(Element element, IDictionary filters)
+    {
+        const int total = 1;
+        return (await GetDataTableAsync(element, filters, null, int.MaxValue, 1, total)).Item1;
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
     public int GetCount(Element element, IDictionary filters)
     {
-        int tot = 0;
+        var tot = 0;
         GetDataTable(element, filters, null, 1, 1, ref tot);
         return tot;
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
+    public async Task<int> GetCountAsync(Element element, IDictionary filters)
+    {
+        var tot = 0;
+        var tuple = await GetDataTableAsync(element, filters, null, 1, 1, tot);
+        return tuple.Item2;
     }
 
     ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
     public void CreateDataModel(Element element)
     {
-        var scriptSql = new StringBuilder();
-        scriptSql.AppendLine(GetCreateTableScript(element));
-        scriptSql.AppendLine(GetWriteProcedureScript(element));
-        scriptSql.AppendLine(GetReadProcedureScript(element));
-        DataAccess.ExecuteBatch(scriptSql.ToString());
+        var sqlScripts = GetDataModelScripts(element);
+        DataAccess.ExecuteBatch(sqlScripts);
+    }
+    
+    ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
+    public async Task CreateDataModelAsync(Element element)
+    {
+        var sqlScripts = GetDataModelScripts(element);
+        await DataAccess.ExecuteBatchAsync(sqlScripts);
+    }
+
+    private string GetDataModelScripts(Element element)
+    {
+        var sqlScripts = new StringBuilder();
+        sqlScripts.AppendLine(GetCreateTableScript(element));
+        sqlScripts.AppendLine(GetWriteProcedureScript(element));
+        sqlScripts.AppendLine(GetReadProcedureScript(element));
+        return sqlScripts.ToString();
     }
 
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
@@ -184,13 +299,13 @@ public abstract class BaseProvider
         return plainTextWriter.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage);
     }
 
-    private bool ValidateOrderByClause(Element element, string orderBy)
+    private static bool ValidateOrderByClause(Element element, string orderBy)
     {
         if (string.IsNullOrEmpty(orderBy))
             return true;
 
         var clauses = orderBy.Split(',');
-        foreach (string clause in clauses)
+        foreach (var clause in clauses)
         {
             if (!string.IsNullOrEmpty(clause))
             {
@@ -208,14 +323,29 @@ public abstract class BaseProvider
 
     private CommandOperation SetValuesNoResult(Element element, IDictionary values)
     {
-        var ret = CommandOperation.None;
+        const CommandOperation result = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
         DataAccess.SetCommand(command);
 
+        return GetCommandFromValuesNoResult(element, command, result);
+    }
+    
+    private async Task<CommandOperation> SetValuesNoResultAsync(Element element, IDictionary values)
+    {
+        const CommandOperation result = CommandOperation.None;
+        var command = GetInsertOrReplaceCommand(element, values);
+        await DataAccess.SetCommandAsync(command);
+
+        return GetCommandFromValuesNoResult(element, command, result);
+    }
+    
+    private static CommandOperation GetCommandFromValuesNoResult(Element element, DataAccessCommand command,
+        CommandOperation ret)
+    {
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
         if (oret.Value != DBNull.Value)
         {
-            if (!int.TryParse(oret.Value.ToString(), out var nret))
+            if (!int.TryParse(oret.Value.ToString(), out var result))
             {
                 string err = Translate.Key("Element");
                 err += " " + element.Name;
@@ -223,9 +353,11 @@ public abstract class BaseProvider
                 throw new JJMasterDataException(err);
             }
 
-            ret = (CommandOperation)nret;
+            ret = (CommandOperation)result;
         }
 
         return ret;
     }
+
+
 }
