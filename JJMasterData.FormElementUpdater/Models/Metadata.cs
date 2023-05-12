@@ -2,8 +2,6 @@
 
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.FormElementUpdater.Models;

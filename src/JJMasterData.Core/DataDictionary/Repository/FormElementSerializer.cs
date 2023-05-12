@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.Serializers;
+namespace JJMasterData.Core.DataDictionary.Repository;
 
 public static class FormElementSerializer
 {

@@ -1,46 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataDictionary.Serializers;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
 public class SqlDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly IOptions<JJMasterDataCoreOptions> _options;
-    private Element _masterDataElement;
-
-    internal Element MasterDataElement
-    {
-        get
-        {
-            if (_masterDataElement == null)
-            {
-                string tableName = _options.Value.DataDictionaryTableName;
-                _masterDataElement = DataDictionaryStructure.GetElement(tableName);
-            }
-
-            return _masterDataElement;
-        }
-    }
+    internal Element MasterDataElement { get;  }
 
     public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
-        _options = options;
+        MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
@@ -81,14 +62,14 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         FormElement currentParser = null;
         foreach (DataRow row in dt.Rows)
         {
-            string name = row["name"].ToString();
+            var name = row["name"].ToString();
             if (!currentName.Equals(name))
             {
                 currentName = name;
                 list.Add(new FormElement());
             }
 
-            string json = row["json"].ToString();
+            var json = row["json"].ToString();
             currentParser = row["type"].ToString()! switch
             {
                 "F" => FormElementSerializer.Deserialize(json),
@@ -131,9 +112,10 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
 
-        var filter = new Hashtable { { "name", dictionaryName } };
-        var dataTable = _entityRepository.GetDataTable(MasterDataElement, filter);
-        return GetFormElementFromDataTable(dictionaryName, dataTable);
+        var filter = new Hashtable { { "name", dictionaryName },{"type", "F"} };
+        var model = _entityRepository.GetFields(MasterDataElement, filter).ToModel<DataDictionaryModel>();
+
+        return FormElementSerializer.Deserialize(model.Json);
     }
 
     public async Task<FormElement> GetMetadataAsync(string dictionaryName)
@@ -141,30 +123,10 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
 
-        var filter = new Hashtable { { "name", dictionaryName } };
-        var dataTable = await _entityRepository.GetDataTableAsync(MasterDataElement, filter);
+        var filter = new Hashtable { { "name", dictionaryName },{"type", "F"} };
+        var model = (await _entityRepository.GetFieldsAsync(MasterDataElement, filter)).ToModel<DataDictionaryModel>();
 
-        return GetFormElementFromDataTable(dictionaryName, dataTable);
-    }
-
-    private static FormElement GetFormElementFromDataTable(string dictionaryName, DataTable dataTable)
-    {
-        if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
-
-        var formElement = new FormElement();
-        foreach (DataRow row in dataTable.Rows)
-        {
-            string json = row["json"].ToString();
-
-            formElement = row["type"].ToString() switch
-            {
-                "F" => FormElementSerializer.Deserialize(json),
-                _ => formElement
-            };
-        }
-
-        return formElement;
+        return FormElementSerializer.Deserialize(model.Json);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
@@ -193,11 +155,11 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(formElement.Name))
             throw new ArgumentNullException(nameof(formElement.Name));
 
-        string name = formElement.Name;
+        var name = formElement.Name;
 
-        DateTime dNow = DateTime.Now;
+        var dNow = DateTime.Now;
 
-        string jsonForm = FormElementSerializer.Serialize(formElement);
+        var jsonForm = FormElementSerializer.Serialize(formElement);
 
         var values = new Hashtable
         {
@@ -266,7 +228,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             throw new ArgumentNullException(nameof(elementName));
 
         var filter = new Hashtable { { "name", elementName } };
-        int count = _entityRepository.GetCount(MasterDataElement, filter);
+        var count = _entityRepository.GetCount(MasterDataElement, filter);
         return count > 0;
     }
 
@@ -276,7 +238,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             throw new ArgumentNullException(nameof(dictionaryName));
 
         var filter = new Hashtable { { "name", dictionaryName } };
-        int count = await _entityRepository.GetCountAsync(MasterDataElement, filter);
+        var count = await _entityRepository.GetCountAsync(MasterDataElement, filter);
         return count > 0;
     }
 

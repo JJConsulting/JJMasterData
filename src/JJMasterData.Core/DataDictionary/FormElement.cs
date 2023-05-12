@@ -18,13 +18,15 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElement : Element
 {
     public string? Title { get; set; }
-    
+
     public string? SubTitle { get; set; }
     
     [Required]
+    [DataMember(Name = "fields")]
     public new FormElementList Fields { get; private set; }
     
     [Required]
+    [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
     
     [Required]

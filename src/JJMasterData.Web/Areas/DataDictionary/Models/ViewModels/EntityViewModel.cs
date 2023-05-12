@@ -13,6 +13,13 @@ public class EntityViewModel : DataDictionaryViewModel
     public object HtmlAttributes =>
         ReadOnly ? new { @class = "form-control", disabled="disabled"} : new { @class = "form-control" };
 
+    // ReSharper disable once UnusedMember.Global
+    // Reason: Used for model binding.
+    public EntityViewModel()
+    {
+        
+    }
+    
     public EntityViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
     {
     }
