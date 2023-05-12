@@ -12,7 +12,7 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElementFieldActions
 {
-    [JsonProperty("command")]
+    [JsonProperty]
     private List<SqlCommandAction> CommandActions { get; set; }
     
     [JsonProperty]
