@@ -31,7 +31,7 @@ public class DictionariesControllerTest
     {
         var dictionaries = _controller.GetAll().Value;
 
-        Assert.IsType<Metadata[]>(dictionaries);
+        Assert.IsType<FormElement[]>(dictionaries);
     }
     
     [Theory]
@@ -40,7 +40,7 @@ public class DictionariesControllerTest
     {
         var dictionary = _controller.Get(id);
 
-        Assert.IsType<Metadata>(dictionary);
-        Assert.Equal(id,dictionary.Table.Name);
+        Assert.IsType<FormElement>(dictionary);
+        Assert.Equal(id,dictionary.Name);
     }
 }

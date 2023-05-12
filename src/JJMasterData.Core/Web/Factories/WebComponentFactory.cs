@@ -55,18 +55,18 @@ namespace JJMasterData.Core.Web.Factories
                 throw new ArgumentNullException(nameof(elementName));
 
             var dicDao = JJServiceCore.DataDictionaryRepository;
-            var metadata = dicDao.GetMetadata(elementName);
+            var formElement = dicDao.GetMetadata(elementName);
             
             var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
             
             var formEvent = JJServiceCore.FormEventResolver.GetFormEvent(elementName);
-            formEvent?.OnMetadataLoad(dataContext, new FormEventLoadEventArgs(metadata));
+            formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
 
             if (formEvent != null) 
                 dataImp.OnBeforeImport += formEvent.OnBeforeImport;
-            
-            dataImp.FormElement = metadata.GetFormElement();
-            dataImp.ProcessOptions = metadata.Options.ToolBarActions.ImportAction.ProcessOptions;
+
+            dataImp.FormElement = formElement;
+            dataImp.ProcessOptions = formElement.Options.ToolBarActions.ImportAction.ProcessOptions;
         }
         
         internal static void SetDataImpParams(JJDataImp dataImp, FormElement formElement)

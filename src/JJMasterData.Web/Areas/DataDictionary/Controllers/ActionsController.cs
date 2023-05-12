@@ -50,8 +50,7 @@ public class ActionsController : DataDictionaryController
                 action = metadata.Options.ToolBarActions.Get(actionName);
                 break;
             case ActionSource.Field:
-                var formElement = metadata.GetFormElement();
-                action = formElement.Fields[fieldName].Actions.Get(actionName);
+                action = metadata.Fields[fieldName].Actions.Get(actionName);
                 break;
         }
 

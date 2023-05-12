@@ -107,8 +107,7 @@ public class FieldController : DataDictionaryController
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
 
-        var formElement = dictionary.GetFormElement();
-        PopulateViewBag(formElement, field);
+        PopulateViewBag(dictionary, field);
         return View("Index", field);
     }
 

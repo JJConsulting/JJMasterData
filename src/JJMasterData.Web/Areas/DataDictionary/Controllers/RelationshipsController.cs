@@ -157,8 +157,8 @@ public class RelationshipsController : DataDictionaryController
         }
         else
         {
-            var dicParser = _relationshipsService.DataDictionaryRepository.GetMetadata(childDictionaryName);
-            selectList.AddRange(dicParser.Table.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
+            var formElement = _relationshipsService.DataDictionaryRepository.GetMetadata(childDictionaryName);
+            selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
         return selectList;
@@ -212,7 +212,7 @@ public class RelationshipsController : DataDictionaryController
         string dictionaryName,
         int id)
     {
-        var formElement = (FormElement)_relationshipsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = _relationshipsService.DataDictionaryRepository.GetMetadata(dictionaryName);
 
         var relationship = formElement.Relationships.GetById(id);
         

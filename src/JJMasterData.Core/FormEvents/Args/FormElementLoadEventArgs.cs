@@ -3,11 +3,11 @@ using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
-public class FormEventLoadEventArgs : EventArgs
+public class FormElementLoadEventArgs : EventArgs
 {
     public FormElement FormElement { get; }
     
-    public FormEventLoadEventArgs(FormElement formElement)
+    public FormElementLoadEventArgs(FormElement formElement)
     {
         FormElement = formElement;
     }

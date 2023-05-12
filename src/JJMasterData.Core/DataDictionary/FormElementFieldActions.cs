@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Action;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -11,16 +12,16 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElementFieldActions
 {
-    [DataMember(Name = "commandActions")]
+    [JsonProperty("command")]
     private List<SqlCommandAction> CommandActions { get; set; }
-
-    [DataMember(Name = "urlRedirectActions")]
+    
+    [JsonProperty]
     private List<UrlRedirectAction> UrlRedirectActions { get; set; }
 
-    [DataMember(Name = "internalActions")]
+    [JsonProperty]
     private List<InternalAction> InternalActions { get; set; }
-
-    [DataMember(Name = "scriptActions")]
+    
+    [JsonProperty]
     private List<ScriptAction> ScriptActions { get; set; }
 
     public FormElementFieldActions()

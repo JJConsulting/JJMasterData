@@ -24,7 +24,7 @@ public class UIOptionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Edit(MetadataOptions uIMetadataOptions, string dictionaryName)
+    public ActionResult Edit(FormElementOptions uIMetadataOptions, string dictionaryName)
     {
         if (_optionsService!.EditOptions(uIMetadataOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
@@ -37,7 +37,7 @@ public class UIOptionsController : DataDictionaryController
         return View(uIMetadataOptions);
     }
 
-    private MetadataOptions Populate(string dictionaryName)
+    private FormElementOptions Populate(string dictionaryName)
     {
         var dicParser = _optionsService!.DataDictionaryRepository.GetMetadata(dictionaryName);
         var uIOptions = dicParser.Options;

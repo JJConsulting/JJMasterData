@@ -9,12 +9,9 @@ internal static class MongoDBFormElementMapper
     {
         return new MongoDBFormElement
         {
-            //todo;
+            LastModified = DateTime.Now
         };
     }
     
-    public static FormElement FromMongoDBMetadata(MongoDBFormElement mongoDBFormElement)
-    {
-        return mongoDBFormElement;
-    }
+
 }

@@ -12,5 +12,5 @@ public abstract class BaseFormEvent : IFormEvent
     public virtual void OnBeforeImport(object sender, FormBeforeActionEventArgs args) { }
     public virtual void OnBeforeInsert(object sender, FormBeforeActionEventArgs args) { }
     public virtual void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args) { }
-    public virtual void OnMetadataLoad(object sender, FormEventLoadEventArgs args) {}
+    public virtual void OnFormElementLoad(object sender, FormElementLoadEventArgs args) {}
 }

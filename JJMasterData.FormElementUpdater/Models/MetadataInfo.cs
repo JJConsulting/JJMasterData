@@ -1,6 +1,7 @@
+#nullable disable
 using System.Runtime.Serialization;
 
-namespace JJMasterData.FormElementUpdater;
+namespace JJMasterData.FormElementUpdater.Models;
 
 [Serializable]
 [DataContract]

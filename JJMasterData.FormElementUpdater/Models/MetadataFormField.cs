@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿#nullable disable
+
+using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.FormElementUpdater;
+namespace JJMasterData.FormElementUpdater.Models;
 
 [DataContract]
 public class MetadataFormField

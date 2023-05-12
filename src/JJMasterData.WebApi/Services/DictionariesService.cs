@@ -37,7 +37,7 @@ public class DictionariesService
     public DicSyncInfo GetSyncInfo(string userId, DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
     {
         if (listSync == null)
-            throw new ArgumentNullException(nameof(DicSyncParam));
+            throw new ArgumentNullException(nameof(listSync));
 
         if (listSync.Length == 0)
             throw new ArgumentException(Translate.Key("DicSyncParam invalid"));
@@ -52,14 +52,14 @@ public class DictionariesService
         foreach (var os in listSync)
         {
             var dStartObj = DateTime.Now;
-            var dictionary = dictionaries.First(x => x.Table.Name.Equals(os.Name));
+            var dictionary = dictionaries.First(x => x.Name.Equals(os.Name));
             if (dictionary == null)
                 throw new JJMasterDataException(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
 
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
             var info = new DicSyncInfoElement();
             info.Name = os.Name;
-            info.RecordSize = _entityRepository.GetCount(dictionary.Table, filters);
+            info.RecordSize = _entityRepository.GetCount(dictionary, filters);
             totRecords += info.RecordSize;
 
             TimeSpan tsObj = DateTime.Now - dStartObj;
@@ -96,15 +96,15 @@ public class DictionariesService
         return syncInfo;
     }
 
-    private Hashtable GetSyncInfoFilter(string? userId, Metadata metadata, Hashtable? metadataFilters)
+    private Hashtable GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
     {
         var filters = new Hashtable();
-        var fields = metadata.Table.Fields;
+        var fields = metadata.Fields;
         if (metadataFilters != null)
         {
             foreach (DictionaryEntry osFilter in metadataFilters)
             {
-                if (!fields.ContainsKey(osFilter.Key.ToString()))
+                if (!fields.Contains(osFilter.Key.ToString()))
                     continue;
 
                 filters.Add(fields[osFilter.Key.ToString()].Name, osFilter.Value);
@@ -122,7 +122,7 @@ public class DictionariesService
         else
         {
             if (!filters[fieldApplyUser]!.ToString()!.Equals(userId))
-                throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", metadata.Table.Name));
+                throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", metadata.Name));
         }
 
         return filters;

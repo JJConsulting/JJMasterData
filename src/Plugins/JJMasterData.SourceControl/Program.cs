@@ -28,7 +28,8 @@ var path = configuration.GetValue<string>("DictionaryPath");
 var serviceProvider = services.BuildServiceProvider().UseJJMasterData();
 
 Console.WriteLine(AppContext.BaseDirectory);
-Console.WriteLine("Starting Process...\n");
+Console.WriteLine(@"Starting Process...
+");
 
 var start = DateTime.Now;
 
@@ -46,7 +47,7 @@ if (path != null)
 
         if (dicParser != null)
         {
-            Console.WriteLine($"SetDictionary: {dicParser.Name}");
+            Console.WriteLine($@"SetDictionary: {dicParser.Name}");
             repository.InsertOrReplace(dicParser);
 
             folderDictionaries.Add(dicParser);
@@ -58,12 +59,13 @@ foreach (var dicParser in databaseDictionaries)
 {
     if (!folderDictionaries.Exists(dic => dic.Name.Equals(dicParser.Name)))
     {
-        Console.WriteLine($"DelDictionary: {dicParser.Name}");
+        Console.WriteLine($@"DelDictionary: {dicParser.Name}");
         repository.Delete(dicParser.Name);
 
     }
 }
 
-Console.WriteLine($"\nProcess started: {start}");
-Console.WriteLine($"Process finished: {DateTime.Now}");
+Console.WriteLine($@"
+Process started: {start}");
+Console.WriteLine($@"Process finished: {DateTime.Now}");
 Console.ReadLine();

@@ -36,7 +36,7 @@ public class ElementService : BaseService
     public List<string> GetScriptsDictionary(string id)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(id);
-        var element = dictionary.Table;
+        var element = dictionary;
         var listScripts = new List<string>
         {
             _entityRepository.GetScriptCreateTable(element),
@@ -51,7 +51,7 @@ public class ElementService : BaseService
     public void ExecScripts(string id, string scriptExec)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(id);
-        var element = dictionary.Table;
+        var element = dictionary;
 
         switch (scriptExec)
         {
@@ -88,7 +88,7 @@ public class ElementService : BaseService
         }
         else
         {
-            element  = new Element
+            element  = new FormElement
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
@@ -96,14 +96,8 @@ public class ElementService : BaseService
                 CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
             };
         }
-        
-        var metadata = new Metadata
-        {
-            Table = element.DeepCopy(),
-            Form = importFields ? new MetadataForm(new FormElement(element)) : new MetadataForm()
-        };
 
-        DataDictionaryRepository.InsertOrReplace(metadata);
+        DataDictionaryRepository.InsertOrReplace(new FormElement(element));
 
         return element;
     }
@@ -156,7 +150,7 @@ public class ElementService : BaseService
         if (ValidateEntity(newName))
         {
             var dicParser = DataDictionaryRepository.GetMetadata(originName);
-            dicParser.Table.Name = newName;
+            dicParser.Name = newName;
             DataDictionaryRepository.InsertOrReplace(dicParser);
 
         }
@@ -241,7 +235,7 @@ public class ElementService : BaseService
         var dicParser = DataDictionaryRepository.GetMetadata(dicName);
         var propsBuilder = new StringBuilder();
 
-        foreach (var item in dicParser.Table.Fields.ToList())
+        foreach (var item in dicParser.Fields.ToList())
         {
             var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
@@ -256,7 +250,7 @@ public class ElementService : BaseService
 
         var resultClass = new StringBuilder();
 
-        resultClass.AppendLine($"public class {dicParser.Table.Name}" + "\r\n{");
+        resultClass.AppendLine($"public class {dicParser.Name}" + "\r\n{");
         resultClass.AppendLine(propsBuilder.ToString());
         resultClass.AppendLine("\r\n}");
 
@@ -320,10 +314,13 @@ public class ElementService : BaseService
     {
         file.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(file);
-        var dicParser = JsonConvert.DeserializeObject<Metadata>(reader.ReadToEnd());
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        var dicParser = JsonConvert.DeserializeObject<FormElement>(reader.ReadToEnd());
+        
         //TODO: Validation
-        //AddError("Name", "Campo nome do dicionário obrigatório");
+        //FormElement.Validate()
+        
+        DataDictionaryRepository.InsertOrReplace(dicParser);
+
 
         return IsValid;
     }

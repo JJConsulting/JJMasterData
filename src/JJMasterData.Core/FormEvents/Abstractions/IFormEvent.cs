@@ -11,5 +11,5 @@ public interface IFormEvent
     public void OnAfterInsert(object sender, FormAfterActionEventArgs args);
     public void OnAfterUpdate(object sender, FormAfterActionEventArgs args);
     public void OnAfterDelete(object sender, FormAfterActionEventArgs args);
-    public void OnMetadataLoad(object sender, FormEventLoadEventArgs args);
+    public void OnFormElementLoad(object sender, FormElementLoadEventArgs args);
 }

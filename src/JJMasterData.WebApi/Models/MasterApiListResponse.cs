@@ -21,7 +21,7 @@ public class MasterApiListResponse
     public Dictionary<string, object?>[]? Fields { get; set; }
 
 
-    public void SetDataTableValues(Metadata metadata, DataTable? dataTable)
+    public void SetDataTableValues(FormElement formElement, DataTable? dataTable)
     {
         if (dataTable == null)
             return;
@@ -30,9 +30,9 @@ public class MasterApiListResponse
         foreach(DataRow row in dataTable.Rows)
         {
             var cols = new Dictionary<string, object?>();
-            foreach(var field in metadata.Table.Fields)
+            foreach(var field in formElement.Fields)
             {
-                string fieldName = metadata.ApiOptions.GetFieldNameParsed(field.Name);
+                string fieldName = formElement.ApiOptions.GetFieldNameParsed(field.Name);
                 object val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);

@@ -1,7 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿#nullable disable
+using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
 
-namespace JJMasterData.FormElementUpdater;
+namespace JJMasterData.FormElementUpdater.Models;
 
 [Serializable]
 [DataContract]

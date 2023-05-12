@@ -6,6 +6,7 @@ namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 /// <summary>
 /// The repository of Data Dictionaries (metadata)
 /// </summary>
+/// BREAKING_CHANGE: Rename this to IFormElementRepository
 public interface IDataDictionaryRepository
 {
     /// <summary>

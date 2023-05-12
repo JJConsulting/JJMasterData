@@ -16,8 +16,7 @@ public class PanelService : BaseService
 
     public void SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
 
         if (selectedFields?.Length == 0)
         {
@@ -60,9 +59,8 @@ public class PanelService : BaseService
                     field.PanelId = 0;
             }
         }
-
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        
+        DataDictionaryRepository.InsertOrReplace(formElement);
     }
 
     public bool ValidatePanel(FormElementPanel panel)
@@ -83,13 +81,13 @@ public class PanelService : BaseService
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        for (int i = 0; i < dictionary.Form.Panels.Count; i++)
+        for (int i = 0; i < dictionary.Panels.Count; i++)
         {
-            if (dictionary.Form.Panels[i].PanelId == panelId)
-                dictionary.Form.Panels.Remove(dictionary.Form.Panels[i]);
+            if (dictionary.Panels[i].PanelId == panelId)
+                dictionary.Panels.Remove(dictionary.Panels[i]);
         }
 
-        foreach (var f in dictionary.Form.FormFields)
+        foreach (var f in dictionary.Fields)
         {
             if (f.PanelId == panelId)
                 f.PanelId = 0;
@@ -102,8 +100,7 @@ public class PanelService : BaseService
 
     public bool SortPanels(string elementName, string[] orderFields)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
         {
@@ -115,20 +112,19 @@ public class PanelService : BaseService
         {
             formElement.Panels[i] = newList[i];
         }
-
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return true;
     }
 
     public FormElementPanel CopyPanel(string dictionaryName, FormElementPanel panel)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
         var newPanel = panel.DeepCopy();
-        newPanel.PanelId = 1 + dictionary.Form.Panels.Max(x => x.PanelId);
-        dictionary.Form.Panels.Add(newPanel);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
+        formElement.Panels.Add(newPanel);
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return newPanel;
     }

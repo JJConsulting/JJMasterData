@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -169,12 +170,14 @@ public class FormElementField : ElementField
     /// <summary>
     /// Minimum value for number components
     /// </summary>
+    [Obsolete("TODO Gustavo: Mover para atributos")]
     [DataMember(Name = "minValue")]
     public float? MinValue { get; set; }
     
     /// <summary>
     /// Maximum value for number components
     /// </summary>
+    [Obsolete("TODO Gustavo: Mover para atributos")]
     [DataMember(Name = "maxValue")]
     public float? MaxValue { get; set; }
     

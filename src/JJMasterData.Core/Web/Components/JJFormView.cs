@@ -468,14 +468,14 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var dicParser = JJServiceCore.DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(dicParser.GetFormElement())
+        var formElement = JJServiceCore.DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
+        var formsel = new JJFormView(formElement)
         {
             EntityRepository = EntityRepository,
             UserValues = UserValues,
             Name = action.ElementNameToSelect
         };
-        formsel.SetOptions(dicParser.Options);
+        formsel.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
         goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
@@ -515,9 +515,8 @@ public class JJFormView : JJGridView
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var dictionary = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
-        var element = dictionary.Table;
-        var selValues = EntityRepository.GetFields(element, map.PKFieldValues);
+        var formElement = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
+        var selValues = EntityRepository.GetFields(formElement, map.PKFieldValues);
         var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
@@ -779,8 +778,7 @@ public class JJFormView : JJGridView
         var dicRepository = JJServiceCore.DataDictionaryRepository;
         foreach (var relation in relationships)
         {
-            var dic = dicRepository.GetMetadata(relation.ChildElement);
-            var childElement = dic.GetFormElement();
+            var childElement = dicRepository.GetMetadata(relation.ChildElement);
 
             var filter = new Hashtable();
             foreach (var col in relation.Columns.Where(col => values.ContainsKey(col.PkColumn)))
@@ -801,9 +799,9 @@ public class JJFormView : JJGridView
                     RenderPanelGroup = false
                 };
                 
-                if (dic.Options != null)
+                if (childElement.Options != null)
                 {
-                    chieldView.FormUI = dic.Options.Form;
+                    chieldView.FormUI = childElement.Options.Form;
                 }
 
                 var collapse = new JJCollapsePanel
@@ -829,9 +827,9 @@ public class JJFormView : JJGridView
                 };
                 childGrid.Filter.ApplyCurrentFilter(filter);
 
-                if (dic.Options != null)
+                if (childElement.Options != null)
                 {
-                    childGrid.SetOptions(dic.Options);
+                    childGrid.SetOptions(childElement.Options);
                 }
 
                 childGrid.ShowTitle = false;
@@ -965,9 +963,9 @@ public class JJFormView : JJGridView
         }
     }
     
-    public void SetOptions(MetadataOptions metadataOptions)
+    public void SetOptions(FormElementOptions options)
     {
-        FormFactory.SetFormOptions(this, metadataOptions);
+        FormFactory.SetFormOptions(this, options);
     }
 
     private JJLinkButton GetButtonOk()

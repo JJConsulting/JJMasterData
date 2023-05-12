@@ -37,15 +37,13 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
-        if (!dictionary.ApiOptions.EnableGetAll)
+        var formElement = _dataDictionaryRepository.GetMetadata(elementName);
+        if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
-        var filters = GetDefaultFilter(dictionary, true);
-        var element = dictionary.Table;
-
+        var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = _entityRepository.GetListFieldsAsText(element, filters, orderby, regporpag, pag, showLogInfo);
+        string text = _entityRepository.GetListFieldsAsText(formElement, filters, orderby, regporpag, pag, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -61,7 +59,7 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
-        var element = dictionary.Table;
+        var element = dictionary;
         var dt = _entityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
 
         if (dt == null || dt.Rows.Count == 0)
@@ -81,7 +79,7 @@ public class MasterApiService
         if (!dictionary.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
-        var element = dictionary.Table;
+        var element = dictionary;
         var primaryKeys = DataHelper.GetPkValues(element, id, ',');
         var filters = ParseFilter(dictionary, primaryKeys);
         var fields = _entityRepository.GetFields(element, filters);
@@ -153,7 +151,7 @@ public class MasterApiService
             yield return Patch(formService, values, dictionary.ApiOptions);
         }
     }
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
+    private ResponseLetter Insert(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -180,7 +178,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
+    private ResponseLetter Update(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -210,7 +208,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, MetadataApiOptions metadataApiOptions)
+    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -244,7 +242,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Patch(FormService formService, Hashtable values, MetadataApiOptions metadataApiOptions)
+    private ResponseLetter Patch(FormService formService, Hashtable values, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -279,7 +277,7 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var formService = GetFormService(dictionary);
-        var formElement = dictionary.GetFormElement();
+        var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = formService.FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
         var formResult = formService.Delete(values);
@@ -313,7 +311,7 @@ public class MasterApiService
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
-        var element = dictionary.GetFormElement();
+        var element = dictionary;
         var values = ParseFilter(dictionary, paramValues);
         var userValues = new Hashtable
         {
@@ -321,7 +319,7 @@ public class MasterApiService
         };
 
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormManager(dictionary.GetFormElement(), expManager);
+        var formManager = new FormManager(dictionary, expManager);
         var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
@@ -352,7 +350,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(Metadata metadata, IDictionary? paramValues)
+    private Hashtable ParseFilter(FormElement metadata, IDictionary? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -361,14 +359,14 @@ public class MasterApiService
         foreach (DictionaryEntry entry in paramValues)
         {
             //if field not exists, generate a exception
-            var field = metadata.Table.Fields[entry.Key.ToString()];
+            var field = metadata.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString() ?? string.Empty))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()));
         }
 
         return filters;
     }
-    private Hashtable GetDefaultFilter(Metadata dic, bool loadQueryString = false)
+    private Hashtable GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -379,28 +377,28 @@ public class MasterApiService
             var qnvp = _httpContext.Request.Query.Keys;
             foreach (string key in qnvp)
             {
-                if (!dic.Table.Fields.ContainsKey(key))
+                if (!formElement.Fields.Contains(key))
                     continue;
 
                 string? value = _httpContext.Request.Query[key];
-                filters.Add(dic.Table.Fields[key].Name, StringManager.ClearText(value));
+                filters.Add(formElement.Fields[key].Name, StringManager.ClearText(value));
             }
         }
 
-        if (string.IsNullOrEmpty(dic.ApiOptions.ApplyUserIdOn))
+        if (string.IsNullOrEmpty(formElement.ApiOptions.ApplyUserIdOn))
             return filters;
 
         string userId = GetUserId();
-        if (!filters.ContainsKey(dic.ApiOptions.ApplyUserIdOn))
+        if (!filters.ContainsKey(formElement.ApiOptions.ApplyUserIdOn))
         {
-            filters.Add(dic.ApiOptions.ApplyUserIdOn, userId);
+            filters.Add(formElement.ApiOptions.ApplyUserIdOn, userId);
         }
         else
         {
-            if (!userId.Equals(filters[dic.ApiOptions.ApplyUserIdOn]!.ToString()))
+            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn]!.ToString()))
             {
                 throw new UnauthorizedAccessException(
-                    Translate.Key("Access denied to change user filter on {0}", dic.Table.Name));
+                    Translate.Key("Access denied to change user filter on {0}", formElement.Name));
             }
         }
 
@@ -418,9 +416,9 @@ public class MasterApiService
 
         return userId;
     }
-    private FormService GetFormService(Metadata metadata)
+    private FormService GetFormService(FormElement formElement)
     {
-        bool logActionIsVisible = metadata.Options.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = formElement.Options.ToolBarActions.LogAction.IsVisible;
         string userId = GetUserId();
         var userValues = new Hashtable
         {
@@ -428,10 +426,9 @@ public class MasterApiService
         };
         
         var dataContext = new DataContext(DataContextSource.Api, userId);
-        var formEvent = _formEventResolver?.GetFormEvent(metadata.Table.Name);
-        formEvent?.OnMetadataLoad(dataContext,new FormEventLoadEventArgs(metadata));
+        var formEvent = _formEventResolver?.GetFormEvent(formElement.Name);
+        formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
         
-        var formElement = metadata.GetFormElement();
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext)
@@ -443,14 +440,14 @@ public class MasterApiService
         
         return service;
     }
-    private Metadata GetDataDictionary(string elementName)
+    private FormElement GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
         return _dataDictionaryRepository.GetMetadata(elementName);
     }
-    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName).GetFormElement();
+    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName);
     
     /// <summary>
     /// Compares the values of the fields received with those sent to the bank, returning different records
@@ -459,7 +456,7 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, MetadataApiOptions metadataApiOptions)
+    private Hashtable? GetDiff(Hashtable original, Hashtable result, FormElementApiOptions apiOptions)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)
@@ -467,7 +464,7 @@ public class MasterApiService
             if (entry.Value == null)
                 continue;
 
-            string fieldName = metadataApiOptions.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
             if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
@@ -480,7 +477,7 @@ public class MasterApiService
 
         return newValues.Count > 0 ? newValues : null;
     }
-    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, MetadataApiOptions metadataApiOptions)
+    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
@@ -494,7 +491,7 @@ public class MasterApiService
 
         foreach (DictionaryEntry entry in erros)
         {
-            string fieldName = metadataApiOptions.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

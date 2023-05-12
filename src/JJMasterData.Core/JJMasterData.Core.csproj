@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
+    <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
   </ItemGroup>
   
 </Project>
