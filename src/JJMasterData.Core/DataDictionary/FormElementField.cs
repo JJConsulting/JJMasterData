@@ -5,6 +5,7 @@ using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -21,30 +22,32 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
     public const string AutocompletePickerAttribute = "autocompletePicker";
+    public const string MinValueAttribute = "minValue";
+    public const string MaxValueAttribute = "maxValue";
+
     private FormElementFieldActions? _actions;
-    
-    [DataMember(Name = "component")] 
-    public FormComponent Component { get; set; }
+
+    [DataMember(Name = "component")] public FormComponent Component { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "visibleExpression")]
     public string? VisibleExpression { get; set; }
-    
+
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [DataMember(Name = "enableExpression")]
     public string? EnableExpression { get; set; }
-    
-    
+
+
     /// <summary>
     /// Field position in a line
     /// </summary>
     [DataMember(Name = "order")]
     public int Order { get; set; }
-    
+
     /// <summary>
     /// Line counter, used to break the line in the form (row class)
     /// </summary>
@@ -99,7 +102,8 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [DataMember(Name = "attributes")]
-    public Hashtable? Attributes { get; set; }
+    public IDictionary<string, dynamic> Attributes { get; set; } =
+        new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Allows exporting the field (Default=true)
@@ -153,7 +157,7 @@ public class FormElementField : ElementField
     /// </remarks>
     [DataMember(Name = "panelId")]
     public int PanelId { get; set; }
-    
+
     [DataMember(Name = "actions")]
     public FormElementFieldActions Actions
     {
@@ -166,21 +170,7 @@ public class FormElementField : ElementField
     /// </summary>
     [DataMember(Name = "internalNotes")]
     public string? InternalNotes { get; set; }
-    
-    /// <summary>
-    /// Minimum value for number components
-    /// </summary>
-    [Obsolete("TODO Gustavo: Mover para atributos")]
-    [DataMember(Name = "minValue")]
-    public float? MinValue { get; set; }
-    
-    /// <summary>
-    /// Maximum value for number components
-    /// </summary>
-    [Obsolete("TODO Gustavo: Mover para atributos")]
-    [DataMember(Name = "maxValue")]
-    public float? MaxValue { get; set; }
-    
+
     public FormElementField()
     {
         Component = FormComponent.Text;
@@ -188,8 +178,7 @@ public class FormElementField : ElementField
         Export = true;
         ValidateRequest = true;
         VisibleExpression = "val:1";
-        EnableExpression = "val:1";
-        Attributes = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        EnableExpression = "val:1"; 
     }
 
     public FormElementField(ElementField elementField)
@@ -235,28 +224,24 @@ public class FormElementField : ElementField
             {
                 EnableExpression = "exp:{pagestate} <> 'UPDATE'";
             }
-
         }
+
         DataItem = new FormElementDataItem();
         Export = true;
         ValidateRequest = true;
-        Attributes = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
     }
 
 
     public string? GetAttr(string key)
     {
-        if (Attributes != null && Attributes.ContainsKey(key))
-            return Attributes[key]?.ToString();
+        if (Attributes.TryGetValue(key, out var attribute))
+            return attribute.ToString();
         return string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        if (Attributes != null && Attributes.ContainsKey(key))
-            Attributes[key] = value;
-        else
-            Attributes?.Add(key, value);
+        Attributes[key] = value;
 
         if (string.IsNullOrEmpty(value.ToString()))
             Attributes?.Remove(key);

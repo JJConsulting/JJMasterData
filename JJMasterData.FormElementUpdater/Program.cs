@@ -36,27 +36,16 @@ var start = DateTime.Now;
 
 var metadataRepository = serviceProvider.GetRequiredService<MetadataRepository>();
 var formElementRepository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
-var databaseDictionaries = metadataRepository.GetMetadataList(false);
+var databaseDictionaries = metadataRepository.GetMetadataList();
 
-var dataAccess = new DataAccess();
-
-dataAccess.SetCommand($"truncate table {tableName}");
-
-try
+foreach (var metadata in databaseDictionaries)
 {
-    foreach (var metadata in databaseDictionaries)
-    {
-        var formElement = metadata.GetFormElement();
-        formElementRepository.InsertOrReplace(formElement);
-    }
-}
-catch (Exception e)
-{
-    Console.WriteLine(e);
-    throw;
+    var formElement = metadata.GetFormElement();
+    formElementRepository.InsertOrReplace(formElement);
+    Console.WriteLine(@"✅ " + formElement.Name);
 }
 
-
+new DataAccess().SetCommand($"delete from {tableName} where type <> 'F'");
 
 Console.WriteLine($@"Process started: {start}");
 Console.WriteLine($@"Process finished: {DateTime.Now}");

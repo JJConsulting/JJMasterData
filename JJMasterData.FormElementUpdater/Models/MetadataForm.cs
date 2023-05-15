@@ -24,15 +24,4 @@ public class MetadataForm
         Panels = new List<FormElementPanel>();
         FormFields = new List<MetadataFormField>();
     }
-
-    public MetadataForm(FormElement e) : this()
-    {
-        Title = e.Title;
-        SubTitle = e.SubTitle;
-        Panels = e.Panels;
-        foreach (var f in e.Fields)
-        {
-            FormFields.Add(new MetadataFormField(f));
-        }
-    }
 }

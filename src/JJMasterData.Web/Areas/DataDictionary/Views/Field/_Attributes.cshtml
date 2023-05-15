@@ -22,12 +22,12 @@
 {
     case FormComponent.Slider or FormComponent.Number:
         <div class="col-sm-2">
-            <label asp-for="MinValue" title="@Translate.Key("Minimum Value")" class="@BootstrapHelper.Label">@Translate.Key("Minimum Value")</label>
-            <input class="form-control jjdecimal" type="number" asp-for="MinValue"/>
+            <label for="minValue" title="@Translate.Key("Minimum Value")" class="@BootstrapHelper.Label">@Translate.Key("Minimum Value")</label>
+            <input class="form-control jjdecimal" type="number" name="minValue" id="minValue" value="@Model.GetAttr(FormElementField.MinValueAttribute)"/>
         </div>
         <div class="col-sm-2">
-            <label asp-for="MaxValue" title="@Translate.Key("Maximum Value")" class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
-            <input class="form-control jjdecimal" type="number" asp-for="MaxValue"/>
+            <label for="maxValue" title="@Translate.Key("Maximum Value")" class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
+            <input class="form-control jjdecimal" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
         </div>
         break;
     case FormComponent.TextArea:

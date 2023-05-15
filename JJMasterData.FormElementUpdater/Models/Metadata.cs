@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
@@ -48,15 +49,16 @@ public class Metadata
             field.CssClass = item.CssClass;
             field.HelpDescription = item.HelpDescription;
             field.DataItem = item.DataItem;
-            field.MinValue = item.MinValue;
-            field.MaxValue = item.MaxValue;
+            field.Attributes[FormElementField.MinValueAttribute] = item.MinValue;
+            field.Attributes[FormElementField.MaxValueAttribute] = item.MaxValue;
             field.DataFile = item.DataFile;
             field.Export = item.Export;
             field.ValidateRequest = item.ValidateRequest ?? true;
             field.AutoPostBack = item.AutoPostBack;
             field.NumberOfDecimalPlaces = item.NumberOfDecimalPlaces;
             field.Actions = item.Actions;
-            field.Attributes = item.Attributes;
+            field.Attributes = item.Attributes?.Cast<DictionaryEntry>()
+                .ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value) ?? new Dictionary<string, dynamic>();
             field.PanelId = item.PanelId;
             field.InternalNotes = item.InternalNotes;
         }

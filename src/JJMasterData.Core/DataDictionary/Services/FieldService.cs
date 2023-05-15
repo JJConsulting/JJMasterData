@@ -76,11 +76,6 @@ public class FieldService : BaseService
                     break;
             }
         }
-        else if (field.Component != FormComponent.Number && field.Component != FormComponent.Slider)
-        {
-            field.MinValue = null;
-            field.MaxValue = null;
-        }
         else if (field.Component == FormComponent.File)
         {
             field.DataItem = null;

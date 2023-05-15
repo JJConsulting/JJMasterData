@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;

@@ -206,8 +206,8 @@ public class FieldController : DataDictionaryController
         else if (TempData["selected_tab"] != null)
             ViewBag.Tab = TempData["selected_tab"]!;
 
-        if (TempData.ContainsKey("error"))
-            ViewBag.Error = TempData["error"]!;
+        if (TempData.TryGetValue("error", out var value))
+            ViewBag.Error = value!;
 
         if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Form["originalName"].ToString();
@@ -230,7 +230,7 @@ public class FieldController : DataDictionaryController
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
-        field.Attributes = new Hashtable();
+        field.Attributes = new Dictionary<string, dynamic>();
         switch (field.Component)
         {
             case FormComponent.Text 
@@ -242,6 +242,13 @@ public class FieldController : DataDictionaryController
                 or FormComponent.CnpjCpf 
                 or FormComponent.Cep:
                 field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
+
+                if (field.Component is FormComponent.Number)
+                {
+                    field.SetAttr(FormElementField.MinValueAttribute, float.Parse(Request.Form["minValue"].ToString()));
+                    field.SetAttr(FormElementField.MaxValueAttribute,float.Parse(Request.Form["maxValue"].ToString()));
+                }
+                
                 break;
             case FormComponent.TextArea:
                 field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());

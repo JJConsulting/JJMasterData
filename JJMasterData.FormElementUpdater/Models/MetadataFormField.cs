@@ -71,31 +71,4 @@ public class MetadataFormField
 
     [DataMember(Name = "internalnotes")]
     public string InternalNotes { get; set; }
-
-    public MetadataFormField() { }
-
-    public MetadataFormField(FormElementField f)
-    {
-        Name = f.Name;
-        Component = f.Component;
-        VisibleExpression = f.VisibleExpression;
-        EnableExpression = f.EnableExpression;
-        TriggerExpression = f.TriggerExpression;
-        Order = f.Order;
-        LineGroup = f.LineGroup;
-        CssClass = f.CssClass;
-        HelpDescription = f.HelpDescription;
-        DataItem = f.DataItem;
-        DataFile = f.DataFile;
-        Export = f.Export;
-        MinValue = f.MinValue;
-        MaxValue = f.MaxValue;
-        ValidateRequest = f.ValidateRequest;
-        AutoPostBack = f.AutoPostBack;
-        NumberOfDecimalPlaces = f.NumberOfDecimalPlaces;
-        Actions = f.Actions;
-        Attributes = f.Attributes;
-        PanelId = f.PanelId;
-        InternalNotes = f.InternalNotes;
-    }
 }
