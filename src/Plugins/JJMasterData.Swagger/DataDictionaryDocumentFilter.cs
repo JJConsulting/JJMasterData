@@ -16,54 +16,53 @@ namespace JJMasterData.Swagger
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
             var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
-            var dictionaries = dictionaryRepository.GetMetadataList(null);
+            var dictionaries = dictionaryRepository.GetMetadataList();
 
-            foreach (Metadata metadata in dictionaries)
+            foreach (var formElement in dictionaries)
             {
-                FormElement f = metadata.GetFormElement();
-                MetadataApiOptions metadataApiOptions = metadata.ApiOptions;
+                var apiOptions = formElement.ApiOptions;
                 string key;
 
                 //Get All
-                if (metadata.ApiOptions.EnableGetAll)
+                if (formElement.ApiOptions.EnableGetAll)
                 {
-                    key = "/MasterApi/" + f.Name + "/";
-                    swaggerDoc.paths.Add(key, GetAllPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name + "/";
+                    swaggerDoc.paths.Add(key, GetAllPathItem(formElement, apiOptions));
                 }
 
                 //Get Detail
-                if (metadata.ApiOptions.EnableGetDetail)
+                if (formElement.ApiOptions.EnableGetDetail)
                 {
-                    key = "/MasterApi/" + f.Name + "/{id}";
-                    swaggerDoc.paths.Add(key, GetDetailPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name + "/{id}";
+                    swaggerDoc.paths.Add(key, GetDetailPathItem(formElement, apiOptions));
                 }
 
                 //Add 
-                if (metadata.ApiOptions.EnableAdd)
+                if (formElement.ApiOptions.EnableAdd)
                 {
-                    key = "/MasterApi/" + f.Name;
-                    swaggerDoc.paths.Add(key, GetPostPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name;
+                    swaggerDoc.paths.Add(key, GetPostPathItem(formElement, apiOptions));
                 }
 
                 //Update 
-                if (metadata.ApiOptions.EnableUpdate)
+                if (formElement.ApiOptions.EnableUpdate)
                 {
-                    key = "/MasterApi/" + f.Name + "/ ";
-                    swaggerDoc.paths.Add(key, GetPutPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name + "/ ";
+                    swaggerDoc.paths.Add(key, GetPutPathItem(formElement, apiOptions));
                 }
 
                 //Parcial Update
-                if (metadata.ApiOptions.EnableUpdatePart)
+                if (formElement.ApiOptions.EnableUpdatePart)
                 {
-                    key = "/MasterApi/" + f.Name + " ";
-                    swaggerDoc.paths.Add(key, GetPatchPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name + " ";
+                    swaggerDoc.paths.Add(key, GetPatchPathItem(formElement, apiOptions));
                 }
 
                 //Del
-                if (metadata.ApiOptions.EnableDel)
+                if (formElement.ApiOptions.EnableDel)
                 {
-                    key = "/MasterApi/" + f.Name + "/{id} ";
-                    swaggerDoc.paths.Add(key, GetDelPathItem(f, metadataApiOptions));
+                    key = "/MasterApi/" + formElement.Name + "/{id} ";
+                    swaggerDoc.paths.Add(key, GetDelPathItem(formElement, apiOptions));
                 }
             }
 
@@ -72,30 +71,30 @@ namespace JJMasterData.Swagger
             swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
         }
 
-        private PathItem GetPatchPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetPatchPathItem(FormElement formElement, FormElementApiOptions apiOptions)
         {
-            string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
+            string modelName = formElement.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
-            var sDescription = new StringBuilder();
-            sDescription.Append(f.Title);
-            sDescription.Append("<br><br>Change some fields in a record.");
-            sDescription.Append("<br>We do not use transactions in this scope, ");
-            sDescription.Append("if sending a list of records the return can be 200(all right) or 207(error in some record) ");
-            sDescription.Append("in this case you can check the status of each record in the response return.");
+            var description = new StringBuilder();
+            description.Append(formElement.Title);
+            description.Append("<br><br>Change some fields in a record.");
+            description.Append("<br>We do not use transactions in this scope, ");
+            description.Append("if sending a list of records the return can be 200(all right) or 207(error in some record) ");
+            description.Append("in this case you can check the status of each record in the response return.");
 
             var filterSchema = new Schema
             {
                 title = modelName + "List",
                 type = "array",
-                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List"),
+                items = GetDictionarySchema(formElement, apiOptions, modelName + "List"),
                 description = "List of records"
             };
 
             var oper = new Operation();
             oper.summary = "Update some especific fields";
-            oper.description = sDescription.ToString();
+            oper.description = description.ToString();
             oper.description += "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)";
-            oper.tags = new[] { f.Name };
+            oper.tags = new[] { formElement.Name };
             oper.operationId = modelName + "_Patch";
             oper.consumes = new[] { "application/json" };
             oper.produces = new[] { "application/json", "application/xml" };
@@ -103,7 +102,7 @@ namespace JJMasterData.Swagger
             {
                 new Parameter
                 {
-                    name = metadataApiOptions.GetFieldNameParsed("listParam"),
+                    name = apiOptions.GetFieldNameParsed("listParam"),
                     description = "Array with the objects<br>Primary key required",
                     @in = "body",
                     required = true,
@@ -134,7 +133,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPostPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetPostPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -205,7 +204,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetPutPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetPutPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
 
@@ -268,7 +267,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDelPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetDelPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -325,7 +324,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetDetailPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetDetailPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "").Replace("vw_", "");
             var pkFields = f.Fields.ToList().FindAll(x => x.IsPk);
@@ -382,7 +381,7 @@ namespace JJMasterData.Swagger
             return oPathItem;
         }
 
-        private PathItem GetAllPathItem(FormElement f, MetadataApiOptions metadataApiOptions)
+        private PathItem GetAllPathItem(FormElement f, FormElementApiOptions metadataApiOptions)
         {
             string modelName = f.Name.ToLower().Replace("tb_", "");
             var oPathItem = new PathItem();
@@ -587,7 +586,7 @@ namespace JJMasterData.Swagger
             return modelSchema;
         }
 
-        private Schema GetDictionarySchema(FormElement f, MetadataApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
+        private Schema GetDictionarySchema(FormElement f, FormElementApiOptions metadataApiOptions, string modelName, bool ignoreIdentity = false)
         {
             var modelSchema = new Schema();
             modelSchema.title = modelName;

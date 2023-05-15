@@ -42,8 +42,6 @@ public class FieldControllerTest : IClassFixture<JJMasterDataWebExampleAppFactor
             Label = "Age",
             DataType = FieldType.Int,
             Size = 100,
-            MinValue = 1,
-            MaxValue = 120,
             Component = FormComponent.Number
         }.ToDictionary();
         
