@@ -18,6 +18,7 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.Abstractions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
@@ -26,12 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\JJMasterData.Commons\JJMasterData.Commons.csproj" />
     <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp">
-      <HintPath>..\..\..\..\.nuget\packages\microsoft.csharp\4.7.0\ref\netstandard2.0\Microsoft.CSharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   
 </Project>
