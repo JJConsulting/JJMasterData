@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Data;
 
@@ -97,6 +99,7 @@ public class DataAccess
     /// <summary>
     /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
     /// </summary>
+    [Obsolete("Will be removed at Sun version, this constructor uses a static service locator and can cause runtime errors.")]
     public DataAccess()
     {
         ConnectionString = JJMasterDataCommonsOptions.GetConnectionString();
@@ -107,6 +110,7 @@ public class DataAccess
     /// New instance from a custom connection string name
     /// </summary>
     /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
+    [Obsolete("Will be removed at Sun version, this constructor uses a static service locator and can cause runtime errors.")]
     public DataAccess(string connectionStringName)
     {
         ConnectionString = JJMasterDataCommonsOptions.GetConnectionString(connectionStringName);
@@ -114,7 +118,7 @@ public class DataAccess
     }
 
     /// <summary>
-    /// Initialize a connectionString with a specific providerName.
+    /// Initialize a with a connectionString and a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
     /// </summary>
     /// <param name="connectionString">Conections string with data source, user etc...</param>
@@ -124,6 +128,17 @@ public class DataAccess
         ConnectionString = connectionString;
         ConnectionProvider = connectionProviderName;
     }
+    
+    /// <summary>
+    /// Initialize with a IConfiguration instance.
+    /// </summary>
+    [ActivatorUtilitiesConstructor]
+    public DataAccess(IConfiguration configuration)
+    {
+        ConnectionString = configuration.GetConnectionString("ConnectionString");
+        ConnectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string>("ConnectionString") ?? "System.Data.SqlClient";
+    }
+
 
     public DbConnection GetConnection()
     {

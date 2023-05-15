@@ -16,7 +16,9 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -97,7 +99,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = new EntityRepository();
+            var factory = JJService.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));

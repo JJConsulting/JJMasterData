@@ -44,7 +44,7 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         };
 
         var dataAccess = new DataAccess();
-        var provider = new EntityRepository();
+        var provider = new EntityRepository(dataAccess);
         
         string script = provider.GetScriptCreateTable(element);
 

@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Data;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
@@ -20,6 +21,7 @@ public class Program
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
             .WithPdfExportation();
+            //.WithDataAccess(_=>new DataAccess(builder.Configuration.GetConnectionString("ConnectionString"),"System.Data.SqlClient"));
             //.WithMongoDbDataDictionary();
             //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         
