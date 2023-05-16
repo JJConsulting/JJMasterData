@@ -13,7 +13,7 @@
 
 @using (Html.BeginForm("Edit", "Entity", FormMethod.Post))
 {
-
+    <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
             <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">

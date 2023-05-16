@@ -10,11 +10,13 @@
     ViewData["Title"] = $"{Model.DictionaryName} - Entity";
 }
 
+
 <partial name="_Menu"/>
 
 
 @using (Html.BeginForm())
 {
+    <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
             <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { dictionaryName = Model.DictionaryName })'" class="@BootstrapHelper.DefaultButton btn-small">
