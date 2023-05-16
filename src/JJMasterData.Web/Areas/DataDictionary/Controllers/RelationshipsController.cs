@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;

@@ -7,6 +7,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Args;
@@ -164,6 +165,8 @@ public class JJFormView : JJGridView
 
     public LogAction LogAction => (LogAction)ToolBarActions.Find(x => x is LogAction);
 
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    
     #endregion
 
     #region "Constructors"
@@ -171,6 +174,7 @@ public class JJFormView : JJGridView
     internal JJFormView()
     {
         ShowTitle = true;
+        DataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
         ToolBarActions.Add(new InsertAction());
         ToolBarActions.Add(new DeleteSelectedRowsAction());
         ToolBarActions.Add(new LogAction());
@@ -731,89 +735,78 @@ public class JJFormView : JJGridView
         return html;
     }
 
-    private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable erros, PageState pageState, bool autoReloadFormFields)
+    private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable errors, PageState pageState, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        var relationships = FormElement.Relationships.GetElementRelationships().FindAll(x => x.ViewType != RelationshipViewType.None);
+        var relationships = FormElement.Relationships.Where(r =>r.ViewType != RelationshipViewType.None || r.IsParent).ToList();
 
-        var painel = DataPanel;
-        painel.PageState = pageState;
-        painel.Errors = erros;
-        painel.Values = values;
-        painel.AutoReloadFormFields = autoReloadFormFields;
+        var parentPanel = DataPanel;
+        parentPanel.PageState = pageState;
+        parentPanel.Errors = errors;
+        parentPanel.Values = values;
+        parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)
             html.AppendElement(GetTitle());
 
         if (relationships.Count == 0)
         {
-            html.AppendElement(painel);
-
-            if (erros != null)
-                html.AppendElement(new JJValidationSummary(erros));
-
-            html.AppendElement(GetFormBottombar(pageState, values));
-            html.AppendHiddenInput($"current_painelaction_{Name}");
+            return GetParentPanelHtml(values, errors, pageState, parentPanel);
         }
-        else
+        
+        foreach (var relationship in relationships)
         {
-            var sPainel = painel.GetHtmlBuilder();
-
-            if (erros != null)
-                sPainel.AppendElement(new JJValidationSummary(erros));
-
-            sPainel.AppendElement(GetFormBottombar(pageState, values));
-            sPainel.AppendHiddenInput($"current_painelaction_{Name}");
-
-            var collapse = new JJCollapsePanel
-            {
-                Name = "collapse_" + Name,
-                Title = FormElement.Title,
-                ExpandedByDefault = true,
-                HtmlBuilderContent = sPainel
-            };
-            html.AppendElement(collapse);
+            html.AppendElement(GetRelationshipHtml(values, errors, pageState, relationship, parentPanel));
         }
 
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
-        foreach (var relation in relationships)
+        return html;
+    }
+
+    private HtmlBuilder GetRelationshipHtml(Hashtable values, Hashtable errors, PageState pageState,
+        FormElementRelationship relationship, JJDataPanel parentPanel)
+    {
+        if (relationship.IsParent)
         {
-            var childElement = dicRepository.GetMetadata(relation.ChildElement);
+            return GetParentPanelHtml(values, errors, pageState, parentPanel);
+        }
 
-            var filter = new Hashtable();
-            foreach (var col in relation.Columns.Where(col => values.ContainsKey(col.PkColumn)))
-            {
-                filter.Add(col.FkColumn, values[col.PkColumn]);
-            }
+        var childElement = DataDictionaryRepository.GetMetadata(relationship.ElementRelationship!.ChildElement);
 
-            if (relation.ViewType == RelationshipViewType.View)
+        var filter = new Hashtable();
+        foreach (var col in relationship.ElementRelationship.Columns.Where(col => values.ContainsKey(col.PkColumn)))
+        {
+            filter.Add(col.FkColumn, values[col.PkColumn]);
+        }
+
+        switch (relationship.ViewType)
+        {
+            case RelationshipViewType.View:
             {
-                
-                var childvalues = EntityRepository.GetFields(childElement, filter);
-                var chieldView = new JJDataPanel(childElement)
+                var childValues = EntityRepository.GetFields(childElement, filter);
+                var childView = new JJDataPanel(childElement)
                 {
                     EntityRepository = EntityRepository,
                     PageState = PageState.View,
                     UserValues = UserValues,
-                    Values = childvalues,
+                    Values = childValues,
                     RenderPanelGroup = false
                 };
-                
+
                 if (childElement.Options != null)
                 {
-                    chieldView.FormUI = childElement.Options.Form;
+                    childView.FormUI = childElement.Options.Form;
                 }
 
                 var collapse = new JJCollapsePanel
                 {
-                    Name = "collapse_" + chieldView.Name,
-                    Title = relation.Title,
-                    HtmlBuilderContent = chieldView.GetHtmlBuilder()
+                    Name = "collapse_" + childView.Name,
+                    Title = relationship.Panel.Title,
+                    HtmlBuilderContent = childView.GetHtmlBuilder()
                 };
-                
-                html.AppendElement(collapse);
+
+                return collapse.GetHtmlBuilder();
             }
-            else if (relation.ViewType == RelationshipViewType.List)
+            case RelationshipViewType.List:
             {
                 var childGrid = new JJFormView(childElement)
                 {
@@ -841,11 +834,31 @@ public class JJFormView : JJGridView
                     HtmlContent = childGrid.GetHtml()
                 };
 
-                html.AppendElement(collapse);
+                return collapse.GetHtmlBuilder();
             }
+            default:
+                return null;
         }
+    }
 
-        return html;
+    private HtmlBuilder GetParentPanelHtml(Hashtable values, IDictionary erros, PageState pageState, JJDataPanel parentPanel)
+    {
+        var parentPanelHtml = parentPanel.GetHtmlBuilder();
+
+        if (erros != null)
+            parentPanelHtml.AppendElement(new JJValidationSummary(erros));
+
+        parentPanelHtml.AppendElement(GetFormBottombar(pageState, values));
+        parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
+
+        var collapse = new JJCollapsePanel
+        {
+            Name = "collapse_" + Name,
+            Title = FormElement.Title,
+            ExpandedByDefault = true,
+            HtmlBuilderContent = parentPanelHtml
+        };
+        return collapse.GetHtmlBuilder();
     }
 
     private JJToolbar GetFormLogBottombar(Hashtable values)

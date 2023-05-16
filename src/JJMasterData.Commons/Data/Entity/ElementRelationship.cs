@@ -24,14 +24,6 @@ public class ElementRelationship
     [DataMember(Name = "deleteOnCascade")]
     public bool DeleteOnCascade { get; set; }
 
-    [DataMember(Name = "viewType")]
-    [Obsolete]
-    public RelationshipViewType ViewType { get; set; }
-
-    [DataMember(Name = "title")]
-    [Obsolete]
-    public string Title { get; set; }
-
     public ElementRelationship()
     {
         Columns = new List<ElementRelationshipColumn>();
@@ -41,7 +33,6 @@ public class ElementRelationship
     {
         Columns = new List<ElementRelationshipColumn>();
         ChildElement = childElement;
-        ViewType = RelationshipViewType.List;
         if (columns != null)
             Columns.AddRange(columns);
     }
