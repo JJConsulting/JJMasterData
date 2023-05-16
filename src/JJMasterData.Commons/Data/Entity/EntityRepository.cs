@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Providers;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using Microsoft.Extensions.Configuration;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -12,9 +14,19 @@ public class EntityRepository : IEntityRepository
 {
     private DataAccess DataAccess { get; }
     private BaseProvider Provider { get; }
-    public EntityRepository(DataAccess dataAccess)
+    public EntityRepository(IConfiguration configuration)
     {
-        DataAccess = dataAccess;
+        var connectionString = configuration.GetConnectionString("ConnectionString");
+        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string>("ConnectionString");
+        DataAccess = new DataAccess(connectionString, connectionProvider);
+        
+        Provider = GetProvider();
+    }
+    
+    public EntityRepository(string connectionString, DataAccessProviderType provider)
+    {
+        DataAccess = new DataAccess(connectionString, provider.GetDescription());
+        
         Provider = GetProvider();
     }
 

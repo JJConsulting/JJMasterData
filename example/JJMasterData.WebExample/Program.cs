@@ -21,7 +21,10 @@ public class Program
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
             .WithPdfExportation();
-            //.WithDataAccess(_=>new DataAccess(builder.Configuration.GetConnectionString("ConnectionString"),"System.Data.SqlClient"));
+            // .WithEntityRepository(
+            //     "data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456",
+            //     DataAccessProviderType.SqlServer);
+        //.WithDataAccess(_=>new DataAccess(builder.Configuration.GetConnectionString("ConnectionString"),"System.Data.SqlClient"));
             //.WithMongoDbDataDictionary();
             //.WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
         

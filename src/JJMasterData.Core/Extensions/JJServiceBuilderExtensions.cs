@@ -1,17 +1,20 @@
 ﻿#nullable enable
 
 using System;
+using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Extensions;
 
@@ -52,9 +55,26 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
     
+    public static JJServiceBuilder WithDataDictionaryRepository(this JJServiceBuilder builder, Func<IServiceProvider, IDataDictionaryRepository> implementationFactory) 
+    {
+        builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
+        return builder;
+    }
+    
     public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder)
     {
         builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
+        return builder;
+    }
+    
+    public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder, string connectionString, DataAccessProviderType provider)
+    {
+        builder.Services.Replace(ServiceDescriptor.Scoped(serviceProvider =>
+        {
+            var entityRepository = new EntityRepository(connectionString, provider);
+            return new SqlDataDictionaryRepository(entityRepository,
+                serviceProvider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
+        }));
         return builder;
     }
    

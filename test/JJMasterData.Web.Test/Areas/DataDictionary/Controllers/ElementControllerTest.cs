@@ -44,7 +44,7 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         };
 
         var dataAccess = new DataAccess();
-        var provider = new EntityRepository(dataAccess);
+        var provider = new EntityRepository("data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456", DataAccessProviderType.SqlServer);
         
         string script = provider.GetScriptCreateTable(element);
 

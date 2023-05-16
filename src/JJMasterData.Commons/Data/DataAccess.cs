@@ -99,7 +99,6 @@ public class DataAccess
     /// <summary>
     /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
     /// </summary>
-    [Obsolete("Will be removed at Sun version, this constructor uses a static service locator and can cause runtime errors.")]
     public DataAccess()
     {
         ConnectionString = JJMasterDataCommonsOptions.GetConnectionString();
@@ -110,7 +109,6 @@ public class DataAccess
     /// New instance from a custom connection string name
     /// </summary>
     /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
-    [Obsolete("Will be removed at Sun version, this constructor uses a static service locator and can cause runtime errors.")]
     public DataAccess(string connectionStringName)
     {
         ConnectionString = JJMasterDataCommonsOptions.GetConnectionString(connectionStringName);

@@ -36,7 +36,6 @@ public class JJServiceBuilder
             }
         });
         
-        Services.AddScoped<DataAccess>();
         Services.AddScoped<IEntityRepository,EntityRepository>();
         
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
@@ -54,7 +53,12 @@ public class JJServiceBuilder
         return this;
     }
     
-    public JJServiceBuilder WithDataAccess(Func<IServiceProvider, DataAccess> implementationFactory)
+    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProviderType provider)
+    {
+        return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
+    }
+    
+    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, EntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
         return this;
