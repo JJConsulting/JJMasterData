@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Data;
 
@@ -114,7 +116,7 @@ public class DataAccess
     }
 
     /// <summary>
-    /// Initialize a connectionString with a specific providerName.
+    /// Initialize a with a connectionString and a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
     /// </summary>
     /// <param name="connectionString">Conections string with data source, user etc...</param>
@@ -124,6 +126,17 @@ public class DataAccess
         ConnectionString = connectionString;
         ConnectionProvider = connectionProviderName;
     }
+    
+    /// <summary>
+    /// Initialize with a IConfiguration instance.
+    /// </summary>
+    [ActivatorUtilitiesConstructor]
+    public DataAccess(IConfiguration configuration)
+    {
+        ConnectionString = configuration.GetConnectionString("ConnectionString");
+        ConnectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string>("ConnectionString") ?? "System.Data.SqlClient";
+    }
+
 
     public DbConnection GetConnection()
     {

@@ -71,4 +71,5 @@ public static class DataAccessProvider
         var type = GetDataAccessProviderTypeFromString(providerName);
         return GetDbProviderFactory(type);
     }
+    
 }

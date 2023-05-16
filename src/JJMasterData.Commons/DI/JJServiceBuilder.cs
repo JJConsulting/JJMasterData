@@ -1,5 +1,7 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using System;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
@@ -50,7 +52,18 @@ public class JJServiceBuilder
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
-
+    
+    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProviderType provider)
+    {
+        return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
+    }
+    
+    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, EntityRepository> implementationFactory)
+    {
+        Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
+        return this;
+    }
+    
     public JJServiceBuilder WithLocalizationProvider<T>() where T : class, ILocalizationProvider
     {
         Services.Replace(ServiceDescriptor.Transient<ILocalizationProvider, T>());
