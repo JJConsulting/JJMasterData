@@ -19,7 +19,7 @@ public class JJSlider : JJBaseControl
     
     public static JJBaseControl GetInstance(FormElementField field, object value)
     {
-        var slider = new JJSlider(field.MinValue ?? 0f, field.MaxValue ?? 100)
+        var slider = new JJSlider(field.Attributes[FormElementField.MinValueAttribute] ?? 0f, field.Attributes[FormElementField.MaxValueAttribute] ?? 100)
         {
             Name =  field.Name,
             Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null

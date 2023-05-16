@@ -1,4 +1,5 @@
 ﻿using System;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -13,7 +14,7 @@ public class EntityService : BaseService
     {
     }
 
-    private bool ValidateEntity(FormElement formElement, string originName)
+    private bool ValidateEntity(Element formElement, string originName)
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
@@ -48,13 +49,13 @@ public class EntityService : BaseService
         {
             var dicParser = DataDictionaryRepository.GetMetadata(entityName);
 
-            dicParser.Table.Name = formElement.Name;
-            dicParser.Table.TableName = formElement.TableName;
-            dicParser.Table.CustomProcNameGet = formElement.CustomProcNameGet;
-            dicParser.Table.CustomProcNameSet = formElement.CustomProcNameSet;
-            dicParser.Table.Info = formElement.Info;
-            dicParser.Form.Title = formElement.Title;
-            dicParser.Form.SubTitle = formElement.SubTitle;
+            dicParser.Name = formElement.Name;
+            dicParser.TableName = formElement.TableName;
+            dicParser.CustomProcNameGet = formElement.CustomProcNameGet;
+            dicParser.CustomProcNameSet = formElement.CustomProcNameSet;
+            dicParser.Info = formElement.Info;
+            dicParser.Title = formElement.Title;
+            dicParser.SubTitle = formElement.SubTitle;
 
             if (!entityName.Equals(formElement.Name))
             {

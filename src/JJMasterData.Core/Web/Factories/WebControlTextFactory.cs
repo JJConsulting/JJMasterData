@@ -11,7 +11,6 @@ namespace JJMasterData.Core.Web.Factories
     {
         public static JJTextGroup CreateTextGroup(FormElementField field, object value)
         {
-            
             var textGroup = CreateTextGroup(field);
 
             if (field.Component == FormComponent.Currency)
@@ -25,15 +24,24 @@ namespace JJMasterData.Core.Web.Factories
         public static JJTextGroup CreateTextGroup(FormElementField field)
         {
             if (field == null)
-                throw new ArgumentNullException(nameof(FormElementField));
-            
+                throw new ArgumentNullException(nameof(field));
+
             var textGroup = new JJTextGroup();
             textGroup.SetAttr(field.Attributes);
             textGroup.MaxLength = field.Size;
             textGroup.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
             textGroup.Name = field.Name;
-            textGroup.MinValue = field.MinValue;
-            textGroup.MaxValue = field.MaxValue;
+            
+            if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
+            {
+                textGroup.MinValue = minValue;
+            }
+
+            if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
+            {
+                textGroup.MaxValue = maxValue;
+            }
+            
 
             SetDefaultAttrs(textGroup, field.Component);
 
@@ -43,7 +51,7 @@ namespace JJMasterData.Core.Web.Factories
         public static JJTextGroup CreateTextDate()
         {
             var textGroup = new JJTextGroup();
-            SetDefaultAttrs(textGroup,FormComponent.Date);
+            SetDefaultAttrs(textGroup, FormComponent.Date);
             return textGroup;
         }
 
@@ -82,13 +90,15 @@ namespace JJMasterData.Core.Web.Factories
                     textGroup.MaxLength = 18;
                     textGroup.InputType = InputType.Text;
                     textGroup.SetAttr("onclick", "this.select();");
-                    textGroup.SetAttr("data-inputmask", "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
+                    textGroup.SetAttr("data-inputmask",
+                        "'mask': '[99.999.999/9999-99]', 'placeholder':'', 'greedy': 'false'");
                     break;
                 case FormComponent.Cpf:
                     textGroup.MaxLength = 14;
                     textGroup.InputType = InputType.Text;
                     textGroup.SetAttr("onclick", "this.select();");
-                    textGroup.SetAttr("data-inputmask", "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
+                    textGroup.SetAttr("data-inputmask",
+                        "'mask': '[999.999.999-99]', 'placeholder':'', 'greedy': 'false'");
                     break;
                 case FormComponent.CnpjCpf:
                     textGroup.MaxLength = 18;
@@ -110,7 +120,8 @@ namespace JJMasterData.Core.Web.Factories
                     };
                     textGroup.MaxLength = 15;
                     textGroup.InputType = InputType.Tel;
-                    textGroup.SetAttr("data-inputmask", "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
+                    textGroup.SetAttr("data-inputmask",
+                        "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
                     break;
                 case FormComponent.Hour:
                     var btn = GetDateAction();
@@ -139,7 +150,6 @@ namespace JJMasterData.Core.Web.Factories
                 default:
                     textGroup.InputType = InputType.Text;
                     break;
-
             }
 
             textGroup.SetAttr("class", string.Join(" ", listClass));
@@ -153,11 +163,10 @@ namespace JJMasterData.Core.Web.Factories
                 ToolTip = Translate.Key("Calendar"),
                 ShowInFilter = true
             };
-            
+
             btn.SetAttr("data-toggle", "date");
             btn.SetAttr("tabindex", "-1");
             return btn;
         }
-
     }
 }

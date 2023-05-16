@@ -35,13 +35,13 @@ internal static class FormFactory
         var metadata = dictionaryRepository.GetMetadata(elementName);
         
         var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
-        formEvent?.OnMetadataLoad(dataContext, new MetadataLoadEventArgs(metadata));
+        formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(metadata));
         
-        form.FormElement = metadata.GetFormElement();
+        form.FormElement = metadata;
         SetFormOptions(form, metadata.Options);
     }
 
-    internal static void SetFormOptions(JJFormView form, MetadataOptions metadataOptions)
+    internal static void SetFormOptions(JJFormView form, FormElementOptions metadataOptions)
     {
         if (metadataOptions == null) 
             return;

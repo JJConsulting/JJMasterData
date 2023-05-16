@@ -14,13 +14,13 @@ public class UIOptionsService : BaseService
     {
     }
 
-    private bool ValidateOptions(MetadataOptions uIMetadataOptions, string dictionaryName)
+    private bool ValidateOptions(FormElementOptions options, string dictionaryName)
     {
 
-        if (uIMetadataOptions.Grid.EnableMultSelect)
+        if (options.Grid.EnableMultSelect)
         {
-            var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
-            var pks = dicParser.Table.Fields.ToList().FindAll(x => x.IsPk);
+            var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+            var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
                 AddError("EnableMultSelect", Translate.Key("You cannot enable MultiSelect without setting a primary key"));
@@ -31,15 +31,15 @@ public class UIOptionsService : BaseService
     }
 
 
-    public bool EditOptions(MetadataOptions uIMetadataOptions,string dictionaryName)
+    public bool EditOptions(FormElementOptions options,string dictionaryName)
     {
         try
         {
-            if (ValidateOptions(uIMetadataOptions, dictionaryName))
+            if (ValidateOptions(options, dictionaryName))
             {
                 var dicParser = DataDictionaryRepository.GetMetadata(dictionaryName);
-                dicParser.Options.Form = uIMetadataOptions.Form;
-                dicParser.Options.Grid = uIMetadataOptions.Grid;
+                dicParser.Options.Form = options.Form;
+                dicParser.Options.Grid = options.Grid;
 
                 DataDictionaryRepository.InsertOrReplace(dicParser);
             }

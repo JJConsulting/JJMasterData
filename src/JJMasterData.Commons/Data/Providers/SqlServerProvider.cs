@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -1208,5 +1209,60 @@ public class SqlServerProvider : BaseProvider
         return element;
     }
 
+    public override async Task<Element> GetElementFromTableAsync(string tableName)
+    {
+        if (string.IsNullOrEmpty(tableName))
+            throw new ArgumentNullException(nameof(tableName));
+
+        if (!await DataAccess.TableExistsAsync(tableName))
+            throw new JJMasterDataException(Translate.Key("Table {0} not found", tableName));
+
+        var element = new Element
+        {
+            Name = tableName
+        };
+
+        var cmdFields = new DataAccessCommand
+        {
+            CmdType = CommandType.StoredProcedure,
+            Sql = "sp_columns"
+        };
+        cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
+
+        var dtFields = await DataAccess.GetDataTableAsync(cmdFields);
+        if (dtFields == null || dtFields.Rows.Count == 0)
+            return null;
+
+        foreach (DataRow row in dtFields.Rows)
+        {
+            var field = new ElementField
+            {
+                Name = row["COLUMN_NAME"].ToString(),
+                Label = row["COLUMN_NAME"].ToString(),
+                Size = int.Parse(row["LENGTH"].ToString()),
+                AutoNum = row["TYPE_NAME"].ToString().ToUpper().Contains("IDENTITY"),
+                IsRequired = row["NULLABLE"].ToString().Equals("0"),
+                DataType = GetDataType(row["TYPE_NAME"].ToString())
+            };
+
+            element.Fields.Add(field);
+        }
+
+        //Primary Keys
+        var cmdPks = new DataAccessCommand
+        {
+            CmdType = CommandType.StoredProcedure,
+            Sql = "sp_pkeys"
+        };
+
+        cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
+        var dtPks = await DataAccess.GetDataTableAsync(cmdPks);
+        foreach (DataRow row in dtPks.Rows)
+        {
+            element.Fields[row["COLUMN_NAME"].ToString()].IsPk = true;
+        }
+
+        return element;
+    }
 
 }

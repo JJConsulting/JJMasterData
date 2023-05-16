@@ -15,8 +15,8 @@ public class IndexesService : BaseService
 
     public bool Save(string id, string index, ElementIndex elementIndex)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(id);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(id);
+
         
         if (!string.IsNullOrEmpty(index))
         {
@@ -29,8 +29,7 @@ public class IndexesService : BaseService
 
         if (Validate(elementIndex))
         {
-            dictionary.SetFormElement(formElement);
-            DataDictionaryRepository.InsertOrReplace(dictionary);
+            DataDictionaryRepository.InsertOrReplace(formElement);
         }
 
         return IsValid;
@@ -48,21 +47,19 @@ public class IndexesService : BaseService
     public void Delete(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var elementIndex = dictionary.Table.Indexes[int.Parse(index)];
-        dictionary.Table.Indexes.Remove(elementIndex);
+        var elementIndex = dictionary.Indexes[int.Parse(index)];
+        dictionary.Indexes.Remove(elementIndex);
         DataDictionaryRepository.InsertOrReplace(dictionary);
     }
 
     public void MoveDown(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var indexes = dictionary.Table.Indexes;
+        var indexes = dictionary.Indexes;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
         {
-            ElementIndex elementIndex = indexes[indexToMoveDown + 1];
-            indexes[indexToMoveDown + 1] = indexes[indexToMoveDown];
-            indexes[indexToMoveDown] = elementIndex;
+            (indexes[indexToMoveDown + 1], indexes[indexToMoveDown]) = (indexes[indexToMoveDown], indexes[indexToMoveDown + 1]);
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }
@@ -70,13 +67,11 @@ public class IndexesService : BaseService
     public void MoveUp(string dictionaryName, string index)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var indexes = dictionary.Table.Indexes;
+        var indexes = dictionary.Indexes;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
-            ElementIndex elementIndex = indexes[indexToMoveUp - 1];
-            indexes[indexToMoveUp - 1] = indexes[indexToMoveUp];
-            indexes[indexToMoveUp] = elementIndex;
+            (indexes[indexToMoveUp - 1], indexes[indexToMoveUp]) = (indexes[indexToMoveUp], indexes[indexToMoveUp - 1]);
             DataDictionaryRepository.InsertOrReplace(dictionary);
         }
     }

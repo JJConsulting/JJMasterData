@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Options;
 
@@ -791,6 +792,7 @@ public class OracleProvider : BaseProvider
         return sql.ToString();
     }
 
+
     public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(INSERT, element, values);
@@ -1013,4 +1015,10 @@ public class OracleProvider : BaseProvider
     {
         return null;
     }
+    
+    public override Task<Element> GetElementFromTableAsync(string tableName)
+    {
+        return null;
+    }
+
 }

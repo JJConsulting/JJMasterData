@@ -17,8 +17,7 @@ public class FieldService : BaseService
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
 
         RemoveUnusedProperties(ref field);
 
@@ -47,8 +46,7 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return IsValid;
     }
@@ -77,11 +75,6 @@ public class FieldService : BaseService
                     field.DataItem.Items.Clear();
                     break;
             }
-        }
-        else if (field.Component != FormComponent.Number && field.Component != FormComponent.Slider)
-        {
-            field.MinValue = null;
-            field.MaxValue = null;
         }
         else if (field.Component == FormComponent.File)
         {
@@ -278,17 +271,15 @@ public class FieldService : BaseService
 
     public bool SortFields(string elementName, string[] orderFields)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(elementName);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
         {
             formElement.Fields[i] = newList[i];
         }
-
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        
+        DataDictionaryRepository.InsertOrReplace(formElement);
         return true;
     }
 
@@ -317,7 +308,7 @@ public class FieldService : BaseService
         if (IsValid)
         {
             var dataEntry = DataDictionaryRepository.GetMetadata(elementMap.ElementName);
-            var fieldKey = dataEntry.Table.Fields[elementMap.FieldKey];
+            var fieldKey = dataEntry.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
                 string err = Translate.Key("Field [{0}] invalid, as it is not PK or not configured as a filter",
@@ -337,31 +328,28 @@ public class FieldService : BaseService
 
     public bool DeleteField(string dictionaryName, string fieldName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        if (!dictionary.Table.Fields.ContainsKey(fieldName))
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        if (!formElement.Fields.Contains(fieldName))
             return false;
-
-        var formElement = dictionary.GetFormElement();
+        
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return IsValid;
     }
 
     public string GetNextFieldName(string dictionaryName, string fieldName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var element = dictionary.Table;
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
         string nextField = null;
-        if (element.Fields.ContainsKey(fieldName))
+        if (formElement.Fields.Contains(fieldName))
         {
-            var currentField = element.Fields[fieldName];
-            int iIndex = element.Fields.IndexOf(currentField);
-            if (iIndex >= 0 && iIndex < element.Fields.Count - 1)
+            var currentField = formElement.Fields[fieldName];
+            int iIndex = formElement.Fields.IndexOf(currentField.Name);
+            if (iIndex >= 0 && iIndex < formElement.Fields.Count - 1)
             {
-                nextField = element.Fields[iIndex + 1].Name;
+                nextField = formElement.Fields[iIndex + 1].Name;
             }
         }
 
@@ -381,7 +369,7 @@ public class FieldService : BaseService
         if (dataEntry == null)
             return dicFields;
 
-        foreach (var field in dataEntry.Table.Fields)
+        foreach (var field in dataEntry.Fields)
         {
             dicFields.Add(field.Name, field.Name);
         }
@@ -389,9 +377,8 @@ public class FieldService : BaseService
         return dicFields;
     }
 
-    public bool CopyField(Metadata metadata, FormElementField field)
+    public bool CopyField(FormElement formElement, FormElementField field)
     {
-        var formElement = metadata.GetFormElement();
         var newField = field.DeepCopy();
 
         if (formElement.Fields.Contains(newField.Name))
@@ -401,8 +388,7 @@ public class FieldService : BaseService
         }
 
         formElement.Fields.Add(newField);
-        metadata.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(metadata);
+        DataDictionaryRepository.InsertOrReplace(formElement);
         return IsValid;
     }
 }

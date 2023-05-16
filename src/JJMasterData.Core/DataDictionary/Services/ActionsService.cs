@@ -17,43 +17,43 @@ public class ActionsService : BaseService
     public bool DeleteAction(string elementName, string actionName, ActionSource context, string fieldName = null)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
-        DeleteAction(ref dicParser, actionName, context, fieldName);
+        DeleteAction(dicParser, actionName, context, fieldName);
         DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
     }
 
-    private void DeleteAction(ref Metadata metadata, string originalName, ActionSource context, string fieldName = null)
+    private void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
     {
         if (originalName == null)
             return;
 
         if (context == ActionSource.Field)
         {
-            var field = metadata.GetFormElement().Fields[fieldName];
+            var field = formElement.Fields[fieldName];
             var action = field.Actions.Get(originalName);
             if (action != null)
                 field.Actions.Remove(action);
         }
         else if (context == ActionSource.Grid)
         {
-            var action = metadata.Options.GridActions.Get(originalName);
+            var action = formElement.Options.GridActions.Get(originalName);
             if (action != null)
-                metadata.Options.GridActions.Remove(action);
+                formElement.Options.GridActions.Remove(action);
         }
         else if (context == ActionSource.Toolbar)
         {
-            var action = metadata.Options.ToolBarActions.Get(originalName);
+            var action = formElement.Options.ToolBarActions.Get(originalName);
             if (action != null)
-                metadata.Options.ToolBarActions.Remove(action);
+                formElement.Options.ToolBarActions.Remove(action);
         }
     }
 
     public bool SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
-        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
-        ValidateActionName(dicParser, action.Name, originalName, context, fieldName);
-        ValidateAction(dicParser, action);
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        ValidateActionName(formElement, action.Name, originalName, context, fieldName);
+        ValidateAction(formElement, action);
 
         if (!IsValid)
             return false;
@@ -66,7 +66,7 @@ public class ActionsService : BaseService
                 action is PythonScriptAction |
                 action is InternalAction)
             {
-                DeleteAction(ref dicParser, originalName, context, fieldName);
+                DeleteAction(formElement, originalName, context, fieldName);
             }
         }
                 
@@ -74,7 +74,7 @@ public class ActionsService : BaseService
         {
             case ActionSource.Field:
             {
-                var field = dicParser.GetFormElement().Fields[fieldName];
+                var field = formElement.Fields[fieldName];
                 field.Actions.Set(action);
 
                 if (action.IsDefaultOption)
@@ -83,23 +83,23 @@ public class ActionsService : BaseService
             }
             case ActionSource.Grid:
             {
-                dicParser.Options.GridActions.Set(action);
+                formElement.Options.GridActions.Set(action);
 
                 if (action.IsDefaultOption)
-                    dicParser.Options.GridActions.SetDefault(action.Name);
+                    formElement.Options.GridActions.SetDefault(action.Name);
                 break;
             }
             case ActionSource.Toolbar:
-                dicParser.Options.ToolBarActions.Set(action);
+                formElement.Options.ToolBarActions.Set(action);
                 break;
         }
 
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return true;
     }
 
-    private void ValidateActionName(Metadata dicParser, string actionName, string originalName, ActionSource context, string fieldName = null)
+    private void ValidateActionName(FormElement dicParser, string actionName, string originalName, ActionSource context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -114,7 +114,7 @@ public class ActionsService : BaseService
         {
             case ActionSource.Field:
             {
-                var field = dicParser.GetFormElement().Fields[fieldName];
+                var field = dicParser.Fields[fieldName];
                 listAction = field.Actions.GetAll();
                 break;
             }
@@ -137,7 +137,7 @@ public class ActionsService : BaseService
         }
     }
 
-    private void ValidateAction(Metadata dicParser, BasicAction action)
+    private void ValidateAction(FormElement formElement, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
@@ -154,7 +154,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(sqlAction.CommandSQL))
                 AddError(nameof(sqlAction.CommandSQL), Translate.Key("Required [Sql Command] field"));
 
-            if (!dicParser.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
+            if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                 AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -163,7 +163,7 @@ public class ActionsService : BaseService
             if (string.IsNullOrEmpty(pythonScriptAction.PythonScript))
                 AddError(nameof(pythonScriptAction.PythonScript), Translate.Key("Required [Python Script] field"));
 
-            if (!dicParser.Options.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
+            if (!formElement.Options.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
                 AddError(nameof(pythonScriptAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
@@ -202,7 +202,7 @@ public class ActionsService : BaseService
             }
             else if (actionContext == ActionSource.Field)
             {
-                var formElement = dicParser.GetFormElement();
+                var formElement = dicParser;
                 action = formElement.Fields[fieldName].Actions.Get(actionName);
             }
             action.Order = i + 1;
@@ -239,11 +239,11 @@ public class ActionsService : BaseService
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var dataEntry = DataDictionaryRepository.GetMetadata(elementName);
-        if (dataEntry == null)
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        if (formElement == null)
             return dicFields;
 
-        foreach (var field in dataEntry.Table.Fields)
+        foreach (var field in formElement.Fields)
         {
             dicFields.Add(field.Name, field.Name);
         }

@@ -20,11 +20,10 @@ namespace JJMasterData.Core.Web.Factories
                 throw new ArgumentNullException(nameof(elementName));
 
             var dicDao = JJServiceCore.DataDictionaryRepository;
-            var dicParser = dicDao.GetMetadata(elementName);
-            var formElement = dicParser.GetFormElement();
+            var formElement = dicDao.GetMetadata(elementName);
 
             SetDataPanelParams(dataPanel, formElement);
-            dataPanel.FormUI = dicParser.Options.Form;
+            dataPanel.FormUI = formElement.Options.Form;
         }
 
         internal static void SetDataPanelParams(JJDataPanel dataPanel, FormElement formElement)

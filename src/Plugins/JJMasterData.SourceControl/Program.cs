@@ -28,13 +28,14 @@ var path = configuration.GetValue<string>("DictionaryPath");
 var serviceProvider = services.BuildServiceProvider().UseJJMasterData();
 
 Console.WriteLine(AppContext.BaseDirectory);
-Console.WriteLine("Starting Process...\n");
+Console.WriteLine(@"Starting Process...
+");
 
 var start = DateTime.Now;
 
 var repository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
 var databaseDictionaries = repository.GetMetadataList(false);
-var folderDictionaries = new List<Metadata>();
+var folderDictionaries = new List<FormElement>();
 
 if (path != null)
 {
@@ -42,11 +43,11 @@ if (path != null)
     {
         var json = new StreamReader(file).ReadToEnd();
 
-        var dicParser = JsonConvert.DeserializeObject<Metadata>(json);
+        var dicParser = JsonConvert.DeserializeObject<FormElement>(json);
 
         if (dicParser != null)
         {
-            Console.WriteLine($"SetDictionary: {dicParser.Table.Name}");
+            Console.WriteLine($@"SetDictionary: {dicParser.Name}");
             repository.InsertOrReplace(dicParser);
 
             folderDictionaries.Add(dicParser);
@@ -56,14 +57,15 @@ if (path != null)
 
 foreach (var dicParser in databaseDictionaries)
 {
-    if (!folderDictionaries.Exists(dic => dic.Table.Name.Equals(dicParser.Table.Name)))
+    if (!folderDictionaries.Exists(dic => dic.Name.Equals(dicParser.Name)))
     {
-        Console.WriteLine($"DelDictionary: {dicParser.Table.Name}");
-        repository.Delete(dicParser.Table.Name);
+        Console.WriteLine($@"DelDictionary: {dicParser.Name}");
+        repository.Delete(dicParser.Name);
 
     }
 }
 
-Console.WriteLine($"\nProcess started: {start}");
-Console.WriteLine($"Process finished: {DateTime.Now}");
+Console.WriteLine($@"
+Process started: {start}");
+Console.WriteLine($@"Process finished: {DateTime.Now}");
 Console.ReadLine();

@@ -36,8 +36,8 @@ public class ApiController : DataDictionaryController
     {
         var dic = _apiService.DataDictionaryRepository.GetMetadata( apiViewModel.DictionaryName);
         dic.ApiOptions = apiViewModel.MetadataApiOptions;
-        dic.Table.Sync = apiViewModel.IsSync;
-        dic.Table.SyncMode = apiViewModel.Mode;
+        dic.Sync = apiViewModel.IsSync;
+        dic.SyncMode = apiViewModel.Mode;
 
         if (_apiService.EditApi(dic))
             return RedirectToAction("Index", new { dictionaryName =  apiViewModel.DictionaryName });
@@ -46,19 +46,19 @@ public class ApiController : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(Metadata metadata)
+    private ApiViewModel PopulateViewModel(FormElement metadata)
     {
-        var model = new ApiViewModel(dictionaryName:metadata.Table.Name, menuId:"Api")
+        var model = new ApiViewModel(dictionaryName:metadata.Name, menuId:"Api")
         {
             MetadataApiOptions = metadata.ApiOptions,
-            Mode = metadata.Table.SyncMode,
-            IsSync = metadata.Table.Sync,
-            Fields = metadata.Table.Fields.ToList().FindAll(
+            Mode = metadata.SyncMode,
+            IsSync = metadata.Sync,
+            Fields = new List<ElementField>(metadata.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &
                      x.DataType != FieldType.DateTime2 &
                      x.DataType != FieldType.Date
-            )
+            ))
         };
 
         return model;

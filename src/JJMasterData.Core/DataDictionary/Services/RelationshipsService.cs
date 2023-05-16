@@ -25,8 +25,8 @@ public class RelationshipsService : BaseService
 
     public void SaveElementRelationship(ElementRelationship elementRelationship, int? id, string dictionaryName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relationships = dictionary.Form.Relationships ?? new FormElementRelationshipList(new List<ElementRelationship>());
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var relationships = formElement.Relationships;
 
         var formElementRelationShip = new FormElementRelationship(elementRelationship);
         
@@ -45,16 +45,13 @@ public class RelationshipsService : BaseService
             relationships.Add(new FormElementRelationship(true));
         }
 
-        dictionary.Form.Relationships = relationships;
-        
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(formElement);
     }
 
     public void SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
         string dictionaryName)
     {
-        var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var formElement = metadata.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
 
         var index = formElement.Relationships.GetIndexById(id);
         
@@ -62,9 +59,9 @@ public class RelationshipsService : BaseService
         relationship.ViewType = viewType;
         relationship.Panel = panel;
         
-        metadata.Form.Relationships[index] = relationship;
+        formElement.Relationships[index] = relationship;
 
-        DataDictionaryRepository.InsertOrReplace(metadata);
+        DataDictionaryRepository.InsertOrReplace(formElement);
     }
 
     public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName,
@@ -94,14 +91,14 @@ public class RelationshipsService : BaseService
             return IsValid;
         }
 
-        ElementField? fkColumn = GetField(childElementName, fkColumnName);
+        var fkColumn = GetField(childElementName, fkColumnName);
         if (fkColumn == null)
         {
             AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElementName));
             return IsValid;
         }
 
-        ElementField? pkColumn = GetField(dictionaryName, pkColumnName);
+        var pkColumn = GetField(dictionaryName, pkColumnName);
         if (pkColumn == null)
         {
             AddError("", Translate.Key("Column {0} not found.", pkColumnName));
@@ -126,14 +123,8 @@ public class RelationshipsService : BaseService
 
     private ElementField? GetField(string dictionaryName, string fieldName)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var element = dictionary.Table;
-        if (element.Fields.ContainsKey(fieldName))
-        {
-            return element.Fields[fieldName];
-        }
-
-        return null;
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        return formElement.Fields.Contains(fieldName) ? formElement.Fields[fieldName] : null;
     }
 
 
@@ -189,24 +180,23 @@ public class RelationshipsService : BaseService
 
     public void Delete(string dictionaryName, int id)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var relationship = dictionary.Form.Relationships.GetById(id);
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var relationship = formElement.Relationships.GetById(id);
 
-        dictionary.Form.Relationships.Remove(relationship);
+        formElement.Relationships.Remove(relationship);
 
-        if (dictionary.Form.Relationships.All(r => r.IsParent))
+        if (formElement.Relationships.All(r => r.IsParent))
         {
-            dictionary.Form.Relationships.Clear();
+            formElement.Relationships.Clear();
         }
         
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        DataDictionaryRepository.InsertOrReplace(formElement);
     }
     
 
     public void Sort(string dictionaryName, IEnumerable<string> relationships)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
-        var formElement = dictionary.GetFormElement();
+        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
 
         FormElementRelationship GetRelationship(string name)
         {
@@ -224,12 +214,8 @@ public class RelationshipsService : BaseService
         {
             formElement.Relationships[i] = newList[i];
         }
-
-        dictionary.SetFormElement(formElement);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
-    
- 
-
+        
+        DataDictionaryRepository.InsertOrReplace(formElement);
     }
 
     public bool ValidatePanel(FormElementPanel panel)

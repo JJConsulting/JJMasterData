@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Runtime.Serialization;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -11,10 +13,10 @@ public class FormElementPanel
     public int PanelId { get; set; }
 
     [DataMember(Name = "title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [DataMember(Name = "subtitle")]
-    public string SubTitle { get; set; }
+    public string? SubTitle { get; set; }
 
     [DataMember(Name = "layout")]
     public PanelLayout Layout { get; set; }
@@ -38,7 +40,7 @@ public class FormElementPanel
     public string EnableExpression { get; set; }
 
     [DataMember(Name = "cssClass")]
-    public string CssClass { get; set; }
+    public string? CssClass { get; set; }
 
     public FormElementPanel()
     {

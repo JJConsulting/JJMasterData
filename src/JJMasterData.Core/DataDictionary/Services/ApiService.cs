@@ -12,7 +12,7 @@ public class ApiService : BaseService
     {
     }
 
-    public bool EditApi(Metadata dicParser)
+    public bool EditApi(FormElement dicParser)
     {
         if (ValidateApi(dicParser))
             DataDictionaryRepository.InsertOrReplace(dicParser);
@@ -20,7 +20,7 @@ public class ApiService : BaseService
         return IsValid;
     }
 
-    public bool ValidateApi(Metadata dicParser)
+    public bool ValidateApi(FormElement dicParser)
     {
         bool hasApiGetEnabled;
 
@@ -29,7 +29,7 @@ public class ApiService : BaseService
         else
             hasApiGetEnabled = false;
 
-        if (dicParser.Table.Sync & !hasApiGetEnabled)
+        if (dicParser.ApiOptions.EnableGetAll & !hasApiGetEnabled)
         {
             AddError("Api", Translate.Key("To enable sync the get APIs must be enabled."));
         }

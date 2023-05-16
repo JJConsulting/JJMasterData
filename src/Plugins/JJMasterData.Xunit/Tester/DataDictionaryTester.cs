@@ -41,7 +41,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
         
         var dataContext = new DataContext(DataContextSource.Form, UserId);
         var formEvent = _formEventResolver.GetFormEvent(metadata.Table.Name);
-        formEvent?.OnMetadataLoad(dataContext,new MetadataLoadEventArgs(metadata));
+        formEvent?.OnMetadataLoad(dataContext,new FormEventLoadEventArgs(metadata));
         
         var formElement = metadata.GetFormElement();
         var expManager = new ExpressionManager(userValues, _entityRepository);

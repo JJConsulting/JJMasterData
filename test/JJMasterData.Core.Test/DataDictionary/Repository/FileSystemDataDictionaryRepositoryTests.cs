@@ -26,12 +26,9 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
 
     private static void CreateMetadataIfNotExists()
     {
-        var metadata = new Metadata
+        var metadata = new FormElement()
         {
-            Table = new Element
-            {
-                Name = "Example"
-            }
+            Name = "Example"
         };
 
         if (!File.Exists(DictionaryFilePath))
@@ -66,7 +63,7 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         var metadata = _repository.GetMetadata(DictionaryName);
         
         // Assert
-        Assert.Equal(DictionaryName, metadata.Table.Name);
+        Assert.Equal(DictionaryName, metadata.Name);
     }
     
     [Fact]
@@ -76,14 +73,14 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         CreateMetadataIfNotExists();
         var testData = "Test: " + DateTime.Now;
         var metadata = _repository.GetMetadata(DictionaryName);
-        metadata.Table.Info = testData;
+        metadata.Info = testData;
         
         // Act
         _repository.InsertOrReplace(metadata);
         metadata = _repository.GetMetadata(DictionaryName);
         
         // Assert
-        Assert.Equal(testData, metadata.Table.Info);
+        Assert.Equal(testData, metadata.Info);
     }
 
     public void Dispose()

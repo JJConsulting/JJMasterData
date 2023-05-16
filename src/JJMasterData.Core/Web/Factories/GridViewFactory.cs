@@ -46,7 +46,7 @@ internal static class GridViewFactory
         var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
         var metadata = dictionaryRepository.GetMetadata(elementName);
         grid.Name = "jjview" + elementName.ToLower();
-        grid.FormElement = metadata.GetFormElement();
+        grid.FormElement = metadata;
         SetGridOptions(grid, metadata.Options.Grid);
     }
 

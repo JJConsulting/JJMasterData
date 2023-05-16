@@ -311,7 +311,7 @@ public class JJLookup : JJBaseControl
         {
             var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
             var entityRepository = ExpressionManager.EntityRepository;
-            fields = entityRepository.GetFields(dictionary.Table, filters);
+            fields = entityRepository.GetFields(dictionary, filters);
         }
         catch
         {

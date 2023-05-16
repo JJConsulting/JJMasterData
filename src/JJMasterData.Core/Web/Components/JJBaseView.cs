@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
@@ -111,14 +112,14 @@ public abstract class JJBaseView
             Attributes.Remove(key);
     }
 
-    public void SetAttr(Hashtable values)
+    public void SetAttr(IDictionary<string,dynamic> values)
     {
         if (values == null)
             return;
 
-        foreach (DictionaryEntry v in values)
+        foreach (var v in values)
         {
-            SetAttr(v.Key.ToString(), v.Value);
+            SetAttr(v.Key, v.Value);
         }
     }
 

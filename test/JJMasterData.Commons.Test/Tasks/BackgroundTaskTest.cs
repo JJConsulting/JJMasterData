@@ -16,7 +16,7 @@ public class TaskWorkerTest : IBackgroundTaskWorker
             for (int i = 0; i < 10; i++)
             {
                 token.ThrowIfCancellationRequested();
-                Console.WriteLine("Running Worker...");
+                Console.WriteLine(@"Running Worker...");
                 reporter.Percentage = i * 10;
                 OnProgressChanged?.Invoke(this, new ProgressReporter());
                 Task.Delay(1000, token).Wait(token);

@@ -20,12 +20,10 @@ public class FileService
 
     public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var metadata = _dictionaryRepository.GetMetadata(elementName);
-        if (!metadata.ApiOptions.EnableGetDetail)
+        var formElement = _dictionaryRepository.GetMetadata(elementName);
+        if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
-        
-        var formElement = metadata.GetFormElement();
-        
+
         var field = formElement.Fields.First(f => f.Name == fieldName);
 
         var builder = new FormFilePathBuilder(formElement);
@@ -44,12 +42,11 @@ public class FileService
     
     public void SetDictionaryFile(string elementName, string fieldName, string pkValues, IFormFile file)
     {
-        var metadata = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.ApiOptions.EnableAdd)
+        if (!formElement.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
         
-        var formElement = metadata.GetFormElement();
         var field = formElement.Fields.First(f => f.Name == fieldName);
 
         SetPhysicalFile(formElement, field, pkValues, file);
@@ -104,12 +101,10 @@ public class FileService
     
     public void DeleteFile(string elementName, string fieldName, string pkValues, string fileName)
     {
-        var metadata = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.ApiOptions.EnableDel)
+        if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
-        
-        var formElement = metadata.GetFormElement();
         
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
@@ -158,13 +153,11 @@ public class FileService
     
     public void RenameFile(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
-        var metadata = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = _dictionaryRepository.GetMetadata(elementName);
         
-        if (!metadata.ApiOptions.EnableUpdatePart)
+        if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
-        
-        var formElement = metadata.GetFormElement();
-        
+
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
         RenamePhysicalFile(formElement, field, pkValues, oldName, newName);

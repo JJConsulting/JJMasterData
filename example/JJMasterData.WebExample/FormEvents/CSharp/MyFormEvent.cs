@@ -16,8 +16,8 @@ public class MyFormEvent : BaseFormEvent
         Repository = repository;
     }
     
-    public override void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
+    public override void OnFormElementLoad(object sender, FormElementLoadEventArgs args)
     {
-        args.Metadata.Form.SubTitle = "You can edit your metadata at runtime using FormEvents";
+        args.FormElement.SubTitle = "You can edit your metadata at runtime using FormEvents";
     }
 }

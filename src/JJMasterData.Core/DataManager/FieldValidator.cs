@@ -94,19 +94,19 @@ public static class FieldValidator
             case FormComponent.Slider:
                 if (field.DataType == FieldType.Int)
                 {
-                    if (int.Parse(value) < field.MinValue)
-                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.MinValue);
+                    if (int.Parse(value) < (float?)field.Attributes[FormElementField.MinValueAttribute])
+                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.Attributes[FormElementField.MinValueAttribute]);
 
-                    if (int.Parse(value) > field.MaxValue)
-                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.MaxValue);
+                    if (int.Parse(value) > (float?)field.Attributes[FormElementField.MaxValueAttribute])
+                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.Attributes[FormElementField.MaxValueAttribute]);
                 }
                 else
                 {
-                    if (float.Parse(value, CultureInfo.CurrentCulture) < field.MinValue)
-                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.MinValue);
+                    if (float.Parse(value, CultureInfo.CurrentCulture) < (float?)field.Attributes[FormElementField.MinValueAttribute])
+                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.Attributes["MinValue"]);
 
-                    if (float.Parse(value, CultureInfo.CurrentCulture) > field.MaxValue)
-                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.MaxValue);
+                    if (float.Parse(value, CultureInfo.CurrentCulture) > (float?)field.Attributes[FormElementField.MaxValueAttribute])
+                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.Attributes["MaxValue"]);
                 }
                
                 break;

@@ -1,5 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
@@ -14,28 +17,35 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public class FormElement : Element
 {
-    private List<FormElementField> _formFields = new();
+    public string? Title { get; set; }
+
+    public string? SubTitle { get; set; }
     
-    [DataMember(Name = "title")]
-    public string Title { get; set; }
-    
-    [DataMember(Name = "subTitle")]
-    public string SubTitle { get; set; }
-    
+    [Required]
     [DataMember(Name = "fields")]
     public new FormElementList Fields { get; private set; }
-
+    
+    [Required]
     [DataMember(Name = "panels")]
     public List<FormElementPanel> Panels { get; set; }
-
-    [DataMember(Name = "relations")]
+    
+    [Required]
+    [DataMember(Name="relations")]
     public new FormElementRelationshipList Relationships { get; set; }
-
+    
+    [Required]
+    public FormElementOptions Options { get; set; }
+    
+    [Required]
+    public FormElementApiOptions ApiOptions { get; set; }
+    
     public FormElement()
     {
-        Fields = new FormElementList(base.Fields, _formFields);
+        Fields = new FormElementList(base.Fields);
         Panels = new List<FormElementPanel>();
+        Options = new FormElementOptions();
         Relationships = new FormElementRelationshipList(base.Relationships);
+        ApiOptions = new FormElementApiOptions();
     }
 
     public FormElement(Element element) 
@@ -52,8 +62,12 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        Fields = new FormElementList(base.Fields, _formFields);
+        
+        Fields = new FormElementList(base.Fields);
         Panels = new List<FormElementPanel>();
+        ApiOptions = new FormElementApiOptions();
+        Options = new FormElementOptions();
+        
         foreach (var f in element.Fields)
         {
             AddField(f);
@@ -63,7 +77,7 @@ public class FormElement : Element
     public FormElement(DataTable schema) : this()
     {
         if (schema == null)
-            throw new ArgumentNullException(nameof(schema), "DataTable schema cannot be null");
+            throw new ArgumentNullException(nameof(schema), @"DataTable schema cannot be null");
 
         Name = schema.TableName;
         TableName = schema.TableName;
@@ -122,13 +136,11 @@ public class FormElement : Element
 
     protected void AddField(ElementField field)
     {
-        base.Fields.Add(field);
-        _formFields.Add(new FormElementField(field));
+        Fields.Add(new FormElementField(field));
     }
 
     public FormElementPanel GetPanelById(int id)
     {
         return Panels.Find(x => x.PanelId == id);
     }
-
 }

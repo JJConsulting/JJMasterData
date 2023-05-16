@@ -12,9 +12,9 @@ namespace JJMasterData.Swagger.AspNetCore;
 internal class DataDictionaryOperationFactory
 {
     internal FormElement FormElement { get; set; }
-    internal MetadataApiOptions Options { get; set; }
+    internal FormElementApiOptions Options { get; set; }
     internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
-    internal DataDictionaryOperationFactory(FormElement formElement, MetadataApiOptions options)
+    internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
     {
         FormElement = formElement;
         Options = options;

@@ -1,4 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -10,8 +13,8 @@ public class FormElementDataFile
     /// <summary>
     /// Physical path where the file will be saved
     /// </summary>
-    [DataMember(Name = "folderPath")]
-    public string FolderPath { get; set; }
+    [Required]
+    public string FolderPath { get; set; } = null!;
 
     /// <summary>
     /// Maximum file size in bytes
@@ -30,8 +33,8 @@ public class FormElementDataFile
     /// <remarks>
     /// Example: txt,csv,log
     /// </remarks>
-    [DataMember(Name = "allowedTypes")]
-    public string AllowedTypes { get; set; }
+    [Required]
+    public string AllowedTypes { get; set; } = "*";
 
     /// <summary>
     /// Permite upload simultaneo de arquivos.
