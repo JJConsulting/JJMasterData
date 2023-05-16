@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCore(configuration);
     }
 
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfigurationSection configuration)
+    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
     {
         AddDefaultServices(services);
 

@@ -58,7 +58,7 @@ public class JJServiceBuilder
         return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
     }
     
-    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, EntityRepository> implementationFactory)
+    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
         return this;
