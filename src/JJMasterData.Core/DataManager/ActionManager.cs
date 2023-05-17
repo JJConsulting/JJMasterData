@@ -38,7 +38,7 @@ internal class ActionManager
     }
 
 
-    private string GetInternalUrlScript(InternalAction action, Hashtable formValues)
+    private string GetInternalUrlScript(InternalAction action, IDictionary formValues)
     {
         var elementRedirect = action.ElementRedirect;
         var dicRepository = JJServiceCore.DataDictionaryRepository;
@@ -57,7 +57,7 @@ internal class ActionManager
         
         foreach (var r in elementRedirect.RelationFields)
         {
-            if (formValues.ContainsKey(r.InternalField))
+            if (formValues.Contains(r.InternalField))
             {
                 @params.Append("&");
                 @params.Append(r.RedirectField);
@@ -85,7 +85,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    private string GetUrlRedirectScript(UrlRedirectAction action, Hashtable formValues, PageState pageState, ActionSource contextAction, string fieldName)
+    private string GetUrlRedirectScript(UrlRedirectAction action, IDictionary formValues, PageState pageState, ActionSource contextAction, string fieldName)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         actionMap.FieldName = fieldName;
@@ -129,7 +129,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, Hashtable formValues, ActionSource contextAction)
+    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
@@ -168,7 +168,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    internal string GetConfigUIScript(ConfigAction action, Hashtable formValues)
+    internal string GetConfigUIScript(ConfigAction action, IDictionary formValues)
     {
         var actionMap = new ActionMap(ActionSource.Toolbar, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
@@ -183,7 +183,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    private string GetCommandScript(BasicAction action, Hashtable formValues, ActionSource contextAction)
+    private string GetCommandScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string jsonMap = JsonConvert.SerializeObject(actionMap);
@@ -208,22 +208,22 @@ internal class ActionManager
     }
 
     
-    public JJLinkButton GetLinkGrid(BasicAction action, Hashtable formValues)
+    public JJLinkButton GetLinkGrid(BasicAction action, IDictionary formValues)
     {
         return GetLink(action, formValues, PageState.List, ActionSource.Grid);
     }
 
-    public JJLinkButton GetLinkToolBar(BasicAction action, Hashtable formValues)
+    public JJLinkButton GetLinkToolBar(BasicAction action, IDictionary formValues)
     {
         return GetLink(action, formValues, PageState.List, ActionSource.Toolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, Hashtable formValues, PageState pagestate, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pagestate, string panelName)
     {
         return GetLink(action, formValues, pagestate, ActionSource.Field, panelName);
     }
 
-    private JJLinkButton GetLink(BasicAction action, Hashtable formValues, PageState pagestate, ActionSource contextAction, string fieldName = null)
+    private JJLinkButton GetLink(BasicAction action, IDictionary formValues, PageState pagestate, ActionSource contextAction, string fieldName = null)
     {
         var link = new JJLinkButton
         {

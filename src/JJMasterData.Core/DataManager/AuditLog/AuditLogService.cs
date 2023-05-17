@@ -35,7 +35,7 @@ public class AuditLogService
         EntityRepository = entityRepository;
     }
 
-    public void AddLog(Element element, Hashtable formValues, CommandOperation action)
+    public void AddLog(Element element, IDictionary formValues, CommandOperation action)
     {
         var values = new Hashtable
         {
@@ -67,7 +67,7 @@ public class AuditLogService
         }
     }
 
-    private string GetJsonFields(Hashtable formValues)
+    private string GetJsonFields(IDictionary formValues)
     {
         var valuesAux = new Hashtable();
         foreach (DictionaryEntry item in formValues)
@@ -79,7 +79,7 @@ public class AuditLogService
         return JsonConvert.SerializeObject(valuesAux);
     }
 
-    public string GetKey(Element element, Hashtable values)
+    public string GetKey(Element element, IDictionary values)
     {
         var key = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);

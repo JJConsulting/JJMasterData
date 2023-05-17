@@ -17,7 +17,7 @@ public class FormFilePathBuilder
         FormElement = formElement;
     }
 
-    public string GetFolderPath(FormElementField field, Hashtable formValues)
+    public string GetFolderPath(FormElementField field, IDictionary formValues)
     {
         if (field.DataFile == null)
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);

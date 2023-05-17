@@ -76,7 +76,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public Hashtable CurrentFilter { get; set; }
+    public IDictionary CurrentFilter { get; set; }
 
     /// <summary>
     /// Recupera a ordenação da tabela, 

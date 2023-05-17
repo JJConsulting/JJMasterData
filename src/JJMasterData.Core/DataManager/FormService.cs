@@ -5,6 +5,7 @@ using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -65,7 +66,7 @@ public class FormService
     /// Update records applying expressions and default values.
     /// </summary>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter Update(Hashtable values)
+    public FormLetter Update(IDictionary values)
     {
         var errors = FormManager.ValidateFields(values, PageState.Update, EnableErrorLink);
         var result = new FormLetter(errors);
@@ -101,9 +102,9 @@ public class FormService
         return result;
     }
 
-    public FormLetter Insert(Hashtable values, bool validateFields = true)
+    public FormLetter Insert(IDictionary values, bool validateFields = true)
     {
-        Hashtable errors;
+        IDictionary errors;
         if (validateFields)
             errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
         else
@@ -144,7 +145,7 @@ public class FormService
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter<CommandOperation> InsertOrReplace(Hashtable values)
+    public FormLetter<CommandOperation> InsertOrReplace(IDictionary values)
     {
         var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
         var result = new FormLetter<CommandOperation>(errors);
@@ -194,9 +195,9 @@ public class FormService
     /// Delete records in the database using the primaryKeys filter.
     /// </summary>
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
-    public FormLetter Delete(Hashtable primaryKeys)
+    public FormLetter Delete(IDictionary primaryKeys)
     {
-        var errors = new Hashtable();
+        IDictionary errors = new Dictionary<string,dynamic>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
@@ -230,7 +231,7 @@ public class FormService
         return result;
     }
 
-    private static void RunDatabaseCommand(Action action, ref Hashtable errors)
+    private static void RunDatabaseCommand(Action action, ref IDictionary errors)
     {
         try
         {
@@ -242,7 +243,7 @@ public class FormService
         }
     }
 
-    private static T RunDatabaseCommand<T>(Func<T> func, ref Hashtable errors)
+    private static T RunDatabaseCommand<T>(Func<T> func, ref IDictionary errors)
     {
         try
         {

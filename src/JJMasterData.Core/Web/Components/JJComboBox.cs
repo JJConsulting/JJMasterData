@@ -28,7 +28,7 @@ public class JJComboBox : JJBaseControl
         private set => _entityRepository = value;
     }
 
-    internal Hashtable FormValues { get; private set; }
+    internal IDictionary FormValues { get; private set; }
 
     internal PageState PageState { get; set; }
 
@@ -278,12 +278,12 @@ public class JJComboBox : JJBaseControl
             {
                 if (searchId != null)
                 {
-                    if (!UserValues.ContainsKey("search_id"))
+                    if (!UserValues.Contains("search_id"))
                         UserValues.Add("search_id", StringManager.ClearText(searchId));
                 }
                 else
                 {
-                    if (!UserValues.ContainsKey("search_id"))
+                    if (!UserValues.Contains("search_id"))
                         UserValues.Add("search_id", null);
                 }
 

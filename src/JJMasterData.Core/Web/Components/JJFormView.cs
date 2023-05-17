@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Data.Entity;
@@ -230,12 +231,12 @@ public class JJFormView : JJGridView
         else if ("reloadpainel".Equals(requestType))
         {
             //TODO: eliminar metodo GetSelectedRowId
-            Hashtable filter = GetSelectedRowId();
+            var filter = GetSelectedRowId();
             Hashtable values = null;
             if (filter is { Count: > 0 })
                 values = EntityRepository.GetFields(FormElement, filter);
 
-            string htmlPanel = GetHtmlDataPainel(values, null, PageState, true).ToString();
+            string htmlPanel = GetDataPanelHtml(new(values, null, PageState), true).ToString();
             CurrentContext.Response.SendResponse(htmlPanel);
             return null;
         }
@@ -344,7 +345,7 @@ public class JJFormView : JJGridView
             }
 
             pageState = PageState.Update;
-            return GetHtmlDataPainel(values, errors, pageState, true);
+            return GetDataPanelHtml(new(values, errors, pageState), true);
         }
 
         if ("CANCEL".Equals(formAction))
@@ -356,12 +357,12 @@ public class JJFormView : JJGridView
         if ("REFRESH".Equals(formAction))
         {
             var values = GetFormValues();
-            return GetHtmlDataPainel(values, null, pageState, true);
+            return GetDataPanelHtml(new(values, null, pageState), true);
         }
         else
         {
             bool autoReloadFields;
-            Hashtable values;
+            IDictionary values;
             if (pageState == PageState.Update)
             {
                 autoReloadFields = true;
@@ -375,7 +376,7 @@ public class JJFormView : JJGridView
             }
 
             pageState = PageState.Update;
-            return GetHtmlDataPainel(values, null, pageState, autoReloadFields);
+            return GetDataPanelHtml(new(values, null, pageState), autoReloadFields);
         }
     }
 
@@ -423,7 +424,7 @@ public class JJFormView : JJGridView
                     {
                         div.WithAttribute("id", $"pnl_insert_{Name}")
                            .WithAttribute("style", "display:none")
-                           .AppendElement(GetHtmlDataPainel(RelationValues, null, PageState.Insert, false));
+                           .AppendElement(GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false));
                     });
                     alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
                     return alertHtml;
@@ -435,7 +436,7 @@ public class JJFormView : JJGridView
             }
   
             pageState = PageState.Insert;
-            return GetHtmlDataPainel(values, errors, pageState, true);
+            return GetDataPanelHtml(new(values, errors, pageState), true);
 
         }
 
@@ -456,13 +457,13 @@ public class JJFormView : JJGridView
         }
         if (pageState == PageState.Insert)
         {
-            return GetHtmlDataPainel(GetFormValues(), null, pageState, true);
+            return GetDataPanelHtml(new(GetFormValues(), null, pageState), true);
         }
 
         pageState = PageState.Insert;
         
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
-            return GetHtmlDataPainel(RelationValues, null, PageState.Insert, false);
+            return GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false);
         return GetHtmlElementList(action);
     }
 
@@ -472,14 +473,14 @@ public class JJFormView : JJGridView
         sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
-        var formElement = JJServiceCore.DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var formsel = new JJFormView(formElement)
+        var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
+        var selectedForm = new JJFormView(formElement)
         {
             EntityRepository = EntityRepository,
             UserValues = UserValues,
             Name = action.ElementNameToSelect
         };
-        formsel.SetOptions(formElement.Options);
+        selectedForm.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
         goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
@@ -494,7 +495,7 @@ public class JJFormView : JJGridView
             OnClientClick = goBackScript.ToString(),
             IsDefaultOption = true
         };
-        formsel.AddToolBarAction(goBackAction);
+        selectedForm.AddToolBarAction(goBackAction);
 
         var selAction = new ScriptAction
         {
@@ -503,11 +504,11 @@ public class JJFormView : JJGridView
             ToolTip = "Select",
             IsDefaultOption = true
         };
-        formsel.AddGridAction(selAction);
+        selectedForm.AddGridAction(selAction);
 
-        formsel.OnRenderAction += FormSelectedOnRenderAction;
+        selectedForm.OnRenderAction += FormSelectedOnRenderAction;
 
-        sHtml.AppendElement(formsel);
+        sHtml.AppendElement(selectedForm);
 
         return sHtml;
     }
@@ -541,7 +542,7 @@ public class JJFormView : JJGridView
         else
         {
             pageState = PageState.Update;
-            html.AppendElement(GetHtmlDataPainel(values, null, pageState, false));
+            html.AppendElement(GetDataPanelHtml(new(values, null, pageState), false));
         }
 
         return html;
@@ -559,7 +560,7 @@ public class JJFormView : JJGridView
         pageState = PageState.View;
         var filter = acMap.PKFieldValues;
         var values = EntityRepository.GetFields(FormElement, filter);
-        return GetHtmlDataPainel(values, null, PageState.View, false);
+        return GetDataPanelHtml(new(values, null, pageState), false);
     }
 
     private HtmlBuilder GetHtmlDelete(ref PageState pageState)
@@ -617,9 +618,8 @@ public class JJFormView : JJGridView
         try
         {
             var rows = GetSelectedGridValues();
-            foreach (Hashtable row in rows)
+            foreach (var errors in rows.Select(DeleteFormValues))
             {
-                Hashtable errors = DeleteFormValues(row);
                 if (errors is { Count: > 0 })
                 {
                     foreach (DictionaryEntry err in errors)
@@ -695,7 +695,7 @@ public class JJFormView : JJGridView
         if (pageState == PageState.View)
         {
             var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
-            html.AppendElement(GetFormLogBottombar(actionMap.PKFieldValues));
+            html.AppendElement(GetFormLogBottomBar(actionMap.PKFieldValues));
             pageState = PageState.Log;
             return html;
         }
@@ -735,11 +735,13 @@ public class JJFormView : JJGridView
         return html;
     }
 
-    private HtmlBuilder GetHtmlDataPainel(Hashtable values, Hashtable errors, PageState pageState, bool autoReloadFormFields)
+    private HtmlBuilder GetDataPanelHtml(FormContext formContext, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         var relationships = FormElement.Relationships.Where(r =>r.ViewType != RelationshipViewType.None || r.IsParent).ToList();
-
+        
+        var (values, errors, pageState) = formContext;
+        
         var parentPanel = DataPanel;
         parentPanel.PageState = pageState;
         parentPanel.Errors = errors;
@@ -751,31 +753,87 @@ public class JJFormView : JJGridView
 
         if (relationships.Count == 0)
         {
-            return GetParentPanelHtml(values, errors, pageState, parentPanel);
+            return GetParentPanelHtml(formContext, parentPanel);
         }
         
-        foreach (var relationship in relationships)
+        if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            html.AppendElement(GetRelationshipHtml(values, errors, pageState, relationship, parentPanel));
+            var tabNav = new JJTabNav
+            {
+                Name = $"nav_relationships_{parentPanel.Name}"
+            };
+        
+            foreach (var relationship in relationships.Where(r=>r.Panel.Layout is PanelLayout.Tab))
+            {
+                var baseView = GetRelationshipBaseView(formContext, relationship, parentPanel);
+                tabNav.ListTab.Add(new NavContent
+                {
+                    Title = relationship.Panel.Title,
+                    HtmlContent = baseView
+                });
+            }
+            html.AppendElement(tabNav.GetHtmlBuilder());
         }
 
+        foreach (var relationship in relationships.Where(r=>r.Panel.Layout is not PanelLayout.Tab))
+        {
+            var baseView = GetRelationshipBaseView(formContext, relationship, parentPanel);
+            var panel = GetNonTabRelationshipPanel(relationship, baseView);
+            html.AppendElement(panel);
+        }
+           
+        
         return html;
     }
 
-    private HtmlBuilder GetRelationshipHtml(Hashtable values, Hashtable errors, PageState pageState,
+    private HtmlBuilder GetNonTabRelationshipPanel(FormElementRelationship relationship, HtmlBuilder html)
+    {
+        switch (relationship.Panel.Layout)
+        {
+            case PanelLayout.Collapse:
+            {
+                var collapse = new JJCollapsePanel
+                {
+                    Name = "collapse_" + relationship.Id,
+                    Title = relationship.Panel.Title,
+                    HtmlBuilderContent = html
+                };
+
+                return collapse.GetHtmlBuilder();
+            }
+            case PanelLayout.Panel or PanelLayout.Well:
+            {
+                var panel = new JJCard
+                {
+                    Name = "card_" + relationship.Id,
+                    Title = relationship.Panel.Title,
+                    ShowAsWell = relationship.Panel.Layout == PanelLayout.Well,
+                    HtmlBuilderContent = html
+                };
+
+                return panel.GetHtmlBuilder();
+            }
+            case PanelLayout.NoDecoration:
+                return html;
+            default:
+                return null;
+        }
+    }
+    
+    private HtmlBuilder GetRelationshipBaseView(FormContext formContext,
         FormElementRelationship relationship, JJDataPanel parentPanel)
     {
         if (relationship.IsParent)
         {
-            return GetParentPanelHtml(values, errors, pageState, parentPanel);
+            return GetParentPanelHtml(formContext, parentPanel);
         }
 
         var childElement = DataDictionaryRepository.GetMetadata(relationship.ElementRelationship!.ChildElement);
 
-        var filter = new Hashtable();
-        foreach (var col in relationship.ElementRelationship.Columns.Where(col => values.ContainsKey(col.PkColumn)))
+        var filter = new Dictionary<string,dynamic>();
+        foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.Contains(col.PkColumn)))
         {
-            filter.Add(col.FkColumn, values[col.PkColumn]);
+            filter.Add(col.FkColumn, formContext.Values[col.PkColumn]);
         }
 
         switch (relationship.ViewType)
@@ -783,28 +841,17 @@ public class JJFormView : JJGridView
             case RelationshipViewType.View:
             {
                 var childValues = EntityRepository.GetFields(childElement, filter);
-                var childView = new JJDataPanel(childElement)
+                var childDataPanel = new JJDataPanel(childElement)
                 {
                     EntityRepository = EntityRepository,
                     PageState = PageState.View,
                     UserValues = UserValues,
                     Values = childValues,
-                    RenderPanelGroup = false
+                    RenderPanelGroup = false,
+                    FormUI = childElement.Options.Form
                 };
 
-                if (childElement.Options != null)
-                {
-                    childView.FormUI = childElement.Options.Form;
-                }
-
-                var collapse = new JJCollapsePanel
-                {
-                    Name = "collapse_" + childView.Name,
-                    Title = relationship.Panel.Title,
-                    HtmlBuilderContent = childView.GetHtmlBuilder()
-                };
-
-                return collapse.GetHtmlBuilder();
+                return childDataPanel.GetHtmlBuilder();
             }
             case RelationshipViewType.List:
             {
@@ -820,48 +867,32 @@ public class JJFormView : JJGridView
                 };
                 childGrid.Filter.ApplyCurrentFilter(filter);
 
-                if (childElement.Options != null)
-                {
-                    childGrid.SetOptions(childElement.Options);
-                }
+                childGrid.SetOptions(childElement.Options);
 
                 childGrid.ShowTitle = false;
-
-                var collapse = new JJCollapsePanel
-                {
-                    Name = "collapse_" + childGrid.Name,
-                    Title = childElement.Title,
-                    HtmlContent = childGrid.GetHtml()
-                };
-
-                return collapse.GetHtmlBuilder();
+                return childGrid.GetHtmlBuilder();
             }
             default:
                 return null;
         }
     }
 
-    private HtmlBuilder GetParentPanelHtml(Hashtable values, IDictionary erros, PageState pageState, JJDataPanel parentPanel)
+    private HtmlBuilder GetParentPanelHtml(FormContext formContext, JJDataPanel parentPanel)
     {
+        var (errors, values, pageState) = formContext;
+        
         var parentPanelHtml = parentPanel.GetHtmlBuilder();
 
-        if (erros != null)
-            parentPanelHtml.AppendElement(new JJValidationSummary(erros));
+        if (formContext.Errors != null)
+            parentPanelHtml.AppendElement(new JJValidationSummary(errors));
 
-        parentPanelHtml.AppendElement(GetFormBottombar(pageState, values));
+        parentPanelHtml.AppendElement(GetFormBottomBar(pageState, values));
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
-        var collapse = new JJCollapsePanel
-        {
-            Name = "collapse_" + Name,
-            Title = FormElement.Title,
-            ExpandedByDefault = true,
-            HtmlBuilderContent = parentPanelHtml
-        };
-        return collapse.GetHtmlBuilder();
+        return parentPanelHtml;
     }
 
-    private JJToolbar GetFormLogBottombar(Hashtable values)
+    private JJToolbar GetFormLogBottomBar(IDictionary values)
     {
         var backScript = new StringBuilder();
         backScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
@@ -881,7 +912,7 @@ public class JJFormView : JJGridView
         return toolbar;
     }
 
-    private JJToolbar GetFormBottombar(PageState pageState, Hashtable values)
+    private JJToolbar GetFormBottomBar(PageState pageState, IDictionary values)
     {
         var toolbar = new JJToolbar
         {
@@ -917,7 +948,7 @@ public class JJFormView : JJGridView
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public Hashtable InsertFormValues(Hashtable values, bool validateFields = true)
+    public IDictionary InsertFormValues(IDictionary values, bool validateFields = true)
     {
         var result = Service.Insert(values, validateFields);
         UrlRedirect = result.UrlRedirect;
@@ -928,14 +959,14 @@ public class JJFormView : JJGridView
     /// Update the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public Hashtable UpdateFormValues(Hashtable values)
+    public IDictionary UpdateFormValues(IDictionary values)
     {
         var result = Service.Update(values);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
     
-    public Hashtable DeleteFormValues(Hashtable filter)
+    public IDictionary DeleteFormValues(IDictionary filter)
     {
         var values = Service.FormManager.MergeWithExpressionValues(filter, PageState.Delete, true);
         var result = Service.Delete(values);
@@ -943,7 +974,7 @@ public class JJFormView : JJGridView
         return result.Errors;
     }
     
-    public Hashtable GetFormValues()
+    public IDictionary GetFormValues()
     {
         var painel = DataPanel;
         var values = painel.GetFormValues();
@@ -956,12 +987,12 @@ public class JJFormView : JJGridView
         return values;
     }
     
-    public Hashtable ValidateFields(Hashtable values, PageState pageState)
+    public IDictionary ValidateFields(IDictionary values, PageState pageState)
     {
         var painel = DataPanel;
         painel.Values = values;
 
-        Hashtable errors = painel.ValidateFields(values, pageState);
+        var errors = painel.ValidateFields(values, pageState);
         return errors;
     }
 
@@ -1023,7 +1054,7 @@ public class JJFormView : JJGridView
         return btn;
     }
 
-    private JJLinkButton GetButtonHideLog(Hashtable values)
+    private JJLinkButton GetButtonHideLog(IDictionary values)
     {
         string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionSource.Grid);
         var btn = new JJLinkButton
@@ -1037,7 +1068,7 @@ public class JJFormView : JJGridView
         return btn;
     }
 
-    private JJLinkButton GetButtonViewLog(Hashtable values)
+    private JJLinkButton GetButtonViewLog(IDictionary values)
     {
         string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionSource.Toolbar);
         var btn = new JJLinkButton

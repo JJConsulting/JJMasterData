@@ -302,7 +302,7 @@ internal class FormFileService
         fileStream.Close();
     }
 
-    internal static void SaveFormMemoryFiles(FormElement FormElement, Hashtable primaryKeys)
+    internal static void SaveFormMemoryFiles(FormElement FormElement, IDictionary primaryKeys)
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -317,7 +317,7 @@ internal class FormFileService
         }
     }
 
-    internal static void DeleteFiles(FormElement FormElement, Hashtable primaryKeys)
+    internal static void DeleteFiles(FormElement FormElement, IDictionary primaryKeys)
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)

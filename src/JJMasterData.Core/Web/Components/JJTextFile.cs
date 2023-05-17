@@ -15,10 +15,10 @@ namespace JJMasterData.Core.Web.Components;
 public class JJTextFile : JJBaseControl
 {
     private const string UploadFormParameterName = "jjuploadform_";
-    private Hashtable _formValues;
+    private IDictionary _formValues;
     private FormFilePathBuilder _pathBuiler;
     
-    public Hashtable FormValues
+    public IDictionary FormValues
     {
         get => _formValues ??= new Hashtable();
         set => _formValues = value;
@@ -182,7 +182,7 @@ public class JJTextFile : JJBaseControl
             var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
             for (int i = 0; i < pkFields.Count; i++)
             {
-                if (FormValues.ContainsKey(pkFields[i].Name))
+                if (FormValues.Contains(pkFields[i].Name))
                     FormValues[pkFields[i].Name] = values[i];
                 else
                     FormValues.Add(pkFields[i].Name, values[i]);
@@ -237,7 +237,7 @@ public class JJTextFile : JJBaseControl
         foreach (var pkField in pkFields)
         {
 
-            if (!FormValues.ContainsKey(pkField.Name))
+            if (!FormValues.Contains(pkField.Name))
                 return false;
 
             string value = FormValues[pkField.Name]!.ToString();

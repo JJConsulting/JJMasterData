@@ -15,17 +15,17 @@ public abstract class JJBaseView
 {
     #region "Properties"
 
-    private Hashtable _userValues;
-    private Hashtable _attributes;
+    private IDictionary _userValues;
+    private IDictionary<string,dynamic> _attributes;
     private string _userId;
     
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
     /// </summary>
-    public Hashtable UserValues
+    public IDictionary UserValues
     {
-        get => _userValues ??= new Hashtable();
+        get => _userValues ??= new Dictionary<string,dynamic>();
         set => _userValues = value;
     }
 
@@ -41,9 +41,9 @@ public abstract class JJBaseView
     /// <summary>
     /// HTML attributes represented by key/value pairs
     /// </summary>
-    public Hashtable Attributes
+    public IDictionary<string,dynamic> Attributes
     {
-        get => _attributes ??= new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        get => _attributes ??= new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
     }
 
@@ -98,15 +98,12 @@ public abstract class JJBaseView
 
     public string GetAttr(string key)
     {
-        return Attributes.ContainsKey(key) ? Attributes[key].ToString() : string.Empty;
+        return Attributes.TryGetValue(key, out var attribute) ? attribute.ToString() : string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        if (Attributes.ContainsKey(key))
-            Attributes[key] = value;
-        else
-            Attributes.Add(key, value);
+        Attributes[key] = value;
 
         if (value == null || string.IsNullOrEmpty(value.ToString()))
             Attributes.Remove(key);
@@ -132,7 +129,7 @@ public abstract class JJBaseView
     /// <param name="value">Name of the field</param>
     public void SetUserValues(string field, object value)
     {
-        if (UserValues.ContainsKey(field))
+        if (UserValues.Contains(field))
             UserValues[field] = value;
         else
             UserValues.Add(field, value);

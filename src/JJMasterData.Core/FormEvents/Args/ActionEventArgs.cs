@@ -11,11 +11,11 @@ public class ActionEventArgs : EventArgs
     
     public JJLinkButton LinkButton { get; set; }
     
-    public Hashtable FieldValues { get; internal set; }
+    public IDictionary FieldValues { get; internal set; }
     
     public string HtmlResult { get; set; }
 
-    public ActionEventArgs(BasicAction action, JJLinkButton linkButton, Hashtable fieldValues)
+    public ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary fieldValues)
     {
         Action = action ?? throw new ArgumentNullException(nameof(action));
         Action.Name = action.Name;

@@ -18,7 +18,7 @@ internal class GridFilter
     private const string CLEARACTION = "CLEARACTION";
     internal const string FilterFieldPrefix = "filter_";
 
-    private Hashtable _currentFilter;
+    private IDictionary _currentFilter;
     private JJGridView GridView { get; set; }
 
     private JJHttpContext CurrentContext => GridView.CurrentContext;
@@ -32,7 +32,7 @@ internal class GridFilter
     /// Recupera o filtro atual da grid
     /// </summary>
     /// <returns></returns>
-    public Hashtable GetCurrentFilter()
+    public IDictionary GetCurrentFilter()
     {
         if (_currentFilter != null)
             return _currentFilter;
@@ -74,7 +74,7 @@ internal class GridFilter
         return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("t"));
     }
     
-    public void ApplyCurrentFilter(Hashtable values)
+    public void ApplyCurrentFilter(IDictionary values)
     {
         if (values == null)
         {
@@ -84,7 +84,7 @@ internal class GridFilter
         {
             foreach (DictionaryEntry r in GridView.RelationValues)
             {
-                if (values.ContainsKey(r.Key))
+                if (values.Contains(r.Key))
                     values[r.Key] = r.Value;
                 else
                     values.Add(r.Key, r.Value);
@@ -96,7 +96,7 @@ internal class GridFilter
         {
             foreach (DictionaryEntry r in qValues)
             {
-                if (!values.ContainsKey(r.Key))
+                if (!values.Contains(r.Key))
                     values.Add(r.Key, r.Value);
             }
         }
@@ -154,7 +154,7 @@ internal class GridFilter
 
         foreach(var field in fields)
         {
-            if (!GridView.EnableFilter || GridView.RelationValues.ContainsKey(field.Name))
+            if (!GridView.EnableFilter || GridView.RelationValues.Contains(field.Name))
                 field.EnableExpression = "val:0";
         }
 

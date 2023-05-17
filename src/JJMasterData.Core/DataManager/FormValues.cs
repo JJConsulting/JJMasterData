@@ -78,12 +78,12 @@ internal class FormValues
     /// <summary>
     /// Recupera os dados do Form, aplicando o valor padrão e as triggers
     /// </summary> 
-    public Hashtable GetFormValues(PageState state, Hashtable values, bool autoReloadFormFields, string prefix = null)
+    public IDictionary GetFormValues(PageState state, IDictionary values, bool autoReloadFormFields, string prefix = null)
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var newValues = new Hashtable();
+        IDictionary newValues = new Hashtable();
         DataHelper.CopyIntoHash(ref newValues, values, true);
 
         if (CurrentContext.IsPostBack && autoReloadFormFields)

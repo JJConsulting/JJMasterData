@@ -19,7 +19,7 @@ public class FormUI
     public int FormCols { get; set; }
 
     /// <summary>
-    /// Tipo de layot para renderizar os campos
+    /// Tipo de layout para renderizar os campos
     /// </summary>
     [DataMember(Name = "isVerticalLayout")]
     public bool IsVerticalLayout { get; set; }

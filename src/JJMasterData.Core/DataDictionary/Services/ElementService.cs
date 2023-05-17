@@ -207,7 +207,7 @@ public class ElementService : BaseService
         gridView.EnableMultSelect = true;
         gridView.ExportAction.SetVisible(false);
         
-        if (!gridView.CurrentFilter.ContainsKey("type"))
+        if (!gridView.CurrentFilter.Contains("type"))
             gridView.CurrentFilter.Add("type", "F");
 
         gridView.OnDataLoad += FormViewOnDataLoad;
@@ -281,7 +281,7 @@ public class ElementService : BaseService
     }
     #endregion
 
-    public byte[] ExportSingleRow(Hashtable row)
+    public byte[] ExportSingleRow(IDictionary row)
     {
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);

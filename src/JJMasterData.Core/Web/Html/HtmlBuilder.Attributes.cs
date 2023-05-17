@@ -91,9 +91,9 @@ namespace JJMasterData.Core.Web.Html
         /// <summary>
         /// Set range of attrs
         /// </summary>
-        internal HtmlBuilder WithAttributes(Hashtable attributes)
+        internal HtmlBuilder WithAttributes(IDictionary<string,dynamic> attributes)
         {
-            foreach (DictionaryEntry v in attributes)
+            foreach (var v in attributes)
             {
                 _attributes.Add(v.Key.ToString(), v.Value.ToString());
             }

@@ -95,7 +95,7 @@ internal class GridTableBody
         return html;
     }
 
-    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, Hashtable values, string onClickScript)
+    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary values, string onClickScript)
     {
         foreach (var field in GridView.VisibleFields)
         {
@@ -146,7 +146,7 @@ internal class GridTableBody
         }
     }
 
-    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, Hashtable values,
+    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
@@ -186,7 +186,7 @@ internal class GridTableBody
         return div;
     }
 
-    public IEnumerable<HtmlBuilder> GetActionsHtmlList(Hashtable values)
+    public IEnumerable<HtmlBuilder> GetActionsHtmlList(IDictionary values)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
@@ -205,7 +205,7 @@ internal class GridTableBody
     }
 
     private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
-        Hashtable values)
+        IDictionary values)
     {
         foreach (var action in actionsWithoutGroup)
         {
@@ -232,7 +232,7 @@ internal class GridTableBody
         }
     }
 
-    private HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, Hashtable values)
+    private HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, IDictionary values)
     {
         var td = new HtmlBuilder(HtmlTag.Td)
             .WithCssClass("table-action")
@@ -352,7 +352,7 @@ internal class GridTableBody
         return checkBox;  
     }
 
-    private string GetOnClickScript(Hashtable values, BasicAction defaultAction)
+    private string GetOnClickScript(IDictionary values, BasicAction defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null) 
             return string.Empty;
@@ -383,7 +383,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private Hashtable GetValues(DataRow row)
+    private IDictionary GetValues(DataRow row)
     {
         var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         for (int i = 0; i < row.Table.Columns.Count; i++)

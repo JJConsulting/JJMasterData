@@ -75,13 +75,13 @@ public class JJDataPanel : JJBaseView
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public Hashtable Errors { get; set; }
+    public IDictionary Errors { get; set; }
 
     /// <summary>
     /// Field Values.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public Hashtable Values { get; set; }
+    public IDictionary Values { get; set; }
 
     /// <summary>
     /// When reloading the panel, keep the values ​​entered in the form
@@ -185,7 +185,7 @@ public class JJDataPanel : JJBaseView
             html.AppendHiddenInput($"jjform_pkval_{Name}", GetPkInputHidden());
         }
 
-        var panelGroup = new DataPanelGroup(this);
+        var panelGroup = new DataPanelLayout(this);
         html.AppendRange(panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
@@ -223,9 +223,9 @@ public class JJDataPanel : JJBaseView
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public Hashtable GetFormValues()
+    public IDictionary GetFormValues()
     {
-        Hashtable tempvalues = null;
+        IDictionary tempvalues = null;
 
         if (CurrentContext.HasContext())
         {
@@ -263,7 +263,7 @@ public class JJDataPanel : JJBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Hashtable ValidateFields(Hashtable values, PageState pageState)
+    public IDictionary ValidateFields(IDictionary values, PageState pageState)
     {
         return ValidateFields(values, pageState, true);
     }
@@ -275,7 +275,7 @@ public class JJDataPanel : JJBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public Hashtable ValidateFields(Hashtable values, PageState pageState, bool enableErrorLink)
+    public IDictionary ValidateFields(IDictionary values, PageState pageState, bool enableErrorLink)
     {
         var formManager = new FormManager(FormElement, FieldManager.ExpressionManager);
         return formManager.ValidateFields(values, pageState, enableErrorLink);
@@ -299,10 +299,12 @@ public class JJDataPanel : JJBaseView
         if (action is UrlRedirectAction urlAction)
         {
             string parsedUrl = FieldManager.ExpressionManager.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
-            var result = new Hashtable();
-            result.Add("UrlAsPopUp", urlAction.UrlAsPopUp);
-            result.Add("TitlePopUp", urlAction.TitlePopUp);
-            result.Add("UrlRedirect", parsedUrl);
+            var result = new Hashtable
+            {
+                { "UrlAsPopUp", urlAction.UrlAsPopUp },
+                { "TitlePopUp", urlAction.TitlePopUp },
+                { "UrlRedirect", parsedUrl }
+            };
 
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
         }

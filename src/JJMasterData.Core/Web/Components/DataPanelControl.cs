@@ -21,9 +21,9 @@ internal class DataPanelControl
 
     public PageState PageState { get; private set; }
 
-    public Hashtable Erros { get; private set; }
+    public IDictionary Erros { get; private set; }
 
-    public Hashtable Values { get; set; }
+    public IDictionary Values { get; set; }
 
     public string FieldNamePrefix { get; set; }
 

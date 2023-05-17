@@ -39,7 +39,7 @@ public class JJLookup : JJBaseControl
         private set => _expressionManager = value;
     }
 
-    internal Hashtable FormValues { get; private set; }
+    internal IDictionary FormValues { get; private set; }
 
     internal PageState PageState { get; set; }
 

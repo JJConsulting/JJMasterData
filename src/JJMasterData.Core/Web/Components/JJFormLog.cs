@@ -107,7 +107,7 @@ public class JJFormLog : JJBaseView
         return html;
     }
 
-    private string GetKeyLog(Hashtable values)
+    private string GetKeyLog(IDictionary values)
     {
         var filter = new Hashtable();
         filter.Add(AuditLogService.DIC_NAME, FormElement.Name);
@@ -125,7 +125,7 @@ public class JJFormLog : JJBaseView
         return viewId;
     }
 
-    public HtmlBuilder GetDetailLog(Hashtable values)
+    public HtmlBuilder GetDetailLog(IDictionary values)
     {
         string viewId = GetKeyLog(values);
         var html = GetDetailLog(viewId);
