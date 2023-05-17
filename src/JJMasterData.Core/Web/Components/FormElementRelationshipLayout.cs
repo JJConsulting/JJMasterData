@@ -53,17 +53,20 @@ internal class FormElementRelationshipLayout
         return tabNav.GetHtmlBuilder();
     }
 
-    private static HtmlBuilder GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder html)
+    private HtmlBuilder GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder content)
     {
         switch (relationship.Panel.Layout)
         {
-            case PanelLayout.Collapse:
+            case PanelLayout.Collapse or PanelLayout.Panel:
             {
                 var collapse = new JJCollapsePanel
                 {
                     Name = "collapse_" + relationship.Id,
                     Title = relationship.Panel.Title,
-                    HtmlBuilderContent = html
+                    HtmlBuilderContent = content,
+                    Color = relationship.Panel.Color,
+                    ExpandedByDefault = relationship.Panel.ExpandedByDefault,
+                    CssClass = relationship.Panel.CssClass
                 };
 
                 return collapse.GetHtmlBuilder();
@@ -74,14 +77,23 @@ internal class FormElementRelationshipLayout
                 {
                     Name = "card_" + relationship.Id,
                     Title = relationship.Panel.Title,
+                    Color = relationship.Panel.Color,
                     ShowAsWell = relationship.Panel.Layout == PanelLayout.Well,
-                    HtmlBuilderContent = html
+                    HtmlBuilderContent = content,
+                    CssClass = relationship.Panel.CssClass
                 };
 
                 return panel.GetHtmlBuilder();
             }
             case PanelLayout.NoDecoration:
-                return html;
+                var div = new HtmlBuilder(HtmlTag.Div);
+                div.WithCssClass(relationship.Panel.CssClass);
+                div.AppendElement(new JJTitle(relationship.Panel.Title, string.Empty)
+                {
+                    Size = HeadingSize.H3
+                });
+                div.AppendElement(content);
+                return div;
             default:
                 return null;
         }
