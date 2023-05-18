@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace JJMasterData.Core.DataDictionary;
 
 using System.Runtime.Serialization;
@@ -41,7 +43,7 @@ public class FormElementApiOptions
     public ApiJsonFormat FormatType { get; set; }
 
     /// <summary>
-    /// Aways apply UserId (from login) as filter or on set
+    /// Always apply UserId (from login) as filter or on set
     /// </summary>
     public string? ApplyUserIdOn { get; set; }
 
@@ -60,7 +62,7 @@ public class FormElementApiOptions
     }
 
 
-    public bool HasSetMehtod()
+    public bool HasSetMethod()
     {
         return EnableAdd ||
                EnableUpdate ||
