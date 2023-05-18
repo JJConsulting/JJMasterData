@@ -21,29 +21,28 @@ internal class DataDictionaryTester : IDataDictionaryTester
     public string DictionaryName { get; }
     public string? UserId { get; }
     
-    public DataDictionaryTester(Metadata metadata, string? userId = null)
+    public DataDictionaryTester(FormElement formElement, string? userId = null)
     {
-        DictionaryName = metadata.Table.Name;
+        DictionaryName = formElement.Name;
         UserId = userId;
         
         _entityRepository = JJService.EntityRepository;
         _formEventResolver = JJServiceCore.FormEventResolver;
-        _formService = GetFormService(metadata);
+        _formService = GetFormService(formElement);
     }
    
-    private FormService GetFormService(Metadata metadata)
+    private FormService GetFormService(FormElement formElement)
     {
-        bool logActionIsVisible = metadata.Options.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = formElement.Options.ToolBarActions.LogAction.IsVisible;
         var userValues = new Hashtable
         {
             { "USERID", UserId }
         };
         
         var dataContext = new DataContext(DataContextSource.Form, UserId);
-        var formEvent = _formEventResolver.GetFormEvent(metadata.Table.Name);
-        formEvent?.OnMetadataLoad(dataContext,new FormEventLoadEventArgs(metadata));
+        var formEvent = _formEventResolver.GetFormEvent(formElement.Name);
+        formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
         
-        var formElement = metadata.GetFormElement();
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(formElement, expManager);
         var service = new FormService(formManager, dataContext)
