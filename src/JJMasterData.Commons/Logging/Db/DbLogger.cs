@@ -11,7 +11,6 @@ namespace JJMasterData.Commons.Logging.Db;
 public class DbLogger : ILogger
 {
     private readonly DbLoggerProvider _dbLoggerProvider;
-    private bool _tableExists;
     private readonly BlockingCollection<LogMessage> _queue;
 
     /// <summary>
@@ -72,14 +71,14 @@ public class DbLogger : ILogger
         
             var element = DbLoggerElement.GetInstance(options);
             
-            if (!_tableExists)
+            if (!_dbLoggerProvider.TableExists)
             {
                 if (!_dbLoggerProvider.Repository.TableExists(options.TableName))
                 {
                     _dbLoggerProvider.Repository.CreateDataModel(element);
                 }
 
-                _tableExists = true;
+                _dbLoggerProvider.TableExists = true;
             }
         
             _dbLoggerProvider.Repository.Insert(element, values);
