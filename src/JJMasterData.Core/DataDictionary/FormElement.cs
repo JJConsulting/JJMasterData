@@ -35,9 +35,11 @@ public class FormElement : Element
     public new FormElementRelationshipList Relationships { get; set; }
     
     [Required]
+    [DataMember(Name="options")]
     public FormElementOptions Options { get; set; }
     
     [Required]
+    [DataMember(Name="apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
     
     public FormElement()

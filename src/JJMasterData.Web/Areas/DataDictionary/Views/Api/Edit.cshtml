@@ -8,7 +8,7 @@
     ViewData["Title"] = $"{Model.DictionaryName} - API";
 }
 
-<partial name="_Menu"/>
+<partial name="_Menu" model="Model"/>
 
 <style>
     input[type=checkbox] {
@@ -32,6 +32,7 @@
 
 @using (Html.BeginForm("Edit", "Api", FormMethod.Post))
 {
+    <input asp-for="MenuId" hidden="hidden"/>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
