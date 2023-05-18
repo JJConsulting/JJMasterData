@@ -118,13 +118,13 @@ internal class FormElementRelationshipLayout
 
         switch (relationship.ViewType)
         {
-            case RelationshipViewType.View:
+            case RelationshipViewType.View or RelationshipViewType.Update:
             {
                 var childValues = ParentFormView.EntityRepository.GetFields(childElement, filter);
                 var childDataPanel = new JJDataPanel(childElement)
                 {
                     EntityRepository = ParentFormView.EntityRepository,
-                    PageState = PageState.View,
+                    PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
                     UserValues = ParentFormView.UserValues,
                     Values = childValues,
                     RenderPanelGroup = false,

@@ -761,8 +761,10 @@ public class JJFormView : JJGridView
         }
         
         var layout = new FormElementRelationshipLayout(this);
+
+        var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships);
         
-        html.AppendRange(layout.GetRelationshipsHtml(parentPanel, relationships));
+        html.AppendRange(layoutHtml);
 
         return html;
     }
