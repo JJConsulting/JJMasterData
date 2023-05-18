@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 
@@ -141,6 +142,6 @@ public class FormElement : Element
 
     public FormElementPanel GetPanelById(int id)
     {
-        return Panels.Find(x => x.PanelId == id);
+        return Panels.First(x => x.PanelId == id);
     }
 }

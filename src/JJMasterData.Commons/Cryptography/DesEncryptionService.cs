@@ -15,7 +15,7 @@ internal class DesEncryptionService : IEncryptionService
     
     public string EncryptString(string plainText, string secretKey)
     {
-        using var des = new DESCryptoServiceProvider();
+        using var des = DES.Create();
         byte[] input = Encoding.UTF8.GetBytes(plainText); 
         byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
         using var ms = new MemoryStream();
@@ -33,7 +33,7 @@ internal class DesEncryptionService : IEncryptionService
             return null;
         try
         {
-            using var des = new DESCryptoServiceProvider();
+            using var des = DES.Create();
             using var ms = new MemoryStream();
             var input = Convert.FromBase64String(cipherText.Replace(" ", "+"));
             var keyBytes = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
