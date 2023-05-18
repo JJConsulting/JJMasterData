@@ -35,13 +35,13 @@ public class ExpressionManager
         set => _entityRepository = value;
     }
 
-    public Hashtable UserValues { get; set; }
+    public IDictionary UserValues { get; set; }
 
     #endregion
 
     #region "Constructors"
 
-    public ExpressionManager(Hashtable userValues, IEntityRepository entityRepository)
+    public ExpressionManager(IDictionary userValues, IEntityRepository entityRepository)
     {
         UserValues = userValues;
         EntityRepository = entityRepository;
@@ -52,7 +52,7 @@ public class ExpressionManager
     public string ParseExpression(string expression,
                                   PageState state,
                                   bool quotationMarks,
-                                  Hashtable values,
+                                  IDictionary values,
                                   ExpressionManagerInterval interval = null)
     {
         if (expression == null)
@@ -126,7 +126,7 @@ public class ExpressionManager
         return parsedExpression;
     }
 
-    public string GetDefaultValue(ElementField f, PageState state, Hashtable formValues)
+    public string GetDefaultValue(ElementField f, PageState state, IDictionary formValues)
     {
         if (f == null)
             throw new ArgumentNullException(nameof(f), Translate.Key("ElementField can not be null"));
@@ -134,7 +134,7 @@ public class ExpressionManager
         return GetValueExpression(f.DefaultValue, f, state, formValues);
     }
 
-    public bool GetBoolValue(string expression, string actionName, PageState state, Hashtable formValues)
+    public bool GetBoolValue(string expression, string actionName, PageState state, IDictionary formValues)
     {
         if (string.IsNullOrEmpty(expression))
         {
@@ -179,7 +179,7 @@ public class ExpressionManager
         return result;
     }
 
-    public string GetTriggerValue(FormElementField f, PageState state, Hashtable formValues)
+    public string GetTriggerValue(FormElementField f, PageState state, IDictionary formValues)
     {
         if (f == null)
             throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
@@ -187,7 +187,7 @@ public class ExpressionManager
         return GetValueExpression(f.TriggerExpression, f, state, formValues);
     }
 
-    private string GetValueExpression(string expression, ElementField f, PageState state, Hashtable formValues)
+    private string GetValueExpression(string expression, ElementField f, PageState state, IDictionary formValues)
     {
         if (string.IsNullOrEmpty(expression))
             return null;

@@ -15,15 +15,15 @@ namespace JJMasterData.Core.DataManager
         /// <remarks>
         /// Key = Field name, Value= Field value
         /// </remarks>
-        public Hashtable UserValues { get; set; }
+        public IDictionary UserValues { get; set; }
 
-        public Hashtable FormValues { get; set; }
+        public IDictionary FormValues { get; set; }
 
         public PageState PageState { get; set; }
 
         public IEntityRepository EntityRepository { get; set; }
 
-        public ExpressionOptions(Hashtable userValues, Hashtable formValues, PageState pageState, IEntityRepository entityRepository)
+        public ExpressionOptions(IDictionary userValues, IDictionary formValues, PageState pageState, IEntityRepository entityRepository)
         {
             UserValues = userValues.DeepCopy();
             FormValues = formValues;

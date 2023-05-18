@@ -178,7 +178,7 @@ public class MasterApiService
         }
         return ret;
     }
-    private ResponseLetter Update(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
+    private ResponseLetter Update(FormService formService, IDictionary apiValues, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
@@ -253,7 +253,7 @@ public class MasterApiService
             var formManager = formService.FormManager;
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
-            var currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
+            IDictionary currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
@@ -320,7 +320,7 @@ public class MasterApiService
 
         var expManager = new ExpressionManager(userValues, _entityRepository);
         var formManager = new FormManager(dictionary, expManager);
-        var newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
+        IDictionary newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
         {
@@ -456,7 +456,7 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private Hashtable? GetDiff(Hashtable original, Hashtable result, FormElementApiOptions apiOptions)
+    private Hashtable? GetDiff(IDictionary original, IDictionary result, FormElementApiOptions apiOptions)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         foreach (DictionaryEntry entry in result)
@@ -465,7 +465,7 @@ public class MasterApiService
                 continue;
 
             string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
-            if (original.ContainsKey(entry.Key))
+            if (original.Contains(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
                     !original[entry.Key]!.Equals(entry.Value))
@@ -477,7 +477,7 @@ public class MasterApiService
 
         return newValues.Count > 0 ? newValues : null;
     }
-    private ResponseLetter CreateErrorResponseLetter(Hashtable? erros, FormElementApiOptions apiOptions)
+    private ResponseLetter CreateErrorResponseLetter(IDictionary? errors, FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
@@ -486,10 +486,10 @@ public class MasterApiService
             ValidationList = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
         };
 
-        if (erros == null)
+        if (errors == null)
             return letter;
 
-        foreach (DictionaryEntry entry in erros)
+        foreach (DictionaryEntry entry in errors)
         {
             string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
             letter.ValidationList.Add(fieldName, entry.Value);

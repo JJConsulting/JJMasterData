@@ -12,26 +12,26 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get; set; }
     public DateTime? LastModifiedTo { get; set; }
 
-    public static DataDictionaryFilter GetInstance(Hashtable filter)
+    public static DataDictionaryFilter GetInstance(IDictionary filter)
     {
         var result = new DataDictionaryFilter();
 
-        if (filter.ContainsKey(DataDictionaryStructure.Name))
+        if (filter.Contains(DataDictionaryStructure.Name))
         {
             result.Name = filter[DataDictionaryStructure.Name].ToString();
         }
 
-        if (filter.ContainsKey(DataDictionaryStructure.TableName))
+        if (filter.Contains(DataDictionaryStructure.TableName))
         {
             result.ContainsTableName = filter[DataDictionaryStructure.TableName].ToString().Split(',');
         }
         
-        if (filter.ContainsKey(DataDictionaryStructure.LastModifiedFrom))
+        if (filter.Contains(DataDictionaryStructure.LastModifiedFrom))
         {
             result.LastModifiedFrom = DateTime.Parse(filter[DataDictionaryStructure.LastModifiedFrom].ToString());
         }
         
-        if (filter.ContainsKey(DataDictionaryStructure.LastModifiedTo))
+        if (filter.Contains(DataDictionaryStructure.LastModifiedTo))
         {
             result.LastModifiedTo = DateTime.Parse(filter[DataDictionaryStructure.LastModifiedTo].ToString());
         }

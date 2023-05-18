@@ -18,7 +18,7 @@ public class JJTextRange : JJBaseControl
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    internal static JJBaseControl GetInstance(FormElementField field, Hashtable values)
+    internal static JJBaseControl GetInstance(FormElementField field, IDictionary values)
     {
         string valueFrom = "";
         if (values != null && values.Contains(field.Name + "_from"))

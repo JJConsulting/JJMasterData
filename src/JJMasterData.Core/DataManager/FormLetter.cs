@@ -1,16 +1,18 @@
 #nullable enable
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FormLetter
 {
-    Hashtable? _errors;
+    private IDictionary? _errors;
 
-    public Hashtable Errors 
+    public IDictionary Errors 
     {
-        get => _errors ??= new Hashtable();
+        get => _errors ??= new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         set => _errors = value;
     }
 
@@ -25,7 +27,7 @@ public class FormLetter
             
     }
 
-    public FormLetter(Hashtable errors)
+    public FormLetter(IDictionary errors)
     {
         _errors = errors;
     }
@@ -36,6 +38,6 @@ public class FormLetter<T> : FormLetter
     public T? Result { get; set; }
     
     public FormLetter() : base() { }
-    public FormLetter(Hashtable errors) : base(errors) { }
+    public FormLetter(IDictionary errors) : base(errors) { }
     
 }

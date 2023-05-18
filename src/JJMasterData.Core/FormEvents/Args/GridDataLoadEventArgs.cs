@@ -12,7 +12,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Filtros atuais
     /// </summary>
-    public Hashtable Filters { get; internal set; }
+    public IDictionary Filters { get; internal set; }
 
     /// <summary>
     /// Ordem atual

@@ -45,7 +45,7 @@ public class FieldManager
 
     #endregion
 
-    public bool IsVisible(BasicAction action, PageState state, Hashtable formValues)
+    public bool IsVisible(BasicAction action, PageState state, IDictionary formValues)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action), "action can not be null");
@@ -53,7 +53,7 @@ public class FieldManager
         return ExpressionManager.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
     }
 
-    public bool IsVisible(FormElementField field, PageState state, Hashtable formValues)
+    public bool IsVisible(FormElementField field, PageState state, IDictionary formValues)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
@@ -61,7 +61,7 @@ public class FieldManager
         return ExpressionManager.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
     }
 
-    public bool IsEnabled(FormElementField field, PageState state, Hashtable formValues)
+    public bool IsEnabled(FormElementField field, PageState state, IDictionary formValues)
     {
         if (state == PageState.View)
             return false;
@@ -75,7 +75,7 @@ public class FieldManager
     /// <summary>
     /// Formata os valores exibidos na Grid
     /// </summary>
-    public string ParseVal(FormElementField field, Hashtable values)
+    public string ParseVal(FormElementField field, IDictionary values)
     {
         if (values == null)
             return string.Empty;
@@ -209,7 +209,7 @@ public class FieldManager
         return stringValue;
     }
 
-    public JJBaseControl GetField(FormElementField field, PageState pageState, Hashtable formValues, object value = null)
+    public JJBaseControl GetField(FormElementField field, PageState pageState, IDictionary formValues, object value = null)
     {
         if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {

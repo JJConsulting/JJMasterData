@@ -211,7 +211,7 @@ public class JJDataExp : JJBaseProcess
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
-    internal void ExportFileInBackground(Hashtable filter, string order)
+    internal void ExportFileInBackground(IDictionary filter, string order)
     {
         var exporter = CreateWriter();
 

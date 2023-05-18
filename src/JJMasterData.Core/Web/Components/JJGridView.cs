@@ -76,7 +76,7 @@ public class JJGridView : JJBaseView
     private FormValues _formValues;
     private List<FormElementField> _pkFields;
     private List<FormElementField> _visibleFields;
-    private Hashtable _defaultValues;
+    private IDictionary _defaultValues;
     private List<BasicAction> _toolBarActions;
     private List<BasicAction> _gridActions;
     private ActionMap _currentActionMap;
@@ -239,7 +239,7 @@ public class JJGridView : JJBaseView
 
     public bool ShowToolbar { get; set; }
 
-    public Hashtable CurrentFilter => Filter.GetCurrentFilter();
+    public IDictionary CurrentFilter => Filter.GetCurrentFilter();
 
     /// <summary>
     /// Retrieve the order of the table,
@@ -500,11 +500,11 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public Hashtable RelationValues { get; set; }
+    public IDictionary RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
 
-    internal Hashtable DefaultValues
+    internal IDictionary DefaultValues
     {
         get
         {
@@ -1196,7 +1196,7 @@ public class JJGridView : JJBaseView
         }
     }
 
-    private DataTable GetDataTable(Hashtable filters, string orderBy, int recordsPerPage, int currentPage,
+    private DataTable GetDataTable(IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
         ref int total)
     {
         DataTable dt;
@@ -1237,7 +1237,7 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public List<Hashtable> GetGridValues(int recordPerPage, int currentPage)
+    public List<IDictionary> GetGridValues(int recordPerPage, int currentPage)
     {
         int tot = 1;
         DataTable dt = GetDataTable(CurrentFilter, CurrentOrder, recordPerPage, currentPage, ref tot);
@@ -1248,7 +1248,7 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public List<Hashtable> GetGridValues(DataTable dt = null)
+    public List<IDictionary> GetGridValues(DataTable dt = null)
     {
         if (dt == null)
         {
@@ -1257,10 +1257,10 @@ public class JJGridView : JJBaseView
                 return null;
         }
 
-        var listValues = new List<Hashtable>();
+        var listValues = new List<IDictionary>();
         foreach (DataRow row in dt.Rows)
         {
-            var values = new Hashtable();
+            var values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
             for (int i = 0; i < row.Table.Columns.Count; i++)
             {
                 values.Add(row.Table.Columns[i].ColumnName, row[i]);
@@ -1505,7 +1505,7 @@ public class JJGridView : JJBaseView
     /// </summary>
     public void SetCurrentFilter(string field, object value)
     {
-        if (CurrentFilter.ContainsKey(field))
+        if (CurrentFilter.Contains(field))
             CurrentFilter[field] = value;
         else
             CurrentFilter.Add(field, value);

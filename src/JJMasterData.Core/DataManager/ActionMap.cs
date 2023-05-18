@@ -17,7 +17,7 @@ internal class ActionMap
     public string FieldName { get; set; }
 
     [DataMember(Name = "pkFieldValues")]
-    public Hashtable PKFieldValues { get; set; }
+    public IDictionary PKFieldValues { get; set; }
 
     [DataMember(Name = "contextAction")]
     public ActionSource ContextAction { get; set; }
@@ -33,7 +33,7 @@ internal class ActionMap
         PKFieldValues = new Hashtable();
     }
 
-    public ActionMap(ActionSource contextAction, FormElement formElement, Hashtable row, string actionName)
+    public ActionMap(ActionSource contextAction, FormElement formElement, IDictionary row, string actionName)
     {
         ContextAction = contextAction;
         ActionName = actionName;

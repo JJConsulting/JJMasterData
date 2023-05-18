@@ -12,7 +12,7 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string GetCurrentUserId(Hashtable userValues)
+    public static string GetCurrentUserId(IDictionary userValues)
     {
         if (userValues != null && userValues.Contains("USERID"))
         {
@@ -141,14 +141,14 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoHash(ref Hashtable newValues, Hashtable valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoHash(ref IDictionary newValues, IDictionary valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;
 
         foreach (DictionaryEntry entry in valuesToBeCopied)
         {
-            if (newValues.ContainsKey(entry.Key))
+            if (newValues.Contains(entry.Key))
             {
                 if (replaceIfExistKey)
                     newValues[entry.Key] = entry.Value;

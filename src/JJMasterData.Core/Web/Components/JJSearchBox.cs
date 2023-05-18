@@ -48,7 +48,7 @@ public class JJSearchBox : JJBaseControl
     private string _selectedValue;
     private string _text;
 
-    internal Hashtable FormValues { get; private set; }
+    internal IDictionary FormValues { get; private set; }
 
     internal PageState PageState { get; set; }
 
@@ -85,17 +85,11 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (Attributes.ContainsKey(TriggerLengthAttribute))
-                return int.Parse(Attributes[TriggerLengthAttribute].ToString());
+            if (Attributes.TryGetValue(TriggerLengthAttribute, out var attribute))
+                return int.Parse(attribute.ToString());
             return 0;
         }
-        set
-        {
-            if (Attributes.ContainsKey(TriggerLengthAttribute))
-                Attributes[TriggerLengthAttribute] = value;
-            else
-                Attributes.Add(TriggerLengthAttribute, value);
-        }
+        set => Attributes[TriggerLengthAttribute] = value;
     }
 
     /// <summary>
@@ -353,13 +347,13 @@ public class JJSearchBox : JJBaseControl
             {
                 if (searchId != null)
                 {
-                    if (!UserValues.ContainsKey("search_id"))
+                    if (!UserValues.Contains("search_id"))
                         UserValues.Add("search_id", StringManager.ClearText(searchId));
                 }
 
                 if (searchText != null)
                 {
-                    if (!UserValues.ContainsKey("search_text"))
+                    if (!UserValues.Contains("search_text"))
                         UserValues.Add("search_text", StringManager.ClearText(searchText));
                 }
 

@@ -41,12 +41,12 @@ public class FormManager
     /// Key = Field name
     /// Value = Error message
     /// </returns>
-    public Hashtable ValidateFields(Hashtable formValues, PageState pageState, bool enableErrorLink)
+    public IDictionary ValidateFields(IDictionary formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var errors = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var errors = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
         foreach (var field in FormElement.Fields)
         {
@@ -80,28 +80,28 @@ public class FormManager
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    public Hashtable MergeWithExpressionValues(IDictionary formValues, PageState pageState, bool replaceNullValues)
+    public IDictionary MergeWithExpressionValues(IDictionary formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
 
-        var newvalues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary newValues = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in FormElement.Fields)
         {
             if (formValues.Contains(f.Name))
             {
                 object val = ClearSpecialChars(f, formValues[f.Name]);
-                newvalues.Add(f.Name, val);
+                newValues.Add(f.Name, val);
             }
         }
 
-        ApplyDefaultValues(ref newvalues, pageState, replaceNullValues);
-        ApplyTriggerValues(ref newvalues, pageState);
+        ApplyDefaultValues(ref newValues, pageState, replaceNullValues);
+        ApplyTriggerValues(ref newValues, pageState);
 
-        return newvalues;
+        return newValues;
     }
 
-    public Hashtable GetDefaultValues(Hashtable formValues, PageState state)
+    public Hashtable GetDefaultValues(IDictionary formValues, PageState state)
     {
         var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
         var list = FormElement.Fields
@@ -120,20 +120,20 @@ public class FormManager
         return filters;
     }
 
-    public Hashtable MergeWithDefaultValues(Hashtable formValues, PageState pageState)
+    public IDictionary MergeWithDefaultValues(IDictionary formValues, PageState pageState)
     {
-        var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         if (formValues != null)
         {
             foreach (DictionaryEntry v in formValues)
-                values.Add(v.Key, v.Value);
+                values.Add(v.Key.ToString(), v.Value);
         }
 
         ApplyDefaultValues(ref values, pageState, false);
         return values;
     }
 
-    private void ApplyDefaultValues(ref Hashtable formValues, PageState pageState, bool replaceNullValues)
+    private void ApplyDefaultValues(ref IDictionary formValues, PageState pageState, bool replaceNullValues)
     {
         var defaultValues = GetDefaultValues(formValues, pageState);
         if (defaultValues == null)
@@ -156,7 +156,7 @@ public class FormManager
         }
     }
 
-    private void ApplyTriggerValues(ref Hashtable formValues, PageState pageState)
+    private void ApplyTriggerValues(ref IDictionary formValues, PageState pageState)
     {
         var listFields = FormElement.Fields
             .ToList()
@@ -197,7 +197,7 @@ public class FormManager
         return val;
     }
 
-    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, Hashtable formValues, PageState pageState)
+    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, IDictionary formValues, PageState pageState)
     {
         if (DataItem == null)
             return null;

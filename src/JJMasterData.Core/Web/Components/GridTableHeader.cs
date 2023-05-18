@@ -107,9 +107,9 @@ internal class GridTableHeader
 
             bool isAppliedFilter = GridView.CurrentFilter != null &&
                                    field.Filter.Type != FilterMode.None &&
-                                   !GridView.RelationValues.ContainsKey(field.Name) &&
-                                   (GridView.CurrentFilter.ContainsKey(field.Name) ||
-                                    GridView.CurrentFilter.ContainsKey(field.Name + "_from"));
+                                   !GridView.RelationValues.Contains(field.Name) &&
+                                   (GridView.CurrentFilter.Contains(field.Name) ||
+                                    GridView.CurrentFilter.Contains(field.Name + "_from"));
 
             if (isAppliedFilter)
             {
