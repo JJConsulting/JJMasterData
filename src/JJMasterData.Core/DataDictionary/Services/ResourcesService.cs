@@ -1,26 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
-    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    private JJMasterDataCommonsOptions Options { get; }
+
+    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IOptions<JJMasterDataCommonsOptions> options)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        Options = options.Value;
     }
 
     public JJFormView GetFormView(IList<CultureInfo> supportedCultures)
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataLocalizationProvider.GetElement();
+        var element = JJMasterDataStringLocalizerElement.GetElement(Options.ResourcesTableName);
         
         var formElement = new FormElement(element)
         {
