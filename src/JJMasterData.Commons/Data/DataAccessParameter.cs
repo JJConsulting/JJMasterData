@@ -36,9 +36,9 @@ public class DataAccessParameter
     /// </summary>
     [DataMember(Name = "size")]
     public int Size { get; set; }
-    
-    [DataMember(Name = "direction")]
-    public ParameterDirection Direction { get; set; }
+
+    [DataMember(Name = "direction")] 
+    public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 
     public DataAccessParameter() { }
 

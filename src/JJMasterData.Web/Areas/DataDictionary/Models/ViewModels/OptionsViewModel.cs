@@ -10,7 +10,7 @@ public class OptionsViewModel
     public JJMasterDataCommonsOptions? Options { get; set; } 
     public bool IsFullscreen { get; set; }
     public string? FilePath { get; set; }
-    public DataAccessProviderType ConnectionProvider { get; set; }
+    public DataAccessProvider ConnectionProvider { get; set; }
     public bool? IsConnectionSuccessful { get; set; }
     public bool PathExists => File.Exists(FilePath);
     public JJValidationSummary? ValidationSummary { get; set; }

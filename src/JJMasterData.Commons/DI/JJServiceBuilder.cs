@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Data;
@@ -53,7 +54,7 @@ public class JJServiceBuilder
         return this;
     }
     
-    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProviderType provider)
+    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
         return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
     }

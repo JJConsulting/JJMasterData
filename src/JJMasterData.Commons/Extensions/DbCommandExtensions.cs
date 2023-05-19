@@ -1,7 +1,7 @@
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Text;
+using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Commons.Extensions;
 
@@ -9,7 +9,7 @@ public static class SqlCommandExtensions
 {
     public static string ParameterValueAsSql(this SqlParameter sp)
     {
-        var retval = "";
+        var result = "";
 
         switch (sp.SqlDbType)
         {
@@ -25,14 +25,14 @@ public static class SqlCommandExtensions
             case SqlDbType.DateTime:
             case SqlDbType.DateTime2:
             case SqlDbType.DateTimeOffset:
-                retval = "'" + sp.Value.ToString().Replace("'", "''") + "'";
+                result = "'" + sp.Value.ToString().Replace("'", "''") + "'";
                 break;
             default:
-                retval = sp.Value.ToString().Replace("'", "''");
+                result = sp.Value.ToString().Replace("'", "''");
                 break;
         }
 
-        return retval;
+        return result;
     }
     
     /// <summary>

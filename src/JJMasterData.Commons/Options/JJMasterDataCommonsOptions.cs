@@ -1,10 +1,11 @@
 ﻿#nullable enable
 
+using System;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
@@ -72,13 +73,21 @@ public sealed class JJMasterDataCommonsOptions
     }
 
 
-    public static string? GetConnectionProvider(string name = "ConnectionString")
+    public static DataAccessProvider GetConnectionProvider(string name = "ConnectionString")
     {
         if (IsNetFramework)
-            return ConfigurationManager.ConnectionStrings[name]?.ProviderName;
+        {
+            if (Enum.TryParse<DataAccessProvider>(ConfigurationManager.ConnectionStrings[name]?.ProviderName,
+                    out var provider))
+            {
+                return provider;
+            }
+      
+            throw new DataAccessProviderException("Invalid DataAccess provider.");
+        }
 
-        return Configuration.GetSection("ConnectionProviders").GetValue<string>(name) ??
-               DataAccessProviderType.SqlServer.GetDescription();
+        return Configuration.GetSection("ConnectionProviders").GetValue<DataAccessProvider?>(name) ??
+               DataAccessProvider.SqlServer;
     }
 
     internal static string GetReadProcedureName(Element element)
