@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
+using System.Web.Caching;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -7,17 +9,24 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
+    private IMemoryCache MemoryCache { get; }
     private JJMasterDataCommonsOptions Options { get; }
 
-    public ResourcesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IOptions<JJMasterDataCommonsOptions> options)
+    public ResourcesService(
+        IValidationDictionary validationDictionary, 
+        IDataDictionaryRepository dataDictionaryRepository,
+        IMemoryCache memoryCache,
+        IOptions<JJMasterDataCommonsOptions> options)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        MemoryCache = memoryCache;
         Options = options.Value;
     }
 
@@ -71,7 +80,10 @@ public class ResourcesService : BaseService
         return formView;
     }
 
-    private void ClearCache(object sender, FormAfterActionEventArgs e) => Translate.ClearCache();
+    private void ClearCache(object sender, FormAfterActionEventArgs e)
+    {
+        MemoryCache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
+    }
 
     private void ValidateEspecialChars(object sender, FormBeforeActionEventArgs e)
     {

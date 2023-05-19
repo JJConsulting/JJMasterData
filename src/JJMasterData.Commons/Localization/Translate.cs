@@ -42,10 +42,4 @@ public static class Translate
             return resourceKey;
         return Localizer[resourceKey, args]; 
     }
-
-    public static void ClearCache()
-    {
-        var cache = JJService.Provider.GetRequiredService<IMemoryCache>();
-        cache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
-    }
 }
