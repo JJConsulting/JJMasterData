@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,22 +41,9 @@ public class DataAccess
                 error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
                 throw new DataAccessException(error.ToString());
             }
-
-            if (ConnectionProvider == null)
-            {
-                var error = new StringBuilder();
-                error.AppendLine("Connection provider not found in configuration file.");
-                error.Append("Default connection name is [ConnectionString]");
-                throw new DataAccessException(error.ToString());
-            }
-
             try
             {
-                _factory = DataAccessProvider.GetDbProviderFactory(ConnectionProvider);
-            }
-            catch (DataAccessProviderException)
-            {
-                throw;
+                _factory = DataAccessProviderFactory.GetDbProviderFactory(ConnectionProvider);
             }
             catch (Exception ex)
             {
@@ -69,7 +53,7 @@ public class DataAccess
             return _factory;
         }
     }
-    
+
     ///<summary>
     ///Database connection string; 
     ///Default value configured in app.config as "ConnectionString";
@@ -88,7 +72,7 @@ public class DataAccess
     ///<remarks>
     ///Author: Lucio Pelinson 14-04-2012
     ///</remarks>
-    public string ConnectionProvider { get; set; }
+    public DataAccessProvider ConnectionProvider { get; set; }
 
     /// <summary>
     /// Waiting time to execute a command on the database (seconds - default 240s)
@@ -120,13 +104,27 @@ public class DataAccess
     /// See also <see cref="DataAccessProvider"/>.
     /// </summary>
     /// <param name="connectionString">Conections string with data source, user etc...</param>
-    /// <param name="connectionProviderName">Provider name. Avaliable provider see <see cref="DataAccessProviderType"/></param>
+    /// <param name="connectionProviderName">Provider name. Avaliable provider see <see cref="DataAccessProvider"/></param>
     public DataAccess(string connectionString, string connectionProviderName)
     {
         ConnectionString = connectionString;
-        ConnectionProvider = connectionProviderName;
+
+        if (Enum.TryParse<DataAccessProvider>(connectionProviderName, out var provider))
+        {
+            ConnectionProvider = provider;
+        }
+        else
+        {
+            throw new DataAccessProviderException("Invalid DataAccess provider.");
+        }
     }
-    
+
+    public DataAccess(string connectionString, DataAccessProvider dataAccessProvider)
+    {
+        ConnectionString = connectionString;
+        ConnectionProvider = dataAccessProvider;
+    }
+
     /// <summary>
     /// Initialize with a IConfiguration instance.
     /// </summary>
@@ -134,7 +132,9 @@ public class DataAccess
     public DataAccess(IConfiguration configuration)
     {
         ConnectionString = configuration.GetConnectionString("ConnectionString");
-        ConnectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string>("ConnectionString") ?? "System.Data.SqlClient";
+        ConnectionProvider = configuration.GetSection("ConnectionProviders")
+                                 .GetValue<DataAccessProvider?>("ConnectionString") ??
+                             DataAccessProvider.SqlServer;
     }
 
 
@@ -202,7 +202,7 @@ public class DataAccess
                 using var dataAdapter = Factory.CreateDataAdapter();
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
-    
+
                 if (cmd.Parameters != null)
                 {
                     foreach (var parameter in cmd.Parameters)
@@ -212,8 +212,6 @@ public class DataAccess
                     }
                 }
             }
-            
-
         }
         catch (Exception ex)
         {
@@ -248,10 +246,11 @@ public class DataAccess
                     dataAdapter!.SelectCommand = dbCommand;
                     dataAdapter.Fill(dt);
                 }
-                
+
                 if (cmd.Parameters != null)
                 {
-                    foreach (var param in cmd.Parameters.Where(param => param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+                    foreach (var param in cmd.Parameters.Where(param =>
+                                 param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
                     {
                         param.Value = dbCommand.Parameters[param.Name].Value;
                     }
@@ -351,7 +350,7 @@ public class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-        
+
             using (dbCommand.Connection)
             {
                 scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
@@ -479,7 +478,7 @@ public class DataAccess
                 foreach (var command in commands)
                 {
                     currentCommand = command;
-                    
+
                     using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = sqlTras;
@@ -499,7 +498,8 @@ public class DataAccess
         return numberOfRowsAffected;
     }
 
-    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
+    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands,
+        CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
         DataAccessCommand currentCommand = null;
@@ -513,7 +513,7 @@ public class DataAccess
                 foreach (var command in commands)
                 {
                     currentCommand = command;
-                    
+
                     using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = transaction;
@@ -585,13 +585,12 @@ public class DataAccess
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = sqlConn;
             dbCommand.Transaction = trans;
-            
-            
-            using(dbCommand.Connection)
+
+
+            using (dbCommand.Connection)
             {
-            	numberOfRowsAffected += dbCommand.ExecuteNonQuery();
+                numberOfRowsAffected += dbCommand.ExecuteNonQuery();
             }
-            
         }
         catch (Exception ex)
         {
@@ -612,7 +611,8 @@ public class DataAccess
     public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
 
     /// <inheritdoc cref="GetFields(string)"/>
-    public Task<Hashtable> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) => GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
+    public Task<Hashtable> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) =>
+        GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
 
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
@@ -630,7 +630,7 @@ public class DataAccess
         {
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = GetConnection();
-            
+
             using (dbCommand.Connection)
             {
                 using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
@@ -651,6 +651,7 @@ public class DataAccess
                         }
                     }
                 }
+
                 foreach (var parameter in cmd.Parameters)
                 {
                     if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
@@ -667,7 +668,8 @@ public class DataAccess
     }
 
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
     {
         Hashtable result = null;
         try
@@ -676,7 +678,8 @@ public class DataAccess
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
             using (dbCommand.Connection)
             {
-                using (var dataReader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
+                using (var dataReader =
+                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
@@ -833,8 +836,7 @@ public class DataAccess
     public bool ExecuteBatch(string script)
     {
         string markpar = "GO";
-        if (ConnectionProvider == DataAccessProviderType.Oracle.GetDescription() ||
-            ConnectionProvider == DataAccessProviderType.OracleNetCore.GetDescription())
+        if (ConnectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
         {
             markpar = "/";
         }
@@ -872,8 +874,7 @@ public class DataAccess
     public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
     {
         string markpar = "GO";
-        if (ConnectionProvider == DataAccessProviderType.Oracle.GetDescription() ||
-            ConnectionProvider == DataAccessProviderType.OracleNetCore.GetDescription())
+        if (ConnectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
         {
             markpar = "/";
         }

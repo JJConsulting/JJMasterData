@@ -6,9 +6,9 @@ using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Core.DataManager;
 

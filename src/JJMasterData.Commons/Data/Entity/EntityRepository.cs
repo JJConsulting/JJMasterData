@@ -24,7 +24,7 @@ public class EntityRepository : IEntityRepository
         Provider = GetProvider();
     }
     
-    public EntityRepository(string connectionString, DataAccessProviderType provider)
+    public EntityRepository(string connectionString, DataAccessProvider provider)
     {
         DataAccess = new DataAccess(connectionString, provider.GetDescription());
         
@@ -33,12 +33,12 @@ public class EntityRepository : IEntityRepository
 
     private BaseProvider GetProvider()
     {
-        return DataAccessProvider.GetDataAccessProviderTypeFromString(DataAccess.ConnectionProvider) switch
+        return DataAccess.ConnectionProvider switch
         {
-            DataAccessProviderType.SqlServer => new SqlServerProvider(DataAccess),
-            DataAccessProviderType.Oracle => new OracleProvider(DataAccess),
-            DataAccessProviderType.OracleNetCore => new OracleProvider(DataAccess),
-            DataAccessProviderType.SqLite => new ProviderSQLite(DataAccess),
+            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess),
+            DataAccessProvider.Oracle => new OracleProvider(DataAccess),
+            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess),
+            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess),
             _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
                                                      DataAccess.ConnectionProvider + "]")
         };
