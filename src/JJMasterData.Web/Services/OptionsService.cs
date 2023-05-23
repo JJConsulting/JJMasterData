@@ -61,14 +61,12 @@ public class OptionsService : BaseService
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
     {
-        string? connection = JJMasterDataCommonsOptions.GetConnectionString();
+        string? connection = ConnectionStringsWritableOptions?.Value.ConnectionString;
         var connectionResult = await GetConnectionResultAsync(connection);
         var viewModel = new OptionsViewModel
         {
             ConnectionString = new ConnectionString(connection),
-            //Options = JJMasterDataWritableOptions?.Value,
-            ConnectionProvider =
-                DataAccessProvider.GetDataAccessProviderTypeFromString(JJMasterDataCommonsOptions.GetConnectionProvider()),
+            ConnectionProvider = DataAccessProvider.SqlServer,
             FilePath = JJMasterDataWritableOptions?.FilePath,
             IsFullscreen = isFullscreen,
             IsConnectionSuccessful = connectionResult.IsConnectionSuccessful
