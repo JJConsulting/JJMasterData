@@ -67,7 +67,7 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
     
-    public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder, string connectionString, DataAccessProviderType provider)
+    public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder, string connectionString, DataAccessProvider provider)
     {
         builder.Services.Replace(ServiceDescriptor.Scoped(serviceProvider =>
         {
