@@ -21,6 +21,4 @@ public record JJMasterDataCoreOptions
     /// </summary>
     public string JJMasterDataUrl { get; set; }
     public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
-
-
 }
