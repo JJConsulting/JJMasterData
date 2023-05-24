@@ -9,11 +9,11 @@ public class RefreshAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "refresh";
-
+    public const string ActionName = "refresh";
+    public override bool IsUserCreated => true;
     public RefreshAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Refresh";
         Icon = IconType.Refresh;
         ShowAsButton = true;

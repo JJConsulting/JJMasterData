@@ -9,11 +9,11 @@ public class LegendAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "legend";
-
+    public const string ActionName = "legend";
+    public override bool IsUserCreated => true;
     public LegendAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Information";
         Icon = IconType.Info;
         ShowAsButton = true;

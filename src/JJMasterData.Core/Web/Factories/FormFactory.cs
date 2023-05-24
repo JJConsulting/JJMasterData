@@ -46,7 +46,7 @@ internal static class FormFactory
         if (metadataOptions == null) 
             return;
 
-        form.ToolBarActions = metadataOptions.ToolBarActions.GetAll();
+        form.ToolBarActions = metadataOptions.ToolbarActions.GetAll();
         form.GridActions = metadataOptions.GridActions.GetAll();
         form.ShowTitle = metadataOptions.Grid.ShowTitle;
         form.DataPanel.FormUI = metadataOptions.Form;

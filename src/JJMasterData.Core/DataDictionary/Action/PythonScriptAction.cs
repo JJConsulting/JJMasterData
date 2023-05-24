@@ -21,10 +21,10 @@ public class PythonScriptAction : BasicAction
     /// </remarks>
     [DataMember(Name = "applyOnSelected")]
     public bool ApplyOnSelected { get; set; }
-
+    public override bool IsUserCreated => true;
+    
     public PythonScriptAction()
     {
         Icon = IconType.Play;
-        IsCustomAction = true;
     }
 }

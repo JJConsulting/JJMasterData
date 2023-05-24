@@ -8,11 +8,11 @@ public class EditAction : BasicAction
     /// <summary>
     /// Default action name
     /// </summary>
-    public const string ACTION_NAME = "edit";
-
+    public const string ActionName = "edit";
+    public override bool IsUserCreated => false;
     public EditAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Edit";
         ConfirmationMessage = "";
         Icon = IconType.Pencil;

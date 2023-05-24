@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Test.DataDictionary;
@@ -13,7 +14,7 @@ public class FormElementTest
         var settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
         string json = JsonConvert.SerializeObject(form, settings);
         var formElement = JsonConvert.DeserializeObject<FormElement>(json, settings);
-
+        
         Assert.Equal(formElement!.Name, form.Name);
         Assert.Equal(formElement.Title, form.Title);
         Assert.Equal(formElement.Fields[0].Name, form.Fields[0].Name);

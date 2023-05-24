@@ -14,8 +14,9 @@ public class FilterAction : BasicAction
     /// <summary>
     /// Action default name.
     /// </summary>
-    public const string ACTION_NAME = "filter";
-
+    public const string ActionName = "filter";
+    
+    public override bool IsUserCreated => false;
     /// <summary>
     /// Exibir em um collapse painel.
     /// <para></para>(Default = true)
@@ -53,7 +54,7 @@ public class FilterAction : BasicAction
 
     public FilterAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Filter";
         Icon = IconType.Binoculars;
         ShowAsButton = true;

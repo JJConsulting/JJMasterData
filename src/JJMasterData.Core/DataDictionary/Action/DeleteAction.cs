@@ -11,11 +11,11 @@ public class DeleteAction : BasicAction
     /// <summary>
     /// Default action name
     /// </summary>
-    public const string ACTION_NAME = "delete";
-
+    public const string ActionName = "delete";
+    public override bool IsUserCreated => false;
     public DeleteAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Delete";
         ConfirmationMessage = "Would you like to delete this record?";
         Icon = IconType.Trash;

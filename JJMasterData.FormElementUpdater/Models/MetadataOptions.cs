@@ -15,7 +15,7 @@ public class MetadataOptions
     public FormUI Form { get; set; }
 
     [DataMember(Name = "toolBarActions")]
-    public GridToolBarActions ToolBarActions { get; set; }
+    public GridToolbarActions ToolbarActions { get; set; }
 
     [DataMember(Name = "gridActions")]
     public GridActions GridActions { get; set; }
@@ -24,7 +24,7 @@ public class MetadataOptions
     {
         Grid = new GridUI();
         Form = new FormUI();
-        ToolBarActions = new GridToolBarActions();
+        ToolbarActions = new GridToolbarActions();
         GridActions = new GridActions();
     }
 }

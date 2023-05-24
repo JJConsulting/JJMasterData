@@ -12,11 +12,11 @@ public class ConfigAction : BasicAction
     /// <summary>
     /// Default action name
     /// </summary>
-    public const string ACTION_NAME = "config";
-
+    public const string ActionName = "config";
+    public override bool IsUserCreated => false;
     public ConfigAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Options";
         Icon = IconType.Cog;
         ShowAsButton = true;

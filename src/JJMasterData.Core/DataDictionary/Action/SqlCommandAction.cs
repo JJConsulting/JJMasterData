@@ -11,7 +11,7 @@ public class SqlCommandAction : BasicAction
     /// Comando SQL a ser executado, aceita expression
     /// </summary>
     [DataMember(Name = "commandSQL")]
-    public string CommandSQL { get; set; }
+    public string CommandSql { get; set; }
 
     /// <summary>
     /// Aplicar somenter as linhas selecionadas (default=false)
@@ -23,9 +23,10 @@ public class SqlCommandAction : BasicAction
     [DataMember(Name = "applyOnSelected")]
     public bool ApplyOnSelected { get; set; }
 
+    public override bool IsUserCreated => true;
+    
     public SqlCommandAction()
     {
         Icon = IconType.Play;
-        IsCustomAction = true;
     }
 }

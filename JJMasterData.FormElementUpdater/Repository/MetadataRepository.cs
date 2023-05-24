@@ -280,7 +280,7 @@ public class MetadataRepository
         //Nairobi
         dicParser.Options ??= new MetadataOptions();
 
-        dicParser.Options.ToolBarActions ??= new GridToolBarActions();
+        dicParser.Options.ToolbarActions ??= new GridToolbarActions();
 
         dicParser.Options.GridActions ??= new GridActions();
 
@@ -327,26 +327,26 @@ public class MetadataRepository
         foreach (var action in dicParser.Options.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            action.IsCustomAction = true;
+            //action.IsUserCreated = true;
         }
 
-        foreach (var action in dicParser.Options.ToolBarActions
+        foreach (var action in dicParser.Options.ToolbarActions
                      .GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            action.IsCustomAction = true;
+            //action.IsUserCreated = true;
         }
 
         //Alpha Centauri
 
-        dicParser.Options.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
+        dicParser.Options.ToolbarActions.PythonActions ??= new List<PythonScriptAction>();
 
         dicParser.Options.GridActions.PythonActions ??= new List<PythonScriptAction>();
 
         //Sirius
 
-        dicParser.Options.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolbarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
-        dicParser.Options.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolbarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
     }
 }

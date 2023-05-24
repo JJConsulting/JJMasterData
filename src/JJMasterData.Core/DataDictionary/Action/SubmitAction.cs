@@ -9,4 +9,6 @@ public class SubmitAction : BasicAction
 {
     [DataMember(Name = "formAction")]
     public string FormAction { get; set; }
+    
+    public override bool IsUserCreated => true;
 }

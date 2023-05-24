@@ -66,7 +66,7 @@ namespace JJMasterData.Core.Web.Factories
                 dataImp.OnBeforeImport += formEvent.OnBeforeImport;
 
             dataImp.FormElement = formElement;
-            dataImp.ProcessOptions = formElement.Options.ToolBarActions.ImportAction.ProcessOptions;
+            dataImp.ProcessOptions = formElement.Options.ToolbarActions.ImportAction.ProcessOptions;
         }
         
         internal static void SetDataImpParams(JJDataImp dataImp, FormElement formElement)

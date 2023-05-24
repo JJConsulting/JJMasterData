@@ -16,11 +16,12 @@ public class UrlRedirectAction : BasicAction
     [DataMember(Name = "titlePopUp")]
     public string TitlePopUp { get; set; }
 
+    public override bool IsUserCreated => true;
+    
     public UrlRedirectAction()
     {
         UrlAsPopUp = false;
         TitlePopUp = "Title";
         Icon = IconType.ExternalLink;
-        IsCustomAction = true;
     }
 }

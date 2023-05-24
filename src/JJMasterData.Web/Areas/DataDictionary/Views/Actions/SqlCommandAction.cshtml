@@ -101,12 +101,12 @@
                         @if (!BootstrapHelper.Version.Equals(3))
                         {
                             <div class="card-body">
-                                @Html.TextAreaFor(model => model.CommandSQL, new { @class = "form-control", rows = "8" })
+                                @Html.TextAreaFor(model => model.CommandSql, new { @class = "form-control", rows = "8" })
                             </div>
                         }
                         else
                         {
-                            @Html.TextAreaFor(model => model.CommandSQL, new { @class = "form-control", rows = "8" })
+                            @Html.TextAreaFor(model => model.CommandSql, new { @class = "form-control", rows = "8" })
                         }
                     </div>
                 </div>

@@ -1,6 +1,5 @@
 ﻿using System;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -9,7 +8,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Represents a clickable button
 /// </summary>
 [Serializable]
-public class JJLinkButton : JJBaseView, IAction
+public class JJLinkButton : JJBaseView
 {
 
     private JJSpinner _spinner;

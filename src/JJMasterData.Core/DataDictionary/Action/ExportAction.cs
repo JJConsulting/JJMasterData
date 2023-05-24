@@ -13,8 +13,8 @@ public class ExportAction : BasicAction
     /// <summary>
     /// Default action name
     /// </summary>
-    public const string ACTION_NAME = "export";
-
+    public const string ActionName = "export";
+    public override bool IsUserCreated => false;
 
     [DataMember(Name = "processOptions")]
     public ProcessOptions ProcessOptions { get; set; }
@@ -22,7 +22,7 @@ public class ExportAction : BasicAction
 
     public ExportAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Export";
         Icon = IconType.Download;
         ShowAsButton = true;

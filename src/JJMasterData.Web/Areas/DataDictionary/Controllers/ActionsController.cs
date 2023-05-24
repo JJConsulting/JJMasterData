@@ -22,7 +22,7 @@ public class ActionsController : DataDictionaryController
         var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.MenuId = "Actions";
-        ViewBag.ToolBarActions = dicParcer.Options.ToolBarActions.GetAll();
+        ViewBag.ToolBarActions = dicParcer.Options.ToolbarActions.GetAll();
         ViewBag.GridActions = dicParcer.Options.GridActions.GetAll();
 
         if ((string?)Request.Query["selected_tab"] == null)
@@ -47,7 +47,7 @@ public class ActionsController : DataDictionaryController
                 action = metadata.Options.GridActions.Get(actionName);
                 break;
             case ActionSource.Toolbar:
-                action = metadata.Options.ToolBarActions.Get(actionName);
+                action = metadata.Options.ToolbarActions.Get(actionName);
                 break;
             case ActionSource.Field:
                 action = metadata.Fields[fieldName].Actions.Get(actionName);

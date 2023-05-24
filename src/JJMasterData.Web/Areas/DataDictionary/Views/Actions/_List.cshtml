@@ -55,7 +55,7 @@
                             </button>
                             &nbsp;
 
-                            @if (action.IsCustomAction)
+                            @if (action.IsUserCreated)
                             {
                                 <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:14px;" type="button"
                                         onclick="@GetCmdDelete(action)">

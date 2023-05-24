@@ -12,10 +12,5 @@ public class ScriptAction : BasicAction
     /// </summary>
     [DataMember(Name = "onClientClick")]
     public string OnClientClick { get; set; }
-
-    public ScriptAction()
-    {
-        IsCustomAction = true;
-    }
-
+    public override bool IsUserCreated => true;
 }

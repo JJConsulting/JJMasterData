@@ -10,7 +10,7 @@ public class InsertAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "insert";
+    public const string ActionName = "insert";
 
     /// <summary>
     /// Nome do dicionário utilizado para exibir a pré seleção de um registro (default= null)
@@ -33,10 +33,11 @@ public class InsertAction : BasicAction
     /// </remarks>
     [DataMember(Name = "reopenForm")]
     public bool ReopenForm { get; set; }
-
+    
+    public override bool IsUserCreated => false;
     public InsertAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         Text = "New";
         Icon = IconType.PlusCircle;
         ShowAsButton = true;

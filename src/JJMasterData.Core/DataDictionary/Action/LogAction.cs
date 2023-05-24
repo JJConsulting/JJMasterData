@@ -9,11 +9,11 @@ public class LogAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "log";
-
+    public const string ActionName = "log";
+    public override bool IsUserCreated => true;
     public LogAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Log";
         Icon = IconType.Film;
         ShowAsButton = true;

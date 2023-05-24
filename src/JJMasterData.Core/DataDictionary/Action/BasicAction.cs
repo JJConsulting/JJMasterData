@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Action;
 /// </summary>
 [Serializable]
 [DataContract]
-public abstract class BasicAction : IAction
+public abstract class BasicAction 
 {
     /// <summary>
     /// Identifier of the component
@@ -103,29 +103,23 @@ public abstract class BasicAction : IAction
     public string VisibleExpression { get; set; }
 
     /// <summary>
-    /// Order of the action (0,1,2...)
+    /// Order of the action (0, 1, 2...)
     /// </summary>
     [DataMember(Name = "order")]
     public int Order { get; set; }
-
-    /// <summary>
-    /// Show the action as a button
-    /// </summary>
+    
     [DataMember(Name = "showAsButton")]
     public bool ShowAsButton { get; set; }
 
     /// <summary>
-    /// CSS3 Class
+    /// CSS3 Stylesheet Class
     /// </summary>
     [DataMember(Name = "cssClass")]
     public string CssClass { get; set; }
 
-        
-    /// <summary>
-    /// Returns true if the action is user-created.
-    /// </summary>
+    
     [DataMember(Name = "isCustomAction")]
-    public bool IsCustomAction { get; internal set; }
+    public abstract bool IsUserCreated { get; }
 
     public BasicAction()
     {
@@ -138,10 +132,7 @@ public abstract class BasicAction : IAction
     /// </summary>
     public void SetVisible(bool value)
     {
-        if (value)
-            VisibleExpression = "val:1";
-        else
-            VisibleExpression = "val:0";
+        VisibleExpression = value ? "val:1" : "val:0";
     }
 
     /// <summary>
@@ -150,10 +141,7 @@ public abstract class BasicAction : IAction
     /// <param name="value"></param>
     public void SetEnable(bool value)
     {
-        if (value)
-            EnableExpression = "val:1";
-        else
-            EnableExpression = "val:0";
+        EnableExpression = value ? "val:1" : "val:0";
     }
 
     /// <summary>
@@ -164,21 +152,21 @@ public abstract class BasicAction : IAction
     /// <summary>
     /// Copy the actions of another action.
     /// </summary>
-    public void SetOptions(BasicAction ac)
+    public void SetOptions(BasicAction action)
     {
-        Text = ac.Text;
-        ToolTip = ac.ToolTip;
-        IsDefaultOption = ac.IsDefaultOption;
-        IsGroup = ac.IsGroup;
-        DividerLine = ac.DividerLine;
-        Icon = ac.Icon;
-        ShowTitle = ac.ShowTitle;
-        ConfirmationMessage = ac.ConfirmationMessage;
-        EnableExpression = ac.EnableExpression;
-        VisibleExpression = ac.VisibleExpression;
-        Order = ac.Order;
-        ShowAsButton = ac.ShowAsButton;
-        CssClass = ac.CssClass;
+        Text = action.Text;
+        ToolTip = action.ToolTip;
+        IsDefaultOption = action.IsDefaultOption;
+        IsGroup = action.IsGroup;
+        DividerLine = action.DividerLine;
+        Icon = action.Icon;
+        ShowTitle = action.ShowTitle;
+        ConfirmationMessage = action.ConfirmationMessage;
+        EnableExpression = action.EnableExpression;
+        VisibleExpression = action.VisibleExpression;
+        Order = action.Order;
+        ShowAsButton = action.ShowAsButton;
+        CssClass = action.CssClass;
     }
 
 }

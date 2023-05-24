@@ -11,15 +11,15 @@ public class ImportAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "import";
+    public const string ActionName = "import";
 
         
     [DataMember(Name = "processOptions")]
     public ProcessOptions ProcessOptions { get; set; }
-
+    public override bool IsUserCreated => false;
     public ImportAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Upload";
         Icon = IconType.Upload;
         ShowAsButton = true;

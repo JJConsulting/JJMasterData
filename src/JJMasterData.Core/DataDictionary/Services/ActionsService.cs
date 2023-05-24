@@ -43,9 +43,9 @@ public class ActionsService : BaseService
         }
         else if (context == ActionSource.Toolbar)
         {
-            var action = formElement.Options.ToolBarActions.Get(originalName);
+            var action = formElement.Options.ToolbarActions.Get(originalName);
             if (action != null)
-                formElement.Options.ToolBarActions.Remove(action);
+                formElement.Options.ToolbarActions.Remove(action);
         }
     }
 
@@ -90,7 +90,7 @@ public class ActionsService : BaseService
                 break;
             }
             case ActionSource.Toolbar:
-                formElement.Options.ToolBarActions.Set(action);
+                formElement.Options.ToolbarActions.Set(action);
                 break;
         }
 
@@ -122,7 +122,7 @@ public class ActionsService : BaseService
                 listAction = dicParser.Options.GridActions.GetAll();
                 break;
             case ActionSource.Toolbar:
-                listAction = dicParser.Options.ToolBarActions.GetAll();
+                listAction = dicParser.Options.ToolbarActions.GetAll();
                 break;
         }
 
@@ -151,8 +151,8 @@ public class ActionsService : BaseService
 
         if (action is SqlCommandAction sqlAction)
         {
-            if (string.IsNullOrEmpty(sqlAction.CommandSQL))
-                AddError(nameof(sqlAction.CommandSQL), Translate.Key("Required [Sql Command] field"));
+            if (string.IsNullOrEmpty(sqlAction.CommandSql))
+                AddError(nameof(sqlAction.CommandSql), Translate.Key("Required [Sql Command] field"));
 
             if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                 AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
@@ -198,7 +198,7 @@ public class ActionsService : BaseService
             }
             else if (actionContext == ActionSource.Toolbar)
             {
-                action = dicParser.Options.ToolBarActions.Get(actionName);
+                action = dicParser.Options.ToolbarActions.Get(actionName);
             }
             else if (actionContext == ActionSource.Field)
             {
@@ -222,7 +222,7 @@ public class ActionsService : BaseService
         }
         else if (actionContext == ActionSource.Toolbar)
         {
-            action = dicParser.Options.ToolBarActions.Get(actionName);
+            action = dicParser.Options.ToolbarActions.Get(actionName);
         }
 
         action.SetVisible(visible);

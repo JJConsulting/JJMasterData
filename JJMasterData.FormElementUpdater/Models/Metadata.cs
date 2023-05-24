@@ -69,7 +69,7 @@ public class Metadata
             Form = Options.Form,
             Grid = Options.Grid,
             GridActions = Options.GridActions,
-            ToolBarActions = Options.ToolBarActions
+            ToolbarActions = Options.ToolbarActions
         };
 
         formElement.ApiOptions = new FormElementApiOptions

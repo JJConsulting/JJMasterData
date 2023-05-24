@@ -11,11 +11,11 @@ public class SortAction : BasicAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ACTION_NAME = "sort";
-
+    public const string ActionName = "sort";
+    public override bool IsUserCreated => true;
     public SortAction()
     {
-        Name = ACTION_NAME;
+        Name = ActionName;
         ToolTip = "Sort";
         Icon = IconType.SortAlphaAsc;
         ShowAsButton = true;

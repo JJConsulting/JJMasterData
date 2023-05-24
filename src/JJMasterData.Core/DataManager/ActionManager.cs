@@ -361,7 +361,7 @@ internal class ActionManager
 
                 foreach (var row in selectedRows)
                 {
-                    string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, row);
+                    string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, row);
                     listSql.Add(sql);
                 }
 
@@ -382,7 +382,7 @@ internal class ActionManager
                     formValues = formManager.GetDefaultValues(null, PageState.List);
                 }
 
-                string sql = Expression.ParseExpression(cmdAction.CommandSQL, PageState.List, false, formValues);
+                string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);
                 listSql.Add(sql);
                 EntityRepository.SetCommand(listSql);
             }

@@ -9,7 +9,7 @@ namespace JJMasterData.Core.DataDictionary;
 
 [Serializable]
 [DataContract]
-public class GridToolBarActions
+public class GridToolbarActions
 {
     [DataMember(Name = "insertAction")]
     public InsertAction InsertAction { get; set; }
@@ -53,7 +53,7 @@ public class GridToolBarActions
     [DataMember(Name = "jsActions")]
     private List<ScriptAction> JsActions { get; set; }
     
-    public GridToolBarActions()
+    public GridToolbarActions()
     {
         InsertAction = new InsertAction();
         LegendAction = new LegendAction();
@@ -300,120 +300,114 @@ public class GridToolBarActions
 
     public List<BasicAction> GetAll()
     {
-        var listAction = new List<BasicAction>();
+        var actionList = new List<BasicAction>();
 
         if (InsertAction is not null)
         {
-            listAction.Add(InsertAction);
+            actionList.Add(InsertAction);
         }
         else
         {
             InsertAction = new InsertAction();
-            listAction.Add(InsertAction);
+            actionList.Add(InsertAction);
         }
 
         if (LegendAction is not null)
         {
-            listAction.Add(LegendAction);
+            actionList.Add(LegendAction);
         }
         else
         {
             LegendAction = new LegendAction();
-            listAction.Add(LegendAction);
+            actionList.Add(LegendAction);
         }
 
         if (RefreshAction is not null)
         {
-            listAction.Add(RefreshAction);
+            actionList.Add(RefreshAction);
         }
         else
         {
             RefreshAction = new RefreshAction();
-            listAction.Add(RefreshAction);
+            actionList.Add(RefreshAction);
         }
 
         if (FilterAction is not null)
         {
-            listAction.Add(FilterAction);
+            actionList.Add(FilterAction);
         }
         else
         {
             FilterAction = new FilterAction();
-            listAction.Add(FilterAction);
+            actionList.Add(FilterAction);
         }
 
         if (ImportAction is not null)
         {
-            listAction.Add(ImportAction);
+            actionList.Add(ImportAction);
         }
         else
         {
             ImportAction = new ImportAction();
-            listAction.Add(ImportAction);
+            actionList.Add(ImportAction);
         }
 
         if (ExportAction is not null)
         {
-            listAction.Add(ExportAction);
+            actionList.Add(ExportAction);
         }
         else
         {
             ExportAction = new ExportAction();
-            listAction.Add(ExportAction);
+            actionList.Add(ExportAction);
         }
 
         if (ConfigAction is not null)
         {
-            listAction.Add(ConfigAction);
+            actionList.Add(ConfigAction);
         }
         else
         {
             ConfigAction = new ConfigAction();
-            listAction.Add(ConfigAction);
+            actionList.Add(ConfigAction);
         }
 
         if (SortAction is not null)
         {
-            listAction.Add(SortAction);
+            actionList.Add(SortAction);
         }
         else
         {
             SortAction = new SortAction();
-            listAction.Add(SortAction);
+            actionList.Add(SortAction);
         }
 
         if (LogAction is not null)
         {
-            listAction.Add(LogAction);
+            actionList.Add(LogAction);
         }
         else
         {
             LogAction = new LogAction();
-            listAction.Add(LogAction);
+            actionList.Add(LogAction);
         }
 
 
         if (CommandActions is { Count: > 0 })
-            listAction.AddRange(CommandActions.ToArray());
+            actionList.AddRange(CommandActions.ToArray());
 
         if (PythonActions is { Count: > 0 })
-            listAction.AddRange(PythonActions.ToArray());
+            actionList.AddRange(PythonActions.ToArray());
 
         if (UrlRedirectActions is { Count: > 0 })
-            listAction.AddRange(UrlRedirectActions.ToArray());
+            actionList.AddRange(UrlRedirectActions.ToArray());
 
         if (InternalActions is { Count: > 0 })
-            listAction.AddRange(InternalActions.ToArray());
+            actionList.AddRange(InternalActions.ToArray());
 
         if (JsActions is { Count: > 0 })
-            listAction.AddRange(JsActions.ToArray());
+            actionList.AddRange(JsActions.ToArray());
         
-        return listAction.OrderBy(x => x.Order).ToList();
+        return actionList.OrderBy(x => x.Order).ToList();
     }
-
-    public int Count
-    {
-        get { return GetAll().FindAll(x => x.IsVisible).Count; }
-    }
-
 }
