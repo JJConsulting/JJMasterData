@@ -9,7 +9,8 @@ public static class FormElementSerializer
     {
         TypeNameHandling = TypeNameHandling.Auto, 
         Formatting = Formatting.Indented,
-        ContractResolver = new CamelCasePropertyNamesContractResolver()
+        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
     };
     
     public static string Serialize(FormElement formElement)

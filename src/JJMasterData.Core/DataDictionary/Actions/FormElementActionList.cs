@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary.Action;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -12,8 +13,18 @@ namespace JJMasterData.Core.DataDictionary;
 [DataContract]
 public abstract class FormElementActionList : IList<BasicAction>
 {
-    protected IList<BasicAction> List { get; } = new List<BasicAction>();
-
+    protected IList<BasicAction> List { get; set; }
+    protected FormElementActionList()
+    {
+        List = new List<BasicAction>();
+    }
+    
+    [JsonConstructor]
+    protected FormElementActionList(IList<BasicAction> list)
+    {
+        List = list;
+    }
+    
     public IEnumerator<BasicAction> GetEnumerator()
     {
         return List.GetEnumerator();

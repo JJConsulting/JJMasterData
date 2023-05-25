@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using JJMasterData.Core.DataDictionary.Action;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
+
 
 public class GridTableActionList : FormElementActionList
 {
@@ -19,5 +22,11 @@ public class GridTableActionList : FormElementActionList
         List.Add(new DeleteAction());
         List.Add(new EditAction());
         List.Add(new ViewAction());
+    }
+    
+    [JsonConstructor]
+    private GridTableActionList(IList<BasicAction> list)
+    {
+        List = list;
     }
 }

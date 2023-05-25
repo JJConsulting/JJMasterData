@@ -15,15 +15,12 @@ public class FormElementOptions
     public FormUI Form { get; set; }
     
     [DataMember(Name="gridToolbarActions")]
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public GridToolbarActionList ToolbarActions { get;}
 
     [DataMember(Name = "formToolbarActions")]
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public FormToolbarActionList FormToolbarActions { get; }
 
     [DataMember(Name="gridActions")]
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public GridTableActionList GridActions { get; }
 
     public FormElementOptions()
@@ -33,5 +30,20 @@ public class FormElementOptions
         ToolbarActions = new GridToolbarActionList();
         FormToolbarActions = new FormToolbarActionList();
         GridActions = new GridTableActionList();
+    }
+    
+    [JsonConstructor]
+    private FormElementOptions(
+        GridUI gridUI,
+        FormUI formUI,
+        GridToolbarActionList toolbarActions,
+        GridTableActionList gridActions,
+        FormToolbarActionList formToolbarActions)
+    {
+        Grid = gridUI;
+        Form = formUI;
+        ToolbarActions = toolbarActions;
+        GridActions = gridActions;
+        FormToolbarActions = formToolbarActions;
     }
 }

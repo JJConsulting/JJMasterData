@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -103,6 +104,21 @@ public class FormElement : Element
 
             AddField(field);
         }
+    }
+
+    [JsonConstructor]
+    private FormElement(
+        FormElementList fields,
+        List<FormElementPanel> panels,
+        FormElementRelationshipList relationships, 
+        FormElementOptions options,
+        FormElementApiOptions apiOptions)
+    {
+        Fields = fields;
+        Relationships = relationships;
+        Options = options;
+        ApiOptions = apiOptions;
+        Panels = panels;
     }
 
     protected void SetFieldType(ElementField field, Type type)

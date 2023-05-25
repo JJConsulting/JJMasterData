@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Action.Form;
@@ -10,9 +11,15 @@ public class FormToolbarActionList : FormElementActionList
     [JsonIgnore] public CancelAction CancelAction => List.First(a => a.Name == CancelAction.Name) as CancelAction;
     [JsonIgnore] public SaveAction SaveAction => List.First(a => a.Name == SaveAction.Name) as SaveAction;
 
-    public FormToolbarActionList()
+    public FormToolbarActionList() 
     {
         List.Add(new SaveAction());
         List.Add(new CancelAction());
+    }
+    
+    [JsonConstructor]
+    private FormToolbarActionList(IList<BasicAction> list)
+    {
+        List = list;
     }
 }
