@@ -3,72 +3,73 @@
 using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
+using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
-[DataContract]
+
 public class MetadataFormField
 {
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
 
-    [DataMember(Name = "component")]
+    [JsonProperty("component")]
     public FormComponent Component { get; set; }
 
-    [DataMember(Name = "visibleexpression")]
+    [JsonProperty("visibleexpression")]
     public string VisibleExpression { get; set; }
 
-    [DataMember(Name = "enableexpression")]
+    [JsonProperty("enableexpression")]
     public string EnableExpression { get; set; }
 
-    [DataMember(Name = "triggerexpression")]
+    [JsonProperty("triggerexpression")]
     public string TriggerExpression { get; set; }
 
-    [DataMember(Name = "order")]
+    [JsonProperty("order")]
     public int Order { get; set; }
 
-    [DataMember(Name = "linegroup")]
+    [JsonProperty("linegroup")]
     public int LineGroup { get; set; }
 
-    [DataMember(Name = "cssclass")]
+    [JsonProperty("cssclass")]
     public string CssClass { get; set; }
 
-    [DataMember(Name = "helpdescription")]
+    [JsonProperty("helpdescription")]
     public string HelpDescription { get; set; }
 
-    [DataMember(Name = "dataitem")]
+    [JsonProperty("dataitem")]
     public FormElementDataItem DataItem { get; set; }
 
-    [DataMember(Name = "datafile")]
+    [JsonProperty("datafile")]
     public FormElementDataFile DataFile { get; set; }
 
-    [DataMember(Name = "export")]
+    [JsonProperty("export")]
     public bool Export { get; set; }
 
-    [DataMember(Name = "validaterequest")]
+    [JsonProperty("validaterequest")]
     public bool? ValidateRequest { get; set; }
 
-    [DataMember(Name = "autopostback")]
+    [JsonProperty("autopostback")]
     public bool AutoPostBack { get; set; }
 
-    [DataMember(Name = "maxvalue")]
+    [JsonProperty("maxvalue")]
     public float? MaxValue { get; set; }
 
-    [DataMember(Name = "minvalue")]
+    [JsonProperty("minvalue")]
     public float? MinValue { get; set; }
 
-    [DataMember(Name = "numberdecimalplaces")]
+    [JsonProperty("numberdecimalplaces")]
     public int NumberOfDecimalPlaces { get; set; }
 
-    [DataMember(Name = "actions")]
+    [JsonProperty("actions")]
     public FormElementFieldActions Actions { get; set; }
 
-    [DataMember(Name = "attributes")]
+    [JsonProperty("attributes")]
     public Hashtable Attributes { get; set; }
 
-    [DataMember(Name = "panelid")]
+    [JsonProperty("panelid")]
     public int PanelId { get; set; }
 
-    [DataMember(Name = "internalnotes")]
+    [JsonProperty("internalnotes")]
     public string InternalNotes { get; set; }
 }

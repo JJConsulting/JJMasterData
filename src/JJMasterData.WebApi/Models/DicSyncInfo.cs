@@ -1,28 +1,28 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;
 
-[Serializable]
-[DataContract]
+
 public class DicSyncInfo
 {
     /// <summary>
     /// Lista de dicionários com retorno do count
     /// </summary>
-    [DataMember(Name = "listElement")]
+    [JsonProperty("listElement")]
     public List<DicSyncInfoElement> ListElement { get; set; }
 
     /// <summary>
     /// Server date.
     /// Format "yyyy-MM-dd HH:mm"
     /// </summary>
-    [DataMember(Name = "serverDate")]
+    [JsonProperty("serverDate")]
     public string? ServerDate { get; set; }
 
     /// <summary>
     /// Total processing time in milliseconds
     /// </summary>
-    [DataMember(Name = "totalProcessMilliseconds")]
+    [JsonProperty("totalProcessMilliseconds")]
     public double TotalProcessMilliseconds { get; set; }
 
 

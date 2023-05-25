@@ -1,19 +1,17 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-[Serializable]
-[DataContract]
 public class UrlRedirectAction : BasicAction
 {
-    [DataMember(Name = "urlRedirect")]
+    [JsonProperty("urlRedirect")]
     public string UrlRedirect { get; set; }
 
-    [DataMember(Name = "urlAsPopUp")]
+    [JsonProperty("urlAsPopUp")]
     public bool UrlAsPopUp { get; set; }
 
-    [DataMember(Name = "titlePopUp")]
+    [JsonProperty("titlePopUp")]
     public string TitlePopUp { get; set; }
 
     public override bool IsUserCreated => true;

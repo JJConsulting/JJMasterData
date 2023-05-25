@@ -1,23 +1,23 @@
 ﻿using System.Data;
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
+using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;
 
-[Serializable]
-[DataContract]
+
 public class MasterApiListResponse
 {
     /// <summary>
     /// Quantidade total de registros no banco
     /// </summary>
-    [DataMember(Name = "tot")]
+    [JsonProperty("tot")]
     public int Tot { get; set; }
 
     /// <summary>
     /// Tabela com os dados da pesquisa
     /// </summary>
-    [DataMember(Name = "fields")]
+    [JsonProperty("fields")]
     public Dictionary<string, object?>[]? Fields { get; set; }
 
 

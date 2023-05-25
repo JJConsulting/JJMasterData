@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -8,20 +9,18 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Specific relationship information between tables
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class ElementRelationship
 {
-    [DataMember(Name = "childElement")]
+    [JsonProperty("childElement")]
     public string ChildElement { get; set; }
         
-    [DataMember(Name = "columns")]
+    [JsonProperty("columns")]
     public List<ElementRelationshipColumn> Columns { get; set; }
 
-    [DataMember(Name = "updateOnCascade")]
+    [JsonProperty("updateOnCascade")]
     public bool UpdateOnCascade { get; set; }
 
-    [DataMember(Name = "deleteOnCascade")]
+    [JsonProperty("deleteOnCascade")]
     public bool DeleteOnCascade { get; set; }
 
     public ElementRelationship()

@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
+
 public class DataElementMap
 {
-    [DataMember(Name = "elementName")]
+    [JsonProperty("elementName")]
     public string ElementName { get; set; }
 
-    [DataMember(Name = "fieldKey")]
+    [JsonProperty("fieldKey")]
     public string FieldKey { get; set; }
 
-    [DataMember(Name = "fieldDescription")]
+    [JsonProperty("fieldDescription")]
     public string FieldDescription { get; set; }
 
-    [DataMember(Name = "popUpSize")]
+    [JsonProperty("popUpSize")]
     public PopupSize PopUpSize { get; set; }
 
     public Hashtable Filters 
@@ -51,11 +49,11 @@ public class DataElementMap
         }
     }
 
-    [DataMember(Name = "mapFilters")]
+    [JsonProperty("mapFilters")]
     public List<DataElementMapFilter> MapFilters { get; set; }
         
 
-    [DataMember(Name = "enableElementActions")]
+    [JsonProperty("enableElementActions")]
     public bool EnableElementActions { get; set; }
 
     public DataElementMap()

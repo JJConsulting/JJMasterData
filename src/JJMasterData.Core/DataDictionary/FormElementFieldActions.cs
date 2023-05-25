@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
+
 public class FormElementFieldActions
 {
     [JsonProperty]

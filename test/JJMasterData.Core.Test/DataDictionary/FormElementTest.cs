@@ -1,6 +1,5 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Test.DataDictionary;

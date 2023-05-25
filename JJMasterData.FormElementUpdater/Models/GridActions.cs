@@ -1,35 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Action;
+﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.GridTable;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater.Models;
 
-[Serializable]
-[DataContract]
+
 public class GridActions
 {
-    [DataMember(Name = "editAction")]
+    [JsonProperty("editAction")]
     public EditAction EditAction { get; set; }
 
-    [DataMember(Name = "deleteAction")]
+    [JsonProperty("deleteAction")]
     public DeleteAction DeleteAction { get; set; }
 
-    [DataMember(Name = "viewAction")]
+    [JsonProperty("viewAction")]
     public ViewAction ViewAction { get; set; }
 
-    [DataMember(Name = "commandActions")]
+    [JsonProperty("commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }
 
-    [DataMember(Name = "urlRedirectActions")]
+    [JsonProperty("urlRedirectActions")]
     private List<UrlRedirectAction> UrlRedirectActions { get; set; }
 
-    [DataMember(Name = "internalActions")]
+    [JsonProperty("internalActions")]
     private List<InternalAction> InternalActions { get; set; }
 
-    [DataMember(Name = "jsActions")]
+    [JsonProperty("jsActions")]
     private List<ScriptAction> JsActions { get; set; }
 
     

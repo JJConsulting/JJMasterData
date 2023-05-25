@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;

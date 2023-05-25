@@ -1,22 +1,21 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-[Serializable]
-[DataContract]
 public class FilterAction : BasicAction
 {
     /// <summary>
     /// Action default name.
     /// </summary>
     public const string ActionName = "filter";
-    
+
     public override bool IsUserCreated => false;
+
     /// <summary>
     /// Exibir em um collapse painel.
     /// <para></para>(Default = true)
@@ -26,7 +25,7 @@ public class FilterAction : BasicAction
     /// e um painel com os filtros será exibido acima da grid. 
     /// O comportamento do filtro permanece o mesmo.
     /// </remarks>
-    [DataMember(Name = "showAsCollapse")]
+    [JsonProperty("showAsCollapse")]
     public bool ShowAsCollapse { get; set; }
 
     /// <summary>
@@ -34,7 +33,7 @@ public class FilterAction : BasicAction
     /// Aplícavél somente se a propriedade ShowAsCollapse estiver habilitada
     /// <para></para>(Default = false)
     /// </summary>
-    [DataMember(Name = "expandedByDefault")]
+    [JsonProperty("expandedByDefault")]
     public bool ExpandedByDefault { get; set; }
 
     /// <summary>
@@ -49,7 +48,7 @@ public class FilterAction : BasicAction
     /// Se a propriedade ShowAsCollapse estiver desabilitada o campo de texto será exibido 
     /// na Toolbar junto com os botões de acão respeitando a ordem configurada.
     /// </remarks>
-    [DataMember(Name = "enableScreenSearch")]
+    [JsonProperty("enableScreenSearch")]
     public bool EnableScreenSearch { get; set; }
 
     public FilterAction()

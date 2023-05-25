@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JJMasterData.ReceitaFederal.Models;
 
-[Serializable]
+
 public class CnpjInfo
 {
     /// <summary>
@@ -26,7 +26,7 @@ public class CnpjInfo
     /// </summary>
     public CnpjResult Result { get; set; }
         
-    [Serializable]
+    
     public class CnpjResult
     {
         /// <summary>

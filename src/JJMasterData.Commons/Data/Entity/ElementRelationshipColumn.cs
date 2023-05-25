@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -7,14 +8,12 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Relationship data
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class ElementRelationshipColumn
 {
-    [DataMember(Name = "pkcolumn")]
+    [JsonProperty("pkcolumn")]
     public string PkColumn { get; set; }
 
-    [DataMember(Name = "fkcolumn")]
+    [JsonProperty("fkcolumn")]
     public string FkColumn { get; set; }
 
 

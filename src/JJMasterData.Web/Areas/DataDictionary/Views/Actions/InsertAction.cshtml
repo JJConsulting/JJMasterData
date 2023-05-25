@@ -9,7 +9,7 @@
 @using Microsoft.Extensions.Options
 @inject IOptions<JJMasterDataCoreOptions> Options
 
-@model  JJMasterData.Core.DataDictionary.Action.InsertAction
+@model  JJMasterData.Core.DataDictionary.Actions.GridToolbar.InsertAction
 
 @using (Html.BeginForm("InsertAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))

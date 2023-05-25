@@ -2,9 +2,14 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Localization
+
+@model ActionsListViewModel
+
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - Actions";
+    ViewData["Title"] = $"{Model.DictionaryName} - Actions";
 }
 
 <script lang="javascript" type="text/javascript">
@@ -13,51 +18,66 @@
     });
 
     function savePanelState() {
-        var currentTab = $("#selected_tab").val();
+        let currentTab = $("#selected_tab").val();
         if (!currentTab) {
             currentTab = "#divGrid";
         }
         $(".nav a[href='" + currentTab + "']").tab("show");
 
         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-            var target = $(e.target).attr("href");
+            const target = $(e.target).attr("href");
             $("#selected_tab").val(target);
         });
     }
 
 </script>
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(Model.DictionaryName, Model.MenuId))"/>
 
 @using (Html.BeginForm())
 {
-    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
+    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab"/>
     <ul class="nav nav-tabs">
-        <li id="navGrid" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGrid">@Translate.Key("Grid")</a></li>
-        <li id="navToolbar" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divToolBar">@Translate.Key("ToolBar")</a></li>
+        <li id="navGrid" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGrid">@StringLocalizer["Grid Table"]</a>
+        </li>
+        <li id="navGridToolbar" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGridToolbar">@StringLocalizer["Grid Toolbar"]</a>
+        </li>
+        <li id="navFormToolbar" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divFormToolbar">@StringLocalizer["Form Toolbar"]</a>
+        </li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
 
         <div id="divGrid" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
-            @await Html.PartialAsync("_List", new DataDictionaryListAction
-            {
-                Context = ActionSource.Grid,
-                DictionaryName = ViewBag.DictionaryName,
-                ListAction = ViewBag.GridActions
-            })
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Context = ActionSource.GridTable,
+                       DictionaryName = Model.DictionaryName,
+                       Actions = Model.GridTableActions,
+                       MenuId = Model.MenuId
+                   })
         </div>
 
-        <div id="divToolBar" class="tab-pane fade">
-            @await Html.PartialAsync("_List", new DataDictionaryListAction
-            {
-                Context = ActionSource.Toolbar,
-                DictionaryName = ViewBag.DictionaryName,
-                ListAction = ViewBag.ToolBarActions
-            })
+        <div id="divGridToolbar" class="tab-pane fade">
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Context = ActionSource.GridToolbar,
+                       DictionaryName = Model.DictionaryName,
+                       MenuId = Model.MenuId,
+                       Actions = Model.GridToolbarActions
+                   })
+        </div>
+
+        <div id="divFormToolbar" class="tab-pane fade">
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Context = ActionSource.FormToolbar,
+                       DictionaryName = Model.DictionaryName,
+                       Actions = Model.FormToolbarActions
+                   })
         </div>
     </div>
-
 }
-
-

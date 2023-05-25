@@ -1,13 +1,12 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-[Serializable]
-[DataContract]
+
 public class InternalAction : BasicAction
 {
-    [DataMember(Name = "elementRedirect")]
+    [JsonProperty("elementRedirect")]
     public FormActionRedirect ElementRedirect { get; set; }
     public override bool IsUserCreated => true;
     public InternalAction()

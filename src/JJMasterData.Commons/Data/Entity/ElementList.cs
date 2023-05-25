@@ -11,7 +11,6 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Table Field List
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
 public class ElementList : IList<ElementField>
 {
     private readonly IList<ElementField> _list = new List<ElementField>();

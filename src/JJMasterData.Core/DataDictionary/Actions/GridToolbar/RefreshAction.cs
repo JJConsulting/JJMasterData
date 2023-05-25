@@ -1,9 +1,8 @@
-﻿using System;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-[Serializable]
 public class RefreshAction : BasicAction
 {
     /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -9,17 +10,15 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Index specific information
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class ElementIndex
 {
-    [DataMember(Name = "columns")]
+    [JsonProperty("columns")] 
     public List<string> Columns { get; set; }
 
-    [DataMember(Name = "isunique")]
+    [JsonProperty("isunique")] 
     public bool IsUnique { get; set; }
 
-    [DataMember(Name = "isclustered")]
+    [JsonProperty("isclustered")] 
     public bool IsClustered { get; set; }
 
     public ElementIndex()

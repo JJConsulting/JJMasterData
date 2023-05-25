@@ -3,14 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
-[Serializable]
-[DataContract]
 public abstract class FormElementActionList : IList<BasicAction>
 {
     protected IList<BasicAction> List { get; set; }
@@ -55,6 +52,7 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Add(BasicAction item)
     {
+        ValidateAction(item);
         List.Add(item);
     }
     
@@ -63,6 +61,8 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         if (!item.IsUserCreated)
             throw new NotSupportedException("You cannot set non-user created actions.");
+        
+        ValidateAction(item);
         
         var existingAction = List.FirstOrDefault(a => a.Name == item.Name);
         if (existingAction != null)
@@ -94,8 +94,8 @@ public abstract class FormElementActionList : IList<BasicAction>
     public bool Remove(BasicAction item)
     {
         if (item.IsUserCreated)
-            List.Remove(item);
-        
+            return List.Remove(item);
+       
         throw new NotSupportedException("You cannot remove non user created actions");
     }
 
@@ -109,6 +109,7 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Insert(int index, BasicAction item)
     {
+        ValidateAction(item);
         List.Insert(index,item);
     }
 
@@ -121,5 +122,14 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         get => List[index];
         set => List[index] = value;
+    }
+    
+    private static void ValidateAction(BasicAction action)
+    {
+        if (action == null)
+            throw new ArgumentNullException(nameof(action));
+
+        if (string.IsNullOrEmpty(action.Name))
+            throw new ArgumentException("Property name action is not valid");
     }
 }

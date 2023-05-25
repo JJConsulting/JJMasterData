@@ -1,6 +1,7 @@
 ﻿@using JJMasterData.Commons.Data.Entity
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 
@@ -169,11 +170,11 @@
                 }
                 else
                 {
-                    @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new DataDictionaryListAction
+                    @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
                     {
                         Context = ActionSource.Field,
                         DictionaryName = ViewBag.DictionaryName,
-                        ListAction = Model.Actions.GetAll(),
+                        Actions = Model.Actions.GetAll(),
                         FieldName = ViewBag.OriginalName
                     })
                 }

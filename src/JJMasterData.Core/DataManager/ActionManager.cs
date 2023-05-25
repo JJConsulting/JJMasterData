@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.GridTable;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
@@ -95,7 +97,7 @@ internal class ActionManager
         var script = new StringBuilder();
 
         if (contextAction == ActionSource.Field ||
-            contextAction == ActionSource.Form)
+            contextAction == ActionSource.FormToolbar)
         {
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);
@@ -155,7 +157,7 @@ internal class ActionManager
 
     internal string GetExportScript(ExportAction action, Hashtable formValues)
     {
-        var actionMap = new ActionMap(ActionSource.Toolbar, FormElement, formValues, action.Name);
+        var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
 
         var script = new StringBuilder();
@@ -170,7 +172,7 @@ internal class ActionManager
 
     internal string GetConfigUIScript(ConfigAction action, IDictionary formValues)
     {
-        var actionMap = new ActionMap(ActionSource.Toolbar, FormElement, formValues, action.Name);
+        var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
 
         var script = new StringBuilder();
@@ -210,12 +212,12 @@ internal class ActionManager
     
     public JJLinkButton GetLinkGrid(BasicAction action, IDictionary formValues)
     {
-        return GetLink(action, formValues, PageState.List, ActionSource.Grid);
+        return GetLink(action, formValues, PageState.List, ActionSource.GridTable);
     }
 
     public JJLinkButton GetLinkToolBar(BasicAction action, IDictionary formValues)
     {
-        return GetLink(action, formValues, PageState.List, ActionSource.Toolbar);
+        return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
     }
 
     public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pagestate, string panelName)
@@ -304,7 +306,7 @@ internal class ActionManager
         try
         {
             var listSql = new List<string>();
-            if (map.ContextAction == ActionSource.Toolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            if (map.ContextAction == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
             {
                 var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)

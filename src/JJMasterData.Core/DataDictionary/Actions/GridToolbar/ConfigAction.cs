@@ -1,12 +1,12 @@
-﻿using System;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 /// <summary>
 /// Represents the settings menu of a data dictionary.
 /// </summary>
-[Serializable]
+
 public class ConfigAction : BasicAction
 {
     /// <summary>

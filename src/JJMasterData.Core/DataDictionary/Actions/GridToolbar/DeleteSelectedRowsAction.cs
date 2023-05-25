@@ -1,8 +1,7 @@
-﻿using System;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-[Serializable]
 public class DeleteSelectedRowsAction : BasicAction
 {
     /// <summary>

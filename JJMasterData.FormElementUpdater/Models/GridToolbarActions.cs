@@ -1,53 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Action;
+﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.FormElementUpdater.Models;
 
-[Serializable]
-[DataContract]
 public class GridToolbarActions
 {
-    [DataMember(Name = "insertAction")]
+    [JsonProperty("insertAction")]
     public InsertAction InsertAction { get; set; }
 
-    [DataMember(Name = "legendAction")]
+    [JsonProperty("legendAction")]
     public LegendAction LegendAction { get; set; }
 
-    [DataMember(Name = "refreshAction")]
+    [JsonProperty("refreshAction")]
     public RefreshAction RefreshAction { get; set; }
 
-    [DataMember(Name = "filterAction")]
+    [JsonProperty("filterAction")]
     public FilterAction FilterAction { get; set; }
 
-    [DataMember(Name = "importAction")]
+    [JsonProperty("importAction")]
     public ImportAction ImportAction { get; set; }
 
-    [DataMember(Name = "exportAction")]
+    [JsonProperty("exportAction")]
     public ExportAction ExportAction { get; set; }
 
-    [DataMember(Name = "configAction")]
+    [JsonProperty("configAction")]
     public ConfigAction ConfigAction { get; set; }
 
-    [DataMember(Name = "sortAction")]
+    [JsonProperty("sortAction")]
     public SortAction SortAction { get; set; }
 
-    [DataMember(Name = "logAction")]
+    [JsonProperty("logAction")]
     public LogAction LogAction { get; set; }
 
-    [DataMember(Name = "commandActions")]
+    [JsonProperty("commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }
 
-    [DataMember(Name = "urlRedirectActions")]
+    [JsonProperty("urlRedirectActions")]
     private List<UrlRedirectAction> UrlRedirectActions { get; set; }
 
-    [DataMember(Name = "internalActions")]
+    [JsonProperty("internalActions")]
     private List<InternalAction> InternalActions { get; set; }
 
-    [DataMember(Name = "jsActions")]
+    [JsonProperty("jsActions")]
     private List<ScriptAction> JsActions { get; set; }
     
     public GridToolbarActions()

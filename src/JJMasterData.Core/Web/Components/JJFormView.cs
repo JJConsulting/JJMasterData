@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.GridTable;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
@@ -829,7 +830,7 @@ public class JJFormView : JJGridView
 
         if (sender is not JJGridView grid) return;
         
-        var map = new ActionMap(ActionSource.Grid, grid.FormElement, e.FieldValues, e.Action.Name);
+        var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string criptId = map.GetCriptJson();
         e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
     }
@@ -946,7 +947,7 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonHideLog(IDictionary values)
     {
-        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionSource.Grid);
+        string scriptAction = ActionManager.GetFormActionScript(ViewAction, values, ActionSource.GridTable);
         var btn = new JJLinkButton
         {
             Type = LinkButtonType.Button,
@@ -960,7 +961,7 @@ public class JJFormView : JJGridView
 
     private JJLinkButton GetButtonViewLog(IDictionary values)
     {
-        string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionSource.Toolbar);
+        string scriptAction = ActionManager.GetFormActionScript(LogAction, values, ActionSource.GridToolbar);
         var btn = new JJLinkButton
         {
             Type = LinkButtonType.Button,

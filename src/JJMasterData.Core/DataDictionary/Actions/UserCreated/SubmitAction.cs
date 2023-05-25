@@ -1,13 +1,12 @@
-using System;
-using System.Runtime.Serialization;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-[Serializable]
-[DataContract]
+
 public class SubmitAction : BasicAction
 {
-    [DataMember(Name = "formAction")]
+    [JsonProperty("formAction")]
     public string FormAction { get; set; }
     
     public override bool IsUserCreated => true;

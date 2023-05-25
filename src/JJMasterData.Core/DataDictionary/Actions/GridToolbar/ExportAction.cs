@@ -1,22 +1,22 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-[Serializable]
 public class ExportAction : BasicAction
 {
     /// <summary>
     /// Default action name
     /// </summary>
     public const string ActionName = "export";
+
     public override bool IsUserCreated => false;
 
-    [DataMember(Name = "processOptions")]
+    [JsonProperty("processOptions")] 
     public ProcessOptions ProcessOptions { get; set; }
 
 

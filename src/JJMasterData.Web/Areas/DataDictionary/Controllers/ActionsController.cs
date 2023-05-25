@@ -2,8 +2,12 @@
 
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.GridTable;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -19,16 +23,18 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
-        ViewBag.DictionaryName = dictionaryName;
-        ViewBag.MenuId = "Actions";
-        ViewBag.ToolBarActions = dicParcer.Options.ToolbarActions.GetAll();
-        ViewBag.GridActions = dicParcer.Options.GridActions.GetAll();
+        var formElement = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var model = new ActionsListViewModel(dictionaryName, "Actions")
+        {
+            GridTableActions = formElement.Options.GridTableActions.GetAll(),
+            GridToolbarActions = formElement.Options.GridToolbarActions.GetAll(),
+            FormToolbarActions = formElement.Options.FormToolbarActions.GetAll()
+        };
 
         if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
 
-        return View();
+        return View(model);
     }
 
     public ActionResult Edit(string dictionaryName, string actionName, ActionSource context, string fieldName)
@@ -43,11 +49,11 @@ public class ActionsController : DataDictionaryController
         BasicAction? action = null;
         switch (context)
         {
-            case ActionSource.Grid:
-                action = metadata.Options.GridActions.Get(actionName);
+            case ActionSource.GridTable:
+                action = metadata.Options.GridTableActions.Get(actionName);
                 break;
-            case ActionSource.Toolbar:
-                action = metadata.Options.ToolbarActions.Get(actionName);
+            case ActionSource.GridToolbar:
+                action = metadata.Options.GridToolbarActions.Get(actionName);
                 break;
             case ActionSource.Field:
                 action = metadata.Fields[fieldName].Actions.Get(actionName);
@@ -371,5 +377,5 @@ public class ActionsController : DataDictionaryController
             }
         }
     }
-
+    
 }

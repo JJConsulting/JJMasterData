@@ -1,23 +1,23 @@
 ﻿#nullable disable
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
+using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
-[Serializable]
-[DataContract]
+
 public class MetadataOptions
 {
-    [DataMember(Name = "grid")]
+    [JsonProperty("grid")]
     public GridUI Grid { get; set; }
 
-    [DataMember(Name = "form")]
+    [JsonProperty("form")]
     public FormUI Form { get; set; }
 
-    [DataMember(Name = "toolBarActions")]
+    [JsonProperty("toolBarActions")]
     public GridToolbarActions ToolbarActions { get; set; }
 
-    [DataMember(Name = "gridActions")]
+    [JsonProperty("gridActions")]
     public GridActions GridActions { get; set; }
 
     public MetadataOptions()

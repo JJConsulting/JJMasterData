@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
@@ -7,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
+
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
     private IList<FormElementRelationship> _formRelationships;

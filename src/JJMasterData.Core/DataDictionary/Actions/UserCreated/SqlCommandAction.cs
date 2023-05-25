@@ -1,16 +1,14 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-[Serializable]
-[DataContract]
 public class SqlCommandAction : BasicAction
 {
     /// <summary>
     /// Comando SQL a ser executado, aceita expression
     /// </summary>
-    [DataMember(Name = "commandSQL")]
+    [JsonProperty("commandSQL")]
     public string CommandSql { get; set; }
 
     /// <summary>
@@ -20,7 +18,7 @@ public class SqlCommandAction : BasicAction
     /// Valido somente para contexto da toolbar, 
     /// onde o comando é aplicado para cada linha selecionada
     /// </remarks>
-    [DataMember(Name = "applyOnSelected")]
+    [JsonProperty("applyOnSelected")]
     public bool ApplyOnSelected { get; set; }
 
     public override bool IsUserCreated => true;

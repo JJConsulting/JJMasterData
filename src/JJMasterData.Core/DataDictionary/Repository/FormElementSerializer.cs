@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -9,7 +8,6 @@ public static class FormElementSerializer
     {
         TypeNameHandling = TypeNameHandling.Auto, 
         Formatting = Formatting.Indented,
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
     };
     

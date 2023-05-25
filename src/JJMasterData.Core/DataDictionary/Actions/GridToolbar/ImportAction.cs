@@ -1,11 +1,9 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-[Serializable]
-[DataContract]
 public class ImportAction : BasicAction
 {
     /// <summary>
@@ -14,7 +12,7 @@ public class ImportAction : BasicAction
     public const string ActionName = "import";
 
         
-    [DataMember(Name = "processOptions")]
+    [JsonProperty("processOptions")]
     public ProcessOptions ProcessOptions { get; set; }
     public override bool IsUserCreated => false;
     public ImportAction()

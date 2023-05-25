@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Action;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 
@@ -35,17 +35,17 @@ public class ActionsService : BaseService
             if (action != null)
                 field.Actions.Remove(action);
         }
-        else if (context == ActionSource.Grid)
+        else if (context == ActionSource.GridTable)
         {
-            var action = formElement.Options.GridActions.Get(originalName);
+            var action = formElement.Options.GridTableActions.Get(originalName);
             if (action != null)
-                formElement.Options.GridActions.Remove(action);
+                formElement.Options.GridTableActions.Remove(action);
         }
-        else if (context == ActionSource.Toolbar)
+        else if (context == ActionSource.GridToolbar)
         {
-            var action = formElement.Options.ToolbarActions.Get(originalName);
+            var action = formElement.Options.GridToolbarActions.Get(originalName);
             if (action != null)
-                formElement.Options.ToolbarActions.Remove(action);
+                formElement.Options.GridToolbarActions.Remove(action);
         }
     }
 
@@ -80,16 +80,16 @@ public class ActionsService : BaseService
                     field.Actions.SetDefault(action.Name);
                 break;
             }
-            case ActionSource.Grid:
+            case ActionSource.GridTable:
             {
-                formElement.Options.GridActions.Set(action);
+                formElement.Options.GridTableActions.Set(action);
 
                 if (action.IsDefaultOption)
-                    formElement.Options.GridActions.SetDefaultOption(action.Name);
+                    formElement.Options.GridTableActions.SetDefaultOption(action.Name);
                 break;
             }
-            case ActionSource.Toolbar:
-                formElement.Options.ToolbarActions.Set(action);
+            case ActionSource.GridToolbar:
+                formElement.Options.GridToolbarActions.Set(action);
                 break;
         }
 
@@ -117,11 +117,11 @@ public class ActionsService : BaseService
                 listAction = field.Actions.GetAll();
                 break;
             }
-            case ActionSource.Grid:
-                listAction = dicParser.Options.GridActions.GetAll();
+            case ActionSource.GridTable:
+                listAction = dicParser.Options.GridTableActions.GetAll();
                 break;
-            case ActionSource.Toolbar:
-                listAction = dicParser.Options.ToolbarActions.GetAll();
+            case ActionSource.GridToolbar:
+                listAction = dicParser.Options.GridToolbarActions.GetAll();
                 break;
         }
 
@@ -182,13 +182,13 @@ public class ActionsService : BaseService
             string actionName = listAction[i];
             BasicAction action = null;
 
-            if (actionContext == ActionSource.Grid)
+            if (actionContext == ActionSource.GridTable)
             {
-                action = dicParser.Options.GridActions.Get(actionName);
+                action = dicParser.Options.GridTableActions.Get(actionName);
             }
-            else if (actionContext == ActionSource.Toolbar)
+            else if (actionContext == ActionSource.GridToolbar)
             {
-                action = dicParser.Options.ToolbarActions.Get(actionName);
+                action = dicParser.Options.GridToolbarActions.Get(actionName);
             }
             else if (actionContext == ActionSource.Field)
             {
@@ -206,13 +206,13 @@ public class ActionsService : BaseService
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
         BasicAction action = null;
-        if (actionContext == ActionSource.Grid)
+        if (actionContext == ActionSource.GridTable)
         {
-            action = dicParser.Options.GridActions.Get(actionName);
+            action = dicParser.Options.GridTableActions.Get(actionName);
         }
-        else if (actionContext == ActionSource.Toolbar)
+        else if (actionContext == ActionSource.GridToolbar)
         {
-            action = dicParser.Options.ToolbarActions.Get(actionName);
+            action = dicParser.Options.GridToolbarActions.Get(actionName);
         }
 
         action.SetVisible(visible);

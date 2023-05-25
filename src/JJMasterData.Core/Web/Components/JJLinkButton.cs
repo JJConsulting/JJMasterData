@@ -1,5 +1,4 @@
-﻿using System;
-using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -7,7 +6,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a clickable button
 /// </summary>
-[Serializable]
+
 public class JJLinkButton : JJBaseView
 {
 

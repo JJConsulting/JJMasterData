@@ -11,7 +11,7 @@ namespace JJMasterData.Core.DataDictionary;
 /// Lista de campos do formulário
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
+
 public class FormElementList : ICollection<FormElementField>
 {
     private IList<FormElementField> _formFields;
@@ -98,10 +98,7 @@ public class FormElementList : ICollection<FormElementField>
 
     public FormElementField this[int index]
     {
-        get
-        {
-            return _formFields[index];
-        }
+        get => _formFields[index];
         set
         {
             _formFields[index] = value;

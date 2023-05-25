@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -8,55 +9,54 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Elemento base com a estrutura basica da tabela
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
-public class Element 
+public class Element
 {
     /// <summary>
     /// Dictionary Name
     /// </summary>
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Table information
     /// </summary>
-    [DataMember(Name = "info")]
+    [JsonProperty("info")]
     public string Info { get; set; }
+
     /// <summary>
     /// Field List
     /// </summary>
-    [DataMember(Name = "fields")]
+    [JsonProperty("fields")]
     public ElementList Fields { get; set; }
 
     /// <summary>
     /// Index List
     /// </summary>
-    [DataMember(Name = "indexes")]
+    [JsonProperty("indexes")]
     public List<ElementIndex> Indexes { get; set; }
 
     /// <summary>
     /// Relationships List
     /// </summary>
-    [DataMember(Name = "relations")]
+    [JsonProperty("relations")]
     public List<ElementRelationship> Relationships { get; set; }
 
     /// <summary>
     /// Table Name
     /// </summary>
-    [DataMember(Name = "tableName")]
-    public string TableName { get; set; } 
+    [JsonProperty("tableName")]
+    public string TableName { get; set; }
 
     /// <summary>
     /// Custom name for recording procedure
     /// </summary>
-    [DataMember(Name = "customprocnameget")]
+    [JsonProperty("customprocnameget")]
     public string CustomProcNameGet { get; set; }
 
     /// <summary>
     /// Custom name for read procedure
     /// </summary>
-    [DataMember(Name = "customprocnameset")]
+    [JsonProperty("customprocnameset")]
     public string CustomProcNameSet { get; set; }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class Element
     /// Enable sync for the app.
     /// <para></para>Default = true
     /// </remarks>
-    [DataMember(Name = "sync")]
+    [JsonProperty("sync")]
     public bool Sync { get; set; }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class Element
     /// Behavior whether data will be synchronized online or offline
     /// <para>Default = SyncMode.Online</para>
     /// </remarks>
-    [DataMember(Name = "mode")]
+    [JsonProperty("mode")]
     public SyncMode SyncMode { get; set; }
 
     public Element()
@@ -98,7 +98,4 @@ public class Element
     {
         Info = description;
     }
-
-       
-
 }

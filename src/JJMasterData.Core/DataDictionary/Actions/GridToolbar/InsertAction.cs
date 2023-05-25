@@ -1,10 +1,9 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-[Serializable]
-[DataContract]
+
 public class InsertAction : BasicAction
 {
     /// <summary>
@@ -21,7 +20,7 @@ public class InsertAction : BasicAction
     /// Se o metodo de insert for executado com sucesso o usuário será redirecionado para edição do dicionário do contexto.
     /// <para/>Importante! Ao executar o insert o id gerado automaticamente deverá ser retornado na procedure de set.
     /// </remarks>
-    [DataMember(Name = "elementNameToSelect")]
+    [JsonProperty("elementNameToSelect")]
     public string ElementNameToSelect { get; set; }
 
     /// <summary>
@@ -31,10 +30,11 @@ public class InsertAction : BasicAction
     /// False = Fecha o formulário e volta para lista
     /// True = Reabre o formulário para inserir um novo registro
     /// </remarks>
-    [DataMember(Name = "reopenForm")]
+    [JsonProperty("reopenForm")]
     public bool ReopenForm { get; set; }
-    
+
     public override bool IsUserCreated => false;
+
     public InsertAction()
     {
         Name = ActionName;

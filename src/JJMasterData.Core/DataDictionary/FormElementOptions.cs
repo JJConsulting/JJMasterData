@@ -1,49 +1,48 @@
 #nullable enable
 
-using System.Runtime.Serialization;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.DataDictionary.Actions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementOptions
 {
-    [DataMember(Name="gridOptions")]
+    [JsonProperty("gridOptions")]
     public GridUI Grid { get; set; }
-    
-    [DataMember(Name="formOptions")]
-    public FormUI Form { get; set; }
-    
-    [DataMember(Name="gridToolbarActions")]
-    public GridToolbarActionList ToolbarActions { get;}
 
-    [DataMember(Name = "formToolbarActions")]
+    [JsonProperty("formOptions")]
+    public FormUI Form { get; set; }
+
+    [JsonProperty("toolBarActions")]
+    public GridToolbarActionList GridToolbarActions { get; }
+
+    [JsonProperty("formToolbarActions")]
     public FormToolbarActionList FormToolbarActions { get; }
 
-    [DataMember(Name="gridActions")]
-    public GridTableActionList GridActions { get; }
+    [JsonProperty("gridActions")] 
+    public GridTableActionList GridTableActions { get; }
 
     public FormElementOptions()
     {
         Grid = new GridUI();
         Form = new FormUI();
-        ToolbarActions = new GridToolbarActionList();
+        GridToolbarActions = new GridToolbarActionList();
         FormToolbarActions = new FormToolbarActionList();
-        GridActions = new GridTableActionList();
+        GridTableActions = new GridTableActionList();
     }
-    
+
     [JsonConstructor]
     private FormElementOptions(
         GridUI gridUI,
         FormUI formUI,
-        GridToolbarActionList toolbarActions,
-        GridTableActionList gridActions,
-        FormToolbarActionList formToolbarActions)
+        [JsonProperty("gridActions")] GridTableActionList? gridTableActions,
+        [JsonProperty("toolbarActions")] GridToolbarActionList? gridToolbarActions,
+        FormToolbarActionList? formToolbarActions)
     {
         Grid = gridUI;
         Form = formUI;
-        ToolbarActions = toolbarActions;
-        GridActions = gridActions;
-        FormToolbarActions = formToolbarActions;
+        GridToolbarActions = gridToolbarActions ?? new GridToolbarActionList();
+        GridTableActions = gridTableActions ?? new GridTableActionList();
+        FormToolbarActions = formToolbarActions ?? new FormToolbarActionList();
     }
 }

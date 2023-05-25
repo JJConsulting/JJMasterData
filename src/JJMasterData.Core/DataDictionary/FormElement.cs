@@ -5,18 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-/// <summary>
-/// Form data
-/// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class FormElement : Element
 {
     public string? Title { get; set; }
@@ -24,23 +17,23 @@ public class FormElement : Element
     public string? SubTitle { get; set; }
     
     [Required]
-    [DataMember(Name = "fields")]
+    [JsonProperty("fields")]
     public new FormElementList Fields { get; private set; }
     
     [Required]
-    [DataMember(Name = "panels")]
+    [JsonProperty("panels")]
     public List<FormElementPanel> Panels { get; set; }
     
     [Required]
-    [DataMember(Name="relations")]
+    [JsonProperty("relations")]
     public new FormElementRelationshipList Relationships { get; set; }
     
     [Required]
-    [DataMember(Name="options")]
+    [JsonProperty("options")]
     public FormElementOptions Options { get; set; }
     
     [Required]
-    [DataMember(Name="apiOptions")]
+    [JsonProperty("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
     
     public FormElement()

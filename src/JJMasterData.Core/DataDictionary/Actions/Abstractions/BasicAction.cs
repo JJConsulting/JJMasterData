@@ -1,14 +1,11 @@
-using System;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Action;
+namespace JJMasterData.Core.DataDictionary.Actions.Abstractions;
 
 /// <summary>
 /// Action basic info
 /// </summary>
-[Serializable]
-[DataContract]
-public abstract class BasicAction 
+public abstract class BasicAction
 {
     /// <summary>
     /// Identifier of the component
@@ -19,33 +16,33 @@ public abstract class BasicAction
     ///<p>Don't try to create a action with a repeated name. This can cause unforessen consequences.</p>
     ///</div>
     /// </remarks>
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Action description
     /// </summary>
-    [DataMember(Name = "text")]
+    [JsonProperty("text")]
     public string Text { get; set; }
 
     /// <summary>
     /// Control mouse tooltip
     /// </summary>
-    [DataMember(Name = "tooltip")]
+    [JsonProperty("tooltip")]
     public string ToolTip { get; set; }
 
     /// <summary>
     /// Execute this action as default
     /// This action will be triggered in any line location
     /// </summary>
-    [DataMember(Name = "isDefaultOption")]
+    [JsonProperty("isDefaultOption")]
     public bool IsDefaultOption { get; set; }
 
     /// <summary>
     /// Display this action in a group menu
     /// Default = false
     /// </summary>
-    [DataMember(Name = "isGroup")]
+    [JsonProperty("isGroup")]
     public bool IsGroup { get; set; }
 
     /// <summary>
@@ -55,19 +52,19 @@ public abstract class BasicAction
     /// <remarks>
     /// Only valid if IsGroup is true.
     /// </remarks>
-    [DataMember(Name = "dividerLine")]
+    [JsonProperty("dividerLine")]
     public bool DividerLine { get; set; }
 
     /// <summary>
     /// Link/Button FontAwesome icon.
     /// </summary>
-    [DataMember(Name = "icon")]
+    [JsonProperty("icon")]
     public IconType Icon { get; set; }
 
     /// <summary>
     /// Display grid title
     /// </summary>
-    [DataMember(Name = "showTitle")]
+    [JsonProperty("showTitle")]
     public bool ShowTitle { get; set; }
 
     /// <summary>
@@ -75,7 +72,7 @@ public abstract class BasicAction
     /// No = Cancels the action
     /// Sim = Action will be executed
     /// </summary>
-    [DataMember(Name = "confirmationMessage")]
+    [JsonProperty("confirmationMessage")]
     public string ConfirmationMessage { get; set; }
 
     /// <summary>
@@ -87,7 +84,7 @@ public abstract class BasicAction
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "enableExpression")]
+    [JsonProperty("enableExpression")]
     public string EnableExpression { get; set; }
 
     /// <summary>
@@ -99,27 +96,25 @@ public abstract class BasicAction
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "visibleExpression")]
+    [JsonProperty("visibleExpression")]
     public string VisibleExpression { get; set; }
 
     /// <summary>
     /// Order of the action (0, 1, 2...)
     /// </summary>
-    [DataMember(Name = "order")]
+    [JsonProperty("order")]
     public int Order { get; set; }
-    
-    [DataMember(Name = "showAsButton")]
-    public bool ShowAsButton { get; set; }
+
+    [JsonProperty("showAsButton")] public bool ShowAsButton { get; set; }
 
     /// <summary>
     /// CSS3 Stylesheet Class
     /// </summary>
-    [DataMember(Name = "cssClass")]
+    [JsonProperty("cssClass")]
     public string CssClass { get; set; }
 
-    
-    [DataMember(Name = "isCustomAction")]
-    public abstract bool IsUserCreated { get; }
+
+    [JsonProperty("isCustomAction")] public abstract bool IsUserCreated { get; }
 
     public BasicAction()
     {
@@ -168,5 +163,4 @@ public abstract class BasicAction
         ShowAsButton = action.ShowAsButton;
         CssClass = action.CssClass;
     }
-
 }

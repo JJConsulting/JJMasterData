@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -7,20 +8,18 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Informações de filtro
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class ElementFilter
 {
     /// <summary>
     /// Filter type
     /// </summary>
-    [DataMember(Name = "type")]
+    [JsonProperty("type")]
     public FilterMode Type { get; set; }
 
     /// <summary>
     /// Required filter
     /// </summary>
-    [DataMember(Name = "isrequired")]
+    [JsonProperty("isrequired")]
     public bool IsRequired { get; set; }
 
     public ElementFilter()
@@ -31,5 +30,5 @@ public class ElementFilter
     public ElementFilter(FilterMode type)
     {
         Type = type;
-    }   
+    }
 }

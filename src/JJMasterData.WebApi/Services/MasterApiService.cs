@@ -418,7 +418,7 @@ public class MasterApiService
     }
     private FormService GetFormService(FormElement formElement)
     {
-        bool logActionIsVisible = formElement.Options.ToolbarActions.LogAction.IsVisible;
+        bool logActionIsVisible = formElement.Options.GridToolbarActions.LogAction.IsVisible;
         string userId = GetUserId();
         var userValues = new Hashtable
         {

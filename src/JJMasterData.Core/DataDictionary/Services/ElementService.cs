@@ -4,7 +4,6 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -242,7 +241,7 @@ public class ElementService : BaseService
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
             var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 
-            propsBuilder.AppendLine($"\t[DataMember(Name = \"{item.Name}\")] ");
+            propsBuilder.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
             propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
             propsBuilder.AppendLine("\t"+propField);
             propsBuilder.AppendLine("");

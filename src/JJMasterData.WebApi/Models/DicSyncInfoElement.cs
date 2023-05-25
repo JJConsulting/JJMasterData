@@ -1,26 +1,26 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;
 
-[Serializable]
-[DataContract]
+
 public class DicSyncInfoElement
 {
     /// <summary>
     /// Dicionary Name
     /// </summary>
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string? Name { get; set; }
 
     /// <summary>
     /// Count command return
     /// </summary>
-    [DataMember(Name = "recordSize")]
+    [JsonProperty("recordSize")]
     public int RecordSize { get; set; }
 
     /// <summary>
     /// Executing time in milliseconds
     /// </summary>
-    [DataMember(Name = "processMilliseconds")]
+    [JsonProperty("processMilliseconds")]
     public double ProcessMilliseconds { get; set; }
 }

@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections;
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -13,8 +11,7 @@ namespace JJMasterData.Core.DataDictionary;
 /// Field-specific information in the form, inherits from ElementField
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
+
 public class FormElementField : ElementField
 {
     public const string PlaceholderAttribute = "placeholder";
@@ -27,25 +24,25 @@ public class FormElementField : ElementField
 
     private FormElementFieldActions? _actions;
 
-    [DataMember(Name = "component")] public FormComponent Component { get; set; }
+    [JsonProperty("component")] public FormComponent Component { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "visibleExpression")]
+    [JsonProperty("visibleExpression")]
     public string? VisibleExpression { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "enableExpression")]
+    [JsonProperty("enableExpression")]
     public string? EnableExpression { get; set; }
 
 
     /// <summary>
     /// Field position in a line
     /// </summary>
-    [DataMember(Name = "order")]
+    [JsonProperty("order")]
     public int Order { get; set; }
 
     /// <summary>
@@ -71,44 +68,44 @@ public class FormElementField : ElementField
     ///     f3.CssClass = "col-sm-6";
     /// </code>
     /// </remarks>
-    [DataMember(Name = "lineGroup")]
+    [JsonProperty("lineGroup")]
     public int LineGroup { get; set; }
 
     /// <summary>
     /// Class name (CSS) to be appended in object group rendering
     /// </summary>
-    [DataMember(Name = "cssClass")]
+    [JsonProperty("cssClass")]
     public string? CssClass { get; set; }
 
     /// <summary>
     /// Help text will be displayed next to the label
     /// </summary>
-    [DataMember(Name = "helpDescription")]
+    [JsonProperty("helpDescription")]
     public string? HelpDescription { get; set; }
 
     /// <summary>
     /// Relationship specific settings
     /// </summary>
-    [DataMember(Name = "dataItem")]
+    [JsonProperty("dataItem")]
     public FormElementDataItem? DataItem { get; set; }
 
     /// <summary>
     /// File-specific settings
     /// </summary>
-    [DataMember(Name = "dataFile")]
+    [JsonProperty("dataFile")]
     public FormElementDataFile? DataFile { get; set; }
 
     /// <summary>
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
-    [DataMember(Name = "attributes")]
+    [JsonProperty("attributes")]
     public IDictionary<string, dynamic> Attributes { get; set; } =
         new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Allows exporting the field (Default=true)
     /// </summary>
-    [DataMember(Name = "export")]
+    [JsonProperty("export")]
     public bool Export { get; set; }
 
     /// <summary>
@@ -118,7 +115,7 @@ public class FormElementField : ElementField
     /// Important for lower versions of .NET Framework to enable the parameter: 
     /// httpRuntime requestValidationMode="4.5" ... 
     /// </remarks>
-    [DataMember(Name = "validateRequest")]
+    [JsonProperty("validateRequest")]
     public bool ValidateRequest { get; set; }
 
     /// <summary>
@@ -131,13 +128,13 @@ public class FormElementField : ElementField
     /// <para/>Exemplo:
     /// "SELECT ID, DESCR FROM TB_FOO WHERE TPVEND = {campo_tpvend}"
     /// </remarks>
-    [DataMember(Name = "autoPostBack")]
+    [JsonProperty("autoPostBack")]
     public bool AutoPostBack { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "triggerExpression")]
+    [JsonProperty("triggerExpression")]
     public string? TriggerExpression { get; set; }
 
     /// <summary>
@@ -146,7 +143,7 @@ public class FormElementField : ElementField
     /// <remarks>
     /// Property valid only for numeric types
     /// </remarks>
-    [DataMember(Name = "numberOfDecimalPlaces")]
+    [JsonProperty("numberOfDecimalPlaces")]
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>
@@ -155,10 +152,10 @@ public class FormElementField : ElementField
     /// <remarks>
     /// Id references a FormElementPanel
     /// </remarks>
-    [DataMember(Name = "panelId")]
+    [JsonProperty("panelId")]
     public int PanelId { get; set; }
 
-    [DataMember(Name = "actions")]
+    [JsonProperty("actions")]
     public FormElementFieldActions Actions
     {
         get => _actions ??= new FormElementFieldActions();
@@ -168,7 +165,7 @@ public class FormElementField : ElementField
     /// <summary>
     /// Internal developer notes
     /// </summary>
-    [DataMember(Name = "internalNotes")]
+    [JsonProperty("internalNotes")]
     public string? InternalNotes { get; set; }
 
     public FormElementField()

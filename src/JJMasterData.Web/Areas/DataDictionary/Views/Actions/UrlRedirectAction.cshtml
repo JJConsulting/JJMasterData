@@ -4,7 +4,7 @@
 
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
-@model  JJMasterData.Core.DataDictionary.Action.UrlRedirectAction
+@model  JJMasterData.Core.DataDictionary.Actions.UserCreated.UrlRedirectAction
 
 @using (Html.BeginForm("UrlRedirectAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))

@@ -1,17 +1,16 @@
 ﻿@using JJMasterData.Commons.Util
-@using JJMasterData.Core.DataDictionary.Action
 @using System.Text
 @using JJMasterData.Commons.Localization
-@using JJMasterData.Core.DataManager
-
+@using JJMasterData.Core.DataDictionary.Actions.Abstractions
+@using JJMasterData.Core.DataDictionary.Actions.UserCreated
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.Web
-@model  JJMasterData.Web.Areas.DataDictionary.Models.DataDictionaryListAction
-
+@model ActionsListDetailsViewModel
 
 @{
     var sortableClass = string.Empty;
 }
-@if (Model.ListAction?.Count > 1)
+@if (Model.Actions?.Count > 1)
 {
     sortableClass = "jjsortable";
     <script language="javascript" type="text/javascript">
@@ -39,7 +38,7 @@
 <div class="row">
     <div class="col-sm-12">
         <ul class="list-group @sortableClass" id="sortable_@Model.Context.ToString()">
-            @foreach (var action in Model.ListAction!)
+            @foreach (var action in Model.Actions!)
             {
                 <li class="list-group-item" id="@action.Name">
                     <div style="height: 33px;">
@@ -86,43 +85,43 @@
 
     public string GetCmdEdit(BasicAction action)
     {
-        var sScript = new StringBuilder();
-        sScript.Append("popup.show('");
-        sScript.Append(Model.Context.ToString().FirstCharToUpper());
-        sScript.Append(" Action', '");
-        sScript.Append(Url.Action("Edit", "Actions",
+        var script = new StringBuilder();
+        script.Append("popup.show('");
+        script.Append(Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action', '");
+        script.Append(Url.Action("Edit", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
-        sScript.Append("');");
+        script.Append("');");
 
-        return sScript.ToString();
+        return script.ToString();
     }
 
     public string GetCmdAdd(Type actionType)
     {
-        var sScript = new StringBuilder();
-        sScript.Append("popup.show('");
-        sScript.Append(Model.Context.ToString().FirstCharToUpper());
-        sScript.Append(" Action', '");
-        sScript.Append(Url.Action("Add", "Actions",
+        var script = new StringBuilder();
+        script.Append("popup.show('");
+        script.Append(Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action', '");
+        script.Append(Url.Action("Add", "Actions",
             new { dictionaryName = Model.DictionaryName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
-        sScript.Append("');");
+        script.Append("');");
 
-        return sScript.ToString();
+        return script.ToString();
     }
 
     public string GetCmdDelete(BasicAction action)
     {
-        var sScript = new StringBuilder();
-        sScript.Append("jjdictionary.deleteAction('");
-        sScript.Append(action.Name);
-        sScript.Append("', '");
-        sScript.Append(Url.Action("Remove", "Actions",
+        var script = new StringBuilder();
+        script.Append("jjdictionary.deleteAction('");
+        script.Append(action.Name);
+        script.Append("', '");
+        script.Append(Url.Action("Remove", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
-        sScript.Append("', '");
-        sScript.Append(Translate.Key("Are you sure you want to delete [{0}] action?", action.Name));
-        sScript.Append("');");
+        script.Append("', '");
+        script.Append(Translate.Key("Are you sure you want to delete [{0}] action?", action.Name));
+        script.Append("');");
 
-        return sScript.ToString();
+        return script.ToString();
     }
 
     public string? GetUrlDisable(BasicAction action)
@@ -136,6 +135,4 @@
         return Url.Action("Sort", "Actions",
             new { dictionaryName = Model.DictionaryName, fieldName = Model.FieldName });
     }
-
-
 }

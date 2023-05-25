@@ -1,22 +1,23 @@
 ﻿using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
 [DataContract]
 public class MetadataForm
 {
-    [DataMember(Name = "formfields")]
+    [JsonProperty("formfields")]
     public List<MetadataFormField> FormFields { get; set; }
 
-    [DataMember(Name = "title")]
+    [JsonProperty("title")]
     public string Title { get; set; }
 
-    [DataMember(Name = "subtitle")]
+    [JsonProperty("subtitle")]
     public string SubTitle { get; set; }
 
-    [DataMember(Name = "panels")]
+    [JsonProperty("panels")]
     public List<FormElementPanel> Panels { get; set; }
 
     public MetadataForm()
