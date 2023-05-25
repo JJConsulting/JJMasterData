@@ -276,7 +276,6 @@ internal class ActionManager
                 script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
                 break;
             case SqlCommandAction:
-            case PythonScriptAction:
                 script = GetCommandScript(action, formValues, contextAction);
                 break;
             case SortAction:
@@ -299,52 +298,7 @@ internal class ActionManager
 
         return link;
     }
-
-    public string ExecutePythonScriptAction(JJGridView gridView, ActionMap map, PythonScriptAction action)
-    {
-        var scriptManager = JJService.Provider.GetService(typeof(IPythonEngine)) as IPythonEngine;
-
-        try
-        {
-            if (map.ContextAction == ActionSource.Toolbar && gridView.EnableMultSelect && action.ApplyOnSelected)
-            {
-                var selectedRows = gridView.GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = Translate.Key("No lines selected.");
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
-
-                foreach (var row in selectedRows)
-                    scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, row));
-
-                gridView.ClearSelectedGridValues();
-            }
-            else
-            {
-                Hashtable formValues;
-                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
-                                                  map.PKFieldValues.Count > 0))
-                {
-                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PKFieldValues);
-                }
-                else
-                {
-                    var formManager = new FormManager(FormElement, Expression);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
-                }
-                scriptManager?.Execute(Expression.ParseExpression(action.PythonScript, PageState.List, false, formValues));
-            }
-        }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
-    }
-
+    
     public string ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
     {
         try

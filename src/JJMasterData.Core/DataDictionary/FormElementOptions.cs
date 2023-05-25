@@ -13,10 +13,10 @@ public class FormElementOptions
     public FormUI Form { get; set; }
     
     [DataMember(Name="gridToolbarActions")]
-    public GridToolbarActions ToolbarActions { get; set; }
+    public GridToolbarActionList ToolbarActions { get; set; }
 
     [DataMember(Name = "formToolbarActions")]
-    public FormToolbarActions FormToolbarActions { get; set; }
+    public FormToolbarActionList FormToolbarActions { get; set; }
 
     [DataMember(Name="gridActions")]
     public GridActions GridActions { get; set; }
@@ -25,8 +25,8 @@ public class FormElementOptions
     {
         Grid = new GridUI();
         Form = new FormUI();
-        ToolbarActions = new GridToolbarActions();
-        FormToolbarActions = new FormToolbarActions();
+        ToolbarActions = new GridToolbarActionList();
+        FormToolbarActions = new FormToolbarActionList();
         GridActions = new GridActions();
     }
 }

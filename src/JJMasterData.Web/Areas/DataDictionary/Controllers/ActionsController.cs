@@ -68,7 +68,6 @@ public class ActionsController : DataDictionaryController
             nameof(UrlRedirectAction) => new UrlRedirectAction(),
             nameof(InternalAction) => new InternalAction(),
             nameof(SqlCommandAction) => new SqlCommandAction(),
-            nameof(PythonScriptAction) => new PythonScriptAction(),
             _ => throw new JJMasterDataException("Invalid Action")
         };
 
@@ -282,19 +281,7 @@ public class ActionsController : DataDictionaryController
         PopulateViewBag(dictionaryName, sqlAction, context, fieldName);
         return View(sqlAction);
     }
-
-    [HttpPost]
-    public ActionResult PythonScriptAction(string dictionaryName, PythonScriptAction pythonAction, ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
-    {
-        if (isActionSave)
-        {
-            SaveAction(dictionaryName, pythonAction, context, originalName, fieldName);
-        }
-
-        PopulateViewBag(dictionaryName, pythonAction, context, fieldName);
-        return View(pythonAction);
-    }
+    
 
     [HttpPost]
     public ActionResult InternalAction(string dictionaryName, InternalAction internalAction, ActionSource context,
@@ -366,7 +353,6 @@ public class ActionsController : DataDictionaryController
 
         switch (basicAction)
         {
-            case PythonScriptAction _:
             case SqlCommandAction _:
             case ImportAction _:
             case ExportAction _:

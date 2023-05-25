@@ -63,7 +63,6 @@ public class ActionsService : BaseService
             if (action is UrlRedirectAction |
                 action is ScriptAction | 
                 action is SqlCommandAction |
-                action is PythonScriptAction |
                 action is InternalAction)
             {
                 DeleteAction(formElement, originalName, context, fieldName);
@@ -109,7 +108,7 @@ public class ActionsService : BaseService
         if (originalName != null && originalName.Equals(actionName))
             return;
         
-        List<BasicAction> listAction = null;
+        IList<BasicAction> listAction = null;
         switch (context)
         {
             case ActionSource.Field:
@@ -156,15 +155,6 @@ public class ActionsService : BaseService
 
             if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                 AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
-        }
-
-        if (action is PythonScriptAction pythonScriptAction)
-        {
-            if (string.IsNullOrEmpty(pythonScriptAction.PythonScript))
-                AddError(nameof(pythonScriptAction.PythonScript), Translate.Key("Required [Python Script] field"));
-
-            if (!formElement.Options.Grid.EnableMultSelect && pythonScriptAction.ApplyOnSelected)
-                AddError(nameof(pythonScriptAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
         }
 
         else if (action is UrlRedirectAction urlAction)

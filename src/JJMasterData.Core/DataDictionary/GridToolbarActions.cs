@@ -41,9 +41,6 @@ public class GridToolbarActions
     [DataMember(Name = "commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }
 
-    [DataMember(Name = "pythonActions")]
-    internal List<PythonScriptAction> PythonActions { get; set; }
-
     [DataMember(Name = "urlRedirectActions")]
     private List<UrlRedirectAction> UrlRedirectActions { get; set; }
 
@@ -67,7 +64,6 @@ public class GridToolbarActions
         CommandActions = new List<SqlCommandAction>();
         UrlRedirectActions = new List<UrlRedirectAction>();
         InternalActions = new List<InternalAction>();
-        PythonActions = new List<PythonScriptAction>();
         JsActions = new List<ScriptAction>();
     }
 
@@ -122,18 +118,6 @@ public class GridToolbarActions
             }
             CommandActions.Add(cmdAction);
         }
-        else if (action is PythonScriptAction pythonAction)
-        {
-            for (int i = 0; i < PythonActions.Count; i++)
-            {
-                if (PythonActions[i].Name.Equals(action.Name))
-                {
-                    PythonActions[i] = pythonAction;
-                    return;
-                }
-            }
-            PythonActions.Add(pythonAction);
-        }
         else if (action is UrlRedirectAction urlAction)
         {
             for (int i = 0; i < UrlRedirectActions.Count; i++)
@@ -183,12 +167,6 @@ public class GridToolbarActions
         CommandActions.Add(action);
     }
 
-    public void Add(PythonScriptAction action)
-    {
-        ValidateAction(action);
-        PythonActions.Add(action);
-    }
-
     public void Add(UrlRedirectAction action)
     {
         ValidateAction(action);
@@ -226,12 +204,6 @@ public class GridToolbarActions
         ValidateAction(action);
         CommandActions.Remove(action);
     }
-    public void Remove(PythonScriptAction action)
-    {
-        ValidateAction(action);
-        PythonActions.Remove(action);
-    }
-
     public void Remove(UrlRedirectAction action)
     {
         ValidateAction(action);
@@ -262,10 +234,6 @@ public class GridToolbarActions
         else if (action is InternalAction acInternal)
         {
             Remove(acInternal);
-        }
-        else if (action is PythonScriptAction acPython)
-        {
-            Remove(acPython);
         }
         else if (action is ScriptAction jScriptAction)
         {
@@ -395,9 +363,6 @@ public class GridToolbarActions
 
         if (CommandActions is { Count: > 0 })
             actionList.AddRange(CommandActions.ToArray());
-
-        if (PythonActions is { Count: > 0 })
-            actionList.AddRange(PythonActions.ToArray());
 
         if (UrlRedirectActions is { Count: > 0 })
             actionList.AddRange(UrlRedirectActions.ToArray());

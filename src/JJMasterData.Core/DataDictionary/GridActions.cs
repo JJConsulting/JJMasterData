@@ -23,9 +23,6 @@ public class GridActions
     [DataMember(Name = "commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }
 
-    [DataMember(Name = "pythonActions")]
-    internal List<PythonScriptAction> PythonActions { get; set; }
-
     [DataMember(Name = "urlRedirectActions")]
     private List<UrlRedirectAction> UrlRedirectActions { get; set; }
 
@@ -44,7 +41,6 @@ public class GridActions
         CommandActions = new List<SqlCommandAction>();
         UrlRedirectActions = new List<UrlRedirectAction>();
         InternalActions = new List<InternalAction>();
-        PythonActions = new List<PythonScriptAction>();
         JsActions = new List<ScriptAction>();
     }
 
@@ -73,18 +69,6 @@ public class GridActions
                 }
             }
             CommandActions.Add(cmdAction);
-        }
-        else if (action is PythonScriptAction pythonAction)
-        {
-            for (int i = 0; i < PythonActions.Count; i++)
-            {
-                if (PythonActions[i].Name.Equals(action.Name))
-                {
-                    PythonActions[i] = pythonAction;
-                    return;
-                }
-            }
-            PythonActions.Add(pythonAction);
         }
         else if (action is UrlRedirectAction urlAction)
         {
@@ -133,12 +117,7 @@ public class GridActions
         ValidateAction(action);
         CommandActions.Add(action);
     }
-
-    public void Add(PythonScriptAction action)
-    {
-        ValidateAction(action);
-        PythonActions.Add(action);
-    }
+    
 
     public void Add(UrlRedirectAction action)
     {
@@ -163,13 +142,6 @@ public class GridActions
         ValidateAction(action);
         CommandActions.Remove(action);
     }
-
-    public void Remove(PythonScriptAction action)
-    {
-        ValidateAction(action);
-        PythonActions.Remove(action);
-    }
-
     public void Remove(UrlRedirectAction action)
     {
         ValidateAction(action);
@@ -194,10 +166,6 @@ public class GridActions
         if (action is SqlCommandAction acSql)
         {
             Remove(acSql);
-        }
-        else if (action is PythonScriptAction acPython)
-        {
-            Remove(acPython);
         }
         else if (action is UrlRedirectAction acUrl)
         {
@@ -259,10 +227,6 @@ public class GridActions
         action = JsActions.Find(x => x.Name.Equals(name));
         if (action != null)
             return action;
-        
-        action = PythonActions.Find(x => x.Name.Equals(name));
-        if (action != null)
-            return action;
 
         return null;
     }
@@ -290,10 +254,7 @@ public class GridActions
 
         if (CommandActions is { Count: > 0 })
             listAction.AddRange(CommandActions.ToArray());
-
-        if (PythonActions is { Count: > 0 })
-            listAction.AddRange(PythonActions.ToArray());
-
+        
         if (UrlRedirectActions is { Count: > 0 })
             listAction.AddRange(UrlRedirectActions.ToArray());
 

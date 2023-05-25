@@ -4,20 +4,21 @@ using JJMasterData.Core.Web;
 namespace JJMasterData.Core.DataDictionary.Action;
 
 [Serializable]
-public class RefreshAction : BasicAction
+public class LogAction : BasicAction
 {
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ActionName = "refresh";
-    public override bool IsUserCreated => true;
-    public RefreshAction()
+    public const string ActionName = "log";
+    public override bool IsUserCreated => false;
+    public LogAction()
     {
         Name = ActionName;
-        ToolTip = "Refresh";
-        Icon = IconType.Refresh;
+        ToolTip = "Log";
+        Icon = IconType.Film;
         ShowAsButton = true;
         CssClass = BootstrapHelper.PullRight;
-        Order = 6;
+        Order = 20;
+        SetVisible(false);
     }
 }

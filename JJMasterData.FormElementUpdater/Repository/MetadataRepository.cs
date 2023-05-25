@@ -336,12 +336,7 @@ public class MetadataRepository
         {
             //action.IsUserCreated = true;
         }
-
-        //Alpha Centauri
-
-        dicParser.Options.ToolbarActions.PythonActions ??= new List<PythonScriptAction>();
-
-        dicParser.Options.GridActions.PythonActions ??= new List<PythonScriptAction>();
+        
 
         //Sirius
 

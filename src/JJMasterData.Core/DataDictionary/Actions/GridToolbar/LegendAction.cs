@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Action;
 
 [Serializable]
-[DataContract]
-public class SortAction : BasicAction
+public class LegendAction : BasicAction
 {
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    public const string ActionName = "sort";
-    public override bool IsUserCreated => true;
-    public SortAction()
+    public const string ActionName = "legend";
+    public override bool IsUserCreated => false;
+    public LegendAction()
     {
         Name = ActionName;
-        ToolTip = "Sort";
-        Icon = IconType.SortAlphaAsc;
+        ToolTip = "Information";
+        Icon = IconType.Info;
         ShowAsButton = true;
         CssClass = BootstrapHelper.PullRight;
         Order = 7;

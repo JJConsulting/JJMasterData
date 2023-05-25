@@ -837,11 +837,6 @@ public class JJGridView : JJBaseView
 
                 currentAction = string.Empty;
                 break;
-            case PythonScriptAction pyAction:
-                error = _actionManager.ExecutePythonScriptAction(this, actionMap, pyAction);
-
-                currentAction = string.Empty;
-                break;
         }
 
         return error;
