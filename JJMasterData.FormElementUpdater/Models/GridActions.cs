@@ -12,13 +12,13 @@ namespace JJMasterData.Core.DataDictionary;
 public class GridActions
 {
     [DataMember(Name = "editAction")]
-    public EditAction EditAction { get; private set; }
+    public EditAction EditAction { get; set; }
 
     [DataMember(Name = "deleteAction")]
-    public DeleteAction DeleteAction { get; private set; }
+    public DeleteAction DeleteAction { get; set; }
 
     [DataMember(Name = "viewAction")]
-    public ViewAction ViewAction { get; private set; }
+    public ViewAction ViewAction { get; set; }
 
     [DataMember(Name = "commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }

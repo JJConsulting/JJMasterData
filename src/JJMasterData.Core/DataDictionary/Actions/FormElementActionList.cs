@@ -33,14 +33,20 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         return List.OrderBy(x => x.Order).ToList();
     }
+    
+    public void SetDefaultOption(string actionName)
+    {
+        foreach (var action in List)
+        {
+            action.IsDefaultOption = action.Name.Equals(actionName);
+        }
+    }
 
     public void Add(BasicAction item)
     {
-        if (!item.IsUserCreated)
-            throw new NotSupportedException("You cannot add non-user created actions.");
-        
         List.Add(item);
     }
+    
 
     public void Set(BasicAction item)
     {

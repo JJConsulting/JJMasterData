@@ -1,6 +1,8 @@
 #nullable enable
 
 using System.Runtime.Serialization;
+using JJMasterData.Core.Web.Components;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -13,13 +15,16 @@ public class FormElementOptions
     public FormUI Form { get; set; }
     
     [DataMember(Name="gridToolbarActions")]
-    public GridToolbarActionList ToolbarActions { get; set; }
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+    public GridToolbarActionList ToolbarActions { get;}
 
     [DataMember(Name = "formToolbarActions")]
-    public FormToolbarActionList FormToolbarActions { get; set; }
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+    public FormToolbarActionList FormToolbarActions { get; }
 
     [DataMember(Name="gridActions")]
-    public GridActions GridActions { get; set; }
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+    public GridTableActionList GridActions { get; }
 
     public FormElementOptions()
     {
@@ -27,6 +32,6 @@ public class FormElementOptions
         Form = new FormUI();
         ToolbarActions = new GridToolbarActionList();
         FormToolbarActions = new FormToolbarActionList();
-        GridActions = new GridActions();
+        GridActions = new GridTableActionList();
     }
 }

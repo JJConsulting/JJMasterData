@@ -9,7 +9,7 @@ public class ViewAction : BasicAction
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "view";
-
+    public override bool IsUserCreated => false;
     public ViewAction()
     {
         Name = ActionName;
@@ -20,5 +20,5 @@ public class ViewAction : BasicAction
         Order = 1;
     }
 
-    public override bool IsUserCreated => true;
+
 }

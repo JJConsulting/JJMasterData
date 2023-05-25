@@ -85,7 +85,7 @@ public class ActionsService : BaseService
                 formElement.Options.GridActions.Set(action);
 
                 if (action.IsDefaultOption)
-                    formElement.Options.GridActions.SetDefault(action.Name);
+                    formElement.Options.GridActions.SetDefaultOption(action.Name);
                 break;
             }
             case ActionSource.Toolbar:

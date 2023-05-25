@@ -4,6 +4,7 @@ using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
@@ -67,10 +68,18 @@ public class Metadata
         formElement.Options = new FormElementOptions
         {
             Form = Options.Form,
-            Grid = Options.Grid,
-            GridActions = Options.GridActions,
-            ToolbarActions = Options.ToolbarActions
+            Grid = Options.Grid
         };
+
+        foreach (var action in Options.GridActions.GetAll())
+        {
+            formElement.Options.GridActions.Add(action);
+        }
+        
+        foreach (var action in Options.ToolbarActions.GetAll())
+        {
+            formElement.Options.GridActions.Add(action);
+        }
 
         formElement.ApiOptions = new FormElementApiOptions
         {

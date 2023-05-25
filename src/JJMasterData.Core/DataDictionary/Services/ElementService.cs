@@ -11,6 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -286,7 +287,7 @@ public class ElementService : BaseService
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+        string json = FormElementSerializer.Serialize(metadata);
 
         return Encoding.Default.GetBytes(json);
     }
@@ -300,7 +301,7 @@ public class ElementService : BaseService
             {
                 string dictionaryName = element["name"].ToString();
                 var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
-                string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+                string json = FormElementSerializer.Serialize(metadata);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
                 using var streamWriter = new StreamWriter(jsonFile.Open());
@@ -310,16 +311,16 @@ public class ElementService : BaseService
         return memoryStream.ToArray();
     }
 
-    public bool Import(Stream file)
+    public async Task<bool> Import(Stream file)
     {
         file.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(file);
-        var dicParser = JsonConvert.DeserializeObject<FormElement>(reader.ReadToEnd());
+        var dicParser = FormElementSerializer.Deserialize(await reader.ReadToEndAsync());
         
         //TODO: Validation
         //FormElement.Validate()
         
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
 
         return IsValid;
