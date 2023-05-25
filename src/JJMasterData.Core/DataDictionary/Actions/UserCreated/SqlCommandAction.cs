@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-public class SqlCommandAction : BasicAction
+public class SqlCommandAction : UserCreatedAction
 {
     /// <summary>
     /// Comando SQL a ser executado, aceita expression
@@ -21,8 +21,6 @@ public class SqlCommandAction : BasicAction
     [JsonProperty("applyOnSelected")]
     public bool ApplyOnSelected { get; set; }
 
-    public override bool IsUserCreated => true;
-    
     public SqlCommandAction()
     {
         Icon = IconType.Play;

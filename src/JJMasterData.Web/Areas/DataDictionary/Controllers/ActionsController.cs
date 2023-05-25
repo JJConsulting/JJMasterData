@@ -3,6 +3,7 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -62,6 +63,10 @@ public class ActionsController : DataDictionaryController
 
   
         PopulateViewBag(dictionaryName, action!, context, fieldName);
+
+        if (action is FormToolbarAction formToolbarAction)
+            return View("FormToolbarAction", formToolbarAction);
+                
         return View(action!.GetType().Name, action);
         
     }
@@ -224,6 +229,17 @@ public class ActionsController : DataDictionaryController
         PopulateViewBag(dictionaryName, sortAction, context);
         return View(sortAction);
     }
+    
+    public IActionResult FormToolbarAction(string dictionaryName, FormToolbarAction formToolbarAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, formToolbarAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, formToolbarAction, context);
+        return View(formToolbarAction);
+    }
 
     [HttpPost]
     public ActionResult LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
@@ -377,5 +393,6 @@ public class ActionsController : DataDictionaryController
             }
         }
     }
-    
+
+
 }

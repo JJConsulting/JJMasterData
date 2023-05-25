@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-public class ScriptAction : BasicAction
+public class ScriptAction : UserCreatedAction
 {
     /// <summary>
-    /// Ação JavaScript que será executada quando usuário clicar no controle
+    /// JS script that will be executed when the user clicks on the control.
     /// </summary>
     [JsonProperty("onClientClick")]
     public string OnClientClick { get; set; }

@@ -3,6 +3,9 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Web.TagHelpers
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @model EntityViewModel;
 
@@ -29,17 +32,17 @@
 
     <br/>
     
-    <jj-collapse-panel  name="dataDictionary" icon="Book" title="@Translate.Key("Data Dictionary")" expanded-by-default="true">
+    <jj-collapse-panel  name="dataDictionary" icon="Book" title="@StringLocalizer["Data Dictionary"]" expanded-by-default="true">
         <partial name="_DataDictionaryPanel" model="Model"/>
     </jj-collapse-panel>
 
-    <jj-collapse-panel  name="formPanel" icon="AlignLeft" title="@Translate.Key("Form")" expanded-by-default="true">
+    <jj-collapse-panel  name="formPanel" icon="AlignLeft" title="@StringLocalizer["Form"]" expanded-by-default="true">
         <partial name="_FormPanel" model="Model"/>
     </jj-collapse-panel>
 
     if (Model.FormEvent != null)
     {
-        <jj-collapse-panel  name="eventsPanel" icon="Bolt" title="@Translate.Key("Events")" expanded-by-default="true">
+        <jj-collapse-panel  name="eventsPanel" icon="Bolt" title="@StringLocalizer["Events"]" expanded-by-default="true">
             <partial name="_EventsPanel" model="Model"/>
         </jj-collapse-panel>
     }

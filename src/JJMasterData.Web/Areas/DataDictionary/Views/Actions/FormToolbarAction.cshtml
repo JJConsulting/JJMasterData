@@ -1,0 +1,28 @@
+@{
+    Layout = "_MasterDataLayout.Popup";
+}
+
+@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model JJMasterData.Core.DataDictionary.Actions.FormToolbar.FormToolbarAction
+
+@using (Html.BeginForm("FormToolbarAction", "Actions",
+    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="divGeneral" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+        <div id="divAdvanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

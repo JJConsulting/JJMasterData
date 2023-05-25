@@ -1,9 +1,9 @@
 #nullable enable
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+
 
 namespace JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 
-public class CancelAction : BasicAction
+public class CancelAction : FormToolbarAction
 {
     public const string ActionName = "cancel";
     public override bool IsUserCreated => false;
@@ -11,5 +11,8 @@ public class CancelAction : BasicAction
     public CancelAction()
     {
         Name = ActionName;
+        Icon = IconType.Times;
+        Order = 0;
+        Text = "Cancel";
     }
 }

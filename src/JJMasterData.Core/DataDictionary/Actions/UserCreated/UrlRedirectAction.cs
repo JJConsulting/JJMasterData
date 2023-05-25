@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-public class UrlRedirectAction : BasicAction
+public class UrlRedirectAction : UserCreatedAction
 {
     [JsonProperty("urlRedirect")]
     public string UrlRedirect { get; set; }
@@ -14,8 +14,6 @@ public class UrlRedirectAction : BasicAction
     [JsonProperty("titlePopUp")]
     public string TitlePopUp { get; set; }
 
-    public override bool IsUserCreated => true;
-    
     public UrlRedirectAction()
     {
         UrlAsPopUp = false;

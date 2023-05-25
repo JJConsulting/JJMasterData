@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -9,7 +10,9 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
-    public ActionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository) 
+    public ActionsService(
+        IValidationDictionary validationDictionary, 
+        IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
     }
@@ -60,10 +63,7 @@ public class ActionsService : BaseService
 
         if (originalName != null && !originalName.Equals(action.Name))
         {
-            if (action is UrlRedirectAction |
-                action is ScriptAction | 
-                action is SqlCommandAction |
-                action is InternalAction)
+            if (action is UrlRedirectAction or ScriptAction or SqlCommandAction or InternalAction)
             {
                 DeleteAction(formElement, originalName, context, fieldName);
             }
@@ -91,6 +91,11 @@ public class ActionsService : BaseService
             case ActionSource.GridToolbar:
                 formElement.Options.GridToolbarActions.Set(action);
                 break;
+            case ActionSource.FormToolbar:
+                formElement.Options.FormToolbarActions.Set(action);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(context), context, null);
         }
 
         DataDictionaryRepository.InsertOrReplace(formElement);
@@ -98,7 +103,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void ValidateActionName(FormElement dicParser, string actionName, string originalName, ActionSource context, string fieldName = null)
+    private void ValidateActionName(FormElement formElement, string actionName, string originalName, ActionSource context, string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -113,15 +118,15 @@ public class ActionsService : BaseService
         {
             case ActionSource.Field:
             {
-                var field = dicParser.Fields[fieldName];
+                var field = formElement.Fields[fieldName];
                 listAction = field.Actions.GetAll();
                 break;
             }
             case ActionSource.GridTable:
-                listAction = dicParser.Options.GridTableActions.GetAll();
+                listAction = formElement.Options.GridTableActions.GetAll();
                 break;
             case ActionSource.GridToolbar:
-                listAction = dicParser.Options.GridToolbarActions.GetAll();
+                listAction = formElement.Options.GridToolbarActions.GetAll();
                 break;
         }
 
