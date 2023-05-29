@@ -1,6 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-
-namespace JJMasterData.Core.DataDictionary.Actions.GridTable;
+﻿namespace JJMasterData.Core.DataDictionary.Actions.GridTable;
 
 /// <summary>
 /// Represents the default delete action of a data dictionary

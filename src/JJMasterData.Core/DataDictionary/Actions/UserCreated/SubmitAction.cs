@@ -1,4 +1,3 @@
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
