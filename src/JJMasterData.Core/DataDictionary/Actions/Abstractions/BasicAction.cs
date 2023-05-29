@@ -114,7 +114,8 @@ public abstract class BasicAction
     public string CssClass { get; set; }
 
 
-    [JsonProperty("isCustomAction")] public abstract bool IsUserCreated { get; }
+    [JsonProperty("isCustomAction")] 
+    public abstract bool IsUserCreated { get; }
 
     public BasicAction()
     {

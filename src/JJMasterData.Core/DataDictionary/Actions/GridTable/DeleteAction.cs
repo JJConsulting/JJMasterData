@@ -6,13 +6,12 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridTable;
 /// Represents the default delete action of a data dictionary
 /// </summary>
 
-public class DeleteAction : BasicAction
+public class DeleteAction : GridTableAction
 {
     /// <summary>
     /// Default action name
     /// </summary>
     public const string ActionName = "delete";
-    public override bool IsUserCreated => false;
     public DeleteAction()
     {
         Name = ActionName;

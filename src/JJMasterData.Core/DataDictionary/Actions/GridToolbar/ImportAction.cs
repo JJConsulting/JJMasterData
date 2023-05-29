@@ -4,17 +4,15 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-public class ImportAction : BasicAction
+public class ImportAction : GridToolbarAction
 {
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "import";
-
-        
+    
     [JsonProperty("processOptions")]
     public ProcessOptions ProcessOptions { get; set; }
-    public override bool IsUserCreated => false;
     public ImportAction()
     {
         Name = ActionName;

@@ -59,9 +59,6 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Set(BasicAction item)
     {
-        if (!item.IsUserCreated)
-            throw new NotSupportedException("You cannot set non-user created actions.");
-        
         ValidateAction(item);
         
         var existingAction = List.FirstOrDefault(a => a.Name == item.Name);
@@ -78,7 +75,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     
     public void Clear()
     {
-        throw new NotSupportedException("Clearing all actions is not supported.");
+        List.Clear();
     }
 
     public bool Contains(BasicAction item)
@@ -93,10 +90,7 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public bool Remove(BasicAction item)
     {
-        if (item.IsUserCreated)
-            return List.Remove(item);
-       
-        throw new NotSupportedException("You cannot remove non user created actions");
+        return List.Remove(item);
     }
 
     public int Count => List.Count;

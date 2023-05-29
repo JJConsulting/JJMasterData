@@ -7,14 +7,12 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-public class ExportAction : BasicAction
+public class ExportAction : GridToolbarAction
 {
     /// <summary>
     /// Default action name
     /// </summary>
     public const string ActionName = "export";
-
-    public override bool IsUserCreated => false;
 
     [JsonProperty("processOptions")] 
     public ProcessOptions ProcessOptions { get; set; }

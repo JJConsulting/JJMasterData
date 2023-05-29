@@ -15,6 +15,15 @@ public class ElementList : IList<ElementField>
 {
     private readonly IList<ElementField> _list = new List<ElementField>();
 
+    public ElementList()
+    {
+        
+    }
+    public ElementList(IList<ElementField> fields)
+    {
+        _list = fields;
+    }
+    
     #region Implementation of IEnumerable
 
     public IEnumerator<ElementField> GetEnumerator()

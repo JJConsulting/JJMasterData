@@ -31,24 +31,33 @@ public class ActionsService : BaseService
         if (originalName == null)
             return;
 
-        if (context == ActionSource.Field)
+        switch (context)
         {
-            var field = formElement.Fields[fieldName];
-            var action = field.Actions.Get(originalName);
-            if (action != null)
-                field.Actions.Remove(action);
-        }
-        else if (context == ActionSource.GridTable)
-        {
-            var action = formElement.Options.GridTableActions.Get(originalName);
-            if (action != null)
-                formElement.Options.GridTableActions.Remove(action);
-        }
-        else if (context == ActionSource.GridToolbar)
-        {
-            var action = formElement.Options.GridToolbarActions.Get(originalName);
-            if (action != null)
-                formElement.Options.GridToolbarActions.Remove(action);
+            case ActionSource.Field:
+            {
+                var field = formElement.Fields[fieldName];
+                var fieldAction = field.Actions.Get(originalName);
+                field.Actions.Remove(fieldAction);
+                break;
+            }
+            case ActionSource.GridTable:
+            {
+                var gridTableAction = formElement.Options.GridTableActions.Get(originalName);
+                formElement.Options.GridTableActions.Remove(gridTableAction);
+                break;
+            }
+            case ActionSource.GridToolbar:
+            {
+                var gridToolbarAction = formElement.Options.GridToolbarActions.Get(originalName);
+                formElement.Options.GridToolbarActions.Remove(gridToolbarAction);
+                break;
+            }
+            case ActionSource.FormToolbar:
+                var formToolbarAction = formElement.Options.FormToolbarActions.Get(originalName);
+                formElement.Options.GridToolbarActions.Remove(formToolbarAction);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(context), context, null);
         }
     }
 
@@ -63,10 +72,7 @@ public class ActionsService : BaseService
 
         if (originalName != null && !originalName.Equals(action.Name))
         {
-            if (action is UrlRedirectAction or ScriptAction or SqlCommandAction or InternalAction)
-            {
-                DeleteAction(formElement, originalName, context, fieldName);
-            }
+            DeleteAction(formElement, originalName, context, fieldName);
         }
                 
         switch (context)
@@ -181,28 +187,22 @@ public class ActionsService : BaseService
 
     public bool SortActions(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
     {
-        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
-            BasicAction action = null;
 
-            if (actionContext == ActionSource.GridTable)
+            var action = actionContext switch
             {
-                action = dicParser.Options.GridTableActions.Get(actionName);
-            }
-            else if (actionContext == ActionSource.GridToolbar)
-            {
-                action = dicParser.Options.GridToolbarActions.Get(actionName);
-            }
-            else if (actionContext == ActionSource.Field)
-            {
-                var formElement = dicParser;
-                action = formElement.Fields[fieldName].Actions.Get(actionName);
-            }
+                ActionSource.GridTable => formElement.Options.GridTableActions.Get(actionName),
+                ActionSource.GridToolbar => formElement.Options.GridToolbarActions.Get(actionName),
+                ActionSource.Field => formElement.Fields[fieldName].Actions.Get(actionName),
+                ActionSource.FormToolbar => formElement.Options.FormToolbarActions.Get(actionName),
+                _ => throw new ArgumentOutOfRangeException(nameof(actionContext), actionContext, null)
+            };
             action.Order = i + 1;
         }
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        DataDictionaryRepository.InsertOrReplace(formElement);
 
         return true;
     }
@@ -210,17 +210,15 @@ public class ActionsService : BaseService
     public bool EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
     {
         var dicParser = DataDictionaryRepository.GetMetadata(elementName);
-        BasicAction action = null;
-        if (actionContext == ActionSource.GridTable)
+        BasicAction action = actionContext switch
         {
-            action = dicParser.Options.GridTableActions.Get(actionName);
-        }
-        else if (actionContext == ActionSource.GridToolbar)
-        {
-            action = dicParser.Options.GridToolbarActions.Get(actionName);
-        }
+            ActionSource.GridTable => dicParser.Options.GridTableActions.Get(actionName),
+            ActionSource.GridToolbar => dicParser.Options.GridToolbarActions.Get(actionName),
+            ActionSource.FormToolbar => dicParser.Options.FormToolbarActions.Get(actionName),
+            _ => null
+        };
 
-        action.SetVisible(visible);
+        action!.SetVisible(visible);
         DataDictionaryRepository.InsertOrReplace(dicParser);
 
         return true;
@@ -228,8 +226,7 @@ public class ActionsService : BaseService
 
     public Dictionary<string, string> GetFieldList(string elementName)
     {
-        var dicFields = new Dictionary<string, string>();
-        dicFields.Add(string.Empty, Translate.Key("--Select--"));
+        var dicFields = new Dictionary<string, string> { { string.Empty, Translate.Key("--Select--") } };
 
         if (string.IsNullOrEmpty(elementName))
             return dicFields;

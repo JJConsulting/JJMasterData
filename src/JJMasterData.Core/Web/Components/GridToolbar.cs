@@ -41,7 +41,7 @@ internal class GridToolbar
                 }
             }
 
-            var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
+            var linkButton = GridView.ActionManager.GetLinkGridToolbar(action, GridView.DefaultValues);
             if (linkButton.Visible)
             {
                 switch (action)

@@ -37,7 +37,7 @@ public class FormElement : Element
     [Required]
     [JsonProperty("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
-    
+
     public FormElement()
     {
         Fields = new FormElementList(base.Fields);
@@ -61,16 +61,12 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        
-        Fields = new FormElementList(base.Fields);
+
+        base.Fields = element.Fields;
+        Fields = new FormElementList(element.Fields);
         Panels = new List<FormElementPanel>();
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
-        
-        foreach (var f in element.Fields)
-        {
-            AddField(f);
-        }
     }
 
     public FormElement(DataTable schema) : this()
@@ -96,8 +92,6 @@ public class FormElement : Element
             var type = col.DataType;
 
             SetFieldType(field, type);
-
-            AddField(field);
         }
     }
 
@@ -109,7 +103,9 @@ public class FormElement : Element
         FormElementOptions options,
         FormElementApiOptions apiOptions)
     {
+        base.Fields = new ElementList(fields.Cast<ElementField>().ToList());
         Fields = fields;
+        base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
         Relationships = relationships;
         Options = options;
         ApiOptions = apiOptions;
@@ -146,11 +142,6 @@ public class FormElement : Element
         {
             field.DataType = FieldType.NVarchar;
         }
-    }
-
-    protected void AddField(ElementField field)
-    {
-        Fields.Add(new FormElementField(field));
     }
 
     public FormElementPanel GetPanelById(int id)

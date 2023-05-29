@@ -3,13 +3,12 @@ using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-public class LegendAction : BasicAction
+public class LegendAction : GridToolbarAction
 {
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "legend";
-    public override bool IsUserCreated => false;
     public LegendAction()
     {
         Name = ActionName;

@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 
-
 public class InternalAction : UserCreatedAction
 {
     [JsonProperty("elementRedirect")]

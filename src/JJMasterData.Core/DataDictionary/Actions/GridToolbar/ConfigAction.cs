@@ -7,13 +7,12 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 /// Represents the settings menu of a data dictionary.
 /// </summary>
 
-public class ConfigAction : BasicAction
+public class ConfigAction : GridToolbarAction
 {
     /// <summary>
     /// Default action name
     /// </summary>
     public const string ActionName = "config";
-    public override bool IsUserCreated => false;
     public ConfigAction()
     {
         Name = ActionName;

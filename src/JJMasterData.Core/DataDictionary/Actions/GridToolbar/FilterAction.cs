@@ -7,14 +7,13 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 /// <summary>
 /// Represents the dictionary export button.
 /// </summary>
-public class FilterAction : BasicAction
+public class FilterAction : GridToolbarAction
 {
     /// <summary>
     /// Action default name.
     /// </summary>
     public const string ActionName = "filter";
-
-    public override bool IsUserCreated => false;
+    
 
     /// <summary>
     /// Exibir em um collapse painel.

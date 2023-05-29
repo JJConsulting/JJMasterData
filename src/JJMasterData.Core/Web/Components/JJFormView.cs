@@ -6,6 +6,8 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -777,7 +779,7 @@ public class JJFormView : JJGridView
         if (parentPanel.Errors != null)
             parentPanelHtml.AppendElement(new JJValidationSummary(parentPanel.Errors));
 
-        parentPanelHtml.AppendElement(GetFormBottomBar(parentPanel.PageState, parentPanel.Values));
+        parentPanelHtml.AppendElement(GetFormBottomBar(parentPanel.FormElement.Options.FormToolbarActions,parentPanel.PageState, parentPanel.Values));
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
         return parentPanelHtml;
@@ -789,7 +791,7 @@ public class JJFormView : JJGridView
         backScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
         backScript.AppendLine("$('form:first').submit(); ");
 
-        var btnBack = GetButtonBack();
+        var btnBack = GetBackButton();
         btnBack.OnClientClick = backScript.ToString();
 
         var btnHideLog = GetButtonHideLog(values);
@@ -803,24 +805,30 @@ public class JJFormView : JJGridView
         return toolbar;
     }
 
-    private JJToolbar GetFormBottomBar(PageState pageState, IDictionary values)
+    private JJToolbar GetFormBottomBar(FormToolbarActionList actions, PageState pageState,
+        IDictionary values)
     {
         var toolbar = new JJToolbar
         {
             CssClass = "pb-3 mt-3"
         };
+
+        foreach (var action in actions)
+        {
+            if (action is SaveAction saveAction)
+            {
+                saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
+            }
+
+            toolbar.Items.Add(ActionManager.GetLinkFormToolbar(action, values, pageState).GetHtmlBuilder());
+        }
+        
         if (pageState == PageState.View)
         {
-            toolbar.Items.Add(GetButtonBack().GetHtmlBuilder());
-
             if (LogAction.IsVisible)
                 toolbar.Items.Add(GetButtonViewLog(values).GetHtmlBuilder());
         }
-        else
-        {
-            toolbar.Items.Add(GetButtonOk().GetHtmlBuilder());
-            toolbar.Items.Add(GetButtonCancel().GetHtmlBuilder());
-        }
+        
         return toolbar;
     }
 
@@ -902,31 +910,10 @@ public class JJFormView : JJGridView
     {
         FormFactory.SetFormOptions(this, options);
     }
-
-    private JJLinkButton GetButtonOk()
+    
+    private JJLinkButton GetBackButton()
     {
-        var btn = new JJLinkButton
-        {
-            Text = "Save",
-            IconClass = IconType.Check.GetCssClass(),
-            OnClientClick = $"return jjview.doPainelAction('{Name}','OK');"
-        };
-        if (DataPanel.FormUI.EnterKey == FormEnterKey.Submit)
-        {
-            btn.Type = LinkButtonType.Submit;
-            btn.CssClass = "btn btn-primary btn-small";
-        }
-        else
-        {
-            btn.Type = LinkButtonType.Button;
-            btn.CssClass = BootstrapHelper.DefaultButton + " btn-small";
-        }
-        return btn;
-    }
-
-    private JJLinkButton GetButtonCancel()
-    {
-        var btn = new JJLinkButton
+        var btn =new JJLinkButton
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
@@ -934,12 +921,6 @@ public class JJFormView : JJGridView
             IconClass = IconType.Times.GetCssClass(),
             Text = "Cancel"
         };
-        return btn;
-    }
-
-    private JJLinkButton GetButtonBack()
-    {
-        var btn = GetButtonCancel();
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;

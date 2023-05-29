@@ -3,13 +3,12 @@ using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-public class LogAction : BasicAction
+public class LogAction : GridToolbarAction
 {
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "log";
-    public override bool IsUserCreated => false;
     public LogAction()
     {
         Name = ActionName;

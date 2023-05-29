@@ -2,13 +2,13 @@
 
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-public class DeleteSelectedRowsAction : BasicAction
+public class DeleteSelectedRowsAction : GridToolbarAction
 {
     /// <summary>
     /// Action name
     /// </summary>
     public const string ActionName = "deleteSelectedRows";
-    public override bool IsUserCreated => false;
+
     public DeleteSelectedRowsAction()
     {
         Name = ActionName;

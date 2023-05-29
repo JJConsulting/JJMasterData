@@ -3,13 +3,12 @@
 namespace JJMasterData.Core.DataDictionary.Actions.GridTable;
 
 
-public class EditAction : BasicAction
+public class EditAction : GridTableAction
 {
     /// <summary>
     /// Default action name
     /// </summary>
     public const string ActionName = "edit";
-    public override bool IsUserCreated => false;
     public EditAction()
     {
         Name = ActionName;

@@ -4,7 +4,7 @@ using JJMasterData.Core.Web;
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 
-public class SortAction : BasicAction
+public class SortAction : GridToolbarAction
 {
     /// <summary>
     /// Nome padrão da ação

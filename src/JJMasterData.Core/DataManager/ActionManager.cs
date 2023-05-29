@@ -8,6 +8,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -215,9 +216,14 @@ internal class ActionManager
         return GetLink(action, formValues, PageState.List, ActionSource.GridTable);
     }
 
-    public JJLinkButton GetLinkToolBar(BasicAction action, IDictionary formValues)
+    public JJLinkButton GetLinkGridToolbar(BasicAction action, IDictionary formValues)
     {
         return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
+    }
+    
+    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary formValues, PageState pageState)
+    {
+        return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
     public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pagestate, string panelName)
@@ -262,6 +268,13 @@ internal class ActionManager
                 break;
             case ExportAction:
                 script = $"JJDataExp.openExportUI('{ComponentName}');";
+                break;
+            case SaveAction save:
+                link.Type = save.EnterKeyBehavior == FormEnterKey.Submit ? LinkButtonType.Submit : LinkButtonType.Button;
+                script = $"return jjview.doPainelAction('{ComponentName}','OK');";
+                break;
+            case CancelAction or BackAction:
+                script = $"return jjview.doPainelAction('{ComponentName}','CANCEL');";
                 break;
             case RefreshAction:
                 script = $"jjview.doRefresh('{ComponentName}');";

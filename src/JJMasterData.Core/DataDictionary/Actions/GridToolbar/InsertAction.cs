@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 
-public class InsertAction : BasicAction
+public class InsertAction : GridToolbarAction
 {
     /// <summary>
     /// Nome padrão da ação
@@ -32,8 +32,6 @@ public class InsertAction : BasicAction
     /// </remarks>
     [JsonProperty("reopenForm")]
     public bool ReopenForm { get; set; }
-
-    public override bool IsUserCreated => false;
 
     public InsertAction()
     {

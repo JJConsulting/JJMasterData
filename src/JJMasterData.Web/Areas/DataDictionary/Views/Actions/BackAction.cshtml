@@ -7,7 +7,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Actions.FormToolbar.FormToolbarAction
 
-@using (Html.BeginForm("CancelAction", "Actions",
+@using (Html.BeginForm("BackAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">

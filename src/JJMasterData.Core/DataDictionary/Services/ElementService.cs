@@ -35,8 +35,8 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(id);
-        var element = dictionary;
+        var formElement = DataDictionaryRepository.GetMetadata(id);
+        Element element = formElement;
         var listScripts = new List<string>
         {
             _entityRepository.GetScriptCreateTable(element),

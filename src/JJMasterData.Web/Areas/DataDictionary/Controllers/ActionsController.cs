@@ -221,15 +221,40 @@ public class ActionsController : DataDictionaryController
         return View(sortAction);
     }
     
-    public IActionResult FormToolbarAction(string dictionaryName, FormToolbarAction formToolbarAction, ActionSource context, string? originalName, bool isActionSave)
+    [HttpPost]
+    public IActionResult SaveAction(string dictionaryName, SaveAction saveAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, formToolbarAction, context, originalName);
+            SaveAction(dictionaryName, saveAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, formToolbarAction, context);
-        return View("formToolbarAction",formToolbarAction);
+        PopulateViewBag(dictionaryName, saveAction, context);
+        return View(saveAction);
+    }
+    
+    [HttpPost]
+    public IActionResult CancelAction(string dictionaryName, CancelAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, cancelAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, cancelAction, context);
+        return View(cancelAction);
+    }
+    
+    [HttpPost]
+    public IActionResult BackAction(string dictionaryName, BackAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, cancelAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, cancelAction, context);
+        return View(cancelAction);
     }
 
     [HttpPost]

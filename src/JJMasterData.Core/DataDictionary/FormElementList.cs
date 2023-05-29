@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -14,19 +15,31 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementList : ICollection<FormElementField>
 {
-    private IList<FormElementField> _formFields;
-    private ElementList _baseFields;
-
+    private readonly IList<FormElementField> _formFields;
+    private readonly ElementList _baseFields;
+    
     public FormElementList()
     {
         _baseFields = new ElementList();
         _formFields = new List<FormElementField>();
     }
-
+    [JsonConstructor]
+    private FormElementList(IList<FormElementField> formFields)
+    {
+        _baseFields = new ElementList(formFields.Cast<ElementField>().ToList());
+        _formFields = formFields;
+    }
+    
     public FormElementList(ElementList baseFields)
     {
         _baseFields = baseFields;
+
         _formFields = new List<FormElementField>();
+
+        foreach (var field in _baseFields)
+        {
+            _formFields.Add(new FormElementField(field));
+        }
     }
 
     #region Implementation of IEnumerable

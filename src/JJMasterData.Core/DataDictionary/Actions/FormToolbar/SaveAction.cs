@@ -5,7 +5,6 @@ namespace JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 public class SaveAction : FormToolbarAction
 {
     public const string ActionName = "save";
-    public override bool IsUserCreated => false;
 
     public SaveAction()
     {
@@ -13,5 +12,9 @@ public class SaveAction : FormToolbarAction
         Name = ActionName;
         Icon = IconType.Check;
         Text = "Save";
+        ShowAsButton = true;
+        VisibleExpression = "exp:{pagestate} in ('INSERT','UPDATE')";
     }
+
+    public FormEnterKey EnterKeyBehavior { get; set; }
 }
