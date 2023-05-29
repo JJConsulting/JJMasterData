@@ -47,26 +47,17 @@ public class ActionsController : DataDictionaryController
 
         var metadata = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        BasicAction? action = null;
-        switch (context)
+        BasicAction? action = context switch
         {
-            case ActionSource.GridTable:
-                action = metadata.Options.GridTableActions.Get(actionName);
-                break;
-            case ActionSource.GridToolbar:
-                action = metadata.Options.GridToolbarActions.Get(actionName);
-                break;
-            case ActionSource.Field:
-                action = metadata.Fields[fieldName].Actions.Get(actionName);
-                break;
-        }
+            ActionSource.GridTable => metadata.Options.GridTableActions.Get(actionName),
+            ActionSource.GridToolbar => metadata.Options.GridToolbarActions.Get(actionName),
+            ActionSource.FormToolbar => metadata.Options.FormToolbarActions.Get(actionName),
+            ActionSource.Field => metadata.Fields[fieldName].Actions.Get(actionName),
+            _ => null
+        };
 
-  
         PopulateViewBag(dictionaryName, action!, context, fieldName);
 
-        if (action is FormToolbarAction formToolbarAction)
-            return View("FormToolbarAction", formToolbarAction);
-                
         return View(action!.GetType().Name, action);
         
     }
@@ -238,7 +229,7 @@ public class ActionsController : DataDictionaryController
         }
 
         PopulateViewBag(dictionaryName, formToolbarAction, context);
-        return View(formToolbarAction);
+        return View("formToolbarAction",formToolbarAction);
     }
 
     [HttpPost]

@@ -77,7 +77,7 @@ public class ActionsService : BaseService
                 field.Actions.Set(action);
 
                 if (action.IsDefaultOption)
-                    field.Actions.SetDefault(action.Name);
+                    field.Actions.SetDefaultOption(action.Name);
                 break;
             }
             case ActionSource.GridTable:

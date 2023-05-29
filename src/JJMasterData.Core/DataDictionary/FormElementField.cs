@@ -11,7 +11,6 @@ namespace JJMasterData.Core.DataDictionary;
 /// Field-specific information in the form, inherits from ElementField
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-
 public class FormElementField : ElementField
 {
     public const string PlaceholderAttribute = "placeholder";
@@ -21,8 +20,6 @@ public class FormElementField : ElementField
     public const string AutocompletePickerAttribute = "autocompletePicker";
     public const string MinValueAttribute = "minValue";
     public const string MaxValueAttribute = "maxValue";
-
-    private FormElementFieldActions? _actions;
 
     [JsonProperty("component")] public FormComponent Component { get; set; }
 
@@ -156,11 +153,7 @@ public class FormElementField : ElementField
     public int PanelId { get; set; }
 
     [JsonProperty("actions")]
-    public FormElementFieldActions Actions
-    {
-        get => _actions ??= new FormElementFieldActions();
-        set => _actions = value;
-    }
+    public FormElementFieldActions Actions { get; set; }
 
     /// <summary>
     /// Internal developer notes
@@ -175,7 +168,8 @@ public class FormElementField : ElementField
         Export = true;
         ValidateRequest = true;
         VisibleExpression = "val:1";
-        EnableExpression = "val:1"; 
+        EnableExpression = "val:1";
+        Actions = new FormElementFieldActions();
     }
 
     public FormElementField(ElementField elementField)
@@ -226,6 +220,7 @@ public class FormElementField : ElementField
         DataItem = new FormElementDataItem();
         Export = true;
         ValidateRequest = true;
+        Actions = new FormElementFieldActions();
     }
 
 

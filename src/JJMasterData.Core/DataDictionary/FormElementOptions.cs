@@ -33,14 +33,14 @@ public class FormElementOptions
 
     [JsonConstructor]
     private FormElementOptions(
-        GridUI gridUI,
-        FormUI formUI,
+        [JsonProperty("gridOptions")]GridUI? gridUI,
+        [JsonProperty("formOptions")]FormUI? formUI,
         [JsonProperty("gridActions")] GridTableActionList? gridTableActions,
         [JsonProperty("toolbarActions")] GridToolbarActionList? gridToolbarActions,
         FormToolbarActionList? formToolbarActions)
     {
-        Grid = gridUI;
-        Form = formUI;
+        Grid = gridUI ?? new GridUI();
+        Form = formUI ?? new FormUI();
         GridToolbarActions = gridToolbarActions ?? new GridToolbarActionList();
         GridTableActions = gridTableActions ?? new GridTableActionList();
         FormToolbarActions = formToolbarActions ?? new FormToolbarActionList();

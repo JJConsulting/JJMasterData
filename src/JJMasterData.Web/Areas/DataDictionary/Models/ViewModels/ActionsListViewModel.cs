@@ -11,4 +11,13 @@ public class ActionsListViewModel : DataDictionaryViewModel
     public ActionsListViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
     {
     }
+    
+#pragma warning disable CS8618
+    // ReSharper disable once UnusedMember.Global
+    // Reason: Used for model binding.
+    public ActionsListViewModel()
+#pragma warning restore CS8618
+    {
+        
+    }
 }

@@ -12,8 +12,10 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElement : Element
 {
+    [JsonProperty]
     public string? Title { get; set; }
 
+    [JsonProperty]
     public string? SubTitle { get; set; }
     
     [Required]
