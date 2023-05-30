@@ -53,9 +53,7 @@ public class FieldService : BaseService
 
     private void RemoveUnusedProperties(ref FormElementField field)
     {
-        if (field.Component == FormComponent.ComboBox |
-            field.Component == FormComponent.Search |
-            field.Component == FormComponent.Lookup)
+        if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup)
         {
             switch (field.DataItem!.DataItemType)
             {

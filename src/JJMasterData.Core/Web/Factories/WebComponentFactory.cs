@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Core.DataDictionary;
@@ -66,7 +65,7 @@ namespace JJMasterData.Core.Web.Factories
                 dataImp.OnBeforeImport += formEvent.OnBeforeImport;
 
             dataImp.FormElement = formElement;
-            dataImp.ProcessOptions = formElement.Options.ToolBarActions.ImportAction.ProcessOptions;
+            dataImp.ProcessOptions = formElement.Options.GridToolbarActions.ImportAction.ProcessOptions;
         }
         
         internal static void SetDataImpParams(JJDataImp dataImp, FormElement formElement)

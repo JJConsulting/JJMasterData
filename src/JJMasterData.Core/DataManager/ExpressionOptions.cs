@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
 using System.Collections;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager

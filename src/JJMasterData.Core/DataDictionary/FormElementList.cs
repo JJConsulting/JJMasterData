@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -11,22 +12,34 @@ namespace JJMasterData.Core.DataDictionary;
 /// Lista de campos do formulário
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
+
 public class FormElementList : ICollection<FormElementField>
 {
-    private IList<FormElementField> _formFields;
-    private ElementList _baseFields;
-
+    private readonly IList<FormElementField> _formFields;
+    private readonly ElementList _baseFields;
+    
     public FormElementList()
     {
         _baseFields = new ElementList();
         _formFields = new List<FormElementField>();
     }
-
+    [JsonConstructor]
+    private FormElementList(IList<FormElementField> formFields)
+    {
+        _baseFields = new ElementList(formFields.Cast<ElementField>().ToList());
+        _formFields = formFields;
+    }
+    
     public FormElementList(ElementList baseFields)
     {
         _baseFields = baseFields;
+
         _formFields = new List<FormElementField>();
+
+        foreach (var field in _baseFields)
+        {
+            _formFields.Add(new FormElementField(field));
+        }
     }
 
     #region Implementation of IEnumerable
@@ -98,10 +111,7 @@ public class FormElementList : ICollection<FormElementField>
 
     public FormElementField this[int index]
     {
-        get
-        {
-            return _formFields[index];
-        }
+        get => _formFields[index];
         set
         {
             _formFields[index] = value;

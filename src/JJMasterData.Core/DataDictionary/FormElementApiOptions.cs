@@ -1,58 +1,57 @@
 #nullable enable
 
+using Newtonsoft.Json;
+
 namespace JJMasterData.Core.DataDictionary;
 
-using System.Runtime.Serialization;
-
-[DataContract]
 public class FormElementApiOptions
 {
     /// <summary>
     /// Get all records. Verb GET
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableGetAll")]
     public bool EnableGetAll { get; set; }
 
     /// <summary>
     /// Get a record detail. Verb GET
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableGetDetail")]
     public bool EnableGetDetail { get; set; }
 
     /// <summary>
     /// Add new records. Verb POST
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableAdd")]
     public bool EnableAdd { get; set; }
 
     /// <summary>
     /// Update records. Verb PUT
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableUpdate")]
     public bool EnableUpdate { get; set; }
 
     /// <summary>
     /// Update some especifics fields. Verb PATCH
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableUpdatePart")]
     public bool EnableUpdatePart { get; set; }
 
     /// <summary>
     /// Delete a record. Verb DEL
     /// </summary>
-    [DataMember]
+    [JsonProperty("enableDel")]
     public bool EnableDel { get; set; }
 
     /// <summary>
     /// Json Format
     /// </summary>
-    [DataMember]
+    [JsonProperty("formatType")]
     public ApiJsonFormat FormatType { get; set; }
 
     /// <summary>
     /// Always apply UserId (from login) as filter or on set
     /// </summary>
-    [DataMember]
+    [JsonProperty("applyUserIdOn")]
     public string? ApplyUserIdOn { get; set; }
 
 
@@ -68,8 +67,7 @@ public class FormElementApiOptions
     {
         return FormatType == ApiJsonFormat.Lowercase ? fieldName.ToLower() : fieldName;
     }
-
-
+    
     public bool HasSetMethod()
     {
         return EnableAdd ||

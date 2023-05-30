@@ -1,6 +1,4 @@
 ﻿#nullable enable
-using System;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using System.Collections.Generic;
 using System.Linq;

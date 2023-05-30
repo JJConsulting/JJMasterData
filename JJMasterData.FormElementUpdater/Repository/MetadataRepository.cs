@@ -7,7 +7,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
@@ -280,7 +280,7 @@ public class MetadataRepository
         //Nairobi
         dicParser.Options ??= new MetadataOptions();
 
-        dicParser.Options.ToolBarActions ??= new GridToolBarActions();
+        dicParser.Options.ToolbarActions ??= new GridToolbarActions();
 
         dicParser.Options.GridActions ??= new GridActions();
 
@@ -327,26 +327,21 @@ public class MetadataRepository
         foreach (var action in dicParser.Options.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            action.IsCustomAction = true;
+            //action.IsUserCreated = true;
         }
 
-        foreach (var action in dicParser.Options.ToolBarActions
+        foreach (var action in dicParser.Options.ToolbarActions
                      .GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            action.IsCustomAction = true;
+            //action.IsUserCreated = true;
         }
-
-        //Alpha Centauri
-
-        dicParser.Options.ToolBarActions.PythonActions ??= new List<PythonScriptAction>();
-
-        dicParser.Options.GridActions.PythonActions ??= new List<PythonScriptAction>();
+        
 
         //Sirius
 
-        dicParser.Options.ToolBarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolbarActions.ExportAction.ProcessOptions ??= new ProcessOptions();
 
-        dicParser.Options.ToolBarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
+        dicParser.Options.ToolbarActions.ImportAction.ProcessOptions ??= new ProcessOptions();
     }
 }

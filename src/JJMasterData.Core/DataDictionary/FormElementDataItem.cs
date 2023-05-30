@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
 using JJMasterData.Commons.Data;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -9,8 +8,7 @@ namespace JJMasterData.Core.DataDictionary;
 /// Configurações de objetos do tipo lista
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
+
 public class FormElementDataItem
 {
     private DataAccessCommand _command;
@@ -19,7 +17,7 @@ public class FormElementDataItem
     /// <summary>
     /// Tipo da origem dos dados
     /// </summary>
-    [DataMember(Name = "dataItemType")]
+    [JsonProperty("dataItemType")]
     public DataItemType DataItemType { get; set; }
 
     /// <summary>
@@ -27,7 +25,7 @@ public class FormElementDataItem
     /// 1) Coluna Código;
     /// 2) Coluna Descrição
     /// </summary>
-    [DataMember(Name = "command")]
+    [JsonProperty("command")]
     public DataAccessCommand Command
     {
         get => _command ??= new DataAccessCommand();
@@ -37,7 +35,7 @@ public class FormElementDataItem
     /// <summary>
     /// ComboBox items [Key, Value]
     /// </summary>
-    [DataMember(Name = "itens")]
+    [JsonProperty("itens")]
     public IList<DataItemValue> Items
     {
         get => _items ??= new List<DataItemValue>();
@@ -47,13 +45,13 @@ public class FormElementDataItem
     /// <summary>
     /// Mapeamento do dicionário
     /// </summary>
-    [DataMember(Name = "elementMap")]
+    [JsonProperty("elementMap")]
     public DataElementMap ElementMap { get; set; }
 
     /// <summary>
     /// Exibir texto (Todos) como primeira opção (Default = NONE)
     /// </summary>
-    [DataMember(Name = "firstoption")]
+    [JsonProperty("firstoption")]
     public FirstOptionMode FirstOption { get; set; }
 
     /// <summary>
@@ -65,13 +63,13 @@ public class FormElementDataItem
     /// Nesse caso por questão de desempenho recomendamos desabilitar essa opção e 
     /// criar um novo campo do tipo VIEWONLY para tratar o resultado na procedure
     /// </remarks>
-    [DataMember(Name = "replacetextongrid")]
+    [JsonProperty("replacetextongrid")]
     public bool ReplaceTextOnGrid { get; set; }
 
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>
-    [DataMember(Name = "enableMultiSelect")]
+    [JsonProperty("enableMultiSelect")]
     public bool EnableMultiSelect { get; set; }
     
     /// <summary>
@@ -82,7 +80,7 @@ public class FormElementDataItem
     /// Para exibir apenas a imagem de status na grid certifique-se a 
     /// propriedade ReplaceTextOnGrid esta configurada para falso.
     /// </remarks>
-    [DataMember(Name = "showimagelegend")]
+    [JsonProperty("showimagelegend")]
     public bool ShowImageLegend { get; set; }
 
     public FormElementDataItem()

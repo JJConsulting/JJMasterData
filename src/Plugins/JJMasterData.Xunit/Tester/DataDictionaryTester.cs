@@ -33,7 +33,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
    
     private FormService GetFormService(FormElement formElement)
     {
-        bool logActionIsVisible = formElement.Options.ToolBarActions.LogAction.IsVisible;
+        bool logActionIsVisible = formElement.Options.GridToolbarActions.LogAction.IsVisible;
         var userValues = new Hashtable
         {
             { "USERID", UserId }

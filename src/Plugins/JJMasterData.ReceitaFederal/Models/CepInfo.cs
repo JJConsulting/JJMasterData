@@ -2,7 +2,7 @@
 
 namespace JJMasterData.ReceitaFederal.Models;
 
-[Serializable]
+
 public class CepInfo
 {
     /// <summary>
@@ -25,7 +25,7 @@ public class CepInfo
     /// </summary>
     public CepResult Result { get; set; }
 
-    [Serializable]
+    
     public class CepResult
     {
         public string Logradouro { get; set; }

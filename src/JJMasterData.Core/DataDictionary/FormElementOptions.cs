@@ -1,28 +1,48 @@
 #nullable enable
 
-using System.Runtime.Serialization;
+using JJMasterData.Core.DataDictionary.Actions;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementOptions
 {
-    [DataMember(Name="gridOptions")]
+    [JsonProperty("gridOptions")]
     public GridUI Grid { get; set; }
-    
-    [DataMember(Name="formOptions")]
-    public FormUI Form { get; set; }
-    
-    [DataMember(Name="gridToolbarActions")]
-    public GridToolBarActions ToolBarActions { get; set; }
 
-    [DataMember(Name="gridActions")]
-    public GridActions GridActions { get; set; }
+    [JsonProperty("formOptions")]
+    public FormUI Form { get; set; }
+
+    [JsonProperty("toolBarActions")]
+    public GridToolbarActionList GridToolbarActions { get; }
+
+    [JsonProperty("formToolbarActions")]
+    public FormToolbarActionList FormToolbarActions { get; }
+
+    [JsonProperty("gridActions")] 
+    public GridTableActionList GridTableActions { get; }
 
     public FormElementOptions()
     {
         Grid = new GridUI();
         Form = new FormUI();
-        ToolBarActions = new GridToolBarActions();
-        GridActions = new GridActions();
+        GridToolbarActions = new GridToolbarActionList();
+        FormToolbarActions = new FormToolbarActionList();
+        GridTableActions = new GridTableActionList();
+    }
+
+    [JsonConstructor]
+    private FormElementOptions(
+        [JsonProperty("gridOptions")]GridUI? gridUI,
+        [JsonProperty("formOptions")]FormUI? formUI,
+        [JsonProperty("gridActions")] GridTableActionList? gridTableActions,
+        [JsonProperty("toolbarActions")] GridToolbarActionList? gridToolbarActions,
+        FormToolbarActionList? formToolbarActions)
+    {
+        Grid = gridUI ?? new GridUI();
+        Form = formUI ?? new FormUI();
+        GridToolbarActions = gridToolbarActions ?? new GridToolbarActionList();
+        GridTableActions = gridTableActions ?? new GridTableActionList();
+        FormToolbarActions = formToolbarActions ?? new FormToolbarActionList();
     }
 }

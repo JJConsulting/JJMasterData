@@ -1,11 +1,12 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;
 
 /// <summary>
 /// Informações do login do usuário
 /// </summary>
-[DataContract(Name = "userAccessInfo")]
+[JsonObject("userAccessInfo")]
 public class UserAccessInfo
 {
     /// <summary>
@@ -27,36 +28,36 @@ public class UserAccessInfo
     /// <br/>307 = Password and confirmation password are not the same!
     /// <br/>308 = Your current password is incorrect! It will not be possible to change to the new password.
     /// </summary>
-    [DataMember(Name = "errorId")]
+    [JsonProperty("errorId")]
     public int ErrorId { get; set; }
 
     /// <summary>
     /// Retorna verdadeiro se o login foi realizado com sucesso
     /// </summary>
-    [DataMember(Name = "isValid")]
+    [JsonProperty("isValid")]
     public bool IsValid { get; set; }
 
     /// <summary>
     /// Descrição do erro
     /// </summary>
-    [DataMember(Name = "message")]
+    [JsonProperty("message")]
     public string? Message { get; set; }
 
     /// <summary>
     /// Token a ser utilizado nas requisições
     /// </summary>
-    [DataMember(Name = "token")]
+    [JsonProperty("token")]
     public string? Token { get; set; }
 
     /// <summary>
     /// Id do Usuário
     /// </summary>
-    [DataMember(Name = "userId")]
+    [JsonProperty("userId")]
     public string? UserId { get; set; }
 
     /// <summary>
     /// Versão do sistema
     /// </summary>
-    [DataMember(Name = "version")]
+    [JsonProperty("version")]
     public string? Version { get; set; }
 }

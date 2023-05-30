@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using System.Web.Caching;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Options;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;

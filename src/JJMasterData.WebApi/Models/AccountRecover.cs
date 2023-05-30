@@ -1,22 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;
 
-[DataContract(Name = "accountRecover")]
+[JsonObject("accountRecover")]
 public class AccountRecover
 {
     /// <summary>
     /// User login
     /// </summary>
     [Required]
-    [DataMember(Name = "user")]
+    [JsonProperty("user")]
     public string? User { get; set; }
 
     /// <summary>
     /// AppId number from smartphone
     /// </summary>
-    [DataMember(Name = "appId")]
+    [JsonProperty("appId")]
     public string? AppId { get; set; }
 
 }

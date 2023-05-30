@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;

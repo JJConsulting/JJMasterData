@@ -1,24 +1,24 @@
 ﻿#nullable enable
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationship
 {
-    [DataMember(Name = "id")]
+    [JsonProperty("id")]
     public int Id { get; set; }
     
-    [DataMember(Name = "isParent")]
+    [JsonProperty("isParent")]
     public bool IsParent { get; set; }
 
-    [DataMember(Name = "elementRelationship")]
+    [JsonProperty("elementRelationship")]
     public ElementRelationship? ElementRelationship { get; set; }
     
-    [DataMember(Name = "viewType")]
+    [JsonProperty("viewType")]
     public RelationshipViewType ViewType { get; set; }
 
-    [DataMember(Name = "panel")]
+    [JsonProperty("panel")]
     public FormElementPanel Panel { get; set; }
 
     internal FormElementRelationship(bool isParent = false)

@@ -28,10 +28,10 @@ public class SqlServerProvider : BaseProvider
     public override string GetCreateTableScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new ArgumentNullException(nameof(Element.Fields));
+            throw new ArgumentException(nameof(element.Fields));
 
         var sql = new StringBuilder();
         var keys = new StringBuilder();

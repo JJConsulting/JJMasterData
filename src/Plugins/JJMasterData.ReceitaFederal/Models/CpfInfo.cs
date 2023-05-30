@@ -2,7 +2,7 @@
 
 namespace JJMasterData.ReceitaFederal.Models;
 
-[Serializable]
+
 public class CpfInfo
 {
     /// <summary>
@@ -25,7 +25,7 @@ public class CpfInfo
     /// </summary>
     public CpfResult Result { get; set; }
 
-    [Serializable]
+    
     public class CpfResult
     {
         public string Nome_Da_Pf { get; set; }

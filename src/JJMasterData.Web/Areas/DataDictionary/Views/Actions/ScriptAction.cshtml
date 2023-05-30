@@ -4,7 +4,7 @@
 
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
-@model  JJMasterData.Core.DataDictionary.Action.ScriptAction
+@model JJMasterData.Core.DataDictionary.Actions.UserCreated.ScriptAction
 
 @using (Html.BeginForm("ScriptAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))

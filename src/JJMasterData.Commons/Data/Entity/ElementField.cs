@@ -9,14 +9,12 @@ namespace JJMasterData.Commons.Data.Entity;
 /// Informações do campo
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class ElementField
 {
     /// <summary>
     /// Internal field id
     /// </summary>
-    [DataMember(Name = "fieldid")]
+    [JsonProperty("fieldid")]
     public int FieldId { get; set; }
 
     /// <summary>
@@ -26,32 +24,32 @@ public class ElementField
     /// When in JJGridView, the "::ASC" OR "::DESC" tags can be used
     /// in the column name to indicate the data order.
     /// </remarks>
-    [DataMember(Name = "fieldname")]
+    [JsonProperty("fieldname")]
     public string Name { get; set; }
 
     /// <summary>
     /// Description on the form
     /// </summary>
-    [DataMember(Name = "label")]
+    [JsonProperty("label")]
     public string Label { get; set; }
 
     /// <summary>
     /// Data Type
     /// Default NVARCHAR
     /// </summary>
-    [DataMember(Name = "datatype")]
+    [JsonProperty("datatype")]
     public FieldType DataType { get; set; }
 
     /// <summary>
     /// Filter Parameters
     /// </summary>
-    [DataMember(Name = "filter")]
+    [JsonProperty("filter")]
     public ElementFilter Filter { get; set; }
 
     /// <summary>
     /// Filed Size
     /// </summary>
-    [DataMember(Name = "size")]
+    [JsonProperty("size")]
     public int Size { get; set; }
 
     /// <summary>
@@ -65,25 +63,25 @@ public class ElementField
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "defaultvalue")]
+    [JsonProperty("defaultvalue")]
     public string DefaultValue { get; set; }
 
     /// <summary>
     /// Required field (Default=false)
     /// </summary>
-    [DataMember(Name = "isrequired")]
+    [JsonProperty("isrequired")]
     public bool IsRequired { get; set; }
 
     /// <summary>
     /// Primary Key (Default=false)
     /// </summary>
-    [DataMember(Name = "ispk")]
+    [JsonProperty("ispk")]
     public bool IsPk { get; set; }
 
     /// <summary>
     /// Auto Numerical (Identity) (Default=false)
     /// </summary>
-    [DataMember(Name = "autonum")]
+    [JsonProperty("autonum")]
     public bool AutoNum { get; set; }
 
     /// <summary>
@@ -95,9 +93,9 @@ public class ElementField
     /// <para/>VIEWONLY = Used to only Get operation
     /// <para/>VIRTUAL  = Ignored in database operations
     /// </remarks>
-    [DataMember(Name = "databehavior")]
+    [JsonProperty("databehavior")]
     public FieldBehavior DataBehavior { get; set; }
-    
+
     /// <summary>
     /// Apply this field on delete filter on procedure
     /// </summary>

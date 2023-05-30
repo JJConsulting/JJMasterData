@@ -1,24 +1,24 @@
-﻿using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
 internal record DataExpDto
 {
-    [DataMember(Name = "StartDate")]
+    [JsonProperty("StartDate")]
     public string StartDate { get; set; }
 
-    [DataMember(Name = "IsProcessing")]
+    [JsonProperty("IsProcessing")]
     public bool IsProcessing { get; set; }
 
-    [DataMember(Name = "Message")]
+    [JsonProperty("Message")]
     public string Message { get; set; }
 
-    [DataMember(Name = "FinishedMessage")]
+    [JsonProperty("FinishedMessage")]
     public string FinishedMessage { get; set; }
 
-    [DataMember(Name = "HasError")]
+    [JsonProperty("HasError")]
     public bool HasError { get; set; }
 
-    [DataMember(Name = "PercentProcess")]
+    [JsonProperty("PercentProcess")]
     public int PercentProcess { get; set; }
 }

@@ -1,45 +1,43 @@
 ﻿#nullable enable
 
-using System;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
+
 public class FormElementPanel
 {
-    [DataMember(Name = "id")]
+    [JsonProperty("id")]
     public int PanelId { get; set; }
 
-    [DataMember(Name = "title")]
+    [JsonProperty("title")]
     public string? Title { get; set; }
 
-    [DataMember(Name = "subtitle")]
+    [JsonProperty("subtitle")]
     public string? SubTitle { get; set; }
 
-    [DataMember(Name = "layout")]
+    [JsonProperty("layout")]
     public PanelLayout Layout { get; set; }
 
-    [DataMember(Name = "color")]
+    [JsonProperty("color")]
     public PanelColor Color { get; set; }
 
-    [DataMember(Name = "expandedByDefault")]
+    [JsonProperty("expandedByDefault")]
     public bool ExpandedByDefault { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "visibleExpression")]
+    [JsonProperty("visibleExpression")]
     public string VisibleExpression { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
-    [DataMember(Name = "enableExpression")]
+    [JsonProperty("enableExpression")]
     public string EnableExpression { get; set; }
 
-    [DataMember(Name = "cssClass")]
+    [JsonProperty("cssClass")]
     public string? CssClass { get; set; }
 
     public FormElementPanel()

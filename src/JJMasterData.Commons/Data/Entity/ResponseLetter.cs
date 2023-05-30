@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
-[Serializable]
-[DataContract]
 public class ResponseLetter
 {
-    [DataMember(Name = "status")]
+    [JsonProperty("status")]
     public int? Status { get; set; }
 
-    [DataMember(Name = "message")]
+    [JsonProperty("message")]
     public string Message { get; set; }
 
-    [DataMember(Name = "validationList")]
+    [JsonProperty("validationList")]
     public Hashtable ValidationList { get; set; }
 
-    [DataMember(Name = "data")]
+    [JsonProperty("data")]
     public Hashtable Data { get; set; }
 
     public ResponseLetter() { }

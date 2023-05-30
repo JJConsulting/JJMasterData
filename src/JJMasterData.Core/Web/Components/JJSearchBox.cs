@@ -407,14 +407,14 @@ public class JJSearchBox : JJBaseControl
     /// <summary>
     /// Record used to send data to the client.
     /// </summary>
-    [Serializable]
+    
     [DataContract]
     private record JJSearchBoxItem(string Id, string Name)
     {
-        [DataMember(Name = "id")]
+        [JsonProperty("id")]
         public string Id { get; set; } = Id;
 
-        [DataMember(Name = "name")]
+        [JsonProperty("name")]
         public string Name { get; set; } = Name;
     }
 }

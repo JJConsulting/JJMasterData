@@ -4,22 +4,24 @@ using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions;
+using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
-[DataContract(Name = "elementInfo")]
+[JsonObject("elementInfo")]
 public class Metadata
 {
-    [DataMember(Name = "table")]
+    [JsonProperty("table")]
     public Element Table { get; set; }
 
-    [DataMember(Name = "form")]
+    [JsonProperty("form")]
     public MetadataForm Form { get; set; }
 
-    [DataMember(Name = "uioptions")]
+    [JsonProperty("uioptions")]
     public MetadataOptions Options { get; set; }
 
-    [DataMember(Name = "api")]
+    [JsonProperty("api")]
     public MetadataApiOptions ApiOptions { get; set; }
 
     public static explicit operator FormElement(Metadata metadata) => metadata.GetFormElement();
@@ -67,10 +69,18 @@ public class Metadata
         formElement.Options = new FormElementOptions
         {
             Form = Options.Form,
-            Grid = Options.Grid,
-            GridActions = Options.GridActions,
-            ToolBarActions = Options.ToolBarActions
+            Grid = Options.Grid
         };
+
+        foreach (var action in Options.GridActions.GetAll())
+        {
+            formElement.Options.GridTableActions.Add(action);
+        }
+        
+        foreach (var action in Options.ToolbarActions.GetAll())
+        {
+            formElement.Options.GridTableActions.Add(action);
+        }
 
         formElement.ApiOptions = new FormElementApiOptions
         {
