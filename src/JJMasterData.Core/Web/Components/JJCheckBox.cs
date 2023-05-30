@@ -13,7 +13,9 @@ public class JJCheckBox : JJBaseControl
     /// Default: 1
     /// </remarks>
     public string Value { get; set; }
-    
+
+    public new string Text { get; set;}
+
     public bool IsChecked
     {
         get
@@ -69,17 +71,20 @@ public class JJCheckBox : JJBaseControl
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithCssClass(CssClass)
+                .WithAttribute("onclick",$"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');")
                 .WithToolTip(Translate.Key(ToolTip))
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
-        
+
+        div.AppendHiddenInput(Name + "_hidden", IsChecked ? Value : "0");
+
         div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {
             label.WithAttribute("for", Name);
             label.AppendText(Text);
         });
-        
+
         return div;
     }
     
