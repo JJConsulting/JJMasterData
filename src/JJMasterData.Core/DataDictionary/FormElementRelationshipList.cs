@@ -9,8 +9,8 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
-    private IList<FormElementRelationship> _formRelationships;
-    private List<ElementRelationship> _baseRelationships;
+    private readonly IList<FormElementRelationship> _formRelationships;
+    private readonly List<ElementRelationship> _baseRelationships;
     
     [JsonConstructor]
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
