@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.Abstractions;
@@ -117,6 +118,9 @@ public abstract class BasicAction
     [JsonProperty("isCustomAction")] 
     public abstract bool IsUserCreated { get; }
 
+    [JsonProperty(PropertyName = "formToolbarActionLocation", NullValueHandling = NullValueHandling.Ignore)]
+    public FormToolbarActionLocation? FormToolbarActionLocation { get; set; }
+    
     public BasicAction()
     {
         SetVisible(true);

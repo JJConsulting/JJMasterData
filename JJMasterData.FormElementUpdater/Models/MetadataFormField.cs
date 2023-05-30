@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
@@ -62,7 +63,7 @@ public class MetadataFormField
     public int NumberOfDecimalPlaces { get; set; }
 
     [JsonProperty("actions")]
-    public FormElementFieldActions Actions { get; set; }
+    public FormElementFieldActionList Actions { get; set; }
 
     [JsonProperty("attributes")]
     public Hashtable Attributes { get; set; }
