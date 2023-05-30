@@ -32,14 +32,12 @@ namespace JJMasterData.Core.Web.Components;
 public class JJFormView : JJGridView
 {
     #region "Events"
-
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
     public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
     public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
     public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-
     #endregion
 
     #region "Properties"
@@ -48,7 +46,6 @@ public class JJFormView : JJGridView
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
     private FormService _service;
-    private readonly FormElementRelationshipLayout _formElementRelationshipLayout;
 
 
     internal JJFormLog FormLog =>
@@ -106,7 +103,7 @@ public class JJFormView : JJGridView
     {
         get
         {
-            PageState pageState = PageState.List;
+            var pageState = PageState.List;
             if (CurrentContext.Request["current_pagestate_" + Name] != null)
                 pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
 
@@ -178,7 +175,6 @@ public class JJFormView : JJGridView
 
     internal JJFormView()
     {
-        _formElementRelationshipLayout = new FormElementRelationshipLayout(this);
         ShowTitle = true;
         DataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
         ToolBarActions.Add(new InsertAction());
@@ -191,13 +187,11 @@ public class JJFormView : JJGridView
 
     public JJFormView(string elementName) : this()
     {
-        _formElementRelationshipLayout = new FormElementRelationshipLayout(this);
         FormFactory.SetFormViewParams(this, elementName);
     }
 
     public JJFormView(FormElement formElement) : this()
     {
-        _formElementRelationshipLayout = new FormElementRelationshipLayout(this);
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
     }
@@ -813,7 +807,9 @@ public class JJFormView : JJGridView
             CssClass = "pb-3 mt-3"
         };
 
-        foreach (var action in actions)
+        var context = new ActionContext(values, pageState, ActionSource.FormToolbar, null);
+        
+        foreach (var action in actions.Where(a=>!a.IsGroup))
         {
             if (action is SaveAction saveAction)
             {
@@ -822,6 +818,12 @@ public class JJFormView : JJGridView
 
             toolbar.Items.Add(ActionManager.GetLinkFormToolbar(action, values, pageState).GetHtmlBuilder());
         }
+
+        if (actions.Any(a => a.IsGroup))
+        {
+            toolbar.Items.Add(ActionManager.GetGroupedActionsHtml(actions.Where(a=>a.IsGroup).ToList(), context));
+        }
+
         
         if (pageState == PageState.View)
         {

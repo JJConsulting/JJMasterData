@@ -199,7 +199,8 @@ internal class GridTableBody
 
         if (groupedActions.Count > 0)
         {
-            yield return GetGroupedActionsHtml(groupedActions, values);
+            var context = new ActionContext(values, PageState.List, ActionSource.GridTable, OnRenderAction);
+            yield return GridView.ActionManager.GetGroupedActionsHtml(groupedActions, context);
         }
         
     }
@@ -230,67 +231,6 @@ internal class GridTableBody
             
             yield return td;
         }
-    }
-
-    private HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, IDictionary values)
-    {
-        var td = new HtmlBuilder(HtmlTag.Td)
-            .WithCssClass("table-action")
-            .AppendElement(HtmlTag.Div, div =>
-            {
-                div.WithCssClass(BootstrapHelper.InputGroupBtn);
-                div.AppendElement(BootstrapHelper.Version == 3 ? HtmlTag.Button : HtmlTag.A,
-                    element =>
-                    {
-                        element.WithAttribute("type", "button");
-                        element.WithCssClass("btn-link dropdown-toggle");
-                        element.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
-                        element.WithAttribute("aria-haspopup", "true");
-                        element.WithAttribute("aria-expanded", "false");
-                        element.AppendElement(HtmlTag.Span, span =>
-                        {
-                            span.WithCssClass("caret");
-                            span.WithToolTip(Translate.Key("More Options"));
-                        });
-                    });
-                div.AppendElement(HtmlTag.Ul, ul =>
-                {
-                    ul.WithCssClass("dropdown-menu dropdown-menu-right");
-                    foreach (var action in actionsWithGroup)
-                    {
-                        var link = GridView.ActionManager.GetLinkGrid(action, values);
-                        
-                        link.Attributes.Add("style","display:block");
-                        
-                        var onRender = OnRenderAction;
-                        if (onRender != null)
-                        {
-                            var args = new ActionEventArgs(action, link, values);
-                            onRender.Invoke(GridView, args);
-                        }
-
-                        if (link is { Visible: true })
-                        {
-                            ul.AppendElementIf(action.DividerLine, GetDividerHtml);
-                            ul.AppendElement(HtmlTag.Li, li =>
-                            {
-                                li.WithCssClass("dropdown-item");
-                                li.AppendElement(link);
-                            });
-                        }
-                    }
-                });
-            });
-        return td;
-    }
-
-    private static HtmlBuilder GetDividerHtml()
-    {
-        var li = new HtmlBuilder(HtmlTag.Li)
-            .WithCssClass("separator")
-            .WithCssClass("divider");
-
-        return li;
     }
 
     private static string GetTdStyle(FormElementField field)

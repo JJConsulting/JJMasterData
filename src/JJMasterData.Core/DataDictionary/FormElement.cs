@@ -100,14 +100,14 @@ public class FormElement : Element
         FormElementList fields,
         List<FormElementPanel> panels,
         FormElementRelationshipList relationships, 
-        FormElementOptions options,
+        FormElementOptions? options,
         FormElementApiOptions apiOptions)
     {
         base.Fields = new ElementList(fields.Cast<ElementField>().ToList());
         Fields = fields;
         base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
         Relationships = relationships;
-        Options = options;
+        Options = options ?? new FormElementOptions();
         ApiOptions = apiOptions;
         Panels = panels;
     }
