@@ -1,7 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Threading;
 using JJMasterData.Commons.DI;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Localization;
 
@@ -10,11 +11,10 @@ namespace JJMasterData.Commons.Localization;
 /// </summary>
 public static class Translate
 {
-    private static ConcurrentDictionary<string, IDictionary<string, string>> _resourcesDictionary;
-    private static ILocalizationProvider Provider { get; }
+    private static IStringLocalizer<JJMasterDataResources> Localizer { get; }
     static Translate()
     {
-        Provider = JJService.LocalizationProvider;
+        Localizer = JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
     }
     
     /// <summary>
@@ -24,37 +24,22 @@ public static class Translate
     /// <returns>The value equivalent to that key.</returns>
     public static string Key(string resourceKey)
     {
-        string culture = CultureInfo.CurrentCulture.Name;
-
         if (string.IsNullOrEmpty(resourceKey))
             return resourceKey;
-
-        _resourcesDictionary ??= new ConcurrentDictionary<string, IDictionary<string, string>>();
-        
-        if (!_resourcesDictionary.ContainsKey(culture))
-            _resourcesDictionary.TryAdd(culture, Provider.GetLocalizedStrings(culture));
-        
-        if (_resourcesDictionary[culture].ContainsKey(resourceKey))
-            return _resourcesDictionary[culture][resourceKey];
-        
-        return resourceKey;
+        return Localizer[resourceKey];
     }
 
 
     /// <summary>
     /// Translates the value 
     /// </summary>
-    /// <param name="formatKey"></param>
+    /// <param name="resourceKey"></param>
     /// <param name="args"></param>
     /// <returns>The value equivalent to that key.</returns>
-    public static string Key(string formatKey, params object[] args)
+    public static string Key(string resourceKey, params object[] args)
     {
-        return string.Format(Key(formatKey), args);
-    }
-
-    public static void ClearCache()
-    {
-        _resourcesDictionary.Clear();
-        _resourcesDictionary = null;
+        if (string.IsNullOrEmpty(resourceKey))
+            return resourceKey;
+        return Localizer[resourceKey, args]; 
     }
 }

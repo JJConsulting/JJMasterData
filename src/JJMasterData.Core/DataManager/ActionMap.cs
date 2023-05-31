@@ -10,16 +10,16 @@ namespace JJMasterData.Core.DataManager;
 [DataContract]
 internal class ActionMap
 {
-    [DataMember(Name = "actionName")]
+    [JsonProperty("actionName")]
     public string ActionName { get; set; }
 
-    [DataMember(Name = "fieldName")]
+    [JsonProperty("fieldName")]
     public string FieldName { get; set; }
 
-    [DataMember(Name = "pkFieldValues")]
+    [JsonProperty("pkFieldValues")]
     public IDictionary PKFieldValues { get; set; }
 
-    [DataMember(Name = "contextAction")]
+    [JsonProperty("contextAction")]
     public ActionSource ContextAction { get; set; }
 
     public ActionMap()

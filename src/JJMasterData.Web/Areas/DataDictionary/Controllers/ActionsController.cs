@@ -2,8 +2,13 @@
 
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
+using JJMasterData.Core.DataDictionary.Actions.GridTable;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -19,16 +24,18 @@ public class ActionsController : DataDictionaryController
 
     public ActionResult Index(string dictionaryName)
     {
-        var dicParcer = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
-        ViewBag.DictionaryName = dictionaryName;
-        ViewBag.MenuId = "Actions";
-        ViewBag.ToolBarActions = dicParcer.Options.ToolBarActions.GetAll();
-        ViewBag.GridActions = dicParcer.Options.GridActions.GetAll();
+        var formElement = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var model = new ActionsListViewModel(dictionaryName, "Actions")
+        {
+            GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
+            GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted(),
+            FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted()
+        };
 
         if ((string?)Request.Query["selected_tab"] == null)
             ViewBag.Tab = Request.Query["selected_tab"];
 
-        return View();
+        return View(model);
     }
 
     public ActionResult Edit(string dictionaryName, string actionName, ActionSource context, string fieldName)
@@ -40,22 +47,17 @@ public class ActionsController : DataDictionaryController
 
         var metadata = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        BasicAction? action = null;
-        switch (context)
+        BasicAction? action = context switch
         {
-            case ActionSource.Grid:
-                action = metadata.Options.GridActions.Get(actionName);
-                break;
-            case ActionSource.Toolbar:
-                action = metadata.Options.ToolBarActions.Get(actionName);
-                break;
-            case ActionSource.Field:
-                action = metadata.Fields[fieldName].Actions.Get(actionName);
-                break;
-        }
+            ActionSource.GridTable => metadata.Options.GridTableActions.Get(actionName),
+            ActionSource.GridToolbar => metadata.Options.GridToolbarActions.Get(actionName),
+            ActionSource.FormToolbar => metadata.Options.FormToolbarActions.Get(actionName),
+            ActionSource.Field => metadata.Fields[fieldName].Actions.Get(actionName),
+            _ => null
+        };
 
-  
         PopulateViewBag(dictionaryName, action!, context, fieldName);
+
         return View(action!.GetType().Name, action);
         
     }
@@ -68,7 +70,6 @@ public class ActionsController : DataDictionaryController
             nameof(UrlRedirectAction) => new UrlRedirectAction(),
             nameof(InternalAction) => new InternalAction(),
             nameof(SqlCommandAction) => new SqlCommandAction(),
-            nameof(PythonScriptAction) => new PythonScriptAction(),
             _ => throw new JJMasterDataException("Invalid Action")
         };
 
@@ -219,6 +220,42 @@ public class ActionsController : DataDictionaryController
         PopulateViewBag(dictionaryName, sortAction, context);
         return View(sortAction);
     }
+    
+    [HttpPost]
+    public IActionResult SaveAction(string dictionaryName, SaveAction saveAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, saveAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, saveAction, context);
+        return View(saveAction);
+    }
+    
+    [HttpPost]
+    public IActionResult CancelAction(string dictionaryName, CancelAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, cancelAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, cancelAction, context);
+        return View(cancelAction);
+    }
+    
+    [HttpPost]
+    public IActionResult BackAction(string dictionaryName, BackAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        if (isActionSave)
+        {
+            SaveAction(dictionaryName, cancelAction, context, originalName);
+        }
+
+        PopulateViewBag(dictionaryName, cancelAction, context);
+        return View(cancelAction);
+    }
 
     [HttpPost]
     public ActionResult LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
@@ -282,19 +319,7 @@ public class ActionsController : DataDictionaryController
         PopulateViewBag(dictionaryName, sqlAction, context, fieldName);
         return View(sqlAction);
     }
-
-    [HttpPost]
-    public ActionResult PythonScriptAction(string dictionaryName, PythonScriptAction pythonAction, ActionSource context,
-        string? originalName, bool isActionSave, string? fieldName)
-    {
-        if (isActionSave)
-        {
-            SaveAction(dictionaryName, pythonAction, context, originalName, fieldName);
-        }
-
-        PopulateViewBag(dictionaryName, pythonAction, context, fieldName);
-        return View(pythonAction);
-    }
+    
 
     [HttpPost]
     public ActionResult InternalAction(string dictionaryName, InternalAction internalAction, ActionSource context,
@@ -366,7 +391,6 @@ public class ActionsController : DataDictionaryController
 
         switch (basicAction)
         {
-            case PythonScriptAction _:
             case SqlCommandAction _:
             case ImportAction _:
             case ExportAction _:
@@ -385,5 +409,6 @@ public class ActionsController : DataDictionaryController
             }
         }
     }
+
 
 }

@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
 
-[Serializable]
-[DataContract]
 public class DataAccessCommand
 {
-    [DataMember(Name = "cmdType")]
+    [JsonProperty("cmdType")]
     public CommandType CmdType { get; set; }
 
-    [DataMember(Name = "sql")]
+    [JsonProperty("sql")]
     public string Sql { get; set; }
 
-    [DataMember(Name = "parameters")]
+    [JsonProperty("parameters")]
     public List<DataAccessParameter> Parameters { get; set; }
 
     public DataAccessCommand()

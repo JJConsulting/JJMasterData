@@ -12,7 +12,9 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents.Args;
@@ -837,11 +839,6 @@ public class JJGridView : JJBaseView
 
                 currentAction = string.Empty;
                 break;
-            case PythonScriptAction pyAction:
-                error = _actionManager.ExecutePythonScriptAction(this, actionMap, pyAction);
-
-                currentAction = string.Empty;
-                break;
         }
 
         return error;
@@ -1535,9 +1532,9 @@ public class JJGridView : JJBaseView
 
         return actionMap.ContextAction switch
         {
-            ActionSource.Form => null, //TODO: formAction
-            ActionSource.Grid => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),
-            ActionSource.Toolbar => ToolBarActions.Find(x => x.Name.Equals(actionMap.ActionName)),
+            ActionSource.FormToolbar => null, //TODO: formAction
+            ActionSource.GridTable => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),
+            ActionSource.GridToolbar => ToolBarActions.Find(x => x.Name.Equals(actionMap.ActionName)),
             ActionSource.Field => FormElement.Fields[actionMap.FieldName].Actions.Get(actionMap.ActionName),
             _ => null,
         };

@@ -4,13 +4,13 @@ using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
-using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -35,8 +35,8 @@ public class ElementService : BaseService
 
     public List<string> GetScriptsDictionary(string id)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(id);
-        var element = dictionary;
+        var formElement = DataDictionaryRepository.GetMetadata(id);
+        Element element = formElement;
         var listScripts = new List<string>
         {
             _entityRepository.GetScriptCreateTable(element),
@@ -241,7 +241,7 @@ public class ElementService : BaseService
             var typeProp = GetTypeProp(item.DataType, item.IsRequired);
             var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
 
-            propsBuilder.AppendLine($"\t[DataMember(Name = \"{item.Name}\")] ");
+            propsBuilder.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
             propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
             propsBuilder.AppendLine("\t"+propField);
             propsBuilder.AppendLine("");
@@ -286,7 +286,7 @@ public class ElementService : BaseService
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+        string json = FormElementSerializer.Serialize(metadata);
 
         return Encoding.Default.GetBytes(json);
     }
@@ -300,7 +300,7 @@ public class ElementService : BaseService
             {
                 string dictionaryName = element["name"].ToString();
                 var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
-                string json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+                string json = FormElementSerializer.Serialize(metadata);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
                 using var streamWriter = new StreamWriter(jsonFile.Open());
@@ -310,16 +310,16 @@ public class ElementService : BaseService
         return memoryStream.ToArray();
     }
 
-    public bool Import(Stream file)
+    public async Task<bool> Import(Stream file)
     {
         file.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(file);
-        var dicParser = JsonConvert.DeserializeObject<FormElement>(reader.ReadToEnd());
+        var dicParser = FormElementSerializer.Deserialize(await reader.ReadToEndAsync());
         
         //TODO: Validation
         //FormElement.Validate()
         
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
 
         return IsValid;

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 
@@ -7,7 +8,7 @@ public class ApiViewModel : DataDictionaryViewModel
 {
     public bool IsSync { get; set; }
     public SyncMode Mode { get; set; }
-    public List<ElementField> Fields { get; set; } = null!;
+    public List<ElementField>? Fields { get; set; } 
     public FormElementApiOptions MetadataApiOptions { get; set; } = null!;
     
     // ReSharper disable once UnusedMember.Global

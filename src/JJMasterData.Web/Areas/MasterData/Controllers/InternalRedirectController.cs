@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Data.SqlClient;
 using System.Web;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
@@ -9,6 +8,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 

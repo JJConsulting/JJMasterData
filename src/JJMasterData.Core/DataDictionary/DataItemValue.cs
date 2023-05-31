@@ -1,23 +1,20 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
 /// Object responsible for storing the items of a list
 /// </summary>
-[Serializable]
-[DataContract]
+
 public class DataItemValue
 {
-    
-    [DataMember(Name = "id")]
+    [JsonProperty("id")]
     public string Id { get; set; }
 
-    [DataMember(Name = "description")]
+    [JsonProperty("description")]
     public string Description { get; set; }
     
-    [DataMember(Name = "icon")]
+    [JsonProperty("icon")]
     public IconType Icon { get; set; }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class DataItemValue
     /// <example>
     /// #FF112F1
     /// </example>
-    [DataMember(Name = "imagecolor")]
+    [JsonProperty("imagecolor")]
     public string ImageColor { get; set; }
 
 

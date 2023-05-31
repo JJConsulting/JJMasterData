@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace JJMasterData.Core.DataManager;
+﻿namespace JJMasterData.Core.DataManager;
 
 public class FormFileInfo
 {

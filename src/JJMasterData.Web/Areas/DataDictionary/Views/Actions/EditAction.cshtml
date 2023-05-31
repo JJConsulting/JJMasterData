@@ -5,7 +5,7 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model  JJMasterData.Core.DataDictionary.Action.EditAction
+@model  JJMasterData.Core.DataDictionary.Actions.GridTable.EditAction
 
 @using (Html.BeginForm("EditAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))

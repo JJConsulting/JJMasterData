@@ -1,16 +1,14 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
+
 public class DataElementMapFilter
 {
-    [DataMember(Name = "fieldName")]
+    [JsonProperty("fieldName")]
     public string FieldName { get; set; }
 
-    [DataMember(Name = "expressionValue")]
+    [JsonProperty("expressionValue")]
     public string ExpressionValue { get; set; }
 
 }

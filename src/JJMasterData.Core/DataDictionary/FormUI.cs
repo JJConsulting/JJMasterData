@@ -1,10 +1,8 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
+
 public class FormUI
 {
         
@@ -15,13 +13,13 @@ public class FormUI
     /// <remarks>
     /// Somente multiplos de 12
     /// </remarks>
-    [DataMember(Name = "formCols")]
+    [JsonProperty("formCols")]
     public int FormCols { get; set; }
 
     /// <summary>
     /// Tipo de layout para renderizar os campos
     /// </summary>
-    [DataMember(Name = "isVerticalLayout")]
+    [JsonProperty("isVerticalLayout")]
     public bool IsVerticalLayout { get; set; }
 
     /// <summary>
@@ -31,14 +29,14 @@ public class FormUI
     /// <remarks>
     /// Valor padrão falso
     /// </remarks>
-    [DataMember(Name = "showViewModeAsStatic")]
+    [JsonProperty("showViewModeAsStatic")]
     public bool ShowViewModeAsStatic { get; set; }
 
     /// <summary>
     /// Comportamento da Tecla enter no formulário 
     /// Default = DISABLED
     /// </summary>
-    [DataMember(Name = "enterKey")]
+    [JsonProperty("enterKey")]
     public FormEnterKey EnterKey { get; set; }
 
     public FormUI()

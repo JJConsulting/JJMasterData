@@ -1,25 +1,23 @@
 #nullable disable
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.FormElementUpdater.Models;
 
-[Serializable]
-[DataContract]
 public class MetadataInfo
 {
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
     
-    [DataMember(Name = "tablename")]
+    [JsonProperty("tablename")]
     public string TableName { get; set; }
     
-    [DataMember(Name = "info")]
+    [JsonProperty("info")]
     public string Info { get; set; }
         
-    [DataMember(Name = "sync")]
+    [JsonProperty("sync")]
     public string Sync { get; set; }
     
-    [DataMember(Name = "modified")]
+    [JsonProperty("modified")]
     public DateTime Modified { get; set; }
     
     public MetadataInfo()

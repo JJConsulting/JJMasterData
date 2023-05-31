@@ -1,13 +1,11 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
 /// Opções configuradas no dicionário de dados
 /// </summary>
-[Serializable]
-[DataContract]
+
 public class GridUI
 {
     /// <summary>
@@ -17,53 +15,53 @@ public class GridUI
     /// <remarks>
     /// Se o TotalPerPage for zero a paginação não será exibida
     /// </remarks>
-    [DataMember(Name = "totalPerPage")]
+    [JsonProperty("totalPerPage")]
     public int TotalPerPage { get; set; }
 
     /// <summary>
     /// Total de botões na paginação 
     /// (Default = 5)
     /// </summary>
-    [DataMember(Name = "totalPaggingButton")]
+    [JsonProperty("totalPaggingButton")]
     public int TotalPaggingButton { get; set; }
 
     /// <summary>
     /// Exibi borda na grid 
     /// (Default = false)
     /// </summary>
-    [DataMember(Name = "showBorder")]
+    [JsonProperty("showBorder")]
     public bool ShowBorder { get; set; }
 
     /// <summary>
     /// Exibir colunas zebradas 
     /// (Default = true)
     /// </summary>*
-    [DataMember(Name = "showRowStriped")]
+    [JsonProperty("showRowStriped")]
     public bool ShowRowStriped { get; set; }
 
     /// <summary>
     /// Alterar a cor da linha ao passar o mouse 
     /// (Default = true)
     /// </summary>
-    [DataMember(Name = "showRowHover")]
+    [JsonProperty("showRowHover")]
     public bool ShowRowHover { get; set; }
 
     /// <summary>
     /// Quantidade total de registros existentes no banco
     /// </summary>
-    [DataMember(Name = "totalReg")]
+    [JsonProperty("totalReg")]
     public int TotalReg { get; set; }
 
     /// <summary>
     /// Exibir título no cabeçalho da página
     /// </summary>
-    [DataMember(Name = "showTitle")]
+    [JsonProperty("showTitle")]
     public bool ShowTitle { get; set; }
 
     /// <summary>
     /// Exibir toolbar (Default = true) 
     /// </summary>
-    [DataMember(Name = "showToolbar")]
+    [JsonProperty("showToolbar")]
     public bool ShowToolBar { get; set; }
 
     /// <summary>
@@ -73,14 +71,14 @@ public class GridUI
     /// Habilita ou não o link nos titulos permitindo a ordenação.
     /// Mesmo quando configurado como falso, a grid respeita a propriedade CurrentOrder
     /// </remarks>
-    [DataMember(Name = "enableSorting")]
+    [JsonProperty("enableSorting")]
     public bool EnableSorting { get; set; }
 
     /// <summary>
     /// Permite selecionar multiplas linhas na Grid 
     /// habilitando um checkbox na primeira coluna. (Defaut = false)
     /// </summary>
-    [DataMember(Name = "enableMultSelect")]
+    [JsonProperty("enableMultSelect")]
     public bool EnableMultSelect { get; set; }
 
     /// <summary>
@@ -91,7 +89,7 @@ public class GridUI
     /// Ao utilizar esta propriedade, recomendamos alterar o parametro [Name] do objeto.
     /// A propriedade [Name] é utilizada para compor o nome da variável de sessão.
     /// </remarks>
-    [DataMember(Name = "maintainValuesOnLoad")]
+    [JsonProperty("maintainValuesOnLoad")]
     public bool MaintainValuesOnLoad { get; set; }
 
     /// <summary>
@@ -102,7 +100,7 @@ public class GridUI
     /// <para/>
     /// Para alterar o texto da mensagem veja o método EmptyDataText
     /// </remarks>
-    [DataMember(Name = "showHeaderWhenEmpty")]
+    [JsonProperty("showHeaderWhenEmpty")]
     public bool ShowHeaderWhenEmpty { get; set; }
 
     /// <summary>
@@ -112,7 +110,7 @@ public class GridUI
     /// Valor padrão = (Não existe registro para ser exibido).
     /// <para/>
     /// </remarks>
-    [DataMember(Name = "emptyDataText")]
+    [JsonProperty("emptyDataText")]
     public string EmptyDataText { get; set; }
 
     /// <summary>
@@ -130,13 +128,13 @@ public class GridUI
     /// <para/>
     /// Se a propriedade TotalRecords for igual zero a paginação não será exibida.
     /// </remarks>
-    [DataMember(Name = "showPagging")]
+    [JsonProperty("showPagging")]
     public bool ShowPagging { get; set; }
 
     /// <summary>
     /// Fixar o cabeçalho da grid ao realizar Scroll (Default = false)
     /// </summary>
-    [DataMember(Name = "headerFixed")]
+    [JsonProperty("headerFixed")]
     public bool HeaderFixed { get; set; }
 
 

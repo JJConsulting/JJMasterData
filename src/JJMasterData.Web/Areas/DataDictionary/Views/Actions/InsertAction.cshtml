@@ -3,9 +3,13 @@
 }
 
 @using JJMasterData.Commons.Localization
+@using JJMasterData.Core.Options
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
-@model  JJMasterData.Core.DataDictionary.Action.InsertAction
+@using Microsoft.Extensions.Options
+@inject IOptions<JJMasterDataCoreOptions> Options
+
+@model  JJMasterData.Core.DataDictionary.Actions.GridToolbar.InsertAction
 
 @using (Html.BeginForm("InsertAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
@@ -77,7 +81,7 @@
     {
         var cbo = new JJSearchBox();
         cbo.Name = "ElementNameToSelect";
-        cbo.DataItem.Command.Sql = "select name as cod, name from tb_masterdata where type = 'F' order by name";
+        cbo.DataItem.Command.Sql = $"select name as cod, name from {Options.Value.DataDictionaryTableName} where type = 'F' order by name";
         cbo.SelectedValue = Model.ElementNameToSelect;
         return cbo;
     }

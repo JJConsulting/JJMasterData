@@ -1,13 +1,10 @@
 ﻿#nullable enable
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-[Serializable]
-[DataContract]
 public class FormElementDataFile
 {
     /// <summary>
@@ -19,11 +16,11 @@ public class FormElementDataFile
     /// <summary>
     /// Maximum file size in bytes
     /// </summary>
-    [DataMember(Name = "maxFileSize")]
+    [JsonProperty("maxFileSize")]
     public int MaxFileSize { get; set; }
     
     
-    [DataMember(Name = "dragDrop")]
+    [JsonProperty("dragDrop")]
     public bool DragDrop { get; set; }
 
     /// <summary>
@@ -40,20 +37,20 @@ public class FormElementDataFile
     /// Permite upload simultaneo de arquivos.
     /// Default: True
     /// </summary>
-    [DataMember(Name = "multipleFile")]
+    [JsonProperty("multipleFile")]
     public bool MultipleFile { get; set; }
 
     /// <summary>
     /// Export file name with download link
     /// </summary>
-    [DataMember(Name = "exportAsLink")]
+    [JsonProperty("exportAsLink")]
     public bool ExportAsLink { get; set; }
 
 
     /// <summary>
     /// Preview images in gallery format
     /// </summary>
-    [DataMember(Name = "viewGallery")]
+    [JsonProperty("viewGallery")]
     public bool ViewGallery { get; set; }
 
 }

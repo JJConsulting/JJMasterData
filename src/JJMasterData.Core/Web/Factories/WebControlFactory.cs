@@ -4,7 +4,7 @@ using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
@@ -119,7 +119,7 @@ internal class WebControlFactory
 
     private void AddUserActions(JJTextGroup textGroup, FormElementField f)
     {
-        var actions = f.Actions.GetAll().FindAll(x => x.IsVisible);
+        var actions = f.Actions.GetAllSorted().FindAll(x => x.IsVisible);
         foreach (BasicAction action in actions)
         {
             var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState, f.Name);

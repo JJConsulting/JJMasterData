@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace JJMasterData.Core.DataDictionary;
+﻿namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
 /// Escopo de execução do pocesso
 /// </summary>
-[Serializable]
+
 public enum ProcessScope
 {
     /// <summary>

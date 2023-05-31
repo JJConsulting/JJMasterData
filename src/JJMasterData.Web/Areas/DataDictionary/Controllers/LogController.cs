@@ -3,7 +3,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;

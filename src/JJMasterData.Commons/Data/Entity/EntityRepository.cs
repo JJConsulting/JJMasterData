@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -18,27 +19,27 @@ public class EntityRepository : IEntityRepository
     public EntityRepository(IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("ConnectionString");
-        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string>("ConnectionString");
-        DataAccess = new DataAccess(connectionString, connectionProvider);
+        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<DataAccessProvider?>("ConnectionString");
+        DataAccess = new DataAccess(connectionString, connectionProvider ?? DataAccessProvider.SqlServer);
         
         Provider = GetProvider();
     }
     
-    public EntityRepository(string connectionString, DataAccessProviderType provider)
+    public EntityRepository(string connectionString, DataAccessProvider provider)
     {
-        DataAccess = new DataAccess(connectionString, provider.GetDescription());
+        DataAccess = new DataAccess(connectionString, provider);
         
         Provider = GetProvider();
     }
 
     private BaseProvider GetProvider()
     {
-        return DataAccessProvider.GetDataAccessProviderTypeFromString(DataAccess.ConnectionProvider) switch
+        return DataAccess.ConnectionProvider switch
         {
-            DataAccessProviderType.SqlServer => new SqlServerProvider(DataAccess),
-            DataAccessProviderType.Oracle => new OracleProvider(DataAccess),
-            DataAccessProviderType.OracleNetCore => new OracleProvider(DataAccess),
-            DataAccessProviderType.SqLite => new ProviderSQLite(DataAccess),
+            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess),
+            DataAccessProvider.Oracle => new OracleProvider(DataAccess),
+            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess),
+            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess),
             _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
                                                      DataAccess.ConnectionProvider + "]")
         };
@@ -128,7 +129,7 @@ public class EntityRepository : IEntityRepository
 
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
 
-    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetCount(Element, IDictionary)"/>
     public int GetCount(Element element, IDictionary filters) => Provider.GetCount(element, filters);
 
     ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>

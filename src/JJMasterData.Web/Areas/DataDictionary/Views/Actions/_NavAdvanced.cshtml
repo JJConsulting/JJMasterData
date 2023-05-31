@@ -1,6 +1,8 @@
 ﻿@using JJMasterData.Commons.Localization
+@using JJMasterData.Core.DataDictionary.Actions
 @using JJMasterData.Core.Web
-@model JJMasterData.Core.DataDictionary.Action.BasicAction
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model JJMasterData.Core.DataDictionary.Actions.Abstractions.BasicAction
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
@@ -60,5 +62,14 @@
             @Html.CheckBoxFor(model => model.DividerLine, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
+    @if (ViewBag.ContextAction is ActionSource.FormToolbar)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("Location of the action when in a relationship")">@Translate.Key("Location")</label>
+            <div class="input-append">
+                <select asp-for="FormToolbarActionLocation" class="form-select" asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
+            </div>
+        </div>
+    }
 
 </div>

@@ -5,41 +5,39 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Data.Entity;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
-/// <summary>
-/// Form data
-/// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
-[Serializable]
-[DataContract]
 public class FormElement : Element
 {
+    [JsonProperty]
     public string? Title { get; set; }
 
+    [JsonProperty]
     public string? SubTitle { get; set; }
     
     [Required]
-    [DataMember(Name = "fields")]
+    [JsonProperty("fields")]
     public new FormElementList Fields { get; private set; }
     
     [Required]
-    [DataMember(Name = "panels")]
+    [JsonProperty("panels")]
     public List<FormElementPanel> Panels { get; set; }
     
     [Required]
-    [DataMember(Name="relations")]
+    [JsonProperty("relations")]
     public new FormElementRelationshipList Relationships { get; set; }
     
     [Required]
+    [JsonProperty("options")]
     public FormElementOptions Options { get; set; }
     
     [Required]
+    [JsonProperty("apiOptions")]
     public FormElementApiOptions ApiOptions { get; set; }
-    
+
     public FormElement()
     {
         Fields = new FormElementList(base.Fields);
@@ -63,16 +61,12 @@ public class FormElement : Element
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;
-        
-        Fields = new FormElementList(base.Fields);
+
+        base.Fields = element.Fields;
+        Fields = new FormElementList(element.Fields);
         Panels = new List<FormElementPanel>();
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
-        
-        foreach (var f in element.Fields)
-        {
-            AddField(f);
-        }
     }
 
     public FormElement(DataTable schema) : this()
@@ -98,9 +92,24 @@ public class FormElement : Element
             var type = col.DataType;
 
             SetFieldType(field, type);
-
-            AddField(field);
         }
+    }
+
+    [JsonConstructor]
+    private FormElement(
+        FormElementList fields,
+        List<FormElementPanel> panels,
+        FormElementRelationshipList relationships, 
+        FormElementOptions? options,
+        FormElementApiOptions apiOptions)
+    {
+        base.Fields = new ElementList(fields.Cast<ElementField>().ToList());
+        Fields = fields;
+        base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
+        Relationships = relationships;
+        Options = options ?? new FormElementOptions();
+        ApiOptions = apiOptions;
+        Panels = panels;
     }
 
     protected void SetFieldType(ElementField field, Type type)
@@ -133,11 +142,6 @@ public class FormElement : Element
         {
             field.DataType = FieldType.NVarchar;
         }
-    }
-
-    protected void AddField(ElementField field)
-    {
-        Fields.Add(new FormElementField(field));
     }
 
     public FormElementPanel GetPanelById(int id)

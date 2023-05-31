@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -41,7 +41,7 @@ internal class GridToolbar
                 }
             }
 
-            var linkButton = GridView.ActionManager.GetLinkToolBar(action, GridView.DefaultValues);
+            var linkButton = GridView.ActionManager.GetLinkGridToolbar(action, GridView.DefaultValues);
             if (linkButton.Visible)
             {
                 switch (action)

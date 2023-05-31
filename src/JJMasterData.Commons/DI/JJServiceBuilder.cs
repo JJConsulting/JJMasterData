@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Data;
@@ -10,6 +11,7 @@ using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.DI;
@@ -25,7 +27,9 @@ public class JJServiceBuilder
     public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
     {
         Services.AddLocalization();
-        
+        Services.AddMemoryCache();
+        Services.AddSingleton<ResourceManagerStringLocalizerFactory>();
+        Services.AddSingleton<IStringLocalizerFactory,JJMasterDataStringLocalizerFactory>();
         Services.AddLogging(builder =>
         {
             if (configuration != null)
@@ -36,12 +40,11 @@ public class JJServiceBuilder
             }
         });
         
-        Services.AddScoped<IEntityRepository,EntityRepository>();
+        Services.AddTransient<IEntityRepository,EntityRepository>();
         
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
         Services.AddTransient<JJMasterDataEncryptionService>();
         
-        Services.AddTransient<ILocalizationProvider, JJMasterDataLocalizationProvider>();
         Services.AddSingleton<IBackgroundTask, BackgroundTask>();
         
         return this;
@@ -53,20 +56,14 @@ public class JJServiceBuilder
         return this;
     }
     
-    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProviderType provider)
+    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
         return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
     }
     
-    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, EntityRepository> implementationFactory)
+    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
-        return this;
-    }
-    
-    public JJServiceBuilder WithLocalizationProvider<T>() where T : class, ILocalizationProvider
-    {
-        Services.Replace(ServiceDescriptor.Transient<ILocalizationProvider, T>());
         return this;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services.Abstractions;
 

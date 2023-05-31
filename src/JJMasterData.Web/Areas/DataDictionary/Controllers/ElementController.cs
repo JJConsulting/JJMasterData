@@ -1,6 +1,5 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Action;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Web.Models;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
@@ -92,9 +92,9 @@ public class ElementController : DataDictionaryController
         upload.OnPostFile += OnPostFile;
     }
 
-    private void OnPostFile(object? sender, FormUploadFileEventArgs e)
+    private async void OnPostFile(object? sender, FormUploadFileEventArgs e)
     {
-        _elementService.Import(new MemoryStream(e.File.Bytes));
+        await _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
             e.SuccessMessage = Translate.Key("Dictionary imported successfully!");

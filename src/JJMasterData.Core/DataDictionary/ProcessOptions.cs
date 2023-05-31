@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -7,13 +7,13 @@ public class ProcessOptions
     /// <summary>
     /// SQL command to be executed before starting the import process
     /// </summary>
-    [DataMember(Name = "commandBeforeProcess")]
+    [JsonProperty("commandBeforeProcess")]
     public string CommandBeforeProcess { get; set; }
 
     /// <summary>
     /// SQL command to be executed at the end of the import process
     /// </summary>
-    [DataMember(Name = "commandAfterProcess")]
+    [JsonProperty("commandAfterProcess")]
     public string CommandAfterProcess { get; set; }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class ProcessOptions
     /// Varios usuários poderão executar esse processo simultaneamente, 
     /// porém visualiza apenas o log e a execução do seu processo.
     /// </remarks>
-    [DataMember(Name = "scope")]
+    [JsonProperty("scope")]
     public ProcessScope Scope { get; set; }
 
     public ProcessOptions()

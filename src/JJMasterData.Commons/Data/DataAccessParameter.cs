@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Data;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
 
-[Serializable]
-[DataContract]
 public class DataAccessParameter
 {
     /// <summary>
@@ -14,7 +13,7 @@ public class DataAccessParameter
     /// MSSQL: @Foo
     /// ORACLE: p_foo
     /// </summary>
-    [DataMember(Name = "name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
 
 
@@ -22,25 +21,26 @@ public class DataAccessParameter
     /// Value of the parameter.
     /// To send null, use DBNull.Value
     /// </summary>
-    [DataMember(Name = "value")]
+    [JsonProperty("value")]
     public object Value { get; set; }
 
     /// <summary>
     /// Specifies the data type of a field, a property, or a Parameter object of a .NET
     /// </summary>
-    [DataMember(Name = "type")]
+    [JsonProperty("type")]
     public DbType Type { get; set; }
 
     /// <summary>
     /// Field size. For numbers is optional.
     /// </summary>
-    [DataMember(Name = "size")]
+    [JsonProperty("size")]
     public int Size { get; set; }
-    
-    [DataMember(Name = "direction")]
-    public ParameterDirection Direction { get; set; }
 
-    public DataAccessParameter() { }
+    [JsonProperty("direction")] public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
+
+    public DataAccessParameter()
+    {
+    }
 
     public DataAccessParameter(string name, string value)
     {
@@ -107,5 +107,4 @@ public class DataAccessParameter
         Type = type;
         Direction = direction;
     }
-    
 }

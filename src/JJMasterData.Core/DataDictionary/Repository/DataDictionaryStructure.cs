@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary.Action;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
