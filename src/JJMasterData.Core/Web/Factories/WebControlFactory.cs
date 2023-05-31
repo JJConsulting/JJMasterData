@@ -119,7 +119,7 @@ internal class WebControlFactory
 
     private void AddUserActions(JJTextGroup textGroup, FormElementField f)
     {
-        var actions = f.Actions.GetAll().FindAll(x => x.IsVisible);
+        var actions = f.Actions.GetAllSorted().FindAll(x => x.IsVisible);
         foreach (BasicAction action in actions)
         {
             var link = ActionManager.GetLinkField(action, ExpressionOptions.FormValues, ExpressionOptions.PageState, f.Name);

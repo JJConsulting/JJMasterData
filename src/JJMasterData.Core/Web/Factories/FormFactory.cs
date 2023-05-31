@@ -46,8 +46,8 @@ internal static class FormFactory
         if (metadataOptions == null) 
             return;
 
-        form.ToolBarActions = metadataOptions.GridToolbarActions.GetAll();
-        form.GridActions = metadataOptions.GridTableActions.GetAll();
+        form.ToolBarActions = metadataOptions.GridToolbarActions.GetAllSorted();
+        form.GridActions = metadataOptions.GridTableActions.GetAllSorted();
         form.ShowTitle = metadataOptions.Grid.ShowTitle;
         form.DataPanel.FormUI = metadataOptions.Form;
         GridViewFactory.SetGridOptions(form, metadataOptions.Grid);

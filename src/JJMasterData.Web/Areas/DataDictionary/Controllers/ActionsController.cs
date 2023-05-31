@@ -27,9 +27,9 @@ public class ActionsController : DataDictionaryController
         var formElement = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
         var model = new ActionsListViewModel(dictionaryName, "Actions")
         {
-            GridTableActions = formElement.Options.GridTableActions.GetAll(),
-            GridToolbarActions = formElement.Options.GridToolbarActions.GetAll(),
-            FormToolbarActions = formElement.Options.FormToolbarActions.GetAll()
+            GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
+            GridToolbarActions = formElement.Options.GridToolbarActions.GetAllSorted(),
+            FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted()
         };
 
         if ((string?)Request.Query["selected_tab"] == null)

@@ -125,14 +125,14 @@ public class ActionsService : BaseService
             case ActionSource.Field:
             {
                 var field = formElement.Fields[fieldName];
-                listAction = field.Actions.GetAll();
+                listAction = field.Actions.GetAllSorted();
                 break;
             }
             case ActionSource.GridTable:
-                listAction = formElement.Options.GridTableActions.GetAll();
+                listAction = formElement.Options.GridTableActions.GetAllSorted();
                 break;
             case ActionSource.GridToolbar:
-                listAction = formElement.Options.GridToolbarActions.GetAll();
+                listAction = formElement.Options.GridToolbarActions.GetAllSorted();
                 break;
         }
 
