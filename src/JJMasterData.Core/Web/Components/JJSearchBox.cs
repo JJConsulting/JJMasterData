@@ -36,14 +36,14 @@ public class JJSearchBox : JJBaseControl
 
     #region "Properties"
 
-    private const string NUMBER_OF_ITEMS_ATTRIBUTE = "numberofitems";
-    private const string SCROLLBAR_ATTRIBUTE = "scrollbar";
-    private const string TRIGGER_LENGTH_ATTRIBUTE = "triggerlength";
+    private const string NumberOfItemsAttribute = "numberofitems";
+    private const string ScrollbarAttribute = "scrollbar";
+    private const string TriggerLengthAttribute = "triggerlength";
 
-    private IList<DataItemValue> values;
-    private FormElementDataItem dataItem;
-    private string selectedValue;
-    private string text;
+    private IList<DataItemValue> _values;
+    private FormElementDataItem _dataItem;
+    private string _selectedValue;
+    private string _text;
 
 
     internal ExpressionOptions ExpressionOptions { get; }
@@ -59,14 +59,14 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && text == null && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && _text == null && CurrentContext.IsPostBack)
             {
-                text = CurrentContext.Request[Name];
+                _text = CurrentContext.Request[Name];
             }
 
-            return text;
+            return _text;
         }
-        set => text = value;
+        set => _text = value;
     }
 
     /// <summary>
@@ -77,11 +77,11 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (Attributes.TryGetValue(TRIGGER_LENGTH_ATTRIBUTE, out var attribute))
+            if (Attributes.TryGetValue(TriggerLengthAttribute, out var attribute))
                 return int.Parse(attribute.ToString());
             return 0;
         }
-        set => Attributes[TRIGGER_LENGTH_ATTRIBUTE] = value;
+        set => Attributes[TriggerLengthAttribute] = value;
     }
 
     /// <summary>
@@ -92,16 +92,16 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (Attributes.ContainsKey(NUMBER_OF_ITEMS_ATTRIBUTE))
-                return int.Parse(Attributes[NUMBER_OF_ITEMS_ATTRIBUTE].ToString());
+            if (Attributes.ContainsKey(NumberOfItemsAttribute))
+                return int.Parse(Attributes[NumberOfItemsAttribute].ToString());
             return 0;
         }
         set
         {
-            if (Attributes.ContainsKey(NUMBER_OF_ITEMS_ATTRIBUTE))
-                Attributes[NUMBER_OF_ITEMS_ATTRIBUTE] = value;
+            if (Attributes.ContainsKey(NumberOfItemsAttribute))
+                Attributes[NumberOfItemsAttribute] = value;
             else
-                Attributes.Add(NUMBER_OF_ITEMS_ATTRIBUTE, value);
+                Attributes.Add(NumberOfItemsAttribute, value);
         }
     }
 
@@ -119,15 +119,15 @@ public class JJSearchBox : JJBaseControl
     public bool ScrollBar
     {
         get =>
-            Attributes.ContainsKey(SCROLLBAR_ATTRIBUTE) &&
-            Attributes[SCROLLBAR_ATTRIBUTE].ToString().Equals("true");
+            Attributes.ContainsKey(ScrollbarAttribute) &&
+            Attributes[ScrollbarAttribute].ToString().Equals("true");
         set
         {
             string v = value ? "true" : "false";
-            if (Attributes.ContainsKey(SCROLLBAR_ATTRIBUTE))
-                Attributes[SCROLLBAR_ATTRIBUTE] = v;
+            if (Attributes.ContainsKey(ScrollbarAttribute))
+                Attributes[ScrollbarAttribute] = v;
             else
-                Attributes.Add(SCROLLBAR_ATTRIBUTE, v);
+                Attributes.Add(ScrollbarAttribute, v);
         }
     }
 
@@ -138,21 +138,21 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(selectedValue) && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPostBack)
             {
-                selectedValue = CurrentContext.Request[Name];
+                _selectedValue = CurrentContext.Request[Name];
             }
 
-            if (string.IsNullOrEmpty(selectedValue) && !string.IsNullOrEmpty(Text))
+            if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
             {
                 var list = GetValues(Text);
                 if (list.Count == 1)
-                    selectedValue = list.ToList().First().Id;
+                    _selectedValue = list.ToList().First().Id;
             }
 
-            return selectedValue;
+            return _selectedValue;
         }
-        set => selectedValue = value;
+        set => _selectedValue = value;
     }
 
     /// <summary>
@@ -160,8 +160,8 @@ public class JJSearchBox : JJBaseControl
     /// </summary>
     public FormElementDataItem DataItem
     {
-        get => dataItem ??= new FormElementDataItem();
-        set => dataItem = value;
+        get => _dataItem ??= new FormElementDataItem();
+        set => _dataItem = value;
     }
 
     /// <summary>
@@ -328,10 +328,10 @@ public class JJSearchBox : JJBaseControl
         else
         {
             var searchData = new SearchBoxData(DataItem, ExpressionOptions);
-            values ??= searchData.GetValues(null, idSearch);
+            _values ??= searchData.GetValues(null, idSearch);
         }
 
-        var item = values?.ToList().Find(x => x.Id.Equals(idSearch));
+        var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
 
         if (item != null)
             description = item.Description;
@@ -348,16 +348,16 @@ public class JJSearchBox : JJBaseControl
         {
             var args = new SearchBoxQueryEventArgs(searchText);
             OnSearchQuery.Invoke(this, args);
-            values = args.Values;
+            _values = args.Values;
         }
         else
         {
             var searchData = new SearchBoxData(DataItem, ExpressionOptions);
-            values ??= searchData.GetValues(searchText, null);
+            _values ??= searchData.GetValues(searchText, null);
         }
 
-        if (values != null && searchText != null)
-            return values.ToList().FindAll(x => x.Description.ToLower().Contains(searchText.ToLower()));
+        if (_values != null && searchText != null)
+            return _values.ToList().FindAll(x => x.Description.ToLower().Contains(searchText.ToLower()));
         return null;
     }
 
