@@ -7,7 +7,9 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Action;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -31,11 +33,17 @@ public class JJDataPanel : JJBaseView
     private FieldManager _fieldManager;
     private FormUI _formUI;
     private IEntityRepository _entityRepository;
+    private IDataDictionaryRepository _dataDictionaryRepository;
 
     public IEntityRepository EntityRepository
     {
         get => _entityRepository ??= JJService.EntityRepository;
         set => _entityRepository = value;
+    }
+
+    public IDataDictionaryRepository DataDictionaryRepository
+    {
+        get => _dataDictionaryRepository ??= JJServiceCore.DataDictionaryRepository;
     }
 
     public FieldManager FieldManager
@@ -79,7 +87,7 @@ public class JJDataPanel : JJBaseView
 
     /// <summary>
     /// Field Values.
-    /// Key=Field Name, Value=Error Description
+    /// Key=Field Name, Value=Field Value
     /// </summary>
     public IDictionary Values { get; set; }
 
@@ -143,26 +151,29 @@ public class JJDataPanel : JJBaseView
         //DownloadFile Route
         if (JJDownloadFile.IsDownloadRoute(this))
             return JJDownloadFile.ResponseRoute(this);
-            
+
+        if (JJSearchBox.IsSearchBoxRoute(CurrentContext))
+            return JJSearchBox.ResponseRoute(this);
+
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
             CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
             return null;
         }
 
-        if ("jjsearchbox".Equals(requestType))
-        {
-            if (Name.Equals(pnlname))
-            {
-                var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
-                if (field != null)
-                {
-                    var jjSearchBox = FieldManager.GetField(field, PageState, Values);
-                    jjSearchBox.GetHtml();
-                }
-            }
-            return null;
-        }
+        //if ("jjsearchbox".Equals(requestType))
+        //{
+        //    if (Name.Equals(pnlname))
+        //    {
+        //        var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
+        //        if (field != null)
+        //        {
+        //            var jjSearchBox = FieldManager.GetField(field, PageState, Values);
+        //            jjSearchBox.GetHtml();
+        //        }
+        //    }
+        //    return null;
+        //}
 
         if ("geturlaction".Equals(requestType))
         {
@@ -182,7 +193,7 @@ public class JJDataPanel : JJBaseView
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"jjform_pkval_{Name}", GetPkInputHidden());
+            html.AppendHiddenInput($"jjform_pkval_{FormElement.Name}", GetPkInputHidden());
         }
 
         var panelGroup = new DataPanelLayout(this);
@@ -225,26 +236,12 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     public IDictionary GetFormValues()
     {
-        IDictionary tempvalues = null;
-
-        if (CurrentContext.HasContext())
-        {
-            string criptPkval = CurrentContext.Request["jjform_pkval_" + Name];
-            if (!string.IsNullOrEmpty(criptPkval))
-            {
-                string parsedPkval = Cript.Descript64(criptPkval);
-                var filters = DataHelper.GetPkValues(FormElement, parsedPkval, '|');
-                var entityRepository = FieldManager.ExpressionManager.EntityRepository;
-                tempvalues =entityRepository.GetFields(FormElement, filters);
-            }
-        }
-        
-        tempvalues ??= new Hashtable();
-
-        DataHelper.CopyIntoHash(ref tempvalues, Values, true);
-
         var formValues = new FormValues(FieldManager);
-        return formValues.GetFormValues(PageState, tempvalues, AutoReloadFormFields);
+        var dbValues = formValues.GetDatabaseValuesFromPk(FormElement);
+        dbValues ??= new Hashtable();
+
+        DataHelper.CopyIntoHash(ref dbValues, Values, true);
+        return formValues.GetFormValues(PageState, dbValues, AutoReloadFormFields);
     }
 
     /// <summary>

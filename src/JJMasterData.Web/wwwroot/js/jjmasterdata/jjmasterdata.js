@@ -670,7 +670,8 @@ class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
-            const pnlname = $(this).attr("pnlname");
+            const dictionaryName = $(this).attr("dictionaryName");
+            const pageState = $(this).attr("pageState");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
             let scrollbar = Boolean($(this).attr("scrollbar"));
@@ -691,7 +692,8 @@ class JJSearchBox {
                 urltypehead += "?";
             urltypehead += "t=jjsearchbox";
             urltypehead += "&objname=" + objid;
-            urltypehead += "&pnlname=" + pnlname;
+            urltypehead += "&dictionaryName=" + dictionaryName;
+            urltypehead += "&pageState=" + pageState;
             const jjSearchBoxSelector = "#" + objid + "_text";
             const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {

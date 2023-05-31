@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Globalization;
-using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;
+using System;
+using System.Collections;
+using System.Globalization;
 
 namespace JJMasterData.Core.DataManager;
 
+//TODO: Refactoring FormValues to FormRequest
+//RequestFormValues to GetValues
 internal class FormValues
 {
-    private FormValues _formValues;
-    private FormManager _formManager;
 
     private FormElement FormElement => FieldManager.FormElement;
     private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
@@ -23,7 +25,7 @@ internal class FormValues
         FieldManager = fieldManager;
     }
 
-    public Hashtable RequestFormValues(PageState state, string prefix = "")
+    public Hashtable RequestFormValues(PageState state, string? prefix = null)
     {
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -32,7 +34,7 @@ internal class FormValues
         foreach (var field in FormElement.Fields)
         {
             var fieldName = (prefix ?? string.Empty) + field.Name;
-            var value = field.ValidateRequest ? CurrentContext.Request.Form(fieldName) : CurrentContext.Request.GetUnvalidated(fieldName);
+            object? value = field.ValidateRequest ? CurrentContext.Request.Form(fieldName) : CurrentContext.Request.GetUnvalidated(fieldName);
 
             switch (field.Component)
             {
@@ -55,7 +57,7 @@ internal class FormValues
                     string requestType = CurrentContext.Request.QueryString("t");
                     if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType)))
                     {
-                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
+                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
                             value = numericValue;
                         else
                             value = 0;
@@ -78,7 +80,7 @@ internal class FormValues
     /// <summary>
     /// Recupera os dados do Form, aplicando o valor padrão e as triggers
     /// </summary> 
-    public IDictionary GetFormValues(PageState state, IDictionary values, bool autoReloadFormFields, string prefix = null)
+    public IDictionary GetFormValues(PageState state, IDictionary? values, bool autoReloadFormFields, string? prefix = null)
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
@@ -88,13 +90,28 @@ internal class FormValues
 
         if (CurrentContext.IsPostBack && autoReloadFormFields)
         {
-            _formValues ??= new FormValues(FieldManager);
-            var requestedValues = _formValues.RequestFormValues(state, prefix);
+            var formValues = new FormValues(FieldManager);
+            var requestedValues = formValues.RequestFormValues(state, prefix);
             DataHelper.CopyIntoHash(ref newValues, requestedValues, true);
         }
 
-        _formManager ??= new FormManager(FormElement, FieldManager.ExpressionManager);
-        return _formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPostBack);
+        var formManager = new FormManager(FormElement, FieldManager.ExpressionManager);
+        return formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPostBack);
+    }
+
+    public IDictionary? GetDatabaseValuesFromPk(FormElement element)
+    {
+        if (!CurrentContext.HasContext())
+            return null;
+
+        string criptPkval = CurrentContext.Request["jjform_pkval_" + element.Name];
+        if (string.IsNullOrEmpty(criptPkval))
+            return null;
+
+        string parsedPkval = Cript.Descript64(criptPkval);
+        var filters = DataHelper.GetPkValues(element, parsedPkval, '|');
+        var entityRepository = FieldManager.ExpressionManager.EntityRepository;
+        return entityRepository.GetFields(FormElement, filters);
     }
 
 }

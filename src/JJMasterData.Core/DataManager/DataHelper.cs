@@ -1,18 +1,20 @@
-﻿using JJMasterData.Commons.Exceptions;
+﻿#nullable enable
+
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Web.Http;
 using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.Web.Http;
 
 namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string GetCurrentUserId(IDictionary userValues)
+    public static string? GetCurrentUserId(IDictionary? userValues)
     {
         if (userValues != null && userValues.Contains("USERID"))
         {
@@ -125,7 +127,7 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static Hashtable ParseOriginalName(FormElement formElement, Hashtable paramValues)
+    public static Hashtable? ParseOriginalName(FormElement formElement, Hashtable? paramValues)
     {
         if (paramValues == null)
             return null;
@@ -141,7 +143,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoHash(ref IDictionary newValues, IDictionary valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoHash(ref IDictionary newValues, IDictionary? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

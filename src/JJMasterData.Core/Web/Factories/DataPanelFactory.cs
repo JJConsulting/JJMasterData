@@ -19,7 +19,7 @@ namespace JJMasterData.Core.Web.Factories
             if (string.IsNullOrEmpty(elementName))
                 throw new ArgumentNullException(nameof(elementName));
 
-            var dicDao = JJServiceCore.DataDictionaryRepository;
+            var dicDao = dataPanel.DataDictionaryRepository;
             var formElement = dicDao.GetMetadata(elementName);
 
             SetDataPanelParams(dataPanel, formElement);

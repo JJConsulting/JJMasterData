@@ -26,6 +26,12 @@ namespace JJMasterData.Core.Web.Html
             return this;
         }
 
+        public HtmlBuilder WithAttribute(string name, int value)
+        {
+            _attributes[name] = value.ToString();
+            return this;
+        }
+
         /// <summary>
         /// Set attribute to the HTML builder on condition.
         /// </summary>
