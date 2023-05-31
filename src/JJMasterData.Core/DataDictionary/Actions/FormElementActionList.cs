@@ -37,7 +37,7 @@ public abstract class FormElementActionList : IList<BasicAction>
         return List.First(a => a.Name == actionName);
     }
 
-    public List<BasicAction> GetAll()
+    public List<BasicAction> GetAllSorted()
     {
         return List.OrderBy(x => x.Order).ToList();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Data.Entity;
@@ -7,6 +8,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
@@ -759,10 +761,22 @@ public class JJFormView : JJGridView
         
         var layout = new FormElementRelationshipLayout(this);
 
+        var topActions = FormElement.Options.FormToolbarActions
+            .GetAllSorted()
+            .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
+
+        html.AppendElement(GetFormToolbar(topActions,parentPanel.PageState, parentPanel.Values));
+        
         var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships);
         
         html.AppendRange(layoutHtml);
 
+        var bottomActions = FormElement.Options.FormToolbarActions
+            .GetAllSorted()
+            .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
+        
+        html.AppendElement(GetFormToolbar(bottomActions,parentPanel.PageState, parentPanel.Values));
+        
         return html;
     }
 
@@ -773,7 +787,10 @@ public class JJFormView : JJGridView
         if (parentPanel.Errors != null)
             parentPanelHtml.AppendElement(new JJValidationSummary(parentPanel.Errors));
 
-        parentPanelHtml.AppendElement(GetFormBottomBar(parentPanel.FormElement.Options.FormToolbarActions,parentPanel.PageState, parentPanel.Values));
+        var panelActions = parentPanel.FormElement.Options.FormToolbarActions
+            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
+        
+        parentPanelHtml.AppendElement(GetFormToolbar(panelActions,parentPanel.PageState, parentPanel.Values));
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
         return parentPanelHtml;
@@ -799,7 +816,7 @@ public class JJFormView : JJGridView
         return toolbar;
     }
 
-    private JJToolbar GetFormBottomBar(FormToolbarActionList actions, PageState pageState,
+    private JJToolbar GetFormToolbar(IList<BasicAction> actions, PageState pageState,
         IDictionary values)
     {
         var toolbar = new JJToolbar

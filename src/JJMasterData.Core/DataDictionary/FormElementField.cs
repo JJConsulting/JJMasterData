@@ -4,6 +4,7 @@ using System;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using JJMasterData.Core.DataDictionary.Actions;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -153,7 +154,7 @@ public class FormElementField : ElementField
     public int PanelId { get; set; }
 
     [JsonProperty("actions")]
-    public FormElementFieldActions Actions { get; set; }
+    public FormElementFieldActionList Actions { get; set; }
 
     /// <summary>
     /// Internal developer notes
@@ -169,7 +170,7 @@ public class FormElementField : ElementField
         ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
-        Actions = new FormElementFieldActions();
+        Actions = new FormElementFieldActionList();
     }
 
     public FormElementField(ElementField elementField)
@@ -220,7 +221,7 @@ public class FormElementField : ElementField
         DataItem = new FormElementDataItem();
         Export = true;
         ValidateRequest = true;
-        Actions = new FormElementFieldActions();
+        Actions = new FormElementFieldActionList();
     }
 
 
