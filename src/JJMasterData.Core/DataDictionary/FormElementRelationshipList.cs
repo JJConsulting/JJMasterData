@@ -15,6 +15,8 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     [JsonConstructor]
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
     {
+        _baseRelationships = formRelationships.Where(r => r.ElementRelationship != null)
+            .Select(r => r.ElementRelationship).ToList();
         _formRelationships = formRelationships;
     }
     

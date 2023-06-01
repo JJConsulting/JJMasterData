@@ -5,6 +5,14 @@
 @using JJMasterData.Core.Web.Components
 @model JJMasterData.Core.DataDictionary.Actions.Abstractions.BasicAction
 
+@{
+    TempData["selectedTab"] = ViewBag.ContextAction switch
+    {
+        ActionSource.GridToolbar => "#divGridToolbar",
+        ActionSource.FormToolbar => "#divFormToolbar",
+        _ => "#divGrid"
+        };
+}
 
 <script lang="javascript" type="text/javascript">
         function setIconValue(fieldid, cod, description) {
@@ -18,6 +26,8 @@
             oFld.focus();
         }
     </script>
+
+
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@Translate.Key("Name")</label>
