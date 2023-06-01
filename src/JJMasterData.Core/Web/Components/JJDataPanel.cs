@@ -152,7 +152,7 @@ public class JJDataPanel : JJBaseView
         if (JJDownloadFile.IsDownloadRoute(this))
             return JJDownloadFile.ResponseRoute(this);
 
-        if (JJSearchBox.IsSearchBoxRoute(CurrentContext))
+        if (JJSearchBox.IsSearchBoxRoute(this))
             return JJSearchBox.ResponseRoute(this);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))

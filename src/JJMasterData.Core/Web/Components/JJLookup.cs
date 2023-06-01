@@ -363,7 +363,8 @@ public class JJLookup : JJBaseControl
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
 
-        if (field == null) return null;
+        if (field == null) 
+            return null;
 
         var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return lookup.GetHtmlBuilder();

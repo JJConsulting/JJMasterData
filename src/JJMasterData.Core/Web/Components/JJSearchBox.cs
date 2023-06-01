@@ -212,7 +212,7 @@ public class JJSearchBox : JJBaseControl
 
     internal override HtmlBuilder RenderHtml()
     {
-        if (IsSearchBoxRoute(CurrentContext))
+        if (IsSearchBoxRoute(this))
         {
             ResponseJson();
             return null;
@@ -222,9 +222,9 @@ public class JJSearchBox : JJBaseControl
     }
 
 
-    public static bool IsSearchBoxRoute(JJHttpContext context)
+    public static bool IsSearchBoxRoute(JJBaseView view)
     {
-        string requestType = context.Request.QueryString("t");
+        string requestType = view.CurrentContext.Request.QueryString("t");
         return "jjsearchbox".Equals(requestType);
     }
 
@@ -234,33 +234,35 @@ public class JJSearchBox : JJBaseControl
         string fieldName = view.CurrentContext.Request.QueryString("objname");
         var pageState = (PageState)int.Parse(view.CurrentContext.Request.QueryString("pageState"));
 
-        if (!IsSearchBoxRoute(view.CurrentContext))
+        if (!IsSearchBoxRoute(view))
             return null;
 
         if (string.IsNullOrEmpty(dictionaryName))
             return null;
 
-        FormElement element = view.FormElement.Name.Equals(dictionaryName)
-            ? view.FormElement
-            : view.DataDictionaryRepository.GetMetadata(dictionaryName);
-
-        var field = element.Fields[fieldName];
-        var dataItem = field.DataItem;
-
-        if (dataItem == null)
-            throw new ArgumentNullException(nameof(dataItem));
-
+        FormElement element;
         IDictionary formValues = null;
-        string sql = dataItem.Command.Sql;
-        sql = sql.Replace("{search_id}", string.Empty);
-        sql = sql.Replace("{search_text}", string.Empty);
-        if (sql.Contains("{"))
+        if (view.FormElement.Name.Equals(dictionaryName))
         {
-            var formRequest = new FormValues(view.FieldManager);
-            var dbValues = formRequest.GetDatabaseValuesFromPk(element);
-            formValues = formRequest.GetFormValues(pageState, dbValues, true);
+            element = view.FormElement;
+            formValues = view.Values;
+        }
+        else
+        {
+            element = view.DataDictionaryRepository.GetMetadata(dictionaryName);
+            var dataItem = element.Fields[fieldName].DataItem;
+            if (dataItem == null)
+                throw new ArgumentNullException(nameof(dataItem));
+
+            if (dataItem.HasSqlExpression())
+            {
+                var formRequest = new FormValues(view.FieldManager);
+                var dbValues = formRequest.GetDatabaseValuesFromPk(element);
+                formValues = formRequest.GetFormValues(pageState, dbValues, true);
+            }
         }
 
+        var field = element.Fields[fieldName];
         var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState, view.EntityRepository);
         var searchBox = JJSearchBox.GetInstance(field, expOptions, null, dictionaryName);
         searchBox.ResponseJson();
