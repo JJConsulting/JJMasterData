@@ -13,14 +13,14 @@ public static class FieldValidator
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
-        
+
         string fieldName = enableErrorLink ? GetFieldLinkHtml(objname, field.Label) : field.Label;
 
         string error = null;
-        
+
         if (string.IsNullOrEmpty(value))
         {
-            if(field.IsRequired || field.IsPk)
+            if (field.IsRequired || field.IsPk)
             {
                 error = Translate.Key("{0} field is required", fieldName);
             }
@@ -28,14 +28,14 @@ public static class FieldValidator
         else
         {
             error = ValidateDataType(field, value, fieldName);
-        
+
             error ??= ValidateComponent(field, value, fieldName);
         }
-        
+
         return error;
     }
 
-    private static string ValidateComponent(FormElementField field, string value,  string fieldName)
+    private static string ValidateComponent(FormElementField field, string value, string fieldName)
     {
         switch (field.Component)
         {
@@ -92,23 +92,18 @@ public static class FieldValidator
                 break;
             case FormComponent.Number:
             case FormComponent.Slider:
-                if (field.DataType == FieldType.Int)
+                if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
                 {
-                    if (int.Parse(value) < (float?)field.Attributes[FormElementField.MinValueAttribute])
-                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.Attributes[FormElementField.MinValueAttribute]);
-
-                    if (int.Parse(value) > (float?)field.Attributes[FormElementField.MaxValueAttribute])
-                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.Attributes[FormElementField.MaxValueAttribute]);
+                    if (float.Parse(value, CultureInfo.CurrentCulture) < (float?)minValue)
+                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, minValue);
                 }
-                else
+
+                if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
                 {
-                    if (float.Parse(value, CultureInfo.CurrentCulture) < (float?)field.Attributes[FormElementField.MinValueAttribute])
-                        return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.Attributes["MinValue"]);
-
-                    if (float.Parse(value, CultureInfo.CurrentCulture) > (float?)field.Attributes[FormElementField.MaxValueAttribute])
-                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.Attributes["MaxValue"]);
+                    if (float.Parse(value, CultureInfo.CurrentCulture) > (float?)maxValue)
+                        return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, maxValue);
                 }
-               
+
                 break;
             case FormComponent.Text:
             case FormComponent.TextArea:
