@@ -9,8 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.Web.Http;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -228,7 +226,7 @@ public class JJSearchBox : JJBaseControl
         return "jjsearchbox".Equals(requestType);
     }
 
-    public static HtmlBuilder ResponseRoute(JJDataPanel view)
+    public static HtmlBuilder ResponseJson(JJDataPanel view)
     {
         string dictionaryName = view.CurrentContext.Request.QueryString("dictionaryName");
         string fieldName = view.CurrentContext.Request.QueryString("objname");
@@ -256,7 +254,9 @@ public class JJSearchBox : JJBaseControl
 
             if (dataItem.HasSqlExpression())
             {
-                var formRequest = new FormValues(view.FieldManager);
+                var expression = new ExpressionManager(view.UserValues, view.EntityRepository);
+                var fieldManager = new FieldManager(element, expression);
+                var formRequest = new FormValues(fieldManager);
                 var dbValues = formRequest.GetDatabaseValuesFromPk(element);
                 formValues = formRequest.GetFormValues(pageState, dbValues, true);
             }
@@ -373,12 +373,10 @@ public class JJSearchBox : JJBaseControl
         CurrentContext.Response.SendResponse(json, "application/json");
     }
 
-
-    public string GetJsonValues(string textSearch)
+    private string GetJsonValues(string textSearch)
     {
         var listValue = GetValues(textSearch);
         var listItem = new List<SearchBoxItem>();
-        //TODO: use DaItemValue insteadof SearchBoxItem
         string description;
         foreach (var i in listValue)
         {

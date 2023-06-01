@@ -358,11 +358,10 @@ public class JJLookup : JJBaseControl
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
-
-        if (string.IsNullOrEmpty(lookupRoute)) return null;
+        if (string.IsNullOrEmpty(lookupRoute)) 
+            return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
-
         if (field == null) 
             return null;
 

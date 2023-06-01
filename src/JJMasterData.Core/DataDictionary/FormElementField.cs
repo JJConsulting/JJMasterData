@@ -236,7 +236,7 @@ public class FormElementField : ElementField
     {
         Attributes[key] = value;
 
-        if (string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value?.ToString()))
             Attributes?.Remove(key);
     }
 }

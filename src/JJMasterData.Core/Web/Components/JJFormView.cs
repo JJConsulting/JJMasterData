@@ -216,7 +216,7 @@ public class JJFormView : JJGridView
             return JJDownloadFile.ResponseRoute(this);
 
         if (JJSearchBox.IsSearchBoxRoute(this))
-            return JJSearchBox.ResponseRoute(DataPanel);
+            return JJSearchBox.ResponseJson(DataPanel);
 
 
         //if ("jjsearchbox".Equals(requestType))

@@ -137,7 +137,6 @@ public class JJDataPanel : JJBaseView
     {
         Values = GetFormValues();
         string requestType = CurrentContext.Request.QueryString("t");
-        string objname = CurrentContext.Request.QueryString("objname");
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
         //Lookup Route
@@ -153,27 +152,14 @@ public class JJDataPanel : JJBaseView
             return JJDownloadFile.ResponseRoute(this);
 
         if (JJSearchBox.IsSearchBoxRoute(this))
-            return JJSearchBox.ResponseRoute(this);
+            return JJSearchBox.ResponseJson(this);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
             CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
             return null;
         }
-
-        //if ("jjsearchbox".Equals(requestType))
-        //{
-        //    if (Name.Equals(pnlname))
-        //    {
-        //        var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(objname));
-        //        if (field != null)
-        //        {
-        //            var jjSearchBox = FieldManager.GetField(field, PageState, Values);
-        //            jjSearchBox.GetHtml();
-        //        }
-        //    }
-        //    return null;
-        //}
+        
 
         if ("geturlaction".Equals(requestType))
         {
