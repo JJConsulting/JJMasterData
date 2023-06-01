@@ -11,11 +11,7 @@ public class HtmlElementTag
     public HtmlElementTag(HtmlTag tag)
     {
         TagName = tag;
-
-        if (tag is HtmlTag.Br or HtmlTag.Input or HtmlTag.Hr)
-            HasClosingTag = false;
-        else
-            HasClosingTag = true;
+        HasClosingTag = tag is not (HtmlTag.Br or HtmlTag.Input or HtmlTag.Hr);
     }
 
     public HtmlElementTag(HtmlTag tag, bool hasClosingTag)

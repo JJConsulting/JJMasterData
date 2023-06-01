@@ -722,7 +722,7 @@ public class JJFormView : JJGridView
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
-            html.AppendElement(GetTitle());
+            html.AppendElement(GetTitle(UserValues));
 
         pageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -753,7 +753,7 @@ public class JJFormView : JJGridView
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)
-            html.AppendElement(GetTitle());
+            html.AppendElement(GetTitle(values));
 
         if (relationships.Count == 0)
         {

@@ -20,12 +20,12 @@ namespace JJMasterData.Core.Web.Html
         /// <summary>
         /// Insert a list of HTML builder as a child of caller builder.
         /// </summary>
-        public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> listelement)
+        public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> htmlList)
         {
-            if (listelement == null) 
+            if (htmlList == null) 
                 return this;
             
-            foreach (var item in listelement)
+            foreach (var item in htmlList)
                 AppendElement(item);
 
             return this;

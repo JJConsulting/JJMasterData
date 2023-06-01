@@ -113,15 +113,9 @@ namespace JJMasterData.Core.Web.Html
         {
             if (!string.IsNullOrEmpty(tooltip))
             {
-                if (_attributes.ContainsKey("title"))
-                    _attributes["title"] = tooltip;
-                else
-                    _attributes.Add("title", tooltip);
+                _attributes["title"] = tooltip;
 
-                if (_attributes.ContainsKey(BootstrapHelper.DataToggle))
-                    _attributes[BootstrapHelper.DataToggle] = "tooltip";
-                else
-                    _attributes.Add(BootstrapHelper.DataToggle, "tooltip");
+                _attributes[BootstrapHelper.DataToggle] = "tooltip";
             }
 
             return this;
