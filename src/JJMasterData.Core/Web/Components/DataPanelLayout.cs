@@ -143,7 +143,6 @@ internal class DataPanelLayout
         var fields = FormElement.Fields.ToList()
             .FindAll(x => x.PanelId == panelId)
             .OrderBy(x => x.LineGroup)
-            .ThenBy(x => x.Order)
             .ToList()
             .DeepCopy();
 

@@ -46,7 +46,6 @@ public class Metadata
             field.VisibleExpression = item.VisibleExpression;
             field.EnableExpression = item.EnableExpression;
             field.TriggerExpression = item.TriggerExpression;
-            field.Order = item.Order;
             field.LineGroup = item.LineGroup;
             field.CssClass = item.CssClass;
             field.HelpDescription = item.HelpDescription;

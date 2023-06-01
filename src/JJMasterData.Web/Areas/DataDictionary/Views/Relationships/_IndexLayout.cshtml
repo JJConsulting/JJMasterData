@@ -2,8 +2,25 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Web.TagHelpers
 @using JJMasterData.Commons.Localization
+@using JJMasterData.Commons.Data.Entity
 
 @model RelationshipsListViewModel
+
+@functions {
+    private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
+    {
+        if (relationship.IsParent)
+            return "fa-crown";
+        return relationship.ViewType switch
+        {
+            RelationshipViewType.List => "fa-table-cells",
+            RelationshipViewType.View => "fa-eye",
+            RelationshipViewType.Update => "fa-pencil",
+            _ => "fa-ban"
+        };
+    }
+
+}
 
 <script language="javascript" type="text/javascript">
 
@@ -11,7 +28,7 @@
         $("#sortable").sortable({
                update: function () {
                  const relationships = $(this).sortable('toArray');
-                 fetch('@Url.Action("Sort", new {dictionaryName = Model.DictionaryName})', {
+                 fetch('@Url.Action("Sort", new { dictionaryName = Model.DictionaryName })', {
                      method: 'POST',
                      headers: {
                          'Content-Type': 'application/json'
@@ -36,11 +53,11 @@
                 {
                     var relationship = Model.Relationships[index];
                     var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
-                    
+
                     <li class="list-group-item" id="@id">
                         <div style="height: 33px;">
                             <div style="float: left; margin-top: 10px;">
-                                <span class="@(relationship.IsParent ? "fa-solid fa-crown" : "fa fa-align-left")"></span>&nbsp;
+                                <span class="fa-solid @GetRelationshipIconCssClass(relationship)"></span>&nbsp;
                                 @(relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName)
                                 &nbsp;
                             </div>
