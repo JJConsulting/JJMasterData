@@ -12,6 +12,7 @@ public class SaveAction : FormToolbarAction
         Name = ActionName;
         Icon = IconType.Check;
         Text = "Save";
+        FormToolbarActionLocation = Actions.FormToolbarActionLocation.Panel;
         ShowAsButton = true;
         VisibleExpression = "exp:{pagestate} in ('INSERT','UPDATE')";
     }

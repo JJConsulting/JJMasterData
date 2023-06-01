@@ -18,7 +18,7 @@
     });
 
     function savePanelState() {
-        let currentTab = $("#selected_tab").val();
+        let currentTab = $("#selectedTab").val();
         if (!currentTab) {
             currentTab = "#divGrid";
         }
@@ -26,7 +26,7 @@
 
         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
             const target = $(e.target).attr("href");
-            $("#selected_tab").val(target);
+            $("#selectedTab").val(target);
         });
     }
 
@@ -36,7 +36,7 @@
 
 @using (Html.BeginForm())
 {
-    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab"/>
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
     <ul class="nav nav-tabs">
         <li id="navGrid" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGrid">@StringLocalizer["Grid Table"]</a>

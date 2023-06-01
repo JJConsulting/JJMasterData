@@ -13,6 +13,7 @@ public class BackAction : FormToolbarAction
         VisibleExpression = "exp: {pagestate} = 'VIEW'";
         Icon = IconType.ArrowLeft;
         ShowAsButton = true;
+        FormToolbarActionLocation = Actions.FormToolbarActionLocation.Panel;
         Order = 0;
         Text = "Back";
     }
