@@ -6,7 +6,7 @@
         document.getElementById(this.modalTitleId).innerHTML = title;
     }
 
-    private showModal() {
+    private showModal(isIframe: boolean = true) {
         if (bootstrapVersion < 5) {
             $("#" + this.modalId).modal();
         }
@@ -15,14 +15,15 @@
             modal.show();
         }
 
-        messageWait.show();
-
-        $("iframe").on("load", function () {
-            messageWait.hide();
-        });
+        if(isIframe){
+            messageWait.show();
+            $("iframe").on("load", function () {
+                messageWait.hide();
+            });
+        }
     }
 
-    private loadHtml(url, size) {
+    private loadHtml(content, size, isIframe = true) {
         const modalIdSelector = `#${this.modalId}`;
         if ($(modalIdSelector).length) {
             $(modalIdSelector).remove();
@@ -80,10 +81,6 @@
   height: 100%;
 }
 `
-
-
-
-
         let html = "";
 
         html += "<div id=\"popup-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
@@ -122,10 +119,16 @@
         html += "      </div>\r\n";
         html += "      <div class=\"modal-body\"  style=\"height:90%;width:auto;\">\r\n";
 
-        html += "         <iframe style=\"border: 0px;\" ";
-        html += " src='";
-        html += url;
-        html += "' width='100%' height='97%'>Waiting...</iframe>";
+        if(isIframe){
+
+            html += "         <iframe style=\"border: 0px;\" ";
+            html += " src='";
+            html += content;
+            html += "' width='100%' height='97%'>Waiting...</iframe>";
+        }
+        else{
+            html += content;
+        }
 
         html += "      </div>\r\n";
 
@@ -139,6 +142,25 @@
         this.loadHtml(url, size);
         this.setTitle(title);
         this.showModal();
+    }
+
+    showHtml(title, html, size = 1) {
+        this.loadHtml(html, size, false);
+        this.setTitle(title);
+        this.showModal(false);
+    }
+
+    showHtmlFromUrl(title, url, size = 1) {
+        messageWait.show();
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                this.showHtml(title, html, size)
+                messageWait.hide();
+            })
+            .catch(error => {
+                console.error('Error fetching HTML from URL:', error);
+            });
     }
 
     hide() {

@@ -1,6 +1,7 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 
@@ -72,17 +73,6 @@
                 //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
             }
         });
-    }
-
-    function setIconValue(fieldid, cod, description) {
-        let fieldIcon = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon");
-        fieldIcon.value = cod;
-
-        let fieldIconText = window.document.getElementById("DataItem_Items_" + fieldid + "__Icon_text");
-        fieldIconText.value = description;
-
-        popup.hide();
-        fieldIconText.focus();
     }
 
     function addDataItem(qtd) {
@@ -218,28 +208,11 @@
                     {
                         <td>
                             @{
-                                var iconId = "DataItem.Items[" + i + "].Icon";
-                                var searchBox = new JJSearchBox
-                                {
-                                    DataItem =
-                                    {
-                                        ShowImageLegend = true,
-                                        Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
-                                    },
-                                    SelectedValue = (Model.DataItem.Items[i].Icon.GetId()).ToString(),
-                                    Name = iconId
-                                };
+                                var iconId = $"DataItem_Items_{i}__Icon";
                             }
 
                             <div class="row">
-                                <div class="col-sm-10">
-                                    @Html.Raw(searchBox.GetHtml())
-                                </div>
-                                <div class="col-sm-2">
-                                    <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.show('Icons','@Url.Action("Icons", new { dictionaryName = ViewBag.DictionaryName, itemId = i })');">
-                                        <span class="fa fa-search"></span>
-                                    </button>
-                                </div>
+                                <partial name="../Icons/_IconSearchBox" model="new IconViewModel { InputId = iconId, SelectedIcon = Model.DataItem.Items[i].Icon, EnablePopUp = false}"/>
                             </div>
                         </td>
                         <td>

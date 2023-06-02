@@ -55,13 +55,7 @@ public class FieldController : DataDictionaryController
         PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
-
-    public IActionResult Icons(string dictionaryName, string itemId)
-    {
-        ViewBag.ItemId = itemId;
-        return View("Icons");
-    }
-
+    
     public IActionResult Delete(string dictionaryName, string fieldName)
     {
         _fieldService.DeleteField(dictionaryName, fieldName);
