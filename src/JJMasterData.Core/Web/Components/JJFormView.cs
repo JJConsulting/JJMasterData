@@ -207,31 +207,32 @@ public class JJFormView : JJGridView
         var dataPanel = DataPanel;
         
         if (JJLookup.IsLookupRoute(this))
-            return new HtmlBuilder(dataPanel.GetHtml());
+            return dataPanel.RenderHtml();
         
         if (JJTextFile.IsFormUploadRoute(this))
-            return new HtmlBuilder(dataPanel.GetHtml());
+            return dataPanel.RenderHtml();
         
         if (JJDownloadFile.IsDownloadRoute(this))
             return JJDownloadFile.ResponseRoute(this);
 
-        if ("jjsearchbox".Equals(requestType))
-        {
-            string pnlname = CurrentContext.Request.QueryString("pnlname");
-            if (dataPanel.Name.Equals(pnlname))
-            {
-                dataPanel.GetHtml();
-            }
-            else if (Name.Equals(pnlname))
-            {
-                Filter.GetFilterHtml();
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else if ("reloadpainel".Equals(requestType))
+        if (JJSearchBox.IsSearchBoxRoute(this))
+            return JJSearchBox.ResponseJson(DataPanel);
+
+
+        //if ("jjsearchbox".Equals(requestType))
+        //{
+        //    string dictionaryName = CurrentContext.Request.QueryString("dictionaryName");
+        //    if (FormElement.Name.Equals(dictionaryName))
+        //    {
+        //        dataPanel.GetHtml();
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
+        //else
+        if ("reloadpainel".Equals(requestType))
         {
             //TODO: eliminar metodo GetSelectedRowId
             var filter = GetSelectedRowId();
@@ -721,7 +722,7 @@ public class JJFormView : JJGridView
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
-            html.AppendElement(GetTitle());
+            html.AppendElement(GetTitle(UserValues));
 
         pageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -752,7 +753,7 @@ public class JJFormView : JJGridView
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)
-            html.AppendElement(GetTitle());
+            html.AppendElement(GetTitle(values));
 
         if (relationships.Count == 0)
         {

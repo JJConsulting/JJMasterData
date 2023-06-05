@@ -629,7 +629,7 @@ public class JJGridView : JJBaseView
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
 
-        html.AppendElementIf(ShowTitle, GetTitle().GetHtmlBuilder);
+        html.AppendElementIf(ShowTitle, GetTitle( _defaultValues).GetHtmlBuilder);
         html.AppendElementIf(FilterAction.IsVisible,Filter.GetFilterHtml);
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
@@ -807,13 +807,24 @@ public class JJGridView : JJBaseView
         return lookup.GetHtmlBuilder();
     }
 
-    internal JJTitle GetTitle()
+    internal JJTitle GetTitle(IDictionary values = null)
     {
-        var title = new JJTitle(FormElement.Title, FormElement.SubTitle)
+        var title = FormElement.Title;
+        var subTitle = FormElement.SubTitle;
+        
+        foreach (var field in FormElement.Fields)
+        {
+            var value = values?[field.Name]?.ToString();
+            title = title?.Replace($"{{{field.Name}}}",value);
+            subTitle = subTitle?.Replace($"{{{field.Name}}}",value);
+        }
+
+        var titleComponent = new JJTitle(title, subTitle)
         {
             Size = TitleSize
         };
-        return title;
+        
+        return titleComponent;
     }
 
     internal HtmlBuilder GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlElement();
@@ -824,7 +835,7 @@ public class JJGridView : JJBaseView
 
     private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
 
-    public string GetTitleHtml() => GetTitle().GetHtml();
+    public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
 
     private string ExecuteCurrentAction(ref string currentAction)
     {

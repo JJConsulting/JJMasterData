@@ -98,21 +98,21 @@ public class FormElement : Element
     [JsonConstructor]
     private FormElement(
         FormElementList fields,
-        List<FormElementPanel> panels,
+        List<FormElementPanel>? panels,
         FormElementRelationshipList relationships, 
         FormElementOptions? options,
-        FormElementApiOptions apiOptions)
+        FormElementApiOptions? apiOptions)
     {
         base.Fields = new ElementList(fields.Cast<ElementField>().ToList());
         Fields = fields;
         base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
-        ApiOptions = apiOptions;
-        Panels = panels;
+        ApiOptions = apiOptions ?? new FormElementApiOptions();
+        Panels = panels ?? new List<FormElementPanel>();
     }
 
-    protected void SetFieldType(ElementField field, Type type)
+    private static void SetFieldType(ElementField field, Type type)
     {
         if (type == typeof(int) ||
             type == typeof(short) ||

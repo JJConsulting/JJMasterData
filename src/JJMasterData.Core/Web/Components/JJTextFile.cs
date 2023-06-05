@@ -371,12 +371,12 @@ public class JJTextFile : JJBaseControl
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
-
-        if (uploadFormRoute == null) return null;
+        if (uploadFormRoute == null) 
+            return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
-
-        if (field == null) return null;
+        if (field == null) 
+            return null;
 
         var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
         return upload.GetHtmlBuilder();

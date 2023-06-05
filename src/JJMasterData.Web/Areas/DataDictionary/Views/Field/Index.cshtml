@@ -161,9 +161,10 @@
                         {
                             <div>@Translate.Key("No record found")</div>
                         }
-                        @foreach (FormElementField field in ViewBag.Fields)
+                        @for(int i = 0; i < ViewBag.Fields.Count; i++)
                         {
-                            string fieldName = field.Name;
+                            FormElementField field = ViewBag.Fields[i];
+                            var fieldName = field.Name;
                             
                             <a href="javascript:loadIframe('@Url.Action("Detail", new { dictionaryName = ViewBag.DictionaryName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
@@ -182,7 +183,7 @@
                                             label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
                                             if (label.Length > 35)
                                             {
-                                                label = label.Substring(0, 30) + "...";
+                                                label = label[..30] + "...";
                                             }
                                         }
                                         @label
@@ -190,7 +191,7 @@
                                     <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@Translate.Key("Drag and drop to move")">
                                     </div>
                                     <span class="@BootstrapHelper.PullRight jjsortable-span" title="@Translate.Key("Drag and drop to move")">
-                                        @field.Order.ToString()
+                                        @i
                                     </span>
                                 </div>
                             </a>

@@ -369,11 +369,6 @@ public class ActionsController : DataDictionaryController
 
     private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionSource context, string? fieldName = null)
     {
-        if ((string?)Request.Query["selected_tab"] != null)
-            ViewBag.Tab = Request.Query["selected_tab"];
-        else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"]!;
-
         if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Query["originalName"];
         else if (TempData["originalName"] != null)
@@ -381,8 +376,8 @@ public class ActionsController : DataDictionaryController
         else
             ViewBag.OriginalName = basicAction.Name;
 
-        if (TempData.ContainsKey("error"))
-            ViewBag.Error = TempData["error"]!;
+        if (TempData.TryGetValue("error", out var value))
+            ViewBag.Error = value!;
 
         ViewBag.DictionaryName = dictionaryName;
         ViewBag.ContextAction = context;

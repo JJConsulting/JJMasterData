@@ -99,8 +99,7 @@ internal class FormElementRelationshipLayout
         }
     }
 
-    private HtmlBuilder GetRelationshipHtml(JJDataPanel parentPanel,
-        FormElementRelationship relationship)
+    private HtmlBuilder GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
     {
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
@@ -113,7 +112,9 @@ internal class FormElementRelationshipLayout
         var filter = new Dictionary<string,dynamic>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.Contains(col.PkColumn)))
         {
-            filter.Add(col.FkColumn, formContext.Values[col.PkColumn]);
+            var value = formContext.Values[col.PkColumn];
+            filter[col.FkColumn] = value;
+            ParentFormView.UserValues[col.FkColumn] = value;
         }
 
         switch (relationship.ViewType)

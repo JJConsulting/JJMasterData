@@ -71,7 +71,7 @@ public class FormElementDataItem
     /// </remarks>
     [JsonProperty("enableMultiSelect")]
     public bool EnableMultiSelect { get; set; }
-    
+
     /// <summary>
     /// Permite incluir imagens na lista como legendas
     /// </summary>
@@ -90,5 +90,17 @@ public class FormElementDataItem
         ElementMap = new DataElementMap();
     }
 
+    public bool HasSqlExpression()
+    {
+        if (Command == null)
+            return false;
 
+        if (string.IsNullOrEmpty(Command.Sql))
+            return false;
+
+        string sql = Command.Sql;
+        sql = sql.Replace("{search_id}", string.Empty);
+        sql = sql.Replace("{search_text}", string.Empty);
+        return sql.Contains("{");
+    }
 }

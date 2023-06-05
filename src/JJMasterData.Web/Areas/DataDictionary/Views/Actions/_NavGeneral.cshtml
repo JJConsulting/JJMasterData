@@ -1,23 +1,18 @@
-﻿
-@using JJMasterData.Web.Extensions
-@using JJMasterData.Commons.Localization
+﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
-@using JJMasterData.Core.Web.Components
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Actions.Abstractions.BasicAction
 
+@{
+    TempData["selectedTab"] = ViewBag.ContextAction switch
+    {
+        ActionSource.GridToolbar => "#divGridToolbar",
+        ActionSource.FormToolbar => "#divFormToolbar",
+        _ => "#divGrid"
+        };
+}
 
-<script lang="javascript" type="text/javascript">
-        function setIconValue(fieldid, cod, description) {
-            let oFldId = window.document.getElementById(fieldid);
-            oFldId.value = cod;
-    
-            let oFld = window.document.getElementById(fieldid + "_text");
-            oFld.value = description;
-    
-            popup.hide();
-            oFld.focus();
-        }
-    </script>
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@Translate.Key("Name")</label>
@@ -25,38 +20,8 @@
 
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <label class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
-        @{
-            var searchBox = new JJSearchBox
-            {
-                DataItem =
-                {
-                    ShowImageLegend = true,
-                    Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription())).ToList()
-                },
-                SelectedValue = ((int)Model.Icon).ToString(),
-                Name = "Icon"
-            };
-        }
-        
-        @if (BootstrapHelper.Version >= 4)
-        {
-            <a href="javascript: void(0);" @BootstrapHelper.GetDataToggle("tooltip") title="Search Icon" onclick="popup.show('Icons','@Url.Action("Icons", "Field", new { jjDictionaryName = ViewBag.DictionaryName, itemId = "Icon" })');" style="text-decoration:none">
-                <span class="fa fa-search "></span>
-            </a>
-            @searchBox.GetHtmlString()
-        }
-        else
-        {
-            <div class="input-group">
-                @searchBox.GetHtmlString()
-                <span class="@BootstrapHelper.InputGroupBtn">
-                    <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.show('Icons','@Url.Action("Icons", "Field", new { jjDictionaryName = ViewBag.DictionaryName, itemId = "Icon" })');">
-                        <span class="fa fa-search"></span>
-                    </button>
-                </span>
-            </div>
-        }
+        <label for="icon" class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
+        <partial name="../Icons/_IconSearchBox" model="@(new IconViewModel { InputId = "icon", SelectedIcon = Model.Icon })"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label">@Translate.Key("Text")</label>

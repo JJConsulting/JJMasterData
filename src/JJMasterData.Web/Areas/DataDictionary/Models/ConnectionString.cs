@@ -44,7 +44,7 @@ public class ConnectionString
             Server = dataSource.ToString();
         }
 
-        if (builder.TryGetValue("user id", out var userId))
+        if (builder.TryGetValue("user", out var userId))
         {
             Username = userId.ToString();
         }
@@ -117,7 +117,7 @@ public class ConnectionString
             builder["integrated security"] = true;
         else
         {
-            builder["user id"] = Username;
+            builder["user"] = Username;
             builder["password"] = Password;
         }
 

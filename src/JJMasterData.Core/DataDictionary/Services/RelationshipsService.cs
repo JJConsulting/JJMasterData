@@ -148,7 +148,8 @@ public class RelationshipsService : BaseService
 
         if (IsValid && index == null)
         {
-            var relationships = GetFormElement(dictionaryName).Relationships
+            var element = GetFormElement(dictionaryName);
+            var relationships = element.Relationships
                 .GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (relationships.Count > 0)
                 AddError("",

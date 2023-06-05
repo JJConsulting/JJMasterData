@@ -35,13 +35,7 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonProperty("enableExpression")]
     public string? EnableExpression { get; set; }
-
-
-    /// <summary>
-    /// Field position in a line
-    /// </summary>
-    [JsonProperty("order")]
-    public int Order { get; set; }
+    
 
     /// <summary>
     /// Line counter, used to break the line in the form (row class)
@@ -236,7 +230,7 @@ public class FormElementField : ElementField
     {
         Attributes[key] = value;
 
-        if (string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value?.ToString()))
             Attributes?.Remove(key);
     }
 }

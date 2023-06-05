@@ -19,9 +19,8 @@ public class EntityRepository : IEntityRepository
     public EntityRepository(IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("ConnectionString");
-        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<DataAccessProvider?>("ConnectionString");
+        var connectionProvider = configuration.GetSection("ConnectionProviders")?.GetValue<DataAccessProvider?>("ConnectionString");
         DataAccess = new DataAccess(connectionString, connectionProvider ?? DataAccessProvider.SqlServer);
-        
         Provider = GetProvider();
     }
     

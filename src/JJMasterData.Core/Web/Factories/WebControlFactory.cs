@@ -65,7 +65,7 @@ internal class WebControlFactory
                 baseView = JJComboBox.GetInstance(f, ExpressionOptions, value);
                 break;
             case FormComponent.Search:
-                baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, PanelName);
+                baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, FormElement.Name);
                 break;
             case FormComponent.Lookup:
                 baseView = JJLookup.GetInstance(f, ExpressionOptions, value, PanelName);
