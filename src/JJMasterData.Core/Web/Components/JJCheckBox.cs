@@ -71,7 +71,7 @@ public class JJCheckBox : JJBaseControl
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithCssClass(CssClass)
-                .WithAttribute("onclick",$"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');")
+                .WithAttribute("onchange",$"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');")
                 .WithToolTip(Translate.Key(ToolTip))
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
