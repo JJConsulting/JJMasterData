@@ -297,18 +297,7 @@
             $("form:first").submit();
         },
 
-        formAction: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                const result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
 
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val(criptid);
-            $("form:first").submit();
-        },
 
 
         gridAction: function (objid, criptid, confirmMessage) {

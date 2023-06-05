@@ -50,7 +50,20 @@ public class JJRequest
         }
 
     }
+    
+    public string PathAndQuery
+    {
 
+        get
+        {
+#if NETFRAMEWORK
+            return SystemWebCurrent.Request.Url.PathAndQuery;
+#else
+            return AspNetCoreCurrent.Request.PathBase + AspNetCoreCurrent.Request.Path + AspNetCoreCurrent.Request.QueryString;
+#endif
+        }
+
+    }
 #if NETFRAMEWORK
     public HttpPostedFile GetFile(string file)
     {

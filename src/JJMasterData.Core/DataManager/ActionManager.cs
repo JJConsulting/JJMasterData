@@ -100,19 +100,18 @@ internal class ActionManager
 
         var script = new StringBuilder();
 
-        if (contextAction == ActionSource.Field ||
-            contextAction == ActionSource.FormToolbar)
+        if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
         {
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);
             script.Append("','");
             script.Append(criptMap);
-            script.Append("'");
+            script.Append('\'');
             if (!string.IsNullOrEmpty(confirmationMessage))
             {
                 script.Append(",'");
                 script.Append(confirmationMessage);
-                script.Append("'");
+                script.Append('\'');
             }
 
             script.Append(");");
@@ -137,23 +136,23 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
+    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource actionSource, bool isPopup = false)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
+        string encryptedActionMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
-        script.Append("jjview.formAction('");
+        script.Append(!isPopup ? "ActionManager.executeFormAction('" : "ActionManager.executeFormActionAsPopUp('" );
         script.Append(ComponentName);
         script.Append("','");
-        script.Append(criptMap);
-        script.Append("'");
+        script.Append(encryptedActionMap);
+        script.Append('\'');
         if (!string.IsNullOrEmpty(confirmationMessage))
         {
             script.Append(",'");
             script.Append(confirmationMessage);
-            script.Append("'");
+            script.Append('\'');
         }
 
         script.Append(");");
@@ -326,6 +325,9 @@ internal class ActionManager
         string script;
         switch (action)
         {
+            case InsertAction formAction:
+                script = GetFormActionScript(action, formValues, contextAction, formAction.ShowAsPopup);
+                break;
             case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
                 or LogAction:
                 script = GetFormActionScript(action, formValues, contextAction);

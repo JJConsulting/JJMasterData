@@ -7,6 +7,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class ActionManager {
+    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
+        const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
+        const form = document.querySelector("form");
+        currentTableActionInput.value = "";
+        currentFormActionInput.value = encryptedActionMap;
+        form.submit();
+    }
+    static executeFormActionAsPopUp(actionName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t", "popup");
+        const formData = new URLSearchParams();
+        formData.append("current_formaction_" + actionName, encryptedActionMap);
+        popup.showHtmlFromUrl("Teste", urlBuilder.build(), {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData
+        }, 4);
+    }
+}
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     jjloadform("load", null);
@@ -1201,17 +1234,6 @@ var jjview = (function () {
             $("#current_selaction_" + objid).val(criptid);
             $("form:first").submit();
         },
-        formAction: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                const result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val(criptid);
-            $("form:first").submit();
-        },
         gridAction: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
                 var result = confirm(confirmMessage);
@@ -1703,9 +1725,9 @@ class Popup {
         this.setTitle(title);
         this.showModal(false);
     }
-    showHtmlFromUrl(title, url, size = 1) {
+    showHtmlFromUrl(title, url, options = null, size = 1) {
         messageWait.show();
-        fetch(url)
+        fetch(url, options)
             .then(response => response.text())
             .then(html => {
             this.showHtml(title, html, size);
@@ -1727,6 +1749,30 @@ var popup = function () {
         return new Popup();
     }
 }();
+class UrlBuilder {
+    constructor() {
+        this.queryParameters = new Map();
+    }
+    addQueryParameter(key, value) {
+        this.queryParameters.set(key, value);
+    }
+    build() {
+        const form = document.querySelector("form");
+        let url = form.getAttribute("action");
+        if (!url.includes("?")) {
+            url += "?";
+        }
+        let isFirst = true;
+        for (const [key, value] of this.queryParameters.entries()) {
+            if (!isFirst) {
+                url += "&";
+            }
+            url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            isFirst = false;
+        }
+        return url;
+    }
+}
 var jjutil = (function () {
     return {
         justNumber: function (e) {

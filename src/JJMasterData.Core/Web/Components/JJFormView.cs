@@ -205,7 +205,7 @@ public class JJFormView : JJGridView
         string requestType = CurrentContext.Request.QueryString("t");
         string objName = CurrentContext.Request.QueryString("objname");
         var dataPanel = DataPanel;
-        
+
         if (JJLookup.IsLookupRoute(this))
             return dataPanel.RenderHtml();
         
@@ -263,6 +263,15 @@ public class JJFormView : JJGridView
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
             CurrentContext.Response.SendResponse(htmlForm.ToString());
+            return null;
+        }
+        
+        if ("popup".Equals(requestType))
+        {
+            var form = new HtmlBuilder(HtmlTag.Form);
+            form.WithAttribute("action", CurrentContext.Request.PathAndQuery);
+            form.AppendElement(htmlForm);
+            CurrentContext.Response.SendResponse(form.ToString());
             return null;
         }
 
@@ -398,67 +407,64 @@ public class JJFormView : JJGridView
         if (CurrentContext.Request["current_painelaction_" + Name] != null)
             formAction = CurrentContext.Request["current_painelaction_" + Name];
 
-        if (formAction.Equals("OK"))
+        switch (formAction)
         {
-            var values = GetFormValues();
-            var errors = InsertFormValues(values);
-
-            if (errors.Count == 0)
+            case "OK":
             {
-                if (!string.IsNullOrEmpty(UrlRedirect))
-                {
-                    CurrentContext.Response.Redirect(UrlRedirect);
-                    return null;
-                }
+                var values = GetFormValues();
+                var errors = InsertFormValues(values);
 
-                if (action.ReopenForm)
+                if (errors.Count == 0)
                 {
-                    pageState = PageState.Insert;
+                    if (!string.IsNullOrEmpty(UrlRedirect))
+                    {
+                        CurrentContext.Response.Redirect(UrlRedirect);
+                        return null;
+                    }
 
-                    var alert = new JJAlert
+                    if (action.ReopenForm)
                     {
-                        Name = $"pnl_insertmsg_{Name}",
-                        Color = PanelColor.Success,
-                        ShowIcon = true,
-                        Icon = IconType.CheckCircleO
-                    };
-                    alert.Messages.Add(Translate.Key("Record added successfully"));
-                    var alertHtml = alert.GetHtmlBuilder();
-                    alertHtml.AppendElement(HtmlTag.Div, div =>
-                    {
-                        div.WithAttribute("id", $"pnl_insert_{Name}")
-                           .WithAttribute("style", "display:none")
-                           .AppendElement(GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false));
-                    });
-                    alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
-                    return alertHtml;
-                }
+                        pageState = PageState.Insert;
+
+                        var alert = new JJAlert
+                        {
+                            Name = $"pnl_insertmsg_{Name}",
+                            Color = PanelColor.Success,
+                            ShowIcon = true,
+                            Icon = IconType.CheckCircleO
+                        };
+                        alert.Messages.Add(Translate.Key("Record added successfully"));
+                        var alertHtml = alert.GetHtmlBuilder();
+                        alertHtml.AppendElement(HtmlTag.Div, div =>
+                        {
+                            div.WithAttribute("id", $"pnl_insert_{Name}")
+                                .WithAttribute("style", "display:none")
+                                .AppendElement(GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false));
+                        });
+                        alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
+                        return alertHtml;
+                    }
  
-                pageState = PageState.List;
-                return GetHtmlGrid();
+                    pageState = PageState.List;
+                    return GetHtmlGrid();
 
-            }
+                }
   
-            pageState = PageState.Insert;
-            return GetDataPanelHtml(new(values, errors, pageState), true);
-
+                pageState = PageState.Insert;
+                return GetDataPanelHtml(new(values, errors, pageState), true);
+            }
+            case "CANCEL":
+                pageState = PageState.List;
+                ClearTempFiles();
+                return GetHtmlGrid();
+            case "ELEMENTSEL":
+                pageState = PageState.Insert;
+                return GetHtmlElementInsert(ref pageState);
+            case "ELEMENTLIST":
+                pageState = PageState.Insert;
+                return GetHtmlElementList(action);
         }
 
-        if (formAction.Equals("CANCEL"))
-        {
-            pageState = PageState.List;
-            ClearTempFiles();
-            return GetHtmlGrid();
-        }
-        if (formAction.Equals("ELEMENTSEL"))
-        {
-            return GetHtmlElementInsert(ref pageState);
-        }
-        if (formAction.Equals("ELEMENTLIST"))
-        {
-            pageState = PageState.Insert;
-            return GetHtmlElementList(action);
-        }
         if (pageState == PageState.Insert)
         {
             return GetDataPanelHtml(new(GetFormValues(), null, pageState), true);
