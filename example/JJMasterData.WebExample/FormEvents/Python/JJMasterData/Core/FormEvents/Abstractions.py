@@ -29,5 +29,5 @@ class BaseFormEvent:
     def OnBeforeUpdate(self, sender, args: FormBeforeActionEventArgs):
         pass
 
-    def OnMetadataLoad(self, sender, args: MetadataLoadEventArgs):
+    def OnFormElementLoad(self, sender, args: FormElementLoadEventArgs):
         pass
