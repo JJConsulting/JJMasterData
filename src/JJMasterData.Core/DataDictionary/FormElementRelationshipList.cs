@@ -134,7 +134,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
             if (!value.IsParent)
             {
-                var element = baseRelationships.First(r => r == value.ElementRelationship);
+                var element = baseRelationships.First(r => r.ChildElement == value.ElementRelationship!.ChildElement);
                 var i = baseRelationships.IndexOf(element);
                 baseRelationships[i] = value.ElementRelationship;
             }
