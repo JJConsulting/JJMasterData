@@ -10,9 +10,30 @@
     ViewData["Title"] = $"{Model.DictionaryName} - Relationships";
 }
 
+@section Scripts{
+    
+    <script lang="javascript" type="text/javascript">
+    $(function () {
+          let currentTab = $("#selectedTab").val();
+          if (!currentTab) {
+              currentTab = "#divElements";
+          }
+          $(".nav a[href='" + currentTab + "']").tab("show");
+
+          $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+              const target = $(e.target).attr("href");
+              $("#selectedTab").val(target);
+          });
+    });
+
+
+</script>
+}
 
 @using (Html.BeginForm())
 {
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["SelectedTab"]"/>
+    
     <ul class="nav nav-tabs">
         <li id="navGrid" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divElements">@Translate.Key("Elements")</a>

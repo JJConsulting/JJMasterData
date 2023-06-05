@@ -25,8 +25,9 @@ public class RelationshipsService : BaseService
     {
         var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
         var relationships = formElement.Relationships;
-
-        var formElementRelationShip = new FormElementRelationship(elementRelationship);
+        
+        var formElementRelationShip = relationships.FirstOrDefault( r=> r.Id ==id);
+        formElementRelationShip ??= new FormElementRelationship(elementRelationship);
         
         if (id != null)
         {
@@ -51,13 +52,9 @@ public class RelationshipsService : BaseService
     {
         var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
 
-        var index = formElement.Relationships.GetIndexById(id);
-        
-        var relationship = formElement.Relationships[index];
+        var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
         relationship.Panel = panel;
-        
-        formElement.Relationships[index] = relationship;
 
         DataDictionaryRepository.InsertOrReplace(formElement);
     }

@@ -7,6 +7,10 @@
 
 @model RelationshipsLayoutDetailsViewModel
 
+@{
+    TempData["SelectedTab"] = "#divLayout";
+}
+
 @section Scripts{
     <script type="text/javascript">
         function saveForm() {
@@ -22,6 +26,7 @@
             .then(data => {
                 if (data.success === true) {
                     window.parent.popup.hide();
+                    window.parent.location.reload();
                 } else {
                     document.querySelector('#divError').innerHTML = data.errorMessage;
                 }
