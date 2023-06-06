@@ -313,11 +313,7 @@
             $("form:first").submit();
         },
 
-        doPainelAction: function (objid, v) {
-            $("#current_painelaction_" + objid).val(v);
-            $("form").submit();
-            return false;
-        },
+
 
         doFormUrlRedirect: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {

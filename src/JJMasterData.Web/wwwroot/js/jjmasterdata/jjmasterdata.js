@@ -8,6 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class ActionManager {
+    static executePanelAction(name, action) {
+        $("#current_painelaction_" + name).val(action);
+        let form = document.forms[name];
+        if (!form) {
+            form = document.forms[0];
+        }
+        form.submit();
+        return false;
+    }
     static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
@@ -16,7 +25,10 @@ class ActionManager {
         }
         const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
         const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
-        const form = document.querySelector("form");
+        let form = document.querySelector("form");
+        if (!form) {
+            form = document.forms[0];
+        }
         currentTableActionInput.value = "";
         currentFormActionInput.value = encryptedActionMap;
         form.submit();
@@ -1244,11 +1256,6 @@ var jjview = (function () {
             $("#current_tableaction_" + objid).val(criptid);
             $("#current_formaction_" + objid).val("");
             $("form:first").submit();
-        },
-        doPainelAction: function (objid, v) {
-            $("#current_painelaction_" + objid).val(v);
-            $("form").submit();
-            return false;
         },
         doFormUrlRedirect: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {

@@ -353,10 +353,10 @@ internal class ActionManager
                 else
                     link.Type = save.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                 
-                script = $"return jjview.doPainelAction('{ComponentName}','OK');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','OK');";
                 break;
             case CancelAction or BackAction:
-                script = $"return jjview.doPainelAction('{ComponentName}','CANCEL');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','CANCEL');";
                 break;
             case RefreshAction:
                 script = $"jjview.doRefresh('{ComponentName}');";
