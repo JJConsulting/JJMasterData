@@ -568,7 +568,6 @@ function jjloadform(event, prefixSelector) {
         ajaxStop: function () { messageWait.hide(); }
     });
     $("form").on("submit", function () {
-        event.preventDefault();
         let isValid;
         try {
             isValid = $("form").valid();
