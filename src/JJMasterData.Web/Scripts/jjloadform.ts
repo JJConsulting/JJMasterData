@@ -97,6 +97,7 @@
     });
 
     $("form").on("submit",function () {
+        event.preventDefault();
         
         let isValid : boolean;
         
