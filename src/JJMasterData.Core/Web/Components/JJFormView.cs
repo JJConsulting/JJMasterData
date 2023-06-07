@@ -269,8 +269,20 @@ public class JJFormView : JJGridView
         if ("popup".Equals(requestType))
         {
             var form = new HtmlBuilder(HtmlTag.Form);
-            form.WithAttribute("action", CurrentContext.Request.PathAndQuery);
-            form.AppendElement(htmlForm);
+            form.WithAttribute("action", CurrentContext.Request.Path);
+            form.WithAttribute("method", "POST");
+            form.WithNameAndId(Name);
+
+            if (Name != objName)
+            {
+                var dynamicForm = new JJFormView(objName);
+                form.AppendElement(dynamicForm.GetHtmlBuilder());
+            }
+            else
+            {
+                form.AppendElement(htmlForm);
+            }
+            
             CurrentContext.Response.SendResponse(form.ToString());
             return null;
         }

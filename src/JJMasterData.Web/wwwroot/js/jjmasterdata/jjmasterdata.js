@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class ActionManager {
     static executePanelAction(name, action) {
         $("#current_painelaction_" + name).val(action);
-        let form = document.forms[name];
+        let form = document.querySelector(`form#${name}`);
         if (!form) {
             form = document.forms[0];
         }
-        form.submit();
+        form.requestSubmit();
         return false;
     }
     static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {

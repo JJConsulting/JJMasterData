@@ -51,6 +51,20 @@ public class JJRequest
 
     }
     
+    public string Path
+    {
+
+        get
+        {
+#if NETFRAMEWORK
+            return SystemWebCurrent.Request.Url.AbsolutePath;
+#else
+            return AspNetCoreCurrent.Request.PathBase + AspNetCoreCurrent.Request.Path;
+#endif
+        }
+
+    }
+    
     public string PathAndQuery
     {
 

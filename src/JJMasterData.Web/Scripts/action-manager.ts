@@ -1,13 +1,13 @@
 class ActionManager {
     static executePanelAction(name: string, action: string){
         $("#current_painelaction_" + name).val(action);
-        let form = document.forms[name];
+        let form = document.querySelector<HTMLFormElement>(`form#${name}`);
 
         if(!form){
             form = document.forms[0];
         }
         
-        form.submit()
+        form.requestSubmit()
         return false;
     }
     

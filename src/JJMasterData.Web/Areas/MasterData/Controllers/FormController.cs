@@ -13,6 +13,7 @@ public class FormController : MasterDataController
         var model = new FormViewModel(dictionaryName, ConfigureFormView);
         return View(model);
     }
+    
 
     private void ConfigureFormView(JJFormView formView)
     {
