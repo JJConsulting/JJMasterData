@@ -273,16 +273,10 @@ public class JJFormView : JJGridView
             form.WithAttribute("method", "POST");
             form.WithNameAndId(Name);
 
-            if (Name != objName)
-            {
-                var dynamicForm = new JJFormView(objName);
-                form.AppendElement(dynamicForm.GetHtmlBuilder());
-            }
-            else
-            {
-                form.AppendElement(htmlForm);
-            }
+       
+            form.AppendElement(htmlForm);
             
+        
             CurrentContext.Response.SendResponse(form.ToString());
             return null;
         }
