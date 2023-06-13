@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 

@@ -1,6 +1,4 @@
-﻿
-
-namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+﻿namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 /// <summary>
 /// Represents the settings menu of a data dictionary.

@@ -21,6 +21,11 @@ public class FormElementRelationship
     [JsonProperty("panel")]
     public FormElementPanel Panel { get; set; }
 
+    public FormElementRelationship()
+    {
+        
+    }
+    
     public FormElementRelationship(bool isParent = false)
     {
         IsParent = isParent;
