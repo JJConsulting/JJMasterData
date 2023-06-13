@@ -10,6 +10,7 @@
         <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData.Xunit</RepositoryUrl>
         <PackageTags>xunit,jjmasterdata</PackageTags>
         <RootNamespace>JJMasterData.Xunit</RootNamespace>
+        <AssemblyName>JJMasterData.Xunit</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

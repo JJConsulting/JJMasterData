@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>JJMasterData.Documentation</RootNamespace>
+    <AssemblyName>JJMasterData.Documentation</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

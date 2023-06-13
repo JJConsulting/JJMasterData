@@ -8,6 +8,7 @@
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<RootNamespace>JJMasterData.Commons</RootNamespace>
+		<AssemblyName>JJMasterData.Commons</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />

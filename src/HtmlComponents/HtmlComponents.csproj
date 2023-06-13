@@ -10,6 +10,7 @@
     <Description>JJMasterData library to render JJMasterData's components.</Description>
     <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
     <RootNamespace>JJMasterData.Core</RootNamespace>
+    <AssemblyName>JJMasterData.Core</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'netstandard2.0'">

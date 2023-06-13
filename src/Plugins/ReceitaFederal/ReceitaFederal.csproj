@@ -4,6 +4,7 @@
         <LangVersion>10</LangVersion>
         <Nullable>disable</Nullable>
         <RootNamespace>JJMasterData.ReceitaFederal</RootNamespace>
+        <AssemblyName>JJMasterData.ReceitaFederal</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Commons\Commons.csproj" />

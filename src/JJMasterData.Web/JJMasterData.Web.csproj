@@ -13,6 +13,7 @@
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <PackageId>JJMasterData.Web</PackageId>
         <RootNamespace>JJMasterData.Web</RootNamespace>
+        <AssemblyName>JJMasterData.Web</AssemblyName>
     </PropertyGroup>
     
     <ItemGroup>

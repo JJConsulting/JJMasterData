@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net4.8</TargetFramework>
     <RootNamespace>JJMasterData.Swagger</RootNamespace>
+    <AssemblyName>JJMasterData.Swagger</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -14,6 +14,7 @@
     <LangVersion>11</LangVersion>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <RootNamespace>JJMasterData.Swagger.AspNetCore</RootNamespace>
+    <AssemblyName>JJMasterData.Swagger.AspNetCore</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

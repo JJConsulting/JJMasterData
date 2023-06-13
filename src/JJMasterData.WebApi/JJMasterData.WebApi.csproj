@@ -8,6 +8,7 @@
     <IsPackable>true</IsPackable>
     <LangVersion>11</LangVersion>
     <RootNamespace>JJMasterData.WebApi</RootNamespace>
+    <AssemblyName>JJMasterData.WebApi</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

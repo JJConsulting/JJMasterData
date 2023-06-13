@@ -10,6 +10,7 @@
         <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <RootNamespace>JJMasterData.MongoDB</RootNamespace>
+        <AssemblyName>JJMasterData.MongoDB</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
