@@ -11,9 +11,8 @@
         <Product>JJMasterData.Web - Saturn Version</Product>
         <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
-        <PackageId>JJMasterData.Web</PackageId>
-        <RootNamespace>JJMasterData.Web</RootNamespace>
         <AssemblyName>JJMasterData.Web</AssemblyName>
+        <RootNamespace>JJMasterData.Web</RootNamespace>
     </PropertyGroup>
     
     <ItemGroup>

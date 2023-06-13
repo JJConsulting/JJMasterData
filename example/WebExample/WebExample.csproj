@@ -15,9 +15,9 @@
     </ItemGroup>
   
     <ItemGroup>
-      <ProjectReference Include="..\..\src\JJMasterData.Web\JJMasterData.Web.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Python\Python.csproj" />
+      <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
   
 </Project>

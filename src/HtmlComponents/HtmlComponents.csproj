@@ -22,6 +22,10 @@
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="PolySharp" Version="1.13.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>
 
@@ -29,6 +33,10 @@
     <ProjectReference Include="..\Commons\Commons.csproj" />
     <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
     <ProjectReference Include="..\DataDictionary\DataDictionary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Http\Abstractions\" />
   </ItemGroup>
   
 </Project>
