@@ -3,30 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Core", "src\JJMasterData.Core\JJMasterData.Core.csproj", "{9D34A26C-47C9-4331-A68E-95D6BD7DD81B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlComponents", "src\HtmlComponents\HtmlComponents.csproj", "{9D34A26C-47C9-4331-A68E-95D6BD7DD81B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Commons", "src\JJMasterData.Commons\JJMasterData.Commons.csproj", "{1E907B0C-F2D3-4293-A621-5A2E8CEBEB16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commons", "src\Commons\Commons.csproj", "{1E907B0C-F2D3-4293-A621-5A2E8CEBEB16}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Documentation", "doc\JJMasterData.Documentation\JJMasterData.Documentation.csproj", "{B564D529-DA46-4713-ACA5-BB7F6B9B32D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documentation", "doc\Documentation\Documentation.csproj", "{B564D529-DA46-4713-ACA5-BB7F6B9B32D9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{59427CF1-D6B7-4779-9E62-4717C5763762}"
 	ProjectSection(SolutionItems) = preProject
 		src\Plugins\Directory.Build.props = src\Plugins\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Hangfire", "src\Plugins\JJMasterData.Hangfire\JJMasterData.Hangfire.csproj", "{3E777E1F-A8C0-4175-9694-FE27E549E814}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hangfire", "src\Plugins\Hangfire\Hangfire.csproj", "{3E777E1F-A8C0-4175-9694-FE27E549E814}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Python", "src\Plugins\JJMasterData.Python\JJMasterData.Python.csproj", "{2D0EDA9F-4441-4A78-BC41-CE2C5F1636AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Python", "src\Plugins\Python\Python.csproj", "{2D0EDA9F-4441-4A78-BC41-CE2C5F1636AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Swagger.AspNetCore", "src\Plugins\JJMasterData.Swagger.AspNetCore\JJMasterData.Swagger.AspNetCore.csproj", "{67156B18-90A7-4302-9AA0-920814E24F1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swagger.AspNetCore", "src\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj", "{67156B18-90A7-4302-9AA0-920814E24F1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Swagger", "src\Plugins\JJMasterData.Swagger\JJMasterData.Swagger.csproj", "{DE91439F-D233-439C-9B10-3261DBA9E760}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swagger", "src\Plugins\Swagger\Swagger.csproj", "{DE91439F-D233-439C-9B10-3261DBA9E760}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Swagger", "Swagger", "{CD6DDE10-3DC3-4D42-BA45-9999E995F39A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{034CBF9B-6FEC-4D5C-A440-133F5310055D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Pdf", "src\Plugins\JJMasterData.Pdf\JJMasterData.Pdf.csproj", "{40C11852-04ED-413B-9FED-C9666D62B0A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pdf", "src\Plugins\Pdf\Pdf.csproj", "{40C11852-04ED-413B-9FED-C9666D62B0A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2A275D42-9681-495E-80B8-D0529680DED7}"
 	ProjectSection(SolutionItems) = preProject
@@ -37,13 +35,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6DF8173F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web", "src\JJMasterData.Web\JJMasterData.Web.csproj", "{BC5877C0-EEE4-4A6B-87E9-52138E2F3CD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Core.Test", "test\JJMasterData.Core.Test\JJMasterData.Core.Test.csproj", "{CAB8385E-033D-4D3B-A7F2-6F024AAB8527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Test", "test\Core.Test\Core.Test.csproj", "{CAB8385E-033D-4D3B-A7F2-6F024AAB8527}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Web.Test", "test\JJMasterData.Web.Test\JJMasterData.Web.Test.csproj", "{85B7C6A1-9901-4CB4-BCE9-D60F9C257737}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Test", "test\Web.Test\Web.Test.csproj", "{85B7C6A1-9901-4CB4-BCE9-D60F9C257737}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Commons.Test", "test\JJMasterData.Commons.Test\JJMasterData.Commons.Test.csproj", "{14C3076E-B624-4F3B-A4A6-D091577937A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commons.Test", "test\Commons.Test\Commons.Test.csproj", "{14C3076E-B624-4F3B-A4A6-D091577937A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.SourceControl", "src\Plugins\JJMasterData.SourceControl\JJMasterData.SourceControl.csproj", "{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceControl", "src\Plugins\SourceControl\SourceControl.csproj", "{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-4493-BAAA-277D13A85DB8}"
 	ProjectSection(SolutionItems) = preProject
@@ -53,22 +51,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{86CDB147-0DAF-
 		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebExample", "example\JJMasterData.WebExample\JJMasterData.WebExample.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebExample", "example\WebExample\WebExample.csproj", "{E3224095-1C9D-4248-BE8E-7ACFB9D34352}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppSettings", "AppSettings", "{BF9BF48F-98C7-465F-B01E-DC839641EA7A}"
 	ProjectSection(SolutionItems) = preProject
 		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.MongoDB", "src\Plugins\JJMasterData.MongoDB\JJMasterData.MongoDB.csproj", "{F3309B09-66B6-41DC-9624-DE50F6600CF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDB", "src\Plugins\MongoDB\MongoDB.csproj", "{F3309B09-66B6-41DC-9624-DE50F6600CF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.JsonSchema", "src\Plugins\JJMasterData.JsonSchema\JJMasterData.JsonSchema.csproj", "{42027A67-DF64-4FCE-A5BE-EA9D187276B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonSchema", "src\Plugins\JsonSchema\JsonSchema.csproj", "{42027A67-DF64-4FCE-A5BE-EA9D187276B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xunit", "Xunit", "{486B5AB6-BCEF-4B86-8541-22D3146C301B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{98258DC9-8941-48AA-A5B8-4266CE09AA59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Xunit", "src\Plugins\JJMasterData.Xunit\JJMasterData.Xunit.csproj", "{8A0BB333-8860-4386-A74C-E3569D869761}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xunit", "src\Plugins\Xunit\Xunit.csproj", "{8A0BB333-8860-4386-A74C-E3569D869761}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Brazil", "Brazil", "{E8FF3A3D-3CA8-419D-8979-878DECA35873}"
 EndProject
@@ -76,19 +74,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xunit", "Xunit", "{70D007E8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Brazil", "Brazil", "{B6033FAA-2851-47E9-908F-8E6650106602}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.ReceitaFederal", "src\Plugins\JJMasterData.ReceitaFederal\JJMasterData.ReceitaFederal.csproj", "{62CAAFCD-1856-417A-A23F-92A332B67236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReceitaFederal", "src\Plugins\ReceitaFederal\ReceitaFederal.csproj", "{62CAAFCD-1856-417A-A23F-92A332B67236}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.Xunit.Test", "src\Plugins\test\JJMasterData.Xunit.Test\JJMasterData.Xunit.Test.csproj", "{819AEDEB-F0DC-47C5-8594-87512C6007FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xunit.Test", "src\Plugins\test\Xunit.Test\Xunit.Test.csproj", "{819AEDEB-F0DC-47C5-8594-87512C6007FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.ReceitaFederal.Test", "src\Plugins\test\JJMasterData.ReceitaFederal.Test\JJMasterData.ReceitaFederal.Test.csproj", "{BE2BB040-D2D8-4485-A5F6-5FCD6022A48D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReceitaFederal.Test", "src\Plugins\test\ReceitaFederal.Test\ReceitaFederal.Test.csproj", "{BE2BB040-D2D8-4485-A5F6-5FCD6022A48D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebApi", "src\JJMasterData.WebApi\JJMasterData.WebApi.csproj", "{27C38469-4501-4334-9A0B-FF5557636C30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JJMasterData.WebApi.Test", "test\JJMasterData.WebApi.Test\JJMasterData.WebApi.Test.csproj", "{13EC3E0B-2540-4210-B816-26F57865891B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Test", "test\WebApi.Test\WebApi.Test.csproj", "{13EC3E0B-2540-4210-B816-26F57865891B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJMasterData.FormElementUpdater", "JJMasterData.FormElementUpdater\JJMasterData.FormElementUpdater.csproj", "{134F1172-0F4D-4629-A1ED-A58A0CC35677}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormElementUpdater", "FormElementUpdater\FormElementUpdater.csproj", "{134F1172-0F4D-4629-A1ED-A58A0CC35677}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConsoleApps", "ConsoleApps", "{8799DF37-58EB-4B95-A558-DD3D5EDD247A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataDictionary", "src\DataDictionary\DataDictionary.csproj", "{96CDD48B-4981-4710-B6A9-F30428FB1A70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -376,6 +376,18 @@ Global
 		{134F1172-0F4D-4629-A1ED-A58A0CC35677}.Release|x64.Build.0 = Release|Any CPU
 		{134F1172-0F4D-4629-A1ED-A58A0CC35677}.Release|x86.ActiveCfg = Release|Any CPU
 		{134F1172-0F4D-4629-A1ED-A58A0CC35677}.Release|x86.Build.0 = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|x64.Build.0 = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Debug|x86.Build.0 = Debug|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|x64.ActiveCfg = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|x64.Build.0 = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|x86.ActiveCfg = Release|Any CPU
+		{96CDD48B-4981-4710-B6A9-F30428FB1A70}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -387,13 +399,11 @@ Global
 		{67156B18-90A7-4302-9AA0-920814E24F1B} = {CD6DDE10-3DC3-4D42-BA45-9999E995F39A}
 		{DE91439F-D233-439C-9B10-3261DBA9E760} = {CD6DDE10-3DC3-4D42-BA45-9999E995F39A}
 		{CD6DDE10-3DC3-4D42-BA45-9999E995F39A} = {59427CF1-D6B7-4779-9E62-4717C5763762}
-		{034CBF9B-6FEC-4D5C-A440-133F5310055D} = {59427CF1-D6B7-4779-9E62-4717C5763762}
 		{40C11852-04ED-413B-9FED-C9666D62B0A2} = {59427CF1-D6B7-4779-9E62-4717C5763762}
 		{CAB8385E-033D-4D3B-A7F2-6F024AAB8527} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{85B7C6A1-9901-4CB4-BCE9-D60F9C257737} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{14C3076E-B624-4F3B-A4A6-D091577937A1} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{F3309B09-66B6-41DC-9624-DE50F6600CF1} = {59427CF1-D6B7-4779-9E62-4717C5763762}
-		{42027A67-DF64-4FCE-A5BE-EA9D187276B9} = {034CBF9B-6FEC-4D5C-A440-133F5310055D}
 		{486B5AB6-BCEF-4B86-8541-22D3146C301B} = {59427CF1-D6B7-4779-9E62-4717C5763762}
 		{98258DC9-8941-48AA-A5B8-4266CE09AA59} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{8A0BB333-8860-4386-A74C-E3569D869761} = {486B5AB6-BCEF-4B86-8541-22D3146C301B}
@@ -406,6 +416,7 @@ Global
 		{13EC3E0B-2540-4210-B816-26F57865891B} = {6DF8173F-DE7A-4110-B192-856C0CD48D37}
 		{134F1172-0F4D-4629-A1ED-A58A0CC35677} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
 		{1C089FF1-D60B-407A-84C4-F3AFCC0EF0AA} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
+		{42027A67-DF64-4FCE-A5BE-EA9D187276B9} = {8799DF37-58EB-4B95-A558-DD3D5EDD247A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCB34875-DB5E-4444-99BA-3C362F8EF1BB}

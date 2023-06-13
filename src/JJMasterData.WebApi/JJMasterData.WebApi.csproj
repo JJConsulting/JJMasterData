@@ -7,6 +7,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <LangVersion>11</LangVersion>
+    <RootNamespace>JJMasterData.WebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JJMasterData.Core\JJMasterData.Core.csproj" />
-    <ProjectReference Include="..\Plugins\JJMasterData.Swagger.AspNetCore\JJMasterData.Swagger.AspNetCore.csproj" />
+    <ProjectReference Include="..\HtmlComponents\HtmlComponents.csproj" />
+    <ProjectReference Include="..\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="jjmasterdata.json" /></VisualStudio></ProjectExtensions>

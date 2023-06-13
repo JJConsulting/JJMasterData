@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>11</LangVersion>
+        <Nullable>enable</Nullable>
+        <Description>JJMasterData MongoDB support.</Description>
+        <PackageIcon>JJMasterData.png</PackageIcon>
+        <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RootNamespace>JJMasterData.MongoDB</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\HtmlComponents\HtmlComponents.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    </ItemGroup>
+</Project>

@@ -8,10 +8,11 @@
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <AssemblyName>JJMasterData.Web</AssemblyName>
         <Product>JJMasterData.Web - Saturn Version</Product>
         <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <PackageId>JJMasterData.Web</PackageId>
+        <RootNamespace>JJMasterData.Web</RootNamespace>
     </PropertyGroup>
     
     <ItemGroup>
@@ -25,7 +26,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\JJMasterData.Core\JJMasterData.Core.csproj" />
+        <ProjectReference Include="..\HtmlComponents\HtmlComponents.csproj" />
     </ItemGroup>
     
     <ItemGroup>

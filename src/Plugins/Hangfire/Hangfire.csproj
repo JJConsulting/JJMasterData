@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>JJMasterData Hangfire support to background tasks, like exportation and importation.</Description>
+		<PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
+		<AssemblyVersion>1.0.2</AssemblyVersion>
+		<FileVersion>1.0.2</FileVersion>
+		<Version>1.0.2</Version>
+		<PackageTags>hangfire,jjmasterdata</PackageTags>
+		<RootNamespace>JJMasterData.Hangfire</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Hangfire.Console" Version="1.4.2" />
+		<PackageReference Include="Hangfire.Core" Version="1.7.30" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\..\Commons\Commons.csproj" />
+		<ProjectReference Include="..\..\HtmlComponents\HtmlComponents.csproj" />
+	</ItemGroup>
+
+</Project>

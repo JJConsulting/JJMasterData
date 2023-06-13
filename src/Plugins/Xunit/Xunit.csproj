@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>10</LangVersion>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Description>JJMasterData xUnit plugin.</Description>
+        <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData.Xunit</RepositoryUrl>
+        <PackageTags>xunit,jjmasterdata</PackageTags>
+        <RootNamespace>JJMasterData.Xunit</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoFixture" Version="4.17.0" />
+      <PackageReference Include="xunit.assert" Version="2.4.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Commons\Commons.csproj" />
+      <ProjectReference Include="..\..\HtmlComponents\HtmlComponents.csproj" />
+    </ItemGroup>
+</Project>
