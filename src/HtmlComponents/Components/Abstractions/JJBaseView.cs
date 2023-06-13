@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -29,7 +30,7 @@ public abstract class JJBaseView
         set => _userValues = value;
     }
 
-    internal JJHttpContext CurrentContext => JJHttpContext.GetInstance();
+    internal IHttpContext CurrentContext => JJHttpContext.GetInstance();
 
     public bool Visible { get; set; } = true;
 

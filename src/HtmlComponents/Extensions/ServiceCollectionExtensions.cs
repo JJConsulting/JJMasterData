@@ -12,6 +12,8 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Extensions;
 
@@ -51,6 +53,15 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(this IServiceCollection services)
     {
+        
+#if NET
+        services.AddHttpContextAccessor();
+#endif
+        services.AddScoped<IHttpSession, JJSession>();
+        services.AddScoped<IHttpRequest, JJRequest>();
+        services.AddScoped<IHttpResponse, JJResponse>();
+        services.AddScoped<IHttpContext, JJHttpContext>();
+        
         services.AddTransient<IFormEventResolver,FormEventResolver>();
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         

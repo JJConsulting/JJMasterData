@@ -1,17 +1,21 @@
-﻿#if NET || NETSTANDARD
+﻿#if NETSTANDARD || NETCOREAPP
 using Microsoft.AspNetCore.Http;
 #endif
-
-// ReSharper disable RedundantNameQualifier
+using System.Web;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Http;
 
-public class JJResponse
+public class JJResponse : IHttpResponse
 {
-    private static System.Web.HttpContext SystemWebCurrent => JJHttpContext.SystemWebCurrent;
-
-#if NETCOREAPP || NETSTANDARD
-    private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
+    
+#if NET || NETSTANDARD
+    private Microsoft.AspNetCore.Http.HttpContext HttpContext { get; }
+    
+    public JJResponse(IHttpContextAccessor httpContextAccessor)
+    {
+        HttpContext = httpContextAccessor.HttpContext;
+    }
 #endif
     
 
@@ -22,49 +26,49 @@ public class JJResponse
     /// <param name="contentType">Optional. Usually application/json</param>
     public void SendResponse(string data, string contentType = null)
     {
-        SystemWebCurrent.Response.ClearContent();
-        #if NETFRAMEWORK
+        System.Web.HttpContext.Current!.Response.ClearContent();
+#if NETFRAMEWORK
         if (contentType != null)
         {
-            SystemWebCurrent.Response.ContentType = contentType;
+            HttpContext.Current.Response.ContentType = contentType;
         }
-        #else
-        if (!AspNetCoreCurrent.Response.HasStarted && contentType != null)
+#else
+        if (!HttpContext.Response.HasStarted && contentType != null)
         {
-            AspNetCoreCurrent.Response.ContentType = contentType;
+            HttpContext.Response.ContentType = contentType;
         }
-        #endif
-        SystemWebCurrent.Response.Write(data);
-        SystemWebCurrent.Response.End();
+#endif
+        System.Web.HttpContext.Current!.Response.Write(data);
+        System.Web.HttpContext.Current!.Response.End();
     }
 
     public void ClearResponse()
     {
 #if NETFRAMEWORK
-        SystemWebCurrent.Response.Clear();
-        SystemWebCurrent.Response.ClearHeaders();
-        SystemWebCurrent.Response.ClearContent();
+        HttpContext.Current.Response.Clear();
+        HttpContext.Current.Response.ClearHeaders();
+        HttpContext.Current.Response.ClearContent();
 #else
-        AspNetCoreCurrent.Response.Clear();
-        AspNetCoreCurrent.Response.Headers.Clear();
+        HttpContext.Response.Clear();
+        HttpContext.Response.Headers.Clear();
 #endif
     }
 
     public void AddResponseHeader(string key, string value)
     {
 #if NETFRAMEWORK
-        SystemWebCurrent.Response.Headers.Add(key, value);
+        HttpContext.Current.Response.Headers.Add(key, value);
 #else
-        if(!AspNetCoreCurrent.Response.HasStarted)
-            AspNetCoreCurrent.Response.Headers.Add(key, value);
+        if(!HttpContext.Response.HasStarted)
+            HttpContext.Response.Headers.Add(key, value);
 #endif
     }
 
 
 #if NETFRAMEWORK
-    public void Redirect(string url) => SystemWebCurrent.Response.Redirect(url);
+    public void Redirect(string url) => HttpContext.Current.Response.Redirect(url);
 #else
-    public void Redirect(string url) => AspNetCoreCurrent.Response.Redirect(url);
+    public void Redirect(string url) => HttpContext.Response.Redirect(url);
 #endif
 
 }

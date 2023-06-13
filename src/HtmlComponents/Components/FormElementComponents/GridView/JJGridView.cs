@@ -257,7 +257,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentOrder != null) return _currentOrder;
-            if (!CurrentContext.IsPostBack)
+            if (!CurrentContext.IsPost)
             {
                 if (MaintainValuesOnLoad)
                 {
@@ -300,7 +300,7 @@ public class JJGridView : JJBaseView
                 return _currentPage;
             }
 
-            if (CurrentContext.IsPostBack)
+            if (CurrentContext.IsPost)
             {
                 int currentPage = 1;
                 string tablePageId = "current_tablepage_" + Name;
@@ -369,7 +369,7 @@ public class JJGridView : JJBaseView
 
             if (MaintainValuesOnLoad && FormElement != null)
             {
-                CurrentSettings = JJSession.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
+                CurrentSettings = JJHttpContext.GetInstance().Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
             }
 
             if (_currentSettings == null)
@@ -383,7 +383,7 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad && FormElement != null)
-                JJSession.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
+                JJHttpContext.GetInstance().Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
 
             _currentSettings = value;
         }
@@ -419,7 +419,7 @@ public class JJGridView : JJBaseView
             if (_currentExportConfig != null) return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (CurrentContext.IsPostBack)
+            if (CurrentContext.IsPost)
             {
                 _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
             }

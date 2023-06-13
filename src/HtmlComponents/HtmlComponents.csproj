@@ -34,9 +34,5 @@
     <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
     <ProjectReference Include="..\DataDictionary\DataDictionary.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Http\Abstractions\" />
-  </ItemGroup>
   
 </Project>

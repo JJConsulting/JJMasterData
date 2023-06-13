@@ -1,26 +1,28 @@
-﻿// ReSharper disable RedundantUsingDirective
-#if NETFRAMEWORK
+﻿#if NET || NETSTANDARD
+using Microsoft.AspNetCore.Http;
+using JJMasterData.Core.Extensions;
+#elif NETFRAMEWORK
 using System.Web;
 #endif
-using JJMasterData.Core.Extensions;
 
+using JJMasterData.Core.Web.Http.Abstractions;
 
-#if NET || NETSTANDARD
-using Microsoft.AspNetCore.Http;
-#endif
-// ReSharper disable RedundantNameQualifier
 
 namespace JJMasterData.Core.Web.Http;
 
 /// <summary>
 /// Session helper class.
 /// </summary>
-public class JJSession
+public class JJSession : IHttpSession
 {
-#if NETFRAMEWORK
-    private static System.Web.HttpContext SystemWebCurrent => JJHttpContext.SystemWebCurrent;
-#else
-    private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
+    
+#if NET || NETSTANDARD
+    private HttpContext HttpContext { get; }
+    
+    public JJSession(IHttpContextAccessor httpContextAccessor)
+    {
+        HttpContext = httpContextAccessor.HttpContext;
+    }
 #endif
 
     public string this[string key]
@@ -28,39 +30,37 @@ public class JJSession
         get
         {
 #if NETFRAMEWORK
-            object obj = SystemWebCurrent.Session[key];
-            return obj == null ? null : SystemWebCurrent.Session[key].ToString();
-
+            return HttpContext.Current.Session[key]?.ToString();
 #else
-            return AspNetCoreCurrent.Session.GetString(key);
+            return HttpContext.Session.GetString(key);
 #endif
         }
         set
         {
 #if NETFRAMEWORK
-            SystemWebCurrent.Session[key] = value;
+            HttpContext.Current.Session[key] = value;
 #else
-            AspNetCoreCurrent.Session.SetString(key, value ?? string.Empty);
+            HttpContext.Session.SetString(key, value ?? string.Empty);
 #endif
         }
     }
 
-    internal static void SetSessionValue(string key, object value)
+    public void SetSessionValue(string key, object value)
     {
 #if NETFRAMEWORK
-        SystemWebCurrent.Session[key] = value;
+        HttpContext.Current.Session[key] = value;
 #else
-        AspNetCoreCurrent?.Session.SetObject(key, value);
+        HttpContext?.Session.SetObject(key, value);
 #endif
     }
 
 
-    internal static T GetSessionValue<T>(string key)
+    public T GetSessionValue<T>(string key)
     {
 #if NETFRAMEWORK
-        return (T)SystemWebCurrent.Session[key] ?? default;
+        return (T)HttpContext.Current.Session[key] ?? default;
 #else
-        return AspNetCoreCurrent.Session.GetObject<T>(key);
+        return HttpContext.Session.GetObject<T>(key);
 #endif
     }
 }

@@ -65,7 +65,7 @@ internal static class GridViewFactory
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad && grid.FormElement != null)
-                settings = JJSession.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = JJHttpContext.GetInstance().Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)
             {

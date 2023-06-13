@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -21,7 +22,7 @@ internal class GridFilter
     private IDictionary _currentFilter;
     private JJGridView GridView { get; set; }
 
-    private JJHttpContext CurrentContext => GridView.CurrentContext;
+    private IHttpContext CurrentContext => GridView.CurrentContext;
 
     public GridFilter(JJGridView grid)
     {
@@ -52,14 +53,14 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        Hashtable sesssionFilter = JJSession.GetSessionValue<Hashtable>("jjcurrentfilter_" + GridView.Name);
+        Hashtable sesssionFilter = JJHttpContext.GetInstance().Session.GetSessionValue<Hashtable>("jjcurrentfilter_" + GridView.Name);
         if (sesssionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sesssionFilter;
             return _currentFilter;
         }
 
-        if (sesssionFilter != null && (CurrentContext.IsPostBack || IsAjaxPost()))
+        if (sesssionFilter != null && (CurrentContext.IsPost || IsAjaxPost()))
         {
             _currentFilter = sesssionFilter;
             return _currentFilter;
@@ -107,7 +108,7 @@ internal class GridFilter
             _currentFilter = formManager.MergeWithDefaultValues(values, PageState.List);
         }
         
-        JJSession.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
+        JJHttpContext.GetInstance().Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
     
     public HtmlBuilder GetFilterHtml()

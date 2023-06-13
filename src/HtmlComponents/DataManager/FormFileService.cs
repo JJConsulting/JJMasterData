@@ -43,8 +43,8 @@ internal class FormFileService
 
     public List<FormFileInfo> MemoryFiles
     {
-        get => JJSession.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => JJSession.SetSessionValue(MemoryFilesSessionName, value);
+        get => JJHttpContext.GetInstance().Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
+        set => JJHttpContext.GetInstance().Session.SetSessionValue(MemoryFilesSessionName, value);
     }
 
     public FormFileService(string memoryFilesSessionName)

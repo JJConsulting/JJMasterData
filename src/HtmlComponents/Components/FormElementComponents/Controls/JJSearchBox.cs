@@ -57,7 +57,7 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && _text == null && CurrentContext.IsPost)
             {
                 _text = CurrentContext.Request[Name];
             }
@@ -136,7 +136,7 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPostBack)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
             {
                 _selectedValue = CurrentContext.Request[Name];
             }

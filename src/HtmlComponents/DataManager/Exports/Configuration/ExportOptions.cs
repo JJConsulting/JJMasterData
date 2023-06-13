@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exports.Configuration;
 
@@ -28,7 +29,7 @@ public class ExportOptions
         Delimiter = ";";
     }
 
-    internal static ExportOptions LoadFromForm(JJHttpContext currentContext, string objname)
+    internal static ExportOptions LoadFromForm(IHttpContext currentContext, string objname)
     {
         var expConfig = new ExportOptions();
         if (currentContext.Request[objname + FileName] != null)

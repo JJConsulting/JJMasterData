@@ -9,6 +9,7 @@ using JJMasterData.Core.Web.Http;
 using System;
 using System.Collections;
 using System.Globalization;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -18,7 +19,7 @@ internal class FormValues
 {
 
     private FormElement FormElement => FieldManager.FormElement;
-    private JJHttpContext CurrentContext => JJHttpContext.GetInstance();
+    private IHttpContext CurrentContext => JJHttpContext.GetInstance();
 
     public FieldManager FieldManager { get; private set; }
 
@@ -90,7 +91,7 @@ internal class FormValues
         IDictionary newValues = new Hashtable();
         DataHelper.CopyIntoHash(ref newValues, values, true);
 
-        if (CurrentContext.IsPostBack && autoReloadFormFields)
+        if (CurrentContext.IsPost && autoReloadFormFields)
         {
             var formValues = new FormValues(FieldManager);
             var requestedValues = formValues.RequestFormValues(state, prefix);
@@ -98,7 +99,7 @@ internal class FormValues
         }
 
         var formManager = new FormManager(FormElement, FieldManager.ExpressionManager);
-        return formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPostBack);
+        return formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPost);
     }
 
     public IDictionary? GetDatabaseValuesFromPk(FormElement element)

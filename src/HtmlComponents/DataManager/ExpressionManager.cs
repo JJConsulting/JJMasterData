@@ -13,6 +13,7 @@ using JJMasterData.Commons.Protheus;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -20,10 +21,10 @@ public class ExpressionManager
 {
     #region "Properties"
 
-    private JJHttpContext _currentContext;
+    private IHttpContext _currentContext;
     private IEntityRepository _entityRepository;
 
-    internal JJHttpContext CurrentContext
+    internal IHttpContext CurrentContext
     {
         get => _currentContext ??= JJHttpContext.GetInstance();
         set => _currentContext = value;

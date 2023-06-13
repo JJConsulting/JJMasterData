@@ -1,27 +1,24 @@
-﻿// ReSharper disable RedundantUsingDirective
-#if NETFRAMEWORK
-using System.Web;
-#endif
-
-#if NET || NETSTANDARD
-using Microsoft.AspNetCore.Http;
-#endif
+﻿using JJMasterData.Core.Web.Http.Abstractions;
 
 #if NET || NETSTANDARD
 using Microsoft.AspNetCore.Http.Extensions;
 #endif
-// ReSharper disable RedundantNameQualifier
+
 namespace JJMasterData.Core.Web.Http;
 
 /// <summary>
 /// Http Request helper class.
 /// </summary>
-public class JJRequest
+public class JJRequest : IHttpRequest
 {
-#if NETFRAMEWORK
-    private static System.Web.HttpContext SystemWebCurrent => JJHttpContext.SystemWebCurrent;
-#else
-    private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
+
+#if NET || NETSTANDARD
+    private Microsoft.AspNetCore.Http.HttpContext HttpContext { get; }
+    
+    public JJRequest(Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+    {
+        HttpContext = httpContextAccessor.HttpContext;
+    }
 #endif
 
     public string UserHostAddress
@@ -29,9 +26,9 @@ public class JJRequest
         get
         {
 #if NETFRAMEWORK
-            return SystemWebCurrent.Request.UserHostAddress;
+            return System.Web.HttpContext.Current.Request.UserHostAddress;
 #else
-            return AspNetCoreCurrent.Connection.RemoteIpAddress?.ToString();
+            return HttpContext.Connection.RemoteIpAddress?.ToString();
 #endif
         }
 
@@ -43,27 +40,51 @@ public class JJRequest
         get
         {
 #if NETFRAMEWORK
-            return SystemWebCurrent.Request.HttpMethod;
+            return System.Web.HttpContext.Current.Request.HttpMethod;
 #else
-            return AspNetCoreCurrent.Request.Method;
+            return HttpContext.Request.Method;
 #endif
         }
 
     }
 
-#if NETFRAMEWORK
-    public HttpPostedFile GetFile(string file)
+    public string PathBase
     {
-        return SystemWebCurrent.Request.Files[file];
+        get
+        {
+#if NETFRAMEWORK
+        return "";
+#else
+            return HttpContext.Request.PathBase;
+#endif
+        }
+    }
+    public string ApplicationPath
+    {
+
+        get
+        {
+#if NETFRAMEWORK
+            return System.Web.HttpContext.Current.Request.ApplicationPath;
+#else
+            return HttpContext.Request.PathBase;
+#endif
+        }
+
+    }
+#if NETFRAMEWORK
+    public System.Web.HttpPostedFile GetFile(string file)
+    {
+        return System.Web.HttpContext.Current.Request.Files[file];
     }
 #else
-    public IFormFile GetFile(string file) => AspNetCoreCurrent.Request.Form.Files[file];
+    public Microsoft.AspNetCore.Http.IFormFile GetFile(string file) => HttpContext.Request.Form.Files[file];
 #endif
 
     public object GetUnvalidated(string key)
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent.Request.Unvalidated[key];
+        return System.Web.HttpContext.Current.Request.Unvalidated[key];
 #else
         return GetValue(key);
 #endif
@@ -74,39 +95,39 @@ public class JJRequest
         get
         {
 #if NETFRAMEWORK
-            return SystemWebCurrent.Request.UserAgent;
+            return System.Web.HttpContext.Current.Request.UserAgent;
 #else
 
-            return AspNetCoreCurrent.Request.Headers["User-Agent"];
+            return HttpContext.Request.Headers["User-Agent"];
 #endif
         }
     }
 
 
 #if NETFRAMEWORK
-    public string AbsoluteUri => SystemWebCurrent.Request.Url.AbsoluteUri;
+    public string AbsoluteUri => System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
 #else
-    public string AbsoluteUri => AspNetCoreCurrent.Request.GetDisplayUrl();
+    public string AbsoluteUri => HttpContext.Request.GetDisplayUrl();
 #endif
 
 
     public string this[string key] => GetValue(key);
 
 
-    private string GetValue(string key)
+    public string GetValue(string key)
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent.Request[key];
+        return System.Web.HttpContext.Current.Request[key];
 #else
 
-        if (AspNetCoreCurrent.Request.Query.ContainsKey(key))
+        if (HttpContext.Request.Query.ContainsKey(key))
         {
-            return AspNetCoreCurrent.Request.Query[key];
+            return HttpContext.Request.Query[key];
         }
 
-        if (AspNetCoreCurrent.Request.HasFormContentType)
+        if (HttpContext.Request.HasFormContentType)
         {
-            return AspNetCoreCurrent.Request.Form[key];
+            return HttpContext.Request.Form[key];
         }
 
         return null;
@@ -116,9 +137,9 @@ public class JJRequest
     public string QueryString(string key)
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent.Request.QueryString[key];
+        return System.Web.HttpContext.Current.Request.QueryString[key];
 #else
-        return AspNetCoreCurrent.Request.Query[key];
+        return HttpContext.Request.Query[key];
 #endif
     }
 
@@ -126,10 +147,10 @@ public class JJRequest
     public string Form(string key)
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent.Request.Form[key];
+        return System.Web.HttpContext.Current.Request.Form[key];
 #else
-        if (AspNetCoreCurrent.Request.HasFormContentType)
-            return AspNetCoreCurrent.Request.Form[key];
+        if (HttpContext.Request.HasFormContentType)
+            return HttpContext.Request.Form[key];
 
         return null;
 #endif
