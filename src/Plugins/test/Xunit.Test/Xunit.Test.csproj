@@ -25,7 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Commons\Commons.csproj" />
-      <ProjectReference Include="..\..\..\HtmlComponents\HtmlComponents.csproj" />
+      <ProjectReference Include="..\..\..\Core\Core.csproj" />
       <ProjectReference Include="..\..\Xunit\Xunit.csproj" />
     </ItemGroup>
 

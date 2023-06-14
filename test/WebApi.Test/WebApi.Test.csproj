@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\JJMasterData.WebApi\JJMasterData.WebApi.csproj" />
+      <ProjectReference Include="..\..\src\WebApi\WebApi.csproj" />
     </ItemGroup>
 
 </Project>
