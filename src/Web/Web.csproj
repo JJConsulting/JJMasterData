@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <OutputType>Library</OutputType>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Product>JJMasterData.Web - Saturn Version</Product>
+        <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
+        <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <AssemblyName>JJMasterData.Web</AssemblyName>
+        <RootNamespace>JJMasterData.Web</RootNamespace>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="1.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <EmbeddedResource Include="wwwroot\**\*" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <EmbeddedResource Include="Scripts\**\*.ts" />
+    </ItemGroup>
+    
+	<ItemGroup>
+      <Content Update="Scripts\tsconfig.json" Pack="false">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+        <Content Update="package.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+        <Content Update="package-lock.json" Pack="false">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>
