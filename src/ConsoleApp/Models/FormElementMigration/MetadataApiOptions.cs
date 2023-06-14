@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 
-namespace JJMasterData.FormElementUpdater.Models;
+namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 
 [DataContract]
 public class MetadataApiOptions

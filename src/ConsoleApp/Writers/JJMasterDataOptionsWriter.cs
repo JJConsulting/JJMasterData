@@ -1,11 +1,11 @@
 using JJMasterData.Commons.Options;
 using Newtonsoft.Json.Schema;
 
-namespace JJMasterData.JsonSchema.Writers;
+namespace JJMasterData.ConsoleApp.Writers;
 
 public class JJMasterDataOptionsWriter : BaseWriter
 {
-    public override async Task WriteAsync()
+    public override void Write()
     {
         var schema = new JSchema
         {
@@ -17,6 +17,6 @@ public class JJMasterDataOptionsWriter : BaseWriter
 
         schema.Properties.Add(jjmasterdata);
 
-        await WriteSchemaAsync("JJMasterDataOptions", schema);
+        WriteSchema("JJMasterDataOptions", schema);
     }
 }

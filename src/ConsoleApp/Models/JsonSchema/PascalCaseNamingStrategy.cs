@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace JJMasterData.JsonSchema.Models;
+namespace JJMasterData.ConsoleApp.Models.JsonSchema;
 
 /// <summary>
 /// Uses Pascal case naming strategy, first letter is capitalized, and first letter

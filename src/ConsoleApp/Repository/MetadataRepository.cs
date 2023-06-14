@@ -6,16 +6,17 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.ConsoleApp.Models;
+using JJMasterData.ConsoleApp.Models.FormElementMigration;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.FormElementUpdater.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace JJMasterData.FormElementUpdater.Repository;
+namespace JJMasterData.ConsoleApp.Repository;
 
 public class MetadataRepository
 {

@@ -4,7 +4,7 @@ using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using Newtonsoft.Json;
 
-namespace JJMasterData.FormElementUpdater.Models;
+namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 
 
 public class GridActions

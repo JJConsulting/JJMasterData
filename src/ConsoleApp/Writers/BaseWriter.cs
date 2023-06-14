@@ -1,10 +1,9 @@
-using JJMasterData.JsonSchema.Models;
-using Newtonsoft.Json;
+using JJMasterData.ConsoleApp.Models.JsonSchema;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 
-namespace JJMasterData.JsonSchema.Writers;
+namespace JJMasterData.ConsoleApp.Writers;
 
 public abstract class BaseWriter 
 {
@@ -23,7 +22,7 @@ public abstract class BaseWriter
         Generator.GenerationProviders.Add(new StringEnumGenerationProvider());
     }
 
-    public abstract Task WriteAsync();
+    public abstract void Write();
     
     private static string GetFilePath(string? fileName)
     {
@@ -35,8 +34,8 @@ public abstract class BaseWriter
         return path;
     }
 
-    protected static async Task WriteSchemaAsync(string fileName, JSchema schema)
+    protected static void WriteSchema(string fileName, JSchema schema)
     {
-        await File.WriteAllTextAsync(GetFilePath(fileName), schema.ToString());
+        File.WriteAllText(GetFilePath(fileName), schema.ToString());
     }
 }

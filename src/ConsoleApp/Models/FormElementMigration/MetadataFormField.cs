@@ -1,12 +1,11 @@
 ﻿#nullable disable
 
 using System.Collections;
-using System.Runtime.Serialization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.FormElementUpdater.Models;
+namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 
 
 public class MetadataFormField
