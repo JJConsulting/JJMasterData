@@ -27,7 +27,7 @@ public static class Commands
     
     public static Command GetImportCommand(Action handler)
     {
-        var command = new Command("import", "Normally used at CI pipelines, import ");
+        var command = new Command("import", "Normally used at CI pipelines, import data dictionaries from a folder and store at the database.");
         command.SetHandler(handler);
         return command;
     }
