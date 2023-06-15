@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -9,15 +10,22 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Options;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
 public abstract class BaseProvider
 {
-    internal DataAccess DataAccess { get; private set; }
-    public BaseProvider(DataAccess dataAccess)
+    public abstract DataAccessProvider DataAccessProvider { get; }
+    internal DataAccess DataAccess { get; set; }
+    protected JJMasterDataCommonsOptions Options { get; }
+
+
+    public BaseProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options)
     {
         DataAccess = dataAccess;
+        Options = options;
     }
     public abstract string VariablePrefix { get; }
     public abstract string GetCreateTableScript(Element element);

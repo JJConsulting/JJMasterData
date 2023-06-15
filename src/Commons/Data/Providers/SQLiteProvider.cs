@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Options;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -13,18 +15,19 @@ public class ProviderSQLite : BaseProvider
 {
     private const string Tab = "\t";
     public override string VariablePrefix => "@";
+    public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqLite;
 
-    public ProviderSQLite(DataAccess dataAccess) : base(dataAccess)
+    public ProviderSQLite(DataAccess dataAccess, JJMasterDataCommonsOptions options) : base(dataAccess, options)
     {
     }
 
     public override string GetCreateTableScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new ArgumentNullException(nameof(Element.Fields));
+            throw new ArgumentNullException(nameof(element.Fields));
 
         StringBuilder sSql = new StringBuilder();
 

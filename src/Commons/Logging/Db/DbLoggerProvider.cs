@@ -13,12 +13,10 @@ public class DbLoggerProvider : ILoggerProvider
     internal IEntityRepository Repository { get; }
     internal bool TableExists { get; set; }
  
-    public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IServiceProvider serviceProvider)
+    public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IEntityRepository entityRepository)
     {
         Options = options;
-
-        using var scope = serviceProvider.CreateScope();
-        Repository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
+        Repository = entityRepository;
     }
  
     /// <summary>

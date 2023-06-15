@@ -4,6 +4,7 @@ using System;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -14,6 +15,7 @@ using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Extensions;
@@ -66,18 +68,21 @@ public static class JJServiceBuilderExtensions
         builder.Services.Replace(ServiceDescriptor.Scoped<IDataDictionaryRepository, SqlDataDictionaryRepository>());
         return builder;
     }
-    
+
     public static JJServiceBuilder WithDatabaseDataDictionary(this JJServiceBuilder builder, string connectionString, DataAccessProvider provider)
     {
-        builder.Services.Replace(ServiceDescriptor.Scoped(serviceProvider =>
+        return WithDataDictionaryRepository(builder,serviceProvider =>
         {
-            var entityRepository = new EntityRepository(connectionString, provider);
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
+
+            var entityRepository = new EntityRepository(configuration.GetConnectionString(connectionString),provider, options);
+            
             return new SqlDataDictionaryRepository(entityRepository,
                 serviceProvider.GetRequiredService<IConfiguration>());
-        }));
-        return builder;
+        });
     }
-   
+    
     public static JJServiceBuilder WithFileSystemDataDictionary(this JJServiceBuilder builder)
     {
         builder.Services.AddOptions<FileSystemDataDictionaryOptions>().BindConfiguration("JJMasterData:DataDictionary");

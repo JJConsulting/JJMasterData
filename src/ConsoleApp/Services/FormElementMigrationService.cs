@@ -12,6 +12,7 @@ public class FormElementMigrationService
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private MetadataRepository MetadataRepository { get; }
+    private DataAccess DataAccess { get; }
     private string TableName { get; }
     public FormElementMigrationService(
         IEntityRepository entityRepository, 
@@ -23,6 +24,7 @@ public class FormElementMigrationService
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         MetadataRepository = metadataRepository;
+        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
         TableName = configuration.GetJJMasterData().GetValue<string>("DataDictionaryTableName")!;
     }
     
@@ -38,7 +40,7 @@ public class FormElementMigrationService
             Console.WriteLine(@"✅ " + formElement.Name);
         }
 
-        new DataAccess().SetCommand($"delete from {TableName} where type <> 'F'");
+        DataAccess.SetCommand($"delete from {TableName} where type <> 'F'");
 
         Console.WriteLine($@"Process started: {start}");
         Console.WriteLine($@"Process finished: {DateTime.Now}");

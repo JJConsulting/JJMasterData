@@ -37,7 +37,7 @@ public class OptionsController : DataDictionaryController
     {
         if (ModelState.IsValid)
         {
-            var result = await OptionsService.GetConnectionResultAsync(model.ConnectionString.ToString());
+            var result = await Service.GetConnectionResultAsync(model.ConnectionString.ToString());
             model.IsConnectionSuccessful = result.IsConnectionSuccessful;
 
             if (!result.IsConnectionSuccessful.GetValueOrDefault())

@@ -17,18 +17,22 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
     private readonly IEntityRepository _entityRepository;
+    private readonly JJMasterDataCommonsOptions _options;
     public ElementService(IValidationDictionary validationDictionary, 
+                          IOptions<JJMasterDataCommonsOptions> commonsOptions,
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
         _entityRepository = entityRepository;
+        _options = commonsOptions.Value;
     }
 
     #region Exec Scripts GET/SET/TABLE
@@ -92,8 +96,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
-                CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
-                CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
+                CustomProcNameGet = _options.GetReadProcedureName(tableName),
+                CustomProcNameSet = _options.GetWriteProcedureName(tableName)
             };
         }
 

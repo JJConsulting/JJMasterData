@@ -7,12 +7,14 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.DI;
 public class JJServiceBuilder
@@ -58,12 +60,18 @@ public class JJServiceBuilder
     
     public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
-        return WithEntityRepository(_ => new EntityRepository(connectionString, provider));
+        return WithEntityRepository(serviceProvider =>
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
+
+            return new EntityRepository(configuration.GetConnectionString(connectionString),provider, options);
+        });
     }
     
     public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
-        Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
+        Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;
     }
 }

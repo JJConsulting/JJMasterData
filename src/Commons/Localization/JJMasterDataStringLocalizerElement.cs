@@ -5,14 +5,14 @@ namespace JJMasterData.Commons.Localization;
 
 public static class JJMasterDataStringLocalizerElement
 {
-    public static Element GetElement(string tableName)
+    public static Element GetElement(JJMasterDataCommonsOptions options)
     {
         var element = new Element
         {
-            Name = tableName,
-            TableName = tableName,
-            CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
-            CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName),
+            Name = options.ResourcesTableName,
+            TableName = options.ResourcesTableName,
+            CustomProcNameGet = options.GetReadProcedureName(options.ResourcesTableName),
+            CustomProcNameSet = options.GetWriteProcedureName(options.ResourcesTableName),
             Info = "Resources"
         };
 

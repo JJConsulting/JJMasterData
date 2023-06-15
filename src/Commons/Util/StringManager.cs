@@ -8,6 +8,34 @@ namespace JJMasterData.Commons.Util;
 
 public static class StringManager
 {
+    public static bool ParseBool(object? value)
+    {
+        if (value == null)
+            return false;
+
+        string stringValue = value.ToString();
+        
+        if (string.IsNullOrWhiteSpace(stringValue))
+        {
+            return false;
+        }
+        
+        stringValue = stringValue.Replace("val:", "").Trim();
+
+        stringValue = stringValue.ToLower();
+        
+        return stringValue switch
+        {
+            "true" => true,
+            "t" => true,
+            "1" => true,
+            "yes" => true,
+            "y" => true,
+            "s" => true,
+            _ => false,
+        };
+    }
+    
     /// <summary>
     /// Clear the text, preventing SQL injection
     /// </summary>

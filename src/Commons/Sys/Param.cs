@@ -6,6 +6,7 @@ using JJMasterData.Commons.Data;
 
 namespace JJMasterData.Commons.Sys;
 
+#if NET48
 /// <summary>
 /// Parametros e configurações armazenadas no banco de dados
 /// </summary>
@@ -237,3 +238,4 @@ public class Param
         Dao.SetCommand(script.ToString());
     }
 }
+#endif

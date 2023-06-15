@@ -8,7 +8,13 @@ using System.Collections;
 using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Options;
+using JJMasterData.Core.DI;
+using JJMasterData.Core.Options;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -16,7 +22,7 @@ public class FormService
 {
     #region Properties
 
-    private AuditLogService _auditLog;
+    private IAuditLogService _auditLog;
 
     private IEntityRepository EntityRepository => FormManager.EntityRepository;
 
@@ -25,10 +31,10 @@ public class FormService
     public FormManager FormManager { get; private set; }
 
     public DataContext DataContext { get; private set; }
-    
-    public AuditLogService AuditLog
+
+    public IAuditLogService AuditLog
     {
-        get => _auditLog ??= new AuditLogService(DataContext, EntityRepository);
+        get => _auditLog ??= JJService.Provider.GetRequiredService<IAuditLogService>();
         internal set => _auditLog = value;
     }
 
@@ -90,7 +96,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Update);
+            AuditLog.AddLog(FormElement,DataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -98,7 +104,7 @@ public class FormService
             OnAfterUpdate.Invoke(DataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
-        
+
         return result;
     }
 
@@ -129,7 +135,7 @@ public class FormService
             FormFileService.SaveFormMemoryFiles(FormElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, CommandOperation.Insert);
+            AuditLog.AddLog(FormElement,DataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -165,7 +171,7 @@ public class FormService
             return result;
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, values, result.Result);
+            AuditLog.AddLog(FormElement,DataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -197,7 +203,7 @@ public class FormService
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
     public FormLetter Delete(IDictionary primaryKeys)
     {
-        IDictionary errors = new Dictionary<string,dynamic>();
+        IDictionary errors = new Dictionary<string, dynamic>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
@@ -219,7 +225,7 @@ public class FormService
             FormFileService.DeleteFiles(FormElement, primaryKeys);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement, primaryKeys, CommandOperation.Delete);
+            AuditLog.AddLog(FormElement,DataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
@@ -256,7 +262,7 @@ public class FormService
 
         return default;
     }
-    
+
     public void AddFormEvent(IFormEvent formEvent)
     {
         if (formEvent != null)

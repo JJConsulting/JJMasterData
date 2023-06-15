@@ -10,7 +10,7 @@ public class DataAccessTest
 
     public DataAccessTest()
     {
-        DataAccess = new DataAccess();
+        DataAccess = new DataAccess("data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456;Encrypt=True;Trust Server Certificate=True", DataAccessProvider.SqlServer);
         ConfigureSeedValues();
     }
     

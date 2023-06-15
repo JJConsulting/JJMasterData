@@ -80,14 +80,23 @@ public class DataAccess
     public int TimeOut { get; set; } = 240;
 
 
+#if NET48
     /// <summary>
     /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
     /// </summary>
     public DataAccess()
     {
-        ConnectionString = JJMasterDataCommonsOptions.GetConnectionString();
-        ConnectionProvider = JJMasterDataCommonsOptions.GetConnectionProvider();
+        ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+        if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ProviderName, out var provider))
+        {
+            ConnectionProvider = provider;
+        }
+        else
+        {
+            throw new DataAccessProviderException("Invalid DataAccess provider.");
+        }
     }
+
 
     /// <summary>
     /// New instance from a custom connection string name
@@ -95,10 +104,17 @@ public class DataAccess
     /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = JJMasterDataCommonsOptions.GetConnectionString(connectionStringName);
-        ConnectionProvider = JJMasterDataCommonsOptions.GetConnectionProvider(connectionStringName);
+        ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+        if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ProviderName, out var provider))
+        {
+            ConnectionProvider = provider;
+        }
+        else
+        {
+            throw new DataAccessProviderException("Invalid DataAccess provider.");
+        }
     }
-
+#endif
     /// <summary>
     /// Initialize a with a connectionString and a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
