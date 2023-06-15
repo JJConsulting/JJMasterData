@@ -77,8 +77,8 @@ public static class ServiceCollectionExtensions
         {
             var wrapperOptions = wrapper.JJMasterDataCommons;
             options.SecretKey = wrapperOptions.SecretKey;
-            options.PrefixGetProc = wrapperOptions.PrefixGetProc;
-            options.PrefixSetProc = wrapperOptions.PrefixSetProc;
+            options.ReadProcedurePattern = wrapperOptions.ReadProcedurePattern;
+            options.WriteProcedurePattern = wrapperOptions.WriteProcedurePattern;
             options.ResourcesTableName = wrapperOptions.ResourcesTableName;
         }
         

@@ -5,6 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Reflection;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.WebApi.Models;
 
@@ -15,10 +16,10 @@ public class AccountService
     private string? ApiVersion { get; }
     private DataAccess DataAccess { get; }
 
-    public AccountService()
+    public AccountService(IConfiguration configuration)
     {
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        DataAccess = new DataAccess();
+        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
     }
     public UserAccessInfo Login(string? username, string? password, string? appId)
     {
@@ -223,10 +224,9 @@ public class AccountService
         return info;
     }
 
-    private static string? GetParam(string param, object? userId)
+    private  string? GetParam(string param, object? userId)
     {
         string? value = null;
-        var dao = new DataAccess();
         var cmd = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
@@ -239,14 +239,14 @@ public class AccountService
         else
             cmd.Parameters.Add(new DataAccessParameter("@userid", userId, DbType.Int32));
 
-        object result = dao.GetResult(cmd);
+        object result = DataAccess.GetResult(cmd);
         if (result != null)
             value = result.ToString();
 
         return value;
     }
 
-    private static ConfigSmtp GetConfigSmtp(int userId)
+    private ConfigSmtp GetConfigSmtp(int userId)
     {
         var config = new ConfigSmtp
         {

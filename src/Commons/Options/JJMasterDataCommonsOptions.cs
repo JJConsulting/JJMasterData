@@ -1,13 +1,8 @@
 ﻿#nullable enable
 
-using System;
 using System.Runtime.InteropServices;
-using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
-using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace JJMasterData.Commons.Options;
 
@@ -33,108 +28,70 @@ public sealed class JJMasterDataCommonsOptions
     /// <summary>
     /// Default value: {tablename}Get <br></br>
     /// </summary>
-    public string PrefixGetProc { get; set; }
+    [ConfigurationKeyName("PrefixGetProc")]
+    public string ReadProcedurePattern { get; set; }
 
     /// <summary>
     /// Default value: {tablename}Set <br></br>
     /// </summary>
-    public string PrefixSetProc { get; set; }
+    [ConfigurationKeyName("PrefixSetProc")]
+    public string WriteProcedurePattern { get; set; }
 
     /// <summary>
     /// Default value: "ChangeMe" <br></br>
     /// </summary>
-    public string SecretKey { get; set; }
+    public string? SecretKey { get; set; }
 
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
-
-    internal static IConfiguration Configuration
-    {
-        get
-        {
-            var configuration = JJService.Provider.GetService(typeof(IConfiguration))!;
-            return (IConfiguration)configuration;
-        }
-    }
 
     public JJMasterDataCommonsOptions()
     {
         ResourcesTableName = "JJMasterDataResources";
-        PrefixGetProc = "{tablename}Get";
-        PrefixSetProc = "{tablename}Set";
-        SecretKey = "ChangeMe";
+        ReadProcedurePattern = "{tablename}Get";
+        WriteProcedurePattern = "{tablename}Set";
     }
-
-    public static string? GetConnectionString(string name = "ConnectionString")
-    {
-        if (IsNetFramework)
-            return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
-
-        return Configuration.GetConnectionString(name);
-    }
-
-
-    public static DataAccessProvider GetConnectionProvider(string name = "ConnectionString")
-    {
-        if (IsNetFramework)
-        {
-            if (Enum.TryParse<DataAccessProvider>(ConfigurationManager.ConnectionStrings[name]?.ProviderName,
-                    out var provider))
-            {
-                return provider;
-            }
-      
-            throw new DataAccessProviderException("Invalid DataAccess provider.");
-        }
-
-        return Configuration.GetSection("ConnectionProviders").GetValue<DataAccessProvider?>(name) ??
-               DataAccessProvider.SqlServer;
-    }
-
-    internal static string GetReadProcedureName(Element element)
+    
+    public string GetReadProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.CustomProcNameGet))
             return element.CustomProcNameGet;
 
         string tableName = element.TableName;
-        string pattern = JJService.Options.PrefixGetProc;
 
-        return pattern.Replace("{tablename}", tableName);
+        return ReadProcedurePattern.Replace("{tablename}", tableName);
     }
 
-    internal static string GetWriteProcedureName(Element element)
+    public string GetWriteProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.CustomProcNameSet))
             return element.CustomProcNameSet;
 
         string tableName = element.TableName;
-        string pattern = JJService.Options.PrefixSetProc;
 
-        return pattern.Replace("{tablename}", tableName);
+        return WriteProcedurePattern.Replace("{tablename}", tableName);
     }
 
-    public static string GetReadProcedureName(string tableName)
+    public string GetReadProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.Options.PrefixGetProc;
 
-        return pattern.Replace("{tablename}", dicName);
+        return ReadProcedurePattern.Replace("{tablename}", dicName);
     }
 
-    public static string GetWriteProcedureName(string tableName)
+    public string GetWriteProcedureName(string tableName)
     {
         var dicName = RemovePrefixChars(tableName);
-        var pattern = JJService.Options.PrefixSetProc;
 
-        return pattern.Replace("{tablename}", dicName);
+        return WriteProcedurePattern.Replace("{tablename}", dicName);
     }
 
     private static string RemovePrefixChars(string tableName)
     {
         if (tableName.ToLower().StartsWith("tb_"))
-            return tableName.Substring(3);
+            return tableName[3..];
 
         if (tableName.ToLower().StartsWith("tb"))
-            return tableName.Substring(2);
+            return tableName[2..];
 
         return tableName;
     }

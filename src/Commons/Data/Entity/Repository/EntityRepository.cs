@@ -8,27 +8,35 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Providers;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityRepository : IEntityRepository
 {
+    private JJMasterDataCommonsOptions Options { get; }
     private DataAccess DataAccess { get; }
     private BaseProvider Provider { get; }
-    public EntityRepository(IConfiguration configuration)
+    
+    [ActivatorUtilitiesConstructor]
+    public EntityRepository(IConfiguration configuration, IOptions<JJMasterDataCommonsOptions> options)
     {
         var connectionString = configuration.GetConnectionString("ConnectionString");
-        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<DataAccessProvider?>("ConnectionString");
-        DataAccess = new DataAccess(connectionString, connectionProvider ?? DataAccessProvider.SqlServer);
-        
+        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string?>("ConnectionString") ?? "SqlServer";
+        DataAccess = new DataAccess(connectionString, connectionProvider);
+        Options = options.Value;
         Provider = GetProvider();
     }
     
-    public EntityRepository(string connectionString, DataAccessProvider provider)
+    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<JJMasterDataCommonsOptions> options)
     {
         DataAccess = new DataAccess(connectionString, provider);
-        
+        Options = options.Value;
+
         Provider = GetProvider();
     }
 
@@ -36,12 +44,11 @@ public class EntityRepository : IEntityRepository
     {
         return DataAccess.ConnectionProvider switch
         {
-            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess),
-            DataAccessProvider.Oracle => new OracleProvider(DataAccess),
-            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess),
-            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess),
-            _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" +
-                                                     DataAccess.ConnectionProvider + "]")
+            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess, Options),
+            DataAccessProvider.Oracle => new OracleProvider(DataAccess, Options),
+            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess, Options),
+            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess, Options),
+            _ => throw new InvalidOperationException(Translate.Key("Invalid data provider.") + " [" + DataAccess.ConnectionProvider + "]")
         };
     }
 

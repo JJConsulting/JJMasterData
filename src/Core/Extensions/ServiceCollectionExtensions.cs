@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
@@ -64,7 +65,7 @@ public static class ServiceCollectionExtensions
         
         services.AddTransient<IFormEventResolver,FormEventResolver>();
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
-        
+        services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         

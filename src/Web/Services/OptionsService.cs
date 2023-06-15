@@ -31,12 +31,10 @@ public class OptionsService : BaseService
     }
 
 
-    public static async Task<(bool, string)> TryConnectionAsync(string? connectionString)
+    public async Task<(bool, string)> TryConnectionAsync(string? connectionString)
     {
-        var dataAccess = new DataAccess
-        {
-            ConnectionString = connectionString
-        };
+        var dataAccess = new DataAccess(connectionString,
+            Enum.Parse<DataAccessProvider>(ConnectionProvidersWritableOptions!.Value.ConnectionString!));
 
         return await dataAccess.TryConnectionAsync(default);
     }
@@ -110,7 +108,7 @@ public class OptionsService : BaseService
         return message.ToString();
     }
 
-    public static async Task<ConnectionResult> GetConnectionResultAsync(string? connectionString)
+    public async Task<ConnectionResult> GetConnectionResultAsync(string? connectionString)
     {
         var result = await TryConnectionAsync(connectionString);
         return new ConnectionResult(result.Item1, result.Item2);

@@ -83,7 +83,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         string culture = Thread.CurrentThread.CurrentCulture.Name;
         var tableName = Options.ResourcesTableName;
 
-        var element = JJMasterDataStringLocalizerElement.GetElement(tableName);
+        var element = JJMasterDataStringLocalizerElement.GetElement(Options);
         if (!EntityRepository.TableExists(element.TableName))
             EntityRepository.CreateDataModel(element);
 

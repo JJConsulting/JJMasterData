@@ -6,48 +6,50 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.AuditLog;
 
-public class AuditLogService
+public class AuditLogService : IAuditLogService
 {
-    public const string DIC_ID = "id";
-    public const string DIC_NAME = "dictionary";
-    public const string DIC_KEY = "recordKey";
-    public const string DIC_ACTION = "actionType";
-    public const string DIC_ORIGIN = "origin";
-    public const string DIC_MODIFIED = "modified";
-    public const string DIC_USERID = "userId";
-    public const string DIC_IP = "ip";
-    public const string DIC_BROWSER = "browser";
-    public const string DIC_JSON = "json";
+    public const string DicId = "id";
+    public const string DicName = "dictionary";
+    public const string DicKey = "recordKey";
+    public const string DicAction = "actionType";
+    public const string DicOrigin = "origin";
+    public const string DicModified = "modified";
+    public const string DicUserid = "userId";
+    public const string DicIp = "ip";
+    public const string DicBrowser = "browser";
+    public const string DicJson = "json";
 
     private static bool _hasAuditLogTable;
-
-    public DataContext Data { get; private set; }
-
     public IEntityRepository EntityRepository { get; private set; }
+    public JJMasterDataCommonsOptions CommonsOptions { get; }
+    public JJMasterDataCoreOptions CoreOptions { get; }
 
-    public AuditLogService(DataContext data, IEntityRepository entityRepository)
+    public AuditLogService(IEntityRepository entityRepository, IOptions<JJMasterDataCommonsOptions> commonsOptions, IOptions<JJMasterDataCoreOptions> coreOptions)
     {
-        Data = data;
         EntityRepository = entityRepository;
+        CommonsOptions = commonsOptions.Value;
+        CoreOptions = coreOptions.Value;
     }
 
-    public void AddLog(Element element, IDictionary formValues, CommandOperation action)
+    public void AddLog(Element element,DataContext dataContext, IDictionary formValues, CommandOperation action)
     {
         var values = new Hashtable
         {
-            { DIC_NAME, element.Name },
-            { DIC_KEY, GetKey(element, formValues) },
-            { DIC_ACTION, (int)action },
-            { DIC_ORIGIN, (int)Data.Source },
-            { DIC_MODIFIED, DateTime.Now },
-            { DIC_USERID, Data.UserId },
-            { DIC_IP, Data.IpAddress },
-            { DIC_BROWSER, Data.BrowserInfo },
-            { DIC_JSON, GetJsonFields(formValues) }
+            { DicName, element.Name },
+            { DicKey, GetKey(element, formValues) },
+            { DicAction, (int)action },
+            { DicOrigin, (int)dataContext.Source },
+            { DicModified, DateTime.Now },
+            { DicUserid, dataContext.UserId },
+            { DicIp, dataContext.IpAddress },
+            { DicBrowser, dataContext.BrowserInfo },
+            { DicJson, GetJsonFields(formValues) }
         };
 
         var logElement = GetElement();
@@ -96,22 +98,22 @@ public class AuditLogService
 
     public Element GetElement()
     {
-        string tableName = ConfigurationHelper.GetMasterDataAuditLog();
+        string tableName = CoreOptions.AuditLogTableName;
         var element = new Element(tableName, "Log")
         {
-            CustomProcNameGet = JJMasterDataCommonsOptions.GetReadProcedureName(tableName),
-            CustomProcNameSet = JJMasterDataCommonsOptions.GetWriteProcedureName(tableName)
+            CustomProcNameGet = CommonsOptions.GetWriteProcedureName(tableName),
+            CustomProcNameSet = CommonsOptions.GetWriteProcedureName(tableName)
         };
-        element.Fields.AddPK(DIC_ID, "Id", FieldType.Int, 1, true, FilterMode.Equal);
-        element.Fields.Add(DIC_NAME, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
-        element.Fields.Add(DIC_ACTION, "Action", FieldType.Int, 1, true, FilterMode.Equal);
-        element.Fields.Add(DIC_MODIFIED, "Date", FieldType.DateTime, 15, true, FilterMode.Range);
-        element.Fields.Add(DIC_USERID, "User Id", FieldType.Varchar, 30, false, FilterMode.Contain);
-        element.Fields.Add(DIC_IP, "IP Address", FieldType.Varchar, 45, false, FilterMode.Contain);
-        element.Fields.Add(DIC_BROWSER, "Browser", FieldType.Varchar, 100, false, FilterMode.None);
-        element.Fields.Add(DIC_ORIGIN, "Origin", FieldType.Int, 1, true, FilterMode.Equal);
-        element.Fields.Add(DIC_KEY, "Record Key", FieldType.Varchar, 100, true, FilterMode.Equal);
-        element.Fields.Add(DIC_JSON, "Object", FieldType.Text, 0, false, FilterMode.None);
+        element.Fields.AddPK(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
+        element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
+        element.Fields.Add(DicAction, "Action", FieldType.Int, 1, true, FilterMode.Equal);
+        element.Fields.Add(DicModified, "Date", FieldType.DateTime, 15, true, FilterMode.Range);
+        element.Fields.Add(DicUserid, "User Id", FieldType.Varchar, 30, false, FilterMode.Contain);
+        element.Fields.Add(DicIp, "IP Address", FieldType.Varchar, 45, false, FilterMode.Contain);
+        element.Fields.Add(DicBrowser, "Browser", FieldType.Varchar, 100, false, FilterMode.None);
+        element.Fields.Add(DicOrigin, "Origin", FieldType.Int, 1, true, FilterMode.Equal);
+        element.Fields.Add(DicKey, "Record Key", FieldType.Varchar, 100, true, FilterMode.Equal);
+        element.Fields.Add(DicJson, "Object", FieldType.Text, 0, false, FilterMode.None);
 
         return element;
     }
@@ -119,13 +121,13 @@ public class AuditLogService
     public FormElement GetFormElement()
     {
         var form = new FormElement(GetElement());
-        form.Fields[DIC_ID].VisibleExpression = "val:0";
-        form.Fields[DIC_NAME].VisibleExpression = "val:0";
-        form.Fields[DIC_BROWSER].VisibleExpression = "val:0";
-        form.Fields[DIC_JSON].VisibleExpression = "val:0";
-        form.Fields[DIC_MODIFIED].Component = FormComponent.DateTime;
+        form.Fields[DicId].VisibleExpression = "val:0";
+        form.Fields[DicName].VisibleExpression = "val:0";
+        form.Fields[DicBrowser].VisibleExpression = "val:0";
+        form.Fields[DicJson].VisibleExpression = "val:0";
+        form.Fields[DicModified].Component = FormComponent.DateTime;
 
-        var origin = form.Fields[DIC_ORIGIN];
+        var origin = form.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem.ReplaceTextOnGrid = true;
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
@@ -134,7 +136,7 @@ public class AuditLogService
             origin.DataItem.Items.Add(item);
         }
 
-        var action = form.Fields[DIC_ACTION];
+        var action = form.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
         action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;

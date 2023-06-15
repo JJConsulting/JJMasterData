@@ -10,6 +10,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -20,8 +21,10 @@ public class SqlServerProvider : BaseProvider
     private const string DeleteInitial = "E";
     private const char Tab = '\t';
     public override string VariablePrefix => "@";
+    public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqlServer;
 
-    public SqlServerProvider(DataAccess dataAccess) : base(dataAccess)
+
+    public SqlServerProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options) : base(dataAccess, options)
     {
     }
 
@@ -31,7 +34,7 @@ public class SqlServerProvider : BaseProvider
             throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new ArgumentException(nameof(element.Fields));
+            throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
         var keys = new StringBuilder();
@@ -235,7 +238,7 @@ public class SqlServerProvider : BaseProvider
         StringBuilder sql = new StringBuilder();
 
         bool updateScript = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
+        string procedureFinalName = Options.GetWriteProcedureName(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -501,7 +504,7 @@ public class SqlServerProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataCommonsOptions.GetReadProcedureName(element);
+        string procedureFinalName = Options.GetReadProcedureName(element);
 
         //Se exisitir apaga
         sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
@@ -925,7 +928,7 @@ public class SqlServerProvider : BaseProvider
         var command = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
-            Sql = JJMasterDataCommonsOptions.GetReadProcedureName(element),
+            Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
                 new("@orderby", orderBy),
@@ -1002,7 +1005,7 @@ public class SqlServerProvider : BaseProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
+        cmd.Sql = Options.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 

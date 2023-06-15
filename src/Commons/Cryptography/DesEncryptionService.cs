@@ -17,7 +17,7 @@ internal class DesEncryptionService : IEncryptionService
     {
         using var des = DES.Create();
         byte[] input = Encoding.UTF8.GetBytes(plainText); 
-        byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey.Substring(0, 8));
+        byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey[..8]);
         using var ms = new MemoryStream();
         using (var cs = new CryptoStream(ms, des.CreateEncryptor(keyBytes, Iv), CryptoStreamMode.Write))
         {

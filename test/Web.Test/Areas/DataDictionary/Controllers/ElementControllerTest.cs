@@ -1,5 +1,8 @@
 ﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
@@ -9,13 +12,14 @@ namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;
 public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFactory>
 {
     private readonly HttpClient _client;
-
+    private readonly Mock<IEntityRepository> _entityRepositoryMock = new();
+    private readonly Mock<DataAccess> _dataAccessMock = new();
     public ElementControllerTest(JJMasterDataWebExampleAppFactory factory)
     {
         factory.EnsureServer();
         _client = factory.CreateClient();
     }
-    private static void CreateElement()
+    private void CreateElement()
     {
         var element = new Element
         {
@@ -43,8 +47,8 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
             }
         };
 
-        var dataAccess = new DataAccess();
-        var provider = new EntityRepository("data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456", DataAccessProvider.SqlServer);
+        var dataAccess = _dataAccessMock.Object;
+        var provider = _entityRepositoryMock.Object;
         
         string script = provider.GetScriptCreateTable(element);
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Options;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -16,9 +17,10 @@ public class OracleProvider : BaseProvider
     private const string UPDATE = "A";
     private const string DELETE = "E";
     private const string TAB = "\t";
+    public override DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
     public override string VariablePrefix => "p_";
 
-    public OracleProvider(DataAccess dataAccess) : base(dataAccess)
+    public OracleProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options) : base(dataAccess, options)
     {
     }
 
@@ -244,7 +246,7 @@ public class OracleProvider : BaseProvider
         bool isFirst = true;
         bool hasPk = HasPK(element);
         bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
+        string procedureFinalName = Options.GetWriteProcedureName(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -499,7 +501,7 @@ public class OracleProvider : BaseProvider
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
         StringBuilder sql = new StringBuilder();
-        string procedureFinalName = JJMasterDataCommonsOptions.GetReadProcedureName(element);
+        string procedureFinalName = Options.GetReadProcedureName(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -817,7 +819,7 @@ public class OracleProvider : BaseProvider
     {
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = JJMasterDataCommonsOptions.GetWriteProcedureName(element);
+        cmd.Sql = Options.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
 
@@ -853,7 +855,7 @@ public class OracleProvider : BaseProvider
         var cmd = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
-            Sql = JJMasterDataCommonsOptions.GetReadProcedureName(element),
+            Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
                 new(VariablePrefix + "orderby", orderBy),

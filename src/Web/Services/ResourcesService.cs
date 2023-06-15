@@ -32,7 +32,7 @@ public class ResourcesService : BaseService
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataStringLocalizerElement.GetElement(Options.ResourcesTableName);
+        var element = JJMasterDataStringLocalizerElement.GetElement(Options);
         
         var formElement = new FormElement(element)
         {
