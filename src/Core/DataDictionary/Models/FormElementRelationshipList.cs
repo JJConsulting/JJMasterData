@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Linq;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -9,7 +10,7 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
     private readonly IList<FormElementRelationship> formRelationships;
-    private readonly System.Collections.Generic.List<ElementRelationship> baseRelationships;
+    private readonly List<ElementRelationship> baseRelationships;
     
     [JsonConstructor]
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
@@ -19,10 +20,10 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         this.formRelationships = formRelationships;
     }
     
-    public FormElementRelationshipList(System.Collections.Generic.List<ElementRelationship> baseFields)
+    public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
         baseRelationships = baseFields;
-        formRelationships = new System.Collections.Generic.List<FormElementRelationship>();
+        formRelationships = new List<FormElementRelationship>();
         if (baseFields.Count > 0)
         {
             formRelationships.Add(new FormElementRelationship(true));
@@ -33,7 +34,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         }
     }
 
-    public System.Collections.Generic.List<ElementRelationship> GetElementRelationships()
+    public List<ElementRelationship> GetElementRelationships()
     {
         return baseRelationships;
     }

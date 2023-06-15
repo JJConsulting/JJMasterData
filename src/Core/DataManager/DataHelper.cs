@@ -18,7 +18,7 @@ public static class DataHelper
     {
         if (userValues != null && userValues.Contains("USERID"))
         {
-            return userValues["USERID"].ToString();
+            return userValues["USERID"]!.ToString();
         }
 
         var currentContext = JJHttpContext.GetInstance();
@@ -101,10 +101,10 @@ public static class DataHelper
             if (name.Length > 0)
                 name += separator.ToString();
                 
-            if (!formValues.Contains(field.Name))
+            if (!formValues.Contains(field.Name) || formValues[field.Name] == null)
                 throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
                     
-            string value = formValues[field.Name].ToString();
+            string value = formValues[field.Name]!.ToString()!;
             if (value.Contains(separator))
                 throw new JJMasterDataException(Translate.Key("Primary key value {0} contains invalid characters.", value));
                 
@@ -136,7 +136,7 @@ public static class DataHelper
         foreach (DictionaryEntry entry in paramValues)
         {
             var field = formElement.Fields[entry.Key.ToString()];
-            if (!filters.ContainsKey(entry.Key.ToString()))
+            if (!filters.ContainsKey(entry.Key.ToString()!))
                 filters.Add(field.Name, entry.Value);
         }
 
