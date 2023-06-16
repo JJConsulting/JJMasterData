@@ -1,0 +1,80 @@
+@using JJMasterData.BlazorClient.Services
+@using JJMasterData.Commons.Extensions
+@using JJMasterData.Core.DataDictionary
+
+<div class="autocomplete">
+    <input
+        @bind="selectedDescription"
+        @oninput="HandleInput" 
+        @onfocusout="HandleFocusOut"
+        disabled="@Disabled"
+        class="form-control filter @(!isValidValue ? "is-invalid" : string.Empty)"/>
+    
+    @if (Values is not null && showResults)
+    {
+        <ul class="options">
+            @if (Values.Any())
+            {
+                @foreach (var value in Values)
+                {
+                    <li class="option" @onclick=@(_ => SelectValue(value.Id))>
+                        <span class="option-text">@value.Description</span>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="disabled option">No results</li>
+            }
+        </ul>
+    }
+ 
+    <div class="invalid-feedback">
+        Invalid value selected.
+    </div>
+    
+</div>
+
+@code {
+    private string? selectedValueId;
+    private string? selectedDescription;
+    private bool isSelected;
+    private bool isValidValue = true;
+    private bool showResults;
+
+    void SelectValue(string id)
+    {
+        OnSelectValue?.Invoke(id);
+        selectedValueId = id;
+        selectedDescription = Values!.First(v => v.Id.Equals(selectedValueId)).Description;
+        showResults = false;
+        isValidValue = true;
+        isSelected = true;
+    }
+    
+    async Task HandleInput(ChangeEventArgs e)
+    {
+        isSelected = false;
+        var filter = e.Value?.ToString();
+
+        Values = await SearchBoxService.GetValues(DataItem,filter, Context);
+
+        if (Values != null && filter != null)
+        {
+            Values = Values.ToList().FindAll(x => x.Description.ToLower().Contains(filter.ToLower()));
+        }
+        
+        showResults = true;
+    }
+
+    private async Task HandleFocusOut()
+    {
+        await Task.Delay(200);
+        showResults = false;
+
+        if (!isSelected && selectedDescription != null)
+        {
+            isValidValue = false;
+        }
+    }
+}

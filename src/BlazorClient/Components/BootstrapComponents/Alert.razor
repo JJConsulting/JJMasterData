@@ -1,0 +1,62 @@
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.BlazorClient.Components.FormElementComponents
+
+<div class="alert alert-dismissible @GetCssClass()" role="alert">
+    @if (ShowCloseButton)
+    {
+        <button type="button" aria-label="Close" data-bs-dismiss="alert" class="btn-close">
+        </button>
+    }
+
+    @if (Icon is not null)
+    {
+        <Icon IconType="@(Icon.Value)"/>
+    }
+    <b>&nbsp;@Title</b>
+    <br/>
+    @if (RenderFragment is not null)
+    {
+        @RenderFragment
+    }
+    @if (Messages is not null)
+    {
+        <ul>
+            @foreach (var message in Messages)
+            {
+                <li>
+                    @((MarkupString)message)
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public PanelColor Color { get; set; }
+
+    [Parameter]
+    public IconType? Icon { get; set; }
+
+    [Parameter]
+    public bool ShowCloseButton { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment? RenderFragment { get; set; }
+
+    [Parameter]
+    public IEnumerable<string>? Messages { get; set; }
+    
+    private string GetCssClass()
+    {
+        if (Color == PanelColor.Default)
+            return "alert-secondary";
+
+        return $"alert-{Color.ToString().ToLower()}";
+    }
+
+}

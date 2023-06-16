@@ -1,0 +1,98 @@
+@using JJMasterData.Core.DataDictionary.Actions.UserCreated
+@using JJMasterData.Core.DataDictionary.Actions.Abstractions
+@using JJMasterData.Core.DataDictionary.Actions.GridTable
+@using JJMasterData.BlazorClient.Services
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.Core.DataDictionary.Actions.FormToolbar
+@using JJMasterData.Core.DataDictionary.Actions.GridToolbar
+@using JJMasterData.BlazorClient.Models
+@using JJMasterData.BlazorClient.Components.FormElementComponents
+@using JJMasterData.BlazorClient.Components.BootstrapComponents
+
+@inject NavigationManager NavigationManager
+
+
+@switch (Action)
+{
+    case UrlRedirectAction urlAction:
+        <LinkButton Icon="@urlAction.Icon" Text="@urlAction.Text" OnClick="@(() => NavigationManager.NavigateTo(urlAction.UrlRedirect))" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case ViewAction viewAction:
+        <LinkButton Icon="@viewAction.Icon" Text="@viewAction.Text" OnClick="@(() => { MasterDataView!.SetState(PageState.View, PrimaryKeyValues); })" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case InsertAction insertAction:
+        <LinkButton Icon="@insertAction.Icon" Text="@insertAction.Text" OnClick="@(async () => { await SetStateInsert(insertAction); })" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case EditAction editAction:
+        <LinkButton Icon="@editAction.Icon" Text="@editAction.Text" OnClick="@(() => { MasterDataView!.SetState(PageState.Update, PrimaryKeyValues); })" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case DeleteAction deleteAction:
+        <LinkButton Icon="@deleteAction.Icon" Text="@deleteAction.Text" OnClick="@(() => { MasterDataView!.SetState(PageState.Delete); })" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case CancelAction cancelAction when MasterDataView?.PageState is PageState.Insert or PageState.Update:
+        <LinkButton Icon="@cancelAction.Icon" Text="@cancelAction.Text" OnClick="@SetStateList" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case BackAction backAction when MasterDataView?.PageState is PageState.View:
+        <LinkButton Icon="@backAction.Icon" Text="@backAction.Text" OnClick="@SetStateList" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+    case SaveAction saveAction:
+        <LinkButton Icon="@saveAction.Icon" Text="@saveAction.Text" OnClick="@FormView.OnSave" ShowAsButton="@Action.ShowAsButton"/>
+        break;
+}
+
+@code {
+
+    [Parameter]
+    public BasicAction Action { get; set; } = null!;
+
+    [CascadingParameter]
+    public MasterDataView? MasterDataView { get; set; }
+
+    [CascadingParameter]
+    public Modal? Modal { get; set; }
+
+    [CascadingParameter]
+    public FormView FormView { get; set; } = default!;
+
+    [CascadingParameter]
+    public GridView GridView { get; set; } = default!;
+
+    [CascadingParameter]
+    public FormElement? FormElement { get; set; }
+
+    [Parameter]
+    public IDictionary<string, dynamic>? PrimaryKeyValues { get; set; }
+
+    private async Task SetStateList()
+    {
+        if (Modal is null)
+        {
+            MasterDataView!.SetState(PageState.List);
+        }
+        else
+        {
+            await Modal.DismissAsync();
+        }
+    }
+    
+    private async Task SetStateInsert(InsertAction action)
+    {
+        if (action.ShowAsPopup)
+        {
+            await MasterDataView!.Modal.ShowAsync<MasterDataView>(
+                MasterDataView!.FormElement!.Title!, new Dictionary<string, object?>()
+            {
+                { "FormElement", MasterDataView.FormElement },
+                { "ElementName", MasterDataView.ElementName },
+                { "SelectedPrimaryKeys", PrimaryKeyValues} ,
+                { "PageState", PageState.Insert }
+            });
+            await GridView!.RePopulateDataSourceAsync();
+        }
+        else
+        {
+            MasterDataView!.SetState(PageState.Insert, PrimaryKeyValues);
+        }
+    }
+
+}

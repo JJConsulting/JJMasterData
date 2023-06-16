@@ -9,6 +9,11 @@
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
     <partial name="_MasterDataStylesheets"/>
     <partial name="_MasterDataScripts"/>
+    @if ((bool)(ViewData["EnableBlazor"] ?? false))
+    {
+        <base href="~/" />
+    }
+   
 </head>
 <body>
 
@@ -18,5 +23,9 @@
 
 @await RenderSectionAsync("Scripts", required: false)
 
+@if ((bool)(ViewData["EnableBlazor"] ?? false))
+{
+    <script src="~/_framework/blazor.server.js"></script>
+}
 </body>
 </html>

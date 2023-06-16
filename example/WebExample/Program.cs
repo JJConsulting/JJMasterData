@@ -1,3 +1,4 @@
+using JJMasterData.BlazorClient.Extensions;
 using JJMasterData.Commons.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
@@ -20,6 +21,7 @@ public class Program
         builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddControllersWithViews();
+        builder.Services.AddJJMasterDataBlazorClient();
         builder.Services.AddJJMasterDataWeb(settingsPath)
             .WithFormEventResolver()
             .WithPdfExportation();
@@ -54,6 +56,7 @@ public class Program
         app.UseStaticFiles();
         app.UseRouting();
         app.MapRazorPages();
+        app.MapJJMasterDataBlazorClient();
         app.UseAuthorization();
         app.UseJJMasterDataWeb();
         app.MapJJMasterData()

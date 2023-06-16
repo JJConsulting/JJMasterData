@@ -1,0 +1,71 @@
+@inherits ComponentBase
+@using JJMasterData.BlazorClient.Models
+
+@if (Display)
+{
+    <CascadingValue Value="this">
+        <div class="modal" tabindex="-1" style="display:block;">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@Title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="async () =>await DismissAsync()"></button>
+                    </div>
+                    <div class="modal-body">
+                        @Content
+                    </div>
+                </div>
+            </div>
+        </div>
+    </CascadingValue>
+}
+@code {
+    public bool Display { get; protected set; }
+    protected RenderFragment? Content { get; set; }
+    
+    protected TaskCompletionSource<ModalResult> ModalTask { get; set; } = new();
+
+    [Parameter]
+    public string? Title { get; set; }
+    
+    public Task<ModalResult> ShowAsync<TComponent>(string title,IDictionary<string,object?>? parameters = null) where TComponent : IComponent
+    {
+        Title = title;
+        ModalTask = new TaskCompletionSource<ModalResult>();
+        Content = builder =>
+        {
+            var sequence = 0;
+            
+            builder.OpenComponent(sequence++, typeof(TComponent));
+
+            if (parameters != null)
+            {
+                foreach (var entry in parameters)
+                {
+                    builder.AddAttribute(sequence++, entry.Key, entry.Value);
+                }
+            }
+
+            builder.CloseComponent();
+        };
+        Display = true;
+        InvokeAsync(StateHasChanged);
+        return ModalTask.Task;
+    }
+
+    public async Task DismissAsync()
+    {
+        _ = ModalTask.TrySetResult(ModalResult.Cancel());
+        Display = false;
+        Content = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task CloseAsync(ModalResult result)
+    {
+        _ = ModalTask.TrySetResult(result);
+        Display = false;
+        Content = null;
+        await InvokeAsync(StateHasChanged);
+    }
+}

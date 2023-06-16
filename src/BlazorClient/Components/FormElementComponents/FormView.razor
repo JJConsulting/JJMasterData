@@ -1,0 +1,81 @@
+@using JJMasterData.BlazorClient.Services
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.Core.DataDictionary.Actions.FormToolbar
+@using JJMasterData.BlazorClient.Components.FormElementComponents.Controls
+@using JJMasterData.BlazorClient.Components.BootstrapComponents
+@if (FormElement != null && Values != null)
+{
+    @if (Modal == null)
+    {
+        <PageHeader Title="@FormElement.Title" SubTitle="@FormElement.SubTitle"/>
+    }
+    
+    <Card>
+        <div class="@GetColCss()">
+            <div class="row">
+                @*TODO: Fields by row*@
+                @if (VisibleFields != null)
+                {
+                    foreach (var field in VisibleFields)
+                    {
+                        <div class="mb-3 @field.CssClass">
+                            <label class="col-form-label" for="@field.Name">@(field.Label ?? field.Name)</label>
+                            <FormElementFieldControl Field="@field"
+                                                     Values="@Values"
+                                                     PageState="@PageState"
+                                                     UserValues="@UserValues"
+                                                     OnValueChanged="@SetValue"/>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </Card>
+
+    @if (Errors is not null && Errors.Any())
+    {
+        <JJValidationSummary Errors="@(Errors.Select(e => e.ErrorMessage))"/>
+    }
+    <div class="row">
+        <div class="col-sm-12">
+            @foreach (var action in FormElement.Options.FormToolbarActions)
+            {
+                @if (action is SaveAction)
+                {
+                    if (PageState is PageState.Insert or PageState.Update)
+                    {
+                        <CascadingValue Value="this">
+                            <ActionButton Action="action"/>
+                        </CascadingValue>
+                    }
+                }
+                else
+                {
+                    <ActionButton Action="action"/>
+                }
+            }
+        </div>
+    </div>
+}
+
+@code{
+
+    string GetColCss()
+    {
+        string colClass = "";
+        int cols = FormElement!.Options.Form.FormCols;
+        if (cols > 12)
+            cols = 12;
+
+        if (cols >= 1)
+            colClass = $" col-sm-{12 / cols}";
+        return colClass;
+    }
+
+    void SetValue(string fieldName, dynamic? value)
+    {
+        //ExpressionsService.GetTriggerValue(fieldName, PageState,Values, UserValues)
+        Values![fieldName] = value;
+    }
+
+}

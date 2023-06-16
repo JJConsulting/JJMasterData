@@ -1,0 +1,20 @@
+@using JJMasterData.Core.DataDictionary
+
+
+&nbsp;
+@if (Tooltip == null)
+{
+    <i class="@IconType.GetCssClass()"></i>
+}
+else
+{
+    <i class="@IconType.GetCssClass()" aria-label="@Tooltip" data-bs-toggle="tooltip"></i>
+}
+
+
+
+@code{
+
+    [Parameter] public IconType IconType { get; set; }
+    [Parameter] public string? Tooltip { get; set; }
+}

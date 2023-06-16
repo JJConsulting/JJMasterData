@@ -1,0 +1,26 @@
+<div class="accordion-item">
+  <h2 class="accordion-header" id="@Id">
+    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@BsTarget" aria-expanded="true" aria-controls="@BsTarget">
+      @Title
+    </button>
+  </h2>
+  <div id="@BsTarget" class="accordion-collapse collapse show" aria-labelledby="@Id" >
+    <div class="accordion-body">
+      @ChildContent
+    </div>
+  </div>
+</div>
+
+@code {
+  [Parameter]
+  public string Id { get; set; } = Guid.NewGuid().ToString();
+
+  private string BsTarget => $"collapse{Id}";
+
+  [Parameter]
+  public string Title { get; set; } = null!;
+
+  [Parameter]
+  public RenderFragment ChildContent { get; set; } = null!;
+
+}

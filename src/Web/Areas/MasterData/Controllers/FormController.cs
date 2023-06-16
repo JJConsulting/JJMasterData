@@ -8,9 +8,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController : MasterDataController
 {
-    public IActionResult Render(string dictionaryName)
+    public IActionResult Render(string dictionaryName, bool isBlazor = false)
     {
-        var model = new FormViewModel(dictionaryName, ConfigureFormView);
+        var model = new FormViewModel(dictionaryName, ConfigureFormView, isBlazor);
         return View(model);
     }
 

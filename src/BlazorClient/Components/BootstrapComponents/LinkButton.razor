@@ -1,0 +1,42 @@
+@using JJMasterData.Core.DataDictionary
+
+@if (!ShowAsButton)
+{
+    <a href="javascript:void(0)" @onclick="OnClick"
+       class="me-1">
+        <i class="@Icon.GetCssClass()"></i>
+        @if (!string.IsNullOrWhiteSpace(Text))
+        {
+            <span>&nbsp;@Text</span>
+        }
+    </a>
+}
+else
+{
+    <button type="@(IsSubmit ? "submit" : "button")" @onclick="OnClick" class="btn btn-secondary me-1">
+        <i class="@Icon.GetCssClass()"></i>
+        @if (!string.IsNullOrWhiteSpace(Text))
+        {
+            <span>&nbsp;@Text</span>
+        }
+    </button>
+}
+
+
+@code {
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public IconType Icon { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; } = default!;
+
+    [Parameter]
+    public bool ShowAsButton { get; set; }
+
+    [Parameter]
+    public bool IsSubmit { get; set; }
+}

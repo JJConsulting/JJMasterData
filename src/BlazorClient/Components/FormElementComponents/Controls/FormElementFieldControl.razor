@@ -1,0 +1,69 @@
+@using JJMasterData.BlazorClient.Services.Abstractions
+@using JJMasterData.Core.DataDictionary
+@using System.ComponentModel.DataAnnotations
+@using JJMasterData.BlazorClient.Services
+
+@{
+    object? fieldValue = null;
+
+    bool disabled = !FieldsService.IsEnabled(Field, PageState, Values, UserValues);
+    
+    if (Values.TryGetValue(Field.Name, out var value))
+    {
+        fieldValue = value;
+    }
+    switch (Field.Component)
+    {
+        case FormComponent.Search:
+            var context = new SearchBoxContext(null, Values, UserValues,PageState);
+            <SearchBox 
+                Disabled="@disabled" 
+                DataItem="Field.DataItem" 
+                Context="context" 
+                SelectedValue="@(fieldValue?.ToString() ?? string.Empty)"
+                OnSelectValue="e=>OnValueChanged(Field.Name, e)"/>
+            break;
+        case FormComponent.TextArea:
+            <textarea type="text"
+                   disabled="@disabled"
+                   class="form-control"
+                   id="@Field.Name"
+                   name="@Field.Name"
+                   value="@(fieldValue ?? string.Empty)"
+                   @oninput="@(e => OnValueChanged(Field.Name, e.Value!))">
+            </textarea>
+            break;
+        case FormComponent.Text:
+        default:
+            <input type="text"
+                   disabled="@disabled"
+                   class="form-control"
+                   id="@Field.Name"
+                   name="@Field.Name"
+                   value="@(fieldValue ?? string.Empty)"
+                   @oninput="@(e => OnValueChanged(Field.Name, e.Value!))"/>
+            break;
+    }
+}
+
+@code {
+
+    [Inject]
+    public IFieldsService FieldsService { get; set; } = default!;
+
+    [Parameter]
+    public FormElementField Field { get; set; } = default!;
+    
+    [Parameter]
+    public Action<string,dynamic?> OnValueChanged { get; set; } = default!;
+
+    [Parameter]
+    public IDictionary<string, dynamic?> Values { get; set; } = null!;
+    
+    [Parameter]
+    [Required]
+    public IDictionary<string,dynamic?> UserValues { get; set; }= null!;
+    
+    [Parameter]
+    public PageState PageState { get; set; }
+}

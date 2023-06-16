@@ -1,0 +1,66 @@
+<nav aria-label="table view navigation">
+    <ul class="pagination">
+        
+        @if (PaginationData.IsPreviousButtonVisible())
+        {
+            <li class="page-item">
+                <a class="page-link" @onclick="async () => { await PaginationFunc(1); }" aria-label="Previous">
+                    <span aria-hidden="true">
+                        <i class="fa fa-angle-double-left"></i>
+                    </span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" @onclick="async () => { await PaginationFunc(PaginationData.FirstButton - 1); }" aria-label="Previous">
+                    <span aria-hidden="true">
+                        <i class="fa fa-angle-left"></i>
+                    </span>
+                </a>
+            </li>
+        }
+        @{
+            int pageCount = PaginationData.PageCount;
+
+            for (int i = PaginationData.FirstButton; i < PaginationData.FirstButton + PaginationData.TotalButtons; i++)
+            {
+                int currentPage = i;
+
+                @if (i > pageCount || pageCount <= 1)
+                {
+                    break;
+                }
+                <li class="page-item @(PaginationData.CurrentPage == i ? "active" : string.Empty)">
+                    <a class="page-link" @onclick="async () => { await PaginationFunc(currentPage); }">@i</a>
+                </li>
+            }
+        }
+        @if (PaginationData.IsNextButtonVisible())
+        {
+            <li class="page-item">
+                <a class="page-link" @onclick="async () => { await PaginationFunc(PaginationData.FirstButton + PaginationData.TotalButtons); }" aria-label="Next">
+                    <span aria-hidden="true">
+                        <i class="fa fa-angle-right"></i>
+                    </span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" @onclick="async () => { await PaginationFunc(PaginationData.PageCount); }" aria-label="Next">
+                    <span aria-hidden="true">
+                        <i class="fa fa-angle-double-right"></i>
+                    </span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
+
+@code{
+
+    [Parameter]
+    public GridView.TableViewPaginationData PaginationData { get; set; } = null!;
+
+    [Parameter]
+    public Func<int,Task> PaginationFunc { get; set; } = null!;
+
+    
+}

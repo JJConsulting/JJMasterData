@@ -1,0 +1,10 @@
+@using JJMasterData.Core.DataDictionary
+
+<Alert Color="PanelColor.Danger" Icon="IconType.Warning" Title="Invalid Data" Messages="Errors"/>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<string> Errors { get; set; } = null!;
+
+}

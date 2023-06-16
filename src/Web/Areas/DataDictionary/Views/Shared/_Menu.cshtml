@@ -163,7 +163,12 @@
             </li>
             <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = Model.DictionaryName })', '_blank').focus();">
                 <a href="#">
-                    <span class="fa fa-eye fa-fw fa-lg"></span> @Translate.Key("Preview")
+                    <span class="fa fa-eye fa-fw fa-lg"></span> @Translate.Key("Preview (Legacy)")
+                </a>
+            </li>
+           <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = Model.DictionaryName, isBlazor=true })', '_blank').focus();">
+                <a href="#">
+                    <span class="fa fa-eye fa-fw fa-lg"></span> @Translate.Key("Preview (Blazor)")
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>

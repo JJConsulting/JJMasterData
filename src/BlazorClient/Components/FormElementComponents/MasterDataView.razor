@@ -1,0 +1,88 @@
+@using JJMasterData.Core.DataDictionary
+@using Microsoft.IdentityModel.Tokens
+@using JJMasterData.BlazorClient.Components.BootstrapComponents
+
+@if (FormElement != null)
+{
+    <CascadingValue Value="this">
+        @switch (PageState)
+        {
+            case PageState.List:
+                <GridView 
+                    ElementName="@ElementName" 
+                    FormElement="@FormElement" 
+                    SelectedPrimaryKeys="SelectedPrimaryKeys"/>
+                break;
+            case PageState.View:
+            case PageState.Insert:
+            case PageState.Update:
+                if (ChildFormElements.IsNullOrEmpty() || PageState == PageState.Insert)
+                {
+                    IDictionary<string, dynamic?>? values = null;
+                    if (PageState == PageState.Insert)
+                    {
+                        values = SelectedPrimaryKeys!;
+                    }
+                    <FormView 
+                              ElementName="@ElementName" 
+                              FormElement="@FormElement"
+                              Values="values"
+                              PrimaryKeys="SelectedPrimaryKeys" 
+                              PageState="PageState"/>
+                }
+                else
+                {
+                    foreach (var relationship in FormElement!.Relationships)
+                    {
+                        if (relationship.IsParent)
+                        {
+                            <Accordion>
+                                <AccordionItem Title="@FormElement.Title">
+                                    <FormView ElementName="@ElementName" 
+                                              FormElement="@FormElement" 
+                                              PrimaryKeys="SelectedPrimaryKeys" 
+                                              PageState="PageState"></FormView>
+                                </AccordionItem>
+                            </Accordion>
+                        }
+                        else 
+                        {
+                            var formElement = ChildFormElements.First(f => f.Name == relationship.ElementRelationship!.ChildElement);
+                            
+                            var foreignKeys = GetMappedForeignKeys(FormElement, SelectedPrimaryKeys!);
+                            
+                            var parameters = new Dictionary<string, dynamic>
+                            {
+                                { "FormElement", formElement },
+                                { "SelectedPrimaryKeys", foreignKeys! }
+                            };
+                            <Accordion>
+                                <AccordionItem Title="@formElement.Title">
+                                    <DynamicComponent Type="@typeof(MasterDataView)" Parameters="parameters"/>
+                                </AccordionItem>
+                            </Accordion>
+                        }
+                    }
+                }
+                break;
+            case PageState.Import:
+                break;
+            case PageState.Delete:
+                break;
+            case PageState.Log:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    
+    
+        <Modal @ref="modal" />
+
+    </CascadingValue>
+}
+
+@code{
+    private Modal? modal;
+    public Modal Modal => modal!;
+}
+

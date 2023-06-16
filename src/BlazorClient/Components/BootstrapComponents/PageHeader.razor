@@ -1,0 +1,18 @@
+<div class="pb-2 mt-4 mb-2 border-bottom">
+    <h1>
+        @Title
+        @if (SubTitle != null)
+        {
+            <small> @SubTitle</small>
+        }
+    </h1>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+    
+    [Parameter]
+    public string? SubTitle { get; set; }
+}

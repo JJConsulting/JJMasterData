@@ -1,0 +1,79 @@
+.table .table-action {
+    text-align: center;
+    width: 45px;
+}
+
+.table .jjselect {
+    vertical-align: middle;
+    width: 70px;
+    padding-left: 24px;
+}
+
+.table .jjselect i {
+    padding-top: 3px;
+    float: right;
+}
+
+.table .jjselect .dropdown-toggle{
+    margin-left: 3px;
+}
+
+.table .jjgrid-action {
+    cursor: pointer;
+}
+
+.table .jjgrid-action:hover td:first-child:before {
+    font-family: 'FontAwesome';
+    content: "\f142";
+    position: absolute;
+    left: 0px;
+    font-size: 1.25em;
+}
+
+.sortable-th {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.sortable-th :hover {
+    cursor: pointer;
+    cursor: hand;
+    text-decoration: underline;
+}
+
+
+/* Table Head Fixed Style  */
+
+table.table-fix-head {
+    border-collapse: collapse;
+}
+
+table.table-fix-head th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0px 4px 0px rgba(0, 0, 0, .2);
+    background: #eee;
+}
+
+table.table-fix-head th[scope=row] {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    vertical-align: top;
+}
+
+table.table-fix-head:nth-of-type(2) th:not([scope=row]):first-child {
+    left: 0;
+    z-index: 3;
+}
+
+.table-fix-head th[scope=row] + td {
+    min-width: 24em;
+}
+
+.table-fix-head th[scope=row] {
+    min-width: 20em;
+}

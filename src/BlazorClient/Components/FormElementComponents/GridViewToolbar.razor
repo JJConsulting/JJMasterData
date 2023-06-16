@@ -1,0 +1,26 @@
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.Core.DataDictionary.Actions
+@using JJMasterData.BlazorClient.Components.FormElementComponents.Controls
+
+<div class=" mb-3"> 
+	<div class="row"> 
+		<div class="col-sm-12">
+			@foreach (var action in Options.GridToolbarActions)
+			{
+				@if (action.ShowAsButton)
+				{
+					<ActionButton Action="action" PrimaryKeyValues="PrimaryKeyValues"/>
+				}
+			}
+		</div> 
+	</div> 
+</div>
+
+
+@code {
+	[Parameter]
+    public FormElementOptions Options { get; set; } = null!;
+	
+	[Parameter]
+	public IDictionary<string,dynamic?> PrimaryKeyValues { get; set; } = null!;
+}

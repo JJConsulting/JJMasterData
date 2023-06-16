@@ -5,7 +5,6 @@ using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
-using JJMasterData.Web.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -123,7 +122,6 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(IServiceCollection services)
     {
-        services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddSystemWebAdapters();

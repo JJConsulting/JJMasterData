@@ -1,0 +1,118 @@
+﻿@using JJMasterData.Core.DataDictionary
+@using JJMasterData.BlazorClient.Services
+@using JJMasterData.Commons.Data.Entity
+@using JJMasterData.BlazorClient.Extensions
+@using JJMasterData.BlazorClient.Services.Abstractions
+@using JJMasterData.Commons.Extensions
+
+@inject IFieldsService FieldsService
+
+
+@if (FormElement is not null && DataSource is not null && VisibleFields is not null)
+{
+    @if (FormElement?.Title is not null)
+    {
+        if (FormElement.Options.Grid.ShowTitle)
+        {
+            <PageHeader Title="@FormElement.Title" SubTitle="@FormElement.SubTitle"/>
+        }
+    }
+    <CascadingValue Value="this">
+        <GridViewToolbar PrimaryKeyValues="SelectedPrimaryKeys" Options="FormElement!.Options"/>
+    </CascadingValue>
+
+    <table class="table table-responsive table-striped table-hover">
+        <thead>
+        @if (DataSource is { Data.IsEmpty: false} || (DataSource is { Data.IsEmpty: true} && FormElement!.Options.Grid.ShowHeaderWhenEmpty))
+        {
+            <tr>
+                @foreach (var field in VisibleFields)
+                {
+                    <th class="@(FormElement!.Options.Grid.EnableSorting ? "sortable-th" : string.Empty)" @onclick="async () => await SetOrderByData(field.Name)">
+                        @(field.Label ?? field.Name)
+                        @if (OrderByData?.FieldName == field.Name)
+                        {
+                            if (OrderByData.Direction == OrderByDirection.Asc)
+                            {
+                                <Icon IconType="IconType.SortAmountAsc" Tooltip="Ascending Order"/>
+                            }
+                            else
+                            {
+                                <Icon IconType="IconType.SortAmountDesc" Tooltip="Descending order"/>
+                            }
+                        }
+                    </th>
+                }
+
+                @for (var i = 0; i < FormElement!.Options.GridTableActions.Count; i++)
+                {
+                    <th>
+
+                    </th>
+                }
+            </tr>
+        }
+
+        </thead>
+        <tbody>
+        @switch (DataSource)
+        {
+            case {Data: not null} and { Data.IsEmpty: false}:
+            {
+                foreach (var row in DataSource.Data)
+                {
+                    <GridViewRow Row="@row.DeepCopy()" FormElement="@FormElement" OnActionRender="@OnActionRender" VisibleFields="@VisibleFields"/>
+                }
+                break;
+            }
+            case {Data: not null} and { Data.IsEmpty: true}:
+                if (FormElement != null)
+                {
+                    <Alert
+                        Icon="@IconType.InfoCircle"
+                        ShowCloseButton="@true"
+                        Color="@PanelColor.Default"
+                        Title="@FormElement.Options.Grid.EmptyDataText"/>
+                }
+                break;
+            default:
+                <Spinner/>
+                break;
+        }
+        </tbody>
+    </table>
+
+
+    @if (PaginationData is not null && DataSource is {Data.IsEmpty: false})
+    {
+        <GridViewPagination PaginationData="PaginationData" PaginationFunc="SetCurrentPage"/>
+    }
+}
+else
+{
+    <Spinner/>
+}
+
+
+@functions
+{
+    private async Task SetCurrentPage(int i)
+    {
+        PaginationData!.CurrentPage = i;
+        await PopulateDataSourceAsync();
+        StateHasChanged();
+    }
+
+    private async Task SetOrderByData(string fieldName)
+    {
+        OrderByData = OrderByData == null ?
+            new OrderByData(fieldName) :
+            new OrderByData(fieldName,
+                OrderByData.Direction == OrderByDirection.Asc
+                    ? OrderByDirection.Desc
+                    : OrderByDirection.Asc);
+
+        await PopulateDataSourceAsync();
+        StateHasChanged();
+    }
+}

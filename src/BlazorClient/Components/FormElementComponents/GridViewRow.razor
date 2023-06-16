@@ -1,0 +1,75 @@
+@using JJMasterData.BlazorClient.Services.Abstractions
+@using JJMasterData.Core.DataDictionary
+@using JJMasterData.BlazorClient.Extensions
+@using JJMasterData.BlazorClient.Services
+@using JJMasterData.Commons.Extensions
+@using JJMasterData.Core.DataDictionary.Actions.Abstractions
+@using System.Collections.Concurrent
+@using JJMasterData.BlazorClient.Components.FormElementComponents.Controls
+<tr>
+    @foreach (var field in VisibleFields)
+    {
+        <td>
+            @if (formattedValues == null || formattedValues.Count == 0)
+            {
+                <text>NEVER</text>
+            }
+            else
+            {
+                if (formattedValues.TryGetValue(field.Name, out var value))
+                {
+                    <text>@value</text>
+                }
+                else if (Row.ContainsKey(field.Name))
+                {
+                    <text>GONNA</text>
+                }
+            }
+        </td>
+    }
+
+    @foreach (var action in FormElement.Options.GridTableActions.GetAllSorted())
+    {
+        OnActionRender?.Invoke(action, Row);
+        <td class="table-action">
+            <ActionButton Action="action" PrimaryKeyValues="FormElement.GetPrimaryKeyValues(Row)"/>
+        </td>
+    }
+</tr>
+
+@code {
+    private Dictionary<string, string>? formattedValues;
+
+    [Parameter]
+    public Action<BasicAction, IDictionary<string, dynamic?>>? OnActionRender { get; set; }
+
+    [Parameter]
+    public IDictionary<string, dynamic?> Row { get; set; } = null!;
+
+    [Parameter]
+    public FormElement FormElement { get; set; } = null!;
+
+    [Parameter]
+    public IEnumerable<FormElementField> VisibleFields { get; set; } = null!;
+
+    [Inject]
+    public IFieldFormattingService FieldFormattingService { get; set; } = null!;
+
+    [Inject]
+    public IFieldsService FieldsService { get; set; } = null!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        formattedValues = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        foreach (var kvp in Row)
+        {
+            if (FormElement.Fields.Contains(kvp.Key))
+            {
+                var field = FormElement.Fields[kvp.Key];
+                formattedValues[kvp.Key] = await FieldFormattingService.FormatGridValue(field, Row);
+            }
+        }
+        await base.OnParametersSetAsync();
+    }
+
+}
