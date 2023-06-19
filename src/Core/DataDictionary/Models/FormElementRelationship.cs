@@ -19,8 +19,14 @@ public class FormElementRelationship
     public RelationshipViewType ViewType { get; set; }
 
     [JsonProperty("panel")]
-    public FormElementPanel Panel { get; set; }
+    public FormElementPanel Panel { get; set; } = null!;
 
+
+    [JsonConstructor]
+    private FormElementRelationship()
+    {
+        
+    }
     
     public FormElementRelationship(bool isParent = false)
     {

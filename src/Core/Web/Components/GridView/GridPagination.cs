@@ -105,10 +105,10 @@ internal class GridPagination
         string enableAjax = GridView.EnableAjax ? "true" : "false";
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
         string dictionaryNameEncrypted = encryptionService.EncryptString(GridView.FormElement.Name);
-        string url = $"{ConfigurationHelper.GetUrlMasterData()}?dictionaryNameEncrypted={dictionaryNameEncrypted}&currentPage={page}";
+        string url = $"{ConfigurationHelper.GetUrlMasterData()}Form/GetGrid?dictionaryNameEncrypted={dictionaryNameEncrypted}&currentPage={page}";
         if (GridView.IsExternalRoute)
         {
-            return $"javascript:jjview.doPaginationExternal('{name}', {url}, {page})";
+            return $"javascript:jjview.doPaginationExternal('{name}', '{url}', {page})";
         }
         
         return $"javascript:jjview.doPagination('{name}', {enableAjax}, {page})";

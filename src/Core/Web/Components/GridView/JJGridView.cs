@@ -124,7 +124,7 @@ public class JJGridView : JJBaseView
         }
     }
 
-    internal bool IsExternalRoute { get; set; } = true;
+    internal bool IsExternalRoute { get; set; } 
 
     public JJDataExp DataExp
     {
