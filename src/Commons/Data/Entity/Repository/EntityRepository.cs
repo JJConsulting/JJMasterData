@@ -164,6 +164,8 @@ public class EntityRepository : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetScriptWriteProcedure(Element)"/>
     public string GetScriptWriteProcedure(Element element) => Provider.GetWriteProcedureScript(element);
 
+    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields) => Provider.GetAlterTableScript(element, fields);
+
     ///<inheritdoc cref="IEntityRepository.GetScriptReadProcedure(Element)"/>
     public string GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);
 

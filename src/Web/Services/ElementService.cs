@@ -37,7 +37,7 @@ public class ElementService : BaseService
 
     #region Exec Scripts GET/SET/TABLE
 
-    public List<string> GetScriptsDictionary(string id)
+    public List<string> GetScriptsList(string id)
     {
         var formElement = DataDictionaryRepository.GetMetadata(id);
         Element element = formElement;
@@ -45,19 +45,20 @@ public class ElementService : BaseService
         {
             _entityRepository.GetScriptCreateTable(element),
             _entityRepository.GetScriptReadProcedure(element),
-            _entityRepository.GetScriptWriteProcedure(element)
+            _entityRepository.GetScriptWriteProcedure(element),
+            _entityRepository.GetAlterTableScript(element),
         };
 
         return listScripts;
     }
 
 
-    public void ExecScripts(string id, string scriptExec)
+    public void ExecScripts(string id, string scriptOption)
     {
         var dictionary = DataDictionaryRepository.GetMetadata(id);
         var element = dictionary;
 
-        switch (scriptExec)
+        switch (scriptOption)
         {
             case "Exec":
                 var sql = new StringBuilder();

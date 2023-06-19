@@ -122,11 +122,18 @@ public class ElementController : DataDictionaryController
 
     public IActionResult Scripts(string dictionaryName)
     {
-        ViewBag.Scripts = _elementService.GetScriptsDictionary(dictionaryName);
-        ViewBag.DictionaryName = dictionaryName;
-        ViewBag.IsDefault = false;
+        var scripts = _elementService.GetScriptsList(dictionaryName);
 
-        return View("Scripts", "_MasterDataLayout.Popup");
+        var model = new ElementScriptsViewModel
+        {
+            DictionaryName = dictionaryName,
+            CreateTableScript = scripts[0],
+            WriteProcedureScript = scripts[1],
+            ReadProcedureScript = scripts[2],
+            AlterTableScript = scripts[3]
+        };
+
+        return View(model);
     }
 
     [HttpPost]
@@ -157,11 +164,11 @@ public class ElementController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Scripts(string dictionaryName, string scriptExec)
+    public IActionResult Scripts(string dictionaryName, string scriptOption)
     {
         try
         {
-            _elementService.ExecScripts(dictionaryName, scriptExec);
+            _elementService.ExecScripts(dictionaryName, scriptOption);
             return new JsonResult(new { success = true });
         }
         catch (Exception ex)

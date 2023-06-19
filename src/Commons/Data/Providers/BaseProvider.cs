@@ -38,7 +38,7 @@ public abstract class BaseProvider
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary filters);
     public abstract DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
     public abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values);
-
+    public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> fields);
     ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
     public void Insert(Element element, IDictionary values)
     {

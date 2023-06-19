@@ -191,7 +191,8 @@ public interface IEntityRepository
     /// Build a struture script to procedure of set
     /// </summary>
     public string GetScriptWriteProcedure(Element element);
-
+    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields);
+    
     /// <summary>
     /// Build a element from a existing table
     /// </summary>
@@ -267,4 +268,5 @@ public interface IEntityRepository
 
     Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string,dynamic> filters);
     Task<(List<Dictionary<string, dynamic>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage, int i);
+
 }

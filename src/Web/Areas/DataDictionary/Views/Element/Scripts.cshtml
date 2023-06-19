@@ -1,6 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+
+@model ElementScriptsViewModel
+
 @{
     Layout = "_MasterDataLayout.Popup";
 }
@@ -45,10 +49,6 @@
     }
 }
 
-<style>
-        
-</style>
-
 <div class="row">
     <div class="col-sm-12">
         <button class="@BootstrapHelper.DefaultButton" type="button" value="Exec" onclick="executeScripts(this.value)">
@@ -60,6 +60,14 @@
             <span class="fa fa-forward"></span>
             <span>&nbsp; @Translate.Key("Run All")</span>
         </button>
+        
+        @if (Model.AlterTableScript is not null)
+        {
+            <button class="@BootstrapHelper.DefaultButton" type="button" value="AlterTable" onclick="executeScripts(this.value)">
+                <span class="fa-regular fa-border-bottom-right"></span>
+                <span>&nbsp; @Translate.Key("Alter Table")</span>
+            </button>
+        }
     </div>
 </div>
 <br />
@@ -78,26 +86,40 @@
             @Translate.Key("Set Procedure")
         </a>
     </li>
+      @if (Model.AlterTableScript is not null)
+        {
+             <a @GetIdBs4("AlterTable") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAlterTable">
+                @Translate.Key("Alter Table")
+            </a>
+        }
 </ul>
 
 <div class="tab-content">
     
     <div id="divTable" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
         @{
-            ScriptCode(ViewBag.Scripts[0]);
+            ScriptCode(Model.CreateTableScript);
         }
     </div>
     <div id="divProcGet" class="tab-pane fade">
        @{
-            ScriptCode(ViewBag.Scripts[1]);
+            ScriptCode(Model.ReadProcedureScript);
         }
     </div>
     <div id="divProcSet" class="tab-pane fade">
-       @{
-            ScriptCode(ViewBag.Scripts[2]);
+        @{
+            ScriptCode(Model.WriteProcedureScript);
         }
     </div>
-    
+         
+    @if (Model.AlterTableScript is not null)
+    {
+        <div id="divAlterTable" class="tab-pane fade">
+            @{
+                ScriptCode(Model.AlterTableScript);
+            }
+        </div>
+    }
 </div>
 
 @section Scripts
@@ -106,65 +128,74 @@
     <script type="text/javascript" src="~/js/highlightjs/languages/tsql.min.js"></script>
     <script type="text/javascript">
     
-    function copyAll(obj) {
-            let textVal = $("#divTable pre").text().trim();
+        function copyAll(obj) {
+            let textVal = document.querySelector("#divTable pre").textContent.trim();
             textVal += "\r\n";
-            textVal += $("#divProcGet pre").text().trim();
+            textVal += document.querySelector("#divProcGet pre").textContent.trim();
             textVal += "\r\n";
-            textVal += $("#divProcSet pre").text().trim();
-            
+            textVal += document.querySelector("#divProcSet pre").textContent.trim();
+        
             copyText(textVal);
         }
-    
+        
         function copyContent(obj) {
-            const objName = $(".tab-content .active").first().attr("id");
-            let textVal =  $("#" + objName + " pre").text().trim();
+            const objName = document.querySelector(".tab-content .active").getAttribute("id");
+            let textVal = document.querySelector("#" + objName + " pre").textContent.trim();
             copyText(textVal);
             displayAsCopied(obj);
         }
-    
+        
         function displayAsCopied(obj) {
-             var btnContent = $(obj).html();
-            $(obj).html("<span class='fa fa-check'></span> Copied!")
-                .attr("class", "btn btn-success btn-small btn-sm");
-
+            const btnContent = obj.innerHTML;
+            obj.innerHTML = "<span class='fa fa-check'></span> Copied!";
+            obj.classList.remove("btn");
+            obj.classList.remove("btn-small");
+            obj.classList.remove("btn-sm");
+            obj.classList.add("btn");
+            obj.classList.add("btn-success");
+            obj.classList.add("btn-small");
+            obj.classList.add("btn-sm");
+        
             setTimeout(function() {
-                $(obj).html(btnContent)
-                    .attr("class", "@BootstrapHelper.DefaultButton btn-small btn-sm");
-            },2000);
+                obj.innerHTML = btnContent;
+                obj.classList.remove("btn");
+                obj.classList.remove("btn-success");
+                obj.classList.remove("btn-small");
+                obj.classList.remove("btn-sm");
+                obj.classList.add("btn");
+                obj.classList.add("btn-small");
+                obj.classList.add("btn-sm");
+            }, 2000);
         }
-
+        
         function copyText(value) {
             navigator.clipboard.writeText(value);
         }
-    
+        
         function executeScripts(value) {
-             $.ajax({
-                url: '@Url.Action("Scripts", "Element", new { dictionaryName = ViewBag.DictionaryName })',
-                type: 'POST',
-                data: {
-                    scriptExec: value
+            fetch('@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 },
-                dataType: 'json',
-                success: function (response) {
+                body: JSON.stringify({
+                    scriptOption: value
+                })
+            })
+            .then(function(response) {
+                if (response.ok) {
                     window.parent.popup.hide();
-                 },
-                 error: function (xhr, status, error) {
-                     messageWait.hide();
-                     if (xhr.responseText != "") {
-                         var err = JSON.parse(xhr.responseText);
-    
-                         if (err.status == 401) {
-                             window.parent.forms[0].submit();
-                         }
-                         else {
-                             messageBox.show("@Translate.Key("Error")", err.message, 4);
-                         }
-                     }
-                     else {
-                         messageBox.show("@Translate.Key("Error")","@Translate.Key("Unexpected error")", 4);
-                     }
-                 }
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            })
+            .catch(function(error) {
+                messageWait.hide();
+                if (error.status === 401) {
+                    window.parent.forms[0].submit();
+                } else {
+                    messageBox.show("@Translate.Key("Error")", error.message, 4);
+                }
             });
         }
     
