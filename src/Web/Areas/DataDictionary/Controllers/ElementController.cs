@@ -120,16 +120,16 @@ public class ElementController : DataDictionaryController
         return View("ClassSourceCode", "_MasterDataLayout.Popup");
     }
 
-    public IActionResult Scripts(string dictionaryName)
+    public async Task<IActionResult> Scripts(string dictionaryName)
     {
-        var scripts = _elementService.GetScriptsList(dictionaryName);
+        var scripts = await _elementService.GetScriptsListAsync(dictionaryName);
 
         var model = new ElementScriptsViewModel
         {
             DictionaryName = dictionaryName,
-            CreateTableScript = scripts[0],
-            WriteProcedureScript = scripts[1],
-            ReadProcedureScript = scripts[2],
+            CreateTableScript = scripts[0]!,
+            WriteProcedureScript = scripts[1]!,
+            ReadProcedureScript = scripts[2]!,
             AlterTableScript = scripts[3]
         };
 
@@ -164,11 +164,11 @@ public class ElementController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Scripts(string dictionaryName, string scriptOption)
+    public async Task<IActionResult> Scripts(string dictionaryName, string scriptOption)
     {
         try
         {
-            _elementService.ExecScripts(dictionaryName, scriptOption);
+            await _elementService.ExecuteScriptsAsync(dictionaryName, scriptOption);
             return new JsonResult(new { success = true });
         }
         catch (Exception ex)

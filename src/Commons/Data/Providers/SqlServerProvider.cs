@@ -55,7 +55,7 @@ public class SqlServerProvider : BaseProvider
                 sql.AppendLine(",");
 
             sql.Append(Tab);
-            sql.Append(GetDataType(f));
+            sql.Append(GetFieldDefinition(f));
 
             if (!f.IsPk) continue;
             if (keys.Length > 0)
@@ -121,7 +121,7 @@ public class SqlServerProvider : BaseProvider
         return sql.ToString();
     }
 
-    private static string GetDataType(ElementField f)
+    private static string GetFieldDefinition(ElementField f)
     {
         var sql = new StringBuilder();
         sql.Append("[");
@@ -933,25 +933,23 @@ public class SqlServerProvider : BaseProvider
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         var elementFields = fields.ToList();
-        
+    
         if (element == null || !elementFields.Any())
         {
             return string.Empty; 
         }
 
-        string tableName = element.TableName;
-        List<string> alterStatements = new List<string>();
+        var fieldDefinitions =
+            from field in elementFields
+            let fieldName = field.Name
+            let dataType = GetFieldDefinition(field)
+            select $"{dataType}";
 
-        foreach (var field in elementFields)
-        {
-            string fieldName = field.Name;
-            string dataType = GetDataType(field);
-            string nullable = field.IsRequired ? "NOT NULL" : "NULL";
-            string alterStatement = $"ALTER TABLE {tableName} ADD {fieldName} {dataType} {nullable};";
-            alterStatements.Add(alterStatement);
-        }
+        var tableName = element.TableName;
         
-        string alterTableScript = string.Join(Environment.NewLine, alterStatements);
+        var fieldDefinitionsString = string.Join(",\n", fieldDefinitions);
+        var alterTableScript = $"ALTER TABLE {tableName}\nADD {fieldDefinitionsString};";
+    
         return alterTableScript;
     }
 

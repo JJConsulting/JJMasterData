@@ -37,46 +37,60 @@ public class ElementService : BaseService
 
     #region Exec Scripts GET/SET/TABLE
 
-    public List<string> GetScriptsList(string id)
+    public async Task<List<string?>> GetScriptsListAsync(string id)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(id);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(id);
         Element element = formElement;
-        var listScripts = new List<string>
+
+        var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
+        
+        var listScripts = new List<string?>
         {
             _entityRepository.GetScriptCreateTable(element),
             _entityRepository.GetScriptReadProcedure(element),
             _entityRepository.GetScriptWriteProcedure(element),
-            _entityRepository.GetAlterTableScript(element),
+            _entityRepository.GetAlterTableScript(element, addedFields),
         };
 
         return listScripts;
     }
-
-
-    public void ExecScripts(string id, string scriptOption)
+    
+    public async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(id);
+        if (!await _entityRepository.TableExistsAsync(element.TableName))
+            yield break;
+        
+        foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
+        {
+            if (!await _entityRepository.ColumnExistsAsync(element.TableName, field.Name))
+            {
+                yield return field;
+            }
+        }
+    }
+    
+    public async Task ExecuteScriptsAsync(string id, string scriptOption)
+    {
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(id);
         var element = dictionary;
 
         switch (scriptOption)
         {
-            case "Exec":
+            case "ExecuteProcedures":
                 var sql = new StringBuilder();
                 sql.AppendLine(_entityRepository.GetScriptWriteProcedure(element));
                 sql.AppendLine(_entityRepository.GetScriptReadProcedure(element));
-                _entityRepository.ExecuteBatch(sql.ToString());
+                await _entityRepository.ExecuteBatchAsync(sql.ToString());
                 break;
-            case "ExecAll":
-                _entityRepository.CreateDataModel(element);
+            case "ExecuteCreateDataModel":
+                await _entityRepository.CreateDataModelAsync(element);
+                break;
+            case "ExecuteAlterTable":
+                var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
+                await _entityRepository.ExecuteBatchAsync(_entityRepository.GetAlterTableScript(element,addedFields));
                 break;
         }
     }
-
-    public void ExecScriptsMasterData()
-    {
-        DataDictionaryRepository.CreateStructureIfNotExists();
-    }
-
     #endregion
 
     #region Add Dictionary
