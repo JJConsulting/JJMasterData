@@ -64,9 +64,12 @@ public class FileLogger : ILogger
                 Directory.CreateDirectory(directory!);
 
             var record = GetLogRecord(message);
-            
             using var writer = new StreamWriter(path, true);
             writer.Write(record);
+            writer.Flush();
+            writer.Close();
+
+
         }
     }
 
@@ -82,7 +85,7 @@ public class FileLogger : ILogger
             log.AppendFormat(" [{0}] ", message.EventId.Name);
         }
 
-        log.AppendFormat(" {0} ", message);
+        log.AppendFormat(" {0} ", message.Formatter(message.State, message.Exception));
 
         if (message.Exception != null)
         {

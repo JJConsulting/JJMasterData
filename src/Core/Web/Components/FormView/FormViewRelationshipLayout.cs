@@ -144,7 +144,8 @@ internal class FormViewRelationshipLayout
                     {
                         ShowAsCollapse = false
                     },
-                    Name = "jjgridview_" + childElement.Name
+                    Name = "jjgridview_" + childElement.Name,
+                    IsExternalRoute = true
                 };
                 childGrid.Filter.ApplyCurrentFilter(filter);
 

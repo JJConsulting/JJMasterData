@@ -1,7 +1,11 @@
 using System;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -99,7 +103,14 @@ internal class GridPagination
     {
         string name = GridView.Name;
         string enableAjax = GridView.EnableAjax ? "true" : "false";
-
+        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+        string dictionaryNameEncrypted = encryptionService.EncryptString(GridView.FormElement.Name);
+        string url = $"{ConfigurationHelper.GetUrlMasterData()}?dictionaryNameEncrypted={dictionaryNameEncrypted}&currentPage={page}";
+        if (GridView.IsExternalRoute)
+        {
+            return $"javascript:jjview.doPaginationExternal('{name}', {url}, {page})";
+        }
+        
         return $"javascript:jjview.doPagination('{name}', {enableAjax}, {page})";
     }
 

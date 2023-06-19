@@ -124,6 +124,8 @@ public class JJGridView : JJBaseView
         }
     }
 
+    internal bool IsExternalRoute { get; set; } = true;
+
     public JJDataExp DataExp
     {
         get
@@ -213,7 +215,7 @@ public class JJGridView : JJBaseView
     public FormElement FormElement { get; set; }
 
 
-    /// Datasource is the property responsible for controlling the data source.
+    /// DataSource is the property responsible for controlling the data source.
     /// The component uses the following rule to retrieve grid data:
     /// <para/>1) Use the DataSource property;
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
