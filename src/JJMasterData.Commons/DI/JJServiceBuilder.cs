@@ -36,7 +36,7 @@ public class JJServiceBuilder
             }
         });
         
-        Services.AddScoped<IEntityRepository,EntityRepository>();
+        Services.AddTransient<IEntityRepository,EntityRepository>();
         
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
         Services.AddTransient<JJMasterDataEncryptionService>();
