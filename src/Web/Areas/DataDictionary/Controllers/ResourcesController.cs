@@ -25,9 +25,8 @@ public class ResourcesController : DataDictionaryController
         {
             throw new JJMasterDataException("Resources table not found.");
         }
-        
+
         var formView = _resourcesService.GetFormView(_options.SupportedCultures);
-        
         return View(formView);
     }
 

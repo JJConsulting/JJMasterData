@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JJMasterData.Core.DataDictionary.Services.Abstractions;
+namespace JJMasterData.Core.DataDictionary.Services;
 
 public interface IValidationDictionary
 {

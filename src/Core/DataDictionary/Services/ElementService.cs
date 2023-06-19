@@ -1,9 +1,15 @@
-﻿using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Core.DataDictionary.Services.Abstractions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DI;
+using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Options;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,13 +17,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DI;
-using JJMasterData.Core.Web.Components;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -193,8 +192,10 @@ public class ElementService : BaseService
         var formElement = new FormElement(element);
         formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
-        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("1", "Yes"));
-        formElement.Fields[DataDictionaryStructure.Sync].DataItem.Items.Add(new DataItemValue("0", "No"));
+        var dataItem = new FormElementDataItem();
+        dataItem.Items.Add(new DataItemValue("1", "Yes"));
+        dataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
         
