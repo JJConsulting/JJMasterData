@@ -1,3 +1,4 @@
+using System;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -9,6 +10,7 @@ using JJMasterData.Core.FormEvents.Args;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataManager;
 

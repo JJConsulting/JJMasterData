@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,17 +15,13 @@ public static class StringManager
         if (value == null)
             return false;
 
-        string stringValue = value.ToString();
+        string? stringValue = value.ToString();
         
         if (string.IsNullOrWhiteSpace(stringValue))
-        {
             return false;
-        }
         
         stringValue = stringValue.Replace("val:", "").Trim();
-
         stringValue = stringValue.ToLower();
-        
         return stringValue switch
         {
             "true" => true,
@@ -161,25 +159,25 @@ public static class StringManager
 
         //calculo a data que recebo 
         //descomponho a data em um array 
-        string[] array_data = dt.Split('/');
+        string[] arrayData = dt.Split('/');
 
         //se o array nao tem tres partes, a data eh incorreta 
-        if (array_data.Length != 3)
+        if (arrayData.Length != 3)
             return "";
 
         //comprovo que o ano, mes, dia são corretos 
         int ano;
-        ano = int.Parse(array_data[2]);
+        ano = int.Parse(arrayData[2]);
         //if ( isNaN(ano) )
         //  return "";
 
         int mes;
-        mes = int.Parse(array_data[1]);
+        mes = int.Parse(arrayData[1]);
         // if (isNaN(mes))
         //    return false
 
         int dia;
-        dia = int.Parse(array_data[0]);
+        dia = int.Parse(arrayData[0]);
         //if (isNaN(dia))
         //    return false*/
 
@@ -225,7 +223,7 @@ public static class StringManager
             valor *= -1;
         }
         string strValor = valor.ToString("000000000000000.00");
-        string valor_por_extenso = string.Empty;
+        string valorPorExtenso = string.Empty;
 
         for (int i = 0; i <= 15; i += 3)
         {
@@ -288,84 +286,84 @@ public static class StringManager
                     else if (c == 8) montagem += "oito";
                     else if (c == 9) montagem += "nove";
 
-                valor_por_extenso += montagem;
+                valorPorExtenso += montagem;
             }
 
 
-            if (i == 0 & valor_por_extenso != string.Empty)
+            if (i == 0 & valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(0, 3)) == 1)
-                    valor_por_extenso += " trilhão" + ((Convert.ToDecimal(strValor.Substring(3, 12)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " trilhão" + ((Convert.ToDecimal(strValor.Substring(3, 12)) > 0) ? " e " : string.Empty);
                 else if (Convert.ToInt32(strValor.Substring(0, 3)) > 1)
-                    valor_por_extenso += " trilhões" + ((Convert.ToDecimal(strValor.Substring(3, 12)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " trilhões" + ((Convert.ToDecimal(strValor.Substring(3, 12)) > 0) ? " e " : string.Empty);
             }
-            else if (i == 3 & valor_por_extenso != string.Empty)
+            else if (i == 3 & valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(3, 3)) == 1)
-                    valor_por_extenso += " bilhão" + ((Convert.ToDecimal(strValor.Substring(6, 9)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " bilhão" + ((Convert.ToDecimal(strValor.Substring(6, 9)) > 0) ? " e " : string.Empty);
                 else if (Convert.ToInt32(strValor.Substring(3, 3)) > 1)
-                    valor_por_extenso += " bilhões" + ((Convert.ToDecimal(strValor.Substring(6, 9)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " bilhões" + ((Convert.ToDecimal(strValor.Substring(6, 9)) > 0) ? " e " : string.Empty);
             }
-            else if (i == 6 & valor_por_extenso != string.Empty)
+            else if (i == 6 & valorPorExtenso != string.Empty)
             {
                 if (Convert.ToInt32(strValor.Substring(6, 3)) == 1)
-                    valor_por_extenso += " milhão" + ((Convert.ToDecimal(strValor.Substring(9, 6)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " milhão" + ((Convert.ToDecimal(strValor.Substring(9, 6)) > 0) ? " e " : string.Empty);
                 else if (Convert.ToInt32(strValor.Substring(6, 3)) > 1)
-                    valor_por_extenso += " milhões" + ((Convert.ToDecimal(strValor.Substring(9, 6)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " milhões" + ((Convert.ToDecimal(strValor.Substring(9, 6)) > 0) ? " e " : string.Empty);
             }
-            else if (i == 9 & valor_por_extenso != string.Empty)
+            else if (i == 9 & valorPorExtenso != string.Empty)
                 if (Convert.ToInt32(strValor.Substring(9, 3)) > 0)
-                    valor_por_extenso += " mil" + ((Convert.ToDecimal(strValor.Substring(12, 3)) > 0) ? " e " : string.Empty);
+                    valorPorExtenso += " mil" + ((Convert.ToDecimal(strValor.Substring(12, 3)) > 0) ? " e " : string.Empty);
 
             if (i == 12)
             {
-                if (valor_por_extenso.Length > 8)
-                    if (valor_por_extenso.Substring(valor_por_extenso.Length - 6, 6) == "bilhão" | valor_por_extenso.Substring(valor_por_extenso.Length - 6, 6) == "milhão")
-                        valor_por_extenso += " de";
+                if (valorPorExtenso.Length > 8)
+                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "bilhão" | valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == "milhão")
+                        valorPorExtenso += " de";
                     else
-                    if (valor_por_extenso.Substring(valor_por_extenso.Length - 7, 7) == "bilhões" | valor_por_extenso.Substring(valor_por_extenso.Length - 7, 7) == "milhões" | valor_por_extenso.Substring(valor_por_extenso.Length - 8, 7) == "trilhões")
-                        valor_por_extenso += " de";
+                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "bilhões" | valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == "milhões" | valorPorExtenso.Substring(valorPorExtenso.Length - 8, 7) == "trilhões")
+                        valorPorExtenso += " de";
                     else
-                    if (valor_por_extenso.Substring(valor_por_extenso.Length - 8, 8) == "trilhões")
-                        valor_por_extenso += " de";
+                    if (valorPorExtenso.Substring(valorPorExtenso.Length - 8, 8) == "trilhões")
+                        valorPorExtenso += " de";
 
                 if (isCurrency)
                 {
                     if (Convert.ToInt64(strValor.Substring(0, 15)) == 1)
-                        valor_por_extenso += " real";
+                        valorPorExtenso += " real";
                     else if (Convert.ToInt64(strValor.Substring(0, 15)) > 1)
-                        valor_por_extenso += " reais";
+                        valorPorExtenso += " reais";
 
-                    if (Convert.ToInt32(strValor.Substring(16, 2)) > 0 && valor_por_extenso != string.Empty)
-                        valor_por_extenso += " e ";
+                    if (Convert.ToInt32(strValor.Substring(16, 2)) > 0 && valorPorExtenso != string.Empty)
+                        valorPorExtenso += " e ";
                 }
                 else
                 {
-                    if (Convert.ToInt32(strValor.Substring(16, 2)) > 0 && valor_por_extenso != string.Empty)
-                        valor_por_extenso += " virgula ";
+                    if (Convert.ToInt32(strValor.Substring(16, 2)) > 0 && valorPorExtenso != string.Empty)
+                        valorPorExtenso += " virgula ";
                 }
             }
 
             if (i == 15 && isCurrency)
             {
                 if (Convert.ToInt32(strValor.Substring(16, 2)) == 1)
-                    valor_por_extenso += " centavo";
+                    valorPorExtenso += " centavo";
                 else if (Convert.ToInt32(strValor.Substring(16, 2)) > 1)
-                    valor_por_extenso += " centavos";
+                    valorPorExtenso += " centavos";
             }
         }
 
         if (isNegativo)
         {
-            valor_por_extenso = "menos " + valor_por_extenso;
+            valorPorExtenso = "menos " + valorPorExtenso;
         }
         else if (valor == 0)
         {
-            valor_por_extenso = "zero";
+            valorPorExtenso = "zero";
         }
 
 
-        return valor_por_extenso;
+        return valorPorExtenso;
     }
 
     /// <summary>

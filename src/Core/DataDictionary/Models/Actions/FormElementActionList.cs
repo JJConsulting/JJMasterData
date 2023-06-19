@@ -1,21 +1,23 @@
 #nullable enable
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions;
 
-public abstract class FormElementActionList : IList<BasicAction>
+public abstract class FormElementActionList : System.Collections.Generic.IList<BasicAction>
 {
-    protected IList<BasicAction> List { get; set; }
+    protected System.Collections.Generic.IList<BasicAction> List { get; set; }
     protected FormElementActionList()
     {
         List = new System.Collections.Generic.List<BasicAction>();
     }
     
     [JsonConstructor]
-    protected FormElementActionList(IList<BasicAction> list)
+    protected FormElementActionList(System.Collections.Generic.IList<BasicAction> list)
     {
         List = list;
     }

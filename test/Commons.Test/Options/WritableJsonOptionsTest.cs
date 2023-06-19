@@ -21,7 +21,7 @@ public class DatabaseLoggingOptions
 
 public class FileLoggingOptions
 {
-    public string FileName { get; set; }
+    public string FileName { get; set; } = "log.txt";
     public Dictionary<string, LogLevel> LogLevel { get; set; } = new();
 }
 

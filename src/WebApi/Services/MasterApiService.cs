@@ -252,7 +252,7 @@ public class MasterApiService
 
             var formManager = formService.FormManager;
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
-            var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues);
+            var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues!);
             IDictionary currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -464,7 +464,7 @@ public class MasterApiService
             if (entry.Value == null)
                 continue;
 
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
             if (original.Contains(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
@@ -491,7 +491,7 @@ public class MasterApiService
 
         foreach (DictionaryEntry entry in errors)
         {
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key.ToString());
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

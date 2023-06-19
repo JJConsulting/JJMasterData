@@ -6,7 +6,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Core.DataDictionary.Services.Abstractions;
+namespace JJMasterData.Core.DataDictionary.Services;
 
 public abstract class BaseService
 {
