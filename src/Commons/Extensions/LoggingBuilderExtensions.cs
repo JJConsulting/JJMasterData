@@ -13,7 +13,7 @@ public static class LoggingBuilderExtensions
     {
         builder.Services.AddSingleton<ILoggerProvider, DbLoggerProvider>();
         builder.Services.AddSingleton<DbLoggerBuffer>();
-        builder.Services.AddHostedService<DbLoggerHostedService>();
+        builder.Services.AddHostedService<DbLoggerBackgroundService>();
         LoggerProviderOptions.RegisterProviderOptions<DbLoggerOptions, DbLoggerProvider>(builder.Services);
         return builder;
     }
@@ -22,7 +22,7 @@ public static class LoggingBuilderExtensions
     {
         builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
         builder.Services.AddSingleton<FileLoggerBuffer>();
-        builder.Services.AddHostedService<FileLoggerHostedService>();
+        builder.Services.AddHostedService<FileLoggerBackgroundService>();
         LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(builder.Services);
         return builder;
     }

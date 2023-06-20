@@ -1,21 +1,23 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
-public class FileLoggerHostedService : LoggerHostedService<FileLoggerBuffer>
+public class FileLoggerBackgroundService : LoggerBackgroundService<FileLoggerBuffer>
 {
     private readonly IOptionsMonitor<FileLoggerOptions> _optionsMonitor;
 
-    public FileLoggerHostedService(FileLoggerBuffer loggerBuffer, IOptionsMonitor<FileLoggerOptions> optionsMonitor) : base(loggerBuffer)
+    public FileLoggerBackgroundService(FileLoggerBuffer loggerBuffer, IOptionsMonitor<FileLoggerOptions> optionsMonitor) : base(loggerBuffer)
     {
         _optionsMonitor = optionsMonitor;
     }
-    protected override void Log(LogMessage logMessage)
+    protected override async Task LogAsync(LogMessage logMessage, CancellationToken cancellationToken)
     {
         var options = _optionsMonitor.CurrentValue;
         var path = FileIO.ResolveFilePath(options.FileName);
@@ -28,7 +30,7 @@ public class FileLoggerHostedService : LoggerHostedService<FileLoggerBuffer>
         var record = GetLogRecord(logMessage, formatting);
         
         using var writer = new StreamWriter(path, true);
-        writer.Write(record);
+        await writer.WriteAsync(record);
         
     }
 
