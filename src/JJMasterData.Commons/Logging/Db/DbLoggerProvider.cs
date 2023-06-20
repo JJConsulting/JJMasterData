@@ -27,7 +27,7 @@ public class DbLoggerProvider : ILoggerProvider
     }
 
     /// <summary>
-    /// Creates a new instance of the file logger.
+    /// Creates a new instance of the db logger.
     /// </summary>
     /// <param name="categoryName"></param>
     /// <returns></returns>
