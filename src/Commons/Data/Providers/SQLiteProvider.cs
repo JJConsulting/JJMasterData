@@ -637,4 +637,8 @@ public class ProviderSQLite : BaseProvider
     {
         return null;
     }
+    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    {
+        return "Not implemented";
+    }
 }

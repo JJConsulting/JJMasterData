@@ -44,4 +44,10 @@ public class DataAccessCommand
     {
         CmdType = type;
     }
+
+    public void AddParameter(string name, object? value, DbType dbType)
+    {
+        Parameters ??= new List<DataAccessParameter>();
+        Parameters.Add(new DataAccessParameter(name, value, dbType));
+    }
 }
