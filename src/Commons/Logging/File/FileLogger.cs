@@ -5,20 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.File;
 
 public class FileLogger : ILogger
 {
-    private readonly FileLoggerProvider _fileLoggerProvider;
+    private readonly IOptionsMonitor<FileLoggerOptions> _options;
     private readonly BlockingCollection<LogMessage> _queue;
 
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
-    public FileLogger(FileLoggerProvider fileLoggerProvider)
+    public FileLogger(IOptionsMonitor<FileLoggerOptions> options)
     {
-        _fileLoggerProvider = fileLoggerProvider;
+        _options = options;
         _queue = new BlockingCollection<LogMessage>();
         Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
     }
@@ -57,7 +58,7 @@ public class FileLogger : ILogger
     {
         foreach (var message in _queue.GetConsumingEnumerable())
         {
-            var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.CurrentValue.FileName);
+            var path = FileIO.ResolveFilePath(_options.CurrentValue.FileName);
             var directory = Path.GetDirectoryName(path);
 
             if (!Directory.Exists(directory))

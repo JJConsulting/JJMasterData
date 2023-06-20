@@ -12,11 +12,15 @@ public class DbLoggerProvider : ILoggerProvider
     internal IOptionsMonitor<DbLoggerOptions> Options { get; }
     internal IEntityRepository Repository { get; }
     internal bool TableExists { get; set; }
- 
+
+    private  ILogger _logger;
+
+
     public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IEntityRepository entityRepository)
     {
         Options = options;
         Repository = entityRepository;
+       
     }
  
     /// <summary>
@@ -26,7 +30,8 @@ public class DbLoggerProvider : ILoggerProvider
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName)
     {
-        return new DbLogger(this);
+        _logger ??= new DbLogger(this);
+        return _logger;
     }
  
     public void Dispose(){}

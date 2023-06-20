@@ -6,11 +6,11 @@ namespace JJMasterData.Commons.Logging.File;
 [ProviderAlias("File")]
 public class FileLoggerProvider : ILoggerProvider
 {
-    internal readonly IOptionsMonitor<FileLoggerOptions> Options;
+    private readonly ILogger _logger;
 
     public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
     {
-        Options = options;
+        _logger = new FileLogger(options);
     }
  
     /// <summary>
@@ -20,7 +20,7 @@ public class FileLoggerProvider : ILoggerProvider
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName)
     {
-        return new FileLogger(this);
+        return _logger;
     }
 
     public void Dispose(){}
