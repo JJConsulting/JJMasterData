@@ -27,11 +27,11 @@ jobs:
     strategy:
       matrix:
         project:
-          - src/JJMasterData.Commons
-          - src/JJMasterData.Core
-          - src/JJMasterData.Web
-          - src/Plugins/JJMasterData.Hangfire
-          - src/Plugins/JJMasterData.Pdf
+          - src/Commons
+          - src/Core
+          - src/Web
+          - src/Plugins/Hangfire
+          - src/Plugins/Pdf
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish NuGet package
