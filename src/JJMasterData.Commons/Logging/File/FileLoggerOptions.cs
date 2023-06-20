@@ -1,6 +1,7 @@
 ﻿namespace JJMasterData.Commons.Logging.File;
 
-public record FileLoggerOptions
+public class FileLoggerOptions
 {
     public string FileName { get; set; } = "Log/AppLog-yyyyMMdd.txt";
+    public FileLoggerFormatting Formatting { get; set; }
 }
