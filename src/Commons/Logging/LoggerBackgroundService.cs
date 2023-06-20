@@ -10,7 +10,7 @@ public abstract class LoggerBackgroundService<TLoggerBuffer> : BackgroundService
 
     protected LoggerBackgroundService(TLoggerBuffer loggerBuffer)
     {
-        this._loggerBuffer = loggerBuffer;
+        _loggerBuffer = loggerBuffer;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)

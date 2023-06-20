@@ -39,8 +39,11 @@ public class FormController : MasterDataController
     public IActionResult GetGrid(string dictionaryNameEncrypted, int currentPage)
     {
         var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
-        var formView = new JJFormView(dictionaryName);
-        formView.CurrentPage = currentPage;
+        var formView = new JJFormView(dictionaryName)
+        {
+            IsExternalRoute = true,
+            CurrentPage = currentPage
+        };
 
         return Content(formView.GetTableHtml());
     }

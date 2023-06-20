@@ -8,9 +8,7 @@ public class DbLogger : ILogger
 {
     private readonly DbLoggerBuffer _loggerBuffer;
     
-    public DbLogger(
-        DbLoggerBuffer loggerBuffer
-    )
+    public DbLogger(DbLoggerBuffer loggerBuffer)
     {
         _loggerBuffer = loggerBuffer;
     }
