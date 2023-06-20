@@ -815,6 +815,11 @@ public class OracleProvider : BaseProvider
         return GetCommandWrite(string.Empty, element, values);
     }
 
+    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    {
+        return "Not implemented";
+    }
+
     private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
     {
         DataAccessCommand cmd = new DataAccessCommand();
