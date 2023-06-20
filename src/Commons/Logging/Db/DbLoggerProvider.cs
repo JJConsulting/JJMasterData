@@ -9,36 +9,11 @@ namespace JJMasterData.Commons.Logging.Db;
 [ProviderAlias("Database")]
 public class DbLoggerProvider : ILoggerProvider
 {
-    private IEntityRepository EntityRepository { get; }
-    private DbLoggerOptions Options { get; set; }
-    
-    private readonly BlockingCollection<LogMessage> _queue;
-    private readonly ConcurrentDictionary<string, DbLogger> _loggers =
-        new(StringComparer.OrdinalIgnoreCase);
-    
-    private readonly IDisposable _onChangeOptions;
-    public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IEntityRepository entityRepository)
+    private readonly DbLoggerBuffer _buffer;
+    public DbLoggerProvider(DbLoggerBuffer buffer)
     {
-        EntityRepository = entityRepository;
-        _queue = new BlockingCollection<LogMessage>();
-        _onChangeOptions = options.OnChange(updatedConfig => Options = updatedConfig);
-        
-        Options = options.CurrentValue;
+        _buffer = buffer;
     }
-
-    /// <summary>
-    /// Creates a new instance of the db logger.
-    /// </summary>
-    /// <param name="categoryName"></param>
-    /// <returns></returns>
-    public ILogger CreateLogger(string categoryName) =>
-        _loggers.GetOrAdd(categoryName, name => new DbLogger(name, _queue,EntityRepository,GetCurrentOptions));
-
-    private DbLoggerOptions GetCurrentOptions() => Options;
-
-    public void Dispose()
-    {
-        _loggers.Clear();
-        _onChangeOptions.Dispose();
-    }
+    public ILogger CreateLogger(string categoryName) => new DbLogger(_buffer);
+    public void Dispose(){}
 }

@@ -1,29 +1,18 @@
 using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
 public class FileLogger : ILogger
 {
-
-    private readonly BlockingCollection<LogMessage> _queue;
-    private readonly IOptionsMonitor<FileLoggerOptions> _options;
+    private readonly FileLoggerBuffer _buffer;
 
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
-    public FileLogger(IOptionsMonitor<FileLoggerOptions> options)
+    public FileLogger(FileLoggerBuffer buffer)
     {
-        _queue = new BlockingCollection<LogMessage>();
-        _options = options;
-        Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
+        _buffer = buffer;
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;
@@ -53,90 +42,6 @@ public class FileLogger : ILogger
             return;
 
         var message = new LogMessage(logLevel, eventId, state!, exception, (s, e) => formatter((TState)s, e));
-        _queue.Add(message);
-    }
-    
-    private void LogAtFile()
-    {
-        var options = _options.CurrentValue;
-        foreach (var message in _queue.GetConsumingEnumerable())
-        {
-            var path = FileIO.ResolveFilePath(options.FileName);
-            var directory = Path.GetDirectoryName(path);
-
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory!);
-
-            var formatting = options.Formatting;
-            var record = GetLogRecord(message, formatting);
-            
-            using var writer = new StreamWriter(path, true);
-            writer.Write(record);
-        }
-    }
-
-    private static string GetLogRecord(LogMessage message, FileLoggerFormatting formatting)
-    {
-        var log = new StringBuilder();
-
-        switch (formatting)
-        {
-            case FileLoggerFormatting.Default:
-
-                log.Append(DateTime.Now);
-                log.Append(" ");
-                if (!string.IsNullOrWhiteSpace(message.EventId.Name))
-                {
-                    log.AppendFormat(" [{0}] ", message.EventId.Name);
-                }
-
-                log.Append("(");
-                log.Append(message.LogLevel.ToString());
-                log.AppendLine(")");
-                log.Append(message.Formatter(message.State, message.Exception));
-                log.AppendLine();
-                log.AppendLine();
-                break;
-            case FileLoggerFormatting.Compact:
-            {
-                log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
-                log.AppendFormat(" [{0}] ", message.LogLevel);
-
-                if (!string.IsNullOrWhiteSpace(message.EventId.Name))
-                {
-                    log.AppendFormat(" [{0}] ", message.EventId.Name);
-                }
-
-                log.AppendFormat(" {0} ", message.Formatter(message.State, message.Exception));
-
-                if (message.Exception != null)
-                {
-                    log.AppendLine(message.Exception.Message);
-                    log.AppendLine(message.Exception.StackTrace);
-                    log.AppendFormat("Source: {0}", message.Exception.Source);
-                }
-                log.AppendLine();
-                break;
-            }
-            case FileLoggerFormatting.Json:
-                log.Append(
-                    JsonConvert.SerializeObject(new
-                    {   Date = DateTime.Now,
-                        Event = message.EventId.Name,
-                        message.LogLevel,
-                        Message = message.Formatter(message.State, message.Exception),
-                        message.Exception
-                    }, new JsonSerializerSettings()
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        Formatting = Formatting.Indented
-                    }));
-                log.AppendLine(",");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(formatting), formatting, null);
-        }
-
-        return log.ToString();
+        _buffer.Enqueue(message);
     }
 }

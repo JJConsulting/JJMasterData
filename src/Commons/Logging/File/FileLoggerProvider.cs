@@ -1,34 +1,15 @@
-using System;
-using System.Collections.Concurrent;
-using JJMasterData.Commons.Logging.Db;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.File;
 
 [ProviderAlias("File")]
 public class FileLoggerProvider : ILoggerProvider
 {
-
-    private readonly ILogger _logger;
-    
-    public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
+    private readonly FileLoggerBuffer _buffer;
+    public FileLoggerProvider(FileLoggerBuffer buffer)
     {
-        _logger = new FileLogger(options);
+        _buffer = buffer;
     }
-
-    /// <summary>
-    /// Creates a new instance of the file logger.
-    /// </summary>
-    /// <param name="categoryName"></param>
-    /// <returns></returns>
-    public ILogger CreateLogger(string categoryName) =>
-        _logger;
-
-   
-
-    public void Dispose()
-    {
-
-    }
+    public ILogger CreateLogger(string categoryName) => new FileLogger(_buffer);
+    public void Dispose(){}
 }
