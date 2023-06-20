@@ -64,7 +64,7 @@ internal class FormValues
                     }
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.Form(fieldName + "_hidden") ?? "0";
+                    value ??= CurrentContext.Request.Form(fieldName + "_hidden");
                     break;
             }
 

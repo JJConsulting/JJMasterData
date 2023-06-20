@@ -321,6 +321,7 @@ public class JJTextFile : JJBaseControl
         var btn = new JJLinkButton();
         btn.IconClass = IconType.CloudDownload.GetCssClass();
         btn.Text = filename;
+        btn.Attributes.Add("onclick","event.stopPropagation()");
         btn.UrlAction = GetDownloadLink(filename);
         btn.IsGroup = true;
 

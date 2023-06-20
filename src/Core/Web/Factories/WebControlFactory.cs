@@ -74,7 +74,7 @@ internal class WebControlFactory
                 baseView = JJCheckBox.GetInstance(f, value);
 
                 if (ExpressionOptions.PageState != PageState.List)
-                    baseView.Text = string.IsNullOrEmpty(f.Label) ? f.Name : f.Label;
+                    ((JJCheckBox)baseView).Text = string.IsNullOrEmpty(f.Label) ? f.Name : f.Label;
 
                 break;
             case FormComponent.TextArea:
