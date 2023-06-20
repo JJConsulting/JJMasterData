@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Configuration;
 using Microsoft.AspNetCore.Builder;
 
 namespace JJMasterData.Web.Extensions;

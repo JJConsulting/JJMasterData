@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

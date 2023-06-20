@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.ConsoleApp.Models.FormElementMigration;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.ConsoleApp.Services;

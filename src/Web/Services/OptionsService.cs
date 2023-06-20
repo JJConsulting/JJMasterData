@@ -1,13 +1,13 @@
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
-using JJMasterData.Commons.Options.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using System.Text;
+using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Configuration.Options.Abstractions;
 
 namespace JJMasterData.Web.Services;
 

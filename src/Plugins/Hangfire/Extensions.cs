@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Hangfire;
 public static class Extensions

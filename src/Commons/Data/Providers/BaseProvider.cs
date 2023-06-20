@@ -1,9 +1,7 @@
-﻿
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Commons.Data.Providers;
 

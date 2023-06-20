@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;

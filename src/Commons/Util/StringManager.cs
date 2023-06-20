@@ -40,8 +40,11 @@ public static class StringManager
     /// <remarks>
     /// Author: Lucio Pelinson 21-05-2012
     /// </remarks>
-    public static string ClearText(string input)
+    public static string ClearText(string? input)
     {
+        if (input == null)
+            return string.Empty;
+
         string result = input.Replace("'", "`");
         result = result.Replace('<', '[');
         result = result.Replace('>', ']');

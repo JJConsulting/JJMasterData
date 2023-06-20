@@ -1,14 +1,14 @@
-#nullable enable 
+#nullable enable
 
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Options.Abstractions;
+using JJMasterData.Commons.Configuration.Options.Abstractions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace JJMasterData.Commons.Options;
+namespace JJMasterData.Commons.Configuration.Options;
 
 public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
 {
@@ -34,7 +34,7 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
         T? sectionObject;
 
         JObject? jObject;
-        
+
         if (!File.Exists(FilePath))
         {
 #if NET
@@ -56,7 +56,7 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
 #endif
             jObject = JsonConvert.DeserializeObject<JObject>(content);
         }
-        
+
         if (jObject != null && jObject.TryGetValue(_section, out var section))
         {
             sectionObject = JsonConvert.DeserializeObject<T>(section.ToString());

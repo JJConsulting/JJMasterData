@@ -3,7 +3,7 @@
 using System.Collections;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Data.Extensions;
 
 public static class DictionaryExtensions
 {

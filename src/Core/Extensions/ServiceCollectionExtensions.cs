@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.AuditLog;

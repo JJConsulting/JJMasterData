@@ -6,23 +6,23 @@ namespace JJMasterData.Commons.Logging;
 
 public abstract class LoggerBackgroundService<TLoggerBuffer> : BackgroundService where TLoggerBuffer : LoggerBuffer
 {
-    private readonly TLoggerBuffer loggerBuffer;
+    private readonly TLoggerBuffer _loggerBuffer;
 
     protected LoggerBackgroundService(TLoggerBuffer loggerBuffer)
     {
-        this.loggerBuffer = loggerBuffer;
+        this._loggerBuffer = loggerBuffer;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (loggerBuffer.TryDequeue(out var message))
+            if (_loggerBuffer.TryDequeue(out var message))
             {
                 await LogAsync(message, cancellationToken);
             }
 
-            await Task.Delay(100, cancellationToken);
+            await Task.Delay(500, cancellationToken);
         }
     }
 

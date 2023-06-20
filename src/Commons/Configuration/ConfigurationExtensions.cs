@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Configuration;
 
 public static class ConfigurationExtensions
 {
@@ -13,13 +13,4 @@ public static class ConfigurationExtensions
         return configuration.GetJJMasterData().GetSection(key)?.Value;
     }
 
-    public static IConfigurationSection GetJJMasterDataLogger(this IConfiguration configuration)
-    {
-        return configuration.GetJJMasterData().GetSection("Logger");
-    }
-
-    public static string GetJJMasterDataLogger(this IConfiguration configuration, string key)
-    {
-        return configuration.GetJJMasterDataLogger().GetSection(key)?.Value;
-    }
 }

@@ -1,10 +1,10 @@
-﻿using JJMasterData.Commons.Options;
-using JJMasterData.Commons.Options.Abstractions;
+﻿using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Configuration.Options.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Configuration;
 
 public static class ServiceCollectionExtensions
 {

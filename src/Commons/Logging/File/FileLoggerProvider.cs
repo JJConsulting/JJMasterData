@@ -2,14 +2,18 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.File;
 
-[ProviderAlias("File")]
+[ProviderAlias(ProviderName)]
 public class FileLoggerProvider : ILoggerProvider
 {
-    private readonly FileLoggerBuffer _buffer;
+    public const string ProviderName = "File";
+
+    private readonly ILogger _logger;
+
     public FileLoggerProvider(FileLoggerBuffer buffer)
     {
-        _buffer = buffer;
+        _logger = new FileLogger(buffer);
     }
-    public ILogger CreateLogger(string categoryName) => new FileLogger(_buffer);
+    public ILogger CreateLogger(string categoryName) => _logger;
+
     public void Dispose(){}
 }

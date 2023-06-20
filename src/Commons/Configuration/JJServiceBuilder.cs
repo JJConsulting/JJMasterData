@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Data.Common;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
+using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Logging.Db;
+using JJMasterData.Commons.Logging.File;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.DI;
+namespace JJMasterData.Commons.Configuration;
 public class JJServiceBuilder
 {
     public IServiceCollection Services { get; }
@@ -36,14 +37,18 @@ public class JJServiceBuilder
         {
             if (configuration != null)
             {
-                builder.AddDbLoggerProvider();
-                builder.AddFileLoggerProvider();
-                builder.AddConfiguration(configuration.GetSection("Logging"));
+                var loggingOptions = configuration.GetSection("Logging");
+                builder.AddConfiguration(loggingOptions);
+
+                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null) 
+                    builder.AddDbLoggerProvider();
+
+                if (loggingOptions.GetSection(FileLoggerProvider.ProviderName) != null)
+                    builder.AddFileLoggerProvider();
             }
         });
         
         Services.AddTransient<IEntityRepository,EntityRepository>();
-        
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
         Services.AddTransient<JJMasterDataEncryptionService>();
         

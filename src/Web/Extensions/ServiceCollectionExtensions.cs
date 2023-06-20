@@ -1,5 +1,4 @@
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Models;
@@ -12,7 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Options;

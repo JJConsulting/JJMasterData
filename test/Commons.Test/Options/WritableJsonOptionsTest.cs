@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Options;
+﻿using JJMasterData.Commons.Configuration.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;

@@ -361,7 +361,7 @@ public class MasterApiService
             //if field not exists, generate a exception
             var field = metadata.Fields[entry.Key.ToString()];
             if (!filters.ContainsKey(entry.Key.ToString() ?? string.Empty))
-                filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()));
+                filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()!));
         }
 
         return filters;

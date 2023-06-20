@@ -5,10 +5,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Providers;

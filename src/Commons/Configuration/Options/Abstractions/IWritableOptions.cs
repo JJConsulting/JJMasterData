@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Options.Abstractions;
+namespace JJMasterData.Commons.Configuration.Options.Abstractions;
 
 public interface IWritableOptions<out T> : IOptionsSnapshot<T> where T : class, new()
 {

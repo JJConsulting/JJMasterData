@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Data.Extensions;
 
 public static class SqlCommandExtensions
 {
@@ -34,7 +34,7 @@ public static class SqlCommandExtensions
 
         return result;
     }
-    
+
     /// <summary>
     /// Convert a DbCommand object to a SQL string.
     /// </summary>
@@ -54,10 +54,10 @@ public static class SqlCommandExtensions
                 foreach (SqlParameter sp in dbCommand.Parameters)
                 {
                     if (sp.Direction is not (ParameterDirection.InputOutput or ParameterDirection.Output)) continue;
-                    
+
                     sql.Append("declare " + sp.ParameterName + "\t" + sp.SqlDbType + "\t= ");
 
-                    sql.AppendLine(((sp.Direction == ParameterDirection.Output) ? "null" : sp.ParameterValueAsSql()) + ";");
+                    sql.AppendLine((sp.Direction == ParameterDirection.Output ? "null" : sp.ParameterValueAsSql()) + ";");
                 }
 
                 sql.AppendLine("exec [" + dbCommand.CommandText + "]");
@@ -65,8 +65,8 @@ public static class SqlCommandExtensions
                 foreach (SqlParameter sp in dbCommand.Parameters)
                 {
                     if (sp.Direction == ParameterDirection.ReturnValue) continue;
-                    
-                    sql.Append((firstParam) ? "\t" : "\t, ");
+
+                    sql.Append(firstParam ? "\t" : "\t, ");
 
                     if (firstParam) firstParam = false;
 
@@ -82,7 +82,7 @@ public static class SqlCommandExtensions
 
                 foreach (SqlParameter sp in dbCommand.Parameters)
                 {
-                    if ((sp.Direction == ParameterDirection.InputOutput) || (sp.Direction == ParameterDirection.Output))
+                    if (sp.Direction == ParameterDirection.InputOutput || sp.Direction == ParameterDirection.Output)
                     {
                         sql.AppendLine("select '" + sp.ParameterName + "' = convert(varchar, " + sp.ParameterName + ");");
                     }

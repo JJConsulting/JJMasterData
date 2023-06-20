@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Data.Extensions;
 
 public static class DataTableExtensions
 {

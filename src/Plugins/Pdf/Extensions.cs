@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.DI;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Pdf;

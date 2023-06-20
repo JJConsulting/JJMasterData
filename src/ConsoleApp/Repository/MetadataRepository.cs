@@ -4,7 +4,7 @@ using System.Collections;
 using System.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.ConsoleApp.Models;
 using JJMasterData.ConsoleApp.Models.FormElementMigration;

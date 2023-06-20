@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data.Entity;
 using Microsoft.Extensions.Configuration;
 
-namespace JJMasterData.Commons.Options;
+namespace JJMasterData.Commons.Configuration.Options;
 
 /// <summary>
 /// JJMasterData key/value configurations.
@@ -24,7 +24,7 @@ public sealed class JJMasterDataCommonsOptions
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
     public string ResourcesTableName { get; set; }
-    
+
     /// <summary>
     /// Default value: {tablename}Get <br></br>
     /// </summary>
@@ -50,7 +50,7 @@ public sealed class JJMasterDataCommonsOptions
         ReadProcedurePattern = "{tablename}Get";
         WriteProcedurePattern = "{tablename}Set";
     }
-    
+
     public string GetReadProcedureName(Element element)
     {
         if (!string.IsNullOrEmpty(element.CustomProcNameGet))

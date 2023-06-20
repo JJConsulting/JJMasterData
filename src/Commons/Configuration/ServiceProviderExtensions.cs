@@ -1,7 +1,7 @@
 ﻿using System;
 using JJMasterData.Commons.DI;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Configuration;
 
 public static class ServiceExtensions
 {

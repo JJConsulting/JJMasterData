@@ -1,19 +1,20 @@
-using System;
-using System.Collections.Concurrent;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-[ProviderAlias("Database")]
+[ProviderAlias(ProviderName)]
 public class DbLoggerProvider : ILoggerProvider
 {
-    private readonly DbLoggerBuffer _buffer;
+    public const string ProviderName = "Database";
+
+    private readonly ILogger _logger;
+
     public DbLoggerProvider(DbLoggerBuffer buffer)
     {
-        _buffer = buffer;
+        _logger = new DbLogger(buffer);
     }
-    public ILogger CreateLogger(string categoryName) => new DbLogger(_buffer);
+
+    public ILogger CreateLogger(string categoryName) => _logger;
+
     public void Dispose(){}
 }

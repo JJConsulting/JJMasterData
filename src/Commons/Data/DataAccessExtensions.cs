@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Extensions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Commons.Extensions;
+namespace JJMasterData.Commons.Data;
 
 public static class DataAccessExtensions
 {

@@ -5,8 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;

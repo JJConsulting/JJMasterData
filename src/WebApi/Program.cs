@@ -1,7 +1,6 @@
 using System.Reflection;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.WebApi.Handlers;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Swagger.AspNetCore;
 using JJMasterData.WebApi.Extensions;
