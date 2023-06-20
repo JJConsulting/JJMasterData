@@ -3,6 +3,7 @@ using JJMasterData.Commons.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using JJMasterData.Commons.Logging.File;
 using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Extensions;

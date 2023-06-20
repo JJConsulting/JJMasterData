@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Logging.File;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ public static class LoggingBuilderExtensions
     public static ILoggingBuilder AddDbLoggerProvider(this ILoggingBuilder builder)
     {
         builder.Services.AddSingleton<ILoggerProvider, DbLoggerProvider>();
+        builder.Services.AddSingleton<DbLoggerBuffer>();
+        builder.Services.AddHostedService<DbLoggerHostedService>();
         LoggerProviderOptions.RegisterProviderOptions<DbLoggerOptions, DbLoggerProvider>(builder.Services);
         return builder;
     }
@@ -18,6 +21,8 @@ public static class LoggingBuilderExtensions
     public static ILoggingBuilder AddFileLoggerProvider(this ILoggingBuilder builder)
     {
         builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+        builder.Services.AddSingleton<FileLoggerBuffer>();
+        builder.Services.AddHostedService<FileLoggerHostedService>();
         LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(builder.Services);
         return builder;
     }
