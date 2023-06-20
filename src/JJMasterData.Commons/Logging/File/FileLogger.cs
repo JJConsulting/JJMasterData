@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
@@ -12,18 +13,16 @@ namespace JJMasterData.Commons.Logging.File;
 public class FileLogger : ILogger
 {
 
-    private readonly string _name;
     private readonly BlockingCollection<LogMessage> _queue;
-    private readonly Func<FileLoggerOptions> _getCurrentOptions;
+    private readonly IOptionsMonitor<FileLoggerOptions> _options;
 
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
-    public FileLogger(string name, BlockingCollection<LogMessage> queue, Func<FileLoggerOptions> getCurrentOptions)
+    public FileLogger(IOptionsMonitor<FileLoggerOptions> options)
     {
-        _name = name;
-        _queue = queue;
-        _getCurrentOptions = getCurrentOptions;
+        _queue = new BlockingCollection<LogMessage>();
+        _options = options;
         Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
     }
 
@@ -59,7 +58,7 @@ public class FileLogger : ILogger
     
     private void LogAtFile()
     {
-        var options = _getCurrentOptions();
+        var options = _options.CurrentValue;
         foreach (var message in _queue.GetConsumingEnumerable())
         {
             var path = FileIO.ResolveFilePath(options.FileName);

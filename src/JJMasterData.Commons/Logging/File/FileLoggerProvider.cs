@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using JJMasterData.Commons.Logging.Db;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -8,18 +9,12 @@ namespace JJMasterData.Commons.Logging.File;
 [ProviderAlias("File")]
 public class FileLoggerProvider : ILoggerProvider
 {
-    private FileLoggerOptions Options { get; set; }
-    private readonly BlockingCollection<LogMessage> _queue;
-    private readonly ConcurrentDictionary<string, FileLogger> _loggers =
-        new(StringComparer.OrdinalIgnoreCase);
+
+    private readonly ILogger _logger;
     
-    private readonly IDisposable _onChangeOptions;
     public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
     {
-        _queue = new BlockingCollection<LogMessage>();
-        _onChangeOptions = options.OnChange(updatedConfig => Options = updatedConfig);
-        
-        Options = options.CurrentValue;
+        _logger = new FileLogger(options);
     }
 
     /// <summary>
@@ -28,13 +23,12 @@ public class FileLoggerProvider : ILoggerProvider
     /// <param name="categoryName"></param>
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName) =>
-        _loggers.GetOrAdd(categoryName, name => new FileLogger(name, _queue,GetCurrentOptions));
+        _logger;
 
-    private FileLoggerOptions GetCurrentOptions() => Options;
+   
 
     public void Dispose()
     {
-        _loggers.Clear();
-        _onChangeOptions.Dispose();
+
     }
 }
