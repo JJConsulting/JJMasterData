@@ -16,6 +16,9 @@ public class UrlRedirectAction : BasicAction
     [DataMember(Name = "titlePopUp")]
     public string TitlePopUp { get; set; }
 
+    [DataMember(Name = "popupSize")]
+    public PopupSize PopupSize { get; set; }
+
     public UrlRedirectAction()
     {
         UrlAsPopUp = false;

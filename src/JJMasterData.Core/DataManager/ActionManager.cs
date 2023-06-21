@@ -91,6 +91,7 @@ internal class ActionManager
         actionMap.FieldName = fieldName;
         string criptMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
+        int popupSize = (int)action.PopupSize;
 
         var script = new StringBuilder();
 
@@ -124,6 +125,8 @@ internal class ActionManager
             script.Append(popUpTitle);
             script.Append("','");
             script.Append(confirmationMessage);
+            script.Append("','");
+            script.Append(popupSize);
             script.Append("');");
         }
         return script.ToString();
