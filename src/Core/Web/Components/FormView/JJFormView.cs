@@ -354,9 +354,8 @@ public class JJFormView : JJGridView
 
         if ("CANCEL".Equals(formAction))
         {
-            ClearTempFiles();
-            CurrentContext.Response.Redirect(CurrentContext.Request.AbsoluteUri);
-            return null;
+            pageState = PageState.List;
+            return GetHtmlGrid();
         }
         if ("REFRESH".Equals(formAction))
         {
