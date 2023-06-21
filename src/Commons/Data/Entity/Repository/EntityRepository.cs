@@ -3,12 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Providers;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -136,11 +137,16 @@ public class EntityRepository : IEntityRepository
 
     ///<inheritdoc cref="IEntityRepository.TableExists(string)"/>
     public bool TableExists(string tableName) => DataAccess.TableExists(tableName);
+    
+    public async Task<bool> ColumnExistsAsync(string tableName, string columnName) => await DataAccess.ColumnExistsAsync(tableName,columnName);
 
     ///<inheritdoc cref="IEntityRepository.ExecuteBatch(string)"/>
     public bool ExecuteBatch(string script) => DataAccess.ExecuteBatch(script);
 
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
+    
+    
+    
     public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string, dynamic> filters)
     {
         var total =
@@ -158,11 +164,16 @@ public class EntityRepository : IEntityRepository
 
     public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
 
+
+    
     ///<inheritdoc cref="IEntityRepository.GetScriptCreateTable(Element)"/>
     public string GetScriptCreateTable(Element element) => Provider.GetCreateTableScript(element);
 
     ///<inheritdoc cref="IEntityRepository.GetScriptWriteProcedure(Element)"/>
     public string GetScriptWriteProcedure(Element element) => Provider.GetWriteProcedureScript(element);
+
+    public string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields) => Provider.GetAlterTableScript(element, addedFields);
+
 
     ///<inheritdoc cref="IEntityRepository.GetScriptReadProcedure(Element)"/>
     public string GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);

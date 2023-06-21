@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;

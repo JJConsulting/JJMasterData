@@ -2,7 +2,7 @@
 using System.Data;
 using System.Globalization;
 using System.IO;
-using JJMasterData.Commons.Options;
+using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Commons.Util;
 

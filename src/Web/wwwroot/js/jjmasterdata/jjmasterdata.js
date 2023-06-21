@@ -1178,6 +1178,29 @@ var jjview = (function () {
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, true);
         },
+        doPaginationExternal: function (objid, url, currentPage) {
+            $("#current_tablepage_" + objid).val(currentPage);
+            $("#current_tableaction_" + objid).val("");
+            $("#current_formaction_" + objid).val("");
+            const frm = $("form");
+            $.ajax({
+                async: true,
+                type: frm.attr("method"),
+                url: url,
+                data: frm.serialize(),
+                success: function (data) {
+                    $("#jjgridview_" + objid).html(data);
+                    jjloadform();
+                    $("#current_filteraction_" + objid).val("");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                    console.log(textStatus);
+                    console.log(jqXHR);
+                    $("#current_filteraction_" + objid).val("");
+                }
+            });
+        },
         doRefresh: function (objid, enableAjax) {
             $("#current_tableaction_" + objid).val("");
             $("#current_tablerow_" + objid).val("");

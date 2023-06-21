@@ -5,12 +5,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
 using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -56,23 +55,7 @@ public class SqlServerProvider : BaseProvider
                 sql.AppendLine(",");
 
             sql.Append(Tab);
-            sql.Append("[");
-            sql.Append(f.Name);
-            sql.Append("] ");
-            sql.Append(f.DataType.ToString());
-
-            if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
-            {
-                sql.Append(" (");
-                sql.Append(f.Size);
-                sql.Append(")");
-            }
-
-            if (f.IsRequired)
-                sql.Append(" NOT NULL");
-
-            if (f.AutoNum)
-                sql.Append(" IDENTITY ");
+            sql.Append(GetFieldDefinition(f));
 
             if (!f.IsPk) continue;
             if (keys.Length > 0)
@@ -134,6 +117,30 @@ public class SqlServerProvider : BaseProvider
                 counter++;
             }
         }
+
+        return sql.ToString();
+    }
+
+    private static string GetFieldDefinition(ElementField f)
+    {
+        var sql = new StringBuilder();
+        sql.Append("[");
+        sql.Append(f.Name);
+        sql.Append("] ");
+        sql.Append(f.DataType.ToString());
+
+        if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+        {
+            sql.Append(" (");
+            sql.Append(f.Size);
+            sql.Append(")");
+        }
+
+        if (f.IsRequired)
+            sql.Append(" NOT NULL");
+
+        if (f.AutoNum)
+            sql.Append(" IDENTITY ");
 
         return sql.ToString();
     }
@@ -921,6 +928,29 @@ public class SqlServerProvider : BaseProvider
     public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
+    }
+
+    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    {
+        var elementFields = fields.ToList();
+    
+        if (element == null || !elementFields.Any())
+        {
+            return string.Empty; 
+        }
+
+        var fieldDefinitions =
+            from field in elementFields
+            let fieldName = field.Name
+            let dataType = GetFieldDefinition(field)
+            select $"{dataType}";
+
+        var tableName = element.TableName;
+        
+        var fieldDefinitionsString = string.Join(",\n", fieldDefinitions);
+        var alterTableScript = $"ALTER TABLE {tableName}\nADD {fieldDefinitionsString};";
+    
+        return alterTableScript;
     }
 
     public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)

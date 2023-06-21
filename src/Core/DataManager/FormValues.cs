@@ -1,15 +1,12 @@
 ﻿#nullable enable
-using System;
-using System.Collections;
-using System.Globalization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 using System;
 using System.Collections;
 using System.Globalization;
-using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -67,7 +64,7 @@ internal class FormValues
                     }
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.Form(fieldName + "_hidden") ?? "0";
+                    value ??= CurrentContext.Request.Form(fieldName + "_hidden");
                     break;
             }
 

@@ -1,4 +1,7 @@
-﻿#nullable enable
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,12 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
-using Microsoft.Extensions.Logging;
+using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -38,7 +36,7 @@ public abstract class BaseProvider
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary filters);
     public abstract DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
     public abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values);
-
+    public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
     public void Insert(Element element, IDictionary values)
     {
@@ -199,7 +197,7 @@ public abstract class BaseProvider
         return await DataAccess.GetFieldsAsync(cmd);
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Data.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
     public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int tot)
     {
         if (element == null)
@@ -219,7 +217,7 @@ public abstract class BaseProvider
     }
     
     
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Data.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
     public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
     {
         if (element == null)
@@ -238,7 +236,7 @@ public abstract class BaseProvider
         return (dt, total);
     }
     
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(JJMasterData.Commons.Data.Entity.Element,System.Collections.IDictionary,string,int,int,ref int)"/>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
     public async Task<(List<Dictionary<string,dynamic>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
     {
         if (element == null)

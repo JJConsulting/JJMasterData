@@ -1,4 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary.Services.Abstractions;
+﻿using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Extensions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.Configuration;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 

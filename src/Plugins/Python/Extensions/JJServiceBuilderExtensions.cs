@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Abstractions;

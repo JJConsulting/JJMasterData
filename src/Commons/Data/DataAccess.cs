@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1052,5 +1051,39 @@ public class DataAccess
     public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         return await GetListAsync<Dictionary<string, dynamic>>(cmd,cancellationToken);
+    }
+    
+    private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
+    {
+        var command = new DataAccessCommand
+        {
+            Sql = @"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
+        };
+        
+        command.AddParameter("@TableName", tableName, DbType.String);
+        command.AddParameter("@ColumnName", columnName, DbType.String);
+        
+        return command;
+    }
+    
+    public async Task<bool> ColumnExistsAsync(string tableName, string columnName, CancellationToken cancellationToken = default)
+    {
+        var command = GetColumnExistsCommand(tableName, columnName);
+        try
+        {
+            using var dbCommand = CreateDbCommand(command);
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            using (dbCommand.Connection)
+            {
+                using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
+                {
+                    return await reader.ReadAsync(cancellationToken);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex,command);
+        }
     }
 }

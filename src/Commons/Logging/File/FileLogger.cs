@@ -1,26 +1,18 @@
 using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.File;
 
 public class FileLogger : ILogger
 {
-    private readonly FileLoggerProvider _fileLoggerProvider;
-    private readonly BlockingCollection<LogMessage> _queue;
+    private readonly FileLoggerBuffer _buffer;
 
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
-    public FileLogger(FileLoggerProvider fileLoggerProvider)
+    public FileLogger(FileLoggerBuffer buffer)
     {
-        _fileLoggerProvider = fileLoggerProvider;
-        _queue = new BlockingCollection<LogMessage>();
-        Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
+        _buffer = buffer;
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;
@@ -50,49 +42,6 @@ public class FileLogger : ILogger
             return;
 
         var message = new LogMessage(logLevel, eventId, state!, exception, (s, e) => formatter((TState)s, e));
-        _queue.Add(message);
-    }
-
-    private void LogAtFile()
-    {
-        foreach (var message in _queue.GetConsumingEnumerable())
-        {
-            var path = FileIO.ResolveFilePath(_fileLoggerProvider.Options.CurrentValue.FileName);
-            var directory = Path.GetDirectoryName(path);
-
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory!);
-
-            var record = GetLogRecord(message);
-            
-            using var writer = new StreamWriter(path, true);
-            writer.Write(record);
-        }
-    }
-
-    private static string GetLogRecord(LogMessage message)
-    {
-        var log = new StringBuilder();
-
-        log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
-        log.AppendFormat(" [{0}] ", message.LogLevel);
-
-        if (!string.IsNullOrWhiteSpace(message.EventId.Name))
-        {
-            log.AppendFormat(" [{0}] ", message.EventId.Name);
-        }
-
-        log.AppendFormat(" {0} ", message);
-
-        if (message.Exception != null)
-        {
-            log.AppendLine(message.Exception.Message);
-            log.AppendLine(message.Exception.StackTrace);
-            log.AppendFormat("Source: {0}", message.Exception.Source);
-        }
-
-        log.AppendLine();
-
-        return log.ToString();
+        _buffer.Enqueue(message);
     }
 }

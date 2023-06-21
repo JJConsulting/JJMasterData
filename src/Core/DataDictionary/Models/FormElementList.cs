@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary;
 
@@ -20,7 +21,7 @@ public class FormElementList : ICollection<FormElementField>
     public FormElementList()
     {
         _baseFields = new ElementList();
-        _formFields = new System.Collections.Generic.List<FormElementField>();
+        _formFields = new List<FormElementField>();
     }
     [JsonConstructor]
     private FormElementList(IList<FormElementField> formFields)
@@ -33,7 +34,7 @@ public class FormElementList : ICollection<FormElementField>
     {
         _baseFields = baseFields;
 
-        _formFields = new System.Collections.Generic.List<FormElementField>();
+        _formFields = new List<FormElementField>();
 
         foreach (var field in _baseFields)
         {

@@ -1,27 +1,19 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.File;
 
-[ProviderAlias("File")]
+[ProviderAlias(ProviderName)]
 public class FileLoggerProvider : ILoggerProvider
 {
-    internal readonly IOptionsMonitor<FileLoggerOptions> Options;
+    public const string ProviderName = "File";
 
-    public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
+    private readonly ILogger _logger;
+
+    public FileLoggerProvider(FileLoggerBuffer buffer)
     {
-        Options = options;
+        _logger = new FileLogger(buffer);
     }
- 
-    /// <summary>
-    /// Creates a new instance of the file logger.
-    /// </summary>
-    /// <param name="categoryName"></param>
-    /// <returns></returns>
-    public ILogger CreateLogger(string categoryName)
-    {
-        return new FileLogger(this);
-    }
+    public ILogger CreateLogger(string categoryName) => _logger;
 
     public void Dispose(){}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Data.Extensions;
 
 namespace JJMasterData.Commons.Test.Extensions;
 

@@ -5,8 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
@@ -813,6 +813,11 @@ public class OracleProvider : BaseProvider
     public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
     {
         return GetCommandWrite(string.Empty, element, values);
+    }
+
+    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    {
+        return "Not implemented";
     }
 
     private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)

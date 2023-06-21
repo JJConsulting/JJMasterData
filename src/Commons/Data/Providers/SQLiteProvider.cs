@@ -5,8 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
@@ -636,5 +636,9 @@ public class ProviderSQLite : BaseProvider
     public override Element GetElementFromTable(string tableName)
     {
         return null;
+    }
+    public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    {
+        return "Not implemented";
     }
 }

@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Options;
+﻿using JJMasterData.Commons.Configuration.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -21,7 +21,7 @@ public class DatabaseLoggingOptions
 
 public class FileLoggingOptions
 {
-    public string FileName { get; set; }
+    public string FileName { get; set; } = "log.txt";
     public Dictionary<string, LogLevel> LogLevel { get; set; } = new();
 }
 

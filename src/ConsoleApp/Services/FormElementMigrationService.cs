@@ -1,6 +1,6 @@
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;

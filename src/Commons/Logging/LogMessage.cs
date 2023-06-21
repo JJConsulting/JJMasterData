@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
-internal class LogMessage
+public class LogMessage
 {
     public LogLevel LogLevel { get; }
     public EventId EventId { get; }

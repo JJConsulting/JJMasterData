@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Extensions;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.ReceitaFederal.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 

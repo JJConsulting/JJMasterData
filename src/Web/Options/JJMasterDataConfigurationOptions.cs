@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Options;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 

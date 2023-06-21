@@ -55,7 +55,7 @@ public class MetadataApiOptions
     /// Aways apply UserId (from login) as filter or on set
     /// </summary>
     [JsonProperty("applyUserIdOn")]
-    public string? ApplyUserIdOn { get; set; }
+    public string ApplyUserIdOn { get; set; }
 
 
     public MetadataApiOptions()

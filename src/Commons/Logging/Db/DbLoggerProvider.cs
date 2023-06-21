@@ -1,33 +1,20 @@
-using System;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-[ProviderAlias("Database")]
+[ProviderAlias(ProviderName)]
 public class DbLoggerProvider : ILoggerProvider
 {
-    internal IOptionsMonitor<DbLoggerOptions> Options { get; }
-    internal IEntityRepository Repository { get; }
-    internal bool TableExists { get; set; }
- 
-    public DbLoggerProvider(IOptionsMonitor<DbLoggerOptions> options, IEntityRepository entityRepository)
+    public const string ProviderName = "Database";
+
+    private readonly ILogger _logger;
+
+    public DbLoggerProvider(DbLoggerBuffer buffer)
     {
-        Options = options;
-        Repository = entityRepository;
+        _logger = new DbLogger(buffer);
     }
- 
-    /// <summary>
-    /// Creates a new instance of the db logger.
-    /// </summary>
-    /// <param name="categoryName"></param>
-    /// <returns></returns>
-    public ILogger CreateLogger(string categoryName)
-    {
-        return new DbLogger(this);
-    }
- 
+
+    public ILogger CreateLogger(string categoryName) => _logger;
+
     public void Dispose(){}
 }

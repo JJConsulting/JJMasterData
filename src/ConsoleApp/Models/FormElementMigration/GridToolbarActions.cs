@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Localization;
+﻿#nullable disable
+
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;

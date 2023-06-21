@@ -49,4 +49,8 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
+	<ItemGroup>
+	  <Folder Include="Services\Abstractions\" />
+	</ItemGroup>
 </Project>

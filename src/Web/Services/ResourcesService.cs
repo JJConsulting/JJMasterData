@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataDictionary.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Caching.Memory;
@@ -28,7 +27,7 @@ public class ResourcesService : BaseService
         Options = options.Value;
     }
 
-    public JJFormView GetFormView(IList<CultureInfo> supportedCultures)
+    public JJFormView GetFormView(IList<CultureInfo>? supportedCultures)
     {
         supportedCultures ??= CultureInfo.GetCultures(CultureTypes.AllCultures);
             
@@ -78,12 +77,12 @@ public class ResourcesService : BaseService
         return formView;
     }
 
-    private void ClearCache(object sender, FormAfterActionEventArgs e)
+    private void ClearCache(object? sender, FormAfterActionEventArgs e)
     {
         MemoryCache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 
-    private void ValidateEspecialChars(object sender, FormBeforeActionEventArgs e)
+    private void ValidateEspecialChars(object? sender, FormBeforeActionEventArgs e)
     {
         if (e?.Values == null)
             return;
@@ -91,10 +90,10 @@ public class ResourcesService : BaseService
         if (e.Values.Count == 0)
             return;
 
-        if (e.Values["resourceKey"].ToString().Contains("'") ||
-            e.Values["resourceKey"].ToString().Contains("\"") ||
-            e.Values["resourceValue"].ToString().Contains("'") ||
-            e.Values["resourceValue"].ToString().Contains("\""))
+        if (e.Values["resourceKey"]!.ToString()!.Contains("'") ||
+            e.Values["resourceKey"]!.ToString()!.Contains("\"") ||
+            e.Values["resourceValue"]!.ToString()!.Contains("'") ||
+            e.Values["resourceValue"]!.ToString()!.Contains("\""))
         {
             e.Errors.Add("Error", Translate.Key("Character {0} not allowed", "'"));
         }

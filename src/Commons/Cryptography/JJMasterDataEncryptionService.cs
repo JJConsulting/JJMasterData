@@ -1,5 +1,5 @@
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Cryptography.Abstractions;
-using JJMasterData.Commons.Options;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Cryptography;

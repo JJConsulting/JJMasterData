@@ -1,4 +1,5 @@
 ﻿using System;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.DI;
 using JJMasterData.ReceitaFederal.Abstractions;
 using JJMasterData.ReceitaFederal.Models;
