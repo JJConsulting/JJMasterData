@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -20,6 +15,11 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -190,6 +190,7 @@ public class JJFormView : JJGridView
     public JJFormView(string elementName) : this()
     {
         FormFactory.SetFormViewParams(this, elementName);
+        IsExternalRoute = true;
     }
     
     public JJFormView(FormElement formElement) : this()

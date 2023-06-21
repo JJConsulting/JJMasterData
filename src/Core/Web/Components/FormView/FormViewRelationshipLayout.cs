@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -15,7 +17,7 @@ internal class FormViewRelationshipLayout
     {
         ParentFormView = parentFormView;
     }
-    
+
     public IEnumerable<HtmlBuilder> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
@@ -58,33 +60,33 @@ internal class FormViewRelationshipLayout
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse or PanelLayout.Panel:
-            {
-                var collapse = new JJCollapsePanel
                 {
-                    Name = "collapse_" + relationship.Id,
-                    Title = relationship.Panel.Title,
-                    HtmlBuilderContent = content,
-                    Color = relationship.Panel.Color,
-                    ExpandedByDefault = relationship.Panel.ExpandedByDefault,
-                    CssClass = relationship.Panel.CssClass
-                };
+                    var collapse = new JJCollapsePanel
+                    {
+                        Name = "collapse_" + relationship.Id,
+                        Title = relationship.Panel.Title,
+                        HtmlBuilderContent = content,
+                        Color = relationship.Panel.Color,
+                        ExpandedByDefault = relationship.Panel.ExpandedByDefault,
+                        CssClass = relationship.Panel.CssClass
+                    };
 
-                return collapse.GetHtmlBuilder();
-            }
+                    return collapse.GetHtmlBuilder();
+                }
             case PanelLayout.Panel or PanelLayout.Well:
-            {
-                var panel = new JJCard
                 {
-                    Name = "card_" + relationship.Id,
-                    Title = relationship.Panel.Title,
-                    Color = relationship.Panel.Color,
-                    ShowAsWell = relationship.Panel.Layout == PanelLayout.Well,
-                    HtmlBuilderContent = content,
-                    CssClass = relationship.Panel.CssClass
-                };
+                    var panel = new JJCard
+                    {
+                        Name = "card_" + relationship.Id,
+                        Title = relationship.Panel.Title,
+                        Color = relationship.Panel.Color,
+                        ShowAsWell = relationship.Panel.Layout == PanelLayout.Well,
+                        HtmlBuilderContent = content,
+                        CssClass = relationship.Panel.CssClass
+                    };
 
-                return panel.GetHtmlBuilder();
-            }
+                    return panel.GetHtmlBuilder();
+                }
             case PanelLayout.NoDecoration:
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
@@ -104,12 +106,12 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return ParentFormView.GetParentPanelHtml( parentPanel);
+            return ParentFormView.GetParentPanelHtml(parentPanel);
         }
 
         var childElement = ParentFormView.DataDictionaryRepository.GetMetadata(relationship.ElementRelationship!.ChildElement);
 
-        var filter = new Dictionary<string,dynamic>();
+        var filter = new Dictionary<string, dynamic>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.Contains(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];
@@ -117,47 +119,54 @@ internal class FormViewRelationshipLayout
             ParentFormView.UserValues[col.FkColumn] = value;
         }
 
+        
         switch (relationship.ViewType)
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
-            {
-                var childValues = ParentFormView.EntityRepository.GetFields(childElement, filter);
-                var childDataPanel = new JJDataPanel(childElement)
                 {
-                    EntityRepository = ParentFormView.EntityRepository,
-                    PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
-                    UserValues = ParentFormView.UserValues,
-                    Values = childValues,
-                    RenderPanelGroup = false,
-                    FormUI = childElement.Options.Form
-                };
+                    var childValues = ParentFormView.EntityRepository.GetFields(childElement, filter);
+                    var childDataPanel = new JJDataPanel(childElement)
+                    {
+                        EntityRepository = ParentFormView.EntityRepository,
+                        PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
+                        UserValues = ParentFormView.UserValues,
+                        Values = childValues,
+                        RenderPanelGroup = false,
+                        FormUI = childElement.Options.Form
+                    };
 
-                return childDataPanel.GetHtmlBuilder();
-            }
+                    return childDataPanel.GetHtmlBuilder();
+                }
             case RelationshipViewType.List:
-            {
-                var childGrid = new JJFormView(childElement)
                 {
-                    EntityRepository = ParentFormView.EntityRepository,
-                    UserValues = ParentFormView.UserValues,
-                    FilterAction =
+                    var childGrid = new JJFormView(childElement)
+                    {
+                        EntityRepository = ParentFormView.EntityRepository,
+                        UserValues = ParentFormView.UserValues,
+                        FilterAction =
                     {
                         ShowAsCollapse = false
                     },
-                    Name = "jjgridview_" + childElement.Name,
-                    IsExternalRoute = true
-                };
-                childGrid.Filter.ApplyCurrentFilter(filter);
+                        IsExternalRoute = true
+                    };
+                    childGrid.Filter.ApplyCurrentFilter(filter);
+                    childGrid.SetOptions(childElement.Options);
 
-                childGrid.SetOptions(childElement.Options);
+                    childGrid.ShowTitle = false;
 
-                childGrid.ShowTitle = false;
-                return childGrid.GetHtmlBuilder();
-            }
+                    var htmlBuilder = childGrid.GetHtmlBuilder();
+                    if (htmlBuilder != null)
+                    {
+                        var filters = Cript.Cript64(JsonConvert.SerializeObject(filter));
+                        htmlBuilder.AppendHiddenInput($"jjgridview_{childElement.Name}_filters", filters);
+                    }
+                    
+                    return htmlBuilder;
+                }
             default:
                 return null;
         }
     }
-    
+
 
 }

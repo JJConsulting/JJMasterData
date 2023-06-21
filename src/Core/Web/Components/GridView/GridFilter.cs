@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Web.Components.GridView;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Linq;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -57,6 +59,14 @@ internal class GridFilter
         if (sesssionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sesssionFilter;
+            return _currentFilter;
+        }
+
+        //Relation Filters
+        var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
+        if (!string.IsNullOrEmpty(filters))
+        {
+            _currentFilter = JsonConvert.DeserializeObject<Hashtable>(Cript.Descript64(filters));
             return _currentFilter;
         }
 
@@ -134,6 +144,9 @@ internal class GridFilter
         string objName = CurrentContext.Request.QueryString("objname");
         string panelName = CurrentContext.Request.QueryString("pnlname");
 
+        if (JJSearchBox.IsSearchBoxRoute(GridView))
+            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter);
+
         if ("jjsearchbox".Equals(requestType))
         {
             if (objName == null || !objName.StartsWith(FilterFieldPrefix))
@@ -184,7 +197,7 @@ internal class GridFilter
             Text = "Filter",
             IconClass = "fa fa-search",
             Type = LinkButtonType.Submit,
-            OnClientClick = $"return jjview.doFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
+            OnClientClick = $"{GridView.GetFilterScript()};return false;"
         };
 
         var btnCancel = new JJLinkButton
@@ -305,6 +318,14 @@ internal class GridFilter
             throw new NullReferenceException(nameof(GridView.FormElement));
 
         Hashtable values = null;
+
+        //Relation Filters
+        var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
+        if (!string.IsNullOrEmpty(filters))
+        {
+            values = JsonConvert.DeserializeObject<Hashtable>(Cript.Descript64(filters));
+        }
+
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {

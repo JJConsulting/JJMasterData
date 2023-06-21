@@ -3,6 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
 using System;
@@ -42,10 +43,22 @@ public class JJSearchBox : JJBaseControl
     private FormElementDataItem _dataItem;
     private string _selectedValue;
     private string _text;
+    private string _fieldName;
 
 
     internal ExpressionOptions ExpressionOptions { get; }
 
+    internal string FieldName
+    {
+        get
+        {
+            if (_fieldName == null)
+                return Name;
+
+            return _fieldName;
+        }
+        set => _fieldName = value;
+    }
 
     internal string Id
     {
@@ -196,6 +209,7 @@ public class JJSearchBox : JJBaseControl
         var search = new JJSearchBox(expOptions)
         {
             Name = f.Name,
+            FieldName = f.Name,
             SelectedValue = value?.ToString(),
             Visible = true,
             AutoReloadFormFields = false,
@@ -226,49 +240,42 @@ public class JJSearchBox : JJBaseControl
         return "jjsearchbox".Equals(requestType);
     }
 
+
     public static HtmlBuilder ResponseJson(JJDataPanel view)
     {
-        string dictionaryName = view.CurrentContext.Request.QueryString("dictionaryName");
-        string fieldName = view.CurrentContext.Request.QueryString("objname");
-        var pageState = (PageState)int.Parse(view.CurrentContext.Request.QueryString("pageState"));
+        return ResponseJson(view, view.FormElement, view.Values);
+    }
 
+    internal static HtmlBuilder ResponseJson(JJBaseView view, FormElement formElement, IDictionary formValues)
+    {
+        string dictionaryName = view.CurrentContext.Request.QueryString("dictionaryName");
+        string fieldName = view.CurrentContext.Request.QueryString("fieldName");
+        var pageState = (PageState)int.Parse(view.CurrentContext.Request.QueryString("pageState"));
+        
         if (!IsSearchBoxRoute(view))
             return null;
 
         if (string.IsNullOrEmpty(dictionaryName))
             return null;
 
-        FormElement element;
-        IDictionary formValues = null;
-        if (view.FormElement.Name.Equals(dictionaryName))
+        JJSearchBox searchBox;
+        if (formElement.Name.Equals(dictionaryName))
         {
-            element = view.FormElement;
-            formValues = view.Values;
+            var field = formElement.Fields[fieldName];
+            var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState, JJService.EntityRepository);
+            searchBox = JJSearchBox.GetInstance(field, expOptions, null, dictionaryName);
         }
         else
         {
-            element = view.DataDictionaryRepository.GetMetadata(dictionaryName);
-            var dataItem = element.Fields[fieldName].DataItem;
-            if (dataItem == null)
-                throw new ArgumentNullException(nameof(dataItem));
-
-            if (dataItem.HasSqlExpression())
-            {
-                var expression = new ExpressionManager(view.UserValues, view.EntityRepository);
-                var fieldManager = new FieldManager(element, expression);
-                var formRequest = new FormValues(fieldManager);
-                var dbValues = formRequest.GetDatabaseValuesFromPk(element);
-                formValues = formRequest.GetFormValues(pageState, dbValues, true);
-            }
+            var factory = JJMasterDataFactory.GetInstance();
+            searchBox = factory.CreateJJSearchBox(dictionaryName, fieldName, pageState, view.UserValues);
         }
 
-        var field = element.Fields[fieldName];
-        var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState, view.EntityRepository);
-        var searchBox = JJSearchBox.GetInstance(field, expOptions, null, dictionaryName);
         searchBox.ResponseJson();
 
         return null;
     }
+
 
     private HtmlBuilder GetSearchBoxHtml()
     {
@@ -281,6 +288,7 @@ public class JJSearchBox : JJBaseControl
                 input.WithAttribute("id", Id + "_text");
                 input.WithAttribute("name", Name + "_text");
                 input.WithAttribute("jjid", Name);
+                input.WithAttribute("fieldName", FieldName);
                 input.WithAttribute("type", "text");
                 input.WithAttribute("pageState", (int)ExpressionOptions.PageState);
                 input.WithAttribute("autocomplete", "off");
@@ -365,21 +373,22 @@ public class JJSearchBox : JJBaseControl
 
     public void ResponseJson()
     {
-        if (!Name.Equals(CurrentContext.Request.QueryString("objname")))
+        if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
             return;
 
-        string textSearch = CurrentContext.Request[Name + "_text"];
-        string json = GetJsonValues(textSearch);
+        string objName = CurrentContext.Request.QueryString("objname");
+        string textSearch = CurrentContext.Request[objName];
+        string json = JsonConvert.SerializeObject(GetListBoxItems(textSearch));
         CurrentContext.Response.SendResponse(json, "application/json");
     }
 
-    private string GetJsonValues(string textSearch)
+    public List<SearchBoxItem> GetListBoxItems(string textSearch)
     {
         var listValue = GetValues(textSearch);
         var listItem = new List<SearchBoxItem>();
-        string description;
         foreach (var i in listValue)
         {
+            string description;
             if (DataItem.ShowImageLegend)
                 description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}";
             else
@@ -388,7 +397,7 @@ public class JJSearchBox : JJBaseControl
             listItem.Add(new SearchBoxItem(i.Id, description));
         }
 
-        return JsonConvert.SerializeObject(listItem.ToArray());
+        return listItem;
     }
 
 

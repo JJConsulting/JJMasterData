@@ -124,7 +124,7 @@ public class JJGridView : JJBaseView
         }
     }
 
-    public bool IsExternalRoute { get; init; } 
+    internal bool IsExternalRoute { get; init; } 
 
     public JJDataExp DataExp
     {
@@ -612,6 +612,7 @@ public class JJGridView : JJBaseView
     public JJGridView(string elementName) : this()
     {
         GridViewFactory.SetGridViewParams(this, elementName);
+        IsExternalRoute = true;
     }
 
     public JJGridView(FormElement formElement) : this()

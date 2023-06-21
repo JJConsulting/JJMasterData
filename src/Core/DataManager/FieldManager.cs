@@ -1,12 +1,12 @@
-﻿using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using System;
-using System.Collections;
-using System.Globalization;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using System;
+using System.Collections;
+using System.Globalization;
 
 namespace JJMasterData.Core.DataManager;
 

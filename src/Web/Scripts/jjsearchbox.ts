@@ -2,6 +2,7 @@
     static setup(){
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
+            const fieldName = $(this).attr("fieldName");
             const dictionaryName = $(this).attr("dictionaryName");
             const pageState = $(this).attr("pageState");
             let triggerlength = $(this).attr("triggerlength");
@@ -30,7 +31,8 @@
                 urltypehead += "?";
 
             urltypehead += "t=jjsearchbox";
-            urltypehead += "&objname=" + objid;
+            urltypehead += "&fieldName=" + fieldName;
+            urltypehead += "&objname=" + $(this).attr("name");
             urltypehead += "&dictionaryName=" + dictionaryName;
             urltypehead += "&pageState=" + pageState;
             
