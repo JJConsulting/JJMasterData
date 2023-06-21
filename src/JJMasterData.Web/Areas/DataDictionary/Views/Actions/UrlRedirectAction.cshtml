@@ -34,15 +34,15 @@
                     </div>
                 </div>
 
-                <div class="@BootstrapHelper.FormGroup col-sm-7">
+                <div class="@BootstrapHelper.FormGroup col-sm-8">
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Título da Modal">@Translate.Key("Title") @Translate.Key("Popup")</label>
                     @Html.TextBoxFor(model => model.TitlePopUp, new { @class = "form-control" })
                 </div>
 
 
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Popup Size")">@Translate.Key("Popup Size")</label>
-                    <select asp-for="PopupSize" class="form-control" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
+                    <select asp-for="PopupSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
                 </div>
 
             </div>
