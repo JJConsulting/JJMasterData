@@ -8,6 +8,7 @@ using System.Collections;
 using System.Data.SqlClient;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Core.DataManager;
 

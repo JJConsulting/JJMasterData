@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
+using System.Globalization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -170,7 +171,7 @@ public class FieldController : DataDictionaryController
 
     private IActionResult RedirectToIndex(string dictionaryName, FormElementField field)
     {
-        TempData.Put("field",field);
+        TempData.Put("field", field);
         TempData["error"] = ViewBag.Error;
         TempData["selected_tab"] = Request.Form["selected_tab"].ToString();
         TempData["originalName"] = Request.Form["originalName"].ToString();
@@ -184,13 +185,13 @@ public class FieldController : DataDictionaryController
             throw new ArgumentNullException(nameof(formElement));
         if (field == null)
             throw new ArgumentNullException(nameof(field));
-        
+
         field.DataItem ??= new FormElementDataItem();
 
         field.DataItem.ElementMap ??= new DataElementMap();
 
         field.DataItem.ElementMap.MapFilters ??= new List<DataElementMapFilter>();
-        
+
         field.DataFile ??= new FormElementDataFile
         {
             MaxFileSize = 2097152 //2mb
@@ -225,7 +226,7 @@ public class FieldController : DataDictionaryController
         ViewBag.Fields = formElement.Fields;
 
         if (field.Component != FormComponent.Lookup) return;
-        
+
         ViewBag.ElementNameList = _fieldService.GetElementList();
         ViewBag.ElementFieldList = _fieldService.GetElementFieldList(field);
     }
@@ -234,15 +235,27 @@ public class FieldController : DataDictionaryController
         field.Attributes = new Hashtable();
         switch (field.Component)
         {
-            case FormComponent.Text 
-                or FormComponent.Number 
-                or FormComponent.Password 
-                or FormComponent.Email 
-                or FormComponent.Cnpj 
-                or FormComponent.Cpf 
-                or FormComponent.CnpjCpf 
+            case FormComponent.Text
+                or FormComponent.Number
+                or FormComponent.Password
+                or FormComponent.Email
+                or FormComponent.Cnpj
+                or FormComponent.Slider
+                or FormComponent.Cpf
+                or FormComponent.CnpjCpf
                 or FormComponent.Cep:
                 field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
+                if (field.Component is FormComponent.Number or FormComponent.Slider)
+                {
+                    if (float.TryParse(Request.Form["step"], NumberStyles.Float, CultureInfo.InvariantCulture, out var step))
+                    {
+                        field.SetAttr(FormElementField.StepAttribute, step);
+                    }
+                    else
+                    {
+                        field.SetAttr(FormElementField.StepAttribute, null!);
+                    }
+                }
                 break;
             case FormComponent.TextArea:
                 field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
@@ -251,12 +264,12 @@ public class FieldController : DataDictionaryController
                 field.SetAttr(FormElementField.PopUpSizeAttribute, Request.Form["cboLkPopUpSize"].ToString());
                 field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());
                 break;
-            case FormComponent.Date 
+            case FormComponent.Date
                 or FormComponent.DateTime
                 or FormComponent.Hour:
                 field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute].ToString());
                 break;
-                
+
         }
     }
 

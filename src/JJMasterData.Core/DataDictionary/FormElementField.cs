@@ -20,6 +20,8 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
     public const string AutocompletePickerAttribute = "autocompletePicker";
+    public const string StepAttribute = "step";
+    
     private FormElementFieldActions? _actions;
     
     [DataMember(Name = "component")] 
@@ -248,14 +250,14 @@ public class FormElementField : ElementField
         return string.Empty;
     }
 
-    public void SetAttr(string key, object value)
+    public void SetAttr(string key, object? value)
     {
         if (Attributes != null && Attributes.ContainsKey(key))
             Attributes[key] = value;
         else
             Attributes?.Add(key, value);
-
-        if (string.IsNullOrEmpty(value.ToString()))
+        
+        if (value is null || string.IsNullOrEmpty(value.ToString()))
             Attributes?.Remove(key);
     }
 }
