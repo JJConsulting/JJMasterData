@@ -102,7 +102,7 @@ public class FieldManager
                 {
                     case FieldType.Float:
                     {
-                        if (float.TryParse(value.ToString(),NumberStyles.Any,CultureInfo.CurrentCulture, out float floatValue))
+                        if (double.TryParse(value.ToString(),NumberStyles.Any,CultureInfo.CurrentCulture, out var floatValue))
                             stringValue = floatValue.ToString("N" + field.NumberOfDecimalPlaces);
                         break;
                     }

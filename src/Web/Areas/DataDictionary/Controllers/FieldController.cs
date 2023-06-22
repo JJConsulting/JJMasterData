@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
+using System.Globalization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -233,14 +234,25 @@ public class FieldController : DataDictionaryController
                 or FormComponent.Email
                 or FormComponent.Cnpj
                 or FormComponent.Cpf
+                or FormComponent.Slider
                 or FormComponent.CnpjCpf
                 or FormComponent.Cep:
                 field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
 
-                if (field.Component is FormComponent.Number)
+                if (field.Component is FormComponent.Number or FormComponent.Slider)
                 {
-                    field.SetAttr(FormElementField.MinValueAttribute, Request.Form["minValue"]);
-                    field.SetAttr(FormElementField.MaxValueAttribute, Request.Form["maxValue"]);
+                    if (double.TryParse(Request.Form["step"], out var step))
+                    {
+                        field.SetAttr(FormElementField.StepAttribute, step);
+                    }
+                    if (double.TryParse(Request.Form["minValue"], out var minValue))
+                    {
+                        field.SetAttr(FormElementField.MinValueAttribute, minValue);
+                    }
+                    if (double.TryParse(Request.Form["maxValue"], out var maxValue))
+                    {
+                        field.SetAttr(FormElementField.MaxValueAttribute, maxValue);
+                    }
                 }
 
                 break;

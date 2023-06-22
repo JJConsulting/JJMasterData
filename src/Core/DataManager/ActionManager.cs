@@ -101,8 +101,7 @@ internal class ActionManager
 
         var script = new StringBuilder();
 
-        if (contextAction == ActionSource.Field ||
-            contextAction == ActionSource.FormToolbar)
+        if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
         {
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);

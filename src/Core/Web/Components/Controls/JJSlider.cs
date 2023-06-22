@@ -6,13 +6,13 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJSlider : JJBaseControl
 {
-    public float MinValue { get; set; }
-    public float MaxValue { get; set; }
-    public float? Value { get; set; }
+    public double MinValue { get; set; }
+    public double MaxValue { get; set; }
+    public double? Value { get; set; }
     public double Step { get; set; } = 1;
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
-    public JJSlider(float minValue = 0, float maxValue = 100)
+    public JJSlider(double minValue = 0, double maxValue = 100)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -25,7 +25,7 @@ public class JJSlider : JJBaseControl
             Name =  field.Name,
             NumberOfDecimalPlaces = field.NumberOfDecimalPlaces,
             Step = (double)field.Attributes![FormElementField.StepAttribute],
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? float.Parse(value.ToString()) : null
+            Value = !string.IsNullOrEmpty(value?.ToString()) ? double.Parse(value.ToString()) : null
         };
         return slider;
     }
