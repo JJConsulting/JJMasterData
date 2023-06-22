@@ -11,7 +11,7 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>	
-		fix: Component Slider
+		fix: Decimal places and step support at JJSlider
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
