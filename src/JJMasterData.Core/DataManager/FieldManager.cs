@@ -103,7 +103,7 @@ public class FieldManager
                             stringValue = floatValue.ToString("N" + field.NumberOfDecimalPlaces);
                         break;
                     }
-                    case FieldType.Int when !field.IsPk:
+                    case FieldType.Int:
                     {
                         if (int.TryParse(value.ToString(), out int intVal))
                             stringValue = intVal.ToString("N0");
