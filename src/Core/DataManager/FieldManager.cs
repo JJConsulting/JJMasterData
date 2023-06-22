@@ -7,6 +7,11 @@ using JJMasterData.Core.Web.Factories;
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Threading;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -89,9 +94,28 @@ public class FieldManager
         if (value == null || value == DBNull.Value)
             return string.Empty;
 
-        string stringValue;
+        string stringValue = null;
         switch (field.Component)
         {
+            case FormComponent.Slider:
+                switch (field.DataType)
+                {
+                    case FieldType.Float:
+                    {
+                        if (float.TryParse(value.ToString(),NumberStyles.Any,CultureInfo.CurrentCulture, out float floatValue))
+                            stringValue = floatValue.ToString("N" + field.NumberOfDecimalPlaces);
+                        break;
+                    }
+                    case FieldType.Int:
+                    {
+                        if (int.TryParse(value.ToString(), out int intVal))
+                            stringValue = intVal.ToString("N0");
+                        break;
+                    }
+                    default:
+                        throw new JJMasterDataException("Invalid FieldType for Slider component");
+                }
+                break;
             case FormComponent.ComboBox 
             when field.DataItem!.ReplaceTextOnGrid || field.DataItem.ShowImageLegend:
             {
@@ -149,6 +173,7 @@ public class FieldManager
             case FormComponent.CnpjCpf:
                 stringValue = Format.FormatCnpj_Cpf(stringValue);
                 break;
+            case FormComponent.Slider:
             case FormComponent.Number:
 
                 switch (type)

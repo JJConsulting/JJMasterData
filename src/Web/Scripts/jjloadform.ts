@@ -54,16 +54,7 @@
         locale: localeCode
     });
 
-    $(prefixSelector + ".jjdecimal").each(function () {
-        let decimalPlaces = $(this).attr("jjdecimalplaces");
-        if (decimalPlaces == null)
-            decimalPlaces = "2";
-        
-        if(localeCode==='pt')
-            $(this).number(true, decimalPlaces, ",", ".");
-        else
-            $(this).number(true, decimalPlaces);
-    });
+    $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
 
     $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
         container: "body",

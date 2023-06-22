@@ -29,6 +29,12 @@
             <label for="maxValue" title="@Translate.Key("Maximum Value")" class="@BootstrapHelper.Label">@Translate.Key("Maximum Value")</label>
             <input class="form-control jjdecimal" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
         </div>
+        <div class="col-sm-2">
+            <label for="step" @BootstrapHelper.GetDataToggle("tooltip") 
+                   title="@Translate.Key("Defines the interval at which the value changes.")"
+                   class="@BootstrapHelper.Label">@Translate.Key("Step")</label>
+            <input id="step" name="step" class="form-control jjdecimal" type="number" value="@Model.GetAttr(FormElementField.StepAttribute)"/>
+        </div>
         break;
     case FormComponent.TextArea:
         <div class="@BootstrapHelper.FormGroup col-sm-2">
