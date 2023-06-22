@@ -89,7 +89,8 @@ public class JJFormView : JJGridView
                     Name = "jjpainel_" + FormElement.Name.ToLower(),
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
-                    RenderPanelGroup = true
+                    RenderPanelGroup = true,
+                    IsExternalRoute = IsExternalRoute
                 };
             }
             _dataPanel.PageState = PageState;

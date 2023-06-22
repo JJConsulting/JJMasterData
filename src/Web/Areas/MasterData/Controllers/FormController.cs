@@ -5,6 +5,7 @@ using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
@@ -46,10 +47,10 @@ public class FormController : MasterDataController
     
 
     [HttpPost]
-    public IActionResult GetSearchValues(string dictionaryName, string fieldName, int pageState)
+    public IActionResult SearchValues(string dictionaryNameEncrypted, string fieldName, int pageState)
     {
+        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var searchBox = _masterDataFactory.CreateJJSearchBox(dictionaryName, fieldName, (PageState)pageState, null);
-        var textSearch = HttpContext.Request.Form[$"{searchBox.Name}_text"];
-        return Json(searchBox.GetListBoxItems(textSearch));
+        return Json(searchBox.GetListBoxItems());
     }
 }

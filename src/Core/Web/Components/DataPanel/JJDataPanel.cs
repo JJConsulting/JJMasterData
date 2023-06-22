@@ -34,7 +34,7 @@ public class JJDataPanel : JJBaseView
     private FormUI _formUI;
     private IEntityRepository _entityRepository;
     private IDataDictionaryRepository _dataDictionaryRepository;
-
+    
     public IEntityRepository EntityRepository
     {
         get => _entityRepository ??= JJService.EntityRepository;
@@ -160,7 +160,6 @@ public class JJDataPanel : JJBaseView
             return null;
         }
         
-
         if ("geturlaction".Equals(requestType))
         {
             ResponseUrlAction();

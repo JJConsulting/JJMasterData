@@ -109,7 +109,7 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_dataImp != null) 
+            if (_dataImp != null)
                 return _dataImp;
 
             _dataImp = new JJDataImp(FormElement)
@@ -123,9 +123,6 @@ public class JJGridView : JJBaseView
             return _dataImp;
         }
     }
-
-    internal bool IsExternalRoute { get; init; } 
-
     public JJDataExp DataExp
     {
         get
