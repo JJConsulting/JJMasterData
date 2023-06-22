@@ -348,6 +348,15 @@ class JJDataPanel {
         });
     }
 }
+function applyDecimalPlaces() {
+    let decimalPlaces = $(this).attr("jjdecimalplaces");
+    if (decimalPlaces == null)
+        decimalPlaces = "2";
+    if (localeCode === 'pt')
+        $(this).number(true, decimalPlaces, ",", ".");
+    else
+        $(this).number(true, decimalPlaces);
+}
 var jjdictionary = (function () {
     return {
         deleteAction: function (actionName, url, questionStr) {
@@ -533,15 +542,7 @@ function jjloadform(event, prefixSelector) {
         },
         locale: localeCode
     });
-    $(prefixSelector + ".jjdecimal").each(function () {
-        let decimalPlaces = $(this).attr("jjdecimalplaces");
-        if (decimalPlaces == null)
-            decimalPlaces = "2";
-        if (localeCode === 'pt')
-            $(this).number(true, decimalPlaces, ",", ".");
-        else
-            $(this).number(true, decimalPlaces);
-    });
+    $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
     $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
         container: "body",
         trigger: "hover"
@@ -757,7 +758,14 @@ class JJSlider {
                 this.setAttribute('value', (this).value);
             });
             slider.oninput = function () {
-                sliderInput.value = (this).value;
+                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                if (decimalPlaces == null)
+                    decimalPlaces = "0";
+                let sliderValue = (this).value;
+                if (localeCode === 'pt')
+                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
+                else
+                    sliderInput.value = $.number(sliderValue, decimalPlaces);
             };
         });
     }
@@ -766,7 +774,7 @@ class JJSlider {
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
             input.oninput = function () {
-                slider.value = (this).value;
+                slider.value = $("#" + input.id).val();
             };
         });
     }

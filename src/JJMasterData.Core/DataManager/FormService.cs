@@ -8,6 +8,7 @@ using System.Collections;
 using System.Data.SqlClient;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -105,7 +106,7 @@ public class FormService
     {
         Hashtable errors;
         if (validateFields)
-            errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
+            errors = FormManager.ValidateFields(values.DeepCopy(), PageState.Insert, EnableErrorLink);
         else
             errors = new Hashtable();
 

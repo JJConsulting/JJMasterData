@@ -135,7 +135,7 @@
                         new { @class = "form-control form-select" })
                 </div>
 
-                @if (Model.Component is FormComponent.Number or FormComponent.Currency)
+                @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
                         <label class="@BootstrapHelper.Label " for="NumberOfDecimalPlaces" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of decimal places")">@Translate.Key("DecimalPlaces")</label>

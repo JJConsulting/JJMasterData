@@ -96,16 +96,16 @@ public static class FieldValidator
                 {
                     if (int.Parse(value) < field.MinValue)
                         return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.MinValue);
-
+                
                     if (int.Parse(value) > field.MaxValue)
                         return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.MaxValue);
                 }
                 else
                 {
-                    if (float.Parse(value, CultureInfo.CurrentCulture) < field.MinValue)
+                    if (float.Parse(value) < field.MinValue)
                         return Translate.Key("{0} field needs to be greater than {1}", fieldName, field.MinValue);
-
-                    if (float.Parse(value, CultureInfo.CurrentCulture) > field.MaxValue)
+                
+                    if (float.Parse(value) > field.MaxValue)
                         return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, field.MaxValue);
                 }
                

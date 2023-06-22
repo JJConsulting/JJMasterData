@@ -32,34 +32,44 @@ internal class FormValues
         foreach (var field in FormElement.Fields)
         {
             var fieldName = (prefix ?? string.Empty) + field.Name;
-            var value = field.ValidateRequest ? CurrentContext.Request.Form(fieldName) : CurrentContext.Request.GetUnvalidated(fieldName);
+            var value = field.ValidateRequest
+                ? CurrentContext.Request.Form(fieldName)
+                : CurrentContext.Request.GetUnvalidated(fieldName);
 
             switch (field.Component)
             {
                 case FormComponent.Search:
-                    {
-                        var search = (JJSearchBox)FieldManager.GetField(field, state, values);
-                        search.AutoReloadFormFields = true;
-                        value = search.SelectedValue;
-                        break;
-                    }
+                {
+                    var search = (JJSearchBox)FieldManager.GetField(field, state, values);
+                    search.AutoReloadFormFields = true;
+                    value = search.SelectedValue;
+                    break;
+                }
                 case FormComponent.Lookup:
-                    {
-                        var lookup = (JJLookup)FieldManager.GetField(field, state, values);
-                        lookup.AutoReloadFormFields = true;
-                        value = lookup.SelectedValue;
-                        break;
-                    }
+                {
+                    var lookup = (JJLookup)FieldManager.GetField(field, state, values);
+                    lookup.AutoReloadFormFields = true;
+                    value = lookup.SelectedValue;
+                    break;
+                }
+                case FormComponent.Slider:
+                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                            out var doubleValue))
+                        value = doubleValue;
+                    break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
                     string requestType = CurrentContext.Request.QueryString("t");
-                    if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) || "ajax".Equals(requestType)))
+                    if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) ||
+                                          "ajax".Equals(requestType)))
                     {
-                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
+                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                                out var numericValue))
                             value = numericValue;
                         else
                             value = 0;
                     }
+
                     break;
                 case FormComponent.CheckBox:
                     value ??= CurrentContext.Request.Form(fieldName + "_hidden");
@@ -96,5 +106,4 @@ internal class FormValues
         _formManager ??= new FormManager(FormElement, FieldManager.ExpressionManager);
         return _formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPostBack);
     }
-
 }

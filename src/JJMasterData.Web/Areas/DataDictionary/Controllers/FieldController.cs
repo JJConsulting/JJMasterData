@@ -239,10 +239,22 @@ public class FieldController : DataDictionaryController
                 or FormComponent.Password 
                 or FormComponent.Email 
                 or FormComponent.Cnpj 
+                or FormComponent.Slider
                 or FormComponent.Cpf 
                 or FormComponent.CnpjCpf 
                 or FormComponent.Cep:
                 field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
+                if (field.Component is FormComponent.Number or FormComponent.Slider)
+                {
+                    if (float.TryParse(Request.Form["step"], out var step))
+                    {
+                        field.SetAttr(FormElementField.StepAttribute, step);
+                    }
+                    else
+                    {
+                        field.SetAttr(FormElementField.StepAttribute, null!);
+                    }
+                }
                 break;
             case FormComponent.TextArea:
                 field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
