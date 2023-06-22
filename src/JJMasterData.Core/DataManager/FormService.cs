@@ -106,7 +106,7 @@ public class FormService
     {
         Hashtable errors;
         if (validateFields)
-            errors = FormManager.ValidateFields(values.DeepCopy(), PageState.Insert, EnableErrorLink);
+            errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
         else
             errors = new Hashtable();
 
