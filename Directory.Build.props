@@ -11,7 +11,7 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>	
-		fix: Decimal places and step support at JJSlider
+		fix: Cannot consume scoped service 'JJMasterData.Commons.Data.Entity.Abstractions.IEntityRepository' from singleton 'Microsoft.Extensions.Logging.ILoggerProvider'.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
