@@ -4,7 +4,7 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Components.GridView;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
 
+//TODO: Remove this class
 internal class ActionManager
 {
     /// <summary>
@@ -43,7 +44,7 @@ internal class ActionManager
     }
 
 
-    private string GetInternalUrlScript(InternalAction action, IDictionary formValues)
+    public string GetInternalUrlScript(InternalAction action, IDictionary formValues)
     {
         var elementRedirect = action.ElementRedirect;
         var dicRepository = JJServiceCore.DataDictionaryRepository;
@@ -90,7 +91,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    private string GetUrlRedirectScript(UrlRedirectAction action, IDictionary formValues, PageState pageState,
+    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary formValues, PageState pageState,
         ActionSource contextAction, string fieldName)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
@@ -192,7 +193,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    private string GetCommandScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
+    public string GetCommandScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string jsonMap = JsonConvert.SerializeObject(actionMap);
@@ -223,10 +224,10 @@ internal class ActionManager
         return GetLink(action, formValues, PageState.List, ActionSource.GridTable);
     }
 
-    public JJLinkButton GetLinkGridToolbar(BasicAction action, IDictionary formValues)
-    {
-        return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
-    }
+    //public JJLinkButton GetLinkGridToolbar(BasicAction action, IDictionary formValues)
+    //{
+    //    return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
+    //}
 
     public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary formValues, PageState pageState)
     {
@@ -308,21 +309,10 @@ internal class ActionManager
     private JJLinkButton GetLink(BasicAction action, IDictionary formValues, PageState pagestate,
         ActionSource contextAction, string fieldName = null)
     {
-        var link = new JJLinkButton
-        {
-            ToolTip = action.ToolTip,
-            Text = action.Text,
-            IsGroup = action.IsGroup,
-            IsDefaultOption = action.IsDefaultOption,
-            DividerLine = action.DividerLine,
-            ShowAsButton = !action.IsGroup && action.ShowAsButton,
-            Type = action is SubmitAction ? LinkButtonType.Submit : default,
-            CssClass = action.CssClass,
-            IconClass = action.Icon.GetCssClass() + " fa-fw",
-            Enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues),
-            Visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues)
-        };
-
+        var enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues);
+        var visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues);
+        var link = JJLinkButton.GetInstance(action, enabled, visible);
+        
         string script;
         switch (action)
         {

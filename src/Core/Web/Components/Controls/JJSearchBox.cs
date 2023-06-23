@@ -6,6 +6,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -265,7 +266,6 @@ public class JJSearchBox : JJBaseControl
         return null;
     }
 
-
     private HtmlBuilder GetSearchBoxHtml()
     {
         if (DataItem == null)
@@ -321,7 +321,8 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            url.Append("?t=jjsearchbox");
+
+            url.Append("t=jjsearchbox");
             url.AppendFormat("&dictionaryName={0}", DictionaryName);
         }
         

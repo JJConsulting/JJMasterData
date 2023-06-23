@@ -59,6 +59,7 @@ public class FieldManager
 
         return ExpressionManager.GetBoolValue(field.VisibleExpression, field.Name, state, formValues);
     }
+    
 
     public bool IsEnabled(FormElementField field, PageState state, IDictionary formValues)
     {

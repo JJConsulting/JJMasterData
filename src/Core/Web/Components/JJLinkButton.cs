@@ -1,4 +1,8 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using System.Linq.Expressions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -71,6 +75,24 @@ public class JJLinkButton : JJBaseView
     {
         Enabled = true;
         Type = LinkButtonType.Link;
+    }
+
+    internal static JJLinkButton GetInstance(BasicAction action, bool enable, bool visible)
+    {
+        return new JJLinkButton
+        {
+            ToolTip = action.ToolTip,
+            Text = action.Text,
+            IsGroup = action.IsGroup,
+            IsDefaultOption = action.IsDefaultOption,
+            DividerLine = action.DividerLine,
+            ShowAsButton = !action.IsGroup && action.ShowAsButton,
+            Type = action is SubmitAction ? LinkButtonType.Submit : default,
+            CssClass = action.CssClass,
+            IconClass = action.Icon.GetCssClass() + " fa-fw",
+            Enabled = enable,
+            Visible = visible
+        };
     }
 
     internal override HtmlBuilder RenderHtml()
