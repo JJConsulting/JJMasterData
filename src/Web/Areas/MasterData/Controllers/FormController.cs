@@ -1,16 +1,28 @@
-﻿using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController : MasterDataController
 {
-    public IActionResult Render(string dictionaryName, bool isBlazor = false)
+    private readonly JJMasterDataEncryptionService _encryptionService;
+    private readonly JJMasterDataFactory _masterDataFactory;
+
+    public FormController(JJMasterDataEncryptionService encryptionService, JJMasterDataFactory masterDataFactory)
     {
-        var model = new FormViewModel(dictionaryName, ConfigureFormView, isBlazor);
+        _encryptionService = encryptionService;
+        _masterDataFactory = masterDataFactory;
+    }
+    
+    public IActionResult Render(string dictionaryName)
+    {
+        var model = new FormViewModel(dictionaryName, ConfigureFormView);
         return View(model);
     }
 
@@ -23,5 +35,22 @@ public class FormController : MasterDataController
         
         formView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
+    }
+
+    [HttpPost]
+    public IActionResult GetGrid(string dictionaryNameEncrypted)
+    {
+        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
+        var formView = new JJFormView(dictionaryName);
+        return Content(formView.GetTableHtml());
+    }
+    
+
+    [HttpPost]
+    public IActionResult SearchValues(string dictionaryNameEncrypted, string fieldName, int pageState)
+    {
+        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
+        var searchBox = _masterDataFactory.CreateJJSearchBox(dictionaryName, fieldName, (PageState)pageState, null);
+        return Json(searchBox.GetListBoxItems());
     }
 }

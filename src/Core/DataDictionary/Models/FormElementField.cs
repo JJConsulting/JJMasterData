@@ -21,7 +21,7 @@ public class FormElementField : ElementField
     public const string AutocompletePickerAttribute = "autocompletePicker";
     public const string MinValueAttribute = "minValue";
     public const string MaxValueAttribute = "maxValue";
-
+    public const string StepAttribute = "step";
     [JsonProperty("component")] public FormComponent Component { get; set; }
 
     /// <remarks>

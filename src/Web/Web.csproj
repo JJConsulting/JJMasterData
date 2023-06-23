@@ -37,6 +37,10 @@
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <EmbeddedResource Include="Scripts\**\*.ts" />
     </ItemGroup>
+
+    <ItemGroup>
+      <TypeScriptCompile Remove="Scripts\jjgridview.ts" />
+    </ItemGroup>
     
 	<ItemGroup>
       <Content Update="Scripts\tsconfig.json" Pack="false">

@@ -348,6 +348,15 @@ class JJDataPanel {
         });
     }
 }
+function applyDecimalPlaces() {
+    let decimalPlaces = $(this).attr("jjdecimalplaces");
+    if (decimalPlaces == null)
+        decimalPlaces = "2";
+    if (localeCode === 'pt')
+        $(this).number(true, decimalPlaces, ",", ".");
+    else
+        $(this).number(true, decimalPlaces);
+}
 var jjdictionary = (function () {
     return {
         deleteAction: function (actionName, url, questionStr) {
@@ -483,6 +492,53 @@ JJFeedbackIcon.searchClass = "jj-icon-search";
 JJFeedbackIcon.successClass = "jj-icon-success";
 JJFeedbackIcon.warningClass = "jj-icon-warning";
 JJFeedbackIcon.errorClass = "jj-icon-error";
+class JJGridView {
+    static setup() {
+    }
+    static Sorting(objid, url, tableOroder) {
+        var tableOrder = "#current_tableorder_" + objid;
+        if (tableOroder + " ASC" == $(tableOrder).val())
+            $(tableOrder).val(tableOroder + " DESC");
+        else
+            $(tableOrder).val(tableOroder + " ASC");
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        JJGridView.RefreshGrid(objid, url);
+    }
+    static Pagination(objid, url, currentPage) {
+        $("#current_tablepage_" + objid).val(currentPage);
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        JJGridView.RefreshGrid(objid, url);
+    }
+    static Filter(objid, url) {
+        $("#current_filteraction_" + objid).val("FILTERACTION");
+        $("#current_tableaction_" + objid).val("");
+        $("#current_tablepage_" + objid).val("1");
+        $("#current_formaction_" + objid).val("");
+        JJGridView.RefreshGrid(objid, url);
+    }
+    static RefreshGrid(objid, url) {
+        const frm = $("form");
+        $.ajax({
+            async: true,
+            type: frm.attr("method"),
+            url: url,
+            data: frm.serialize(),
+            success: function (data) {
+                $("#jjgridview_" + objid).html(data);
+                jjloadform();
+                $("#current_filteraction_" + objid).val("");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                console.log(textStatus);
+                console.log(jqXHR);
+                $("#current_filteraction_" + objid).val("");
+            }
+        });
+    }
+}
 function jjloadform(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
@@ -533,15 +589,7 @@ function jjloadform(event, prefixSelector) {
         },
         locale: localeCode
     });
-    $(prefixSelector + ".jjdecimal").each(function () {
-        let decimalPlaces = $(this).attr("jjdecimalplaces");
-        if (decimalPlaces == null)
-            decimalPlaces = "2";
-        if (localeCode === 'pt')
-            $(this).number(true, decimalPlaces, ",", ".");
-        else
-            $(this).number(true, decimalPlaces);
-    });
+    $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
     $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
         container: "body",
         trigger: "hover"
@@ -670,8 +718,7 @@ class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
-            const dictionaryName = $(this).attr("dictionaryName");
-            const pageState = $(this).attr("pageState");
+            const urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
             let scrollbar = Boolean($(this).attr("scrollbar"));
@@ -685,15 +732,6 @@ class JJSearchBox {
             if (showimagelegend == null)
                 showimagelegend = false;
             const frm = $("form");
-            let urltypehead = frm.attr("action");
-            if (urltypehead.includes("?"))
-                urltypehead += "&";
-            else
-                urltypehead += "?";
-            urltypehead += "t=jjsearchbox";
-            urltypehead += "&objname=" + objid;
-            urltypehead += "&dictionaryName=" + dictionaryName;
-            urltypehead += "&pageState=" + pageState;
             const jjSearchBoxSelector = "#" + objid + "_text";
             const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {
@@ -759,7 +797,14 @@ class JJSlider {
                 this.setAttribute('value', (this).value);
             });
             slider.oninput = function () {
-                sliderInput.value = (this).value;
+                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                if (decimalPlaces == null)
+                    decimalPlaces = "0";
+                let sliderValue = (this).value;
+                if (localeCode === 'pt')
+                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
+                else
+                    sliderInput.value = $.number(sliderValue, decimalPlaces);
             };
         });
     }
@@ -768,7 +813,7 @@ class JJSlider {
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
             input.oninput = function () {
-                slider.value = (this).value;
+                slider.value = $("#" + input.id).val();
             };
         });
     }
@@ -1041,7 +1086,6 @@ var jjview = (function () {
             $("#current_tablepage_" + objid).val("1");
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, false);
-            return false;
         },
         doSearch: function (objid, oDom) {
             var value = $(oDom).val().toString().toLowerCase();
@@ -1177,29 +1221,6 @@ var jjview = (function () {
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, true);
-        },
-        doPaginationExternal: function (objid, url, currentPage) {
-            $("#current_tablepage_" + objid).val(currentPage);
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            const frm = $("form");
-            $.ajax({
-                async: true,
-                type: frm.attr("method"),
-                url: url,
-                data: frm.serialize(),
-                success: function (data) {
-                    $("#jjgridview_" + objid).html(data);
-                    jjloadform();
-                    $("#current_filteraction_" + objid).val("");
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                    $("#current_filteraction_" + objid).val("");
-                }
-            });
         },
         doRefresh: function (objid, enableAjax) {
             $("#current_tableaction_" + objid).val("");

@@ -4,6 +4,7 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Web.Components.GridView;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -85,7 +86,7 @@ internal class GridPagination
                 a.WithCssClass("page-link");
                 a.WithAttribute("style", "cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithAttribute("onclick", GetDoPaginationScript(page));
+                a.WithAttribute("onclick", GridView.GetPaginationScript(page));
                 if (icon != null)
                 {
                     a.AppendElement(new JJIcon(icon.Value));
@@ -98,22 +99,7 @@ internal class GridPagination
 
         return li;
     }
-
-    private string GetDoPaginationScript(int page)
-    {
-        string name = GridView.Name;
-        string enableAjax = GridView.EnableAjax ? "true" : "false";
-        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-        string dictionaryNameEncrypted = encryptionService.EncryptString(GridView.FormElement.Name);
-        string url = $"{ConfigurationHelper.GetUrlMasterData()}Form/GetGrid?dictionaryNameEncrypted={dictionaryNameEncrypted}&currentPage={page}";
-        if (GridView.IsExternalRoute)
-        {
-            return $"javascript:jjview.doPaginationExternal('{name}', '{url}', {page})";
-        }
-        
-        return $"javascript:jjview.doPagination('{name}', {enableAjax}, {page})";
-    }
-
+    
     private HtmlBuilder GetTotalRecordsHtmlElement()
     {
         var div = new HtmlBuilder(HtmlTag.Div);

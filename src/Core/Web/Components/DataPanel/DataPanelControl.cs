@@ -27,6 +27,8 @@ internal class DataPanelControl
 
     public string FieldNamePrefix { get; set; }
 
+    public bool IsExternalRoute { get; }
+
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
 
 
@@ -38,6 +40,7 @@ internal class DataPanelControl
         Erros = dataPanel.Errors;
         Values = dataPanel.Values;
         Name = dataPanel.Name;
+        IsExternalRoute = dataPanel.IsExternalRoute;
     }
 
     public DataPanelControl(JJGridView gridView)
@@ -50,6 +53,7 @@ internal class DataPanelControl
         PageState = PageState.Filter;
         Erros = new Hashtable();
         Name = gridView.Name;
+        IsExternalRoute = gridView.IsExternalRoute;
     }
 
     public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
@@ -272,6 +276,7 @@ internal class DataPanelControl
     private HtmlBuilder GetControlField(FormElementField f, object value)
     {
         var field = FieldManager.GetField(f, PageState, Values, value);
+        field.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             field.Name = FieldNamePrefix + f.Name;

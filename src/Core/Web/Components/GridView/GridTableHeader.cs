@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Web.Components.GridView;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -125,11 +130,7 @@ internal class GridTableHeader
     private void SetSortAttributes(HtmlBuilder span, FormElementField field)
     {
         span.WithCssClass("jjenable-sorting");
-
-        string ajax = GridView.EnableAjax ? "true" : "false";
-
-        span.WithAttribute("onclick",
-            $"jjview.doSorting('{GridView.Name}','{ajax}','{field.Name}')");
+        span.WithAttribute("onclick", GridView.GetSortingScript(field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()

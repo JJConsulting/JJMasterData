@@ -30,6 +30,8 @@ public abstract class JJBaseView
         set => _userValues = value;
     }
 
+    internal bool IsExternalRoute { get; set; }
+
     internal IHttpContext CurrentContext => JJHttpContext.GetInstance();
 
     public bool Visible { get; set; } = true;
