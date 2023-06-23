@@ -60,7 +60,7 @@ public class JJServiceBuilder
     
     public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
-        Services.Replace(ServiceDescriptor.Scoped(implementationFactory));
+        Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;
     }
     
