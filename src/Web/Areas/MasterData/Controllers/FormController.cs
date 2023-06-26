@@ -48,13 +48,14 @@ public class FormController : MasterDataController
 
     
     [HttpPost]
-    public IActionResult GetDataPanel(string dictionaryNameEncrypted, PageState pageState)
+    public IActionResult GetDataPanel(string dictionaryNameEncrypted, PageState pageState, bool isModal = true)
     {
         var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var formView = new JJFormView(dictionaryName)
         {
             IsExternalRoute = true,
-            PageState = PageState.Insert
+            PageState = PageState.Insert,
+            IsModal = true
         };
 
         var form = new HtmlBuilder(HtmlTag.Form);

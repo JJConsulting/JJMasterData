@@ -49,7 +49,8 @@ internal static class GridViewScripts
     private static string GetUrl(string dictionaryName)
     {
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
         string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
-        return $"{ConfigurationHelper.GetUrlMasterData()}Form/GetGrid?dictionaryNameEncrypted={dictionaryNameEncrypted}";
+        return urlHelper.GetUrl("GetGrid", "Form",new {Area = "MasterData",dictionaryNameEncrypted});
     }
 }

@@ -39,7 +39,7 @@ class ActionManager {
                 return false;
             }
         }
-        popup.showHtmlFromUrl("Teste", url, {
+        popup.showHtmlFromUrl(actionName, url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

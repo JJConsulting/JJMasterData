@@ -173,6 +173,8 @@ public class JJFormView : JJGridView
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
 
+    internal bool IsModal { get; init; }
+    
     #endregion
 
     #region "Constructors"

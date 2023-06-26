@@ -315,19 +315,19 @@ public class JJSearchBox : JJBaseControl
         if (IsExternalRoute)
         {
             var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+            var urlHelper = JJMasterDataUrlHelper.GetInstance();
             string dictionaryNameEncrypted = encryptionService.EncryptString(DictionaryName);
-            url.AppendFormat("{0}Form/SearchValues", ConfigurationHelper.GetUrlMasterData());
-            url.AppendFormat("?dictionaryNameEncrypted={0}", dictionaryNameEncrypted);
+            url.Append(urlHelper.GetUrl("SearchValues","Form", new { dictionaryNameEncrypted, Area="MasterData"}));
         }
         else
         {
             url.Append("?t=jjsearchbox");
-            url.AppendFormat("&dictionaryName={0}", DictionaryName);
+            url.Append($"&dictionaryName={DictionaryName}");
         }
-        
-        url.AppendFormat("&fieldName={0}", FieldName);
-        url.AppendFormat("&objname={0}", Name + "_text");
-        url.AppendFormat("&pageState={0}", (int)ExpressionOptions.PageState);
+
+        url.Append($"&fieldName={FieldName}");
+        url.Append($"&objname={Name + "_text"}");
+        url.Append($"&pageState={(int)ExpressionOptions.PageState}");
 
         return url.ToString();
     }

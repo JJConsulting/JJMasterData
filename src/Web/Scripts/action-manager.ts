@@ -33,14 +33,14 @@ class ActionManager {
         form.submit();
     }
 
-    static executeFormActionAsPopUp(url:string,actionName: string, encryptedActionMap: string, confirmationMessage?: string) {
+    static executeFormActionAsPopUp(url:string, actionName: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
         
-        popup.showHtmlFromUrl("Teste", url, {
+        popup.showHtmlFromUrl(actionName, url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

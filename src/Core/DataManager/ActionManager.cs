@@ -75,8 +75,9 @@ internal class ActionManager
             }
         }
 
-        string url =
-            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+        
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
+        string url = urlHelper.GetUrl(null,"InternalRedirect", new { parameters =  Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"});
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -147,7 +148,7 @@ internal class ActionManager
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
-        script.Append(!isPopup ? "ActionManager.executeFormAction('" : $"ActionManager.executeFormActionAsPopUp('{GetDataPanelUrl(FormElement.Name, PageState.Insert)}','" );
+        script.Append(!isPopup ? "ActionManager.executeFormAction('" : $"ActionManager.executeFormActionAsPopUp('{GetDataPanelUrl(FormElement.Name,action)}','" );
         script.Append(ComponentName);
         script.Append("','");
         script.Append(encryptedActionMap);
@@ -163,11 +164,21 @@ internal class ActionManager
 
         return script.ToString();
     }
-    private static string GetDataPanelUrl(string dictionaryName, PageState pageState)
+    private static string GetDataPanelUrl(string dictionaryName, BasicAction action)
     {
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
         string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
-        return $"{ConfigurationHelper.GetUrlMasterData()}Form/GetDataPanel?dictionaryNameEncrypted={dictionaryNameEncrypted}&pageState={pageState}";
+
+
+        var pageState = action switch
+        {
+            InsertAction => PageState.Insert,
+            ViewAction => PageState.View,
+            _ => PageState.Update
+        };
+
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
+        return urlHelper.GetUrl("GetDataPanel", "Form", new { dictionaryNameEncrypted, pageState, Area="MasterData"});
     }
 
     internal string GetExportScript(ExportAction action, Hashtable formValues)
@@ -337,7 +348,13 @@ internal class ActionManager
             case InsertAction formAction:
                 script = GetFormActionScript(action, formValues, contextAction, formAction.ShowAsPopup);
                 break;
-            case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
+            case EditAction editAction:
+                script = GetFormActionScript(action, formValues, contextAction, editAction.ShowAsPopup);
+                break;
+            case ViewAction viewAction:
+                script = GetFormActionScript(action, formValues, contextAction, viewAction.ShowAsPopup);
+                break;
+            case ViewAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
                 or LogAction:
                 script = GetFormActionScript(action, formValues, contextAction);
                 break;
