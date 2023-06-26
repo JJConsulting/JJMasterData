@@ -1,4 +1,5 @@
 ﻿function jjloadform(event?, prefixSelector?) {
+    console.log("pan")
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }

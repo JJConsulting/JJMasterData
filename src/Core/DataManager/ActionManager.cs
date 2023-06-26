@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Azure;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -17,6 +20,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
@@ -97,7 +101,6 @@ internal class ActionManager
         actionMap.FieldName = fieldName;
         string criptMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
-        int popupSize = (int)action.PopupSize;
 
         var script = new StringBuilder();
 
@@ -107,12 +110,12 @@ internal class ActionManager
             script.Append(ComponentName);
             script.Append("','");
             script.Append(criptMap);
-            script.Append("'");
+            script.Append('\'');
             if (!string.IsNullOrEmpty(confirmationMessage))
             {
                 script.Append(",'");
                 script.Append(confirmationMessage);
-                script.Append("'");
+                script.Append('\'');
             }
 
             script.Append(");");
@@ -131,38 +134,41 @@ internal class ActionManager
             script.Append(popUpTitle);
             script.Append("','");
             script.Append(confirmationMessage);
-            script.Append("','");
-            script.Append(popupSize);
             script.Append("');");
         }
 
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
+    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource actionSource, bool isPopup = false)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
+        string encryptedActionMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
-        script.Append("jjview.formAction('");
+        script.Append(!isPopup ? "ActionManager.executeFormAction('" : $"ActionManager.executeFormActionAsPopUp('{GetDataPanelUrl(FormElement.Name, PageState.Insert)}','" );
         script.Append(ComponentName);
         script.Append("','");
-        script.Append(criptMap);
-        script.Append("'");
+        script.Append(encryptedActionMap);
+        script.Append('\'');
         if (!string.IsNullOrEmpty(confirmationMessage))
         {
             script.Append(",'");
             script.Append(confirmationMessage);
-            script.Append("'");
+            script.Append('\'');
         }
 
         script.Append(");");
 
         return script.ToString();
     }
-
+    private static string GetDataPanelUrl(string dictionaryName, PageState pageState)
+    {
+        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+        string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
+        return $"{ConfigurationHelper.GetUrlMasterData()}Form/GetDataPanel?dictionaryNameEncrypted={dictionaryNameEncrypted}&pageState={pageState}";
+    }
 
     internal string GetExportScript(ExportAction action, Hashtable formValues)
     {
@@ -328,6 +334,9 @@ internal class ActionManager
         string script;
         switch (action)
         {
+            case InsertAction formAction:
+                script = GetFormActionScript(action, formValues, contextAction, formAction.ShowAsPopup);
+                break;
             case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
                 or LogAction:
                 script = GetFormActionScript(action, formValues, contextAction);
@@ -353,10 +362,10 @@ internal class ActionManager
                 else
                     link.Type = save.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                 
-                script = $"return jjview.doPainelAction('{ComponentName}','OK');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','OK');";
                 break;
             case CancelAction or BackAction:
-                script = $"return jjview.doPainelAction('{ComponentName}','CANCEL');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','CANCEL');";
                 break;
             case RefreshAction:
                 script = $"jjview.doRefresh('{ComponentName}');";

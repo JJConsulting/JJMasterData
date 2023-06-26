@@ -33,6 +33,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Commons\Commons.csproj" />
         <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
+        <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
 
 </Project>

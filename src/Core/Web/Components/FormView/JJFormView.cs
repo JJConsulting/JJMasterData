@@ -102,16 +102,17 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Estado atual da pagina
     /// </summary>
+    private PageState _pageState;
     public PageState PageState
     {
         get
         {
-            var pageState = PageState.List;
             if (CurrentContext.Request["current_pagestate_" + Name] != null)
-                pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
+                _pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
 
-            return pageState;
+            return _pageState;
         }
+        internal init => _pageState = value;
     }
 
     private ActionMap CurrentActionMap
@@ -751,6 +752,7 @@ public class JJFormView : JJGridView
         parentPanel.PageState = pageState;
         parentPanel.Errors = errors;
         parentPanel.Values = values;
+        parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)

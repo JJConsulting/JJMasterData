@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,22 @@ public class FormController : MasterDataController
         var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var formView = new JJFormView(dictionaryName);
         return Content(formView.GetTableHtml());
+    }
+
+    
+    [HttpPost]
+    public IActionResult GetDataPanel(string dictionaryNameEncrypted, PageState pageState)
+    {
+        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
+        var formView = new JJFormView(dictionaryName)
+        {
+            IsExternalRoute = true,
+            PageState = PageState.Insert
+        };
+
+        var form = new HtmlBuilder(HtmlTag.Form);
+        form.AppendElement(formView.GetHtmlBuilder());
+        return Content(form.ToString());
     }
     
 

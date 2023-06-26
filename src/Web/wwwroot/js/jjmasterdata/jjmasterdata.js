@@ -7,6 +7,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class ActionManager {
+    static executePanelAction(name, action) {
+        $("#current_painelaction_" + name).val(action);
+        let form = document.querySelector(`form#${name}`);
+        if (!form) {
+            form = document.forms[0];
+        }
+        form.requestSubmit();
+        return false;
+    }
+    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
+        const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
+        let form = document.querySelector("form");
+        if (!form) {
+            form = document.forms[0];
+        }
+        currentTableActionInput.value = "";
+        currentFormActionInput.value = encryptedActionMap;
+        form.submit();
+    }
+    static executeFormActionAsPopUp(url, actionName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        popup.showHtmlFromUrl("Teste", url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }, 1).then(_ => jjloadform());
+    }
+}
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     jjloadform("load", null);
@@ -540,6 +580,7 @@ class JJGridView {
     }
 }
 function jjloadform(event, prefixSelector) {
+    console.log("pan");
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
@@ -1086,6 +1127,7 @@ var jjview = (function () {
             $("#current_tablepage_" + objid).val("1");
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, false);
+            return false;
         },
         doSearch: function (objid, oDom) {
             var value = $(oDom).val().toString().toLowerCase();
@@ -1245,17 +1287,6 @@ var jjview = (function () {
             $("#current_selaction_" + objid).val(criptid);
             $("form:first").submit();
         },
-        formAction: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                const result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val(criptid);
-            $("form:first").submit();
-        },
         gridAction: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
                 var result = confirm(confirmMessage);
@@ -1266,11 +1297,6 @@ var jjview = (function () {
             $("#current_tableaction_" + objid).val(criptid);
             $("#current_formaction_" + objid).val("");
             $("form:first").submit();
-        },
-        doPainelAction: function (objid, v) {
-            $("#current_painelaction_" + objid).val(v);
-            $("form").submit();
-            return false;
         },
         doFormUrlRedirect: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
@@ -1747,16 +1773,18 @@ class Popup {
         this.setTitle(title);
         this.showModal(false);
     }
-    showHtmlFromUrl(title, url, size = 1) {
-        messageWait.show();
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-            this.showHtml(title, html, size);
-            messageWait.hide();
-        })
-            .catch(error => {
-            console.error('Error fetching HTML from URL:', error);
+    showHtmlFromUrl(title, url, options = null, size = 1) {
+        return __awaiter(this, void 0, void 0, function* () {
+            messageWait.show();
+            yield fetch(url, options)
+                .then(response => response.text())
+                .then(html => {
+                this.showHtml(title, html, size);
+                messageWait.hide();
+            })
+                .catch(error => {
+                console.error('Error fetching HTML from URL:', error);
+            });
         });
     }
     hide() {
@@ -1771,6 +1799,30 @@ var popup = function () {
         return new Popup();
     }
 }();
+class UrlBuilder {
+    constructor() {
+        this.queryParameters = new Map();
+    }
+    addQueryParameter(key, value) {
+        this.queryParameters.set(key, value);
+    }
+    build() {
+        const form = document.querySelector("form");
+        let url = form.getAttribute("action");
+        if (!url.includes("?")) {
+            url += "?";
+        }
+        let isFirst = true;
+        for (const [key, value] of this.queryParameters.entries()) {
+            if (!isFirst) {
+                url += "&";
+            }
+            url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            isFirst = false;
+        }
+        return url;
+    }
+}
 var jjutil = (function () {
     return {
         justNumber: function (e) {

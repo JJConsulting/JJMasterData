@@ -150,9 +150,9 @@
         this.showModal(false);
     }
 
-    showHtmlFromUrl(title, url, size = 1) {
+    async showHtmlFromUrl(title: string, url: RequestInfo | URL, options: RequestInit = null, size = 1) {
         messageWait.show();
-        fetch(url)
+        await fetch(url,options)
             .then(response => response.text())
             .then(html => {
                 this.showHtml(title, html, size)
