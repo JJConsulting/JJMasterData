@@ -10,7 +10,18 @@
             });
 
             slider.oninput = function () {
-                sliderInput.value = (<HTMLInputElement>(this)).value;
+                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                if (decimalPlaces == null)
+                    decimalPlaces = "0";
+
+                let sliderValue = (<HTMLInputElement>(this)).value;
+                
+                if(localeCode==='pt')
+                    // @ts-ignore
+                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
+                else
+                    // @ts-ignore
+                    sliderInput.value = $.number(sliderValue, decimalPlaces);
             }
         });
     }
@@ -19,10 +30,11 @@
         let inputs = document.getElementsByClassName("jjslider-value");
 
         Array.from(inputs).forEach((input: HTMLInputElement) => {
-            let slider = <HTMLInputElement>document.getElementById(input.id.replace("-value", ""));
+            let slider= <HTMLInputElement>document.getElementById(input.id.replace("-value", ""));
 
             input.oninput = function () {
-                slider.value = (<HTMLInputElement>(this)).value;
+                // @ts-ignore
+                slider.value = $("#" + input.id).val();
             }
         });
     }
