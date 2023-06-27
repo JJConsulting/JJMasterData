@@ -90,7 +90,10 @@ internal class GridToolbar
             case ScriptAction jsAction:
                 script = expressionManager.ParseExpression(jsAction.OnClientClick, pageState, false, formValues);
                 break;
-            case InsertAction or DeleteSelectedRowsAction or ImportAction or LogAction:
+            case InsertAction insertAction:
+                script = GridView.ActionManager.GetFormActionScript(action, formValues, contextAction, insertAction.ShowAsPopup);
+                break;
+                case DeleteSelectedRowsAction or ImportAction or LogAction:
                 script = GridView.ActionManager.GetFormActionScript(action, formValues, contextAction);
                 break;
             case ConfigAction:

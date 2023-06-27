@@ -3,17 +3,17 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JJMasterData.Core.Web.Components.Scripts
+namespace JJMasterData.Core.Web.Components.Scripts;
+
+internal class ScriptHelper
 {
-    internal class ScriptHelper
+
+    public static string GetUrl(string dictionaryName)
     {
-
-        public static string GetUrl(string dictionaryName)
-        {
-            var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-            string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
-            return $"{ConfigurationHelper.GetUrlMasterData()}Form/GetGrid?dictionaryNameEncrypted={dictionaryNameEncrypted}";
-        }
-
+        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+        string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
+        var configuration = JJMasterDataUrlHelper.GetInstance();
+        return configuration.GetUrl("GetGridViewTable", "Form", new { dictionaryName = dictionaryNameEncrypted });
     }
+
 }

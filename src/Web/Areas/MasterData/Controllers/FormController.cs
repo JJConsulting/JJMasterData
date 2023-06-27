@@ -43,7 +43,7 @@ public class FormController : MasterDataController
 
     [HttpPost]
     [DictionaryNameDecryptionServiceFilter]
-    public IActionResult GetGridView(string dictionaryName)
+    public IActionResult GetGridViewTable(string dictionaryName)
     {
         var formView = new JJFormView(dictionaryName);
         return Content(formView.GetTableHtml());
@@ -56,7 +56,8 @@ public class FormController : MasterDataController
     public IActionResult GetFormView(
         string dictionaryName,
         PageState pageState,
-        ActionMap actionMap)
+        ActionMap actionMap
+        )
     {
         var formView = new JJFormView(dictionaryName)
         {
@@ -65,12 +66,25 @@ public class FormController : MasterDataController
             IsModal = true,
         };
 
-        formView.DataPanel.LoadValuesFromPK(actionMap.PkFieldValues);
-        
+        if (pageState is not PageState.Insert)
+        {
+            formView.DataPanel.LoadValuesFromPK(actionMap.PkFieldValues);
+        }
+
         var form = new HtmlBuilder(HtmlTag.Form);
         form.AppendElement(formView.GetHtmlBuilder());
         return Content(form.ToString());
     }
+    
+    // [DictionaryNameDecryptionServiceFilter]
+    // [HttpPost]
+    // public IActionResult SaveFormValues(
+    //     [FromRoute]string dictionaryName,
+    //     [FromQuery]PageState pageState,
+    //     [FromBody]IDictionary<string,dynamic> formValues)
+    // {
+
+    // }
     
 
     [HttpPost]
