@@ -7,6 +7,7 @@ public class ViewAction : GridTableAction
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "view";
+    public bool ShowAsPopup { get; set; }
     public ViewAction()
     {
         Name = ActionName;
@@ -16,6 +17,7 @@ public class ViewAction : GridTableAction
         Icon = IconType.Eye;
         Order = 1;
     }
+
 
 
 }

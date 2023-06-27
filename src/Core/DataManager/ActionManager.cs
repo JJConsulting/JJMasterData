@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -13,10 +15,12 @@ using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DI;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
@@ -72,8 +76,9 @@ internal class ActionManager
             }
         }
 
-        string url =
-            $"{ConfigurationHelper.GetUrlMasterData()}InternalRedirect?parameters={Cript.EnigmaEncryptRP(@params.ToString())}";
+        
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
+        string url = urlHelper.GetUrl(null,"InternalRedirect", new { parameters =  Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"});
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -99,7 +104,7 @@ internal class ActionManager
         string criptMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         int popupSize = (int)action.PopupSize;
-
+        
         var script = new StringBuilder();
 
         if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
@@ -108,12 +113,12 @@ internal class ActionManager
             script.Append(ComponentName);
             script.Append("','");
             script.Append(criptMap);
-            script.Append("'");
+            script.Append('\'');
             if (!string.IsNullOrEmpty(confirmationMessage))
             {
                 script.Append(",'");
                 script.Append(confirmationMessage);
-                script.Append("'");
+                script.Append('\'');
             }
 
             script.Append(");");
@@ -140,30 +145,76 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
+    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource actionSource, bool isPopup = false)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
+        string encryptedActionMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
-        var script = new StringBuilder();
-        script.Append("jjview.formAction('");
-        script.Append(ComponentName);
-        script.Append("','");
-        script.Append(criptMap);
-        script.Append("'");
-        if (!string.IsNullOrEmpty(confirmationMessage))
+        string functionSignature;
+        if (isPopup)
         {
-            script.Append(",'");
-            script.Append(confirmationMessage);
-            script.Append("'");
+            var url = GetFormViewUrl(FormElement.Name, action, actionMap);
+            functionSignature = $"ActionManager.executeFormActionAsPopUp('{url}','";
+            var script = new StringBuilder();
+            script.Append(functionSignature);
+            script.Append(ComponentName);
+            script.Append('\'');
+            if (!string.IsNullOrEmpty(confirmationMessage))
+            {
+                script.Append(",'");
+                script.Append(confirmationMessage);
+                script.Append('\'');
+            }
+
+            script.Append(");");
+
+            return script.ToString();
+        }
+        else
+        {
+            functionSignature = "ActionManager.executeFormAction('";
+            var script = new StringBuilder();
+            script.Append(functionSignature);
+            script.Append(ComponentName);
+            script.Append("','");
+            script.Append(encryptedActionMap);
+            script.Append('\'');
+            if (!string.IsNullOrEmpty(confirmationMessage))
+            {
+                script.Append(",'");
+                script.Append(confirmationMessage);
+                script.Append('\'');
+            }
+
+            script.Append(");");
+
+            return script.ToString();
         }
 
-        script.Append(");");
 
-        return script.ToString();
     }
+    private static string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
+    {
+        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+        string encryptedDictionaryName = encryptionService.EncryptStringWithUrlEncode(dictionaryName);
 
+
+        var pageState = action switch
+        {
+            InsertAction => PageState.Insert,
+            ViewAction => PageState.View,
+            _ => PageState.Update
+        };
+
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
+        var encryptedActionMap = encryptionService.EncryptActionMap(actionMap);
+        return urlHelper.GetUrl("GetFormView", "Form", new { 
+            dictionaryName = encryptedDictionaryName, 
+            actionMap = encryptedActionMap, 
+            pageState, 
+            Area="MasterData"});
+    }
 
     internal string GetExportScript(ExportAction action, Hashtable formValues)
     {
@@ -236,9 +287,9 @@ internal class ActionManager
         return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pagestate, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pageState, string panelName)
     {
-        return GetLink(action, formValues, pagestate, ActionSource.Field, panelName);
+        return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
 
     private static HtmlBuilder GetDividerHtml()
@@ -318,7 +369,16 @@ internal class ActionManager
         string script;
         switch (action)
         {
-            case ViewAction or InsertAction or EditAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
+            case InsertAction formAction:
+                script = GetFormActionScript(action, formValues, contextAction, formAction.ShowAsPopup);
+                break;
+            case EditAction editAction:
+                script = GetFormActionScript(action, formValues, contextAction, editAction.ShowAsPopup);
+                break;
+            case ViewAction viewAction:
+                script = GetFormActionScript(action, formValues, contextAction, viewAction.ShowAsPopup);
+                break;
+            case ViewAction or DeleteAction or DeleteSelectedRowsAction or ImportAction
                 or LogAction:
                 script = GetFormActionScript(action, formValues, contextAction);
                 break;
@@ -343,10 +403,10 @@ internal class ActionManager
                 else
                     link.Type = save.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                 
-                script = $"return jjview.doPainelAction('{ComponentName}','OK');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','OK');";
                 break;
             case CancelAction or BackAction:
-                script = $"return jjview.doPainelAction('{ComponentName}','CANCEL');";
+                script = $"return ActionManager.executePanelAction('{ComponentName}','CANCEL');";
                 break;
             case RefreshAction:
                 script = $"jjview.doRefresh('{ComponentName}');";
@@ -391,7 +451,7 @@ internal class ActionManager
         try
         {
             var listSql = new List<string>();
-            if (map.ContextAction == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            if (map.ActionSource == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
             {
                 var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)
@@ -412,10 +472,10 @@ internal class ActionManager
             else
             {
                 Hashtable formValues;
-                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
-                                                  map.PKFieldValues.Count > 0))
+                if (map.PkFieldValues != null && (map.PkFieldValues != null ||
+                                                  map.PkFieldValues.Count > 0))
                 {
-                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PKFieldValues);
+                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PkFieldValues);
                 }
                 else
                 {

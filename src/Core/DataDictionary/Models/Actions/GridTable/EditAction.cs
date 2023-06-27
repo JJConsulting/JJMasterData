@@ -7,6 +7,7 @@ public class EditAction : GridTableAction
     /// Default action name
     /// </summary>
     public const string ActionName = "edit";
+    public bool ShowAsPopup { get; set; }
     public EditAction()
     {
         Name = ActionName;
@@ -15,4 +16,6 @@ public class EditAction : GridTableAction
         Icon = IconType.Pencil;
         Order = 2;
     }
+
+
 }

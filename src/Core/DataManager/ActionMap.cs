@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
 
-internal class ActionMap
+public class ActionMap
 {
     [JsonProperty("actionName")]
     public string ActionName { get; set; }
@@ -15,34 +16,35 @@ internal class ActionMap
     public string FieldName { get; set; }
 
     [JsonProperty("pkFieldValues")]
-    public IDictionary PKFieldValues { get; set; }
+    public IDictionary PkFieldValues { get; set; }
 
     [JsonProperty("contextAction")]
-    public ActionSource ContextAction { get; set; }
+    public ActionSource ActionSource { get; set; }
 
     public ActionMap()
     {
         
     }
     
-    public ActionMap(ActionSource contextAction)
+    public ActionMap(ActionSource actionSource)
     {
-        ContextAction = contextAction;
-        PKFieldValues = new Hashtable();
+        ActionSource = actionSource;
+        PkFieldValues = new Hashtable();
     }
 
-    public ActionMap(ActionSource contextAction, FormElement formElement, IDictionary row, string actionName)
+    public ActionMap(ActionSource actionSource, FormElement formElement, IDictionary row, string actionName)
     {
-        ContextAction = contextAction;
+        ActionSource = actionSource;
         ActionName = actionName;
-        PKFieldValues = new Hashtable();
+        PkFieldValues = new Hashtable();
         foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk))
         {
             if (row[f.Name] != null)
-                PKFieldValues.Add(f.Name, row[f.Name].ToString());
+                PkFieldValues.Add(f.Name, row[f.Name].ToString());
         }
     }
 
+    [Obsolete("Please use EncryptionService.EncryptActionMap(ActionMap). DES has known vulnerabilities.")]
     public string GetCriptJson()
     {
         string jsonMap = JsonConvert.SerializeObject(this);

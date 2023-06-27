@@ -1541,7 +1541,7 @@ public class JJGridView : JJBaseView
         if (actionMap == null)
             return null;
 
-        return actionMap.ContextAction switch
+        return actionMap.ActionSource switch
         {
             ActionSource.FormToolbar => null, //TODO: formAction
             ActionSource.GridTable => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),

@@ -39,7 +39,7 @@
         Footer,
         Img,
         Center,
-        Video
-       
+        Video,
+        Form
     }
 }

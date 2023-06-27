@@ -12,6 +12,7 @@
 {
     <ul class="nav nav-tabs">
         <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
+        <li id="navEdit" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divEditAction">@Translate.Key("Edit Action")</a></li>
         <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
     </ul>
 
@@ -19,6 +20,19 @@
         <div id="divGeneral" class="tab-pane fade active @BootstrapHelper.Show">
             <partial name="_NavGeneral" model="Model"/>
         </div>
+        
+        <div id="divEditAction" class="tab-pane fade">
+          <div class="col-sm-3">
+              <div class="@BootstrapHelper.FormGroup col-sm-2">
+                  <label class="@BootstrapHelper.Label">@Translate.Key("Show as Popup")</label>
+                  <div class="input-append">
+                      @Html.CheckBoxFor(model => model.ShowAsPopup, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                  </div>
+              </div>
+          </div>
+        </div>
+        
+        
         <div id="divAdvanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>
         </div>

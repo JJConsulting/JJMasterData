@@ -124,7 +124,7 @@ public class JJDataPanel : JJBaseView
         DataPanelFactory.SetDataPanelParams(this, formElement);   
     }
 
-    public JJDataPanel(FormElement formElement, Hashtable values, Hashtable errors, PageState pageState) : this(formElement)
+    public JJDataPanel(FormElement formElement, IDictionary values, IDictionary errors, PageState pageState) : this(formElement)
     {
         Values = values;
         Errors = errors;
@@ -232,7 +232,7 @@ public class JJDataPanel : JJBaseView
     /// <summary>
     /// Load values from database
     /// </summary>
-    public void LoadValuesFromPK(Hashtable pks)
+    public void LoadValuesFromPK(IDictionary pks)
     {
         var entityRepository = FieldManager.ExpressionManager.EntityRepository;
         Values = entityRepository.GetFields(FormElement, pks);

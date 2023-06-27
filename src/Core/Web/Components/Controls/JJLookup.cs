@@ -12,6 +12,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -246,8 +247,8 @@ public class JJLookup : JJBaseControl
                 @params.Append(filterParsed);
             }
         }
-        
-        string url = $"{ConfigurationHelper.GetUrlMasterData()}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
+        var urlHelper = JJMasterDataUrlHelper.GetInstance();
+        string url = $"{urlHelper.GetUrl("Lookup","Form", new {p=Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"})}";
 
         var dto = new LookupUrlDto(url);
         

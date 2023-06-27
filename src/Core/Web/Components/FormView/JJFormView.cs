@@ -89,6 +89,7 @@ public class JJFormView : JJGridView
                     Name = "jjpainel_" + FormElement.Name.ToLower(),
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
+                    
                     RenderPanelGroup = true,
                     IsExternalRoute = IsExternalRoute
                 };
@@ -102,16 +103,17 @@ public class JJFormView : JJGridView
     /// <summary>
     /// Estado atual da pagina
     /// </summary>
+    private PageState _pageState;
     public PageState PageState
     {
         get
         {
-            var pageState = PageState.List;
             if (CurrentContext.Request["current_pagestate_" + Name] != null)
-                pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
+                _pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
 
-            return pageState;
+            return _pageState;
         }
+        internal init => _pageState = value;
     }
 
     private ActionMap CurrentActionMap
@@ -172,6 +174,8 @@ public class JJFormView : JJGridView
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
 
+    internal bool IsModal { get; init; }
+    
     #endregion
 
     #region "Constructors"
@@ -377,7 +381,7 @@ public class JJFormView : JJGridView
             {
                 autoReloadFields = false;
                 var acMap = CurrentActionMap;
-                values = EntityRepository.GetFields(FormElement, acMap.PKFieldValues);
+                values = EntityRepository.GetFields(FormElement, acMap.PkFieldValues);
             }
 
             pageState = PageState.Update;
@@ -526,7 +530,7 @@ public class JJFormView : JJGridView
         var html = new HtmlBuilder(HtmlTag.Div);
         var dicRepository = JJServiceCore.DataDictionaryRepository;
         var formElement = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
-        var selValues = EntityRepository.GetFields(formElement, map.PKFieldValues);
+        var selValues = EntityRepository.GetFields(formElement, map.PkFieldValues);
         var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
@@ -563,7 +567,7 @@ public class JJFormView : JJGridView
         }
 
         pageState = PageState.View;
-        var filter = acMap.PKFieldValues;
+        var filter = acMap.PkFieldValues;
         var values = EntityRepository.GetFields(FormElement, filter);
         return GetDataPanelHtml(new(values, null, pageState), false);
     }
@@ -574,7 +578,7 @@ public class JJFormView : JJGridView
         try
         {
             var acMap = CurrentActionMap;
-            var filter = acMap.PKFieldValues;
+            var filter = acMap.PkFieldValues;
 
             var errors = DeleteFormValues(filter);
 
@@ -699,8 +703,8 @@ public class JJFormView : JJGridView
 
         if (pageState == PageState.View)
         {
-            var html = FormLog.GetDetailLog(actionMap.PKFieldValues);
-            html.AppendElement(GetFormLogBottomBar(actionMap.PKFieldValues));
+            var html = FormLog.GetDetailLog(actionMap.PkFieldValues);
+            html.AppendElement(GetFormLogBottomBar(actionMap.PkFieldValues));
             pageState = PageState.Log;
             return html;
         }
@@ -751,6 +755,7 @@ public class JJFormView : JJGridView
         parentPanel.PageState = pageState;
         parentPanel.Errors = errors;
         parentPanel.Values = values;
+        parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)

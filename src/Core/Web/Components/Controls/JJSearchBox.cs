@@ -6,7 +6,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -266,6 +265,7 @@ public class JJSearchBox : JJBaseControl
         return null;
     }
 
+
     private HtmlBuilder GetSearchBoxHtml()
     {
         if (DataItem == null)
@@ -315,20 +315,19 @@ public class JJSearchBox : JJBaseControl
         if (IsExternalRoute)
         {
             var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
+            var urlHelper = JJMasterDataUrlHelper.GetInstance();
             string dictionaryNameEncrypted = encryptionService.EncryptString(DictionaryName);
-            url.AppendFormat("{0}Form/SearchValues", ConfigurationHelper.GetUrlMasterData());
-            url.AppendFormat("?dictionaryNameEncrypted={0}", dictionaryNameEncrypted);
+            url.Append(urlHelper.GetUrl("SearchValues","Form", new { dictionaryNameEncrypted, Area="MasterData"}));
         }
         else
         {
-
-            url.Append("t=jjsearchbox");
-            url.AppendFormat("&dictionaryName={0}", DictionaryName);
+            url.Append("?t=jjsearchbox");
+            url.Append($"&dictionaryName={DictionaryName}");
         }
-        
-        url.AppendFormat("&fieldName={0}", FieldName);
-        url.AppendFormat("&objname={0}", Name + "_text");
-        url.AppendFormat("&pageState={0}", (int)ExpressionOptions.PageState);
+
+        url.Append($"&fieldName={FieldName}");
+        url.Append($"&objname={Name + "_text"}");
+        url.Append($"&pageState={(int)ExpressionOptions.PageState}");
 
         return url.ToString();
     }

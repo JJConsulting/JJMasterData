@@ -11,11 +11,17 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+#if NET
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+#endif
 
 namespace JJMasterData.Core.Extensions;
 
@@ -58,7 +64,10 @@ public static class ServiceCollectionExtensions
         
 #if NET
         services.AddHttpContextAccessor();
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();;
 #endif
+        services.AddScoped<JJMasterDataUrlHelper>();
+        
         services.AddScoped<IHttpSession, JJSession>();
         services.AddScoped<IHttpRequest, JJRequest>();
         services.AddScoped<IHttpResponse, JJResponse>();

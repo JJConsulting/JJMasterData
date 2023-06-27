@@ -105,6 +105,7 @@
             $("#current_tablepage_" + objid).val("1");
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, false);
+            return false;
         },
 
         doSearch: function (objid, oDom) {
@@ -296,18 +297,7 @@
             $("form:first").submit();
         },
 
-        formAction: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                const result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
 
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val(criptid);
-            $("form:first").submit();
-        },
 
 
         gridAction: function (objid, criptid, confirmMessage) {
@@ -323,11 +313,7 @@
             $("form:first").submit();
         },
 
-        doPainelAction: function (objid, v) {
-            $("#current_painelaction_" + objid).val(v);
-            $("form").submit();
-            return false;
-        },
+
 
         doFormUrlRedirect: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
