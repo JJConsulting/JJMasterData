@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using JJMasterData.Commons.DI;
@@ -72,7 +71,7 @@ public class JJMasterDataUrlHelper
 
             return url;
         }
-        #if NET48 || NETSTANDARD
+#if NET48 || NETSTANDARD
         throw new JJMasterDataException("JJMasterDataCoreOptions.JJMasterDataUrl cannot be null at your target framework.");
 #elif NET6_0_OR_GREATER
         values ??= new  {Area = "MasterData"};

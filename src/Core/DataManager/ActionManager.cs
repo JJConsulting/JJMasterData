@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Azure;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -45,7 +44,6 @@ internal class ActionManager
         Expression = expression;
         ComponentName = panelName;
     }
-
 
     private string GetInternalUrlScript(InternalAction action, IDictionary formValues)
     {
