@@ -129,7 +129,9 @@ public static class ServiceCollectionExtensions
         services.AddDistributedMemoryCache();
         services.AddJJMasterDataServices();
         services.AddRequestUrlCultureProvider();
+        services.AddActionFilters();
     }
+    
 
 
     internal static void AddRequestUrlCultureProvider(this IServiceCollection services,

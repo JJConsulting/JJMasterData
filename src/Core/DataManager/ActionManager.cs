@@ -15,6 +15,7 @@ using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DI;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
@@ -148,27 +149,53 @@ internal class ActionManager
         string encryptedActionMap = actionMap.GetCriptJson();
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
-        var script = new StringBuilder();
-        script.Append(!isPopup ? "ActionManager.executeFormAction('" : $"ActionManager.executeFormActionAsPopUp('{GetDataPanelUrl(FormElement.Name,action)}','" );
-        script.Append(ComponentName);
-        script.Append("','");
-        script.Append(encryptedActionMap);
-        script.Append('\'');
-        if (!string.IsNullOrEmpty(confirmationMessage))
+        string functionSignature;
+        if (isPopup)
         {
-            script.Append(",'");
-            script.Append(confirmationMessage);
+            var url = GetFormViewUrl(FormElement.Name, action, actionMap);
+            functionSignature = $"ActionManager.executeFormActionAsPopUp('{url}','";
+            var script = new StringBuilder();
+            script.Append(functionSignature);
+            script.Append(ComponentName);
             script.Append('\'');
+            if (!string.IsNullOrEmpty(confirmationMessage))
+            {
+                script.Append(",'");
+                script.Append(confirmationMessage);
+                script.Append('\'');
+            }
+
+            script.Append(");");
+
+            return script.ToString();
+        }
+        else
+        {
+            functionSignature = "ActionManager.executeFormAction('";
+            var script = new StringBuilder();
+            script.Append(functionSignature);
+            script.Append(ComponentName);
+            script.Append("','");
+            script.Append(encryptedActionMap);
+            script.Append('\'');
+            if (!string.IsNullOrEmpty(confirmationMessage))
+            {
+                script.Append(",'");
+                script.Append(confirmationMessage);
+                script.Append('\'');
+            }
+
+            script.Append(");");
+
+            return script.ToString();
         }
 
-        script.Append(");");
 
-        return script.ToString();
     }
-    private static string GetDataPanelUrl(string dictionaryName, BasicAction action)
+    private static string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
     {
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-        string dictionaryNameEncrypted = encryptionService.EncryptString(dictionaryName);
+        string encryptedDictionaryName = encryptionService.EncryptStringWithUrlEncode(dictionaryName);
 
 
         var pageState = action switch
@@ -179,7 +206,12 @@ internal class ActionManager
         };
 
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        return urlHelper.GetUrl("GetDataPanel", "Form", new { dictionaryNameEncrypted, pageState, Area="MasterData"});
+        var encryptedActionMap = encryptionService.EncryptActionMap(actionMap);
+        return urlHelper.GetUrl("GetFormView", "Form", new { 
+            dictionaryName = encryptedDictionaryName, 
+            actionMap = encryptedActionMap, 
+            pageState, 
+            Area="MasterData"});
     }
 
     internal string GetExportScript(ExportAction action, Hashtable formValues)
@@ -253,9 +285,9 @@ internal class ActionManager
         return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pagestate, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pageState, string panelName)
     {
-        return GetLink(action, formValues, pagestate, ActionSource.Field, panelName);
+        return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
 
     private static HtmlBuilder GetDividerHtml()
@@ -428,7 +460,7 @@ internal class ActionManager
         try
         {
             var listSql = new List<string>();
-            if (map.ContextAction == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            if (map.ActionSource == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
             {
                 var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)
@@ -449,10 +481,10 @@ internal class ActionManager
             else
             {
                 Hashtable formValues;
-                if (map.PKFieldValues != null && (map.PKFieldValues != null ||
-                                                  map.PKFieldValues.Count > 0))
+                if (map.PkFieldValues != null && (map.PkFieldValues != null ||
+                                                  map.PkFieldValues.Count > 0))
                 {
-                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PKFieldValues);
+                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PkFieldValues);
                 }
                 else
                 {

@@ -1,10 +1,13 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using System.Collections;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
@@ -39,25 +42,31 @@ public class FormController : MasterDataController
     }
 
     [HttpPost]
-    public IActionResult GetGrid(string dictionaryNameEncrypted)
+    [DictionaryNameDecryptionServiceFilter]
+    public IActionResult GetGridView(string dictionaryName)
     {
-        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var formView = new JJFormView(dictionaryName);
         return Content(formView.GetTableHtml());
     }
 
     
+    [DictionaryNameDecryptionServiceFilter]
+    [ActionMapDecryptionServiceFilter]
     [HttpPost]
-    public IActionResult GetDataPanel(string dictionaryNameEncrypted, PageState pageState, bool isModal = true)
+    public IActionResult GetFormView(
+        string dictionaryName,
+        PageState pageState,
+        ActionMap actionMap)
     {
-        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var formView = new JJFormView(dictionaryName)
         {
             IsExternalRoute = true,
-            PageState = PageState.Insert,
-            IsModal = true
+            PageState = pageState,
+            IsModal = true,
         };
 
+        formView.DataPanel.LoadValuesFromPK(actionMap.PkFieldValues);
+        
         var form = new HtmlBuilder(HtmlTag.Form);
         form.AppendElement(formView.GetHtmlBuilder());
         return Content(form.ToString());

@@ -33,17 +33,18 @@ class ActionManager {
         currentFormActionInput.value = encryptedActionMap;
         form.submit();
     }
-    static executeFormActionAsPopUp(url, actionName, encryptedActionMap, confirmationMessage) {
+    static executeFormActionAsPopUp(url, title, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
-        popup.showHtmlFromUrl(actionName, url, {
+        popup.showHtmlFromUrl(title, url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }
+            },
+            body: JSON.stringify({})
         }, 1).then(_ => jjloadform());
     }
 }
