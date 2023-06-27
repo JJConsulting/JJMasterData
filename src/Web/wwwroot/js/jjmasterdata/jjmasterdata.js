@@ -559,6 +559,12 @@ class JJGridView {
         $("#current_formaction_" + objid).val("");
         JJGridView.RefreshGrid(objid, url);
     }
+    static Refresh(objid, url) {
+        $("#current_tableaction_" + objid).val("");
+        $("#current_tablerow_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        JJGridView.RefreshGrid(objid, url);
+    }
     static RefreshGrid(objid, url) {
         const frm = $("form");
         $.ajax({
@@ -759,7 +765,7 @@ class JJSearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
-            const urltypehead = $(this).attr("urltypehead");
+            let urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
             let scrollbar = Boolean($(this).attr("scrollbar"));
@@ -773,6 +779,14 @@ class JJSearchBox {
             if (showimagelegend == null)
                 showimagelegend = false;
             const frm = $("form");
+            if (!urltypehead.includes("SearchValues")) {
+                let url = frm.attr("action");
+                if (url.includes("?"))
+                    url += "&";
+                else
+                    url += "?";
+                urltypehead = url + urltypehead;
+            }
             const jjSearchBoxSelector = "#" + objid + "_text";
             const jjSearchBoxHiddenSelector = "#" + objid;
             $(this).blur(function () {

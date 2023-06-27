@@ -34,6 +34,12 @@
         JJGridView.RefreshGrid(objid, url);
     }
 
+    static Refresh(objid, url) {
+        $("#current_tableaction_" + objid).val("");
+        $("#current_tablerow_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        JJGridView.RefreshGrid(objid, url);
+    }
 
     static RefreshGrid(objid, url) {
         const frm = $("form");

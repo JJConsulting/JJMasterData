@@ -2,7 +2,7 @@
     static setup(){
         $("input.jjsearchbox").each(function () {
             const objid = $(this).attr("jjid");
-            const urltypehead = $(this).attr("urltypehead");
+            let urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
             let scrollbar = Boolean($(this).attr("scrollbar"));
@@ -21,6 +21,17 @@
                 showimagelegend = false;
 
             const frm = $("form");
+
+            if (!urltypehead.includes("SearchValues")) {
+                let url = frm.attr("action");
+                if (url.includes("?"))
+                    url += "&";
+                else
+                    url += "?";
+
+                urltypehead = url + urltypehead;
+            }
+
             const jjSearchBoxSelector = "#" + objid + "_text";
             const jjSearchBoxHiddenSelector = "#" + objid;
             
