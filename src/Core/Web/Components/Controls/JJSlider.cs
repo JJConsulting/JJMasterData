@@ -6,12 +6,13 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJSlider : JJBaseControl
 {
-    public float MinValue { get; set; }
-    public float MaxValue { get; set; }
-    public int? Value { get; set; }
+    public double MinValue { get; set; }
+    public double MaxValue { get; set; }
+    public double? Value { get; set; }
+    public double Step { get; set; } = 1;
     public bool ShowInput { get; set; } = true;
-
-    public JJSlider(float minValue = 0, float maxValue = 100)
+    public int NumberOfDecimalPlaces { get; set; }
+    public JJSlider(double minValue = 0, double maxValue = 100)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -22,7 +23,9 @@ public class JJSlider : JJBaseControl
         var slider = new JJSlider(field.Attributes[FormElementField.MinValueAttribute] ?? 0f, field.Attributes[FormElementField.MaxValueAttribute] ?? 100)
         {
             Name =  field.Name,
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? int.Parse(value.ToString()) : null
+            NumberOfDecimalPlaces = field.NumberOfDecimalPlaces,
+            Step = (double)field.Attributes![FormElementField.StepAttribute],
+            Value = !string.IsNullOrEmpty(value?.ToString()) ? double.Parse(value.ToString()) : null
         };
         return slider;
     }
@@ -46,10 +49,14 @@ public class JJSlider : JJBaseControl
                 InputType = InputType.Number,
                 Name = $"{Name}-value",
                 MinValue = MinValue,
+                Enabled = Enabled,
                 Text = Value.ToString(),
+                NumberOfDecimalPlaces = NumberOfDecimalPlaces,
                 MaxValue = MaxValue,
                 CssClass = "jjslider-value"
             };
+
+            number.Attributes["step"] = Step;
 
             html.AppendElement(HtmlTag.Div, row =>
             {
@@ -60,7 +67,7 @@ public class JJSlider : JJBaseControl
 
         return html;
     }
-
+    
     private HtmlBuilder GetHtmlSlider()
     {
         var slider = new HtmlBuilder(HtmlTag.Input)
@@ -68,9 +75,11 @@ public class JJSlider : JJBaseControl
            .WithAttribute("type", "range")
            .WithNameAndId(Name)
            .WithCssClass("jjslider form-range")
-           .WithAttribute("min", MinValue.ToString(CultureInfo.CurrentCulture))
-           .WithAttribute("max", MaxValue.ToString(CultureInfo.CurrentCulture))
-           .WithAttribute("step", "1")
+           .WithAttributeIf(!Enabled,"disabled")
+           .WithAttributeIf(NumberOfDecimalPlaces > 0 , "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
+           .WithAttribute("min", MinValue.ToString(CultureInfo.InvariantCulture))
+           .WithAttribute("max", MaxValue.ToString(CultureInfo.InvariantCulture))
+           .WithAttribute("step", Step.ToString(CultureInfo.InvariantCulture))
            .WithAttributeIf(Value.HasValue, "value", Value?.ToString());
 
         return slider;

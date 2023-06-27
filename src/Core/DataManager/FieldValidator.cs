@@ -94,13 +94,13 @@ public static class FieldValidator
             case FormComponent.Slider:
                 if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
                 {
-                    if (float.Parse(value, CultureInfo.CurrentCulture) < (float?)minValue)
+                    if (double.Parse(value) < (double?)minValue)
                         return Translate.Key("{0} field needs to be greater than {1}", fieldName, minValue);
                 }
 
                 if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
                 {
-                    if (float.Parse(value, CultureInfo.CurrentCulture) > (float?)maxValue)
+                    if (double.Parse(value) > (double?)maxValue)
                         return Translate.Key("{0} field needs to be less or equal than {1}", fieldName, maxValue);
                 }
 
