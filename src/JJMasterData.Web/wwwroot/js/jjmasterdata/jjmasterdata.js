@@ -618,17 +618,16 @@ class JJLookup {
                 });
                 return false;
             });
-            lookupInput.on("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val())
-                    .removeAttr("readonly")
-                    .select();
-            });
-            lookupInput.on("change", function () {
-                $("#id_" + lookupId).val(lookupInput.val());
-            });
+            function setHiddenLookup() {
+                const hiddenLookupInputElement = document.getElementById("id_" + lookupId);
+                const lookupInputElement = document.getElementById(lookupId);
+                hiddenLookupInputElement.value = lookupInputElement.value;
+            }
+            lookupInput.on("focus", setHiddenLookup);
+            lookupInput.on("change", setHiddenLookup);
             lookupInput.on("blur", function () {
                 showWaitOnPost = false;
-                $(jjHiddenLookupSelector).val(lookupInput.val());
+                setHiddenLookup();
                 JJFeedbackIcon.removeAllIcons(jjLookupSelector);
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
@@ -641,18 +640,20 @@ class JJLookup {
                     data: form.serialize(),
                     dataType: "json",
                     cache: false,
+                    async: true,
                     url: ajaxUrl,
                     success: function (data) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
-                            lookupInput.removeAttr("readonly");
                         }
                         else {
+                            const lookupInputElement = document.getElementById(lookupId);
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
-                            lookupInput.attr("readonly", "readonly").val(data.description);
+                            lookupInputElement.value = data.description;
                         }
+                        JJDataPanel.doReload(panelName, lookupId);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
