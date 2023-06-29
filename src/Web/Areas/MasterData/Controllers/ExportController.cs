@@ -14,7 +14,6 @@ public class ExportController : MasterDataController
         MasterDataHttpContext = httpContext;
     }
     
-    [HttpGet]
     public IActionResult Settings([FromQuery]string componentName)
     {
         var settings = new DataExpSettings(componentName, ExportOptions.LoadFromForm(MasterDataHttpContext, componentName));
