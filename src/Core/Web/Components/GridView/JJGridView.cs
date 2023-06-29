@@ -18,9 +18,11 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -92,6 +94,12 @@ public class JJGridView : JJBaseView
         set => _entityRepository = value;
     }
 
+    internal GridViewScriptHelper GridViewScriptHelper { get; } =
+        JJService.Provider.GetRequiredService<GridViewScriptHelper>();
+    
+    internal GridViewToolbarScriptHelper GridViewToolbarScriptHelper { get; } =
+        JJService.Provider.GetRequiredService<GridViewToolbarScriptHelper>();
+    
     internal FormManager FormManager
     {
         get

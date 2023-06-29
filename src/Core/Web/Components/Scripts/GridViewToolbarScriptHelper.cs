@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-internal static class GridToolbarScripts
+internal class GridViewToolbarScriptHelper
 {
-    public static string GetRefreshScript(this JJGridView gridView)
+    private GridViewScriptHelper GridViewScriptHelper { get; }
+
+    public GridViewToolbarScriptHelper(GridViewScriptHelper gridViewScriptHelper)
+    {
+        GridViewScriptHelper = gridViewScriptHelper;
+    }
+    
+    public string GetRefreshScript(JJGridView gridView)
     {
         string name = gridView.Name;
         if (gridView.IsExternalRoute)
         {
-            var url = ScriptHelper.GetUrl(gridView.FormElement.Name);
+            var url = GridViewScriptHelper.GetUrl(gridView.FormElement.Name);
             return $"JJGridView.Refresh('{name}', '{url}')";
         }
 
@@ -21,16 +29,17 @@ internal static class GridToolbarScripts
         return $"jjview.doRefresh('{name}', {enableAjax})";
     }
 
-    public static string GetFilterScript(this JJGridView gridView)
+    public  string GetFilterScript(JJGridView gridView)
     {
         string name = gridView.Name;
         if (gridView.IsExternalRoute)
         {
-            var url = ScriptHelper.GetUrl(gridView.FormElement.Name);
+            var url = GridViewScriptHelper.GetUrl(gridView.FormElement.Name);
             return $"JJGridView.Filter('{name}', '{url}')";
         }
-
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doFilter('{name}','{enableAjax}')";
     }
+
+
 }

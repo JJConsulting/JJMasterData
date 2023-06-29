@@ -13,31 +13,44 @@
         <RootNamespace>JJMasterData.Core</RootNamespace>
         <AssemblyName>JJMasterData.Core</AssemblyName>
     </PropertyGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <!--Runtime dependencies-->
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     </ItemGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-
     <ItemGroup>
+        <PackageReference Include="System.IO.Compression" Version="4.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.Abstractions" Version="1.0.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    </ItemGroup>
+    
+    <!--Compile time dependencies-->
+    <ItemGroup>
         <PackageReference Include="PolySharp" Version="1.13.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
-
+    
     <ItemGroup>
         <ProjectReference Include="..\Commons\Commons.csproj" />
         <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
         <InternalsVisibleTo Include="JJMasterData.Web" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>

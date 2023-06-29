@@ -86,7 +86,7 @@ internal class GridPagination
                 a.WithCssClass("page-link");
                 a.WithAttribute("style", "cursor:pointer; cursor:hand;");
                 a.WithToolTip(tooltip);
-                a.WithAttribute("onclick", GridView.GetPaginationScript(page));
+                a.WithAttribute("onclick", GridView.GridViewScriptHelper.GetPaginationScript(GridView,page));
                 if (icon != null)
                 {
                     a.AppendElement(new JJIcon(icon.Value));

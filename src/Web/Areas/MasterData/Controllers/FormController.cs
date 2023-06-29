@@ -15,12 +15,10 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController : MasterDataController
 {
-    private readonly JJMasterDataEncryptionService _encryptionService;
     private readonly JJMasterDataFactory _masterDataFactory;
 
-    public FormController(JJMasterDataEncryptionService encryptionService, JJMasterDataFactory masterDataFactory)
+    public FormController(JJMasterDataFactory masterDataFactory)
     {
-        _encryptionService = encryptionService;
         _masterDataFactory = masterDataFactory;
     }
     
@@ -76,22 +74,18 @@ public class FormController : MasterDataController
         return Content(form.ToString());
     }
     
-    // [DictionaryNameDecryptionServiceFilter]
-    // [HttpPost]
-    // public IActionResult SaveFormValues(
-    //     [FromRoute]string dictionaryName,
-    //     [FromQuery]PageState pageState,
-    //     [FromBody]IDictionary<string,dynamic> formValues)
-    // {
-
-    // }
+    public IActionResult ExportUI()
+    {
+        throw new NotImplementedException();
+    }
     
 
     [HttpPost]
-    public IActionResult SearchValues(string dictionaryNameEncrypted, string fieldName, int pageState)
+    public IActionResult SearchValues(string dictionaryName, string fieldName, int pageState)
     {
-        var dictionaryName = _encryptionService.DecryptString(dictionaryNameEncrypted);
         var searchBox = _masterDataFactory.CreateJJSearchBox(dictionaryName, fieldName, (PageState)pageState, null);
         return Json(searchBox.GetListBoxItems());
     }
+
+
 }

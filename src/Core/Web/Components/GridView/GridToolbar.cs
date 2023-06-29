@@ -103,7 +103,7 @@ internal class GridToolbar
                 script = $"JJDataExp.openExportUI('{GridView.Name}');";
                 break;
             case RefreshAction:
-                script = GridView.GetRefreshScript();
+                script = GridView.GridViewToolbarScriptHelper.GetRefreshScript(GridView);
                 break;
             case FilterAction:
                 script = BootstrapHelper.GetModalScript($"filter_modal_{GridView.Name}");

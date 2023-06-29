@@ -248,7 +248,7 @@ public class JJLookup : JJBaseControl
             }
         }
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = $"{urlHelper.GetUrl("Lookup","Form", new {p=Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"})}";
+        string url = $"{urlHelper.GetUrl("Index","Lookup", new {p=Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"})}";
 
         var dto = new LookupUrlDto(url);
         

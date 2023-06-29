@@ -1,47 +1,44 @@
 ﻿class JJGridView {
-
     static setup() {
 
     }
-
-    static Sorting(objid, url, tableOroder) {
-        var tableOrder = "#current_tableorder_" + objid;
+    static Sorting(componentName, url, tableOroder) {
+        var tableOrder = "#current_tableorder_" + componentName;
         if (tableOroder + " ASC" == $(tableOrder).val())
             $(tableOrder).val(tableOroder + " DESC");
         else
             $(tableOrder).val(tableOroder + " ASC");
 
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
 
-        JJGridView.RefreshGrid(objid, url);
+        JJGridView.RefreshGrid(componentName, url);
+    }
+    
+    static Pagination(componentName, url, currentPage) {
+        $("#current_tablepage_" + componentName).val(currentPage);
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+
+        JJGridView.RefreshGrid(componentName, url);
     }
 
-
-    static Pagination(objid, url, currentPage) {
-        $("#current_tablepage_" + objid).val(currentPage);
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
-
-        JJGridView.RefreshGrid(objid, url);
+    static Filter(componentName, url) {
+        $("#current_filteraction_" + componentName).val("FILTERACTION");
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_tablepage_" + componentName).val("1");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
 
-    static Filter(objid, url) {
-        $("#current_filteraction_" + objid).val("FILTERACTION");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_tablepage_" + objid).val("1");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
+    static Refresh(componentName, url) {
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_tablerow_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
 
-    static Refresh(objid, url) {
-        $("#current_tableaction_" + objid).val("");
-        $("#current_tablerow_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
-    }
-
-    static RefreshGrid(objid, url) {
+    static RefreshGrid(componentName, url) {
         const frm = $("form");
 
         $.ajax({
@@ -50,15 +47,15 @@
             url: url,
             data: frm.serialize(),
             success: function (data) {
-                $("#jjgridview_" + objid).html(data);
+                $("#jjgridview_" + componentName).html(data);
                 jjloadform();
-                $("#current_filteraction_" + objid).val("");
+                $("#current_filteraction_" + componentName).val("");
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
                 console.log(textStatus);
                 console.log(jqXHR);
-                $("#current_filteraction_" + objid).val("");
+                $("#current_filteraction_" + componentName).val("");
             }
         });
     }

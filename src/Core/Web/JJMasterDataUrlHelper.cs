@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Options;
@@ -47,7 +48,7 @@ public class JJMasterDataUrlHelper
         return scope.ServiceProvider.GetRequiredService<JJMasterDataUrlHelper>();
     }
 
-    public string GetUrl(string? action = null, string? controller = null, object? values = null)
+    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController]string? controller = null,object? values = null)
     {
         if (OptionsUrl is not null)
         {
