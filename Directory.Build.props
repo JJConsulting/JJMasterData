@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.34</Version>
+		<Version>3.1.35</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -11,7 +11,7 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>	
-		fix: Cannot consume scoped service 'JJMasterData.Commons.Data.Entity.Abstractions.IEntityRepository' from singleton 'Microsoft.Extensions.Logging.ILoggerProvider'.
+		fix: Lookup not reloading the panel and not showing descriptions.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
