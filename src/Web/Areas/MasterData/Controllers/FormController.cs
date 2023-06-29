@@ -73,12 +73,6 @@ public class FormController : MasterDataController
         form.AppendElement(formView.GetHtmlBuilder());
         return Content(form.ToString());
     }
-    
-    public IActionResult ExportUI()
-    {
-        throw new NotImplementedException();
-    }
-    
 
     [HttpPost]
     public IActionResult SearchValues(string dictionaryName, string fieldName, int pageState)

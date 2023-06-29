@@ -1,3 +1,5 @@
+using System;
+
 namespace JJMasterData.Core.Web.Http.Abstractions;
 
 public interface IHttpResponse
@@ -7,6 +9,8 @@ public interface IHttpResponse
     /// </summary>
     /// <param name="data">Data to the client. Can be a HTML or JSON .</param>
     /// <param name="contentType">Optional. Usually application/json</param>
+    /// TODO: Add a //#pragma directive for every SendResponse defeated.
+    [Obsolete("Response.End not supported by ASP.NET Core runtime without SystemWebAdapters.")]
     void SendResponse(string data, string contentType = null);
 
     void ClearResponse();

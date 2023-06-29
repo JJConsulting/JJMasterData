@@ -155,43 +155,44 @@ class JJDataExp {
             yield fetch(surl);
         });
     }
-    static openExportUI(objid) {
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=tableexp";
-        else
-            surl += "?t=tableexp";
-        surl += "&gridName=" + objid;
-        surl += "&exptype=showoptions";
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            success: function (data) {
-                var modalBody = "#export_modal_" + objid + " .modal-body ";
-                $(modalBody).html(data);
-                jjloadform(null, modalBody);
-                var qtdElement = $("#" + objid + "_totrows");
-                if (qtdElement.length > 0) {
-                    var totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
-                    if (totRows > 50000)
-                        $("#warning_exp_" + objid).show();
-                }
-                if (bootstrapVersion < 5) {
-                    $("#export_modal_" + objid).modal();
-                }
-                else {
-                    const modal = new bootstrap.Modal("#export_modal_" + objid, {});
-                    modal.show();
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
+    static setSettingsHTML(componentName, html) {
+        const modalBody = "#export_modal_" + componentName + " .modal-body ";
+        $(modalBody).html(html);
+        jjloadform(null, modalBody);
+        const qtdElement = $("#" + componentName + "_totrows");
+        if (qtdElement.length > 0) {
+            const totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
+            if (totRows > 50000)
+                $("#warning_exp_" + componentName).show();
+        }
+        if (bootstrapVersion < 5) {
+            $("#export_modal_" + componentName).modal();
+        }
+        else {
+            const modal = new bootstrap.Modal("#export_modal_" + componentName, {});
+            modal.show();
+        }
+    }
+    static openExportPopup(url, componentName) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+            this.setSettingsHTML(componentName, data);
+        })
+            .catch(error => {
+            console.log(error);
         });
+    }
+    static openExportUI(componentName) {
+        const frm = $("form");
+        let url = frm.attr("action");
+        if (url.includes("?"))
+            url += "&t=tableexp";
+        else
+            url += "?t=tableexp";
+        url += "&gridName=" + componentName;
+        url += "&exptype=showoptions";
+        this.openExportPopup(url, componentName);
     }
     static doExport(objid) {
         var frm = $("form");
@@ -536,36 +537,36 @@ JJFeedbackIcon.errorClass = "jj-icon-error";
 class JJGridView {
     static setup() {
     }
-    static Sorting(objid, url, tableOroder) {
-        var tableOrder = "#current_tableorder_" + objid;
+    static Sorting(componentName, url, tableOroder) {
+        var tableOrder = "#current_tableorder_" + componentName;
         if (tableOroder + " ASC" == $(tableOrder).val())
             $(tableOrder).val(tableOroder + " DESC");
         else
             $(tableOrder).val(tableOroder + " ASC");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
-    static Pagination(objid, url, currentPage) {
-        $("#current_tablepage_" + objid).val(currentPage);
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
+    static Pagination(componentName, url, currentPage) {
+        $("#current_tablepage_" + componentName).val(currentPage);
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
-    static Filter(objid, url) {
-        $("#current_filteraction_" + objid).val("FILTERACTION");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_tablepage_" + objid).val("1");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
+    static Filter(componentName, url) {
+        $("#current_filteraction_" + componentName).val("FILTERACTION");
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_tablepage_" + componentName).val("1");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
-    static Refresh(objid, url) {
-        $("#current_tableaction_" + objid).val("");
-        $("#current_tablerow_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
-        JJGridView.RefreshGrid(objid, url);
+    static Refresh(componentName, url) {
+        $("#current_tableaction_" + componentName).val("");
+        $("#current_tablerow_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+        JJGridView.RefreshGrid(componentName, url);
     }
-    static RefreshGrid(objid, url) {
+    static RefreshGrid(componentName, url) {
         const frm = $("form");
         $.ajax({
             async: true,
@@ -573,15 +574,15 @@ class JJGridView {
             url: url,
             data: frm.serialize(),
             success: function (data) {
-                $("#jjgridview_" + objid).html(data);
+                $("#jjgridview_" + componentName).html(data);
                 jjloadform();
-                $("#current_filteraction_" + objid).val("");
+                $("#current_filteraction_" + componentName).val("");
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
                 console.log(textStatus);
                 console.log(jqXHR);
-                $("#current_filteraction_" + objid).val("");
+                $("#current_filteraction_" + componentName).val("");
             }
         });
     }

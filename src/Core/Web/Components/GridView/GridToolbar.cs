@@ -100,7 +100,7 @@ internal class GridToolbar
                 script = BootstrapHelper.GetModalScript($"config_modal_{GridView.Name}");
                 break;
             case ExportAction:
-                script = $"JJDataExp.openExportUI('{GridView.Name}');";
+                script = GridView.DataExpScriptHelper.GetExportPopupScript(GridView.Name,GridView.IsExternalRoute);
                 break;
             case RefreshAction:
                 script = GridView.GridViewToolbarScriptHelper.GetRefreshScript(GridView);

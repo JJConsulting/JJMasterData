@@ -10,9 +10,6 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Http;
 
-/// <summary>
-/// Session helper class.
-/// </summary>
 public class JJSession : IHttpSession
 {
     

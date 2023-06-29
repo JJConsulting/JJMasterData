@@ -13,6 +13,7 @@
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <RootNamespace>JJMasterData.Web</RootNamespace>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
     
     <ItemGroup>
@@ -36,10 +37,6 @@
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <EmbeddedResource Include="Scripts\**\*.ts" />
     </ItemGroup>
-
-    <ItemGroup>
-      <TypeScriptCompile Remove="Scripts\jjgridview.ts" />
-    </ItemGroup>
     
 	<ItemGroup>
       <Content Update="Scripts\tsconfig.json" Pack="false">
@@ -53,7 +50,4 @@
         </Content>
     </ItemGroup>
     
-	<ItemGroup>
-	  <Folder Include="Services\Abstractions\" />
-	</ItemGroup>
 </Project>

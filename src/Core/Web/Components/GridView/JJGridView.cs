@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -95,10 +96,13 @@ public class JJGridView : JJBaseView
     }
 
     internal GridViewScriptHelper GridViewScriptHelper { get; } =
-        JJService.Provider.GetRequiredService<GridViewScriptHelper>();
+        JJService.Provider.GetScopedDependentService<GridViewScriptHelper>();
     
     internal GridViewToolbarScriptHelper GridViewToolbarScriptHelper { get; } =
-        JJService.Provider.GetRequiredService<GridViewToolbarScriptHelper>();
+        JJService.Provider.GetScopedDependentService<GridViewToolbarScriptHelper>();
+    
+    internal DataExpScriptHelper DataExpScriptHelper { get; } =
+        JJService.Provider.GetScopedDependentService<DataExpScriptHelper>();
     
     internal FormManager FormManager
     {
@@ -423,7 +427,8 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_currentExportConfig != null) return _currentExportConfig;
+            if (_currentExportConfig != null) 
+                return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
             if (CurrentContext.IsPost)
@@ -1159,7 +1164,9 @@ public class JJGridView : JJBaseView
 
                 var html = new DataExpLog(exp.Name).GetHtmlProcess();
 
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(html.ToString());
+#pragma warning restore CS0618
                 break;
             }
             case "checkProcess":

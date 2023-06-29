@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace JJMasterData.Core.Web.Http;
 
-/// <summary>
-/// Http Request helper class.
-/// </summary>
 public class JJRequest : IHttpRequest
 {
 

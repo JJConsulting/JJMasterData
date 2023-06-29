@@ -13,23 +13,25 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataExpSettings
 {
-    private readonly JJDataExp _dataExp;
+    private string ComponentName { get; }
+    private ExportOptions ExportOptions { get; }
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
 
-    public DataExpSettings(JJDataExp dataExp)
+    public DataExpSettings(string componentName, ExportOptions exportOptions)
     {
-        _dataExp = dataExp;
+        ComponentName = componentName;
+        ExportOptions = exportOptions;
     }
 
     internal HtmlBuilder GetHtmlElement()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        html.AppendElement(GetFormHtmlElement());
+        html.AppendElement(GetFormHtmlElement(JJServiceCore.Options.ExportationFolderPath));
 
         html.AppendElement(HtmlTag.Hr);
         html.AppendElement(HtmlTag.Div, div =>
@@ -42,7 +44,7 @@ internal class DataExpSettings
                     Text = Translate.Key("Export"),
                     IconClass = "fa fa-check",
                     ShowAsButton = true,
-                    OnClientClick = $"JJDataExp.doExport('{_dataExp.Name}');"
+                    OnClientClick = $"JJDataExp.doExport('{ComponentName}');"
                 };
 
                 var btnCancel = new JJLinkButton
@@ -64,7 +66,7 @@ internal class DataExpSettings
         return html;
     }
 
-    private HtmlBuilder GetFormHtmlElement()
+    private HtmlBuilder GetFormHtmlElement(string exportationFolderPath)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass(BootstrapHelper.FormHorizontal);
@@ -82,7 +84,7 @@ internal class DataExpSettings
 
             div.AppendElement(GetFirstLineField());
 
-            div.AppendElement(GetFilesPanelHtmlElement());
+            div.AppendElement(GetFilesPanelHtmlElement(exportationFolderPath));
 
             div.AppendElement(HtmlTag.Div, div =>
             {
@@ -100,7 +102,7 @@ internal class DataExpSettings
                 });
             });
 
-            div.AppendElement(GetTooManyRecordsAlert(_dataExp.Name));
+            div.AppendElement(GetTooManyRecordsAlert(ComponentName));
         });
 
         return div;
@@ -112,7 +114,7 @@ internal class DataExpSettings
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{_dataExp.Name}{ExportOptions.FileName}");
+                label.WithAttribute("for", $"{ComponentName}{ExportOptions.FileName}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Export to"));
             })
@@ -121,8 +123,8 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{_dataExp.Name}{ExportOptions.FileName}");
-                    select.WithAttribute("onchange", $"jjview.showExportOptions('{_dataExp.Name}',this.value);");
+                    select.WithNameAndId($"{ComponentName}{ExportOptions.FileName}");
+                    select.WithAttribute("onchange", $"jjview.showExportOptions('{ComponentName}',this.value);");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -157,11 +159,11 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{_dataExp.Name}_div_export_orientation")
+            .WithAttribute("id", $"{ComponentName}_div_export_orientation")
             .WithAttribute("style", "display:none")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{_dataExp.Name}{ExportOptions.TableOrientation}");
+                label.WithAttribute("for", $"{ComponentName}{ExportOptions.TableOrientation}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Orientation"));
             })
@@ -170,7 +172,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{_dataExp.Name}{ExportOptions.TableOrientation}");
+                    select.WithNameAndId($"{ComponentName}{ExportOptions.TableOrientation}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -191,10 +193,10 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{_dataExp.Name}_div_export_all")
+            .WithAttribute("id", $"{ComponentName}_div_export_all")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{_dataExp.Name}{ExportOptions.ExportAll}");
+                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportAll}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Fields"));
             })
@@ -203,7 +205,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{_dataExp.Name}{ExportOptions.ExportAll}");
+                    select.WithNameAndId($"{ComponentName}{ExportOptions.ExportAll}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -225,10 +227,10 @@ internal class DataExpSettings
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("style", "display:none;")
-            .WithAttribute("id", $"{_dataExp.Name}_div_export_delimiter")
+            .WithAttribute("id", $"{ComponentName}_div_export_delimiter")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{_dataExp.Name}{ExportOptions.ExportDelimiter}");
+                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportDelimiter}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Delimiter"));
             })
@@ -237,7 +239,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{_dataExp.Name}{ExportOptions.ExportDelimiter}");
+                    select.WithNameAndId($"{ComponentName}{ExportOptions.ExportDelimiter}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -263,10 +265,10 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{_dataExp.Name}_div_export_fistline")
+            .WithAttribute("id", $"{ComponentName}_div_export_fistline")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{_dataExp.Name}{ExportOptions.ExportTableFirstLine}");
+                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportTableFirstLine}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Export first line as title"));
             })
@@ -278,11 +280,11 @@ internal class DataExpSettings
                     input.WithAttribute("type", "checkbox");
                     input.WithValue("1");
                     input.WithCssClass("form-control");
-                    input.WithNameAndId($"{_dataExp.Name}{ExportOptions.ExportTableFirstLine}");
+                    input.WithNameAndId($"{ComponentName}{ExportOptions.ExportTableFirstLine}");
                     input.WithAttribute("data-toggle", "toggle");
                     input.WithAttribute("data-on", Translate.Key("Yes"));
                     input.WithAttribute("data-off", Translate.Key("No"));
-                    if (_dataExp.ExportOptions.ExportFirstLine)
+                    if (ExportOptions.ExportFirstLine)
                         input.WithAttribute("checked", "checked");
                 });
             });
@@ -310,9 +312,9 @@ internal class DataExpSettings
         return alert;
     }
 
-    private JJCollapsePanel GetFilesPanelHtmlElement()
+    private JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
     {
-        var files = GetGeneratedFiles();
+        var files = GetGeneratedFiles(exportationFolderPath);
         var panel = new JJCollapsePanel
         {
             Name = "exportCollapse",
@@ -336,7 +338,7 @@ internal class DataExpSettings
             if (FileIO.IsFileLocked(file))
                 continue;
 
-            var icon = _dataExp.GetFileIcon(file.Extension);
+            var icon = JJDataExp.GetFileIcon(file.Extension);
             string url = JJDataExp.GetDownloadUrl(file.FullName);
 
             var div = new HtmlBuilder(HtmlTag.Div);
@@ -356,11 +358,11 @@ internal class DataExpSettings
         return html;
     }
 
-    private List<FileInfo> GetGeneratedFiles()
+    private static List<FileInfo> GetGeneratedFiles(string exportationFolderPath)
     {
         var list = new List<FileInfo>();
 
-        var oDir = new DirectoryInfo(JJServiceCore.Options.ExportationFolderPath);
+        var oDir = new DirectoryInfo(exportationFolderPath);
 
         if (oDir.Exists)
             list.AddRange(oDir.GetFiles("*", SearchOption.AllDirectories));

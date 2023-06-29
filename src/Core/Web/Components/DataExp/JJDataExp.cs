@@ -75,10 +75,10 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
+        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(Name, ExportOptions).GetHtmlElement();
     }
 
-    internal JJIcon GetFileIcon(string ext)
+    internal static JJIcon GetFileIcon(string ext)
     {
         if (ext.EndsWith("xls"))
             return new JJIcon(IconType.FileExcelO);

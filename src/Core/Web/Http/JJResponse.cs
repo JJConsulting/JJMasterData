@@ -1,6 +1,7 @@
 ﻿#if NETSTANDARD || NETCOREAPP
 using Microsoft.AspNetCore.Http;
 #endif
+using System;
 using System.Web;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -19,11 +20,7 @@ public class JJResponse : IHttpResponse
 #endif
     
 
-    /// <summary>
-    /// Ends the HttpResponse and sends the data to the client.
-    /// </summary>
-    /// <param name="data">Data to the client. Can be a HTML or JSON .</param>
-    /// <param name="contentType">Optional. Usually application/json</param>
+    /// <inheritdoc cref="SendResponse"/>
     public void SendResponse(string data, string contentType = null)
     {
         System.Web.HttpContext.Current!.Response.ClearContent();

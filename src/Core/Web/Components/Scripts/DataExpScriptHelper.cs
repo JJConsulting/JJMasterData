@@ -16,15 +16,14 @@ internal class DataExpScriptHelper
         UrlHelper = urlHelper;
     }
     
-    public string GetExportModalScript(string componentName, string dictionaryName, bool isExternalRoute)
+    public string GetExportPopupScript(string componentName, bool isExternalRoute)
     {
-        if (isExternalRoute)
-        {
-            var url = UrlHelper.GetUrl("ExportUI","Form",new {dictionaryName});
-            return $"JJDataExp.openExportUI('{url}');";
-        }
+        if (!isExternalRoute) 
+            return $"JJDataExp.openExportUI('{componentName}');";
+        
+        var url = UrlHelper.GetUrl("Settings","Export",new { componentName});
+        return $"JJDataExp.openExportPopup('{url}', '{componentName}');";
 
-        return $"JJDataExp.openExportUI('{componentName}');";
     }
 
 }

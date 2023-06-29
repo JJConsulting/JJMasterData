@@ -12,6 +12,7 @@ using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -62,24 +63,38 @@ public static class ServiceCollectionExtensions
     private static void AddDefaultServices(this IServiceCollection services)
     {
         
+        services.AddHttpServices();
+        services.AddScriptHelpers();
+        
+        services.AddTransient<IFormEventResolver,FormEventResolver>();
+        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
+        
+        services.AddTransient<IAuditLogService, AuditLogService>();
+        services.AddTransient<IExcelWriter, ExcelWriter>();
+        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+        
+        services.AddTransient<JJMasterDataFactory>();
+    }
+
+    private static void AddScriptHelpers(this IServiceCollection services)
+    {
+        services.AddTransient<DataExpScriptHelper>();
+        services.AddTransient<FormViewScriptHelper>();
+        services.AddTransient<GridViewScriptHelper>();
+        services.AddTransient<GridViewToolbarScriptHelper>();
+    }
+    
+    private static void AddHttpServices(this IServiceCollection services)
+    {
 #if NET
         services.AddHttpContextAccessor();
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();;
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 #endif
         services.AddScoped<JJMasterDataUrlHelper>();
-        
+
         services.AddScoped<IHttpSession, JJSession>();
         services.AddScoped<IHttpRequest, JJRequest>();
         services.AddScoped<IHttpResponse, JJResponse>();
         services.AddScoped<IHttpContext, JJHttpContext>();
-        
-        services.AddTransient<IFormEventResolver,FormEventResolver>();
-        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
-        services.AddTransient<IAuditLogService, AuditLogService>();
-        services.AddTransient<IExcelWriter, ExcelWriter>();
-        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
-        services.AddTransient<JJMasterDataFactory>();
     }
-    
-    
 }

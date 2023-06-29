@@ -100,52 +100,50 @@
         await fetch(surl);
     }
 
-    static openExportUI(objid) {
+    
+    private static setSettingsHTML(componentName, html){
+        const modalBody = "#export_modal_" + componentName + " .modal-body ";
+        $(modalBody).html(html);
+        jjloadform(null, modalBody);
 
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=tableexp";
+        const qtdElement = $("#" + componentName + "_totrows");
+        if (qtdElement.length > 0) {
+            const totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
+            if (totRows > 50000)
+                $("#warning_exp_" + componentName).show();
+        }
+
+        if (bootstrapVersion < 5) {
+            $("#export_modal_" + componentName).modal();
+        } else {
+            const modal = new bootstrap.Modal("#export_modal_" + componentName, {});
+            modal.show();
+        }
+    }
+    
+    static openExportPopup(url: string, componentName: string) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                this.setSettingsHTML(componentName, data)
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+    
+    static openExportUI(componentName) {
+        const frm = $("form");
+        let url = frm.attr("action");
+        if (url.includes("?"))
+            url += "&t=tableexp";
         else
-            surl += "?t=tableexp";
+            url += "?t=tableexp";
 
-        surl += "&gridName=" + objid;
-        surl += "&exptype=showoptions";
+        url += "&gridName=" + componentName;
+        url += "&exptype=showoptions";
 
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            success: function (data) {
-                var modalBody = "#export_modal_" + objid + " .modal-body ";
-                $(modalBody).html(data);
-                jjloadform(null, modalBody);
-
-                var qtdElement = $("#" + objid + "_totrows");
-                if (qtdElement.length > 0) {
-                    var totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
-                    if (totRows > 50000)
-                        $("#warning_exp_" + objid).show();
-                }
-
-
-                if (bootstrapVersion < 5) {
-                    $("#export_modal_" + objid).modal();
-                } else {
-                    const modal = new bootstrap.Modal("#export_modal_" + objid, {});
-                    modal.show();
-                }
-
-
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
-
-
+        this.openExportPopup(url, componentName)
     }
 
     static doExport(objid) {
