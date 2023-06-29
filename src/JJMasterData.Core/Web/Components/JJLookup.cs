@@ -125,6 +125,7 @@ public class JJLookup : JJBaseControl
         search.Attributes.Add("pnlname", panelName);
         search.FormValues = expOptions.FormValues;
         search.PageState = expOptions.PageState;
+        search.SelectedValue = value?.ToString();
         search.UserValues = expOptions.UserValues;
         search.EntityRepository = expOptions.EntityRepository;
 
@@ -188,10 +189,10 @@ public class JJLookup : JJBaseControl
             CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
             InputType = OnlyNumbers ? InputType.Number : InputType.Text,
             MaxLength = MaxLength,
-            Text = inputValue,
+            Text = description,
             Attributes = Attributes,
             ToolTip = ToolTip,
-            ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description)),
+            ReadOnly = ReadOnly, //|| Enabled && !string.IsNullOrEmpty(description),
             Enabled = Enabled,
             Actions = new List<JJLinkButton>
             {
@@ -298,11 +299,11 @@ public class JJLookup : JJBaseControl
             foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
             {
                 string filterParsed = ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
-                filters.Add(filter.Key, StringManager.ClearText(filterParsed));
+                filters[filter.Key] = StringManager.ClearText(filterParsed);
             }
         }
 
-        filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(searchId));
+        filters[DataItem.ElementMap.FieldKey]= StringManager.ClearText(searchId);
 
         var dicDao = JJServiceCore.DataDictionaryRepository;
         Hashtable fields;
@@ -364,7 +365,7 @@ public class JJLookup : JJBaseControl
 
         if (field == null) return null;
 
-        var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
+        var lookup = view.FieldManager.GetField(field, view.PageState, view.GetFormValues(), view.Values);
         return lookup.GetHtmlBuilder();
 
     }

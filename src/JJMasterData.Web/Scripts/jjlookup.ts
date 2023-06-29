@@ -43,17 +43,20 @@
             });
 
             function setHiddenLookup(){
-                const hiddenLookupInputElement = document.getElementById("id_" + lookupId) as HTMLInputElement | null
-                const lookupInputElement = document.getElementById(lookupId) as HTMLInputElement | null;
-                hiddenLookupInputElement.value = lookupInputElement.value;
+                lookupInput.val($("#id_" + lookupId).val())
             }
 
-            lookupInput.on("focus",setHiddenLookup);
+            lookupInput.one("focus",function () {
+                lookupInput.val($("#id_" + lookupId).val())
+                    .removeAttr("readonly")
+                    .select();
+            });
 
-            lookupInput.on("change",setHiddenLookup);
-
+            lookupInput.one("change",function () {
+                $("#id_" + lookupId).val(lookupInput.val());
+            });
             
-            lookupInput.on("blur",function () {
+            lookupInput.one("blur",function () {
                 showWaitOnPost = false;
                 setHiddenLookup();
                 
@@ -82,8 +85,8 @@
                             const lookupInputElement = document.getElementById(lookupId) as HTMLInputElement | null;
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass)
                             lookupInputElement.value = data.description;
+                            JJDataPanel.doReload(panelName,lookupId)
                         }
-                        JJDataPanel.doReload(panelName,lookupId);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;

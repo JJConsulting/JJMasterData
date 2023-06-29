@@ -47,9 +47,11 @@ internal class FormValues
                 }
                 case FormComponent.Lookup:
                 {
-                    var lookup = (JJLookup)FieldManager.GetField(field, state, values);
-                    lookup.AutoReloadFormFields = true;
-                    value = lookup.SelectedValue;
+                    value = CurrentContext.Request.Form("id_" + fieldName );
+                    if (string.IsNullOrEmpty(value?.ToString()))
+                    {
+                        value = CurrentContext.Request.Form(fieldName );
+                    }
                     break;
                 }
                 case FormComponent.Slider:

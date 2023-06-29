@@ -619,13 +619,17 @@ class JJLookup {
                 return false;
             });
             function setHiddenLookup() {
-                const hiddenLookupInputElement = document.getElementById("id_" + lookupId);
-                const lookupInputElement = document.getElementById(lookupId);
-                hiddenLookupInputElement.value = lookupInputElement.value;
+                lookupInput.val($("#id_" + lookupId).val());
             }
-            lookupInput.on("focus", setHiddenLookup);
-            lookupInput.on("change", setHiddenLookup);
-            lookupInput.on("blur", function () {
+            lookupInput.one("focus", function () {
+                lookupInput.val($("#id_" + lookupId).val())
+                    .removeAttr("readonly")
+                    .select();
+            });
+            lookupInput.one("change", function () {
+                $("#id_" + lookupId).val(lookupInput.val());
+            });
+            lookupInput.one("blur", function () {
                 showWaitOnPost = false;
                 setHiddenLookup();
                 JJFeedbackIcon.removeAllIcons(jjLookupSelector);
@@ -652,8 +656,8 @@ class JJLookup {
                             const lookupInputElement = document.getElementById(lookupId);
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
+                            JJDataPanel.doReload(panelName, lookupId);
                         }
-                        JJDataPanel.doReload(panelName, lookupId);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
