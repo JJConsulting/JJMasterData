@@ -1,0 +1,54 @@
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Web.Filters;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JJMasterData.Web.Areas.MasterData.Controllers;
+
+public class SearchController : MasterDataController
+{
+    private ISearchBoxService Service { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IExpressionsService ExpressionsService { get; }
+
+    public SearchController(ISearchBoxService service, IDataDictionaryRepository dataDictionaryRepository, IExpressionsService expressionsService)
+    {
+        Service = service;
+        DataDictionaryRepository = dataDictionaryRepository;
+        ExpressionsService = expressionsService;
+    }
+    
+    [HttpPost]
+    [DictionaryNameDecryptionServiceFilter]
+    public async Task<IActionResult> GetItems(
+        string dictionaryName,
+        string fieldName,
+        string fieldSearchName,
+        int pageState
+    )
+    {
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var searchText = HttpContext.Request.Form[fieldSearchName];
+        var dataItem = formElement.Fields[fieldName].DataItem;
+
+        IDictionary<string, dynamic>? formValues = null;
+
+        if (dataItem!.HasSqlExpression())
+        {
+            var fieldManager = new FieldManager(formElement,ExpressionsService);
+            var formValuesService = new FormValues(fieldManager);
+            var dbValues = formValuesService.GetDatabaseValuesFromPk(formElement);
+            formValues = formValuesService.GetFormValues((PageState)pageState, dbValues, true);
+        }
+
+        var context = new SearchBoxContext(formValues, null, (PageState)pageState);
+
+        var values = await Service.GetValues(dataItem,searchText,null,context);
+        var items = Service.GetSearchBoxItems(dataItem,values);
+        
+        return Json(items);
+    }
+}

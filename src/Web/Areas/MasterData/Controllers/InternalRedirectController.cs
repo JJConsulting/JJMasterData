@@ -16,7 +16,7 @@ public class InternalRedirectController : MasterDataController
 {
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
-    private Hashtable? _relationValues;
+    private IDictionary<string,dynamic>? _relationValues;
 
     public ActionResult Index(string parameters)
     {
@@ -102,7 +102,7 @@ public class InternalRedirectController : MasterDataController
         {
             if (errors.Count == 0)
             {
-                panel.EntityRepository.SetValues(formElement, values);
+                panel.EntityRepository.SetValues(formElement, (IDictionary)values);
             }
         }
         catch (SqlException ex)
@@ -130,7 +130,7 @@ public class InternalRedirectController : MasterDataController
 
         _dictionaryName = null;
         _relationshipType = RelationshipViewType.List;
-        _relationValues = new Hashtable();
+        _relationValues = new Dictionary<string, dynamic>();
         var @params = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(parameters));
         _dictionaryName = @params.Get("formname");
         foreach (string key in @params)

@@ -18,7 +18,7 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </code>
 /// </example>
 /// </summary>
-public sealed class JJMasterDataCommonsOptions
+public class JJMasterDataCommonsOptions
 {
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>

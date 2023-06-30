@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Http;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -14,11 +15,11 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IDictionary? userValues)
+    public static string? GetCurrentUserId(IDictionary<string,dynamic>? userValues)
     {
-        if (userValues != null && userValues.Contains("USERID"))
+        if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
-            return userValues["USERID"]!.ToString();
+            return value!.ToString();
         }
 
         var currentContext = JJHttpContext.GetInstance();
@@ -35,7 +36,7 @@ public static class DataHelper
     /// Returns a list with only the primary keys of the table, if the PK value does not exist,
     /// an exception will be thrown
     /// </summary>
-    public static Hashtable GetPkValues(Element element, IDictionary values)
+    public static Hashtable GetPkValues(Element element, IDictionary<string,dynamic> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -51,7 +52,7 @@ public static class DataHelper
 
         foreach (var field in elementPks)
         {
-            if (!values.Contains(field.Name))
+            if (!values.ContainsKey(field.Name))
                 throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
 
             primaryKeys.Add(field.Name, values[field.Name]);
@@ -60,9 +61,9 @@ public static class DataHelper
         return primaryKeys;
     }
 
-    public static Hashtable GetPkValues(Element element, string parsedValues, char separator)
+    public static IDictionary<string,dynamic> GetPkValues(Element element, string parsedValues, char separator)
     {
-        var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
         var values = parsedValues.Split(separator);
         if (values == null || values.Length == 0)
@@ -83,7 +84,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, IDictionary<string,dynamic>formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -101,7 +102,7 @@ public static class DataHelper
             if (name.Length > 0)
                 name += separator.ToString();
                 
-            if (!formValues.Contains(field.Name) || formValues[field.Name] == null)
+            if (!formValues.ContainsKey(field.Name) || formValues[field.Name] == null)
                 throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
                     
             string value = formValues[field.Name]!.ToString()!;
@@ -143,14 +144,14 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoHash(ref IDictionary newValues, IDictionary? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoHash(ref IDictionary<string,dynamic>newValues, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;
 
-        foreach (DictionaryEntry entry in valuesToBeCopied)
+        foreach (var entry in valuesToBeCopied)
         {
-            if (newValues.Contains(entry.Key))
+            if (newValues.ContainsKey(entry.Key))
             {
                 if (replaceIfExistKey)
                     newValues[entry.Key] = entry.Value;

@@ -1,11 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.DataManager;
 
-internal record FormContext(IDictionary Values, IDictionary Errors, PageState PageState)
-{
-    public IDictionary Values { get; } = Values;
-    public IDictionary Errors { get; } = Errors;
-    public PageState PageState { get; } = PageState;
-}
+internal record FormContext(IDictionary<string,dynamic>Values, IDictionary<string,dynamic>Errors, PageState PageState);

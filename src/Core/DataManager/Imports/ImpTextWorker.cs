@@ -11,8 +11,11 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -39,6 +42,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     internal FormService FormService { get; private set; }
 
+    internal IExpressionsService ExpressionsService { get; } =
+        JJService.Provider.GetScopedDependentService<IExpressionsService>();
     public string PostedText { get; private set; }
 
     public char SplitChar { get; private set; }
@@ -183,7 +188,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 }
             }
 
-            Hashtable values = GetHashWithNameAndValue(listField, cols);
+            var values = GetDictionaryWithNameAndValue(listField, cols);
             SetFormValues(values, currentProcess);
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
@@ -205,16 +210,16 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
     /// </summary>
-    private Hashtable GetHashWithNameAndValue(List<FormElementField> listField, string[] cols)
+    private IDictionary<string,dynamic> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
     {
-        var values = new Hashtable();
+        var values = new Dictionary<string, dynamic>();
         for (int i = 0; i < listField.Count; i++)
         {
             var field = listField[i];
             string value = cols[i];
             if (field.Component == FormComponent.CheckBox)
             {
-                if (ExpressionManager.ParseBool(value))
+                if (ExpressionsService.ParseBool(value))
                     value = "1";
                 else
                     value = "0";
@@ -249,7 +254,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private void SetFormValues(Hashtable fileValues, DataImpReporter currentProcess)
+    private void SetFormValues(IDictionary<string,dynamic> fileValues, DataImpReporter currentProcess)
     {
         try
         {
@@ -278,7 +283,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             {
                 currentProcess.Error++;
                 var sErr = new StringBuilder();
-                foreach (DictionaryEntry err in ret.Errors)
+                foreach (var err in ret.Errors)
                 {
                     if (sErr.Length > 0)
                         sErr.AppendLine("");

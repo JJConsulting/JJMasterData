@@ -6,19 +6,21 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FormManager
 {
-    public IEntityRepository EntityRepository => Expression.EntityRepository;
+    public IEntityRepository EntityRepository => JJService.EntityRepository;
 
-    public ExpressionManager Expression { get; private set; }
+    public IExpressionsService Expression { get; private set; }
 
     public FormElement FormElement { get; private set; }
 
-    public FormManager(FormElement formElement, ExpressionManager expression)
+    public FormManager(FormElement formElement, IExpressionsService expression)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -40,7 +42,7 @@ public class FormManager
     /// Key = Field name
     /// Value = Error message
     /// </returns>
-    public IDictionary ValidateFields(IDictionary formValues, PageState pageState, bool enableErrorLink)
+    public IDictionary<string,dynamic>ValidateFields(IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
@@ -58,7 +60,7 @@ public class FormManager
                 continue;
 
             string value;
-            if (formValues.Contains(field.Name) && formValues[field.Name] != null)
+            if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
                 value = formValues[field.Name].ToString();
             else
                 value = "";
@@ -79,17 +81,17 @@ public class FormManager
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    public IDictionary MergeWithExpressionValues(IDictionary formValues, PageState pageState, bool replaceNullValues)
+    public IDictionary<string,dynamic> MergeWithExpressionValues(IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
 
-        IDictionary newValues = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string,dynamic> newValues = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in FormElement.Fields)
         {
-            if (formValues.Contains(f.Name))
+            if (formValues.TryGetValue(f.Name, out var value))
             {
-                object val = ClearSpecialChars(f, formValues[f.Name]);
+                object val = ClearSpecialChars(f, value);
                 newValues.Add(f.Name, val);
             }
         }
@@ -100,9 +102,9 @@ public class FormManager
         return newValues;
     }
 
-    public Hashtable GetDefaultValues(IDictionary formValues, PageState state)
+    public IDictionary<string,dynamic> GetDefaultValues(IDictionary<string,dynamic> formValues, PageState state)
     {
-        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         var list = FormElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
@@ -119,12 +121,12 @@ public class FormManager
         return filters;
     }
 
-    public IDictionary MergeWithDefaultValues(IDictionary formValues, PageState pageState)
+    public IDictionary<string,dynamic> MergeWithDefaultValues(IDictionary<string,dynamic> formValues, PageState pageState)
     {
-        IDictionary values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string,dynamic> values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         if (formValues != null)
         {
-            foreach (DictionaryEntry v in formValues)
+            foreach (var v in formValues)
                 values.Add(v.Key.ToString(), v.Value);
         }
 
@@ -132,15 +134,15 @@ public class FormManager
         return values;
     }
 
-    private void ApplyDefaultValues(ref IDictionary formValues, PageState pageState, bool replaceNullValues)
+    private void ApplyDefaultValues(ref IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
     {
         var defaultValues = GetDefaultValues(formValues, pageState);
         if (defaultValues == null)
             return;
 
-        foreach (DictionaryEntry d in defaultValues)
+        foreach (var d in defaultValues)
         {
-            if (!formValues.Contains(d.Key))
+            if (!formValues.ContainsKey(d.Key))
             {
                 formValues.Add(d.Key, d.Value);
             }
@@ -155,7 +157,7 @@ public class FormManager
         }
     }
 
-    private void ApplyTriggerValues(ref IDictionary formValues, PageState pageState)
+    private void ApplyTriggerValues(ref IDictionary<string,dynamic> formValues, PageState pageState)
     {
         var listFields = FormElement.Fields
             .ToList()
@@ -165,10 +167,7 @@ public class FormManager
             string val = Expression.GetTriggerValue(e, pageState, formValues);
             if (val != null)
             {
-                if (formValues.Contains(e.Name))
-                    formValues[e.Name] = val;
-                else
-                    formValues.Add(e.Name, val);
+                formValues[e.Name] = val;
             }
         }
     }
@@ -196,7 +195,7 @@ public class FormManager
         return val;
     }
 
-    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, IDictionary formValues, PageState pageState)
+    public IList<DataItemValue> GetDataItemValues(FormElementDataItem DataItem, IDictionary<string,dynamic> formValues, PageState pageState)
     {
         if (DataItem == null)
             return null;

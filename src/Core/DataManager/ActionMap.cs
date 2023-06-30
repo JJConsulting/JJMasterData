@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -16,7 +17,7 @@ public class ActionMap
     public string FieldName { get; set; }
 
     [JsonProperty("pkFieldValues")]
-    public IDictionary PkFieldValues { get; set; }
+    public IDictionary<string,dynamic>PkFieldValues { get; set; }
 
     [JsonProperty("contextAction")]
     public ActionSource ActionSource { get; set; }
@@ -29,18 +30,17 @@ public class ActionMap
     public ActionMap(ActionSource actionSource)
     {
         ActionSource = actionSource;
-        PkFieldValues = new Hashtable();
+        PkFieldValues = new Dictionary<string, dynamic>();
     }
 
-    public ActionMap(ActionSource actionSource, FormElement formElement, IDictionary row, string actionName)
+    public ActionMap(ActionSource actionSource, FormElement formElement, IDictionary<string,dynamic> row, string actionName)
     {
         ActionSource = actionSource;
         ActionName = actionName;
-        PkFieldValues = new Hashtable();
-        foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk))
+        PkFieldValues = new Dictionary<string, dynamic>();
+        foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk).Where(f => row.ContainsKey(f.Name) && row[f.Name] != null))
         {
-            if (row[f.Name] != null)
-                PkFieldValues.Add(f.Name, row[f.Name].ToString());
+            PkFieldValues.Add(f.Name, row[f.Name].ToString());
         }
     }
 

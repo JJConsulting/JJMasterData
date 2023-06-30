@@ -39,23 +39,13 @@ public class FormController : MasterDataController
         formView.SetUserValues("USERID", userId);
     }
 
-    [HttpPost]
-    [DictionaryNameDecryptionServiceFilter]
-    public IActionResult GetGridViewTable(string dictionaryName)
-    {
-        var formView = new JJFormView(dictionaryName);
-        return Content(formView.GetTableHtml());
-    }
-
-    
     [DictionaryNameDecryptionServiceFilter]
     [ActionMapDecryptionServiceFilter]
     [HttpPost]
     public IActionResult GetFormView(
         string dictionaryName,
         PageState pageState,
-        ActionMap actionMap
-        )
+        ActionMap actionMap)
     {
         var formView = new JJFormView(dictionaryName)
         {
@@ -72,13 +62,6 @@ public class FormController : MasterDataController
         var form = new HtmlBuilder(HtmlTag.Form);
         form.AppendElement(formView.GetHtmlBuilder());
         return Content(form.ToString());
-    }
-
-    [HttpPost]
-    public IActionResult SearchValues(string dictionaryName, string fieldName, int pageState)
-    {
-        var searchBox = _masterDataFactory.CreateJJSearchBox(dictionaryName, fieldName, (PageState)pageState, null);
-        return Json(searchBox.GetListBoxItems());
     }
 
 

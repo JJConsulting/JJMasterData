@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -17,7 +18,7 @@ public class FormFilePathBuilder
         FormElement = formElement;
     }
 
-    public string GetFolderPath(FormElementField field, IDictionary formValues)
+    public string GetFolderPath(FormElementField field, IDictionary<string,dynamic> formValues)
     {
         if (field.DataFile == null)
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);

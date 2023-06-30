@@ -4,13 +4,13 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
 using System.Collections.Generic;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -68,7 +68,7 @@ public class FormService
     /// Update records applying expressions and default values.
     /// </summary>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter Update(IDictionary values)
+    public FormLetter Update(IDictionary<string,dynamic> values)
     {
         var errors = FormManager.ValidateFields(values, PageState.Update, EnableErrorLink);
         var result = new FormLetter(errors);
@@ -82,7 +82,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(FormElement, values), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(FormElement, (IDictionary)values), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -104,13 +104,13 @@ public class FormService
         return result;
     }
 
-    public FormLetter Insert(IDictionary values, bool validateFields = true)
+    public FormLetter Insert(IDictionary<string,dynamic> values, bool validateFields = true)
     {
-        IDictionary errors;
+        IDictionary<string,dynamic>errors;
         if (validateFields)
             errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
         else
-            errors = new Hashtable();
+            errors = new Dictionary<string,dynamic>();
 
         var result = new FormLetter(errors);
         if (OnBeforeInsert != null)
@@ -122,7 +122,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        RunDatabaseCommand(() => EntityRepository.Insert(FormElement, values), ref errors);
+        RunDatabaseCommand(() => EntityRepository.Insert(FormElement, (IDictionary)values), ref errors);
 
         if (errors.Count > 0)
             return result;
@@ -147,7 +147,7 @@ public class FormService
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter<CommandOperation> InsertOrReplace(IDictionary values)
+    public FormLetter<CommandOperation> InsertOrReplace(IDictionary<string,dynamic> values)
     {
         var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
         var result = new FormLetter<CommandOperation>(errors);
@@ -161,7 +161,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(FormElement, values), ref errors);
+        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(FormElement, (IDictionary) values), ref errors);
 
         if (errors.Count > 0)
             return result;
@@ -197,9 +197,9 @@ public class FormService
     /// Delete records in the database using the primaryKeys filter.
     /// </summary>
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
-    public FormLetter Delete(IDictionary primaryKeys)
+    public FormLetter Delete(IDictionary<string,dynamic> primaryKeys)
     {
-        IDictionary errors = new Dictionary<string, dynamic>();
+        IDictionary<string,dynamic>errors = new Dictionary<string, dynamic>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
@@ -211,7 +211,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(FormElement, primaryKeys), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(FormElement, (IDictionary)primaryKeys), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -233,7 +233,7 @@ public class FormService
         return result;
     }
 
-    private static void RunDatabaseCommand(Action action, ref IDictionary errors)
+    private static void RunDatabaseCommand(Action action, ref IDictionary<string,dynamic> errors)
     {
         try
         {
@@ -245,7 +245,7 @@ public class FormService
         }
     }
 
-    private static T RunDatabaseCommand<T>(Func<T> func, ref IDictionary errors)
+    private static T RunDatabaseCommand<T>(Func<T> func, ref IDictionary<string,dynamic> errors)
     {
         try
         {

@@ -14,6 +14,7 @@ using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
@@ -33,14 +34,14 @@ internal class ActionManager
     /// </summary>
     public FormElement FormElement { get; private set; }
 
-    public ExpressionManager Expression { get; private set; }
+    public IExpressionsService Expression { get; private set; }
 
     public string ComponentName { get; set; }
 
-    internal IEntityRepository EntityRepository => Expression.EntityRepository;
+    internal IEntityRepository EntityRepository => JJService.EntityRepository;
 
 
-    public ActionManager(FormElement formElement, ExpressionManager expression, string panelName)
+    public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
     {
         FormElement = formElement;
         Expression = expression;
@@ -48,7 +49,7 @@ internal class ActionManager
     }
 
 
-    public string GetInternalUrlScript(InternalAction action, IDictionary formValues)
+    public string GetInternalUrlScript(InternalAction action, IDictionary<string,dynamic>formValues)
     {
         var elementRedirect = action.ElementRedirect;
         var dicRepository = JJServiceCore.DataDictionaryRepository;
@@ -67,12 +68,12 @@ internal class ActionManager
 
         foreach (var r in elementRedirect.RelationFields)
         {
-            if (formValues.Contains(r.InternalField))
+            if (formValues.TryGetValue(r.InternalField, out var value))
             {
                 @params.Append("&");
                 @params.Append(r.RedirectField);
                 @params.Append("=");
-                @params.Append(formValues[r.InternalField]);
+                @params.Append(value);
             }
         }
 
@@ -96,7 +97,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary formValues, PageState pageState,
+    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string,dynamic>formValues, PageState pageState,
         ActionSource contextAction, string fieldName)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
@@ -145,7 +146,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary formValues, ActionSource actionSource, bool isPopup = false)
+    public string GetFormActionScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource actionSource, bool isPopup = false)
     {
         var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
         string encryptedActionMap = actionMap.GetCriptJson();
@@ -216,7 +217,7 @@ internal class ActionManager
             Area="MasterData"});
     }
 
-    internal string GetExportScript(ExportAction action, Hashtable formValues)
+    internal string GetExportScript(ExportAction action, IDictionary<string,dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
@@ -231,7 +232,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    internal string GetConfigUIScript(ConfigAction action, IDictionary formValues)
+    internal string GetConfigUIScript(ConfigAction action, IDictionary<string,dynamic>formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string criptMap = actionMap.GetCriptJson();
@@ -246,7 +247,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetCommandScript(BasicAction action, IDictionary formValues, ActionSource contextAction)
+    public string GetCommandScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string jsonMap = JsonConvert.SerializeObject(actionMap);
@@ -272,22 +273,22 @@ internal class ActionManager
     }
 
 
-    public JJLinkButton GetLinkGrid(BasicAction action, IDictionary formValues)
+    public JJLinkButton GetLinkGrid(BasicAction action, IDictionary<string,dynamic>formValues)
     {
         return GetLink(action, formValues, PageState.List, ActionSource.GridTable);
     }
 
-    //public JJLinkButton GetLinkGridToolbar(BasicAction action, IDictionary formValues)
+    //public JJLinkButton GetLinkGridToolbar(BasicAction action, IDictionary<string,dynamic>formValues)
     //{
     //    return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
     //}
 
-    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary formValues, PageState pageState)
+    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary<string,dynamic>formValues, PageState pageState)
     {
         return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, IDictionary formValues, PageState pageState, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary<string,dynamic>formValues, PageState pageState, string panelName)
     {
         return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
@@ -359,7 +360,7 @@ internal class ActionManager
     }
 
 
-    private JJLinkButton GetLink(BasicAction action, IDictionary formValues, PageState pagestate,
+    private JJLinkButton GetLink(BasicAction action, IDictionary<string,dynamic>formValues, PageState pagestate,
         ActionSource contextAction, string fieldName = null)
     {
         var enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues);
@@ -471,11 +472,12 @@ internal class ActionManager
             }
             else
             {
-                Hashtable formValues;
+                IDictionary<string,dynamic> formValues;
                 if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                                   map.PkFieldValues.Count > 0))
                 {
-                    formValues = gridView.EntityRepository.GetFields(FormElement, map.PkFieldValues);
+                    //TODO: Use Async
+                    formValues = gridView.EntityRepository.GetDictionaryAsync(FormElement, map.PkFieldValues).GetAwaiter().GetResult();
                 }
                 else
                 {

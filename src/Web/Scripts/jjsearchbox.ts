@@ -1,7 +1,7 @@
 ﻿class JJSearchBox{
     static setup(){
         $("input.jjsearchbox").each(function () {
-            const objid = $(this).attr("jjid");
+            const componentName = $(this).attr("jjid");
             let urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
@@ -22,7 +22,7 @@
 
             const frm = $("form");
 
-            if (!urltypehead.includes("SearchValues")) {
+            if (!urltypehead.includes("GetResults")) {
                 let url = frm.attr("action");
                 if (url.includes("?"))
                     url += "&";
@@ -32,8 +32,8 @@
                 urltypehead = url + urltypehead;
             }
 
-            const jjSearchBoxSelector = "#" + objid + "_text";
-            const jjSearchBoxHiddenSelector = "#" + objid;
+            const jjSearchBoxSelector = "#" + componentName + "_text";
+            const jjSearchBoxHiddenSelector = "#" + componentName;
             
             $(this).blur(function () {
                 if ($(this).val() == "") {

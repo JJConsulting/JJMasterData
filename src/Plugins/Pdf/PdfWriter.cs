@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -100,7 +101,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         if (DataSource == null)
         {
             var factory = JJService.EntityRepository;
-            DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
             Reporter(ProcessReporter);
@@ -109,7 +110,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
                 GenerateRows(table, token);
             }
         }
@@ -146,7 +147,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         string value = string.Empty;
         Text image = null;
 
-        var values = new Hashtable();
+        var values = new Dictionary<string,dynamic>();
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
@@ -160,7 +161,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             else
             {
-                value = FieldManager.ParseVal(field, values);
+                value = FieldManager.ParseVal(field, values,null);
             }
         }
 
@@ -252,14 +253,14 @@ public class PdfWriter : BaseWriter, IPdfWriter
         }
     }
 
-    private string GetComboBoxValue(FormElementField field, Hashtable values, ref Text image)
+    private string GetComboBoxValue(FormElementField field, IDictionary<string,dynamic> values, ref Text image)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
             return string.Empty;
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, values, selectedValue);
+        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, values,null, selectedValue);
         var item = cbo.GetValue(selectedValue);
 
         if (item != null)

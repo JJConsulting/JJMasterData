@@ -6,10 +6,13 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 
@@ -29,27 +32,27 @@ public class FieldManager
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
-    public ExpressionManager ExpressionManager { get; private set; }
+    public IExpressionsService ExpressionManager { get; private set; }
 
     #endregion
 
     #region "Constructors"
 
-    public FieldManager(FormElement formElement, ExpressionManager expression)
+    public FieldManager(FormElement formElement, IExpressionsService expression)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         ExpressionManager = expression ?? throw new ArgumentNullException(nameof(expression));
         Name = "jjpainel_" + formElement.Name.ToLower();
     }
     
-    public FieldManager(string name, FormElement formElement, ExpressionManager expressionManager) : this(formElement, expressionManager)
+    public FieldManager(string name, FormElement formElement, IExpressionsService expressionManager) : this(formElement, expressionManager)
     {
         Name = name;
     }
 
     #endregion
 
-    public bool IsVisible(BasicAction action, PageState state, IDictionary formValues)
+    public bool IsVisible(BasicAction action, PageState state, IDictionary<string,dynamic>formValues)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action), "action can not be null");
@@ -57,7 +60,7 @@ public class FieldManager
         return ExpressionManager.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
     }
 
-    public bool IsVisible(FormElementField field, PageState state, IDictionary formValues)
+    public bool IsVisible(FormElementField field, PageState state, IDictionary<string,dynamic>formValues)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
@@ -66,7 +69,7 @@ public class FieldManager
     }
     
 
-    public bool IsEnabled(FormElementField field, PageState state, IDictionary formValues)
+    public bool IsEnabled(FormElementField field, PageState state, IDictionary<string,dynamic>formValues)
     {
         if (state == PageState.View)
             return false;
@@ -80,7 +83,7 @@ public class FieldManager
     /// <summary>
     /// Formata os valores exibidos na Grid
     /// </summary>
-    public string ParseVal(FormElementField field, IDictionary values)
+    public string ParseVal(FormElementField field, IDictionary<string,dynamic>values, IDictionary<string,dynamic> userValues)
     {
         if (values == null)
             return string.Empty;
@@ -89,8 +92,8 @@ public class FieldManager
             throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
         object value = null;
-        if (values.Contains(field.Name))
-            value = values[field.Name];
+        if (values.TryGetValue(field.Name, out var value1))
+            value = value1;
 
         if (value == null || value == DBNull.Value)
             return string.Empty;
@@ -120,14 +123,14 @@ public class FieldManager
             case FormComponent.ComboBox 
             when field.DataItem!.ReplaceTextOnGrid || field.DataItem.ShowImageLegend:
             {
-                var comboBox = (JJComboBox)GetField(field, PageState.List, values, value);
+                var comboBox = (JJComboBox)GetField(field, PageState.List, values,userValues, value);
                 stringValue = comboBox.GetDescription() ?? value.ToString();
                 break;
             }
             case FormComponent.Lookup 
                  when field.DataItem is { ReplaceTextOnGrid: true }:
             {
-                var lookup = (JJLookup)GetField(field, PageState.List, values, value);
+                var lookup = (JJLookup)GetField(field, PageState.List, values,userValues, value);
                 stringValue = lookup.GetDescription() ?? value.ToString();
                 break;
             }
@@ -137,7 +140,7 @@ public class FieldManager
             case FormComponent.Search 
                  when field.DataItem is { ReplaceTextOnGrid: true }:
             {
-                var search = (JJSearchBox)GetField(field, PageState.List, values, value);
+                var search = (JJSearchBox)GetField(field, PageState.List, values,userValues, value);
                 search.AutoReloadFormFields = false;
                 stringValue = search.GetDescription(value.ToString()) ?? value.ToString();
                 break;
@@ -234,14 +237,14 @@ public class FieldManager
         return stringValue;
     }
 
-    public JJBaseControl GetField(FormElementField field, PageState pageState, IDictionary formValues, object value = null)
+    public JJBaseControl GetField(FormElementField field, PageState pageState, IDictionary<string,dynamic> formValues,IDictionary<string,dynamic> userValues, object value = null)
     {
         if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
             return JJTextRange.GetInstance(field, formValues);
         }
         
-        var expOptions = new ExpressionOptions(ExpressionManager.UserValues, formValues, pageState, ExpressionManager.EntityRepository);
+        var expOptions = new ExpressionOptions(userValues, formValues, pageState, JJService.EntityRepository);
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
         var control = controlFactory.CreateControl(field, value);
 

@@ -229,7 +229,7 @@ public class ElementService : BaseService
         gridView.EnableMultSelect = true;
         gridView.ExportAction.SetVisible(false);
         
-        if (!gridView.CurrentFilter.Contains("type"))
+        if (!gridView.CurrentFilter.ContainsKey("type"))
             gridView.CurrentFilter.Add("type", "F");
 
         gridView.OnDataLoad += FormViewOnDataLoad;
@@ -303,7 +303,7 @@ public class ElementService : BaseService
     }
     #endregion
 
-    public byte[] ExportSingleRow(IDictionary row)
+    public byte[] ExportSingleRow(IDictionary<string,dynamic>row)
     {
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
@@ -313,7 +313,7 @@ public class ElementService : BaseService
         return Encoding.Default.GetBytes(json);
     }
 
-    public byte[] ExportMultipleRows(List<Hashtable> selectedRows)
+    public byte[] ExportMultipleRows(List<IDictionary<string,dynamic>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))

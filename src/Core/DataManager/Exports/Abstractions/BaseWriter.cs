@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -17,6 +18,7 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Components;
 
@@ -63,7 +65,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         {
             if (_fieldManager == null)
             {
-                var expressionManager = new ExpressionManager(new Hashtable(), JJService.EntityRepository);
+                var expressionManager = JJService.Provider.GetScopedDependentService<IExpressionsService>();
                 _fieldManager = new FieldManager(FormElement, expressionManager);
             }
                 
@@ -76,7 +78,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary CurrentFilter { get; set; }
+    public IDictionary<string,dynamic>CurrentFilter { get; set; }
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -139,7 +141,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public BaseWriter()
     {
-        CurrentFilter = new Hashtable();
+        CurrentFilter = new Dictionary<string,dynamic>();
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
@@ -230,7 +232,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         if (files.Length != 1)
             return null;
 
-        var values = new Hashtable();
+        var values = new Dictionary<string, dynamic>();
 
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {

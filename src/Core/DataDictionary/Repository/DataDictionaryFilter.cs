@@ -12,28 +12,28 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get; set; }
     public DateTime? LastModifiedTo { get; set; }
 
-    public static DataDictionaryFilter GetInstance(IDictionary filter)
+    public static DataDictionaryFilter GetInstance(IDictionary<string,dynamic>filter)
     {
         var result = new DataDictionaryFilter();
 
-        if (filter.Contains(DataDictionaryStructure.Name))
+        if (filter.TryGetValue(DataDictionaryStructure.Name, out var name))
         {
-            result.Name = filter[DataDictionaryStructure.Name].ToString();
+            result.Name = name.ToString();
         }
 
-        if (filter.Contains(DataDictionaryStructure.TableName))
+        if (filter.TryGetValue(DataDictionaryStructure.TableName, out var tableName))
         {
-            result.ContainsTableName = filter[DataDictionaryStructure.TableName].ToString().Split(',');
+            result.ContainsTableName = tableName.ToString().Split(',');
         }
         
-        if (filter.Contains(DataDictionaryStructure.LastModifiedFrom))
+        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedFrom, out var lastModifiedFrom))
         {
-            result.LastModifiedFrom = DateTime.Parse(filter[DataDictionaryStructure.LastModifiedFrom].ToString());
+            result.LastModifiedFrom = DateTime.Parse(lastModifiedFrom.ToString());
         }
         
-        if (filter.Contains(DataDictionaryStructure.LastModifiedTo))
+        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedTo, out var lastModifiedTo))
         {
-            result.LastModifiedTo = DateTime.Parse(filter[DataDictionaryStructure.LastModifiedTo].ToString());
+            result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString());
         }
 
         return result;

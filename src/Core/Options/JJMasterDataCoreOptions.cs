@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.Options;
 
-public record JJMasterDataCoreOptions
+public class JJMasterDataCoreOptions : JJMasterDataCommonsOptions
 {
     public string DataDictionaryTableName { get; set; } = "tb_masterdata";
     

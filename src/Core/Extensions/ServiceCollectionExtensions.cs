@@ -5,9 +5,10 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.AuditLog;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
@@ -70,6 +71,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         
         services.AddTransient<IAuditLogService, AuditLogService>();
+        
+        services.AddTransient<ISearchBoxService, SearchBoxService>();
+        
+        services.AddTransient<IExpressionsService, ExpressionsService>();
+        
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         

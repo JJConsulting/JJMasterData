@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
@@ -37,8 +39,8 @@ public class TextWriter : BaseWriter, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = FieldManager.ExpressionManager.EntityRepository;
-            DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            var factory = JJService.EntityRepository;
+            DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
             Reporter(ProcessReporter);
@@ -47,7 +49,7 @@ public class TextWriter : BaseWriter, ITextWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = factory.GetDataTable(FormElement, CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
                 GenerateRows(sw, token);
             }
         }

@@ -6,7 +6,9 @@ using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -27,12 +29,12 @@ internal class FormValues
         FieldManager = fieldManager;
     }
 
-    public Hashtable RequestFormValues(PageState state, string? prefix = null)
+    public IDictionary<string,dynamic>  RequestFormValues(PageState state, string? prefix = null)
     {
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var values = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in FormElement.Fields)
         {
             var fieldName = (prefix ?? string.Empty) + field.Name;
@@ -44,14 +46,14 @@ internal class FormValues
             {
                 case FormComponent.Search:
                 {
-                    var search = (JJSearchBox)FieldManager.GetField(field, state, values);
+                    var search = (JJSearchBox)FieldManager.GetField(field, state, values, null);
                     search.AutoReloadFormFields = true;
                     value = search.SelectedValue;
                     break;
                 }
                 case FormComponent.Lookup:
                 {
-                    var lookup = (JJLookup)FieldManager.GetField(field, state, values);
+                    var lookup = (JJLookup)FieldManager.GetField(field, state, values,null);
                     lookup.AutoReloadFormFields = true;
                     value = lookup.SelectedValue;
                     break;
@@ -92,12 +94,12 @@ internal class FormValues
     /// <summary>
     /// Recupera os dados do Form, aplicando o valor padrão e as triggers
     /// </summary> 
-    public IDictionary GetFormValues(PageState state, IDictionary? values, bool autoReloadFormFields, string? prefix = null)
+    public IDictionary<string,dynamic> GetFormValues(PageState state, IDictionary<string,dynamic>? values, bool autoReloadFormFields, string? prefix = null)
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        IDictionary newValues = new Hashtable();
+        IDictionary<string,dynamic> newValues = new Dictionary<string,dynamic>();
         DataHelper.CopyIntoHash(ref newValues, values, true);
 
         if (CurrentContext.IsPost && autoReloadFormFields)
@@ -111,7 +113,8 @@ internal class FormValues
         return formManager.MergeWithExpressionValues(newValues, state, !CurrentContext.IsPost);
     }
 
-    public IDictionary? GetDatabaseValuesFromPk(FormElement element)
+    [Obsolete("Create async overload")]
+    public IDictionary<string,dynamic>? GetDatabaseValuesFromPk(FormElement element)
     {
         if (!CurrentContext.HasContext())
             return null;
@@ -122,7 +125,7 @@ internal class FormValues
 
         string parsedPkval = Cript.Descript64(criptPkval);
         var filters = DataHelper.GetPkValues(element, parsedPkval, '|');
-        var entityRepository = FieldManager.ExpressionManager.EntityRepository;
-        return entityRepository.GetFields(FormElement, filters);
+        var entityRepository = JJService.EntityRepository;
+        return entityRepository.GetDictionaryAsync(FormElement, filters).GetAwaiter().GetResult();
     }
 }
