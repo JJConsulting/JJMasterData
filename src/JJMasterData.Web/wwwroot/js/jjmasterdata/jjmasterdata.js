@@ -619,12 +619,10 @@ class JJLookup {
                 return false;
             });
             function setHiddenLookup() {
-                lookupInput.val($("#id_" + lookupId).val());
+                $("#id_" + lookupId).val(lookupInput.val());
             }
             lookupInput.one("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val())
-                    .removeAttr("readonly")
-                    .select();
+                lookupInput.val($("#id_" + lookupId).val()).select();
             });
             lookupInput.one("change", function () {
                 $("#id_" + lookupId).val(lookupInput.val());
@@ -653,9 +651,11 @@ class JJLookup {
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
                         }
                         else {
+                            const lookupHiddenInputElement = document.getElementById("id_" + lookupId);
                             const lookupInputElement = document.getElementById(lookupId);
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
+                            lookupHiddenInputElement.value = data.id;
                             JJDataPanel.doReload(panelName, lookupId);
                         }
                     },

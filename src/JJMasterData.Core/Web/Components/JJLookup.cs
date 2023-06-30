@@ -151,8 +151,10 @@ public class JJLookup : JJBaseControl
         public string Url { get; } = Url;
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
-    private record LookupDescriptionDto(string Description)
+    private record LookupResultDto(string Id,string Description)
     {
+        [JsonProperty("id")]
+        public string Id { get; } = Id;
         [JsonProperty("description")]
         public string Description { get; } = Description;
         public string ToJson() => JsonConvert.SerializeObject(this);
@@ -256,12 +258,12 @@ public class JJLookup : JJBaseControl
     
     private void SendDescription()
     {
-        LookupDescriptionDto dto = null;
+        LookupResultDto dto = null;
         try
         {
             string searchId = CurrentContext.Request["lkid"];
             string description = GetDescription(searchId);
-            dto = new LookupDescriptionDto(description);
+            dto = new LookupResultDto(searchId,description);
         }
         catch (Exception ex)
         {
