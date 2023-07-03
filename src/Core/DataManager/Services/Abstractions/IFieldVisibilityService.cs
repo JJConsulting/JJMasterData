@@ -5,7 +5,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public interface IFieldEvaluationService
+public interface IFieldVisibilityService
 {
     IExpressionsService ExpressionsService { get; }
     bool IsVisible(BasicAction action, PageState state, IDictionary<string,dynamic>formValues);

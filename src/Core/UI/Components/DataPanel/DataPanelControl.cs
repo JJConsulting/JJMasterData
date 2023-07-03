@@ -6,6 +6,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -34,8 +35,8 @@ internal class DataPanelControl
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
 
-    private IFieldEvaluationService FieldEvaluationService { get; }
-    
+    private IFieldVisibilityService FieldVisibilityService { get; }
+    internal IExpressionsService ExpressionsService { get; }
     private IFieldFormattingService FieldFormattingService { get; }
     
     public DataPanelControl(JJDataPanel dataPanel)
@@ -45,9 +46,10 @@ internal class DataPanelControl
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
-        FieldEvaluationService = dataPanel.FieldEvaluationService;
+        FieldVisibilityService = dataPanel.FieldVisibilityService;
         UserValues = dataPanel.UserValues;
         Name = dataPanel.Name;
+        ExpressionsService = dataPanel.ExpressionsService;
         FieldFormattingService = dataPanel.FieldFormattingService;
         IsExternalRoute = dataPanel.IsExternalRoute;
     }
@@ -63,9 +65,10 @@ internal class DataPanelControl
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
+        ExpressionsService = gridView.ExpressionsService;
         FieldFormattingService = gridView.FieldFormattingService;
         IsExternalRoute = gridView.IsExternalRoute;
-        FieldEvaluationService = gridView.FieldEvaluationService;
+        FieldVisibilityService = gridView.FieldVisibilityService;
     }
 
     public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
@@ -91,7 +94,7 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var field in fields)
         {
-            bool visible = FieldEvaluationService.IsVisible(field, PageState, Values);
+            bool visible = FieldVisibilityService.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
             
@@ -209,7 +212,7 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = FieldEvaluationService.IsVisible(f, PageState, Values);
+            bool visible = FieldVisibilityService.IsVisible(f, PageState, Values);
             if (!visible)
                 continue;
 
@@ -294,7 +297,7 @@ internal class DataPanelControl
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             field.Name = FieldNamePrefix + f.Name;
 
-        field.Enabled = FieldEvaluationService.IsEnabled(f, PageState, Values);
+        field.Enabled = FieldVisibilityService.IsEnabled(f, PageState, Values);
         if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(f.Name))
         {
             field.CssClass = "is-invalid";

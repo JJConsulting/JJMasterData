@@ -4,6 +4,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
 
@@ -142,10 +143,16 @@ internal class FormViewRelationshipLayout
                     var childGrid = new JJFormView(childElement)
                     {
                         UserValues = ParentFormView.UserValues,
-                        IsExternalRoute = true
+                        IsExternalRoute = true,
+                        GridView =
+                        {
+                            IsExternalRoute = true,
+                            FilterAction =
+                            {
+                                ShowAsCollapse = true
+                            }
+                        }
                     };
-
-                    childGrid.GridView.FilterAction.ShowAsCollapse = true;
                     childGrid.GridView.Filter.ApplyCurrentFilter(filter);
                     childGrid.SetOptions(childElement.Options);
 
@@ -154,7 +161,7 @@ internal class FormViewRelationshipLayout
                     var htmlBuilder = childGrid.RenderHtml();
                     if (htmlBuilder != null)
                     {
-                        var filters = Cript.Cript64(JsonConvert.SerializeObject(filter));
+                        var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEncode(JsonConvert.SerializeObject(filter));
                         htmlBuilder.AppendHiddenInput($"jjgridview_{childElement.Name}_filters", filters);
                     }
                     

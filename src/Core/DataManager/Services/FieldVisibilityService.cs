@@ -6,11 +6,11 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldEvaluationService : IFieldEvaluationService
+public class FieldVisibilityService : IFieldVisibilityService
 {
     public IExpressionsService ExpressionsService { get; }
 
-    public FieldEvaluationService(IExpressionsService expressionsService)
+    public FieldVisibilityService(IExpressionsService expressionsService)
     {
         ExpressionsService = expressionsService;
     }

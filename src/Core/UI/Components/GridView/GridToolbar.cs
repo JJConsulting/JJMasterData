@@ -31,12 +31,12 @@ internal class GridToolbar
     private IEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
-        var expressionManager = GridView.FieldManager.ExpressionManager;
+        var expressionsService = GridView.ExpressionsService;
         var formValues = GridView.DefaultValues;
 
         foreach (var action in actions)
         {
-            bool isVisible = expressionManager.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, formValues);
+            bool isVisible = expressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, formValues);
             if (!isVisible)
                 continue;
 
@@ -46,7 +46,7 @@ internal class GridToolbar
                 continue;
             }
 
-            bool isEnabled = expressionManager.GetBoolValue(action.EnableExpression, action.Name, PageState.List, formValues);
+            bool isEnabled = expressionsService.GetBoolValue(action.EnableExpression, action.Name, PageState.List, formValues);
             var linkButton = JJLinkButton.GetInstance(action, isEnabled, true);
             linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)
@@ -73,7 +73,7 @@ internal class GridToolbar
     {
         var contextAction = ActionSource.GridToolbar;
         var pageState = PageState.List;
-        var expressionManager = GridView.FieldManager.ExpressionManager;
+        var expressionsService = GridView.ExpressionsService;
         string script;
 
         switch (action)
@@ -88,7 +88,7 @@ internal class GridToolbar
                 script = GridView.ActionManager.GetCommandScript(action, formValues, contextAction);
                 break;
             case ScriptAction jsAction:
-                script = expressionManager.ParseExpression(jsAction.OnClientClick, pageState, false, formValues);
+                script = expressionsService.ParseExpression(jsAction.OnClientClick, pageState, false, formValues);
                 break;
             case InsertAction insertAction:
                 script = GridView.ActionManager.GetFormActionScript(action, formValues, contextAction, insertAction.ShowAsPopup);

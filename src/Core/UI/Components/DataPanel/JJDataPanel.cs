@@ -114,11 +114,10 @@ public class JJDataPanel : JJBaseView
     private JJMasterDataEncryptionService EncryptionService { get; } =
         JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
     
-    public IFieldEvaluationService FieldEvaluationService { get; } = JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    public IFieldVisibilityService FieldVisibilityService { get; } = JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     public IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
     public IFormValuesService FormValuesService { get; } = JJService.Provider.GetScopedDependentService<IFormValuesService>();
-
-    
+    public IExpressionsService ExpressionsService { get; } = JJService.Provider.GetScopedDependentService<IExpressionsService>();
     #endregion
 
     #region "Constructors"
@@ -293,7 +292,7 @@ public class JJDataPanel : JJBaseView
 
         if (action is UrlRedirectAction urlAction)
         {
-            string parsedUrl = FieldManager.ExpressionManager.ParseExpression(urlAction.UrlRedirect, PageState,  false,values);
+            string parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, PageState,  false,values);
             var result = new Hashtable
             {
                 { "UrlAsPopUp", urlAction.UrlAsPopUp },

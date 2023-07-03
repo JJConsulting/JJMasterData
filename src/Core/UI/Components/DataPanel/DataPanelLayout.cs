@@ -165,8 +165,7 @@ internal class DataPanelLayout
 
     private bool IsEnabled(FormElementPanel panel)
     {
-        var fieldManager = DataPanelControl.FieldManager;
-        bool panelEnable = fieldManager.ExpressionManager.GetBoolValue(
+        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
             panel.EnableExpression, "Panel " + panel.Title, DataPanelControl.PageState, DataPanelControl.Values);
 
         return panelEnable;
@@ -174,8 +173,7 @@ internal class DataPanelLayout
 
     private bool IsVisible(FormElementPanel panel)
     {
-        var fieldManager = DataPanelControl.FieldManager;
-        bool panelEnable = fieldManager.ExpressionManager.GetBoolValue(
+        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
             panel.VisibleExpression, "Panel " + panel.Title, DataPanelControl.PageState, DataPanelControl.Values);
 
         return panelEnable;

@@ -13,6 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -42,38 +43,38 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string sAction = CurrentContext.Request.Form("current_filteraction_" + GridView.Name);
-        if (FILTERACTION.Equals(sAction))
+        string currentFilterAction = CurrentContext.Request.Form("current_filteraction_" + GridView.Name);
+        if (FILTERACTION.Equals(currentFilterAction))
         {
             var formFilters = GetFilterFormValues();
             ApplyCurrentFilter(formFilters);
             return _currentFilter;
         }
 
-        if (CLEARACTION.Equals(sAction))
+        if (CLEARACTION.Equals(currentFilterAction))
         {
             ApplyCurrentFilter(null);
             return _currentFilter;
         }
 
-        IDictionary<string,dynamic> sesssionFilter = JJHttpContext.GetInstance().Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);
-        if (sesssionFilter != null && GridView.MaintainValuesOnLoad)
+        var sessionFilter = JJHttpContext.GetInstance().Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);
+        if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
-            _currentFilter = sesssionFilter;
+            _currentFilter = sessionFilter;
             return _currentFilter;
         }
-
-        //Relation Filters
+        
         var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
-            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(Cript.Descript64(filters));
+            var filterJson = GridView.EncryptionService.DecryptStringWithUrlDecode(filters);
+            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
             return _currentFilter;
         }
 
-        if (sesssionFilter != null && (CurrentContext.IsPost || IsAjaxPost()))
+        if (sessionFilter != null && (CurrentContext.IsPost || IsAjaxPost()))
         {
-            _currentFilter = sesssionFilter;
+            _currentFilter = sessionFilter;
             return _currentFilter;
         }
 
@@ -120,7 +121,7 @@ internal class GridFilter
     
     public HtmlBuilder GetFilterHtml()
     {
-        bool isVisible = GridView.FieldEvaluationService.IsVisible(
+        bool isVisible = GridView.FieldVisibilityService.IsVisible(
             GridView.FilterAction, PageState.List, GridView.DefaultValues);
 
         if (!isVisible)
@@ -313,13 +314,13 @@ internal class GridFilter
         if (GridView.FormElement == null)
             throw new NullReferenceException(nameof(GridView.FormElement));
 
-        IDictionary<string,dynamic> values = null;
-
         //Relation Filters
+        var values = new Dictionary<string, dynamic>();
         var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
-            values = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(Cript.Descript64(filters));
+            var filterJson = GridView.EncryptionService.DecryptStringWithUrlDecode(filters);
+            values = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
         }
 
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
@@ -394,7 +395,9 @@ internal class GridFilter
 
         return values;
     }
-    
+
+
+
     public IDictionary<string,dynamic>  GetFilterQueryString()
     {
         if (GridView.FormElement == null)

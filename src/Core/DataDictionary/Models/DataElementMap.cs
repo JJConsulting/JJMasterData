@@ -19,29 +19,29 @@ public class DataElementMap
     [JsonProperty("popUpSize")]
     public PopupSize PopUpSize { get; set; }
 
-    public Hashtable Filters 
+    public IDictionary<string,dynamic> Filters 
     {
         get
         {
-            var _filters = new Hashtable();
+            var filters = new Dictionary<string, dynamic>();
             
             if (MapFilters != null)
             {
                 foreach (var item in MapFilters)
-                    _filters.Add(item.FieldName, item.ExpressionValue);
+                    filters.Add(item.FieldName, item.ExpressionValue);
             }
 
                 
-            return _filters;
+            return filters;
         }
         set
         {
             MapFilters.Clear();
-            foreach (DictionaryEntry s in value)
+            foreach (var s in value)
             {
                 var mapFilter = new DataElementMapFilter
                 {
-                    FieldName = s.Key.ToString(),
+                    FieldName = s.Key,
                     ExpressionValue = s.ToString()
                 };
                 MapFilters.Add(mapFilter);

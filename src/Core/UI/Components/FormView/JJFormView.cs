@@ -20,11 +20,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
@@ -98,7 +97,6 @@ public class JJFormView : JJBaseView
                     Name = "jjpanel_" + FormElement.Name.ToLower(),
                     EntityRepository = EntityRepository,
                     UserValues = UserValues,
-
                     RenderPanelGroup = true,
                     IsExternalRoute = IsExternalRoute
                 };
@@ -202,12 +200,15 @@ public class JJFormView : JJBaseView
     public LogAction LogAction => (LogAction)GridView.ToolBarActions.Find(x => x is LogAction);
     public IDataDictionaryRepository DataDictionaryRepository { get; }
 
-    public IExpressionsService ExpressionsService { get; } =
+    internal IExpressionsService ExpressionsService { get; } =
         JJService.Provider.GetScopedDependentService<IExpressionsService>();
 
-    public IFormFieldsService FormFieldsService { get; } =
+    internal IFormFieldsService FormFieldsService { get; } =
         JJService.Provider.GetScopedDependentService<IFormFieldsService>();
     
+    internal JJMasterDataEncryptionService EncryptionService { get; } =
+        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+
     public bool ShowTitle { get; set; }
 
     internal bool IsModal { get; init; }
@@ -220,6 +221,7 @@ public class JJFormView : JJBaseView
     {
         Name = "jjview";
         DataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
+        
         GridView.ShowTitle = true;
         GridView.ToolBarActions.Add(new InsertAction());
         GridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
@@ -261,21 +263,7 @@ public class JJFormView : JJBaseView
 
         if (JJSearchBox.IsSearchBoxRoute(this))
             return JJSearchBox.ResponseJson(DataPanel);
-
-
-        //if ("jjsearchbox".Equals(requestType))
-        //{
-        //    string dictionaryName = CurrentContext.Request.QueryString("dictionaryName");
-        //    if (FormElement.Name.Equals(dictionaryName))
-        //    {
-        //        dataPanel.GetHtml();
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
-        //else
+        
         if ("reloadpainel".Equals(requestType))
         {
             //TODO: eliminar metodo GetSelectedRowId
@@ -288,7 +276,8 @@ public class JJFormView : JJBaseView
             CurrentContext.Response.SendResponse(htmlPanel);
             return null;
         }
-        else if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
+
+        if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
         {
             if (!DataImp.Upload.Name.Equals(objName))
                 return null;

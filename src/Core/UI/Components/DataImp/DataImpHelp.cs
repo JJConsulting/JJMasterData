@@ -312,7 +312,7 @@ internal class DataImpHelp
         var list = new List<FormElementField>();
         foreach (var field in DataImp.FormElement.Fields)
         {
-            bool visible = DataImp.FieldEvaluationService.IsVisible(field, PageState.Import, null);
+            bool visible = DataImp.FieldVisibilityService.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

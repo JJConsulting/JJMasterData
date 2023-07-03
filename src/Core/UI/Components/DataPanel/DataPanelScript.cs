@@ -105,7 +105,7 @@ internal class DataPanelScript
                 //Campos ocultos
                 if (field != null)
                 {
-                    bool visible = DataPanel.FieldEvaluationService.IsVisible(field, DataPanel.PageState, DataPanel.Values);
+                    bool visible = DataPanel.FieldVisibilityService.IsVisible(field, DataPanel.PageState, DataPanel.Values);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

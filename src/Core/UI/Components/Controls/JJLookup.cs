@@ -214,7 +214,7 @@ public class JJLookup : JJBaseControl
         return div;
     }
 
-    private string GetFeedbackIcon(string value, string description)
+    private static string GetFeedbackIcon(string value, string description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
             return " jj-icon-success ";
@@ -240,7 +240,7 @@ public class JJLookup : JJBaseControl
         //Filters
         if (DataItem.ElementMap.Filters is { Count: > 0 })
         {
-            foreach (DictionaryEntry filter in elementMap.Filters)
+            foreach (var filter in elementMap.Filters)
             {
                 string filterParsed = ExpressionManager.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
                 @params.Append('&');
@@ -299,7 +299,7 @@ public class JJLookup : JJBaseControl
 
         if (DataItem.ElementMap.Filters.Count > 0)
         {
-            foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
+            foreach (var filter in DataItem.ElementMap.Filters)
             {
                 string filterParsed = ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
                 filters.Add(filter.Key, StringManager.ClearText(filterParsed));

@@ -53,8 +53,8 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     public bool ExpandedByDefault { get; set; }
 
-    internal IFieldEvaluationService FieldEvaluationService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    internal IFieldVisibilityService FieldVisibilityService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     
     internal IFormService FormService { get; } =
         JJService.Provider.GetScopedDependentService<IFormService>();

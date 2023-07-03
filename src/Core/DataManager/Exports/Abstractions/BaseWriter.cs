@@ -38,8 +38,8 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     private DataExpReporter _processReporter;
     private List<FormElementField> _fields;
 
-    protected IFieldEvaluationService FieldEvaluationService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    protected IFieldVisibilityService FieldVisibilityService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     
     public List<FormElementField> Fields
     {
@@ -50,7 +50,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                 if (Configuration.ExportAllFields)
                     _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
                 else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldEvaluationService.IsVisible(x, PageState.List, null));
+                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldVisibilityService.IsVisible(x, PageState.List, null));
             }
 
             return _fields;

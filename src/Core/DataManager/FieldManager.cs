@@ -25,10 +25,9 @@ public class FieldManager
     /// <summary>
     /// Objeto responsável por parsear expressoões
     /// </summary>
-    public IExpressionsService ExpressionManager { get; private set; } = JJService.Provider.GetScopedDependentService<IExpressionsService>();
 
-    internal IFieldEvaluationService FieldEvaluationService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    internal IFieldVisibilityService FieldVisibilityService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     
     #endregion
 
@@ -58,7 +57,7 @@ public class FieldManager
         var controlFactory = new WebControlFactory(FormElement, expOptions, Name);
         var control = controlFactory.CreateControl(field, value);
 
-        control.Enabled = FieldEvaluationService.IsEnabled(field, pageState, formValues);
+        control.Enabled = FieldVisibilityService.IsEnabled(field, pageState, formValues);
 
         return control;
     }

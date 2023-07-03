@@ -49,8 +49,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
     internal IEntityRepository EntityRepository { get; } =
         JJService.Provider.GetScopedDependentService<IEntityRepository>();
     
-    internal IFieldEvaluationService FieldEvaluationService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    internal IFieldVisibilityService FieldVisibilityService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     
     internal IFormFieldsService FormFieldsService { get; } =
         JJService.Provider.GetScopedDependentService<IFormFieldsService>();
@@ -255,7 +255,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
         {
-            bool visible = FieldEvaluationService.IsVisible(field, PageState.Import, null);
+            bool visible = FieldVisibilityService.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

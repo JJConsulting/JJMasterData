@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -174,7 +175,7 @@ public class JJGridView : JJBaseView
             var defaultValues = DefaultValues;
             foreach (var f in FormElement.Fields)
             {
-                if (FieldEvaluationService.IsVisible(f, PageState.List, defaultValues))
+                if (FieldVisibilityService.IsVisible(f, PageState.List, defaultValues))
                     _visibleFields.Add(f);
             }
 
@@ -183,7 +184,7 @@ public class JJGridView : JJBaseView
     }
 
     internal ActionManager ActionManager =>
-        _actionManager ??= new ActionManager(FormElement, FieldManager.ExpressionManager, Name);
+        _actionManager ??= new ActionManager(FormElement, ExpressionsService, Name);
 
     internal FieldManager FieldManager => _fieldManager ??= new FieldManager(Name, FormElement);
 
@@ -470,7 +471,7 @@ public class JJGridView : JJBaseView
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public Hashtable Errors { get; set; }
+    public IDictionary<string,dynamic> Errors { get; set; }
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -551,9 +552,13 @@ public class JJGridView : JJBaseView
         set => _selectedRowsId = value ?? "";
     }
 
-    internal IFieldEvaluationService FieldEvaluationService { get; } = JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    internal IFieldVisibilityService FieldVisibilityService { get; } = JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     internal IFieldFormattingService FieldFormattingService { get; }= JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+    internal IExpressionsService ExpressionsService { get; }= JJService.Provider.GetScopedDependentService<IExpressionsService>();
 
+    internal JJMasterDataEncryptionService EncryptionService { get; } =
+        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+    
     #endregion
 
     #region "Constructors"
@@ -1338,8 +1343,8 @@ public class JJGridView : JJBaseView
             line++;
             foreach (var field in FormElement.Fields)
             {
-                bool enabled = FieldEvaluationService.IsEnabled(field, PageState.List, row);
-                bool visible = FieldEvaluationService.IsVisible(field, PageState.List, row);
+                bool enabled = FieldVisibilityService.IsEnabled(field, PageState.List, row);
+                bool visible = FieldVisibilityService.IsVisible(field, PageState.List, row);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string val = string.Empty;
