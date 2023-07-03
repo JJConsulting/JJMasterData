@@ -9,10 +9,8 @@ using System.Linq;
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
-/// Lista de campos do formulário
+/// Implementation of ICollection representing a list of data dictionary fields.
 /// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
-
 public class FormElementList : ICollection<FormElementField>
 {
     private readonly IList<FormElementField> _formFields;
@@ -72,12 +70,7 @@ public class FormElementList : ICollection<FormElementField>
 
     public bool Contains(string fieldName)
     {
-        foreach (FormElementField val in _formFields)
-        {
-            if (val.Name.Equals(fieldName))
-                return true;
-        }
-        return false;
+        return _formFields.Any(val => val.Name.Equals(fieldName));
     }
 
     public bool Contains(FormElementField item)
@@ -97,15 +90,9 @@ public class FormElementList : ICollection<FormElementField>
         return _formFields.Remove(item);
     }
 
-    public int Count
-    {
-        get { return _formFields.Count; }
-    }
+    public int Count => _formFields.Count;
 
-    public bool IsReadOnly
-    {
-        get { return _formFields.IsReadOnly; }
-    }
+    public bool IsReadOnly => _formFields.IsReadOnly;
 
     #endregion
 
@@ -126,7 +113,7 @@ public class FormElementList : ICollection<FormElementField>
             if (string.IsNullOrEmpty(fieldName))
                 throw new ArgumentNullException(nameof(fieldName));
 
-            foreach (FormElementField val in _formFields)
+            foreach (var val in _formFields)
             {
                 if (val.Name.ToLower().Equals(fieldName.ToLower()))
                     return val;

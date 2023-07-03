@@ -395,7 +395,9 @@ public class JJFormUpload : JJBaseView
             GridView.DataSource = dt;
             GridView.FormElement.Title = Title;
             GridView.FormElement.SubTitle = SubTitle;
-            GridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
+            
+            if(GridView.FormElement.Fields.Contains("NameJS"))
+                GridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
 
             if (GridView.FormElement.Fields.Contains("LastWriteTime"))
                 GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";

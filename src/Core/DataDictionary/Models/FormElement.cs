@@ -92,6 +92,8 @@ public class FormElement : Element
             var type = col.DataType;
 
             SetFieldType(field, type);
+            
+            Fields.Add(new FormElementField(field));
         }
     }
 
