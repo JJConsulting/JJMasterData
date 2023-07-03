@@ -184,7 +184,7 @@ public class JJSearchBox : JJBaseControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    public static ISearchBoxService SearchBoxService { get; } = JJService.Provider.GetScopedDependentService<ISearchBoxService>();
+    public static IDataItemService DataItemService { get; } = JJService.Provider.GetScopedDependentService<IDataItemService>();
     
     public SearchBoxContext Context { get; } 
     
@@ -360,7 +360,7 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            _values ??= SearchBoxService.GetValues(DataItem,null, idSearch, Context).GetAwaiter().GetResult();
+            _values ??= DataItemService.GetValues(DataItem,null, idSearch, Context).GetAwaiter().GetResult();
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
@@ -384,7 +384,7 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            _values ??= SearchBoxService.GetValues(DataItem,searchText, null, Context).GetAwaiter().GetResult();
+            _values ??= DataItemService.GetValues(DataItem,searchText, null, Context).GetAwaiter().GetResult();
         }
 
         return _values;
@@ -401,13 +401,13 @@ public class JJSearchBox : JJBaseControl
 #pragma warning restore CS0618
     }
 
-    public IEnumerable<SearchBoxItem> GetListBoxItems()
+    public IEnumerable<DataItemResult> GetListBoxItems()
     {
         string componentName = CurrentContext.Request.QueryString("fieldName");
         string textSearch = CurrentContext.Request.Form(componentName);
 
         var values = GetValues(textSearch);
-        var items = SearchBoxService.GetSearchBoxItems(DataItem, values);
+        var items = DataItemService.GetSearchBoxItems(DataItem, values);
 
         return items;
     }

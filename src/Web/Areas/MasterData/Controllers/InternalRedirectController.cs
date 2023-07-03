@@ -80,7 +80,7 @@ public class InternalRedirectController : MasterDataController
     }
 
     [HttpPost]
-    public ActionResult Save(string parameters)
+    public async Task<ActionResult> Save(string parameters)
     {
         LoadParameters(parameters);
 
@@ -95,7 +95,7 @@ public class InternalRedirectController : MasterDataController
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
-        var values = panel.GetFormValues();
+        var values = await panel.GetFormValues();
         var errors = panel.ValidateFields(values, PageState.Update);
         var formElement = panel.FormElement;
         try

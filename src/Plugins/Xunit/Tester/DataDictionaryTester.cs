@@ -44,7 +44,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
         formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
         
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormManager(formElement, expManager);
+        var formManager = new FormFieldsService(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible

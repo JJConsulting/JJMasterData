@@ -112,8 +112,7 @@ internal class GridFilter
 
         if (GridView.FormElement != null)
         {
-            var formManager = new FormManager(GridView.FormElement, GridView.FieldManager.ExpressionManager);
-            _currentFilter = formManager.MergeWithDefaultValues(values, PageState.List);
+            _currentFilter = GridView.FormFieldsService.MergeWithDefaultValues(GridView.FormElement,values, PageState.List);
         }
         
         JJHttpContext.GetInstance().Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
@@ -121,7 +120,7 @@ internal class GridFilter
     
     public HtmlBuilder GetFilterHtml()
     {
-        bool isVisible = GridView.FieldManager.IsVisible(
+        bool isVisible = GridView.FieldEvaluationService.IsVisible(
             GridView.FilterAction, PageState.List, GridView.DefaultValues);
 
         if (!isVisible)

@@ -151,12 +151,12 @@ public class MasterApiService
             yield return Patch(formService, values, dictionary.ApiOptions);
         }
     }
-    private ResponseLetter Insert(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
+    private ResponseLetter Insert(FormService formService, IDictionary<string,dynamic> apiValues, FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
         {
-            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Insert, true);
+            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Insert, true);
             var formResult = formService.Insert(values);
             if (formResult.IsValid)
             {
@@ -183,7 +183,7 @@ public class MasterApiService
         ResponseLetter ret;
         try
         {
-            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Update, true);
+            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Update, true);
             var formResult = formService.Update(values);
             if (formResult.IsValid)
             {
@@ -213,7 +213,7 @@ public class MasterApiService
         ResponseLetter ret;
         try
         {
-            var values = formService.FormManager.MergeWithExpressionValues(apiValues, PageState.Import, true);
+            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Import, true);
             var formResult = formService.InsertOrReplace(values);
             if (formResult.IsValid)
             {
@@ -250,14 +250,14 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var formManager = formService.FormManager;
+            var formManager = formService.FormFieldsService;
             var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
             var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues!);
             IDictionary currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
-            DataHelper.CopyIntoHash(ref currentValues, parsedValues, true);
+            DataHelper.CopyIntoDictionary(ref currentValues, parsedValues, true);
             ret = Update(formService, currentValues, metadataApiOptions);
         }
         catch (Exception ex)
@@ -279,7 +279,7 @@ public class MasterApiService
         var formService = GetFormService(dictionary);
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
-        var values = formService.FormManager.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
+        var values = formService.FormFieldsService.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
         var formResult = formService.Delete(values);
 
         if (formResult.IsValid)
@@ -319,15 +319,15 @@ public class MasterApiService
         };
 
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormManager(dictionary, expManager);
+        var formManager = new FormFieldsService(dictionary, expManager);
         IDictionary newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
         {
             var formValues = new FormValues
             {
-                Enable = formManager.Expression.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
-                Visible = formManager.Expression.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
+                Enable = formManager.ExpressionsService.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
+                Visible = formManager.ExpressionsService.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
             };
 
             if (newvalues != null && newvalues.Contains(f.Name))
@@ -430,7 +430,7 @@ public class MasterApiService
         formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
         
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormManager(formElement, expManager);
+        var formManager = new FormFieldsService(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
             EnableHistoryLog = logActionIsVisible
@@ -456,16 +456,16 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private Hashtable? GetDiff(IDictionary original, IDictionary result, FormElementApiOptions apiOptions)
+    private Hashtable? GetDiff(IDictionary<string,dynamic> original, IDictionary<string,dynamic> result, FormElementApiOptions apiOptions)
     {
         var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (DictionaryEntry entry in result)
+        foreach (var entry in result)
         {
             if (entry.Value == null)
                 continue;
 
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
-            if (original.Contains(entry.Key))
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
+            if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
                     !original[entry.Key]!.Equals(entry.Value))
@@ -483,7 +483,7 @@ public class MasterApiService
         {
             Status = 400,
             Message = Translate.Key("Invalid data"),
-            ValidationList = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
+            ValidationList = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase)
         };
 
         if (errors == null)

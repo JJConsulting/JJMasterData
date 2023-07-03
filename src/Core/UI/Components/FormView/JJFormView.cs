@@ -20,6 +20,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -47,7 +49,7 @@ public class JJFormView : JJGridView
     private JJDataPanel _dataPanel;
     private ActionMap _currentActionMap;
     private JJFormLog _logHistory;
-    private FormService _service;
+    private IFormService _service;
 
 
     internal JJFormLog FormLog =>
@@ -131,20 +133,17 @@ public class JJFormView : JJGridView
             return _currentActionMap;
         }
     }
-
-
-    private FormService Service 
+    
+    
+    private IFormService Service 
     { 
         get
         {
             if (_service == null)
-            { 
-                var dataContext = new DataContext(DataContextSource.Form, UserId);
-                _service = new FormService(FormManager, dataContext)
-                {
-                    EnableErrorLink = true,
-                    EnableHistoryLog = LogAction.IsVisible
-                };
+            {
+                _service = JJService.Provider.GetScopedDependentService<IFormService>();
+                _service.EnableErrorLink = true;
+                _service.EnableHistoryLog = LogAction.IsVisible;
 
                 _service.OnBeforeInsert += OnBeforeInsert;
                 _service.OnBeforeUpdate += OnBeforeUpdate;
@@ -531,7 +530,7 @@ public class JJFormView : JJGridView
         var dicRepository = JJServiceCore.DataDictionaryRepository;
         var formElement = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var selValues = EntityRepository.GetDictionaryAsync(formElement, map.PkFieldValues).GetAwaiter().GetResult();
-        var values = FormManager.MergeWithExpressionValues(selValues, PageState.Insert, true);
+        var values = FormFieldsService.MergeWithExpressionValues(formElement,selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
         if (erros.Count > 0)
@@ -875,7 +874,7 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public IDictionary<string,dynamic>InsertFormValues(IDictionary<string,dynamic>values, bool validateFields = true)
     {
-        var result = Service.Insert(values, validateFields);
+        var result = Service.Insert(FormElement,values,new DataContext(DataContextSource.Form, UserId), validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -886,28 +885,30 @@ public class JJFormView : JJGridView
     /// <returns>The list of errors.</returns>
     public IDictionary<string,dynamic>UpdateFormValues(IDictionary<string,dynamic>values)
     {
-        var result = Service.Update(values);
+        var result = Service.Update(FormElement,values,new DataContext(DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
     
     public IDictionary<string,dynamic>DeleteFormValues(IDictionary<string,dynamic>filter)
     {
-        var values = Service.FormManager.MergeWithExpressionValues(filter, PageState.Delete, true);
-        var result = Service.Delete(values);
+        var values = FormFieldsService.MergeWithExpressionValues(FormElement,filter, PageState.Delete, true);
+        var result = Service.Delete(FormElement,values,new DataContext(DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
-    
-    public IDictionary<string,dynamic>GetFormValues()
+
+
+    [Obsolete("Must be async")]
+    public IDictionary<string,dynamic> GetFormValues()
     {
         var painel = DataPanel;
-        var values = painel.GetFormValues();
+        var values = painel.GetFormValues().GetAwaiter().GetResult();
 
         if (RelationValues == null) 
             return values;
 
-        DataHelper.CopyIntoHash(ref values, RelationValues, true);
+        DataHelper.CopyIntoDictionary(ref values, RelationValues, true);
 
         return values;
     }

@@ -10,14 +10,20 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class SearchController : MasterDataController
 {
-    private ISearchBoxService Service { get; }
+    private IDataItemService Service { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
 
-    public SearchController(ISearchBoxService service, IDataDictionaryRepository dataDictionaryRepository, IExpressionsService expressionsService)
+    public SearchController(
+        IDataItemService service,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IFormValuesService formValuesService,
+        IExpressionsService expressionsService)
     {
         Service = service;
         DataDictionaryRepository = dataDictionaryRepository;
+        FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
     }
     
@@ -38,10 +44,7 @@ public class SearchController : MasterDataController
 
         if (dataItem!.HasSqlExpression())
         {
-            var fieldManager = new FieldManager(formElement,ExpressionsService);
-            var formValuesService = new FormValues(fieldManager);
-            var dbValues = formValuesService.GetDatabaseValuesFromPk(formElement);
-            formValues = formValuesService.GetFormValues((PageState)pageState, dbValues, true);
+            formValues = await FormValuesService.GetFormValuesWithMergedValues(formElement, (PageState)pageState, true);
         }
 
         var context = new SearchBoxContext(formValues, null, (PageState)pageState);

@@ -61,7 +61,7 @@ public static class DataHelper
         return primaryKeys;
     }
 
-    public static IDictionary<string,dynamic> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string,dynamic> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -144,7 +144,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoHash(ref IDictionary<string,dynamic>newValues, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(ref IDictionary<string,dynamic>newValues, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

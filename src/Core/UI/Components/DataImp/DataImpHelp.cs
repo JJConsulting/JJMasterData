@@ -246,7 +246,7 @@ internal class DataImpHelp
 
     private string GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = DataImp.FormManager.GetDefaultValues(null, PageState.Import);
+        var defaultValues = DataImp.FormFieldsService.GetDefaultValues(DataImp.FormElement,null, PageState.Import);
         var expOptions = new ExpressionOptions(DataImp.UserValues, defaultValues, PageState.Import, JJService.EntityRepository);
         var comboBox = JJComboBox.GetInstance(field, expOptions, null);
         var items = comboBox.GetValues();
@@ -312,7 +312,7 @@ internal class DataImpHelp
         var list = new List<FormElementField>();
         foreach (var field in DataImp.FormElement.Fields)
         {
-            bool visible = DataImp.FieldManager.IsVisible(field, PageState.Import, null);
+            bool visible = DataImp.FieldEvaluationService.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

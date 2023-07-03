@@ -20,4 +20,8 @@
       <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
   
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0-preview2.23159.1" />
+    </ItemGroup>
+  
 </Project>

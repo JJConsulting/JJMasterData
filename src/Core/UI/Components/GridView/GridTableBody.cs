@@ -95,6 +95,7 @@ internal class GridTableBody
         return html;
     }
 
+    [Obsolete("Must be async")]
     private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string,dynamic>values, string onClickScript)
     {
         foreach (var field in GridView.VisibleFields)
@@ -102,7 +103,7 @@ internal class GridTableBody
             string value = string.Empty;
             if (values.ContainsKey(field.Name))
             {
-                value = GridView.FieldManager.ParseVal(field, values, GridView.UserValues);
+                value = GridView.FieldFormattingService.FormatGridValue(field, values, GridView.UserValues).GetAwaiter().GetResult();
             }
 
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -335,6 +336,6 @@ internal class GridTableBody
             return values;
 
         var prefixName = GridView.GetFieldName(string.Empty, values);
-        return GridView.FormValues.GetFormValues(PageState.List, values, GridView.AutoReloadFormFields, prefixName);
+        return GridView.FormValuesService.GetFormValuesWithMergedValues(GridView.FormElement,PageState.List, GridView.AutoReloadFormFields, prefixName).GetAwaiter().GetResult();
     }
 }

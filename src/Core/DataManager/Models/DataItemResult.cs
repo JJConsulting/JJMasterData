@@ -8,7 +8,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 [Serializable]
 [DataContract]
-public record SearchBoxItem(string Id, string Name)
+public record DataItemResult(string Id, string Name)
 {
     [DataMember(Name = "id")]
     public string Id { get; set; } = Id;

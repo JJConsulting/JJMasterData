@@ -11,18 +11,18 @@ using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class SearchBoxService : ISearchBoxService
+public class DataItemService : IDataItemService
 {
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
 
-    public SearchBoxService(IEntityRepository entityRepository, IExpressionsService expressionsService)
+    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
     }
 
-    public IEnumerable<SearchBoxItem> GetSearchBoxItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
+    public IEnumerable<DataItemResult> GetSearchBoxItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
     {
         foreach (var i in values.ToArray())
         {
@@ -33,7 +33,7 @@ public class SearchBoxService : ISearchBoxService
             else
                 description = i.Description;
             
-            yield return new SearchBoxItem(i.Id, description);
+            yield return new DataItemResult(i.Id, description);
         }
     }
 

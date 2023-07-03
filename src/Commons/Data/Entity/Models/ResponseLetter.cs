@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
@@ -14,10 +15,10 @@ public class ResponseLetter
     public string Message { get; set; }
 
     [JsonProperty("validationList")]
-    public Hashtable ValidationList { get; set; }
+    public IDictionary<string,dynamic> ValidationList { get; set; }
 
     [JsonProperty("data")]
-    public Hashtable Data { get; set; }
+    public IDictionary<string,dynamic>  Data { get; set; }
 
     public ResponseLetter() { }
 

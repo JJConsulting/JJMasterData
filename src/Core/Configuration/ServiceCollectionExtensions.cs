@@ -3,6 +3,7 @@ using System.IO;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.Configuration;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports;
@@ -66,41 +67,16 @@ public static class ServiceCollectionExtensions
         
         services.AddHttpServices();
         services.AddScriptHelpers();
+        services.AddDataDictionaryServices();
+        services.AddDataManagerServices();
         
         services.AddTransient<IFormEventResolver,FormEventResolver>();
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         
-        services.AddTransient<IAuditLogService, AuditLogService>();
-        
-        services.AddTransient<ISearchBoxService, SearchBoxService>();
-        
-        services.AddTransient<IExpressionsService, ExpressionsService>();
         
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         
         services.AddTransient<JJMasterDataFactory>();
-    }
-
-    private static void AddScriptHelpers(this IServiceCollection services)
-    {
-        services.AddTransient<DataExpScriptHelper>();
-        services.AddTransient<FormViewScriptHelper>();
-        services.AddTransient<GridViewScriptHelper>();
-        services.AddTransient<GridViewToolbarScriptHelper>();
-    }
-    
-    private static void AddHttpServices(this IServiceCollection services)
-    {
-#if NET
-        services.AddHttpContextAccessor();
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-#endif
-        services.AddScoped<JJMasterDataUrlHelper>();
-
-        services.AddScoped<IHttpSession, JJSession>();
-        services.AddScoped<IHttpRequest, JJRequest>();
-        services.AddScoped<IHttpResponse, JJResponse>();
-        services.AddScoped<IHttpContext, JJHttpContext>();
     }
 }

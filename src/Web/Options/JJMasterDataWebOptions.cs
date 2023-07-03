@@ -1,6 +1,8 @@
+using JJMasterData.Core.Options;
+
 namespace JJMasterData.Web.Options;
 
-public class JJMasterDataWebOptions
+public class JJMasterDataWebOptions : JJMasterDataCoreOptions
 {
     /// <summary>
     /// Default value: _MasterDataLayout <br></br>

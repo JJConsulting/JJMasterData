@@ -17,7 +17,6 @@ public abstract class JJBaseProcess : JJBaseView
     private string _processKey;
     private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
-    private FormManager _formManager;
     IEntityRepository _entityRepository;
 
     internal IExpressionsService ExpressionsService =>
@@ -57,22 +56,15 @@ public abstract class JJBaseProcess : JJBaseView
         get
         {
             if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement, ExpressionsService);
+                _fieldManager = new FieldManager(FormElement);
 
             return _fieldManager;
         }
     }
 
-    internal FormManager FormManager
-    {
-        get
-        {
-            if (_formManager == null)
-                _formManager = new FormManager(FormElement, ExpressionsService);
+    internal IFormFieldsService FormFieldsService { get; } =
+        JJService.Provider.GetScopedDependentService<IFormFieldsService>();
 
-            return _formManager;
-        }
-    }
 
     internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
 

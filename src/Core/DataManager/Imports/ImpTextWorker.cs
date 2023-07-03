@@ -5,7 +5,6 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.FormEvents.Args;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -13,8 +12,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Imports;
@@ -40,22 +41,35 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     internal FieldManager FieldManager { get; private set; }
 
-    internal FormService FormService { get; private set; }
+    internal DataContext DataContext { get; private set; }
 
     internal IExpressionsService ExpressionsService { get; } =
         JJService.Provider.GetScopedDependentService<IExpressionsService>();
+    
+    internal IEntityRepository EntityRepository { get; } =
+        JJService.Provider.GetScopedDependentService<IEntityRepository>();
+    
+    internal IFieldEvaluationService FieldEvaluationService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    
+    internal IFormFieldsService FormFieldsService { get; } =
+        JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    
+    internal IFormService FormService { get; } 
     public string PostedText { get; private set; }
 
     public char SplitChar { get; private set; }
 
 
     public ImpTextWorker(FieldManager fieldManager,
-                         FormService formservice,
+                        IFormService formService,
+                         DataContext dataContext,
                          string postedText,
                          char splitChar)
     {
         FieldManager = fieldManager;
-        FormService = formservice;
+        FormService = formService;
+        DataContext = dataContext;
         PostedText = postedText;
         SplitChar = splitChar;
         Culture = Thread.CurrentThread.CurrentUICulture;
@@ -119,8 +133,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
-
-        var formManager = FormService.FormManager;
+        
         //recuperando campos a serem importados
         var listField = GetListImportedField();
 
@@ -129,14 +142,14 @@ public class ImpTextWorker : IBackgroundTaskWorker
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = Translate.Key("Importing {0} records...", currentProcess.TotalRecords.ToString("N0"));
         //recupera default values
-        var defaultValues = formManager.GetDefaultValues(null, PageState.Import);
+        var defaultValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            string cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
-            formManager.EntityRepository.SetCommand(cmd);
+            string cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
+            EntityRepository.SetCommand(cmd);
         }
 
         token.ThrowIfCancellationRequested();
@@ -199,8 +212,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
             string cmd;
-            cmd = formManager.Expression.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
-            formManager.EntityRepository.SetCommand(cmd);
+            cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
+            EntityRepository.SetCommand(cmd);
         }
 
         if (OnAfterProcess != null)
@@ -242,7 +255,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
         {
-            bool visible = FieldManager.IsVisible(field, PageState.Import, null);
+            bool visible = FieldEvaluationService.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }
@@ -258,8 +271,8 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         try
         {
-            var values = FormService.FormManager.MergeWithExpressionValues(fileValues, PageState.Import, true);
-            var ret = FormService.InsertOrReplace(values);
+            var values = FormFieldsService.MergeWithExpressionValues(FormElement,fileValues, PageState.Import, true);
+            var ret = FormService.InsertOrReplace(FormElement,values, DataContext);
 
             if (ret.IsValid)
             {

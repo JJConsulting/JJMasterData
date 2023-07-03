@@ -4,11 +4,13 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 
@@ -30,6 +32,9 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
+
+    public IFieldFormattingService FieldFormattingService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
 
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -127,7 +132,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         {
             if (DataSource.Columns.Contains(field.Name))
             {
-                value = FieldManager.FormatValue(field, row[field.Name]);
+                value = FieldFormattingService.FormatValue(field, row[field.Name]);
             }
         }
 

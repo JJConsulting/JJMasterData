@@ -18,6 +18,7 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Components;
@@ -37,6 +38,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     private DataExpReporter _processReporter;
     private List<FormElementField> _fields;
 
+    protected IFieldEvaluationService FieldEvaluationService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    
     public List<FormElementField> Fields
     {
         get
@@ -46,7 +50,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                 if (Configuration.ExportAllFields)
                     _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
                 else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldManager.IsVisible(x, PageState.List, null));
+                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldEvaluationService.IsVisible(x, PageState.List, null));
             }
 
             return _fields;
@@ -65,8 +69,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         {
             if (_fieldManager == null)
             {
-                var expressionManager = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-                _fieldManager = new FieldManager(FormElement, expressionManager);
+                _fieldManager = new FieldManager(FormElement);
             }
                 
 

@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
@@ -13,8 +15,10 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.DI;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
 
@@ -55,8 +59,7 @@ public class JJDataPanel : JJBaseView
         {
             if (_fieldManager == null)
             {
-                var expression = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-                _fieldManager = new FieldManager(Name, FormElement, expression);
+                _fieldManager = new FieldManager(Name, FormElement);
             }
             return _fieldManager;
         }
@@ -105,6 +108,17 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
+    public IFieldFormattingService FieldFormattingService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+
+    private JJMasterDataEncryptionService EncryptionService { get; } =
+        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+    
+    public IFieldEvaluationService FieldEvaluationService { get; } = JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    public IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    public IFormValuesService FormValuesService { get; } = JJService.Provider.GetScopedDependentService<IFormValuesService>();
+
+    
     #endregion
 
     #region "Constructors"
@@ -138,7 +152,7 @@ public class JJDataPanel : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        Values = GetFormValues();
+        Values ??= GetFormValues().GetAwaiter().GetResult();
         string requestType = CurrentContext.Request.QueryString("t");
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
@@ -194,7 +208,7 @@ public class JJDataPanel : JJBaseView
     private string GetPkHiddenInput()
     {
         string pkval = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return Cript.Cript64(pkval);
+        return EncryptionService.EncryptStringWithUrlEncode(pkval);
     }
 
     private string GetHtmlFormScript()
@@ -222,14 +236,9 @@ public class JJDataPanel : JJBaseView
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public IDictionary<string,dynamic>GetFormValues()
+    public async Task<IDictionary<string,dynamic>> GetFormValues()
     {
-        var formValues = new FormValues(FieldManager);
-        var dbValues = formValues.GetDatabaseValuesFromPk(FormElement);
-        dbValues ??= new Dictionary<string,dynamic>();
-
-        DataHelper.CopyIntoHash(ref dbValues, Values, true);
-        return formValues.GetFormValues(PageState, dbValues, AutoReloadFormFields);
+        return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
     }
 
     /// <summary>
@@ -263,10 +272,10 @@ public class JJDataPanel : JJBaseView
     /// </returns>
     public IDictionary<string,dynamic>ValidateFields(IDictionary<string,dynamic>values, PageState pageState, bool enableErrorLink)
     {
-        var formManager = new FormManager(FormElement, FieldManager.ExpressionManager);
-        return formManager.ValidateFields(values, pageState, enableErrorLink);
+        return FormFieldsService.ValidateFields(FormElement,values, pageState, enableErrorLink);
     }
 
+    [Obsolete("Must be async")]
     internal void ResponseUrlAction()
     {
         if (!Name.Equals(CurrentContext.Request["objname"]))
@@ -280,11 +289,11 @@ public class JJDataPanel : JJBaseView
         var parms = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
-        var values = GetFormValues();
+        var values = GetFormValues().GetAwaiter().GetResult();
 
         if (action is UrlRedirectAction urlAction)
         {
-            string parsedUrl = FieldManager.ExpressionManager.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
+            string parsedUrl = FieldManager.ExpressionManager.ParseExpression(urlAction.UrlRedirect, PageState,  false,values);
             var result = new Hashtable
             {
                 { "UrlAsPopUp", urlAction.UrlAsPopUp },

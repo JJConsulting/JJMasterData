@@ -17,12 +17,14 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 
@@ -38,6 +40,9 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
+    public IFieldFormattingService FieldFormattingService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+    
     public override void GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
@@ -142,6 +147,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         }
     }
 
+    [Obsolete("Must be async")]
     private Cell CreateCell(DataRow row, FormElementField field)
     {
         string value = string.Empty;
@@ -161,7 +167,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             else
             {
-                value = FieldManager.ParseVal(field, values,null);
+                value = FieldFormattingService.FormatGridValue(field, values,null).GetAwaiter().GetResult();
             }
         }
 

@@ -21,6 +21,7 @@ namespace JJMasterData.Core.Web.Factories;
 public class JJMasterDataFactory
 {
     private readonly IExpressionsService _expressionsService;
+    private readonly IFormValuesService _formValuesService;
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IHttpContext _httpContext;
@@ -28,19 +29,23 @@ public class JJMasterDataFactory
     public JJMasterDataFactory(IEntityRepository entityRepository,
                                IDataDictionaryRepository dataDictionaryRepository,
                                IExpressionsService expressionsService,
+                               IFormValuesService formValuesService,
                                IHttpContext httpContext)
     {
         _expressionsService = expressionsService;
+        _formValuesService = formValuesService;
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
         _httpContext = httpContext;
     }
 
+    
     public static JJMasterDataFactory GetInstance()
     {
         return new JJMasterDataFactory(JJService.EntityRepository,
                                        JJServiceCore.DataDictionaryRepository,
                                        JJService.Provider.GetScopedDependentService<IExpressionsService>(),
+                                       JJService.Provider.GetScopedDependentService<IFormValuesService>(),
                                        JJHttpContext.GetInstance());
 
     }
@@ -52,20 +57,17 @@ public class JJMasterDataFactory
             return null;
 
         IDictionary<string,dynamic>formValues = null;
-        var element = _dataDictionaryRepository.GetMetadata(dictionaryName);
-        var dataItem = element.Fields[fieldName].DataItem;
+        var formElement = _dataDictionaryRepository.GetMetadata(dictionaryName);
+        var dataItem = formElement.Fields[fieldName].DataItem;
         if (dataItem == null)
             throw new ArgumentNullException(nameof(dataItem));
 
         if (dataItem.HasSqlExpression())
         {
-            var fieldManager = new FieldManager(element, _expressionsService);
-            var formRequest = new FormValues(fieldManager);
-            var dbValues = formRequest.GetDatabaseValuesFromPk(element);
-            formValues = formRequest.GetFormValues(pageState, dbValues, true);
+            formValues = _formValuesService.GetFormValuesWithMergedValues(formElement,pageState, true).GetAwaiter().GetResult();
         }
 
-        var field = element.Fields[fieldName];
+        var field = formElement.Fields[fieldName];
         var expOptions = new ExpressionOptions(userValues, formValues, pageState, _entityRepository);
         return JJSearchBox.GetInstance(field, expOptions, null, dictionaryName);
     }

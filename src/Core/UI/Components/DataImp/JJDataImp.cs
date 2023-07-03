@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Imports;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -50,6 +53,11 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     public bool ExpandedByDefault { get; set; }
 
+    internal IFieldEvaluationService FieldEvaluationService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    
+    internal IFormService FormService { get; } =
+        JJService.Provider.GetScopedDependentService<IFormService>();
     #endregion
 
     #region "Constructors"
@@ -264,17 +272,12 @@ public class JJDataImp : JJBaseProcess
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
         var dataContext = new DataContext(DataContextSource.Upload, UserId);
-        var formService = new FormService(FormManager, dataContext)
-        {
-            EnableErrorLink = false,
-            EnableHistoryLog = EnableHistoryLog,
-            OnBeforeImport = OnBeforeImport,
-            OnAfterDelete = OnAfterDelete,
-            OnAfterInsert = OnAfterInsert,
-            OnAfterUpdate = OnAfterUpdate
-        };
+        FormService.OnAfterUpdate += OnAfterUpdate;
+        FormService.OnAfterInsert += OnAfterInsert;
+        FormService.OnAfterDelete += OnAfterDelete;
+        FormService.OnBeforeImport += OnBeforeImport;
 
-        var worker = new ImpTextWorker(FieldManager, formService, postedText, splitChar)
+        var worker = new ImpTextWorker(FieldManager, FormService,dataContext, postedText, splitChar)
         {
             UserId = UserId,
             OnAfterProcess = OnAfterProcess,

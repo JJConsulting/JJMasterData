@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -40,7 +41,7 @@ internal class ActionManager
 
     internal IEntityRepository EntityRepository => JJService.EntityRepository;
 
-
+    internal IFormFieldsService FormFieldsService => JJService.Provider.GetScopedDependentService<IFormFieldsService>();
     public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
     {
         FormElement = formElement;
@@ -481,8 +482,7 @@ internal class ActionManager
                 }
                 else
                 {
-                    var formManager = new FormManager(FormElement, Expression);
-                    formValues = formManager.GetDefaultValues(null, PageState.List);
+                    formValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.List);
                 }
 
                 string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);

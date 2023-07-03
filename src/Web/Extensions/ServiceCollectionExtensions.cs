@@ -122,12 +122,18 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(IServiceCollection services)
     {
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        services.AddTransient<IValidationDictionary, ModelStateWrapper>();
+        services.AddTransient<ResourcesService>();
+        services.AddTransient<RazorPartialRendererService>();
+        services.AddTransient<OptionsService>();
+        services.AddTransient<AboutService>();
+        
         services.ConfigureOptions(typeof(PostConfigureStaticFileOptions));
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddSystemWebAdapters();
         services.AddDistributedMemoryCache();
-        services.AddJJMasterDataServices();
         services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
     }
@@ -174,25 +180,6 @@ public static class ServiceCollectionExtensions
             }));
         });
     }
-
-    internal static void AddJJMasterDataServices(this IServiceCollection services)
-    {
-        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddTransient<IValidationDictionary, ModelStateWrapper>();
-
-        services.AddTransient<ActionsService>();
-        services.AddTransient<ApiService>();
-        services.AddTransient<ElementService>();
-        services.AddTransient<EntityService>();
-        services.AddTransient<FieldService>();
-        services.AddTransient<IndexesService>();
-        services.AddTransient<UIOptionsService>();
-        services.AddTransient<PanelService>();
-        services.AddTransient<RelationshipsService>();
-        services.AddTransient<ResourcesService>();
-        services.AddTransient<RazorPartialRendererService>();
-        services.AddTransient<OptionsService>();
-        services.AddTransient<AboutService>();
-    }
+    
 
 }

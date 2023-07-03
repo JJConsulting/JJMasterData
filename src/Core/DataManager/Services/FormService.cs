@@ -14,25 +14,16 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FormService
+public class FormService : IFormService
 {
     #region Properties
+    
 
-    private IAuditLogService _auditLog;
+    private IEntityRepository EntityRepository { get; }
+    
+    private IFormFieldsService FormFieldsService { get; }
 
-    private IEntityRepository EntityRepository => FormManager.EntityRepository;
-
-    public FormElement FormElement => FormManager.FormElement;
-
-    public FormManager FormManager { get; private set; }
-
-    public DataContext DataContext { get; private set; }
-
-    public IAuditLogService AuditLog
-    {
-        get => _auditLog ??= JJService.Provider.GetRequiredService<IAuditLogService>();
-        internal set => _auditLog = value;
-    }
+    private IAuditLogService AuditLog { get; }
 
     public bool EnableErrorLink { get; set; }
 
@@ -42,22 +33,23 @@ public class FormService
 
     #region Events
 
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
-    public EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
-    public EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
-    public EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
-    public EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
 
     #endregion
 
     #region Constructor
 
-    public FormService(FormManager formManager, DataContext dataContext)
+    public FormService(IFormFieldsService formFieldsService, IEntityRepository entityRepository, IAuditLogService auditLog)
     {
-        FormManager = formManager;
-        DataContext = dataContext;
+        FormFieldsService = formFieldsService;
+        EntityRepository = entityRepository;
+        AuditLog = auditLog;
     }
 
     #endregion
@@ -67,48 +59,50 @@ public class FormService
     /// <summary>
     /// Update records applying expressions and default values.
     /// </summary>
+    /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter Update(IDictionary<string,dynamic> values)
+    /// <param name="dataContext"></param>
+    public FormLetter Update(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
     {
-        var errors = FormManager.ValidateFields(values, PageState.Update, EnableErrorLink);
+        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Update, EnableErrorLink);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeUpdate.Invoke(DataContext, beforeActionArgs);
+            OnBeforeUpdate.Invoke(dataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(FormElement, (IDictionary)values), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(formElement, (IDictionary)values), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
             return result;
 
-        if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+        if (dataContext.Source == DataContextSource.Form)
+            FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement,DataContext, values, CommandOperation.Update);
+            AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterUpdate.Invoke(DataContext, afterEventArgs);
+            OnAfterUpdate.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
         return result;
     }
 
-    public FormLetter Insert(IDictionary<string,dynamic> values, bool validateFields = true)
+    public FormLetter Insert(FormElement formElement,IDictionary<string,dynamic> values, DataContext dataContext, bool validateFields = true)
     {
         IDictionary<string,dynamic>errors;
         if (validateFields)
-            errors = FormManager.ValidateFields(values, PageState.Insert, EnableErrorLink);
+            errors = FormFieldsService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLink);
         else
             errors = new Dictionary<string,dynamic>();
 
@@ -116,27 +110,27 @@ public class FormService
         if (OnBeforeInsert != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeInsert.Invoke(DataContext, beforeActionArgs);
+            OnBeforeInsert.Invoke(dataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return result;
 
-        RunDatabaseCommand(() => EntityRepository.Insert(FormElement, (IDictionary)values), ref errors);
+        RunDatabaseCommand(() => EntityRepository.Insert(formElement, (IDictionary)values), ref errors);
 
         if (errors.Count > 0)
             return result;
 
-        if (DataContext.Source == DataContextSource.Form)
-            FormFileService.SaveFormMemoryFiles(FormElement, values);
+        if (dataContext.Source == DataContextSource.Form)
+            FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement,DataContext, values, CommandOperation.Insert);
+            AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterInsert.Invoke(DataContext, afterEventArgs);
+            OnAfterInsert.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
@@ -146,47 +140,49 @@ public class FormService
     /// <summary>
     /// Insert or update if exists, applying expressions and default values.
     /// </summary>
+    /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
-    public FormLetter<CommandOperation> InsertOrReplace(IDictionary<string,dynamic> values)
+    /// <param name="dataContext"></param>
+    public FormLetter<CommandOperation> InsertOrReplace(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
     {
-        var errors = FormManager.ValidateFields(values, PageState.Import, EnableErrorLink);
+        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Import, EnableErrorLink);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeImport.Invoke(DataContext, beforeActionArgs);
+            OnBeforeImport.Invoke(dataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return result;
 
-        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(FormElement, (IDictionary) values), ref errors);
+        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(formElement, (IDictionary) values), ref errors);
 
         if (errors.Count > 0)
             return result;
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement,DataContext, values, result.Result);
+            AuditLog.AddLog(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterInsert.Invoke(DataContext, afterEventArgs);
+            OnAfterInsert.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
         if (OnAfterUpdate != null && result.Result == CommandOperation.Update)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterUpdate.Invoke(DataContext, afterEventArgs);
+            OnAfterUpdate.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
         if (OnAfterDelete != null && result.Result == CommandOperation.Delete)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterDelete.Invoke(DataContext, afterEventArgs);
+            OnAfterDelete.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
@@ -196,8 +192,11 @@ public class FormService
     /// <summary>
     /// Delete records in the database using the primaryKeys filter.
     /// </summary>
-    /// <param name="primaryKeys">Primary keys to delete records on the database.</param>>
-    public FormLetter Delete(IDictionary<string,dynamic> primaryKeys)
+    /// <param name="formElement"></param>
+    /// <param name="primaryKeys">Primary keys to delete records on the database.</param>
+    /// <param name="dataContext"></param>
+    /// >
+    public FormLetter Delete(FormElement formElement,IDictionary<string,dynamic> primaryKeys,  DataContext dataContext)
     {
         IDictionary<string,dynamic>errors = new Dictionary<string, dynamic>();
         var result = new FormLetter(errors);
@@ -205,28 +204,28 @@ public class FormService
         if (OnBeforeDelete != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
-            OnBeforeDelete?.Invoke(DataContext, beforeActionArgs);
+            OnBeforeDelete?.Invoke(dataContext, beforeActionArgs);
         }
 
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(FormElement, (IDictionary)primaryKeys), ref errors);
+        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(formElement, (IDictionary)primaryKeys), ref errors);
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
             return result;
 
-        if (DataContext.Source == DataContextSource.Form)
-            FormFileService.DeleteFiles(FormElement, primaryKeys);
+        if (dataContext.Source == DataContextSource.Form)
+            FormFileService.DeleteFiles(formElement, primaryKeys);
 
         if (EnableHistoryLog)
-            AuditLog.AddLog(FormElement,DataContext, primaryKeys, CommandOperation.Delete);
+            AuditLog.AddLog(formElement,dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
-            OnAfterDelete.Invoke(DataContext, afterEventArgs);
+            OnAfterDelete.Invoke(dataContext, afterEventArgs);
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 

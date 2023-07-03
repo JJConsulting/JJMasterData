@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
@@ -18,6 +19,7 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components.Scripts;
@@ -78,8 +80,8 @@ public class JJGridView : JJBaseView
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private FieldManager _fieldManager;
-    private FormManager _formManager;
-    private FormValues _formValues;
+    private FormFieldsService _formFieldsService;
+    private FormValuesService _formValuesService;
     private List<FormElementField> _pkFields;
     private List<FormElementField> _visibleFields;
     private IDictionary<string,dynamic>_defaultValues;
@@ -105,18 +107,7 @@ public class JJGridView : JJBaseView
     internal DataExpScriptHelper DataExpScriptHelper { get; } =
         JJService.Provider.GetScopedDependentService<DataExpScriptHelper>();
     
-    internal FormManager FormManager
-    {
-        get
-        {
-            if (_formManager == null)
-            {
-                var expManager = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-                _formManager = new FormManager(FormElement, expManager);
-            }
-            return _formManager;
-        }
-    }
+    internal IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
 
     internal JJDataImp DataImp
     {
@@ -185,7 +176,7 @@ public class JJGridView : JJBaseView
             var defaultValues = DefaultValues;
             foreach (var f in FormElement.Fields)
             {
-                if (FieldManager.IsVisible(f, PageState.List, defaultValues))
+                if (FieldEvaluationService.IsVisible(f, PageState.List, defaultValues))
                     _visibleFields.Add(f);
             }
 
@@ -210,14 +201,14 @@ public class JJGridView : JJBaseView
         {
             if (_fieldManager == null)
             {
-                var exp = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-                _fieldManager = new FieldManager(Name, FormElement, exp);
+                _fieldManager = new FieldManager(Name, FormElement);
             }
             return _fieldManager;
         }
     }
 
-    internal FormValues FormValues => _formValues ??= new FormValues(FieldManager);
+    internal IFormValuesService FormValuesService { get; } =
+        JJService.Provider.GetScopedDependentService<IFormValuesService>();
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -524,7 +515,7 @@ public class JJGridView : JJBaseView
         get
         {
             if (_defaultValues == null)
-                _defaultValues = FormManager.GetDefaultValues(null, PageState.List);
+                _defaultValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.List);
 
             return _defaultValues;
         }
@@ -593,6 +584,9 @@ public class JJGridView : JJBaseView
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selectedrows_" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
+
+    internal IFieldEvaluationService FieldEvaluationService { get; } = JJService.Provider.GetScopedDependentService<IFieldEvaluationService>();
+    internal IFieldFormattingService FieldFormattingService { get; }= JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
 
     #endregion
 
@@ -1263,18 +1257,18 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public List<IDictionary<string,dynamic>> GetGridValues(int recordPerPage, int currentPage)
+    public async Task<List<IDictionary<string,dynamic>>> GetGridValues(int recordPerPage, int currentPage)
     {
         int tot = 1;
         var dt = GetDataTable(CurrentFilter, CurrentOrder, recordPerPage, currentPage, ref tot);
 
-        return GetGridValues(dt);
+        return await GetGridValues(dt);
     }
 
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public List<IDictionary<string,dynamic>> GetGridValues(DataTable dt = null)
+    public async Task<List<IDictionary<string,dynamic>>> GetGridValues(DataTable dt = null)
     {
         if (dt == null)
         {
@@ -1293,7 +1287,7 @@ public class JJGridView : JJBaseView
             }
 
             string prefixValue = GetFieldName("", values);
-            var newValues = FormValues.GetFormValues(PageState.List, values, AutoReloadFormFields, prefixValue);
+            var newValues = await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState.List, values, AutoReloadFormFields, prefixValue);
             listValues.Add(newValues);
         }
 
@@ -1378,8 +1372,8 @@ public class JJGridView : JJBaseView
             line++;
             foreach (var field in FormElement.Fields)
             {
-                bool enabled = FieldManager.IsEnabled(field, PageState.List, row);
-                bool visible = FieldManager.IsVisible(field, PageState.List, row);
+                bool enabled = FieldEvaluationService.IsEnabled(field, PageState.List, row);
+                bool visible = FieldEvaluationService.IsVisible(field, PageState.List, row);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string val = string.Empty;

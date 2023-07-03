@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -32,7 +34,10 @@ internal class DataPanelControl
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
 
-
+    private IFieldEvaluationService FieldEvaluationService { get; }
+    
+    private IFieldFormattingService FieldFormattingService { get; }
+    
     public DataPanelControl(JJDataPanel dataPanel)
     {
         FormUI = dataPanel.FormUI;
@@ -40,8 +45,10 @@ internal class DataPanelControl
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
+        FieldEvaluationService = dataPanel.FieldEvaluationService;
         UserValues = dataPanel.UserValues;
         Name = dataPanel.Name;
+        FieldFormattingService = dataPanel.FieldFormattingService;
         IsExternalRoute = dataPanel.IsExternalRoute;
     }
 
@@ -56,7 +63,9 @@ internal class DataPanelControl
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
+        FieldFormattingService = gridView.FieldFormattingService;
         IsExternalRoute = gridView.IsExternalRoute;
+        FieldEvaluationService = gridView.FieldEvaluationService;
     }
 
     public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
@@ -82,7 +91,7 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var field in fields)
         {
-            bool visible = FieldManager.IsVisible(field, PageState, Values);
+            bool visible = FieldEvaluationService.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
             
@@ -91,7 +100,7 @@ internal class DataPanelControl
             {
                 if (field.Component != FormComponent.Currency)
                 {
-                    value = FieldManager.FormatValue(field, Values[field.Name]);
+                    value = FieldFormattingService.FormatValue(field, Values[field.Name]);
                 }
                 else
                 {
@@ -200,14 +209,14 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = FieldManager.IsVisible(f, PageState, Values);
+            bool visible = FieldEvaluationService.IsVisible(f, PageState, Values);
             if (!visible)
                 continue;
 
             //Value
             object value = null;
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
-                value = FieldManager.FormatValue(f, nonFormattedValue);
+                value = FieldFormattingService.FormatValue(f, nonFormattedValue);
 
             var label = new JJLabel(f)
             {
@@ -266,12 +275,13 @@ internal class DataPanelControl
         return html;
     }
 
+    [Obsolete("Must be async")]
     private HtmlBuilder GetStaticField(FormElementField f)
     {
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(FieldManager.ParseVal(f, Values,UserValues));
+            .AppendText(FieldFormattingService.FormatGridValue(f, Values,UserValues).GetAwaiter().GetResult());
 
         return html;
     }
@@ -284,7 +294,7 @@ internal class DataPanelControl
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             field.Name = FieldNamePrefix + f.Name;
 
-        field.Enabled = FieldManager.IsEnabled(f, PageState, Values);
+        field.Enabled = FieldEvaluationService.IsEnabled(f, PageState, Values);
         if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(f.Name))
         {
             field.CssClass = "is-invalid";
