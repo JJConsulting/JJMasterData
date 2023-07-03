@@ -76,7 +76,7 @@ public static class WebControlTextFactory
                 listClass.Add(BootstrapHelper.TextRight);
                 textGroup.MaxLength = 22;
                 textGroup.InputType = InputType.Number;
-                textGroup.SetAttr("step", textGroup.Attributes["Step"] ?? 1);
+                textGroup.SetAttr("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1);
                 textGroup.SetAttr("onclick", "this.select();");
 
                 if (!textGroup.MinValue.HasValue)
