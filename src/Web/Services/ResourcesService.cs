@@ -41,9 +41,9 @@ public class ResourcesService : BaseService
 
         var formView = new JJFormView(formElement);
         
-        formView.ImportAction.SetVisible(true);
+        formView.GridView.ImportAction.SetVisible(true);
         formView.ViewAction.SetVisible(false);
-        formView.FilterAction.ExpandedByDefault = true;
+        formView.GridView.FilterAction.ExpandedByDefault = true;
 
         var cultureField = formView.FormElement.Fields["cultureCode"];
         cultureField.IsRequired = true;

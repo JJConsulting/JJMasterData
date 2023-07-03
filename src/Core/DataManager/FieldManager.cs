@@ -37,7 +37,7 @@ public class FieldManager
     public FieldManager(FormElement formElement)
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Name = "jjpainel_" + formElement.Name.ToLower();
+        Name = "jjpanel_" + formElement.Name.ToLower();
     }
     
     public FieldManager(string name, FormElement formElement) : this(formElement)

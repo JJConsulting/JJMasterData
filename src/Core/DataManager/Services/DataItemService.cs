@@ -68,11 +68,11 @@ public class DataItemService : IDataItemService
         return searchText != null ? values.Where(v=>v.Description.ToLower().Contains(searchText)) : values;
     }
 
-    private string GetSqlParsed(FormElementDataItem dataItem, string? text, string? searchId, SearchBoxContext searchBoxContext)
+    private string? GetSqlParsed(FormElementDataItem dataItem, string? text, string? searchId, SearchBoxContext searchBoxContext)
     {
         var ( values, userValues, pageState) = searchBoxContext;
 
-        string sql = dataItem.Command.Sql;
+        var sql = dataItem.Command.Sql;
         if (sql.Contains("{"))
         {
             if (searchId != null)

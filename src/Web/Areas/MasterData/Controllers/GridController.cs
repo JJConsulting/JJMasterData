@@ -10,7 +10,7 @@ public class GridController : MasterDataController
     [DictionaryNameDecryptionServiceFilter]
     public IActionResult GetGridViewTable(string dictionaryName)
     {
-        var gridView = new JJFormView(dictionaryName);
+        var gridView = new JJGridView(dictionaryName);
         return Content(gridView.GetTableHtml());
     }
 

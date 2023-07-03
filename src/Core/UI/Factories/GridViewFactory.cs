@@ -49,6 +49,13 @@ internal static class GridViewFactory
         SetGridOptions(grid, metadata.Options.Grid);
     }
 
+    internal static void SetGridViewParams(JJGridView grid, FormElement formElement)
+    {
+        grid.Name = "jjview" + formElement.Name.ToLower();
+        grid.FormElement = formElement;
+        SetGridOptions(grid, formElement.Options.Grid);
+    }
+    
     internal static void SetGridOptions(JJGridView grid, GridUI options)
     {
         if (options == null)

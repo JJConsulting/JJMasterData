@@ -21,9 +21,9 @@ public class JJDataImp : JJBaseProcess
 {
     #region "Events"
 
-    internal EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    internal EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    internal EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+    internal event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    internal event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    internal event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
 
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
     public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;

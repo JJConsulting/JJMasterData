@@ -80,8 +80,6 @@ public class JJGridView : JJBaseView
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private FieldManager _fieldManager;
-    private FormFieldsService _formFieldsService;
-    private FormValuesService _formValuesService;
     private List<FormElementField> _pkFields;
     private List<FormElementField> _visibleFields;
     private IDictionary<string,dynamic>_defaultValues;
@@ -184,28 +182,10 @@ public class JJGridView : JJBaseView
         }
     }
 
-    internal ActionManager ActionManager
-    {
-        get
-        {
-            if (_actionManager == null)
-                _actionManager = new ActionManager(FormElement, FieldManager.ExpressionManager, Name);
+    internal ActionManager ActionManager =>
+        _actionManager ??= new ActionManager(FormElement, FieldManager.ExpressionManager, Name);
 
-            return _actionManager;
-        }
-    }
-
-    internal FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-            {
-                _fieldManager = new FieldManager(Name, FormElement);
-            }
-            return _fieldManager;
-        }
-    }
+    internal FieldManager FieldManager => _fieldManager ??= new FieldManager(Name, FormElement);
 
     internal IFormValuesService FormValuesService { get; } =
         JJService.Provider.GetScopedDependentService<IFormValuesService>();
@@ -510,26 +490,12 @@ public class JJGridView : JJBaseView
 
     public HeadingSize TitleSize { get; set; }
 
-    internal IDictionary<string,dynamic>DefaultValues
-    {
-        get
-        {
-            if (_defaultValues == null)
-                _defaultValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.List);
+    internal IDictionary<string,dynamic> DefaultValues =>
+        _defaultValues ??= FormFieldsService.GetDefaultValues(FormElement, null, PageState.List);
 
-            return _defaultValues;
-        }
-    }
+    public LegendAction LegendAction => (LegendAction)ToolBarActions.Find(x => x is LegendAction);
 
-    public LegendAction LegendAction
-    {
-        get { return (LegendAction)ToolBarActions.Find(x => x is LegendAction); }
-    }
-
-    public RefreshAction RefreshAction
-    {
-        get { return (RefreshAction)ToolBarActions.Find(x => x is RefreshAction); }
-    }
+    public RefreshAction RefreshAction => (RefreshAction)ToolBarActions.Find(x => x is RefreshAction);
 
     public FilterAction FilterAction => (FilterAction)ToolBarActions.Find(x => x is FilterAction);
 

@@ -96,7 +96,7 @@ public class ElementService : BaseService
 
     #region Add Dictionary
 
-    public Element CreateEntity(string tableName, bool importFields)
+    public Element? CreateEntity(string tableName, bool importFields)
     {
         if (!ValidateEntity(tableName, importFields))
             return null;

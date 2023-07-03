@@ -28,17 +28,7 @@ public class FormController : MasterDataController
         return View(model);
     }
 
-    private void ConfigureFormView(JJFormView formView)
-    {
-        var userId = HttpContext.GetUserId();
-
-        if (userId == null) 
-            return;
-        
-        formView.SetCurrentFilter("USERID", userId);
-        formView.SetUserValues("USERID", userId);
-    }
-
+    
     [DictionaryNameDecryptionServiceFilter]
     [ActionMapDecryptionServiceFilter]
     [HttpPost]
@@ -63,6 +53,18 @@ public class FormController : MasterDataController
         form.AppendElement(formView.GetHtmlBuilder());
         return Content(form.ToString());
     }
+    
+    private void ConfigureFormView(JJFormView formView)
+    {
+        var userId = HttpContext.GetUserId();
+
+        if (userId == null) 
+            return;
+        
+        formView.SetCurrentFilter("USERID", userId);
+        formView.SetUserValues("USERID", userId);
+    }
+
 
 
 }

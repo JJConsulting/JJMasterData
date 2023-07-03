@@ -53,17 +53,18 @@ public class ExpressionsService : IExpressionsService
 
     #endregion
 
-    public string ParseExpression(string expression,
+    public string? ParseExpression(
+        string? expression,
         PageState state,
         bool quotationMarks,
-        IDictionary<string, dynamic>? values,
+        IDictionary<string, dynamic?>? values,
         IDictionary<string, dynamic?>? userValues = null,
-        ExpressionManagerInterval interval = null)
+        ExpressionManagerInterval? interval = null)
     {
-        if (expression == null)
+        if (expression is null)
             return null;
-
-        string parsedExpression = expression
+        
+        var parsedExpression = expression
             .Replace("val:", "")
             .Replace("exp:", "")
             .Replace("sql:", "")
@@ -74,7 +75,7 @@ public class ExpressionsService : IExpressionsService
 
         var list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
 
-        foreach (string field in list)
+        foreach (var field in list)
         {
             string? val = null;
             if (userValues != null && userValues.TryGetValue(field, out var value))
@@ -122,7 +123,7 @@ public class ExpressionsService : IExpressionsService
     }
 
 
-    public string GetDefaultValue(ElementField f, PageState state, IDictionary<string, dynamic?> formValues,
+    public string? GetDefaultValue(ElementField f, PageState state, IDictionary<string, dynamic?> formValues,
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (f == null)
@@ -136,7 +137,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            string err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Translate.Key("Invalid expression for {0} field", actionName);
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -147,7 +148,7 @@ public class ExpressionsService : IExpressionsService
         }
         else if (expression.StartsWith("exp:"))
         {
-            string exp = "";
+            var exp = "";
             try
             {
                 exp = ParseExpression(expression, state, true, formValues);
@@ -157,20 +158,20 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
+                var err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
         }
         else if (expression.StartsWith("sql:"))
         {
-            string exp = ParseExpression(expression, state, false, formValues);
-            object obj = EntityRepository.GetResult(exp);
+            var exp = ParseExpression(expression, state, false, formValues);
+            var obj = EntityRepository.GetResult(exp);
             result = ParseBool(obj);
         }
         else
         {
-            string err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Translate.Key("Invalid expression for {0} field", actionName);
             throw new ArgumentException(err, nameof(expression));
         }
 
@@ -183,7 +184,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            string err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Translate.Key("Invalid expression for {0} field", actionName);
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -194,7 +195,7 @@ public class ExpressionsService : IExpressionsService
         }
         else if (expression.StartsWith("exp:"))
         {
-            string exp = "";
+            var exp = "";
             try
             {
                 exp = ParseExpression(expression, state, true, formValues);
@@ -204,36 +205,39 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
+                var err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
         }
         else if (expression.StartsWith("sql:"))
         {
-            string exp = ParseExpression(expression, state, false, formValues);
-            object obj = await EntityRepository.GetResultAsync(exp);
+            var exp = ParseExpression(expression, state, false, formValues);
+            var obj = await EntityRepository.GetResultAsync(exp);
             result = ParseBool(obj);
         }
         else
         {
-            string err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Translate.Key("Invalid expression for {0} field", actionName);
             throw new ArgumentException(err, nameof(expression));
         }
 
         return result;
     }
 
-    public string GetTriggerValue(FormElementField f, PageState state, IDictionary<string, dynamic?> formValues,
+    public string? GetTriggerValue(FormElementField f, PageState state, IDictionary<string, dynamic?> formValues,
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (f == null)
             throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
 
-        return GetValueExpression(f.TriggerExpression, f, state, formValues);
+        if (f.TriggerExpression != null) 
+            return GetValueExpression(f.TriggerExpression, f, state, formValues);
+
+        return null;
     }
 
-    public string GetValueExpression(string expression, ElementField f, PageState state,
+    public string? GetValueExpression(string expression, ElementField f, PageState state,
         IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
     {
         if (string.IsNullOrEmpty(expression))
@@ -242,7 +246,7 @@ public class ExpressionsService : IExpressionsService
         if (f == null)
             throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
 
-        string retVal = null;
+        string? retVal = null;
         try
         {
             if (expression.StartsWith("val:"))
@@ -256,7 +260,7 @@ public class ExpressionsService : IExpressionsService
             {
                 try
                 {
-                    string exp = ParseExpression(expression, state, false, formValues);
+                    var exp = ParseExpression(expression, state, false, formValues);
                     if (f.DataType == FieldType.Float)
                         exp = exp.Replace(".", "").Replace(",", ".");
 
@@ -275,20 +279,20 @@ public class ExpressionsService : IExpressionsService
             }
             else if (expression.StartsWith("sql:"))
             {
-                string exp = ParseExpression(expression, state, false, formValues);
-                object obj = EntityRepository.GetResult(exp);
+                var exp = ParseExpression(expression, state, false, formValues);
+                var obj = EntityRepository.GetResult(exp);
                 if (obj != null)
                     retVal = obj.ToString();
             }
             else if (expression.StartsWith("protheus:"))
             {
-                string[] exp = expression.Replace("\"", "").Replace("'", "").Split(',');
+                var exp = expression.Replace("\"", "").Replace("'", "").Split(',');
                 if (exp.Length < 3)
                     throw new JJMasterDataException(Translate.Key("Invalid Protheus Request"));
 
-                string urlProtheus = ParseExpression(exp[0], state, false, formValues);
-                string functionName = ParseExpression(exp[1], state, false, formValues);
-                string parms = "";
+                var urlProtheus = ParseExpression(exp[0], state, false, formValues);
+                var functionName = ParseExpression(exp[1], state, false, formValues);
+                var parms = "";
                 if (exp.Length >= 3)
                     parms = ParseExpression(exp[2], state, false, formValues);
 

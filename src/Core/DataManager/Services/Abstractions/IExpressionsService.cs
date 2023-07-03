@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
@@ -7,12 +8,13 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
 public interface IExpressionsService
 {
-    string ParseExpression(string expression,
+    string? ParseExpression(
+        string? expression,
         PageState state,
         bool quotationMarks,
-        IDictionary<string,dynamic>? values,
+        IDictionary<string, dynamic?>? values,
         IDictionary<string,dynamic?>? userValues = null,
-        ExpressionManagerInterval interval = null);
+        ExpressionManagerInterval? interval = null);
 
     string? GetDefaultValue(ElementField f, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
     bool GetBoolValue(string expression, string actionName, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);

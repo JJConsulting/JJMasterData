@@ -141,20 +141,17 @@ internal class FormViewRelationshipLayout
                 {
                     var childGrid = new JJFormView(childElement)
                     {
-                        EntityRepository = ParentFormView.EntityRepository,
                         UserValues = ParentFormView.UserValues,
-                        FilterAction =
-                    {
-                        ShowAsCollapse = false
-                    },
                         IsExternalRoute = true
                     };
-                    childGrid.Filter.ApplyCurrentFilter(filter);
+
+                    childGrid.GridView.FilterAction.ShowAsCollapse = true;
+                    childGrid.GridView.Filter.ApplyCurrentFilter(filter);
                     childGrid.SetOptions(childElement.Options);
 
-                    childGrid.ShowTitle = false;
+                    childGrid.GridView.ShowTitle = false;
 
-                    var htmlBuilder = childGrid.GetHtmlBuilder();
+                    var htmlBuilder = childGrid.RenderHtml();
                     if (htmlBuilder != null)
                     {
                         var filters = Cript.Cript64(JsonConvert.SerializeObject(filter));

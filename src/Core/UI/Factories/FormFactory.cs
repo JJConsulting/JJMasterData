@@ -38,6 +38,9 @@ internal static class FormFactory
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(metadata));
         
         form.FormElement = metadata;
+        
+        GridViewFactory.SetGridViewParams(form.GridView, metadata);
+        
         SetFormOptions(form, metadata.Options);
     }
 
@@ -46,11 +49,11 @@ internal static class FormFactory
         if (metadataOptions == null) 
             return;
 
-        form.ToolBarActions = metadataOptions.GridToolbarActions.GetAllSorted();
-        form.GridActions = metadataOptions.GridTableActions.GetAllSorted();
+        form.GridView.ToolBarActions = metadataOptions.GridToolbarActions.GetAllSorted();
+        form.GridView.GridActions = metadataOptions.GridTableActions.GetAllSorted();
         form.ShowTitle = metadataOptions.Grid.ShowTitle;
         form.DataPanel.FormUI = metadataOptions.Form;
-        GridViewFactory.SetGridOptions(form, metadataOptions.Grid);
+        GridViewFactory.SetGridOptions(form.GridView, metadataOptions.Grid);
     }
 
     private static void AddFormEvent(JJFormView form, IFormEvent formEvent)
