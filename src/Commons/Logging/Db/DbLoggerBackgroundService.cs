@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ public class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffer>
 
         var options = _optionsMonitor.CurrentValue;
 
-        var values = new Hashtable
+        var values = new Dictionary<string,dynamic>
         {
             [options.CreatedColumnName] = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond, now.Kind),
             [options.LevelColumnName] = (int)message.LogLevel,

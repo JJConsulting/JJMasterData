@@ -1196,7 +1196,8 @@ public class SqlServerProvider : BaseProvider
 
         var element = new Element
         {
-            Name = tableName
+            Name = tableName,
+            TableName = tableName
         };
 
         var cmdFields = new DataAccessCommand
