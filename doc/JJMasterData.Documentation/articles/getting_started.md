@@ -41,11 +41,14 @@ app.MapJJMasterData();
 ## 4. Navigate on Data Dictionary
 Next, run your website and open in your browser the route:
 ```
-/en-us/DataDictionary,
+/en-us/DataDictionary
 ```
 you will be presented with the following screen:
 
 ![DataDictionaries Home](../media/DataDictionariesHome.png)
+
+> [!TIP] 
+> If you want to remove the current culture from the URL, change the `EnableCultureProvider` value at `MapJJMasterData` method.
 
 ## 5. Create your first Data Dictionary
 Click in `New` Data Dictionary button, enter the table name (Person), after that, you will have a representation of your metadata.
