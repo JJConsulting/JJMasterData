@@ -13,6 +13,7 @@
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <AssemblyName>JJMasterData.Web</AssemblyName>
         <RootNamespace>JJMasterData.Web</RootNamespace>
+        <PackageId>JJMasterData.Web</PackageId>
         <LangVersion>11</LangVersion>
     </PropertyGroup>
     
@@ -32,10 +33,6 @@
     
     <ItemGroup>
         <ProjectReference Include="..\Core\Core.csproj" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <EmbeddedResource Include="wwwroot\**\*" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">

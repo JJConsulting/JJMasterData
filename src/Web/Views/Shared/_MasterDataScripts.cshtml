@@ -1,10 +1,10 @@
 ﻿@using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
-<script src="~/js/jquery/jquery.js"></script>
-<script src="~/js/jquery/jquery-form/jquery.form.js"></script>
-<script src="~/js/jquery/jquery-number/jquery.number.min.js"></script>
-<script src="~/js/jquery/jquery-ui/jquery-ui.min.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery-form/jquery.form.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery-number/jquery.number.min.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $.widget.bridge('uitooltip', $.ui.tooltip);
@@ -13,39 +13,40 @@
         // Change JQueryUI plugin names to fix name collision with Bootstrap.
 </script>
 
-<script src="~/js/jquery/jquery-validation/jquery.validate.min.js"></script>
-<script src="~/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation/jquery.validate.min.js"></script>
+<script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
 
 @switch (BootstrapHelper.Version)
 {
     case 3:
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap3/bootstrap.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap3-toggle/bootstrap-toggle.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap3/bootstrap.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap3-toggle/bootstrap-toggle.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
         break;
     case 4:
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap4/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap4/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
         break;
     default:
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap5/bootstrap.bundle.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
-        <script type="text/javascript" src="~/js/bootstrap/bootstrap-select/bootstrap-select-bs5.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap5/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-select/bootstrap-select-bs5.min.js"></script>
         break;
 }
 
-<script type="text/javascript" src="~/js/flatpickr/flatpickr.min.js"></script>
-<script type="text/javascript" src="~/js/flatpickr/l10n/pt.min.js"></script>
-<script type="text/javascript" src="~/js/flatpickr/l10n/en.min.js"></script>
-<script type="text/javascript" src="~/js/popperjs/popper.min.js"></script>
-<script type="text/javascript" src="~/js/jquery/jquery-uploadfile/jquery.uploadfile.min.js"></script>
-<script type="text/javascript" src="~/js/spin/spin.min.js"></script>
-<script type="text/javascript" src="~/js/inputmask/dist/inputmask.min.js"></script>
-<script type="text/javascript" src="~/js/inputmask/dist/bindings/inputmask.binding.js"></script>
-<script type="text/javascript" src="~/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js"></script>
-<script type="text/javascript" src="~/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/flatpickr.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/pt.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/flatpickr/l10n/en.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/popperjs/popper.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/jquery/jquery-uploadfile/jquery.uploadfile.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/spin/spin.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/inputmask.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/inputmask/dist/bindings/inputmask.binding.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
 
-<script asp-append-version="true" type="text/javascript" src="~/js/jjmasterdata/jjmasterdata.js"></script>
+<script asp-append-version="true" type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"></script>
 
 
