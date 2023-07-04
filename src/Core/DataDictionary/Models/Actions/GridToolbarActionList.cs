@@ -8,15 +8,16 @@ namespace JJMasterData.Core.DataDictionary.Actions;
 
 public class GridToolbarActionList : FormElementActionList
 {
-    public InsertAction InsertAction => List.First(a => a.Name == InsertAction.Name) as InsertAction;
-    public LegendAction LegendAction => List.First(a => a.Name == LegendAction.Name) as LegendAction;
-    public RefreshAction RefreshAction => List.First(a => a.Name == RefreshAction.Name) as RefreshAction;
-    public FilterAction FilterAction => List.First(a => a.Name == FilterAction.Name) as FilterAction;
-    public ImportAction ImportAction => List.First(a => a.Name == ImportAction.Name) as ImportAction;
-    public ExportAction ExportAction => List.First(a => a.Name == ExportAction.Name) as ExportAction;
-    public ConfigAction ConfigAction => List.First(a => a.Name == ConfigAction.Name) as ConfigAction;
-    public SortAction SortAction => List.First(a => a.Name == SortAction.Name) as SortAction;
-    public LogAction LogAction => List.First(a => a.Name == LogAction.Name) as LogAction;
+    public InsertAction InsertAction => List.FirstOrDefault(a => a is InsertAction) as InsertAction;
+    public LegendAction LegendAction => List.FirstOrDefault(a => a is LegendAction) as LegendAction;
+    public RefreshAction RefreshAction => List.FirstOrDefault(a =>  a is RefreshAction) as RefreshAction;
+    public FilterAction FilterAction => List.FirstOrDefault(a => a is FilterAction) as FilterAction;
+    public ImportAction ImportAction => List.FirstOrDefault(a=>a is ImportAction) as ImportAction;
+
+    public ExportAction ExportAction => List.FirstOrDefault(a =>a is ExportAction) as ExportAction;
+    public ConfigAction ConfigAction => List.FirstOrDefault(a =>a is ConfigAction) as ConfigAction;
+    public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
+    public LogAction LogAction => List.FirstOrDefault(a => a is LogAction) as LogAction;
 
     public GridToolbarActionList()
     {

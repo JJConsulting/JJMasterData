@@ -237,7 +237,7 @@ public class JJAuditLogView : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = new JJGridView(Service.GetFormElement());
+        var grid = new JJGridView(Service.GetFormElement(), true);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = AuditLogService.DicModified + " DESC";

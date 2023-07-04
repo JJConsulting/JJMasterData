@@ -115,29 +115,20 @@ public class JJFormView : JJBaseView
     public FormElement FormElement { get; set; }
 
     public IEntityRepository EntityRepository { get; } = JJService.EntityRepository;
-
-    public JJGridView GridView =>
-        _gridView ??= new JJGridView
+    public GridViewFactory GridViewFactory { get; } = JJService.Provider.GetScopedDependentService<GridViewFactory>();
+    public JJGridView GridView
+    {
+        get
         {
-            Name = Name.ToLower(),
-            FormElement = FormElement,
-            UserValues = UserValues,
-            IsExternalRoute = IsExternalRoute,
-            ShowTitle = true,
-            ToolBarActions = new List<BasicAction>
-            {
-                new InsertAction(),
-                new DeleteSelectedRowsAction(),
-                new LogAction()
-                
-            },
-            GridActions = new List<BasicAction>
-            {
-                new ViewAction(),
-                new EditAction(),
-                new DeleteAction()
-            }
-        };
+            var gridView = GridViewFactory.CreateGridView(FormElement);
+            gridView.Name = Name.ToLower();
+            gridView.FormElement = FormElement;
+            gridView.UserValues = UserValues;
+            gridView.IsExternalRoute = IsExternalRoute;
+            gridView.ShowTitle = true;
+            return _gridView ??= gridView;
+        }
+    }
 
     /// <summary>
     /// Estado atual da pagina
@@ -1082,15 +1073,17 @@ public class JJFormView : JJBaseView
         }
     }
 
+    [Obsolete("Please use GridView.ClearSelectedGridValues")]
     private void ClearSelectedGridValues()
     {
         GridView.ClearSelectedGridValues();
     }
 
+    [Obsolete("Please use GridView.EnableMultiSelect")]
     public bool EnableMultSelect
     {
-        get => GridView.EnableMultSelect;
-        set => GridView.EnableMultSelect = value;
+        get => GridView.EnableMultiSelect;
+        set => GridView.EnableMultiSelect = value;
     }
 
     #endregion

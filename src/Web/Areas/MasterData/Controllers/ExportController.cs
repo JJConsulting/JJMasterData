@@ -9,16 +9,32 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class ExportController : MasterDataController
 {
+    private GridViewFactory GridViewFactory { get; }
     private DataExportationFactory DataExportationFactory { get; }
 
-    public ExportController(DataExportationFactory dataExportationFactory)
+    public ExportController(GridViewFactory gridViewFactory,DataExportationFactory dataExportationFactory)
     {
+        GridViewFactory = gridViewFactory;
         DataExportationFactory = dataExportationFactory;
     }
     
-    public IActionResult Settings([FromQuery]string componentName)
+    [DictionaryNameDecryptionServiceFilter]
+    public async Task<IActionResult> StartExportation([FromQuery]string dictionaryName)
     {
-        var settings = new DataExpSettings(componentName);
+        var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);
+        
+        gridView.ExportFileInBackground();
+        
+        var html = new DataExpLog(gridView.DataExportation.Name).GetHtmlProcess().ToString();
+        
+        return Content(html);
+    }
+    
+    [DictionaryNameDecryptionServiceFilter]
+    public async Task<IActionResult> Settings([FromQuery]string dictionaryName)
+    {
+        var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        var settings = new DataExpSettings(dataExportation);
         return Content(settings.GetHtmlElement().ToString());
     }
     

@@ -18,6 +18,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
@@ -103,8 +104,8 @@ public class JJGridView : JJBaseView
     internal GridViewToolbarScriptHelper GridViewToolbarScriptHelper { get; } =
         JJService.Provider.GetScopedDependentService<GridViewToolbarScriptHelper>();
     
-    internal DataExpScriptHelper DataExpScriptHelper { get; } =
-        JJService.Provider.GetScopedDependentService<DataExpScriptHelper>();
+    internal DataExportationScriptHelper DataExportationScriptHelper { get; } =
+        JJService.Provider.GetScopedDependentService<DataExportationScriptHelper>();
     
     internal IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
 
@@ -126,7 +127,7 @@ public class JJGridView : JJBaseView
             return _dataImp;
         }
     }
-    public JJDataExp DataExp
+    public JJDataExp DataExportation
     {
         get
         {
@@ -421,7 +422,7 @@ public class JJGridView : JJBaseView
     /// </remarks>
     public bool EnableSorting { get; set; }
 
-    public bool EnableMultSelect { get; set; }
+    public bool EnableMultiSelect { get; set; }
 
     /// <summary>
     /// Keep the grid filters, order and pagination in the session,
@@ -485,7 +486,7 @@ public class JJGridView : JJBaseView
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string,dynamic>RelationValues { get; set; }
+    public IDictionary<string,dynamic> RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
 
@@ -583,20 +584,39 @@ public class JJGridView : JJBaseView
         DataSource = table;
     }
 
+    #if NET48
+    [Obsolete("This constructor uses a static service locator and is an anti pattern. Please use JJMasterDataFactory.")]
     public JJGridView(string elementName) : this()
     {
-        GridViewFactory.SetGridViewParams(this, elementName);
+        Name = "jjview" + elementName.ToLower();
         IsExternalRoute = true;
+        
+        var dataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        FormElement = dataDictionaryRepository.GetMetadata(elementName);
+        
+        var gridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
+        gridViewFactory.SetGridOptions(this, FormElement.Options);
     }
-
+    
+    [Obsolete("This constructor a static service locator and is an anti pattern. Please use JJMasterDataFactory.")]
     public JJGridView(FormElement formElement) : this()
     {
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         Name = "jjview" + formElement.Name.ToLower();
+        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        
+        var gridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
+        gridViewFactory.SetGridOptions(this, FormElement.Options);
     }
+    #endif
 
-
+    public JJGridView(FormElement formElement, bool thisIsTheTodoDIConstructor) : this()
+    {
+        Name = "jjview" + formElement.Name.ToLower();
+        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+    }
     #endregion
+
+
 
     internal override HtmlBuilder RenderHtml()
     {
@@ -702,7 +722,7 @@ public class JJGridView : JJBaseView
         elementList.Add(GetHiddenInput($"current_tableaction_{Name}", currentAction));
         elementList.Add(GetHiddenInput($"current_tablerow_{Name}", string.Empty));
 
-        if (EnableMultSelect)
+        if (EnableMultiSelect)
         {
             elementList.Add(GetHiddenInput($"selectedrows_{Name}", SelectedRowsId));
         }
@@ -763,7 +783,7 @@ public class JJGridView : JJBaseView
         {
             string gridName = CurrentContext.Request.QueryString("gridName");
             if (Name.Equals(gridName))
-                DoExport();
+                HandleExportation();
 
             return true;
         }
@@ -839,7 +859,7 @@ public class JJGridView : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        if (EnableMultSelect && PrimaryKeyFields.Count == 0)
+        if (EnableMultiSelect && PrimaryKeyFields.Count == 0)
             throw new JJMasterDataException(
                 Translate.Key(
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
@@ -870,7 +890,7 @@ public class JJGridView : JJBaseView
         //Scripts
         script.AppendLine("\t<script type=\"text/javascript\"> ");
 
-        if (EnableMultSelect)
+        if (EnableMultiSelect)
         {
             script.AppendLine("\t$(document).ready(function () {");
             script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
@@ -1093,15 +1113,14 @@ public class JJGridView : JJBaseView
         return values;
     }
 
-    private void DoExport()
+    private void HandleExportation()
     {
-        var exp = DataExp;
         string expressionType = CurrentContext.Request.QueryString("exptype");
         switch (expressionType)
         {
             case "showoptions":
 #pragma warning disable CS0618
-                CurrentContext.Response.SendResponse(exp.GetHtml());
+                CurrentContext.Response.SendResponse(DataExportation.GetHtml());
 #pragma warning restore CS0618
                 break;
             case "export":
@@ -1110,13 +1129,13 @@ public class JJGridView : JJBaseView
                 {
                     var tot = int.MaxValue;
                     var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
-                    exp.DoExport(dt);
+                    DataExportation.StartExportation(dt);
                 }
                 else
                 {
                     try
                     {
-                        exp.ExportFileInBackground(CurrentFilter, CurrentOrder);
+                        ExportFileInBackground();
                     }
                     catch (Exception ex)
                     {
@@ -1130,7 +1149,7 @@ public class JJGridView : JJBaseView
                     }
                 }
 
-                var html = new DataExpLog(exp.Name).GetHtmlProcess();
+                var html = new DataExpLog(DataExportation.Name).GetHtmlProcess();
 
 #pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(html.ToString());
@@ -1139,7 +1158,7 @@ public class JJGridView : JJBaseView
             }
             case "checkProgress":
             {
-                var dto = exp.GetCurrentProgress();
+                var dto = DataExportation.GetCurrentProgress();
                 string json = JsonConvert.SerializeObject(dto);
 #pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(json, "text/json");
@@ -1147,10 +1166,15 @@ public class JJGridView : JJBaseView
                 break;
             }
             case "stopProcess":
-                exp.AbortProcess();
+                DataExportation.AbortProcess();
                 CurrentContext.Response.SendResponse("{}", "text/json");
                 break;
         }
+    }
+
+    internal void ExportFileInBackground()
+    {
+        DataExportation.ExportFileInBackground(CurrentFilter, CurrentOrder);
     }
 
     /// <summary>
@@ -1274,7 +1298,7 @@ public class JJGridView : JJBaseView
     {
         var listValues = new List<IDictionary<string,dynamic>>();
 
-        if (!EnableMultSelect)
+        if (!EnableMultiSelect)
             return listValues;
 
         string inputHidden = SelectedRowsId;
@@ -1504,7 +1528,7 @@ public class JJGridView : JJBaseView
     /// <summary>
     /// Verify if a action is valid, else, throws an exception.
     /// </summary>
-    private void ValidateAction(BasicAction action)
+    private static void ValidateAction(BasicAction action)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));
@@ -1515,7 +1539,8 @@ public class JJGridView : JJBaseView
 
     public void SetGridOptions(GridUI options)
     {
-        GridViewFactory.SetGridOptions(this, options);
+        //TODO:
+        //GridViewFactory.SetGridUIOptions(this, options);
     }
 
     internal BasicAction GetCurrentAction(ActionMap actionMap)
@@ -1525,7 +1550,6 @@ public class JJGridView : JJBaseView
 
         return actionMap.ActionSource switch
         {
-            ActionSource.FormToolbar => null, //TODO: formAction
             ActionSource.GridTable => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),
             ActionSource.GridToolbar => ToolBarActions.Find(x => x.Name.Equals(actionMap.ActionName)),
             ActionSource.Field => FormElement.Fields[actionMap.FieldName].Actions.Get(actionMap.ActionName),

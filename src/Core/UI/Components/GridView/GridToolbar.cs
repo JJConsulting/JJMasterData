@@ -51,7 +51,7 @@ internal class GridToolbar
             linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)
             {
-                case ExportAction when GridView.DataExp.IsRunning():
+                case ExportAction when GridView.DataExportation.IsRunning():
                     linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
                     linkButton.Spinner.Visible = true;
                     break;
@@ -100,7 +100,10 @@ internal class GridToolbar
                 script = BootstrapHelper.GetModalScript($"config_modal_{GridView.Name}");
                 break;
             case ExportAction:
-                script = GridView.DataExpScriptHelper.GetExportPopupScript(GridView.Name,GridView.IsExternalRoute);
+                script = GridView.DataExportationScriptHelper.GetExportPopupScript(
+                    GridView.FormElement.Name,
+                        GridView.Name,
+                    GridView.IsExternalRoute);
                 break;
             case RefreshAction:
                 script = GridView.GridViewToolbarScriptHelper.GetRefreshScript(GridView);
@@ -116,10 +119,7 @@ internal class GridToolbar
                 break;
             case SubmitAction submitAction:
                 string confirmationMessage = submitAction.ConfirmationMessage;
-                if (!string.IsNullOrWhiteSpace(confirmationMessage))
-                    script = $"return confirm('{confirmationMessage}');";
-                else
-                    script = string.Empty;
+                script = !string.IsNullOrWhiteSpace(confirmationMessage) ? $"return confirm('{confirmationMessage}');" : string.Empty;
 
                 break;
             default:

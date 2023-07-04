@@ -23,7 +23,7 @@ internal class GridViewScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.Sorting('{gridView.Name}','{url}','{fieldName}')";
+            return $"JJGridView.sorting('{gridView.Name}','{url}','{fieldName}')";
         }
 
         string ajax = gridView.EnableAjax ? "true" : "false";
@@ -36,7 +36,7 @@ internal class GridViewScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.Pagination('{name}', '{url}', {page})";
+            return $"JJGridView.pagination('{name}', '{url}', {page})";
         }
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";

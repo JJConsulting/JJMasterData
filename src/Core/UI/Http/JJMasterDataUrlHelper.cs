@@ -76,8 +76,6 @@ public class JJMasterDataUrlHelper
         throw new JJMasterDataException("JJMasterDataCoreOptions.JJMasterDataUrl cannot be null at your target framework.");
 #elif NET6_0_OR_GREATER
         values ??= new  {Area = "MasterData"};
-        // ReSharper disable once Mvc.AreaNotResolved
-        // Reason: Dynamically accessed Area because of framework constraints.
         return UrlHelper.Action(action, controller, values) ?? throw new JJMasterDataException("Invalid action and/or controller.");
 #endif
     }

@@ -54,7 +54,7 @@ internal class GridTableBody
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
         html.WithAttribute("id", $"row{index}");
-        bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultSelect);
+        bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
         html.WithCssClassIf(enableGridAction, "jjgrid-action");
 
         html.AppendRange(GetTdHtmlList(row,index));
@@ -74,7 +74,7 @@ internal class GridTableBody
 
         string onClickScript = GetOnClickScript(values, defaultAction);
         
-        if (GridView.EnableMultSelect)
+        if (GridView.EnableMultiSelect)
         {
             var checkBox = GetMultiSelect(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);

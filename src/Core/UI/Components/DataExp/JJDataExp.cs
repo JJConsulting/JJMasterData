@@ -16,7 +16,9 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -54,6 +56,7 @@ public class JJDataExp : JJBaseProcess
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
+    public JJMasterDataCoreOptions MasterDataOptions { get; }
 
     #endregion
 
@@ -61,17 +64,19 @@ public class JJDataExp : JJBaseProcess
     internal JJDataExp(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService, 
-        IFormFieldsService formFieldsService, 
+        IExpressionsService expressionsService,
+        IFormFieldsService formFieldsService,
+        IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask) : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
     {
+        MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
     }
     #endregion
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(Name, ExportOptions).GetHtmlElement();
+        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
     }
 
     internal static JJIcon GetFileIcon(string ext)
@@ -194,7 +199,7 @@ public class JJDataExp : JJBaseProcess
         return WriterFactory.GetInstance(this);
     }
 
-    public void DoExport(DataTable dt)
+    public void StartExportation(DataTable dt)
     {
         var exporter = CreateWriter();
 

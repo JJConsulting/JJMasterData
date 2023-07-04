@@ -6,7 +6,9 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -18,6 +20,7 @@ public class DataExportationFactory
     private IExpressionsService ExpressionsService { get; }
 
     private IFormFieldsService FormFieldsService { get; }
+    private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
     
     public DataExportationFactory(
@@ -25,22 +28,24 @@ public class DataExportationFactory
         IDataDictionaryRepository dataDictionaryRepository,
         IExpressionsService expressionsService, 
         IFormFieldsService formFieldsService,
+        IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTask backgroundTask)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
         FormFieldsService = formFieldsService;
+        Options = options;
         BackgroundTask = backgroundTask;
     }
     public async Task<JJDataExp> CreateDataExportationAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,BackgroundTask);
+        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,Options, BackgroundTask);
     }
 
     public JJDataExp CreateDataExportation(FormElement formElement)
     {
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,BackgroundTask);
+        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,Options, BackgroundTask);
     }
 }

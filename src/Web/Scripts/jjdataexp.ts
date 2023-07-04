@@ -99,38 +99,7 @@
 
         await fetch(surl);
     }
-
     
-    private static setSettingsHTML(componentName, html){
-        const modalBody = "#export_modal_" + componentName + " .modal-body ";
-        $(modalBody).html(html);
-        jjloadform(null, modalBody);
-
-        const qtdElement = $("#" + componentName + "_totrows");
-        if (qtdElement.length > 0) {
-            const totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
-            if (totRows > 50000)
-                $("#warning_exp_" + componentName).show();
-        }
-
-        if (bootstrapVersion < 5) {
-            $("#export_modal_" + componentName).modal();
-        } else {
-            const modal = new bootstrap.Modal("#export_modal_" + componentName, {});
-            modal.show();
-        }
-    }
-    
-    static openExportPopup(url: string, componentName: string) {
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-                this.setSettingsHTML(componentName, data)
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
     
     static openExportUI(componentName) {
         const frm = $("form");
@@ -143,7 +112,7 @@
         url += "&gridName=" + componentName;
         url += "&exptype=showoptions";
 
-        this.openExportPopup(url, componentName)
+        DataExportation.openExportPopup(url, componentName)
     }
 
     static doExport(objid) {

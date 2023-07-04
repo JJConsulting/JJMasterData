@@ -22,7 +22,7 @@ internal class GridViewToolbarScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GridViewScriptHelper.GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.Refresh('{name}', '{url}')";
+            return $"JJGridView.refresh('{name}', '{url}')";
         }
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";
@@ -35,7 +35,7 @@ internal class GridViewToolbarScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GridViewScriptHelper.GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.Filter('{name}', '{url}')";
+            return $"JJGridView.filter('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doFilter('{name}','{enableAjax}')";

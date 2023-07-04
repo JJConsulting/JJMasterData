@@ -9,6 +9,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJGridViewTagHelper : TagHelper
 {
+    private GridViewFactory GridViewFactory { get; }
 
     [HtmlAttributeName("element-name")]
     public string? ElementName { get; set; }
@@ -21,23 +22,28 @@ public class JJGridViewTagHelper : TagHelper
 
     [HtmlAttributeName("configure")]
     public Action<JJGridView>? Configure { get; set; }
-
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    
+    public JJGridViewTagHelper(GridViewFactory gridViewFactory)
+    {
+        GridViewFactory = gridViewFactory;
+    }
+    
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
 
         JJGridView gridView;
 
         if (ElementName is not null)
         {
-            gridView = WebComponentFactory.CreateGridView(ElementName);
+            gridView = await GridViewFactory.CreateGridViewAsync(ElementName);
         }
         else if (FormElement is not null)
         {
-            gridView = WebComponentFactory.CreateGridView(FormElement);
+            gridView = GridViewFactory.CreateGridView(FormElement);
         }
         else if (DataTable is not null)
         {
-            gridView = WebComponentFactory.CreateGridView(DataTable);
+            gridView = GridViewFactory.CreateGridView(DataTable);
         }
         else
         {
@@ -48,6 +54,5 @@ public class JJGridViewTagHelper : TagHelper
 
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(gridView.GetHtml());
-        return Task.CompletedTask;
     }
 }

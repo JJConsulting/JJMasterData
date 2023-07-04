@@ -74,7 +74,12 @@ public class JJDataImp : JJBaseProcess
         FieldVisibilityService = fieldVisibilityService;
         FormService = formService;
         FormElement = formElement;
-        ProcessOptions = formElement.Options.GridToolbarActions.ImportAction.ProcessOptions;
+        var importAction = formElement.Options.GridToolbarActions.ImportAction;
+        if (importAction is not null)
+        {
+            ProcessOptions = importAction.ProcessOptions;
+        }
+        
     }
     #endregion
 

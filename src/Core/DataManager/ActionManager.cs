@@ -454,7 +454,7 @@ internal class ActionManager
         try
         {
             var listSql = new List<string>();
-            if (map.ActionSource == ActionSource.GridToolbar && gridView.EnableMultSelect && cmdAction.ApplyOnSelected)
+            if (map.ActionSource == ActionSource.GridToolbar && gridView.EnableMultiSelect && cmdAction.ApplyOnSelected)
             {
                 var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)

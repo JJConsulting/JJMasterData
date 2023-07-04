@@ -1,98 +1,111 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal static class GridViewFactory
+public class GridViewFactory
 {
-    public static JJGridView CreateGridView(string elementName)
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IHttpSession Session { get; }
+
+    public GridViewFactory(IDataDictionaryRepository dataDictionaryRepository, IHttpSession session)
     {
-        var grid = new JJGridView();
-        SetGridViewParams(grid, elementName);
-        return grid;
+        DataDictionaryRepository = dataDictionaryRepository;
+        Session = session;
     }
 
-    public static JJGridView CreateGridView(FormElement formElement)
+    public JJGridView CreateGridView(DataTable dataTable)
     {
-        var grid = new JJGridView(formElement);
-        return grid;
-    }
+        var gridView = new JJGridView(dataTable);
 
-    public static JJGridView CreateGridView(DataTable dataTable)
+        return gridView;
+    }
+    
+    public JJGridView CreateGridView(FormElement formElement)
     {
-        var grid = new JJGridView(dataTable);
-        return grid;
-    }
+        var gridView = new JJGridView(formElement, true);
 
+        SetGridOptions(gridView, formElement.Options);
+        
+        return gridView;
+    }
+    
+    public async Task<JJGridView> CreateGridViewAsync(string elementName)
+    {
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+
+        var gridView = new JJGridView(formElement, true);
+
+        SetGridOptions(gridView, formElement.Options);
+        
+        return gridView;
+    }
+    
     public static JJGridView CreateGridView<T>(IEnumerable<T> list)
     {
         var data = EnumerableHelper.ConvertToDataTable(list);
         var grid = new JJGridView(data);
         return grid;
     }
-
-    internal static void SetGridViewParams(JJGridView grid, string elementName)
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
-
-        var dictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        var metadata = dictionaryRepository.GetMetadata(elementName);
-        grid.Name = "jjview" + elementName.ToLower();
-        grid.FormElement = metadata;
-        SetGridOptions(grid, metadata.Options.Grid);
-    }
-
-    internal static void SetGridViewParams(JJGridView grid, FormElement formElement)
-    {
-        grid.Name = "jjview" + formElement.Name.ToLower();
-        grid.FormElement = formElement;
-        SetGridOptions(grid, formElement.Options.Grid);
-    }
     
-    internal static void SetGridOptions(JJGridView grid, GridUI options)
+    internal void SetGridOptions(JJGridView grid, FormElementOptions options)
     {
-        if (options == null)
-            throw new ArgumentNullException(nameof(options), "Grid Options");
+        var gridOptions = options.Grid;
+        
+        if (gridOptions == null)
+            throw new ArgumentNullException(nameof(gridOptions), "Grid Options");
 
+        SetGridUiOptions(grid, gridOptions);
+
+        foreach (var action in options.GridTableActions)
+        {
+            grid.GridActions.Add(action);
+        }
+        
+        foreach (var action in options.FormToolbarActions)
+        {
+            grid.ToolBarActions.Add(action);
+        }
+    }
+
+    internal void SetGridUiOptions(JJGridView grid, GridUI gridOptions)
+    {
         grid.EnableAjax = true;
-        grid.EnableSorting = options.EnableSorting;
-        grid.EnableMultSelect = options.EnableMultSelect;
-        grid.MaintainValuesOnLoad = options.MaintainValuesOnLoad;
-        grid.ShowPagging = options.ShowPagging;
-        grid.ShowToolbar = options.ShowToolBar;
+        grid.EnableSorting = gridOptions.EnableSorting;
+        grid.EnableMultiSelect = gridOptions.EnableMultSelect;
+        grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;
+        grid.ShowPagging = gridOptions.ShowPagging;
+        grid.ShowToolbar = gridOptions.ShowToolBar;
 
         if (!GridSettings.HasFormValues(grid.CurrentContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad && grid.FormElement != null)
-                settings = JJHttpContext.GetInstance().Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)
             {
                 settings = grid.CurrentSettings;
-                settings.ShowRowHover = options.ShowRowHover;
-                settings.ShowRowStriped = options.ShowRowStriped;
-                settings.ShowBorder = options.ShowBorder;
-                settings.TotalPerPage = options.TotalPerPage;
-                settings.TotalPaginationButtons = options.TotalPaggingButton;
-                settings.IsHeaderFixed = options.HeaderFixed;
+                settings.ShowRowHover = gridOptions.ShowRowHover;
+                settings.ShowRowStriped = gridOptions.ShowRowStriped;
+                settings.ShowBorder = gridOptions.ShowBorder;
+                settings.TotalPerPage = gridOptions.TotalPerPage;
+                settings.TotalPaginationButtons = gridOptions.TotalPaggingButton;
+                settings.IsHeaderFixed = gridOptions.HeaderFixed;
             }
 
             grid.CurrentSettings = settings;
         }
 
-        grid.ShowHeaderWhenEmpty = options.ShowHeaderWhenEmpty;
-        grid.EmptyDataText = options.EmptyDataText;
+        grid.ShowHeaderWhenEmpty = gridOptions.ShowHeaderWhenEmpty;
+        grid.EmptyDataText = gridOptions.EmptyDataText;
     }
-
-
 }

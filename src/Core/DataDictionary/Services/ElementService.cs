@@ -214,7 +214,9 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
         
-        var gridView = new JJGridView(formElement)
+        formElement.Options.GridTableActions.Clear();
+        
+        var gridView = new JJGridView(formElement, true)
         {
             Name = "List",
             FilterAction =
@@ -224,7 +226,7 @@ public class ElementService : BaseService
         };
         
         gridView.MaintainValuesOnLoad = true;
-        gridView.EnableMultSelect = true;
+        gridView.EnableMultiSelect = true;
         gridView.ExportAction.SetVisible(false);
         
         if (!gridView.CurrentFilter.ContainsKey("type"))

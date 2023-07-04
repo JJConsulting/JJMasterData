@@ -7,6 +7,119 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function setupCollapsePanel(name) {
+    let nameSelector = "#" + name;
+    let collapseSelector = '#collapse_mode_' + name;
+    document.addEventListener("DOMContentLoaded", function () {
+        let collapseElement = document.querySelector(nameSelector);
+        collapseElement.addEventListener("hidden.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "0";
+        });
+        collapseElement.addEventListener("show.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "1";
+        });
+    });
+}
+class DataExportation {
+    static setSettingsHTML(componentName, html) {
+        const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
+        modalBody.innerHTML = html;
+        jjloadform(null);
+        const qtdElement = document.querySelector("#" + componentName + "_totrows");
+        if (qtdElement) {
+            const totRows = +qtdElement.textContent.replace(/\./g, "");
+            if (totRows > 50000) {
+                document.querySelector("#warning_exp_" + componentName).style.display = "block";
+            }
+        }
+        if (bootstrapVersion < 5) {
+            $("#export_modal_" + componentName).modal();
+        }
+        else {
+            const modal = new bootstrap.Modal(document.querySelector("#export_modal_" + componentName), {});
+            modal.show();
+        }
+    }
+    static openExportPopup(url, componentName) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+            this.setSettingsHTML(componentName, data);
+        })
+            .catch(error => {
+            console.log(error);
+        });
+    }
+    static startExportation(url, componentName) {
+        fetch(url, {
+            method: "POST",
+        })
+            .then(response => {
+            if (response.ok) {
+                return response.text();
+            }
+            else {
+                throw new Error("Request failed with status: " + response.status);
+            }
+        })
+            .then(data => {
+            const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
+            modalBody.innerHTML = data;
+            jjloadform(null);
+        })
+            .catch(error => {
+            console.log(error);
+        });
+    }
+}
+class GridView {
+    static sorting(componentName, url, tableOrder) {
+        const tableOrderElement = document.querySelector("#current_tableorder_" + componentName);
+        if (tableOrder + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = tableOrder + " DESC";
+        else
+            tableOrderElement.value = tableOrder + " ASC";
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static pagination(componentName, url, currentPage) {
+        document.querySelector("#current_tablepage_" + componentName).value = currentPage;
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static filter(componentName, url) {
+        document.querySelector("#current_filteraction_" + componentName).value = "FILTERACTION";
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_tablepage_" + componentName).value = "1";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static refresh(componentName, url) {
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_tablerow_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static refreshGrid(componentName, url) {
+        const frm = document.querySelector("form");
+        fetch(url, {
+            method: frm.method,
+            body: new FormData(frm)
+        })
+            .then(response => response.text())
+            .then(data => {
+            document.querySelector("#jjgridview_" + componentName).innerHTML = data;
+            jjloadform();
+            document.querySelector("#current_filteraction_" + componentName).value = "";
+        })
+            .catch(error => {
+            console.log(error);
+            document.querySelector("#current_filteraction_" + componentName).value = "";
+        });
+    }
+}
 class ActionManager {
     static executePanelAction(name, action) {
         $("#current_painelaction_" + name).val(action);
@@ -52,18 +165,6 @@ $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     jjloadform("load", null);
 });
-function setupCollapsePanel(name) {
-    let nameSelector = "#" + name;
-    let collapseSelector = '#collapse_mode_' + name;
-    document.addEventListener("DOMContentLoaded", function () {
-        $(nameSelector).on('hidden.bs.collapse', function () {
-            $(collapseSelector).val("0");
-        });
-        $(nameSelector).on('show.bs.collapse', function () {
-            $(collapseSelector).val("1");
-        });
-    });
-}
 class JJDataExp {
     static setLoadMessage() {
         const options = {
@@ -155,34 +256,6 @@ class JJDataExp {
             yield fetch(surl);
         });
     }
-    static setSettingsHTML(componentName, html) {
-        const modalBody = "#export_modal_" + componentName + " .modal-body ";
-        $(modalBody).html(html);
-        jjloadform(null, modalBody);
-        const qtdElement = $("#" + componentName + "_totrows");
-        if (qtdElement.length > 0) {
-            const totRows = +qtdElement.text().replace(".", "").replace(".", "").replace(".", "").replace(".", "");
-            if (totRows > 50000)
-                $("#warning_exp_" + componentName).show();
-        }
-        if (bootstrapVersion < 5) {
-            $("#export_modal_" + componentName).modal();
-        }
-        else {
-            const modal = new bootstrap.Modal("#export_modal_" + componentName, {});
-            modal.show();
-        }
-    }
-    static openExportPopup(url, componentName) {
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-            this.setSettingsHTML(componentName, data);
-        })
-            .catch(error => {
-            console.log(error);
-        });
-    }
     static openExportUI(componentName) {
         const frm = $("form");
         let url = frm.attr("action");
@@ -192,7 +265,7 @@ class JJDataExp {
             url += "?t=tableexp";
         url += "&gridName=" + componentName;
         url += "&exptype=showoptions";
-        this.openExportPopup(url, componentName);
+        DataExportation.openExportPopup(url, componentName);
     }
     static doExport(objid) {
         var frm = $("form");
@@ -534,59 +607,6 @@ JJFeedbackIcon.searchClass = "jj-icon-search";
 JJFeedbackIcon.successClass = "jj-icon-success";
 JJFeedbackIcon.warningClass = "jj-icon-warning";
 JJFeedbackIcon.errorClass = "jj-icon-error";
-class JJGridView {
-    static setup() {
-    }
-    static Sorting(componentName, url, tableOroder) {
-        var tableOrder = "#current_tableorder_" + componentName;
-        if (tableOroder + " ASC" == $(tableOrder).val())
-            $(tableOrder).val(tableOroder + " DESC");
-        else
-            $(tableOrder).val(tableOroder + " ASC");
-        $("#current_tableaction_" + componentName).val("");
-        $("#current_formaction_" + componentName).val("");
-        JJGridView.RefreshGrid(componentName, url);
-    }
-    static Pagination(componentName, url, currentPage) {
-        $("#current_tablepage_" + componentName).val(currentPage);
-        $("#current_tableaction_" + componentName).val("");
-        $("#current_formaction_" + componentName).val("");
-        JJGridView.RefreshGrid(componentName, url);
-    }
-    static Filter(componentName, url) {
-        $("#current_filteraction_" + componentName).val("FILTERACTION");
-        $("#current_tableaction_" + componentName).val("");
-        $("#current_tablepage_" + componentName).val("1");
-        $("#current_formaction_" + componentName).val("");
-        JJGridView.RefreshGrid(componentName, url);
-    }
-    static Refresh(componentName, url) {
-        $("#current_tableaction_" + componentName).val("");
-        $("#current_tablerow_" + componentName).val("");
-        $("#current_formaction_" + componentName).val("");
-        JJGridView.RefreshGrid(componentName, url);
-    }
-    static RefreshGrid(componentName, url) {
-        const frm = $("form");
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: url,
-            data: frm.serialize(),
-            success: function (data) {
-                $("#jjgridview_" + componentName).html(data);
-                jjloadform();
-                $("#current_filteraction_" + componentName).val("");
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-                $("#current_filteraction_" + componentName).val("");
-            }
-        });
-    }
-}
 function jjloadform(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";

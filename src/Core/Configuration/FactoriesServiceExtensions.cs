@@ -11,6 +11,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<DataImportationFactory>();
         services.AddTransient<DataExportationFactory>();
         services.AddTransient<JJMasterDataFactory>();
+        services.AddTransient<GridViewFactory>();
         return services;
     }
 }

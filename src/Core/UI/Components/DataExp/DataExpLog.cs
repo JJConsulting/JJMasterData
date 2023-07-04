@@ -73,7 +73,7 @@ internal class DataExpLog
             });
     }
 
-    private HtmlBuilder GetProgressData()
+    private static HtmlBuilder GetProgressData()
     {
         return new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Div, div =>

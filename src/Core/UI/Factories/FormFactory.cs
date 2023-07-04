@@ -53,7 +53,6 @@ internal static class FormFactory
         form.GridView.GridActions = metadataOptions.GridTableActions.GetAllSorted();
         form.ShowTitle = metadataOptions.Grid.ShowTitle;
         form.DataPanel.FormUI = metadataOptions.Form;
-        GridViewFactory.SetGridOptions(form.GridView, metadataOptions.Grid);
     }
 
     private static void AddFormEvent(JJFormView form, IFormEvent formEvent)

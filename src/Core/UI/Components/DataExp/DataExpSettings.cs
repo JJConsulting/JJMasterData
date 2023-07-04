@@ -1,41 +1,34 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Html;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataExpSettings
 {
-    private string ComponentName { get; }
-    private ExportOptions ExportOptions { get; }
+    private JJDataExp DataExportation { get; }
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
 
-    public DataExpSettings(string componentName, ExportOptions exportOptions = null)
+    public DataExpSettings(JJDataExp dataExportation)
     {
-        ComponentName = componentName;
-        ExportOptions = exportOptions ?? new ExportOptions();
+        DataExportation = dataExportation;
     }
 
     internal HtmlBuilder GetHtmlElement()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-
-        var path = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.ExportationFolderPath;
-        html.AppendElement(GetFormHtmlElement(path));
+        
+        html.AppendElement(GetFormHtmlElement(DataExportation.MasterDataOptions.ExportationFolderPath));
 
         html.AppendElement(HtmlTag.Hr);
         html.AppendElement(HtmlTag.Div, div =>
@@ -48,7 +41,7 @@ internal class DataExpSettings
                     Text = Translate.Key("Export"),
                     IconClass = "fa fa-check",
                     ShowAsButton = true,
-                    OnClientClick = $"JJDataExp.doExport('{ComponentName}');"
+                    OnClientClick = DataExportation.IsExternalRoute ? " ": $"JJDataExp.doExport('{DataExportation.Name}');"
                 };
 
                 var btnCancel = new JJLinkButton
@@ -106,7 +99,7 @@ internal class DataExpSettings
                 });
             });
 
-            div.AppendElement(GetTooManyRecordsAlert(ComponentName));
+            div.AppendElement(GetTooManyRecordsAlert(DataExportation.Name));
         });
 
         return div;
@@ -118,7 +111,7 @@ internal class DataExpSettings
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{ComponentName}{ExportOptions.FileName}");
+                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.FileName}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Export to"));
             })
@@ -127,8 +120,8 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{ComponentName}{ExportOptions.FileName}");
-                    select.WithAttribute("onchange", $"jjview.showExportOptions('{ComponentName}',this.value);");
+                    select.WithNameAndId($"{DataExportation.Name}{ExportOptions.FileName}");
+                    select.WithAttribute("onchange", $"jjview.showExportOptions('{DataExportation.Name}',this.value);");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -163,11 +156,11 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{ComponentName}_div_export_orientation")
+            .WithAttribute("id", $"{DataExportation.Name}_div_export_orientation")
             .WithAttribute("style", "display:none")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{ComponentName}{ExportOptions.TableOrientation}");
+                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.TableOrientation}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Orientation"));
             })
@@ -176,7 +169,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{ComponentName}{ExportOptions.TableOrientation}");
+                    select.WithNameAndId($"{DataExportation.Name}{ExportOptions.TableOrientation}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -197,10 +190,10 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{ComponentName}_div_export_all")
+            .WithAttribute("id", $"{DataExportation.Name}_div_export_all")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportAll}");
+                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportAll}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Fields"));
             })
@@ -209,7 +202,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{ComponentName}{ExportOptions.ExportAll}");
+                    select.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportAll}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -231,10 +224,10 @@ internal class DataExpSettings
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("style", "display:none;")
-            .WithAttribute("id", $"{ComponentName}_div_export_delimiter")
+            .WithAttribute("id", $"{DataExportation.Name}_div_export_delimiter")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportDelimiter}");
+                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Delimiter"));
             })
@@ -243,7 +236,7 @@ internal class DataExpSettings
                 div.WithCssClass(_colSm);
                 div.AppendElement(HtmlTag.Select, select =>
                 {
-                    select.WithNameAndId($"{ComponentName}{ExportOptions.ExportDelimiter}");
+                    select.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
                     select.WithCssClass("form-control form-select");
                     select.AppendElement(HtmlTag.Option, option =>
                     {
@@ -269,10 +262,10 @@ internal class DataExpSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{ComponentName}_div_export_fistline")
+            .WithAttribute("id", $"{DataExportation.Name}_div_export_fistline")
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", $"{ComponentName}{ExportOptions.ExportTableFirstLine}");
+                label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
                 label.AppendText(Translate.Key("Export first line as title"));
             })
@@ -284,11 +277,11 @@ internal class DataExpSettings
                     input.WithAttribute("type", "checkbox");
                     input.WithValue("1");
                     input.WithCssClass("form-control");
-                    input.WithNameAndId($"{ComponentName}{ExportOptions.ExportTableFirstLine}");
+                    input.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
                     input.WithAttribute("data-toggle", "toggle");
                     input.WithAttribute("data-on", Translate.Key("Yes"));
                     input.WithAttribute("data-off", Translate.Key("No"));
-                    if (ExportOptions.ExportFirstLine)
+                    if (DataExportation.ExportOptions.ExportFirstLine)
                         input.WithAttribute("checked", "checked");
                 });
             });

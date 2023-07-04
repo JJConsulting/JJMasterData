@@ -47,7 +47,7 @@ public class JJMasterDataFactory
     
     public JJDataImp CreateDataImportation(FormElement formElement)
     {
-        return DataImportationFactory.CreateDataImp(formElement);
+        return DataImportationFactory.CreateDataImportation(formElement);
     }
 
 }
