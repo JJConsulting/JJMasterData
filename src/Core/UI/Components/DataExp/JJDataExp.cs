@@ -184,7 +184,7 @@ public class JJDataExp : JJBaseProcess
             return html.ToString();
         }
 
-        var alert = new JJAlert()
+        var alert = new JJAlert
         {
             Title = reporter.Message,
             Icon = IconType.Warning,

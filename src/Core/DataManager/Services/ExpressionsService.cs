@@ -13,27 +13,17 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
-
-public class ExpressionManagerInterval
-{
-    public char Begin { get; set; }
-    public char End { get; set; }
-
-    public ExpressionManagerInterval(char begin, char end)
-    {
-        Begin = begin;
-        End = end;
-    }
-}
 
 public class ExpressionsService : IExpressionsService
 {
     #region "Properties"
 
     private IHttpContext CurrentContext { get; }
+    private IStringLocalizer<JJMasterDataResources> Localizer { get; }
     private ILogger<ExpressionsService> Logger { get; }
     private IEntityRepository EntityRepository { get; }
 
@@ -44,10 +34,12 @@ public class ExpressionsService : IExpressionsService
     public ExpressionsService(
         IEntityRepository entityRepository,
         IHttpContext httpContext,
+        IStringLocalizer<JJMasterDataResources> localizer,
         ILogger<ExpressionsService> logger)
     {
         EntityRepository = entityRepository;
         CurrentContext = httpContext!;
+        Localizer = localizer;
         Logger = logger;
     }
 
@@ -137,7 +129,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            var err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Localizer["Invalid expression for {0} field", actionName];
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -158,7 +150,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                var err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
+                string err = Localizer["Error executing expression {0} for {1} field.", exp, actionName];
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -171,7 +163,7 @@ public class ExpressionsService : IExpressionsService
         }
         else
         {
-            var err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Localizer["Invalid expression for {0} field", actionName];
             throw new ArgumentException(err, nameof(expression));
         }
 
@@ -184,7 +176,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            var err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Localizer["Invalid expression for {0} field", actionName];
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -205,7 +197,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                var err = Translate.Key("Error executing expression {0} for {1} field.", exp, actionName);
+                string err = Localizer["Error executing expression {0} for {1} field.", exp, actionName];
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -218,7 +210,7 @@ public class ExpressionsService : IExpressionsService
         }
         else
         {
-            var err = Translate.Key("Invalid expression for {0} field", actionName);
+            var err = Localizer["Invalid expression for {0} field", actionName];
             throw new ArgumentException(err, nameof(expression));
         }
 
@@ -272,7 +264,7 @@ public class ExpressionsService : IExpressionsService
                 catch (Exception ex)
                 {
                     var message = new StringBuilder();
-                    message.AppendLine(Translate.Key("Error executing expression of field {0}.", f.Name));
+                    message.AppendLine(Localizer["Error executing expression of field {0}.", f.Name]);
                     message.Append(ex.Message);
                     Logger.LogError(ex, message.ToString());
                 }

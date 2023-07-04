@@ -37,12 +37,6 @@ public static class JJServiceBuilderExtensions
 
         return builder;
     }
-
-    public static JJServiceBuilder WithPythonEngine<T>(this JJServiceBuilder builder) where T : IPythonEngine
-    {
-        builder.Services.AddSingleton(typeof(IPythonEngine), typeof(T));
-        return builder;
-    }
     
     public static JJServiceBuilder WithPdfExportation<T>(this JJServiceBuilder builder) where T : IPdfWriter
     {

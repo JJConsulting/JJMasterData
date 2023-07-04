@@ -108,6 +108,9 @@ public class JJGridView : JJBaseView
     
     internal IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
 
+    internal IFieldValidationService FieldValidationService { get; } = JJService.Provider.GetScopedDependentService<IFieldValidationService>();
+
+    
     internal JJDataImp DataImp
     {
         get
@@ -1102,7 +1105,9 @@ public class JJGridView : JJBaseView
         switch (expressionType)
         {
             case "showoptions":
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(exp.GetHtml());
+#pragma warning restore CS0618
                 break;
             case "export":
             {
@@ -1352,7 +1357,7 @@ public class JJGridView : JJBaseView
                         val = row[field.Name].ToString();
 
                     string objname = GetFieldName(field.Name, row);
-                    string err = FieldValidator.ValidateField(field, objname, val);
+                    string err = FieldValidationService.ValidateField(field, objname, val);
                     if (!string.IsNullOrEmpty(err))
                     {
                         string errMsg = $"{Translate.Key("Line")} {line}: {err}";

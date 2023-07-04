@@ -46,20 +46,13 @@ public class JJAuditLogView : JJBaseView
     /// </summary>
     internal JJDataPanel DataPainel
     {
-        get
-        {
-            if (_dataPainel == null)
+        get =>
+            _dataPainel ??= new JJDataPanel(FormElement)
             {
-                _dataPainel = new JJDataPanel(FormElement)
-                {
-                    Name = "jjpainellog_" + Name,
-                    EntityRepository = EntityRepository,
-                };
-            }
-
-            return _dataPainel;
-        }
-        set { _dataPainel = value; }
+                Name = "jjpainellog_" + Name,
+                EntityRepository = EntityRepository,
+            };
+        set => _dataPainel = value;
     }
 
     public FormElement FormElement { get; private set; }

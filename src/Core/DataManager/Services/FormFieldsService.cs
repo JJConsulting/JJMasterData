@@ -11,15 +11,17 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormFieldsService : IFormFieldsService
 {
-    public IEntityRepository EntityRepository { get; }
+    private IEntityRepository EntityRepository { get; }
+    private IFieldValidationService FieldValidationService { get; }
 
-    public IExpressionsService ExpressionsService { get; }
+    private IExpressionsService ExpressionsService { get; }
 
 
-    public FormFieldsService(IExpressionsService expressionsService, IEntityRepository entityRepository)
+    public FormFieldsService(IExpressionsService expressionsService, IEntityRepository entityRepository, IFieldValidationService fieldValidationService)
     {
         ExpressionsService = expressionsService;
         EntityRepository = entityRepository;
+        FieldValidationService = fieldValidationService;
     }
 
     /// <summary>
@@ -56,7 +58,7 @@ public class FormFieldsService : IFormFieldsService
             else
                 value = "";
 
-            var error = FieldValidator.ValidateField(field, field.Name, value, enableErrorLink);
+            var error = FieldValidationService.ValidateField(field, field.Name, value, enableErrorLink);
             if (!string.IsNullOrEmpty(error))
                 errors.Add(field.Name, error);
         }

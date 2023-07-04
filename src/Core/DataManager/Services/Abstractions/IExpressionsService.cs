@@ -17,7 +17,7 @@ public interface IExpressionsService
         ExpressionManagerInterval? interval = null);
 
     string? GetDefaultValue(ElementField f, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
-    bool GetBoolValue(string expression, string actionName, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
+    bool GetBoolValue(string? expression, string actionName, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
     Task<bool> GetBoolValueAsync(string expression, string actionName, PageState state, IDictionary<string,dynamic?>? formValues = null, IDictionary<string,dynamic?>? userValues = null);
     string? GetTriggerValue(FormElementField f, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
     string? GetValueExpression(string expression, ElementField f, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);

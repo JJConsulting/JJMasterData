@@ -51,16 +51,7 @@ public abstract class JJBaseProcess : JJBaseView
     public FormElement FormElement { get; set; }
 
 
-    internal FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-                _fieldManager = new FieldManager(FormElement);
-
-            return _fieldManager;
-        }
-    }
+    internal FieldManager FieldManager => _fieldManager ??= new FieldManager(FormElement);
 
     internal IFormFieldsService FormFieldsService { get; } =
         JJService.Provider.GetScopedDependentService<IFormFieldsService>();
@@ -68,17 +59,10 @@ public abstract class JJBaseProcess : JJBaseView
 
     internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
 
-    internal bool IsRunning()
-    {
-        return BackgroundTask.IsRunning(ProcessKey);
-    }
+    internal bool IsRunning() => BackgroundTask.IsRunning(ProcessKey);
 
-    internal void AbortProcess()
-    {
-        BackgroundTask.Abort(ProcessKey);
-    }
-
-
+    internal void AbortProcess() => BackgroundTask.Abort(ProcessKey);
+    
     private string BuildProcessKey()
     {
         var processKey = new StringBuilder();
