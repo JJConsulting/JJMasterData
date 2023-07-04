@@ -91,7 +91,7 @@ class JJDataExp {
         var target = document.getElementById('impSpin');
         var spinner = new Spinner(options).spin(target);
     }
-    static checkProcess(objname) {
+    static checkProgress(objname) {
         return __awaiter(this, void 0, void 0, function* () {
             showWaitOnPost = false;
             const form = $("form");
@@ -101,7 +101,7 @@ class JJDataExp {
             else
                 formUrl += "?t=tableexp";
             formUrl += "&gridName=" + objname;
-            formUrl += "&exptype=checkProcess";
+            formUrl += "&exptype=checkProgress";
             try {
                 const response = yield fetch(formUrl);
                 const data = yield response.json();
@@ -135,7 +135,7 @@ class JJDataExp {
             JJDataExp.setLoadMessage();
             var isCompleted = false;
             while (!isCompleted) {
-                isCompleted = yield JJDataExp.checkProcess(objname);
+                isCompleted = yield JJDataExp.checkProgress(objname);
                 yield sleep(3000);
             }
         });
@@ -248,7 +248,7 @@ class JJDataImp {
         const target = document.getElementById('impSpin');
         new Spinner(options).spin(target);
     }
-    static checkProcess(objname) {
+    static checkProgress(objname) {
         showWaitOnPost = false;
         const form = $("form");
         let url = form.attr("action");
@@ -309,7 +309,7 @@ class JJDataImp {
                 if (!result.IsProcessing) {
                     $("#current_uploadaction").val("process_finished");
                     setTimeout(function () {
-                        $("form:first").submit();
+                        $("form:first").trigger("submit");
                     }, 1000);
                 }
             }
@@ -319,7 +319,7 @@ class JJDataImp {
         $(document).ready(function () {
             JJDataImp.setLoadMessage();
             setInterval(function () {
-                JJDataImp.checkProcess(objname);
+                JJDataImp.checkProgress(objname);
             }, 3000);
         });
     }
@@ -352,7 +352,7 @@ class JJDataImp {
                 if (pastedText != undefined) {
                     $("#current_uploadaction").val("posted_past_text");
                     $("#pasteValue").val(pastedText);
-                    $("form:first").submit();
+                    $("form:first").trigger("submit");
                 }
                 return false;
             });
@@ -998,7 +998,7 @@ class JJUpload {
                 afterUploadAll: function (obj) {
                     if (autoSubmit && obj.selectedFiles > 0) {
                         $("#uploadaction_" + objid).val("afteruploadall");
-                        $("form:first").submit();
+                        $("form:first").trigger("submit");
                     }
                 }
             });
@@ -1061,7 +1061,7 @@ var jjview = (function () {
                 data: frm.serialize(),
                 success: function (data) {
                     if (data.substring(2, 18) == "<!--ErrorPage-->") {
-                        $("form:first").submit();
+                        $("form:first").trigger("submit");
                         return;
                     }
                     $("#jjgridview_" + objid).html(data);
@@ -1079,7 +1079,7 @@ var jjview = (function () {
             });
         }
         else {
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         }
     }
     return {
@@ -1285,33 +1285,33 @@ var jjview = (function () {
             $("#current_formaction_" + objid).val("");
             tablePost(objid, enableAjax, true);
         },
-        doConfigUI: function (objid, criptid) {
-            $("#current_tableaction_" + objid).val(criptid);
-            $("#current_tablepage_" + objid).val("1");
-            $("#current_tablerow_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            $("form:first").submit();
+        doConfigUI: function (componentName, encryptedActionMap) {
+            $("#current_tableaction_" + componentName).val(encryptedActionMap);
+            $("#current_tablepage_" + componentName).val("1");
+            $("#current_tablerow_" + componentName).val("");
+            $("#current_formaction_" + componentName).val("");
+            $("form:first").trigger("submit");
         },
         doConfigCancel: function (objid) {
             $("form").trigger("reset");
             $("form :checkbox").change();
             $("#config_modal_" + objid).modal("hide");
         },
-        doSelElementInsert: function (objid, criptid) {
-            $("#current_painelaction_" + objid).val("ELEMENTSEL");
-            $("#current_selaction_" + objid).val(criptid);
-            $("form:first").submit();
+        doSelElementInsert: function (componentName, encryptedActionMap) {
+            $("#current_painelaction_" + componentName).val("ELEMENTSEL");
+            $("#current_selaction_" + componentName).val(encryptedActionMap);
+            $("form:first").trigger("submit");
         },
-        gridAction: function (objid, criptid, confirmMessage) {
+        gridAction: function (componentName, encryptedActionMap, confirmMessage) {
             if (confirmMessage) {
                 var result = confirm(confirmMessage);
                 if (!result) {
                     return false;
                 }
             }
-            $("#current_tableaction_" + objid).val(criptid);
-            $("#current_formaction_" + objid).val("");
-            $("form:first").submit();
+            $("#current_tableaction_" + componentName).val(encryptedActionMap);
+            $("#current_formaction_" + componentName).val("");
+            $("form:first").trigger("submit");
         },
         doFormUrlRedirect: function (objid, criptid, confirmMessage) {
             if (confirmMessage) {
@@ -1356,7 +1356,7 @@ var jjview = (function () {
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
             $("#current_tablerow_" + objid).val(criptid);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
         showInsertSucess: function (objid) {
             $("#pnl_insertmsg_" + objid).fadeOut(2000, function () {
@@ -1391,12 +1391,12 @@ var jjview = (function () {
             }
             $("#uploadaction_" + objid).val("DELFILE");
             $("#filename_" + objid).val(filename);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
         downloadFile: function (objid, filename) {
             $("#uploadaction_" + objid).val("DOWNLOADFILE");
             $("#filename_" + objid).val(filename);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
             setTimeout(function () {
                 messageWait.hide();
                 $("#uploadaction_" + objid).val("");
@@ -1407,7 +1407,7 @@ var jjview = (function () {
             if (newFileName != null && newFileName != filename) {
                 $("#uploadaction_" + objid).val("RENAMEFILE");
                 $("#filename_" + objid).val(filename + ";" + newFileName);
-                $("form:first").submit();
+                $("form:first").trigger("submit");
             }
         },
         openUploadForm: function (objid, title, values) {
@@ -1431,7 +1431,7 @@ var jjview = (function () {
         },
         viewLog: function (objid, id) {
             $("#viewid_" + objid).val(id);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
         loadFrameLog: function (objId, logId) {
             $("#sortable_grid a").removeClass("active");

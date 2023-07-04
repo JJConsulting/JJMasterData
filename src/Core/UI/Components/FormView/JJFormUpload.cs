@@ -204,12 +204,10 @@ public class JJFormUpload : JJBaseView
         {
             if (_service == null)
             {
-                _service = new FormFileService(Name)
-                {
-                    OnBeforeCreateFile = OnBeforeCreateFile,
-                    OnBeforeDeleteFile = OnBeforeDeleteFile,
-                    OnBeforeRenameFile = OnBeforeRenameFile
-                };
+                _service = new FormFileService(Name);
+                _service.OnBeforeCreateFile += OnBeforeCreateFile;
+                _service.OnBeforeDeleteFile += OnBeforeDeleteFile;
+                _service.OnBeforeRenameFile += OnBeforeRenameFile;
             }
             _service.AutoSave = AutoSave;
             _service.FolderPath = FolderPath;

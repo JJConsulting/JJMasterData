@@ -38,7 +38,7 @@ public class AuditLogService : IAuditLogService
 
     public void AddLog(Element element,DataContext dataContext, IDictionary<string,dynamic> formValues, CommandOperation action)
     {
-        var values = new Hashtable
+        var values = new Dictionary<string,dynamic>()
         {
             { DicName, element.Name },
             { DicKey, GetKey(element, formValues) },
@@ -125,7 +125,7 @@ public class AuditLogService : IAuditLogService
 
         var origin = form.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
-        origin.DataItem.ReplaceTextOnGrid = true;
+        origin.DataItem!.ReplaceTextOnGrid = true;
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
         {
             var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i));
@@ -134,7 +134,7 @@ public class AuditLogService : IAuditLogService
 
         var action = form.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
-        action.DataItem.ReplaceTextOnGrid = true;
+        action.DataItem!.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));

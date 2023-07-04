@@ -69,14 +69,16 @@ public static class ServiceCollectionExtensions
         services.AddScriptHelpers();
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();
+   
         
         services.AddTransient<IFormEventResolver,FormEventResolver>();
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
-        
+
+ 
         
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         
-        services.AddTransient<JJMasterDataFactory>();
+        services.AddFactories();
     }
 }

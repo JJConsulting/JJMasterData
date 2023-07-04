@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +9,10 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Html;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -295,7 +293,7 @@ public class JJLookup : JJBaseControl
                 return null;
         }
 
-        var filters = new Hashtable();
+        var filters = new Dictionary<string, dynamic>();
 
         if (DataItem.ElementMap.Filters.Count > 0)
         {
@@ -308,13 +306,13 @@ public class JJLookup : JJBaseControl
 
         filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(searchId));
 
-        var dicDao = JJServiceCore.DataDictionaryRepository;
-        Hashtable fields;
+        var dicDao = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        IDictionary<string,dynamic> fields;
         try
         {
             var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
             var entityRepository = EntityRepository;
-            fields = entityRepository.GetFields(dictionary, filters);
+            fields = entityRepository.GetDictionaryAsync(dictionary, filters).GetAwaiter().GetResult();
         }
         catch
         {

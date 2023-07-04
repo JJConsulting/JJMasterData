@@ -2,14 +2,17 @@
 using System.IO;
 using System.Text;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -53,31 +56,26 @@ public class JJDataImp : JJBaseProcess
     /// </summary>
     public bool ExpandedByDefault { get; set; }
 
-    internal IFieldVisibilityService FieldVisibilityService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
+    internal IFieldVisibilityService FieldVisibilityService { get; }
     
-    internal IFormService FormService { get; } =
-        JJService.Provider.GetScopedDependentService<IFormService>();
+    internal IFormService FormService { get; }
     #endregion
 
     #region "Constructors"
-
-    public JJDataImp()
+    public JJDataImp(FormElement formElement,
+        IEntityRepository entityRepository,
+        IExpressionsService expressionsService,
+        IFormFieldsService formFieldsService,
+        IFormService formService,
+        IFieldVisibilityService fieldVisibilityService,
+        IBackgroundTask backgroundTask) 
+        : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
     {
-        ExpandedByDefault = true;
-        Name = "jjdataimp1";
+        FieldVisibilityService = fieldVisibilityService;
+        FormService = formService;
+        FormElement = formElement;
+        ProcessOptions = formElement.Options.GridToolbarActions.ImportAction.ProcessOptions;
     }
-
-    public JJDataImp(string elementName) 
-    {
-        WebComponentFactory.SetDataImpParams(this, elementName);
-    }
-
-    public JJDataImp(FormElement formElement) : this()
-    {
-        WebComponentFactory.SetDataImpParams(this, formElement);
-    }
-
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -370,5 +368,4 @@ public class JJDataImp : JJBaseProcess
             AllowedTypes = "txt,csv,log"
         };
     }
-
 }

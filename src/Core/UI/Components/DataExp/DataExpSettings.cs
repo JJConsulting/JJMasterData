@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DI;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -21,17 +24,18 @@ internal class DataExpSettings
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
 
-    public DataExpSettings(string componentName, ExportOptions exportOptions)
+    public DataExpSettings(string componentName, ExportOptions exportOptions = null)
     {
         ComponentName = componentName;
-        ExportOptions = exportOptions;
+        ExportOptions = exportOptions ?? new ExportOptions();
     }
 
     internal HtmlBuilder GetHtmlElement()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        html.AppendElement(GetFormHtmlElement(JJServiceCore.Options.ExportationFolderPath));
+        var path = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.ExportationFolderPath;
+        html.AppendElement(GetFormHtmlElement(path));
 
         html.AppendElement(HtmlTag.Hr);
         html.AppendElement(HtmlTag.Div, div =>

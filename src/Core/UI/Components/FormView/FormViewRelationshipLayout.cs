@@ -128,7 +128,6 @@ internal class FormViewRelationshipLayout
                     var childValues = ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter).GetAwaiter().GetResult();
                     var childDataPanel = new JJDataPanel(childElement)
                     {
-                        EntityRepository = ParentFormView.EntityRepository,
                         PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
                         UserValues = ParentFormView.UserValues,
                         Values = childValues,

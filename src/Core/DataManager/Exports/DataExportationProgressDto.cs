@@ -2,23 +2,23 @@
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-internal record DataExpDto
+internal record DataExportationProgressDto
 {
-    [JsonProperty("StartDate")]
+    [JsonProperty(nameof(StartDate))]
     public string StartDate { get; set; }
 
-    [JsonProperty("IsProcessing")]
+    [JsonProperty(nameof(IsProcessing))]
     public bool IsProcessing { get; set; }
 
-    [JsonProperty("Message")]
+    [JsonProperty(nameof(Message))]
     public string Message { get; set; }
 
-    [JsonProperty("FinishedMessage")]
+    [JsonProperty(nameof(FinishedMessage))]
     public string FinishedMessage { get; set; }
 
-    [JsonProperty("HasError")]
+    [JsonProperty(nameof(HasError))]
     public bool HasError { get; set; }
 
-    [JsonProperty("PercentProcess")]
+    [JsonProperty(nameof(PercentProcess))]
     public int PercentProcess { get; set; }
 }

@@ -15,6 +15,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -210,22 +211,6 @@ public class JJSearchBox : JJBaseControl
         UserValues = expOptions.UserValues;
     }
 
-    internal static JJSearchBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string dictionaryName)
-    {
-        var search = new JJSearchBox(expOptions)
-        {
-            Name = f.Name,
-            FieldName = f.Name,
-            DictionaryName = dictionaryName,
-            SelectedValue = value?.ToString(),
-            Visible = true,
-            AutoReloadFormFields = false,
-            DataItem = f.DataItem
-        };
-
-        return search;
-    }
-
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -263,7 +248,8 @@ public class JJSearchBox : JJBaseControl
 
         var field = formElement.Fields[fieldName];
         var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState, JJService.EntityRepository);
-        var searchBox = GetInstance(field, expOptions, null, dictionaryName);
+        
+        var searchBox = JJService.Provider.GetScopedDependentService<SearchBoxFactory>().GetInstance(field, expOptions, null, dictionaryName);
         searchBox.ResponseJson();
 
         return null;

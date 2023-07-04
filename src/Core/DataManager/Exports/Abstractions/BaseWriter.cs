@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -19,9 +18,9 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.DI;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
@@ -119,7 +118,8 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            string folderPath = Path.Combine(JJServiceCore.Options.ExportationFolderPath, FormElement.Name);
+            var path = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.ExportationFolderPath;
+            string folderPath = Path.Combine(path, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
             {

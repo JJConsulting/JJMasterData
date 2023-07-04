@@ -8,32 +8,30 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Options;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Core.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly JJMasterDataCommonsOptions _options;
+    private readonly JJMasterDataCoreOptions _options;
     public ElementService(IValidationDictionary validationDictionary, 
-                          IOptions<JJMasterDataCommonsOptions> commonsOptions,
+                          IOptions<JJMasterDataCoreOptions> options,
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
         _entityRepository = entityRepository;
-        _options = commonsOptions.Value;
+        _options = options.Value;
     }
 
     #region Exec Scripts GET/SET/TABLE
@@ -199,7 +197,7 @@ public class ElementService : BaseService
 
     public JJGridView GetFormView()
     {
-        var element = new Element(JJServiceCore.Options.DataDictionaryTableName, "Data Dictionaries");
+        var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
         element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
         element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);

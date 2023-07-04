@@ -29,4 +29,8 @@
 		<PackageReference Include="System.Diagnostics.EventLog" Version="6.0.0" />
 		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Tasks\BackgroundTaskManager.cs" />
+	  <Compile Remove="Tasks\BackgroundTaskBuffer.cs" />
+	</ItemGroup>
 </Project>

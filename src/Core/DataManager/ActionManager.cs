@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Configuration;
@@ -15,8 +14,8 @@ using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web;
@@ -55,7 +54,7 @@ internal class ActionManager
     public string GetInternalUrlScript(InternalAction action, IDictionary<string,dynamic>formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
+        var dicRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var formElement = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = formElement.Title;
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);

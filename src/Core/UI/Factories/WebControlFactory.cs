@@ -13,6 +13,7 @@ using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
+[Obsolete("Move this to JJMasterDataFactory")]
 internal class WebControlFactory
 {
     public readonly EventHandler<ActionEventArgs> OnRenderAction;
@@ -67,7 +68,8 @@ internal class WebControlFactory
                 baseView = JJComboBox.GetInstance(f, ExpressionOptions, value);
                 break;
             case FormComponent.Search:
-                baseView = JJSearchBox.GetInstance(f, ExpressionOptions, value, FormElement.Name);
+                var fac = JJService.Provider.GetScopedDependentService<SearchBoxFactory>();
+                baseView = fac.GetInstance(f, ExpressionOptions, value, FormElement.Name);
                 break;
             case FormComponent.Lookup:
                 baseView = JJLookup.GetInstance(f, ExpressionOptions, value, PanelName);

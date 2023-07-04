@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 
@@ -39,17 +43,10 @@ public class JJDataExp : JJBaseProcess
     /// </summary>
     public ExportOptions ExportOptions
     {
-        get
-        {
-            if (_exportOptions == null)
-                _exportOptions = new ExportOptions();
-
-            return _exportOptions;
-        }
-        set => _exportOptions = value;
+        get => _exportOptions ??= new ExportOptions();
+        internal set => _exportOptions = value;
     }
-
-
+    
     /// <summary>
     /// Exibi borda na grid 
     /// (Default = false)
@@ -61,17 +58,15 @@ public class JJDataExp : JJBaseProcess
     #endregion
 
     #region "Constructors"
-
-    public JJDataExp()
-    {
-        Name = "JJDataExp1";
-    }
-
-    public JJDataExp(FormElement formElement) : this()
+    internal JJDataExp(
+        FormElement formElement,
+        IEntityRepository entityRepository,
+        IExpressionsService expressionsService, 
+        IFormFieldsService formFieldsService, 
+        IBackgroundTask backgroundTask) : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
     {
         FormElement = formElement;
     }
-
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -221,11 +216,11 @@ public class JJDataExp : JJBaseProcess
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
-    internal DataExpDto GetCurrentProcess()
+    internal DataExportationProgressDto GetCurrentProgress()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
         var reporter = BackgroundTask.GetProgress<DataExpReporter>(ProcessKey);
-        var dto = new DataExpDto();
+        var dto = new DataExportationProgressDto();
         if (reporter != null)
         {
             dto.Message = reporter.Message;

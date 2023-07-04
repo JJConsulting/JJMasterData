@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,6 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
@@ -17,7 +15,6 @@ using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
@@ -39,19 +36,11 @@ public class JJDataPanel : JJBaseView
 
     private FieldManager _fieldManager;
     private FormUI _formUI;
-    private IEntityRepository _entityRepository;
-    private IDataDictionaryRepository _dataDictionaryRepository;
-    
-    public IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        set => _entityRepository = value;
-    }
 
-    public IDataDictionaryRepository DataDictionaryRepository
-    {
-        get => _dataDictionaryRepository ??= JJServiceCore.DataDictionaryRepository;
-    }
+    public IEntityRepository EntityRepository { get; } = JJService.EntityRepository;
+
+    public IDataDictionaryRepository DataDictionaryRepository { get; } =
+        JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
 
     public FieldManager FieldManager
     {
@@ -274,26 +263,24 @@ public class JJDataPanel : JJBaseView
         return FormFieldsService.ValidateFields(FormElement,values, pageState, enableErrorLink);
     }
 
-    [Obsolete("Must be async")]
-    internal void ResponseUrlAction()
+    internal async Task ResponseUrlAction()
     {
         if (!Name.Equals(CurrentContext.Request["objname"]))
             return;
 
-        string criptMap = CurrentContext.Request["criptid"];
-        if (string.IsNullOrEmpty(criptMap))
+        string encryptedActionMap = CurrentContext.Request["encryptedActionMap"];
+        if (string.IsNullOrEmpty(encryptedActionMap))
             return;
-
-        string jsonMap = Cript.Descript64(criptMap);
-        var parms = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
+        
+        var parms = EncryptionService.DecryptActionMap(encryptedActionMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
-        var values = GetFormValues().GetAwaiter().GetResult();
+        var values = await GetFormValues();
 
         if (action is UrlRedirectAction urlAction)
         {
             string parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, PageState,  false,values);
-            var result = new Hashtable
+            var result = new Dictionary<string,dynamic>
             {
                 { "UrlAsPopUp", urlAction.UrlAsPopUp },
                 { "TitlePopUp", urlAction.TitlePopUp },

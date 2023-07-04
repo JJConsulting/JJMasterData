@@ -17,7 +17,7 @@
                 data: frm.serialize(),
                 success: function (data) {
                     if (data.substring(2, 18) == "<!--ErrorPage-->") {
-                        $("form:first").submit();
+                        $("form:first").trigger("submit");
                         return;
                     }
 
@@ -36,7 +36,7 @@
             });
         }
         else {
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         }
     }
 
@@ -276,12 +276,12 @@
             tablePost(objid, enableAjax, true);
         },
 
-        doConfigUI: function (objid, criptid) {
-            $("#current_tableaction_" + objid).val(criptid);
-            $("#current_tablepage_" + objid).val("1");
-            $("#current_tablerow_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            $("form:first").submit();
+        doConfigUI: function (componentName, encryptedActionMap) {
+            $("#current_tableaction_" + componentName).val(encryptedActionMap);
+            $("#current_tablepage_" + componentName).val("1");
+            $("#current_tablerow_" + componentName).val("");
+            $("#current_formaction_" + componentName).val("");
+            $("form:first").trigger("submit");
         },
 
 
@@ -291,16 +291,16 @@
             $("#config_modal_" + objid).modal("hide");
         },
 
-        doSelElementInsert: function (objid, criptid) {
-            $("#current_painelaction_" + objid).val("ELEMENTSEL");
-            $("#current_selaction_" + objid).val(criptid);
-            $("form:first").submit();
+        doSelElementInsert: function (componentName, encryptedActionMap) {
+            $("#current_painelaction_" + componentName).val("ELEMENTSEL");
+            $("#current_selaction_" + componentName).val(encryptedActionMap);
+            $("form:first").trigger("submit");
         },
 
 
 
 
-        gridAction: function (objid, criptid, confirmMessage) {
+        gridAction: function (componentName, encryptedActionMap, confirmMessage) {
             if (confirmMessage) {
                 var result = confirm(confirmMessage);
                 if (!result) {
@@ -308,9 +308,9 @@
                 }
             }
 
-            $("#current_tableaction_" + objid).val(criptid);
-            $("#current_formaction_" + objid).val("");
-            $("form:first").submit();
+            $("#current_tableaction_" + componentName).val(encryptedActionMap);
+            $("#current_formaction_" + componentName).val("");
+            $("form:first").trigger("submit");
         },
 
 
@@ -361,7 +361,7 @@
             $("#current_tableaction_" + objid).val("");
             $("#current_formaction_" + objid).val("");
             $("#current_tablerow_" + objid).val(criptid);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
 
         showInsertSucess: function (objid) {
@@ -410,13 +410,13 @@
             }
             $("#uploadaction_" + objid).val("DELFILE");
             $("#filename_" + objid).val(filename);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
 
         downloadFile: function (objid, filename) {
             $("#uploadaction_" + objid).val("DOWNLOADFILE");
             $("#filename_" + objid).val(filename);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
             setTimeout(function () {
                 messageWait.hide();
                 $("#uploadaction_" + objid).val("");
@@ -428,7 +428,7 @@
             if (newFileName != null && newFileName != filename) {
                 $("#uploadaction_" + objid).val("RENAMEFILE");
                 $("#filename_" + objid).val(filename + ";" + newFileName);
-                $("form:first").submit();
+                $("form:first").trigger("submit");
             }
         },
 
@@ -458,7 +458,7 @@
         viewLog: function (objid, id) {
 
             $("#viewid_" + objid).val(id);
-            $("form:first").submit();
+            $("form:first").trigger("submit");
         },
 
         loadFrameLog: function (objId, logId) {

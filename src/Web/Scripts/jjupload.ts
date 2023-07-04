@@ -69,7 +69,7 @@
                 afterUploadAll: function (obj) {
                     if (autoSubmit && obj.selectedFiles > 0) {
                         $("#uploadaction_" + objid).val("afteruploadall");
-                        $("form:first").submit();
+                        $("form:first").trigger("submit");
                     }
                 }
             });

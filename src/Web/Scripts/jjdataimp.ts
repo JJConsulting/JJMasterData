@@ -34,7 +34,7 @@
         new Spinner(options).spin(target);
     }
 
-    private static checkProcess(objname) {
+    private static checkProgress(objname) {
         showWaitOnPost = false;
         const form = $("form");
         let url: string = form.attr("action");
@@ -109,7 +109,7 @@
                 if (!result.IsProcessing) {
                     $("#current_uploadaction").val("process_finished");
                     setTimeout(function () {
-                        $("form:first").submit()
+                        $("form:first").trigger("submit")
                     }, 1000);
                 }
             }
@@ -121,7 +121,7 @@
             JJDataImp.setLoadMessage();
 
             setInterval(function () {
-                JJDataImp.checkProcess(objname);
+                JJDataImp.checkProgress(objname);
             }, 3000);
         });
     }
@@ -160,7 +160,7 @@
 
                     $("#current_uploadaction").val("posted_past_text");
                     $("#pasteValue").val(pastedText);
-                    $("form:first").submit();
+                    $("form:first").trigger("submit");
                 }
                 return false;
             });

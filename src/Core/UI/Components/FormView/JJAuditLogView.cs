@@ -49,8 +49,7 @@ public class JJAuditLogView : JJBaseView
         get =>
             _dataPainel ??= new JJDataPanel(FormElement)
             {
-                Name = "jjpainellog_" + Name,
-                EntityRepository = EntityRepository,
+                Name = "jjpainellog_" + Name
             };
         set => _dataPainel = value;
     }
@@ -149,7 +148,7 @@ public class JJAuditLogView : JJBaseView
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Hashtable { { AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string,dynamic>() { { AuditLogService.DicId, logId } };
 
         var values = EntityRepository.GetFields(Service.GetElement(), filter);
         string json = values[AuditLogService.DicJson]?.ToString();

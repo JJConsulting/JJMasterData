@@ -28,7 +28,7 @@
         var spinner = new Spinner(options).spin(target);
     }
 
-    static async checkProcess(objname) {
+    static async checkProgress(objname) {
         showWaitOnPost = false;
 
         const form = $("form");
@@ -39,7 +39,7 @@
             formUrl += "?t=tableexp";
 
         formUrl += "&gridName=" + objname;
-        formUrl += "&exptype=checkProcess";
+        formUrl += "&exptype=checkProgress";
         
         try{
             const response = await fetch(formUrl);
@@ -79,7 +79,7 @@
         var isCompleted : boolean = false;
         
         while(!isCompleted){
-            isCompleted = await JJDataExp.checkProcess(objname);
+            isCompleted = await JJDataExp.checkProgress(objname);
             await sleep(3000);
         }
     }

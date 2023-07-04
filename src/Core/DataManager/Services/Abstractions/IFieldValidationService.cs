@@ -4,5 +4,5 @@ namespace JJMasterData.Core.DataManager;
 
 public interface IFieldValidationService
 {
-    string ValidateField(FormElementField field, string objname, string value, bool enableErrorLink = true);
+    string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true);
 }

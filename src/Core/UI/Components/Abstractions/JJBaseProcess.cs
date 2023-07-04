@@ -17,16 +17,10 @@ public abstract class JJBaseProcess : JJBaseView
     private string _processKey;
     private ProcessOptions _processOptions;
     private FieldManager _fieldManager;
-    IEntityRepository _entityRepository;
 
-    internal IExpressionsService ExpressionsService =>
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
+    internal IExpressionsService ExpressionsService { get; }
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        set => _entityRepository = value;
-    }
+    internal IEntityRepository EntityRepository { get; }
 
     internal string ProcessKey
     {
@@ -50,15 +44,24 @@ public abstract class JJBaseProcess : JJBaseView
     /// </summary>
     public FormElement FormElement { get; set; }
 
-
     internal FieldManager FieldManager => _fieldManager ??= new FieldManager(FormElement);
 
-    internal IFormFieldsService FormFieldsService { get; } =
-        JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    internal IFormFieldsService FormFieldsService { get; } 
+    
+    internal IBackgroundTask BackgroundTask { get; }
 
-
-    internal IBackgroundTask BackgroundTask => JJService.BackgroundTask;
-
+    protected JJBaseProcess(
+        IEntityRepository entityRepository,
+        IExpressionsService expressionsService, 
+        IFormFieldsService formFieldsService,
+        IBackgroundTask backgroundTask)
+    {
+        EntityRepository = entityRepository;
+        ExpressionsService = expressionsService;
+        FormFieldsService = formFieldsService;
+        BackgroundTask = backgroundTask;
+    }
+    
     internal bool IsRunning() => BackgroundTask.IsRunning(ProcessKey);
 
     internal void AbortProcess() => BackgroundTask.Abort(ProcessKey);

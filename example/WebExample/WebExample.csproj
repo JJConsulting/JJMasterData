@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="JJExportationFiles\Item\" />
       <Folder Include="Metadata" />
       <Folder Include="wwwroot\" />
 
@@ -22,6 +23,11 @@
   
     <ItemGroup>
       <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0-preview2.23159.1" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <None Remove="JJExportationFiles\Item\item_20230703_161006.xls" />
+      <None Remove="JJExportationFiles\Item\item_20230703_155047.xls" />
     </ItemGroup>
   
 </Project>

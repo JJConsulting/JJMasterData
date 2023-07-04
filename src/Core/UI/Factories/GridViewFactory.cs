@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DI;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http;
 
@@ -42,7 +44,7 @@ internal static class GridViewFactory
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName), "Nome do dicionário nao pode ser vazio");
 
-        var dictionaryRepository = JJServiceCore.DataDictionaryRepository;
+        var dictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var metadata = dictionaryRepository.GetMetadata(elementName);
         grid.Name = "jjview" + elementName.ToLower();
         grid.FormElement = metadata;

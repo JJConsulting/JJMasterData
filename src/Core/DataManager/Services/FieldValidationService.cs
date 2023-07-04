@@ -16,12 +16,12 @@ public class FieldValidationService : IFieldValidationService
     {
         Localizer = localizer;
     }
-    public string ValidateField(FormElementField field, string objname, string value, bool enableErrorLink = true)
+    public string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        string fieldName = enableErrorLink ? GetFieldLinkHtml(objname, field.Label) : field.Label;
+        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.Label) : field.Label;
 
         string error = null;
 

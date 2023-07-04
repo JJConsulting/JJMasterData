@@ -1,4 +1,8 @@
-﻿using JJMasterData.Core.DI;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
+using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web;
 
@@ -15,7 +19,7 @@ public static class BootstrapHelper
     public static readonly int Version;
     static BootstrapHelper()
     {
-        Version = JJServiceCore.Options.BootstrapVersion;
+        Version = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.BootstrapVersion;
     }
     #endregion
 

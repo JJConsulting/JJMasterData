@@ -1,6 +1,5 @@
 ﻿using System;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories;

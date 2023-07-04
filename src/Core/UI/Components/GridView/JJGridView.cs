@@ -118,13 +118,10 @@ public class JJGridView : JJBaseView
             if (_dataImp != null)
                 return _dataImp;
 
-            _dataImp = new JJDataImp(FormElement)
-            {
-                EntityRepository = EntityRepository,
-                UserValues = UserValues,
-                ProcessOptions = ImportAction.ProcessOptions,
-                Name = Name + "_dataimp"
-            };
+            _dataImp = JJService.Provider.GetScopedDependentService<JJMasterDataFactory>().CreateDataImportation(FormElement);
+            _dataImp.UserValues = UserValues;
+            _dataImp.ProcessOptions = ImportAction.ProcessOptions;
+            _dataImp.Name = Name + "_dataimp";
 
             return _dataImp;
         }
@@ -133,18 +130,16 @@ public class JJGridView : JJBaseView
     {
         get
         {
-            if (_dataExp != null) return _dataExp;
-            _dataExp = new JJDataExp(FormElement)
-            {
-                Name = Name,
-                ExportOptions = CurrentExportConfig,
-                ShowBorder = CurrentSettings.ShowBorder,
-                ShowRowStriped = CurrentSettings.ShowRowStriped,
-                EntityRepository = EntityRepository,
-                UserValues = UserValues,
-                ProcessOptions = ExportAction.ProcessOptions,
-                OnRenderCell = OnRenderCell
-            };
+            if (_dataExp != null) 
+                return _dataExp;
+            
+            _dataExp = JJService.Provider.GetScopedDependentService<JJMasterDataFactory>().CreateDataExportation(FormElement);
+            _dataExp.Name = Name;
+            _dataExp.ExportOptions = CurrentExportConfig;
+            _dataExp.ShowBorder = CurrentSettings.ShowBorder;
+            _dataExp.ShowRowStriped = CurrentSettings.ShowRowStriped;
+            _dataExp.UserValues = UserValues;
+            _dataExp.ProcessOptions = ExportAction.ProcessOptions;
 
             return _dataExp;
         }
@@ -1142,11 +1137,13 @@ public class JJGridView : JJBaseView
 #pragma warning restore CS0618
                 break;
             }
-            case "checkProcess":
+            case "checkProgress":
             {
-                var dto = exp.GetCurrentProcess();
+                var dto = exp.GetCurrentProgress();
                 string json = JsonConvert.SerializeObject(dto);
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(json, "text/json");
+#pragma warning restore CS0618
                 break;
             }
             case "stopProcess":

@@ -10,13 +10,11 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DI;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -94,7 +92,6 @@ public class JJFormView : JJBaseView
             _dataPanel ??= new JJDataPanel(FormElement)
             {
                 Name = "jjpanel_" + FormElement.Name.ToLower(),
-                EntityRepository = EntityRepository,
                 UserValues = UserValues,
                 RenderPanelGroup = true,
                 IsExternalRoute = IsExternalRoute
@@ -210,7 +207,7 @@ public class JJFormView : JJBaseView
     public ViewAction ViewAction => (ViewAction)GridView.GridActions.Find(x => x is ViewAction);
 
     public LogAction LogAction => (LogAction)GridView.ToolBarActions.Find(x => x is LogAction);
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
+    public IDataDictionaryRepository DataDictionaryRepository { get; } =  JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
 
     internal IExpressionsService ExpressionsService { get; } =
         JJService.Provider.GetScopedDependentService<IExpressionsService>();
@@ -232,7 +229,6 @@ public class JJFormView : JJBaseView
     internal JJFormView()
     {
         Name = "jjview";
-        DataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
     }
 
     public JJFormView(string elementName) : this()
@@ -291,7 +287,7 @@ public class JJFormView : JJBaseView
         }
         else if ("geturlaction".Equals(requestType))
         {
-            dataPanel.ResponseUrlAction();
+            dataPanel.ResponseUrlAction().GetAwaiter().GetResult();
             return null;
         }
 
@@ -557,8 +553,7 @@ public class JJFormView : JJBaseView
         string jsonMap = Cript.Descript64(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var dicRepository = JJServiceCore.DataDictionaryRepository;
-        var formElement = dicRepository.GetMetadata(InsertAction.ElementNameToSelect);
+        var formElement = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var selValues = EntityRepository.GetDictionaryAsync(formElement, map.PkFieldValues).GetAwaiter().GetResult();
         var values = FormFieldsService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);

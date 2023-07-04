@@ -15,9 +15,9 @@ namespace JJMasterData.Core.DataManager;
 
 internal class FormFileService
 {
-    public EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
-    public EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
-    public EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
+    public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
+    public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
+    public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
 
     /// <summary>
     /// Session variable name
