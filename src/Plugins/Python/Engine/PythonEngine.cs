@@ -13,7 +13,7 @@ namespace JJMasterData.Python.Engine;
 /// <remarks>
 /// Gustavo Barros 05/01/2022
 /// </remarks>
-public class PythonEngine : IPythonEngine
+public class PythonEngine 
 {
     public ScriptScope Scope;
 

@@ -10,10 +10,6 @@ namespace JJMasterData.Commons.Tasks;
 
 internal sealed class BackgroundTask : IBackgroundTask
 {
-    private static BackgroundTask _instance;
-
-    public static BackgroundTask GetInstance() => _instance ??= new BackgroundTask();
-
     private static Lazy<List<TaskWrapper>> _taskList;
     internal static List<TaskWrapper> TaskList
     {
@@ -45,7 +41,7 @@ internal sealed class BackgroundTask : IBackgroundTask
 
         taskWrapper.Task = new Task(() => {
             worker.OnProgressChanged += (_, e) => { taskWrapper.ProgressResult = e; };
-            worker.RunWorkerAsync(cancellationSource.Token).Wait();
+            worker.RunWorkerAsync(cancellationSource.Token).Wait(cancellationSource.Token);
         });
 
         var olderPipeline = GetTask(key);
@@ -82,6 +78,4 @@ internal sealed class BackgroundTask : IBackgroundTask
 
         return default;
     }
-
-
 }

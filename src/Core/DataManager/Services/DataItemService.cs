@@ -22,16 +22,13 @@ public class DataItemService : IDataItemService
         ExpressionsService = expressionsService;
     }
 
-    public IEnumerable<DataItemResult> GetSearchBoxItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
+    public IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
     {
         foreach (var i in values.ToArray())
         {
-            string description;
-            
-            if (dataItem.ShowImageLegend)
-                description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}";
-            else
-                description = i.Description;
+            var description = dataItem.ShowImageLegend 
+                ? $"{i.Description}|{i.Icon.GetCssClass()}|{i.ImageColor}"
+                : i.Description;
             
             yield return new DataItemResult(i.Id, description);
         }

@@ -14,6 +14,7 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IExpressionsService, ExpressionsService>();
         services.AddTransient<IFieldFormattingService, FieldFormattingService>();
         services.AddTransient<IFieldVisibilityService, FieldVisibilityService>();
+        services.AddTransient<IFieldValidationService, FieldValidationService>();
         services.AddTransient<IFormService, FormService>();
         services.AddTransient<IFormFieldsService, FormFieldsService>();
         services.AddScoped<IFormValuesService,FormValuesService>();

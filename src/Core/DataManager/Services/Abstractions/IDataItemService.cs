@@ -7,7 +7,7 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
 public interface IDataItemService
 {
-    IEnumerable<DataItemResult> GetSearchBoxItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values);
+    IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values);
     
     Task<IEnumerable<DataItemValue>> GetValues(FormElementDataItem dataItem,
         string searchText,

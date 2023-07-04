@@ -407,7 +407,7 @@ public class JJSearchBox : JJBaseControl
         string textSearch = CurrentContext.Request.Form(componentName);
 
         var values = GetValues(textSearch);
-        var items = DataItemService.GetSearchBoxItems(DataItem, values);
+        var items = DataItemService.GetItems(DataItem, values);
 
         return items;
     }

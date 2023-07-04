@@ -10,11 +10,11 @@ namespace JJMasterData.Core.DataManager;
 
 public class FieldValidationService : IFieldValidationService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<JJMasterDataResources> Localizer { get; }
 
-    public FieldValidationService(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public FieldValidationService(IStringLocalizer<JJMasterDataResources> localizer)
     {
-        StringLocalizer = stringLocalizer;
+        Localizer = localizer;
     }
     public string ValidateField(FormElementField field, string objname, string value, bool enableErrorLink = true)
     {
@@ -29,7 +29,7 @@ public class FieldValidationService : IFieldValidationService
         {
             if (field.IsRequired || field.IsPk)
             {
-                error = StringLocalizer["{0} field is required", fieldName];
+                error = Localizer["{0} field is required", fieldName];
             }
         }
         else
@@ -49,7 +49,7 @@ public class FieldValidationService : IFieldValidationService
             case FormComponent.Email:
                 if (!Validate.ValidEmail(value))
                 {
-                    return StringLocalizer["{0} field invalid email", fieldName];
+                    return Localizer["{0} field invalid email", fieldName];
                 }
 
                 break;
@@ -64,36 +64,35 @@ public class FieldValidationService : IFieldValidationService
                     out _);
                 if (!valid)
                 {
-                    return StringLocalizer["{0} field has an invalid time", fieldName];
+                    return Localizer["{0} field has an invalid time", fieldName];
                 }
-
 
                 break;
             case FormComponent.Cnpj:
                 if (!Validate.ValidCnpj(value))
                 {
-                    return StringLocalizer["{0} field has an invalid value", fieldName];
+                    return Localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Cpf:
                 if (!Validate.ValidCpf(value))
                 {
-                    return StringLocalizer["{0} field has an invalid value", fieldName];
+                    return Localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.CnpjCpf:
                 if (!Validate.ValidCpfCnpj(value))
                 {
-                    return StringLocalizer["{0} field has an invalid value", fieldName];
+                    return Localizer["{0} field has an invalid value", fieldName];
                 }
 
                 break;
             case FormComponent.Tel:
                 if (!Validate.ValidTel(value))
                 {
-                    return StringLocalizer["{0} field invalid phone", fieldName];
+                    return Localizer["{0} field invalid phone", fieldName];
                 }
 
                 break;
@@ -102,13 +101,13 @@ public class FieldValidationService : IFieldValidationService
                 if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
                 {
                     if (double.Parse(value) < (double?)minValue)
-                        return StringLocalizer["{0} field needs to be greater than {1}", fieldName, minValue];
+                        return Localizer["{0} field needs to be greater than {1}", fieldName, minValue];
                 }
 
                 if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
                 {
                     if (double.Parse(value) > (double?)maxValue)
-                        return StringLocalizer["{0} field needs to be less or equal than {1}", fieldName, maxValue];
+                        return Localizer["{0} field needs to be less or equal than {1}", fieldName, maxValue];
                 }
 
                 break;
@@ -116,7 +115,7 @@ public class FieldValidationService : IFieldValidationService
             case FormComponent.TextArea:
                 if (field.ValidateRequest && value.ToLower().Contains("<script"))
                 {
-                    return StringLocalizer["{0} field contains invalid or not allowed character", fieldName];
+                    return Localizer["{0} field contains invalid or not allowed character", fieldName];
                 }
 
                 break;
@@ -134,7 +133,7 @@ public class FieldValidationService : IFieldValidationService
             case FieldType.DateTime2:
                 if (!DateTime.TryParse(value, out var date) || date.Year < 1900)
                 {
-                    return StringLocalizer["{0} field is a invalid date",
+                    return Localizer["{0} field is a invalid date",
                         fieldName];
                 }
 
@@ -142,7 +141,7 @@ public class FieldValidationService : IFieldValidationService
             case FieldType.Int:
                 if (!int.TryParse(value, out _))
                 {
-                    return StringLocalizer["{0} field has an invalid number",
+                    return Localizer["{0} field has an invalid number",
                         fieldName];
                 }
 
@@ -150,7 +149,7 @@ public class FieldValidationService : IFieldValidationService
             case FieldType.Float:
                 if (!double.TryParse(value, out _))
                 {
-                    return StringLocalizer["{0} field has an invalid number",
+                    return Localizer["{0} field has an invalid number",
                         fieldName];
                 }
 
@@ -158,7 +157,7 @@ public class FieldValidationService : IFieldValidationService
             default:
                 if (value.Length > field.Size && field.Size > 0)
                 {
-                    return StringLocalizer["{0} field cannot contain more than {1} characters",
+                    return Localizer["{0} field cannot contain more than {1} characters",
                         fieldName, field.Size];
                 }
 
