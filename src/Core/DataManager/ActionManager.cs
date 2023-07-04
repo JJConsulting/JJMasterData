@@ -28,6 +28,7 @@ using Newtonsoft.Json;
 namespace JJMasterData.Core.DataManager;
 
 //TODO: Remove this class
+//TODO: When removing this class DON'T use JJService, see DataManager/Services/
 internal class ActionManager
 {
     /// <summary>
@@ -42,6 +43,7 @@ internal class ActionManager
     internal IEntityRepository EntityRepository => JJService.EntityRepository;
 
     internal IFormFieldsService FormFieldsService => JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    internal JJMasterDataEncryptionService JJMasterDataEncryptionService => JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
     public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
     {
         FormElement = formElement;
@@ -103,7 +105,7 @@ internal class ActionManager
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         actionMap.FieldName = fieldName;
-        string criptMap = actionMap.GetCriptJson();
+        var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
         int popupSize = (int)action.PopupSize;
         
@@ -114,7 +116,7 @@ internal class ActionManager
             script.Append("jjview.doFormUrlRedirect('");
             script.Append(ComponentName);
             script.Append("','");
-            script.Append(criptMap);
+            script.Append(encryptedActionMap);
             script.Append('\'');
             if (!string.IsNullOrEmpty(confirmationMessage))
             {
@@ -150,7 +152,7 @@ internal class ActionManager
     public string GetFormActionScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource actionSource, bool isPopup = false)
     {
         var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
-        string encryptedActionMap = actionMap.GetCriptJson();
+        var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         string functionSignature;
@@ -221,13 +223,13 @@ internal class ActionManager
     internal string GetExportScript(ExportAction action, IDictionary<string,dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
 
         var script = new StringBuilder();
         script.Append("JJDataExp.doExport('");
         script.Append(ComponentName);
         script.Append("','");
-        script.Append(criptMap);
+        script.Append(encryptedActionMap);
         script.Append("');");
 
         return script.ToString();
@@ -236,13 +238,13 @@ internal class ActionManager
     internal string GetConfigUIScript(ConfigAction action, IDictionary<string,dynamic>formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
-        string criptMap = actionMap.GetCriptJson();
+        string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
 
         var script = new StringBuilder();
         script.Append("jjview.doConfigUI('");
         script.Append(ComponentName);
         script.Append("','");
-        script.Append(criptMap);
+        script.Append(encryptedActionMap);
         script.Append("');");
 
         return script.ToString();

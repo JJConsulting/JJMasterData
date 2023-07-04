@@ -433,7 +433,7 @@ public class MasterApiService
         var formManager = new FormFieldsService(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
-            EnableHistoryLog = logActionIsVisible
+            EnableAuditLog = logActionIsVisible
         };
 
         service.AddFormEvent(formEvent);

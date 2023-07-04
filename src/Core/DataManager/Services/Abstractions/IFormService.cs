@@ -9,8 +9,8 @@ namespace JJMasterData.Core.DataManager;
 
 public interface IFormService
 {
-    bool EnableErrorLink { get; set; }
-    bool EnableHistoryLog { get; set; }
+    bool EnableErrorLinks { get; set; }
+    bool EnableAuditLog { get; set; }
     event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
     event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
     event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;

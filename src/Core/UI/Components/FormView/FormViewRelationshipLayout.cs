@@ -143,15 +143,7 @@ internal class FormViewRelationshipLayout
                     var childGrid = new JJFormView(childElement)
                     {
                         UserValues = ParentFormView.UserValues,
-                        IsExternalRoute = true,
-                        GridView =
-                        {
-                            IsExternalRoute = true,
-                            FilterAction =
-                            {
-                                ShowAsCollapse = true
-                            }
-                        }
+                        IsExternalRoute = true
                     };
                     childGrid.GridView.Filter.ApplyCurrentFilter(filter);
                     childGrid.SetOptions(childElement.Options);

@@ -25,6 +25,7 @@ using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -54,12 +55,12 @@ public class JJFormView : JJBaseView
     private JJDataPanel _dataPanel;
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
-    private JJFormLog _logHistory;
+    private JJAuditLogView _auditLogView;
     private IFormService _service;
 
 
-    internal JJFormLog FormLog =>
-        _logHistory ??= new JJFormLog(FormElement, EntityRepository);
+    internal JJAuditLogView AuditLogView =>
+        _auditLogView ??= new JJAuditLogView(FormElement, EntityRepository);
 
 
     /// <summary>
@@ -90,17 +91,14 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            if (_dataPanel == null)
+            _dataPanel ??= new JJDataPanel(FormElement)
             {
-                _dataPanel = new JJDataPanel(FormElement)
-                {
-                    Name = "jjpanel_" + FormElement.Name.ToLower(),
-                    EntityRepository = EntityRepository,
-                    UserValues = UserValues,
-                    RenderPanelGroup = true,
-                    IsExternalRoute = IsExternalRoute
-                };
-            }
+                Name = "jjpanel_" + FormElement.Name.ToLower(),
+                EntityRepository = EntityRepository,
+                UserValues = UserValues,
+                RenderPanelGroup = true,
+                IsExternalRoute = IsExternalRoute
+            };
 
             _dataPanel.PageState = PageState;
 
@@ -124,9 +122,24 @@ public class JJFormView : JJBaseView
     public JJGridView GridView =>
         _gridView ??= new JJGridView
         {
-            Name = "jjgridview_" + Name.ToLower(),
+            Name = Name.ToLower(),
+            FormElement = FormElement,
             UserValues = UserValues,
-            IsExternalRoute = IsExternalRoute
+            IsExternalRoute = IsExternalRoute,
+            ShowTitle = true,
+            ToolBarActions = new List<BasicAction>
+            {
+                new InsertAction(),
+                new DeleteSelectedRowsAction(),
+                new LogAction()
+                
+            },
+            GridActions = new List<BasicAction>
+            {
+                new ViewAction(),
+                new EditAction(),
+                new DeleteAction()
+            }
         };
 
     /// <summary>
@@ -152,12 +165,11 @@ public class JJFormView : JJBaseView
         {
             if (_currentActionMap != null) return _currentActionMap;
 
-            string criptMap = CurrentContext.Request["current_formaction_" + Name];
-            if (string.IsNullOrEmpty(criptMap))
+            string encryptedActionMap = CurrentContext.Request["current_formaction_" + Name];
+            if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
-            string jsonMap = Cript.Descript64(criptMap);
-            _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
+            _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
             return _currentActionMap;
         }
     }
@@ -170,8 +182,8 @@ public class JJFormView : JJBaseView
             if (_service == null)
             {
                 _service = JJService.Provider.GetScopedDependentService<IFormService>();
-                _service.EnableErrorLink = true;
-                _service.EnableHistoryLog = LogAction.IsVisible;
+                _service.EnableErrorLinks = true;
+                _service.EnableAuditLog = LogAction.IsVisible;
 
                 _service.OnBeforeInsert += OnBeforeInsert;
                 _service.OnBeforeUpdate += OnBeforeUpdate;
@@ -221,14 +233,6 @@ public class JJFormView : JJBaseView
     {
         Name = "jjview";
         DataDictionaryRepository = JJServiceCore.DataDictionaryRepository;
-        
-        GridView.ShowTitle = true;
-        GridView.ToolBarActions.Add(new InsertAction());
-        GridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
-        GridView.ToolBarActions.Add(new LogAction());
-        GridView.GridActions.Add(new ViewAction());
-        GridView.GridActions.Add(new EditAction());
-        GridView.GridActions.Add(new DeleteAction());
     }
 
     public JJFormView(string elementName) : this()
@@ -240,7 +244,6 @@ public class JJFormView : JJBaseView
     public JJFormView(FormElement formElement) : this()
     {
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        GridViewFactory.SetGridViewParams(GridView,  FormElement);
         Name = "jjview" + formElement.Name.ToLower();
     }
 
@@ -730,16 +733,16 @@ public class JJFormView : JJBaseView
 
         if (pageState == PageState.View)
         {
-            var html = FormLog.GetDetailLog(actionMap.PkFieldValues);
+            var html = AuditLogView.GetDetailLog(actionMap.PkFieldValues);
             html.AppendElement(GetFormLogBottomBar(actionMap.PkFieldValues));
             pageState = PageState.Log;
             return html;
         }
 
-        FormLog.GridView.AddToolBarAction(goBackAction);
-        FormLog.DataPainel = DataPanel;
+        AuditLogView.GridView.AddToolBarAction(goBackAction);
+        AuditLogView.DataPainel = DataPanel;
         pageState = PageState.Log;
-        return FormLog.GetHtmlBuilder();
+        return AuditLogView.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetHtmlDataImp(ref PageState pageState)
@@ -893,8 +896,8 @@ public class JJFormView : JJBaseView
         if (sender is not JJGridView grid) return;
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
-        string criptId = map.GetCriptJson();
-        e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{criptId}');";
+        string encryptedActionMap = EncryptionService.EncryptActionMap(map);
+        e.LinkButton.OnClientClick = $"jjview.doSelElementInsert('{Name}','{encryptedActionMap}');";
     }
 
     /// <summary>

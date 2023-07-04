@@ -25,9 +25,9 @@ public class FormService : IFormService
 
     private IAuditLogService AuditLog { get; }
 
-    public bool EnableErrorLink { get; set; }
+    public bool EnableErrorLinks { get; set; }
 
-    public bool EnableHistoryLog { get; set; }
+    public bool EnableAuditLog { get; set; }
 
     #endregion
 
@@ -64,7 +64,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public FormLetter Update(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
     {
-        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Update, EnableErrorLink);
+        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null)
@@ -85,7 +85,7 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (EnableHistoryLog)
+        if (EnableAuditLog)
             AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
@@ -102,7 +102,7 @@ public class FormService : IFormService
     {
         IDictionary<string,dynamic>errors;
         if (validateFields)
-            errors = FormFieldsService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLink);
+            errors = FormFieldsService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLinks);
         else
             errors = new Dictionary<string,dynamic>();
 
@@ -124,7 +124,7 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (EnableHistoryLog)
+        if (EnableAuditLog)
             AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
@@ -145,7 +145,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public FormLetter<CommandOperation> InsertOrReplace(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
     {
-        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Import, EnableErrorLink);
+        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)
@@ -162,7 +162,7 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        if (EnableHistoryLog)
+        if (EnableAuditLog)
             AuditLog.AddLog(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
@@ -219,7 +219,7 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
-        if (EnableHistoryLog)
+        if (EnableAuditLog)
             AuditLog.AddLog(formElement,dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)

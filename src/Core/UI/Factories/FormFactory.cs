@@ -38,9 +38,7 @@ internal static class FormFactory
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(metadata));
         
         form.FormElement = metadata;
-        
-        GridViewFactory.SetGridViewParams(form.GridView, metadata);
-        
+
         SetFormOptions(form, metadata.Options);
     }
 

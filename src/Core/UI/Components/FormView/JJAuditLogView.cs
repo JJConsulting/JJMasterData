@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJFormLog : JJBaseView
+public class JJAuditLogView : JJBaseView
 {
     private IAuditLogService _service;
     private JJGridView _gridView;
@@ -66,12 +66,12 @@ public class JJFormLog : JJBaseView
 
     internal IEntityRepository EntityRepository { get; private set; }
 
-    private JJFormLog()
+    private JJAuditLogView()
     {
         Name = "loghistory";
     }
 
-    public JJFormLog(FormElement formElement, IEntityRepository entityRepository) : this()
+    public JJAuditLogView(FormElement formElement, IEntityRepository entityRepository) : this()
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
