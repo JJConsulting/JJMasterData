@@ -22,7 +22,7 @@
 
             const frm = $("form");
 
-            if (!urltypehead.includes("GetResults")) {
+            if (!urltypehead.includes("GetItems")) {
                 let url = frm.attr("action");
                 if (url.includes("?"))
                     url += "&";
