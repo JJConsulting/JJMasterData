@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace JJMasterData.Core.Web;
 
-public class JJMasterDataUrlHelper
+public class JJMasterDataUrlHelper 
 {
 #if NET6_0_OR_GREATER
     private IUrlHelper UrlHelper { get; }

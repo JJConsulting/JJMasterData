@@ -17,6 +17,7 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Options;
 
@@ -27,6 +28,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJDataExp : JJBaseProcess
 {
+
     #region "Events"
 
     /// <summary>
@@ -56,7 +58,8 @@ public class JJDataExp : JJBaseProcess
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
-    public JJMasterDataCoreOptions MasterDataOptions { get; }
+    internal JJMasterDataCoreOptions MasterDataOptions { get; }
+    internal DataExportationScriptHelper ScriptHelper { get; }
 
     #endregion
 
@@ -66,9 +69,11 @@ public class JJDataExp : JJBaseProcess
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFormFieldsService formFieldsService,
+        DataExportationScriptHelper dataExportationScriptHelper,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask) : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
     {
+        ScriptHelper = dataExportationScriptHelper;
         MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
     }
@@ -76,7 +81,7 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExpLog(Name).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
+        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
     }
 
     internal static JJIcon GetFileIcon(string ext)

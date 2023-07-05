@@ -36,12 +36,15 @@ internal class DataExpSettings
             div.WithCssClass("row");
             div.AppendElement(HtmlTag.Div, div =>
             {
+                string onClientClick = DataExportation.ScriptHelper.GetStartExportationScript(
+                    DataExportation.FormElement.Name, DataExportation.Name, DataExportation.IsExternalRoute);
+                
                 var btnOk = new JJLinkButton
                 {
                     Text = Translate.Key("Export"),
                     IconClass = "fa fa-check",
                     ShowAsButton = true,
-                    OnClientClick = DataExportation.IsExternalRoute ? " ": $"JJDataExp.doExport('{DataExportation.Name}');"
+                    OnClientClick = onClientClick
                 };
 
                 var btnCancel = new JJLinkButton

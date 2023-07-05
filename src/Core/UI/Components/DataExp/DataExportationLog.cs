@@ -1,15 +1,22 @@
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class DataExpLog
+internal class DataExportationLog
 {
+    private DataExportationScriptHelper ExportationScriptHelper { get; }
     private readonly string _name;
+    private readonly bool _isExternalRoute;
+    private readonly string _dictionaryName;
 
-    public DataExpLog(string name)
+    public DataExportationLog(JJDataExp dataExportation)
     {
-        _name = name;
+        ExportationScriptHelper = dataExportation.ScriptHelper;
+        _name = dataExportation.Name;
+        _isExternalRoute = dataExportation.IsExternalRoute;
+        _dictionaryName = dataExportation.FormElement.Name;
     }
 
     internal HtmlBuilder GetHtmlProcess()
@@ -54,8 +61,10 @@ internal class DataExpLog
                 a.AppendText("&nbsp;" + Translate.Key("Stop the exportation."));
             });
         });
+
+        var progressVerificationScript = ExportationScriptHelper.GetStartProgressVerificationScript(_dictionaryName,_name,_isExternalRoute);
         
-        div.AppendScript($"JJDataExp.startProcess('{_name}')");
+        div.AppendScript(progressVerificationScript);
         
         return div;
     }
@@ -68,7 +77,7 @@ internal class DataExpLog
             .AppendHiddenInput("current_uploadaction", string.Empty)
             .AppendElement(HtmlTag.Div, div =>
             {
-                div.WithAttribute("id", "impSpin");
+                div.WithAttribute("id", "exportationSpinner");
                 div.WithAttribute("style", "position: relative; height: 80px");
             });
     }

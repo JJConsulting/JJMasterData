@@ -136,6 +136,7 @@ public class JJGridView : JJBaseView
             
             _dataExp = JJService.Provider.GetScopedDependentService<JJMasterDataFactory>().CreateDataExportation(FormElement);
             _dataExp.Name = Name;
+            _dataExp.IsExternalRoute = IsExternalRoute;
             _dataExp.ExportOptions = CurrentExportConfig;
             _dataExp.ShowBorder = CurrentSettings.ShowBorder;
             _dataExp.ShowRowStriped = CurrentSettings.ShowRowStriped;
@@ -585,7 +586,7 @@ public class JJGridView : JJBaseView
     }
 
     #if NET48
-    [Obsolete("This constructor uses a static service locator and is an anti pattern. Please use JJMasterDataFactory.")]
+    [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use JJMasterDataFactory.")]
     public JJGridView(string elementName) : this()
     {
         Name = "jjview" + elementName.ToLower();
@@ -1149,7 +1150,7 @@ public class JJGridView : JJBaseView
                     }
                 }
 
-                var html = new DataExpLog(DataExportation.Name).GetHtmlProcess();
+                var html = new DataExportationLog(DataExportation).GetHtmlProcess();
 
 #pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(html.ToString());

@@ -7,33 +7,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class ExportController : MasterDataController
+public class ExportationController : MasterDataController
 {
     private GridViewFactory GridViewFactory { get; }
     private DataExportationFactory DataExportationFactory { get; }
 
-    public ExportController(GridViewFactory gridViewFactory,DataExportationFactory dataExportationFactory)
+    public ExportationController(GridViewFactory gridViewFactory,DataExportationFactory dataExportationFactory)
     {
         GridViewFactory = gridViewFactory;
         DataExportationFactory = dataExportationFactory;
     }
     
     [DictionaryNameDecryptionServiceFilter]
-    public async Task<IActionResult> StartExportation([FromQuery]string dictionaryName)
+    public async Task<IActionResult> StartExportation(string dictionaryName, string componentName)
     {
         var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);
-        
+        gridView.IsExternalRoute = true;
+        gridView.DataExportation.Name = componentName;
         gridView.ExportFileInBackground();
         
-        var html = new DataExpLog(gridView.DataExportation.Name).GetHtmlProcess().ToString();
+        var html = new DataExportationLog(gridView.DataExportation).GetHtmlProcess().ToString();
         
         return Content(html);
     }
     
     [DictionaryNameDecryptionServiceFilter]
-    public async Task<IActionResult> Settings([FromQuery]string dictionaryName)
+    public async Task<IActionResult> Settings(string dictionaryName, string componentName)
     {
         var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        dataExportation.Name = componentName;
+        dataExportation.IsExternalRoute = true;
+        
         var settings = new DataExpSettings(dataExportation);
         return Content(settings.GetHtmlElement().ToString());
     }

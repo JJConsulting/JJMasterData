@@ -21,6 +21,64 @@ function setupCollapsePanel(name) {
     });
 }
 class DataExportation {
+    static checkProgress(url, componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            showWaitOnPost = false;
+            try {
+                const response = yield fetch(url);
+                const data = yield response.json();
+                if (data.FinishedMessage) {
+                    showWaitOnPost = true;
+                    document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                    document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
+                    const linkFile = document.querySelector("#export_link_" + componentName);
+                    if (linkFile)
+                        linkFile.click();
+                    return true;
+                }
+                else {
+                    document.querySelector("#divMsgProcess").style.display = "";
+                    document.querySelector(".progress-bar").style.width = data.PercentProcess + "%";
+                    document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
+                    document.querySelector("#lblStartDate").textContent = data.StartDate;
+                    document.querySelector("#lblResumeLog").textContent = data.Message;
+                    return false;
+                }
+            }
+            catch (e) {
+                showWaitOnPost = true;
+                document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
+                document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = e.message;
+                return false;
+            }
+        });
+    }
+    static setLoadMessage() {
+        const options = {
+            lines: 13,
+            length: 38,
+            width: 17,
+            radius: 45,
+            scale: 0.2,
+            corners: 1,
+            color: "#000",
+            opacity: 0.3,
+            rotate: 0,
+            direction: 1,
+            speed: 1.2,
+            trail: 62,
+            fps: 20,
+            zIndex: 2e9,
+            className: "spinner",
+            top: "50%",
+            left: "50%",
+            shadow: false,
+            hwaccel: false,
+            position: "absolute"
+        };
+        const target = document.getElementById('exportationSpinner');
+        var spinner = new Spinner(options).spin(target);
+    }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
@@ -69,6 +127,16 @@ class DataExportation {
         })
             .catch(error => {
             console.log(error);
+        });
+    }
+    static startProgressVerification(url, componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            DataExportation.setLoadMessage();
+            var isCompleted = false;
+            while (!isCompleted) {
+                isCompleted = yield DataExportation.checkProgress(url, componentName);
+                yield sleep(3000);
+            }
         });
     }
 }
@@ -253,35 +321,9 @@ $(function () {
     jjloadform("load", null);
 });
 class JJDataExp {
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
-        var target = document.getElementById('impSpin');
-        var spinner = new Spinner(options).spin(target);
-    }
-    static checkProgress(objname) {
+    static startProgressVerification(objname) {
         return __awaiter(this, void 0, void 0, function* () {
-            showWaitOnPost = false;
+            DataExportation.setLoadMessage();
             const form = $("form");
             let formUrl = form.attr("action");
             if (formUrl.includes("?"))
@@ -290,47 +332,16 @@ class JJDataExp {
                 formUrl += "?t=tableexp";
             formUrl += "&gridName=" + objname;
             formUrl += "&exptype=checkProgress";
-            try {
-                const response = yield fetch(formUrl);
-                const data = yield response.json();
-                if (data.FinishedMessage) {
-                    showWaitOnPost = true;
-                    $("#export_modal_" + objname + " .modal-body").html(data.FinishedMessage);
-                    $("#dataexp_spinner_" + objname).hide();
-                    const linkFile = $("#export_link_" + objname)[0];
-                    if (linkFile)
-                        linkFile.click();
-                    return true;
-                }
-                else {
-                    $("#divMsgProcess").css("display", "");
-                    $(".progress-bar").css("width", data.PercentProcess + "%").text(data.PercentProcess + "%");
-                    $("#lblStartDate").text(data.StartDate);
-                    $("#lblResumeLog").text(data.Message);
-                    return false;
-                }
-            }
-            catch (e) {
-                showWaitOnPost = true;
-                $("#dataexp_spinner_" + objname).hide();
-                $("#export_modal_" + objname + " .modal-body").html(e.message);
-                return false;
-            }
-        });
-    }
-    static startProcess(objname) {
-        return __awaiter(this, void 0, void 0, function* () {
-            JJDataExp.setLoadMessage();
             var isCompleted = false;
             while (!isCompleted) {
-                isCompleted = yield JJDataExp.checkProgress(objname);
+                isCompleted = yield DataExportation.checkProgress(formUrl, objname);
                 yield sleep(3000);
             }
         });
     }
-    static stopProcess(objid, stopStr) {
+    static stopProcess(objid, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
-            $("#divMsgProcess").html(stopStr);
+            $("#divMsgProcess").html(stopMessage);
             showWaitOnPost = false;
             var frm = $("form");
             var surl = frm.attr("action");
