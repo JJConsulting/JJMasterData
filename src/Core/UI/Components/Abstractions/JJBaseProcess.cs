@@ -9,6 +9,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -49,22 +50,25 @@ public abstract class JJBaseProcess : JJBaseView
     internal IFormFieldsService FormFieldsService { get; } 
     
     internal IBackgroundTask BackgroundTask { get; }
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     protected JJBaseProcess(
         IEntityRepository entityRepository,
         IExpressionsService expressionsService, 
         IFormFieldsService formFieldsService,
-        IBackgroundTask backgroundTask)
+        IBackgroundTask backgroundTask,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FormFieldsService = formFieldsService;
         BackgroundTask = backgroundTask;
+        StringLocalizer = stringLocalizer;
     }
     
     internal bool IsRunning() => BackgroundTask.IsRunning(ProcessKey);
 
-    internal void AbortProcess() => BackgroundTask.Abort(ProcessKey);
+    internal void StopExportation() => BackgroundTask.Abort(ProcessKey);
     
     private string BuildProcessKey()
     {

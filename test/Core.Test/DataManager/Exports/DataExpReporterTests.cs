@@ -8,7 +8,7 @@ public class DataExpReporterTests
     public void Percentage_Is_Calculated_Correctly()
     {
         // Arrange
-        var reporter = new DataExpReporter
+        var reporter = new DataExportationReporter
         {
             TotalRecords = 100,
             TotalProcessed = 50
@@ -25,7 +25,7 @@ public class DataExpReporterTests
     public void Percentage_Is_Zero_When_No_Records_Processed()
     {
         // Arrange
-        var reporter = new DataExpReporter
+        var reporter = new DataExportationReporter
         {
             TotalRecords = 100,
             TotalProcessed = 0
@@ -46,7 +46,7 @@ public class DataExpReporterTests
     public void Percentage_Is_Capped_At_100(int totalRecords, int totalProcessed)
     {
         // Arrange
-        var reporter = new DataExpReporter
+        var reporter = new DataExportationReporter
         {
             TotalRecords = totalRecords,
             TotalProcessed = totalProcessed

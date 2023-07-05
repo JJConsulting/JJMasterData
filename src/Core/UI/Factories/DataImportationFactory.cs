@@ -4,6 +4,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -13,6 +14,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -23,11 +25,10 @@ public class DataImportationFactory
     private IExpressionsService ExpressionsService { get; }
     private IFormFieldsService FormFieldsService { get; }
     private IBackgroundTask BackgroundTask { get; }
-    
     private IFormService FormService { get; }
-
     private IFieldVisibilityService FieldVisibilityService { get; }
     private IFormEventResolver FormEventResolver { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public DataImportationFactory(
         IDataDictionaryRepository dataDictionaryRepository,
@@ -37,8 +38,8 @@ public class DataImportationFactory
         IBackgroundTask backgroundTask,
         IFormService formService,
         IFieldVisibilityService fieldVisibilityService,
-        IFormEventResolver formEventResolver
-        )
+        IFormEventResolver formEventResolver,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;
@@ -48,6 +49,7 @@ public class DataImportationFactory
         FormService = formService;
         FieldVisibilityService = fieldVisibilityService;
         FormEventResolver = formEventResolver;
+        StringLocalizer = stringLocalizer;
     }
 
     public async Task<JJDataImp> CreateDataImportationAsync(string elementName)
@@ -72,7 +74,7 @@ public class DataImportationFactory
     
     public JJDataImp CreateDataImportation(FormElement formElement)
     {
-        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FormFieldsService,FormService, FieldVisibilityService, BackgroundTask);
+        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FormFieldsService,FormService, FieldVisibilityService, BackgroundTask, StringLocalizer);
     }
 
 

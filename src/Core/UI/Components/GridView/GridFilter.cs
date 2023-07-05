@@ -121,8 +121,8 @@ internal class GridFilter
     
     public HtmlBuilder GetFilterHtml()
     {
-        bool isVisible = GridView.FieldVisibilityService.IsVisible(
-            GridView.FilterAction, PageState.List, GridView.DefaultValues);
+        var filterAction = GridView.FilterAction;
+        bool isVisible = GridView.ExpressionsService.GetBoolValue(filterAction.VisibleExpression,filterAction.Name,PageState.List,GridView.DefaultValues);
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);

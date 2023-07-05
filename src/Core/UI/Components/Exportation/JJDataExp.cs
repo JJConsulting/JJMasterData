@@ -19,6 +19,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Components;
@@ -73,7 +74,9 @@ public class JJDataExp : JJBaseProcess
         IFormFieldsService formFieldsService,
         DataExportationScriptHelper dataExportationScriptHelper,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
-        IBackgroundTask backgroundTask) : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
+        IBackgroundTask backgroundTask, 
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : 
+        base(entityRepository, expressionsService, formFieldsService, backgroundTask, stringLocalizer)
     {
         ScriptHelper = dataExportationScriptHelper;
         MasterDataOptions = masterDataOptions.Value;
@@ -100,7 +103,7 @@ public class JJDataExp : JJBaseProcess
         return JJDownloadFile.GetDownloadUrl(filePath);
     }
 
-    private string GetFinishedMessageHtml(DataExpReporter reporter)
+    private string GetFinishedMessageHtml(DataExportationReporter reporter)
     {
         if (!reporter.HasError)
         {
@@ -231,7 +234,7 @@ public class JJDataExp : JJBaseProcess
     internal DataExportationProgressDto GetCurrentProgress()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
-        var reporter = BackgroundTask.GetProgress<DataExpReporter>(ProcessKey);
+        var reporter = BackgroundTask.GetProgress<DataExportationReporter>(ProcessKey);
         var dto = new DataExportationProgressDto();
         if (reporter != null)
         {

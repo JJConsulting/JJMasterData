@@ -23,7 +23,7 @@ public class FormService : IFormService
     
     private IFormFieldsService FormFieldsService { get; }
 
-    private IAuditLogService AuditLog { get; }
+    private IAuditLogService AuditLogService { get; }
 
     public bool EnableErrorLinks { get; set; }
 
@@ -45,11 +45,11 @@ public class FormService : IFormService
 
     #region Constructor
 
-    public FormService(IFormFieldsService formFieldsService, IEntityRepository entityRepository, IAuditLogService auditLog)
+    public FormService(IFormFieldsService formFieldsService, IEntityRepository entityRepository, IAuditLogService auditLogService)
     {
         FormFieldsService = formFieldsService;
         EntityRepository = entityRepository;
-        AuditLog = auditLog;
+        AuditLogService = auditLogService;
     }
 
     #endregion
@@ -86,7 +86,7 @@ public class FormService : IFormService
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableAuditLog)
-            AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Update);
+            AuditLogService.AddLog(formElement,dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -125,7 +125,7 @@ public class FormService : IFormService
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableAuditLog)
-            AuditLog.AddLog(formElement,dataContext, values, CommandOperation.Insert);
+            AuditLogService.AddLog(formElement,dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -163,7 +163,7 @@ public class FormService : IFormService
             return result;
 
         if (EnableAuditLog)
-            AuditLog.AddLog(formElement,dataContext, values, result.Result);
+            AuditLogService.AddLog(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -220,7 +220,7 @@ public class FormService : IFormService
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
         if (EnableAuditLog)
-            AuditLog.AddLog(formElement,dataContext, primaryKeys, CommandOperation.Delete);
+            AuditLogService.AddLog(formElement,dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {

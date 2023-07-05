@@ -20,21 +20,18 @@
         }
     }
 
-    static async stopProcess(objid, stopMessage) {
-        $("#divMsgProcess").html(stopMessage);
-        showWaitOnPost = false;
-        
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=tableexp";
+    static async stopProcess(componentName, stopMessage) {
+        const form = $("form");
+        let url = form.attr("action");
+        if (url.includes("?"))
+            url += "&t=tableexp";
         else
-            surl += "?t=tableexp";
+            url += "?t=tableexp";
 
-        surl += "&gridName=" + objid;
-        surl += "&exptype=stopProcess";
+        url += "&gridName=" + componentName;
+        url += "&exptype=stopProcess";
 
-        await fetch(surl);
+        await DataExportation.stopExportation(url, stopMessage);
     }
     
     

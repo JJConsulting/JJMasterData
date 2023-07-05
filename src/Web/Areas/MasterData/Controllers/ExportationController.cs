@@ -1,7 +1,5 @@
-using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Http.Abstractions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +27,17 @@ public class ExportationController : MasterDataController
         var html = new DataExportationLog(gridView.DataExportation).GetHtmlProcess().ToString();
         
         return Content(html);
+    }
+    
+    [DictionaryNameDecryptionServiceFilter]
+    public async Task<IActionResult> StopExportation(string dictionaryName, string componentName)
+    {
+        var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        dataExportation.Name = componentName;
+        dataExportation.IsExternalRoute = true;
+        dataExportation.StopExportation();
+
+        return Json(new {});
     }
     
     [DictionaryNameDecryptionServiceFilter]

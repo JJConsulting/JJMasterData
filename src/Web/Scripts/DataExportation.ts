@@ -32,6 +32,9 @@ class DataExportation{
             return false;
         }
     }
+    
+    
+    
     static setLoadMessage() {
         const options = {
             lines: 13 // The number of lines to draw
@@ -92,8 +95,12 @@ class DataExportation{
             });
     }
     static startExportation(startExportationUrl,checkProgressUrl, componentName) {
+        
+        const form = document.querySelector("form");
+        
         fetch(startExportationUrl, {
             method: "POST",
+            body: new FormData(form)
         })
             .then(response => {
                 if (response.ok) {
@@ -105,8 +112,7 @@ class DataExportation{
             .then(data => {
                 const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
                 modalBody.innerHTML = data;
-                jjloadform(null);
-                
+                jjloadform();
                 DataExportation.startProgressVerification(checkProgressUrl,componentName)
  
             })
@@ -114,7 +120,15 @@ class DataExportation{
                 console.log(error);
             });
     }
-    
+
+
+    static async stopExportation(url: string, stopMessage: string) {
+        document.querySelector<HTMLElement>("#divMsgProcess").innerHTML = stopMessage;
+        showWaitOnPost = false;
+        await fetch(url);
+    }
+
+
     static async startProgressVerification(url, componentName) {
         DataExportation.setLoadMessage();
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -9,6 +10,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -23,7 +25,8 @@ public class DataExportationFactory
     private DataExportationScriptHelper ScriptHelper { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
-    
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
     public DataExportationFactory(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -31,7 +34,8 @@ public class DataExportationFactory
         IFormFieldsService formFieldsService,
         DataExportationScriptHelper scriptHelper,
         IOptions<JJMasterDataCoreOptions> options,
-        IBackgroundTask backgroundTask)
+        IBackgroundTask backgroundTask,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -40,15 +44,16 @@ public class DataExportationFactory
         ScriptHelper = scriptHelper;
         Options = options;
         BackgroundTask = backgroundTask;
+        StringLocalizer = stringLocalizer;
     }
     public async Task<JJDataExp> CreateDataExportationAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask);
+        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask, StringLocalizer);
     }
 
     public JJDataExp CreateDataExportation(FormElement formElement)
     {
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask);
+        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask, StringLocalizer);
     }
 }

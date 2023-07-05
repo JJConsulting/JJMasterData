@@ -16,6 +16,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -57,7 +58,8 @@ public class JJDataImp : JJBaseProcess
     public bool ExpandedByDefault { get; set; }
 
     internal IFieldVisibilityService FieldVisibilityService { get; }
-    
+
+
     internal IFormService FormService { get; }
     #endregion
 
@@ -68,8 +70,9 @@ public class JJDataImp : JJBaseProcess
         IFormFieldsService formFieldsService,
         IFormService formService,
         IFieldVisibilityService fieldVisibilityService,
-        IBackgroundTask backgroundTask) 
-        : base(entityRepository, expressionsService, formFieldsService, backgroundTask)
+        IBackgroundTask backgroundTask,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) 
+        : base(entityRepository, expressionsService, formFieldsService, backgroundTask, stringLocalizer)
     {
         FieldVisibilityService = fieldVisibilityService;
         FormService = formService;
@@ -100,7 +103,7 @@ public class JJDataImp : JJBaseProcess
                 break;
             }
             case "process_stop":
-                AbortProcess();
+                StopExportation();
                 CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
                 break;
             case "process_finished":

@@ -3,7 +3,7 @@ using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class DataExpReporter : ProgressReporter
+public class DataExportationReporter : ProgressReporter
 {
     private int _totalProcessed;
     public int TotalProcessed

@@ -1145,7 +1145,9 @@ public class JJGridView : JJBaseView
                             MessageTitle = "Error"
                         };
 
+#pragma warning disable CS0618
                         CurrentContext.Response.SendResponse(err.GetHtml());
+#pragma warning restore CS0618
                         return;
                     }
                 }
@@ -1160,15 +1162,17 @@ public class JJGridView : JJBaseView
             case "checkProgress":
             {
                 var dto = DataExportation.GetCurrentProgress();
-                string json = JsonConvert.SerializeObject(dto);
+                var json = JsonConvert.SerializeObject(dto);
 #pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(json, "text/json");
 #pragma warning restore CS0618
                 break;
             }
             case "stopProcess":
-                DataExportation.AbortProcess();
+                DataExportation.StopExportation();
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse("{}", "text/json");
+#pragma warning restore CS0618
                 break;
         }
     }

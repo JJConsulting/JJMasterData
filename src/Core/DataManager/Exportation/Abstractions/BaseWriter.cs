@@ -34,7 +34,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     #region "Properties"
 
     private FieldManager _fieldManager;
-    private DataExpReporter _processReporter;
+    private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
     protected IFieldVisibilityService FieldVisibilityService { get; } =
@@ -58,7 +58,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public DataExpReporter ProcessReporter => _processReporter ??= new DataExpReporter();
+    public DataExportationReporter ProcessReporter => _processReporter ??= new DataExportationReporter();
 
     public ExportOptions Configuration { get; set; }
 
@@ -159,7 +159,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 #endif
                 try
                 {
-                    _processReporter = new DataExpReporter();
+                    _processReporter = new DataExportationReporter();
                     ProcessReporter.UserId = UserId;
                     ProcessReporter.StartDate = DateTime.Now;
                     ProcessReporter.Message = Translate.Key("Retrieving records...");
@@ -216,7 +216,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
             }, token);
     }
 
-    public void Reporter(DataExpReporter processReporter)
+    public void Reporter(DataExportationReporter processReporter)
     {
         OnProgressChanged?.Invoke(this, processReporter);
     }

@@ -34,6 +34,19 @@ public class DataExportationScriptHelper
 
     }
     
+    public string GetStopExportationScript(string dictionaryName,string componentName,string stopMessage, bool isExternalRoute)
+    {
+        if (!isExternalRoute) 
+            return $"JJDataExp.stopExportation('{componentName}');";
+
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        
+        var stopExportationUrl = UrlHelper.GetUrl("StopExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
+        
+        return $"DataExportation.stopExportation('{stopExportationUrl}', '{stopMessage}', '{componentName}');";
+
+    }
+    
     public string GetExportPopupScript(string dictionaryName,string componentName, bool isExternalRoute)
     {
         if (!isExternalRoute) 

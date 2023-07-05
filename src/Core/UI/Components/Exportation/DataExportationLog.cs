@@ -1,20 +1,23 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataExportationLog
 {
-    private DataExportationScriptHelper ExportationScriptHelper { get; }
-    private readonly string _name;
+    private DataExportationScriptHelper ScriptHelper { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private readonly string _componentName;
     private readonly bool _isExternalRoute;
     private readonly string _dictionaryName;
 
     public DataExportationLog(JJDataExp dataExportation)
     {
-        ExportationScriptHelper = dataExportation.ScriptHelper;
-        _name = dataExportation.Name;
+        ScriptHelper = dataExportation.ScriptHelper;
+        StringLocalizer = dataExportation.StringLocalizer;
+        _componentName = dataExportation.Name;
         _isExternalRoute = dataExportation.IsExternalRoute;
         _dictionaryName = dataExportation.FormElement.Name;
     }
@@ -37,7 +40,7 @@ internal class DataExportationLog
 
             div.AppendElement(HtmlTag.Br);
 
-            div.AppendText(Translate.Key("Exportation started on"));
+            div.AppendText(StringLocalizer["Exportation started on"]);
 
             div.AppendText(" ");
             
@@ -52,13 +55,14 @@ internal class DataExportationLog
 
             div.AppendElement(HtmlTag.A, a =>
             {
-                a.WithAttribute("href",
-                    $"javascript:JJDataExp.stopProcess('{_name}','{Translate.Key("Stopping Processing...")}')");
+                var stopExportationScript = ScriptHelper.GetStopExportationScript(_dictionaryName, _componentName,
+                    StringLocalizer["Stopping Processing..."], _isExternalRoute);
+                a.WithAttribute("href", $"javascript:{stopExportationScript}");
                 a.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-stop");
                 });
-                a.AppendText("&nbsp;" + Translate.Key("Stop the exportation."));
+                a.AppendText("&nbsp;" + StringLocalizer["Stop the exportation."]);
             });
         });
         return div;

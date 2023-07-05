@@ -18,7 +18,6 @@ namespace JJMasterData.Core.DataManager.Exports;
 
 public class ExcelWriter : BaseWriter, IExcelWriter
 {
-
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     /// <summary>
@@ -120,6 +119,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             sw.WriteLine("\t\t\t</tr>");
             sw.Flush();
             ProcessReporter.TotalProcessed++;
+
             Reporter(ProcessReporter);
             token.ThrowIfCancellationRequested();
         }

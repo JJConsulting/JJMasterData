@@ -7,8 +7,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public interface IFieldVisibilityService
 {
-    IExpressionsService ExpressionsService { get; }
-    bool IsVisible(BasicAction action, PageState state, IDictionary<string,dynamic>formValues);
     bool IsVisible(FormElementField field, PageState state, IDictionary<string,dynamic>formValues);
     bool IsEnabled(FormElementField field, PageState state, IDictionary<string,dynamic>formValues);
 }

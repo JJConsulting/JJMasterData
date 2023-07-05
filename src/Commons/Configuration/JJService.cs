@@ -38,7 +38,5 @@ public static class JJService
         }
     }
 
-    public static IBackgroundTask BackgroundTask => Provider.GetService<IBackgroundTask>();
-
     public static ILogger Logger => Provider.GetRequiredService<ILogger<JJServiceBuilder>>();
 }

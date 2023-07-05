@@ -24,7 +24,6 @@ public class ActionMap
         PkFieldValues = new Dictionary<string, dynamic>();
     }
     
-
     [SetsRequiredMembers]
     public ActionMap(
         ActionSource actionSource,

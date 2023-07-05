@@ -108,8 +108,10 @@ class DataExportation {
         });
     }
     static startExportation(startExportationUrl, checkProgressUrl, componentName) {
+        const form = document.querySelector("form");
         fetch(startExportationUrl, {
             method: "POST",
+            body: new FormData(form)
         })
             .then(response => {
             if (response.ok) {
@@ -122,11 +124,18 @@ class DataExportation {
             .then(data => {
             const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
             modalBody.innerHTML = data;
-            jjloadform(null);
+            jjloadform();
             DataExportation.startProgressVerification(checkProgressUrl, componentName);
         })
             .catch(error => {
             console.log(error);
+        });
+    }
+    static stopExportation(url, stopMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            document.querySelector("#divMsgProcess").innerHTML = stopMessage;
+            showWaitOnPost = false;
+            yield fetch(url);
         });
     }
     static startProgressVerification(url, componentName) {
@@ -339,19 +348,17 @@ class JJDataExp {
             }
         });
     }
-    static stopProcess(objid, stopMessage) {
+    static stopProcess(componentName, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
-            $("#divMsgProcess").html(stopMessage);
-            showWaitOnPost = false;
-            var frm = $("form");
-            var surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=tableexp";
+            const form = $("form");
+            let url = form.attr("action");
+            if (url.includes("?"))
+                url += "&t=tableexp";
             else
-                surl += "?t=tableexp";
-            surl += "&gridName=" + objid;
-            surl += "&exptype=stopProcess";
-            yield fetch(surl);
+                url += "?t=tableexp";
+            url += "&gridName=" + componentName;
+            url += "&exptype=stopProcess";
+            yield DataExportation.stopExportation(url, stopMessage);
         });
     }
     static openExportUI(componentName) {

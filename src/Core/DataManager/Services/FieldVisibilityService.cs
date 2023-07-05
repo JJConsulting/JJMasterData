@@ -8,22 +8,12 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldVisibilityService : IFieldVisibilityService
 {
-    public IExpressionsService ExpressionsService { get; }
+    private IExpressionsService ExpressionsService { get; }
 
     public FieldVisibilityService(IExpressionsService expressionsService)
     {
         ExpressionsService = expressionsService;
     }
-    
-    [Obsolete("Move this to another action service?")]
-    public bool IsVisible(BasicAction action, PageState state, IDictionary<string,dynamic>formValues)
-    {
-        if (action == null)
-            throw new ArgumentNullException(nameof(action), "Action cannot be null");
-
-        return ExpressionsService.GetBoolValue(action.VisibleExpression, action.Name, state, formValues);
-    }
-
     public bool IsVisible(FormElementField field, PageState state, IDictionary<string,dynamic>formValues)
     {
         if (field == null)
