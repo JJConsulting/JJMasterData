@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
@@ -19,7 +20,7 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
-    public IEnumerable<HtmlBuilder> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    public IEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
@@ -56,7 +57,7 @@ internal class FormViewRelationshipLayout
         return tabNav.GetHtmlBuilder();
     }
 
-    private HtmlBuilder GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder content)
+    private static HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
     {
         switch (relationship.Panel.Layout)
         {
@@ -102,7 +103,7 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private HtmlBuilder GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
+    private HtmlBuilder? GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
     {
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
@@ -120,12 +121,13 @@ internal class FormViewRelationshipLayout
             ParentFormView.UserValues[col.FkColumn] = value;
         }
 
-        
+        var mappedForeignKeys = GetMappedForeignKeys(ParentFormView.FormElement,filter);
         switch (relationship.ViewType)
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
                 {
                     var childValues = ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter).GetAwaiter().GetResult();
+                    
                     var childDataPanel = new JJDataPanel(childElement)
                     {
                         PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
@@ -142,7 +144,8 @@ internal class FormViewRelationshipLayout
                     var childGrid = new JJFormView(childElement)
                     {
                         UserValues = ParentFormView.UserValues,
-                        IsExternalRoute = true
+                        IsExternalRoute = true,
+                        RelationValues = mappedForeignKeys
                     };
                     childGrid.GridView.Filter.ApplyCurrentFilter(filter);
                     childGrid.SetOptions(childElement.Options);
@@ -163,5 +166,22 @@ internal class FormViewRelationshipLayout
         }
     }
 
+    private IDictionary<string, dynamic?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, dynamic> filters)
+    {
+        var foreignKeys = new Dictionary<string, dynamic?>();
+        var relationships = formElement.Relationships.GetElementRelationships();
 
+        foreach (var entry in filters)
+        {
+            var matchingRelationship = relationships.FirstOrDefault(r => r.Columns.Any(c => c.FkColumn == entry.Key));
+
+            if (matchingRelationship != null)
+            {
+                var matchingColumn = matchingRelationship.Columns.First(c => c.FkColumn == entry.Key);
+                foreignKeys[matchingColumn.FkColumn] = entry.Value;
+            }
+        }
+
+        return foreignKeys;
+    }
 }

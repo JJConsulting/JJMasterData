@@ -85,7 +85,7 @@ public class FileLoggerBackgroundService : LoggerBackgroundService<FileLoggerBuf
                         message.LogLevel,
                         Message = message.Formatter(message.State, message.Exception),
                         message.Exception
-                    }, new JsonSerializerSettings()
+                    }, new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                         Formatting = Formatting.Indented
