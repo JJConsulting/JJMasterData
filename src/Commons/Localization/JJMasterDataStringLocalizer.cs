@@ -81,7 +81,6 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
     public IDictionary<string, string> GetAllStringsAsDictionary()
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
-        var tableName = Options.ResourcesTableName;
 
         var element = JJMasterDataStringLocalizerElement.GetElement(Options);
         if (!EntityRepository.TableExists(element.TableName))

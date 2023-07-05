@@ -30,7 +30,6 @@ class DataExportation {
                 if (data.FinishedMessage) {
                     showWaitOnPost = true;
                     document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
-                    document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
                     const linkFile = document.querySelector("#export_link_" + componentName);
                     if (linkFile)
                         linkFile.click();
@@ -108,8 +107,8 @@ class DataExportation {
             console.log(error);
         });
     }
-    static startExportation(url, componentName) {
-        fetch(url, {
+    static startExportation(startExportationUrl, checkProgressUrl, componentName) {
+        fetch(startExportationUrl, {
             method: "POST",
         })
             .then(response => {
@@ -124,6 +123,7 @@ class DataExportation {
             const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
             modalBody.innerHTML = data;
             jjloadform(null);
+            DataExportation.startProgressVerification(checkProgressUrl, componentName);
         })
             .catch(error => {
             console.log(error);
@@ -383,6 +383,7 @@ class JJDataExp {
                 var modalBody = "#export_modal_" + objid + " .modal-body ";
                 $(modalBody).html(data);
                 jjloadform(null, modalBody);
+                JJDataExp.startProgressVerification(objid);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);

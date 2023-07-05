@@ -26,6 +26,8 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Exporta dados para um arquivo
 /// </summary>
+///
+///TODO: I think Exportation is better than Exp, exp can be experience, experiment, etc.
 public class JJDataExp : JJBaseProcess
 {
 
@@ -81,7 +83,7 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExpSettings(this).GetHtmlElement();
+        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlElement();
     }
 
     internal static JJIcon GetFileIcon(string ext)

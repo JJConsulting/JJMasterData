@@ -10,7 +10,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class DataExpSettings
+internal class DataExportationSettings
 {
     private JJDataExp DataExportation { get; }
 
@@ -19,7 +19,7 @@ internal class DataExpSettings
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
 
-    public DataExpSettings(JJDataExp dataExportation)
+    public DataExportationSettings(JJDataExp dataExportation)
     {
         DataExportation = dataExportation;
     }

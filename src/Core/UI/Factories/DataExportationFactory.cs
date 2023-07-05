@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
 
-//I think Exportation is better than Exp, exp can be experience, experiment, etc.
 public class DataExportationFactory
 {
     private IEntityRepository EntityRepository { get; }

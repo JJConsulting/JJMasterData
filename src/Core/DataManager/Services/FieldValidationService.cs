@@ -124,7 +124,7 @@ public class FieldValidationService : IFieldValidationService
         return null;
     }
 
-    private string ValidateDataType(FormElementField field, string value, string fieldName)
+    private string ValidateDataType(ElementField field, string value, string fieldName)
     {
         switch (field.DataType)
         {
@@ -167,7 +167,7 @@ public class FieldValidationService : IFieldValidationService
         return null;
     }
 
-    private string GetFieldLinkHtml(string fieldName, string label)
+    private static string GetFieldLinkHtml(string fieldName, string label)
     {
         return $"<a href=\"#void\" onclick=\"javascript:$('#{fieldName}').focus();\" class=\"alert-link\">{label ?? fieldName}</a>";
     }

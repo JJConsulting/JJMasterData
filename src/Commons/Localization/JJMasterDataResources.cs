@@ -1,3 +1,3 @@
 namespace JJMasterData.Commons.Localization;
 
-public record JJMasterDataResources;
+public abstract record JJMasterDataResources;

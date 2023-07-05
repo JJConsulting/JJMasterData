@@ -82,7 +82,7 @@ public class ResourcesService : BaseService
         MemoryCache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 
-    private void ValidateEspecialChars(object? sender, FormBeforeActionEventArgs e)
+    private static void ValidateEspecialChars(object? sender, FormBeforeActionEventArgs e)
     {
         if (e?.Values == null)
             return;

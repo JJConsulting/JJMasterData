@@ -120,6 +120,9 @@ public static class ServiceCollectionExtensions
 
     private static void AddDefaultServices(IServiceCollection services)
     {
+        
+        services.AddControllersWithViews().AddNewtonsoftJson();
+        
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<ResourcesService>();

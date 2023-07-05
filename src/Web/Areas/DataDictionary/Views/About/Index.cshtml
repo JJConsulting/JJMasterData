@@ -1,6 +1,8 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using Microsoft.Extensions.Localization
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AboutViewModel;
+@inject IStringLocalizer<JJMasterDataResources> Localizer
 
 @{
     Layout = "_MasterDataLayout.Popup";
@@ -15,7 +17,7 @@
         <div class="@BootstrapHelper.GetPanelHeading("default")">
             <h5>
                 <span class="text-info fa fa-info-circle"></span>
-                &nbsp;@Translate.Key("System Version")
+                &nbsp;@Localizer["System Version"]
             </h5>
         </div>
         <div class="@BootstrapHelper.PanelBody">
@@ -55,7 +57,7 @@
     <hr />
     <span class="text-warning fa fa-exclamation-triangle"></span>
     <span class="small">
-        @Translate.Key("Warning: This software is protected by the GPL license.")
-        @Translate.Key("For more information, please check our ") <a href="https://github.com/JJConsulting/JJMasterData/blob/main/LICENSE">@Translate.Key("LICENSE").</a>
+        @Localizer["Warning: This software is protected by the GPL license."]
+        @Localizer["For more information, please check our "] <a href="https://github.com/JJConsulting/JJMasterData/blob/main/LICENSE">@Localizer["LICENSE"].</a>
     </span>
 </div>

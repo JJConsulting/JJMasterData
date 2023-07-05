@@ -107,7 +107,7 @@ public class JJDataImp : JJBaseProcess
                 html = GetHtmlLogProcess();
                 break;
             case "process_help":
-                html = new DataImpHelp(this).GetHtmlHelp();
+                html = new DataImportationHelp(this).GetHtmlHelp();
                 break;
             case "posted_past_text":
             {
@@ -135,7 +135,7 @@ public class JJDataImp : JJBaseProcess
 
     private HtmlBuilder GetHtmlLogProcess()
     {
-        var html = new DataImpLog(this).GetHtmlLog()
+        var html = new DataImportationLog(this).GetHtmlLog()
          .AppendHiddenInput("current_uploadaction")
          .AppendHiddenInput("filename")
          .AppendElement(BackButton);
@@ -193,7 +193,7 @@ public class JJDataImp : JJBaseProcess
                             });
                    });
             })
-            .AppendElement(new DataImpLog(this).GetHtmlResume())
+            .AppendElement(new DataImportationLog(this).GetHtmlResume())
             .AppendElement(HtmlTag.Br).AppendElement(HtmlTag.Br);
 
         var btnStop = new JJLinkButton

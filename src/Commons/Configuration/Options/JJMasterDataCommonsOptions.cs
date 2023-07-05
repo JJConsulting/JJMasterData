@@ -36,9 +36,9 @@ public class JJMasterDataCommonsOptions
     /// </summary>
     [ConfigurationKeyName("PrefixSetProc")]
     public string WriteProcedurePattern { get; set; }
-
+    
     /// <summary>
-    /// Default value: "ChangeMe" <br></br>
+    /// Secret key used at JJMasterDataEncryptionService
     /// </summary>
     public string? SecretKey { get; set; }
 

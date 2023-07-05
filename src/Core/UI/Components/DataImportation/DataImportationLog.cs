@@ -8,11 +8,11 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class DataImpLog
+internal class DataImportationLog
 {
     public DataImpReporter Reporter { get; private set; }
 
-    internal DataImpLog(JJDataImp dataImp)
+    internal DataImportationLog(JJDataImp dataImp)
     {
         Reporter = dataImp.GetCurrentReporter();
     }

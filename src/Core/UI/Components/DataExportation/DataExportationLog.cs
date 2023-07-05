@@ -61,11 +61,6 @@ internal class DataExportationLog
                 a.AppendText("&nbsp;" + Translate.Key("Stop the exportation."));
             });
         });
-
-        var progressVerificationScript = ExportationScriptHelper.GetStartProgressVerificationScript(_dictionaryName,_name,_isExternalRoute);
-        
-        div.AppendScript(progressVerificationScript);
-        
         return div;
     }
 

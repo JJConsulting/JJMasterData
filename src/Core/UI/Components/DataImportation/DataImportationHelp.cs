@@ -11,11 +11,11 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class DataImpHelp
+internal class DataImportationHelp
 {
     public JJDataImp DataImp { get; private set; }
 
-    internal DataImpHelp(JJDataImp dataImp)
+    internal DataImportationHelp(JJDataImp dataImp)
     {
         DataImp = dataImp;
     }

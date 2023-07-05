@@ -73,7 +73,7 @@
                 var modalBody = "#export_modal_" + objid + " .modal-body ";
                 $(modalBody).html(data);
                 jjloadform(null, modalBody);
-                //JJDataExp.startProcess(objid);
+                JJDataExp.startProgressVerification(objid)
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);

@@ -38,14 +38,17 @@ public class ExportationController : MasterDataController
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         
-        var settings = new DataExpSettings(dataExportation);
+        var settings = new DataExportationSettings(dataExportation);
         return Content(settings.GetHtmlElement().ToString());
     }
     
     [DictionaryNameDecryptionServiceFilter]
-    public async Task<IActionResult> CheckProgress(string dictionaryName)
+    public async Task<IActionResult> CheckProgress(string dictionaryName, string componentName)
     {
         var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        dataExportation.Name = componentName;
+        dataExportation.IsExternalRoute = true;
+        
         var progress = dataExportation.GetCurrentProgress();
         
         return Json(progress);

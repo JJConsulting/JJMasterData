@@ -39,7 +39,7 @@ public class FileIO
 
         //We defaulted the path to never start with a slash
         if (filepath.StartsWith("\\") && !filepath.Substring(1, 1).Equals("\\"))
-            filepath = filepath.Substring(1);
+            filepath = filepath[1..];
 
         //If the full path is not provided, we include the path from the application
         if (!filepath.Contains(":") && !filepath.StartsWith("\\\\") && !filepath.StartsWith("/"))
@@ -56,10 +56,7 @@ public class FileIO
     /// <returns></returns>
     public static string GetApplicationPath()
     {
-        if (JJMasterDataCommonsOptions.IsNetFramework)
-            return AppDomain.CurrentDomain.BaseDirectory;
-
-        return Environment.CurrentDirectory;
+        return JJMasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
     }
 
 

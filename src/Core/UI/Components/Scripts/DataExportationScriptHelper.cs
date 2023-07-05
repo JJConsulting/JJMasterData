@@ -26,20 +26,11 @@ public class DataExportationScriptHelper
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
         
-        var url = UrlHelper.GetUrl("StartExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
-        return $"DataExportation.startExportation('{url}', '{componentName}');";
-
-    }
-    
-    public string GetStartProgressVerificationScript(string dictionaryName,string componentName, bool isExternalRoute)
-    {
-        if (!isExternalRoute) 
-            return $"JJDataExp.startProgressVerification('{componentName}');";
+        var startExportationUrl = UrlHelper.GetUrl("StartExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
         
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        var checkProgressUrl = UrlHelper.GetUrl("CheckProgress","Exportation",new { dictionaryName=encryptedDictionaryName, componentName });
         
-        var url = UrlHelper.GetUrl("CheckProgress","Exportation",new { dictionaryName=encryptedDictionaryName, componentName });
-        return $"await DataExportation.startProgressVerification('{url}', '{componentName}');";
+        return $"DataExportation.startExportation('{startExportationUrl}','{checkProgressUrl}', '{componentName}');";
 
     }
     
