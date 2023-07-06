@@ -1,20 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.DI;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -22,14 +19,12 @@ namespace JJMasterData.Core.Web.Components;
 //Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
-    private TextGroupFactory TextGroupFactory { get; }
-
     #region "Properties"
 
     private string _selectedValue;
     private string _text;
     private FormElementDataItem _dataItem;
-    private IExpressionsService _expressionManager;
+    private ExpressionManager _expressionManager;
     private IEntityRepository _entityRepository;
 
     internal IEntityRepository EntityRepository
@@ -38,13 +33,13 @@ public class JJLookup : JJBaseControl
         private set => _entityRepository = value;
     }
 
-    internal IExpressionsService ExpressionManager
+    internal ExpressionManager ExpressionManager
     {
-        get => _expressionManager ??= JJService.Provider.GetScopedDependentService<IExpressionsService>();
+        get => _expressionManager ??= new ExpressionManager(UserValues, EntityRepository);
         private set => _expressionManager = value;
     }
 
-    internal IDictionary<string,dynamic>FormValues { get; set; }
+    internal Hashtable FormValues { get; private set; }
 
     internal PageState PageState { get; set; }
 
@@ -74,7 +69,7 @@ public class JJLookup : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPost)
+            if (AutoReloadFormFields && _text == null && CurrentContext.IsPostBack)
             {
                 _text = CurrentContext.Request[Name];
             }
@@ -88,7 +83,7 @@ public class JJLookup : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPostBack)
             {
                 _selectedValue = CurrentContext.Request["id_" + Name];
             }
@@ -109,15 +104,42 @@ public class JJLookup : JJBaseControl
 
     #region "Constructors"
 
-    public JJLookup(IHttpContext httpContext, TextGroupFactory textGroupFactory) : base(httpContext)
+    public JJLookup()
     {
-        TextGroupFactory = textGroupFactory;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
         PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";
+    }
+
+    internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
+    {
+        var search = new JJLookup();
+        search.SetAttr(f.Attributes);
+        search.Name = f.Name;
+        search.Visible = true;
+        search.DataItem = f.DataItem;
+        search.AutoReloadFormFields = false;
+        search.Attributes.Add("pnlname", panelName);
+        search.FormValues = expOptions.FormValues;
+        search.PageState = expOptions.PageState;
+        search.SelectedValue = value?.ToString();
+        search.UserValues = expOptions.UserValues;
+        search.EntityRepository = expOptions.EntityRepository;
+
+        if (f.DataType == FieldType.Int)
+        {
+            search.OnlyNumbers = true;
+            search.MaxLength = 11;
+        }
+        else
+        {
+            search.MaxLength = f.Size;
+        }
+
+        return search;
     }
 
     #endregion
@@ -129,8 +151,10 @@ public class JJLookup : JJBaseControl
         public string Url { get; } = Url;
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
-    private record LookupDescriptionDto(string Description)
+    private record LookupResultDto(string Id,string Description)
     {
+        [JsonProperty("id")]
+        public string Id { get; } = Id;
         [JsonProperty("description")]
         public string Description { get; } = Description;
         public string ToJson() => JsonConvert.SerializeObject(this);
@@ -161,24 +185,26 @@ public class JJLookup : JJBaseControl
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
-        var textGroup = TextGroupFactory.CreateTextGroup();
-        textGroup.Name = Name;
-        textGroup.CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}";
-        textGroup.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
-        textGroup.MaxLength = MaxLength;
-        textGroup.Text = inputValue;
-        textGroup.Attributes = Attributes;
-        textGroup.ToolTip = ToolTip;
-        textGroup.ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description));
-        textGroup.Enabled = Enabled;
-        textGroup.Actions = new List<JJLinkButton>
+        var textGroup = new JJTextGroup
         {
-            new()
+            Name = Name,
+            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            InputType = OnlyNumbers ? InputType.Number : InputType.Text,
+            MaxLength = MaxLength,
+            Text = description,
+            Attributes = Attributes,
+            ToolTip = ToolTip,
+            ReadOnly = ReadOnly, //|| Enabled && !string.IsNullOrEmpty(description),
+            Enabled = Enabled,
+            Actions = new List<JJLinkButton>
             {
-                Name = $"btn_{Name}",
-                Enabled = Enabled,
-                ShowAsButton = true,
-                IconClass = "fa fa-search"
+                new()
+                {
+                    Name = $"btn_{Name}",
+                    Enabled = Enabled,
+                    ShowAsButton = true,
+                    IconClass = "fa fa-search"
+                }
             }
         };
 
@@ -187,7 +213,7 @@ public class JJLookup : JJBaseControl
         return div;
     }
 
-    private static string GetFeedbackIcon(string value, string description)
+    private string GetFeedbackIcon(string value, string description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
             return " jj-icon-success ";
@@ -213,7 +239,7 @@ public class JJLookup : JJBaseControl
         //Filters
         if (DataItem.ElementMap.Filters is { Count: > 0 })
         {
-            foreach (var filter in elementMap.Filters)
+            foreach (DictionaryEntry filter in elementMap.Filters)
             {
                 string filterParsed = ExpressionManager.ParseExpression(filter.Value.ToString(), PageState, false, FormValues);
                 @params.Append('&');
@@ -222,8 +248,8 @@ public class JJLookup : JJBaseControl
                 @params.Append(filterParsed);
             }
         }
-        var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = $"{urlHelper.GetUrl("Index","Lookup", new {p=Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"})}";
+        
+        string url = $"{ConfigurationHelper.GetUrlMasterData()}Lookup?p={Cript.EnigmaEncryptRP(@params.ToString())}";
 
         var dto = new LookupUrlDto(url);
         
@@ -232,12 +258,12 @@ public class JJLookup : JJBaseControl
     
     private void SendDescription()
     {
-        LookupDescriptionDto dto = null;
+        LookupResultDto dto = null;
         try
         {
             string searchId = CurrentContext.Request["lkid"];
             string description = GetDescription(searchId);
-            dto = new LookupDescriptionDto(description);
+            dto = new LookupResultDto(searchId,description);
         }
         catch (Exception ex)
         {
@@ -268,26 +294,26 @@ public class JJLookup : JJBaseControl
                 return null;
         }
 
-        var filters = new Dictionary<string, dynamic>();
+        var filters = new Hashtable();
 
         if (DataItem.ElementMap.Filters.Count > 0)
         {
-            foreach (var filter in DataItem.ElementMap.Filters)
+            foreach (DictionaryEntry filter in DataItem.ElementMap.Filters)
             {
                 string filterParsed = ExpressionManager.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
-                filters.Add(filter.Key, StringManager.ClearText(filterParsed));
+                filters[filter.Key] = StringManager.ClearText(filterParsed);
             }
         }
 
-        filters.Add(DataItem.ElementMap.FieldKey, StringManager.ClearText(searchId));
+        filters[DataItem.ElementMap.FieldKey]= StringManager.ClearText(searchId);
 
-        var dicDao = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        IDictionary<string,dynamic> fields;
+        var dicDao = JJServiceCore.DataDictionaryRepository;
+        Hashtable fields;
         try
         {
             var dictionary = dicDao.GetMetadata(DataItem.ElementMap.ElementName);
-            var entityRepository = EntityRepository;
-            fields = entityRepository.GetDictionaryAsync(dictionary, filters).GetAwaiter().GetResult();
+            var entityRepository = ExpressionManager.EntityRepository;
+            fields = entityRepository.GetFields(dictionary.Table, filters);
         }
         catch
         {
@@ -319,7 +345,7 @@ public class JJLookup : JJBaseControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsLookupRoute(JJBaseView view, IHttpContext context)
+    public static bool IsLookupRoute(JJBaseView view)
     {
         string dataPanelName = string.Empty;
         if (view is JJFormView formView)
@@ -327,20 +353,21 @@ public class JJLookup : JJBaseControl
         else if (view is JJDataPanel dataPanel)
             dataPanelName = dataPanel.Name;
 
-        string lookupRoute = context.Request.QueryString("jjlookup_" + dataPanelName);
+        string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + dataPanelName);
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
-        if (string.IsNullOrEmpty(lookupRoute)) 
-            return null;
+
+        if (string.IsNullOrEmpty(lookupRoute)) return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
-        if (field == null) 
-            return null;
-        var lookup = view.FieldControlFactory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
+
+        if (field == null) return null;
+
+        var lookup = view.FieldManager.GetField(field, view.PageState, view.GetFormValues(), view.Values);
         return lookup.GetHtmlBuilder();
 
     }
