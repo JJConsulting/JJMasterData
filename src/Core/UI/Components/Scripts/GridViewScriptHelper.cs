@@ -23,7 +23,7 @@ public class GridViewScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.sorting('{gridView.Name}','{url}','{fieldName}')";
+            return $"GridView.sorting('{gridView.Name}','{url}','{fieldName}')";
         }
 
         string ajax = gridView.EnableAjax ? "true" : "false";
@@ -36,7 +36,7 @@ public class GridViewScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.pagination('{name}', '{url}', {page})";
+            return $"GridView.pagination('{name}', '{url}', {page})";
         }
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";
@@ -62,7 +62,7 @@ public class GridViewScriptHelper
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
-            return $"JJGridView.filter('{name}', '{url}')";
+            return $"GridView.filter('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doFilter('{name}','{enableAjax}')";

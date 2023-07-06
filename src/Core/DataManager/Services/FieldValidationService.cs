@@ -22,7 +22,7 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
     
-    public IDictionary<string,dynamic>ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
+    public IDictionary<string,dynamic> ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
@@ -31,11 +31,11 @@ public class FieldValidationService : IFieldValidationService
 
         foreach (var field in formElement.Fields)
         {
-            bool isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
+            var isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
             if (!isVisible)
                 continue;
 
-            bool isEnable = ExpressionsService.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
+            var isEnable = ExpressionsService.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
             if (!isEnable)
                 continue;
 

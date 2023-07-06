@@ -22,6 +22,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
@@ -517,12 +518,11 @@ public class JJGridView : JJBaseView
         get
         {
             if (_currentActionMap != null) return _currentActionMap;
-            var criptMap = CurrentContext.Request["current_tableaction_" + Name];
-            if (string.IsNullOrEmpty(criptMap))
+            var encryptedActionMap = CurrentContext.Request["current_tableaction_" + Name];
+            if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
-            var jsonMap = Cript.Descript64(criptMap);
-            _currentActionMap = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
+            _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
             return _currentActionMap;
         }
     }

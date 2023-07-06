@@ -218,12 +218,13 @@ public class JJFormView : JJBaseView
         var dataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
         FormElement = dataDictionaryRepository.GetMetadata(elementName);
-        
+        IsExternalRoute = false;
         factory.SetFormViewParams(this,FormElement);
     }
     
     public JJFormView(FormElement formElement) : this()
     {
+        IsExternalRoute = false;
         FormElement = formElement;
     }
     #endif
@@ -274,7 +275,7 @@ public class JJFormView : JJBaseView
         encryptionService, fieldValuesService, expressionsService, stringLocalizer, gridViewFactory,
         auditLogViewFactory, dataPanelFactory, formViewFactory)
     {
-        Name = "jjview_" + formElement.Name;
+        Name = "jjview_" + formElement.Name.ToLower();
         FormElement = formElement;
     }
 
@@ -380,8 +381,8 @@ public class JJFormView : JJBaseView
 
         if (html != null)
         {
-            html.AppendHiddenInput($"current_pagestate_{Name}", ((int)pageState).ToString());
-            html.AppendHiddenInput($"current_formaction_{Name}", "");
+            html.AppendHiddenInput($"current_pagestate_{Name.ToLower()}", ((int)pageState).ToString());
+            html.AppendHiddenInput($"current_formaction_{Name.ToLower()}", "");
         }
 
         return html;

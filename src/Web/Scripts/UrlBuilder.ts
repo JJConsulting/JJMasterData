@@ -1,33 +1,38 @@
 class UrlBuilder {
     private queryParameters: Map<string, string>;
-
-    constructor() {
+    private url: string
+    
+    constructor(url = null) {
+        this.url = url;
         this.queryParameters = new Map();
     }
-
+    
     addQueryParameter(key: string, value: string) {
         this.queryParameters.set(key, value);
     }
 
     build() {
         const form = document.querySelector("form");
-        let url = form.getAttribute("action");
-
-        if (!url.includes("?")) {
-            url += "?";
+        
+        if(this.url == null){
+            this.url = form.getAttribute("action");
+        }
+        
+        if (!this.url.includes("?")) {
+            this.url += "?";
         }
 
         let isFirst = true;
 
         for (const [key, value] of this.queryParameters.entries()) {
             if (!isFirst) {
-                url += "&";
+                this.url += "&";
             }
-            url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
             isFirst = false;
         }
 
-        return url;
+        return this.url;
     }
 
 }

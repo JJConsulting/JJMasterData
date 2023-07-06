@@ -1,5 +1,4 @@
 using System;
-using JJMasterData.Commons.DI;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Configuration;

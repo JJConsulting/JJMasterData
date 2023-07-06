@@ -72,7 +72,7 @@ public class GridViewFactory
         var gridView = new JJGridView(formElement,CurrentContext, EntityRepository, ExpressionsService, EncryptionService,
             FieldsService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
             FieldControlFactory);
-
+        
         SetGridOptions(gridView,formElement.Options);
         
         return gridView;
