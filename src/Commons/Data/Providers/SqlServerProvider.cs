@@ -10,6 +10,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -23,7 +24,7 @@ public class SqlServerProvider : BaseProvider
     public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqlServer;
 
 
-    public SqlServerProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options) : base(dataAccess, options)
+    public SqlServerProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
     }
 

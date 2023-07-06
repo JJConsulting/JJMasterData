@@ -10,18 +10,21 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
 public class PlainTextReader
 {
-    private BaseProvider _provider;
+    private ILogger<PlainTextReader> Logger { get; }
+    private readonly BaseProvider _provider;
     public bool ShowLogInfo { get; set; }
     public string Delimiter { get; set; }
 
 
-    public PlainTextReader(BaseProvider provider)
+    public PlainTextReader(BaseProvider provider, ILogger<PlainTextReader> logger)
     {
+        Logger = logger;
         _provider = provider;
         Delimiter = "|";
     }
@@ -137,45 +140,43 @@ public class PlainTextReader
             dr.Close();
             dr.Dispose();
             dbCmd.Dispose();
-
-            //Log
+            
             if (ShowLogInfo)
             {
-                TimeSpan ts = DateTime.Now - dStart;
-                StringBuilder sLog = new StringBuilder();
-                sLog.Append(Translate.Key("Synchronizing"));
-                sLog.Append(" ");
-                sLog.AppendLine(element.Name);
+                var ts = DateTime.Now - dStart;
+                var logMessage = new StringBuilder();
+                logMessage.Append("Synchronizing");
+                logMessage.Append(" ");
+                logMessage.AppendLine(element.Name);
 
                 if (filters != null)
                 {
-                    sLog.Append("- ");
-                    sLog.Append(Translate.Key("Filters"));
-                    sLog.Append(": ");
+                    logMessage.Append("- ");
+                    logMessage.Append("Filters");
+                    logMessage.Append(": ");
 
                     foreach (DictionaryEntry val in filters)
                     {
-                        sLog.Append("  ");
-                        sLog.Append(val.Key);
-                        sLog.Append("=");
-                        sLog.Append(val.Value);
+                        logMessage.Append("  ");
+                        logMessage.Append(val.Key);
+                        logMessage.Append("=");
+                        logMessage.Append(val.Value);
                     }
 
-                    sLog.AppendLine("");
+                    logMessage.AppendLine("");
                 }
 
-                sLog.Append("- ");
-                sLog.Append(Translate.Key("TotPerPage"));
-                sLog.Append(": ");
-                sLog.AppendLine(regporpag.ToString());
-                sLog.Append("- ");
-                sLog.Append(Translate.Key("CurrentPage"));
-                sLog.Append(": ");
-                sLog.AppendLine(pag.ToString());
+                logMessage.Append("- ");
+                logMessage.Append("TotPerPage");
+                logMessage.Append(": ");
+                logMessage.AppendLine(regporpag.ToString());
+                logMessage.Append("- ");
+                logMessage.Append("CurrentPage");
+                logMessage.Append(": ");
+                logMessage.AppendLine(pag.ToString());
 
-                sLog.AppendLine(Translate.Key("{0} records sync. Time {1}ms", qtd.ToString(),
-                    ts.TotalMilliseconds.ToString("N3")));
-                Log.AddInfo(sLog.ToString());
+                logMessage.AppendLine($"{qtd.ToString()} records sync. Time {ts.TotalMilliseconds:N3}ms");
+                Logger.LogInformation(logMessage.ToString());
             }
         }
         catch (Exception ex)
@@ -191,8 +192,6 @@ public class PlainTextReader
 
             
             var exception = new JJMasterDataException(message.ToString(), ex);
-            
-            Log.AddError(exception, message.ToString());
 
             throw exception;
 

@@ -8,6 +8,9 @@ namespace JJMasterData.Commons.Logging;
 /// Static accessor to the ILogger interface.
 /// When possible, use ILogger via constructor injection.
 /// </summary>
+
+#if NET48
+[Obsolete("Please use ILogger. This class uses a static service locator and don't have <T> categories support.")]
 public static class Log
 {
     private static ILogger _logger;
@@ -21,7 +24,6 @@ public static class Log
     {
         _logger = logger;
     }
-    
 
     public static void AddError(string value, string source = "System")
     {
@@ -43,6 +45,4 @@ public static class Log
         _logger.LogWarning(value, new EventId(0, source));
     }
 }
-
-
-
+#endif

@@ -10,6 +10,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -48,6 +49,7 @@ public abstract class JJBaseProcess : JJBaseView
     internal IFieldValuesService FieldValuesService { get; } 
     
     internal IBackgroundTask BackgroundTask { get; }
+    private ILogger<JJBaseProcess> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     protected JJBaseProcess(
@@ -55,12 +57,14 @@ public abstract class JJBaseProcess : JJBaseView
         IExpressionsService expressionsService, 
         IFieldValuesService fieldValuesService,
         IBackgroundTask backgroundTask,
+        ILogger<JJBaseProcess> logger,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FieldValuesService = fieldValuesService;
         BackgroundTask = backgroundTask;
+        Logger = logger;
         StringLocalizer = stringLocalizer;
     }
     
@@ -90,11 +94,13 @@ public abstract class JJBaseProcess : JJBaseView
         if (string.IsNullOrEmpty(UserId))
         {
             var error = new StringBuilder();
-            error.AppendLine(Translate.Key("User not found, contact system administrator."));
-            error.Append(Translate.Key("Import configured with scope per user, but no key with USERID found."));
+            error.AppendLine("User not found, contact system administrator.");
+            error.Append("Import configured with scope per user, but no key with USERID found.");
+
+            var errorMessage = error.ToString();
             
-            var exception = new JJMasterDataException(error.ToString());
-            Log.AddError(exception, exception.Message);
+            var exception = new JJMasterDataException(errorMessage);
+            Logger.LogError(exception,"Error while creating process key");
             
             throw exception;
         }

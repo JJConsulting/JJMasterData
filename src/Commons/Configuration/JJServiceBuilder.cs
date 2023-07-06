@@ -69,8 +69,8 @@ public class JJServiceBuilder
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
-
-            return new EntityRepository(configuration.GetConnectionString(connectionString),provider, options);
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            return new EntityRepository(configuration.GetConnectionString(connectionString),provider, options,loggerFactory);
         });
     }
     

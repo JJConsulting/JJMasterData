@@ -17,7 +17,7 @@ public class ProviderSQLite : BaseProvider
     public override string VariablePrefix => "@";
     public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqLite;
 
-    public ProviderSQLite(DataAccess dataAccess, JJMasterDataCommonsOptions options) : base(dataAccess, options)
+    public ProviderSQLite(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
     }
 

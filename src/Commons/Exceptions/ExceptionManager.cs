@@ -23,7 +23,6 @@ public static class ExceptionManager
             case JJMasterDataException dcEx:
                 err.Message = dcEx.Message;
                 err.Status = (int)HttpStatusCode.BadRequest;
-                Log.AddError(ex.Message);
                 break;
             case SqlException exSql:
             {
@@ -39,7 +38,6 @@ public static class ExceptionManager
                 err.Status = (int)HttpStatusCode.NotFound;
                 break;
             default:
-                Log.AddError(ex, ex.Message);
                 err.Message = ex.Message;
                 err.Status = (int)HttpStatusCode.InternalServerError;
                 break;
@@ -71,7 +69,6 @@ public static class ExceptionManager
 #else
                 message = Translate.Key("Unexpected error.");
 #endif
-                Log.AddError(ex.ToString());
                 break;
         }
 

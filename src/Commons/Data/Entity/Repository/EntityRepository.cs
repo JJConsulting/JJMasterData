@@ -19,13 +19,15 @@ namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityRepository : IEntityRepository
 {
+    private ILoggerFactory LoggerFactory { get; }
     private JJMasterDataCommonsOptions Options { get; }
     private DataAccess DataAccess { get; }
     private BaseProvider Provider { get; }
     
     [ActivatorUtilitiesConstructor]
-    public EntityRepository(IConfiguration configuration, IOptions<JJMasterDataCommonsOptions> options)
+    public EntityRepository(IConfiguration configuration, IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
+        LoggerFactory = loggerFactory;
         var connectionString = configuration.GetConnectionString("ConnectionString");
         var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string?>("ConnectionString") ?? "SqlServer";
         DataAccess = new DataAccess(connectionString, connectionProvider);
@@ -33,11 +35,11 @@ public class EntityRepository : IEntityRepository
         Provider = GetProvider();
     }
     
-    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<JJMasterDataCommonsOptions> options)
+    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
         DataAccess = new DataAccess(connectionString, provider);
         Options = options.Value;
-
+        LoggerFactory = loggerFactory;
         Provider = GetProvider();
     }
 
@@ -45,10 +47,10 @@ public class EntityRepository : IEntityRepository
     {
         return DataAccess.ConnectionProvider switch
         {
-            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess, Options),
-            DataAccessProvider.Oracle => new OracleProvider(DataAccess, Options),
-            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess, Options),
-            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess, Options),
+            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess, Options,LoggerFactory),
+            DataAccessProvider.Oracle => new OracleProvider(DataAccess, Options,LoggerFactory),
+            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess, Options,LoggerFactory),
+            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess, Options,LoggerFactory),
             _ => throw new InvalidOperationException("Invalid data provider." + " [" + DataAccess.ConnectionProvider + "]")
         };
     }

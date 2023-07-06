@@ -21,6 +21,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -42,7 +43,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     
     protected TextFileFactory TextFileFactory { get; } =
         JJService.Provider.GetScopedDependentService<TextFileFactory>();
-
+    
+    protected ILogger<BaseWriter> Logger { get; } =
+        JJService.Provider.GetScopedDependentService<ILogger<BaseWriter>>();
     
     public List<FormElementField> Fields
     {
@@ -193,7 +196,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                         default:
                             ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Log.AddError(ex, ex.Message);
+                            Logger.LogError(ex, "Error at data exportation");
                             break;
                     }
                 }

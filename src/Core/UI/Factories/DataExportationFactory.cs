@@ -11,6 +11,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -28,6 +29,7 @@ public class DataExportationFactory
     private IHttpContext HttpContext { get; }
     private FileDownloaderFactory FileDownloaderFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private ILoggerFactory LoggerFactory { get; }
 
     public DataExportationFactory(
         IEntityRepository entityRepository,
@@ -39,6 +41,7 @@ public class DataExportationFactory
         IBackgroundTask backgroundTask,
         IHttpContext httpContext,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        ILoggerFactory loggerFactory,
         FileDownloaderFactory fileDownloaderFactory)
     {
         EntityRepository = entityRepository;
@@ -50,19 +53,19 @@ public class DataExportationFactory
         BackgroundTask = backgroundTask;
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
+        LoggerFactory = loggerFactory;
         FileDownloaderFactory = fileDownloaderFactory;
     }
 
     public async Task<JJDataExp> CreateDataExportationAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, ScriptHelper,
-            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory, HttpContext);
+        return CreateDataExportation(formElement);
     }
 
     public JJDataExp CreateDataExportation(FormElement formElement)
     {
         return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, ScriptHelper,
-            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory, HttpContext);
+            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext);
     }
 }

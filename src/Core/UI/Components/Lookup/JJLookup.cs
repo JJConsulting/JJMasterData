@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -12,16 +10,18 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-//Represents a field with a value from another Data Dictionary accessed via popup.
+/// Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
+    private ILogger<JJLookup> Logger { get; }
     private IExpressionsService ExpressionsService { get; }
 
     #region "Properties"
@@ -101,12 +101,14 @@ public class JJLookup : JJBaseControl
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
-        IExpressionsService expressionsService) : base(httpContext)
+        IExpressionsService expressionsService,
+        ILogger<JJLookup> logger) : base(httpContext)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
+        Logger = logger;
         ExpressionsService = expressionsService;
         Enabled = true;
         AutoReloadFormFields = true;
@@ -205,7 +207,7 @@ public class JJLookup : JJBaseControl
         }
         catch (Exception ex)
         {
-            Log.AddError(ex, ex.Message);
+            Logger.LogError(ex, ex.Message);
         }
 
         CurrentContext.Response.SendResponse(dto?.ToJson(), "application/json");

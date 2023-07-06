@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
 
@@ -18,13 +19,16 @@ public abstract class BaseProvider
     public abstract DataAccessProvider DataAccessProvider { get; }
     internal DataAccess DataAccess { get; set; }
     protected JJMasterDataCommonsOptions Options { get; }
+    private ILoggerFactory LoggerFactory { get; }
 
 
-    public BaseProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options)
+    public BaseProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory)
     {
         DataAccess = dataAccess;
         Options = options;
+        LoggerFactory = loggerFactory;
     }
+    
     public abstract string VariablePrefix { get; }
     public abstract string GetCreateTableScript(Element element);
     public abstract string GetWriteProcedureScript(Element element);
@@ -318,7 +322,7 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
 
-        var plainTextWriter = new PlainTextReader(this);
+        var plainTextWriter = new PlainTextReader(this,LoggerFactory.CreateLogger<PlainTextReader>());
         plainTextWriter.ShowLogInfo = showLogInfo;
         plainTextWriter.Delimiter = delimiter;
 

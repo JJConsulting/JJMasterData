@@ -16,6 +16,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -32,6 +33,7 @@ public class DataImportationFactory
     private IHttpContext HttpContext { get; }
     private UploadAreaFactory UploadAreaFactory { get; }
     private ComboBoxFactory ComboBoxFactory { get; }
+    private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public DataImportationFactory(
@@ -46,6 +48,7 @@ public class DataImportationFactory
         IHttpContext httpContext,
         UploadAreaFactory uploadAreaFactory,
         ComboBoxFactory comboBoxFactory,
+        ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         DataDictionaryRepository = dataDictionaryRepository;
@@ -59,6 +62,7 @@ public class DataImportationFactory
         HttpContext = httpContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
+        LoggerFactory = loggerFactory;
         StringLocalizer = stringLocalizer;
     }
 
@@ -84,7 +88,7 @@ public class DataImportationFactory
     
     public JJDataImp CreateDataImportation(FormElement formElement)
     {
-        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FieldValuesService,FormService, FieldVisibilityService, BackgroundTask,HttpContext,UploadAreaFactory,ComboBoxFactory, StringLocalizer);
+        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FieldValuesService,FormService, FieldVisibilityService, BackgroundTask,HttpContext,UploadAreaFactory,ComboBoxFactory, LoggerFactory,StringLocalizer);
     }
 
 

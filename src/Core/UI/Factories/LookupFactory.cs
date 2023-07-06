@@ -7,6 +7,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -17,21 +18,23 @@ public class LookupFactory
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
+    private ILoggerFactory LoggerFactory { get; }
     private IExpressionsService ExpressionsService { get; }
 
-    public LookupFactory(
-        IHttpContext httpContext,
+    public LookupFactory(IHttpContext httpContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
-        IExpressionsService expressionsService)
+        IExpressionsService expressionsService,
+        ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
+        LoggerFactory = loggerFactory;
         ExpressionsService = expressionsService;
     }
 
@@ -43,7 +46,7 @@ public class LookupFactory
             DataDictionaryRepository, 
             UrlHelper,
             EncryptionService,
-            ExpressionsService);
+            ExpressionsService, LoggerFactory.CreateLogger<JJLookup>());
         search.SetAttr(field.Attributes);
         search.Name = field.Name;
         search.SelectedValue = value?.ToString();

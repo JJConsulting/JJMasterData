@@ -13,6 +13,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Web.Http;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -46,6 +47,10 @@ internal class FormFileService
 
     public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
         JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    
+    public ILogger<FormFileService> Logger { get; } =
+        JJService.Provider.GetScopedDependentService<ILogger<FormFileService>>();
+
     
     public List<FormFileInfo> MemoryFiles
     {
@@ -136,7 +141,7 @@ internal class FormFileService
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 var exception = new JJMasterDataException(errorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception,"Error OnBeforeCreateFile");
                 throw exception;
             }
                 
@@ -186,7 +191,7 @@ internal class FormFileService
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception, "Error OnBeforeDeleteFile");
                 throw exception;
             }
         }

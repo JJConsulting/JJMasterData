@@ -213,7 +213,6 @@ public class ProtheusConnect : IDisposable
         }
         catch (AccessViolationException ex)
         {
-            Log.AddError(ex, ex.Message);
             lRet = false;
         }
         catch

@@ -16,6 +16,7 @@ using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -80,8 +81,9 @@ public class JJDataImp : JJBaseProcess
         IHttpContext currentContext,
         UploadAreaFactory uploadAreaFactory,
         ComboBoxFactory comboBoxFactory,
+        ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(entityRepository, expressionsService, fieldValuesService, backgroundTask, stringLocalizer)
+        : base(entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
     {
         FieldVisibilityService = fieldVisibilityService;
         CurrentContext = currentContext;

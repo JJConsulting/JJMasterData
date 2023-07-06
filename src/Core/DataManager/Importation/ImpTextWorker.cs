@@ -18,6 +18,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -55,6 +56,9 @@ public class ImpTextWorker : IBackgroundTaskWorker
     
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
         JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    
+    internal ILogger<ImpTextWorker> Logger { get; } =
+        JJService.Provider.GetScopedDependentService<ILogger<ImpTextWorker>>();
     
     internal IFormService FormService { get; } 
     public string PostedText { get; private set; }
@@ -112,7 +116,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                     currentProcess.Message += " ";
                     currentProcess.Message += ExceptionManager.GetMessage(ex);
                     currentProcess.AddError(currentProcess.Message);
-                    Log.AddError(ex.Message);
+                    Logger.LogError(ex, "Error while importing file");
                     throw;
                 }
             }

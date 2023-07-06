@@ -22,6 +22,7 @@ using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Components;
@@ -81,8 +82,9 @@ public class JJDataExp : JJBaseProcess
         IBackgroundTask backgroundTask, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         FileDownloaderFactory fileDownloaderFactory,
+        ILoggerFactory loggerFactory,
         IHttpContext currentContext) : 
-        base(entityRepository, expressionsService, fieldValuesService, backgroundTask, stringLocalizer)
+        base(entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
     {
         ScriptHelper = dataExportationScriptHelper;
         FileDownloaderFactory = fileDownloaderFactory;
