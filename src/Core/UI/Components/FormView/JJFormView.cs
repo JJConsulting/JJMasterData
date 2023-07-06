@@ -848,7 +848,7 @@ public class JJFormView : JJBaseView
 
     internal HtmlBuilder GetParentPanelHtml(JJDataPanel parentPanel)
     {
-        var parentPanelHtml = parentPanel.GetHtmlBuilder();
+        var parentPanelHtml = parentPanel.GetPanelHtml();
 
         if (parentPanel.Errors != null)
             parentPanelHtml.AppendElement(new JJValidationSummary(parentPanel.Errors));
@@ -856,7 +856,9 @@ public class JJFormView : JJBaseView
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
 
-        parentPanelHtml.AppendElement(GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values));
+        var toolbar = GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values);
+        
+        parentPanelHtml.AppendElement(toolbar);
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
         return parentPanelHtml;

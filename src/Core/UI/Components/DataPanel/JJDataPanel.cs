@@ -149,6 +149,10 @@ public class JJDataPanel : JJBaseView
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         FieldControlFactory = fieldControlFactory;
+        Values = new Dictionary<string,dynamic>();
+        Errors =  new Dictionary<string,dynamic>();
+        AutoReloadFormFields = true;
+        PageState = PageState.View;
     }
     
     public JJDataPanel(
@@ -192,7 +196,7 @@ public class JJDataPanel : JJBaseView
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetHtmlPanel().ToString());
+            CurrentContext.Response.SendResponse(GetPanelHtml().ToString());
             return null;
         }
         
@@ -202,10 +206,10 @@ public class JJDataPanel : JJBaseView
             return null;
         }
 
-        return GetHtmlPanel();
+        return GetPanelHtml();
     }
 
-    internal HtmlBuilder GetHtmlPanel()
+    internal HtmlBuilder GetPanelHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
