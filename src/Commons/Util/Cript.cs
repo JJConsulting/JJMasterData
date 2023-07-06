@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET48
+using System;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 
@@ -95,3 +96,4 @@ public class Cript
         return ReportPortalEnigmaService.DecryptString(message, secretKey);
     }
 }
+#endif

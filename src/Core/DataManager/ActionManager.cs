@@ -81,7 +81,7 @@ internal class ActionManager
 
         
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = urlHelper.GetUrl(null,"InternalRedirect", new { parameters =  Cript.EnigmaEncryptRP(@params.ToString()), Area="MasterData"});
+        string url = urlHelper.GetUrl(null,"InternalRedirect", new { parameters =  JJMasterDataEncryptionService.EncryptStringWithUrlEncode(@params.ToString()), Area="MasterData"});
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -252,15 +252,14 @@ internal class ActionManager
     public string GetCommandScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        string jsonMap = JsonConvert.SerializeObject(actionMap);
-        string criptMap = Cript.Cript64(jsonMap);
+        string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = Translate.Key(action.ConfirmationMessage);
 
         var script = new StringBuilder();
         script.Append("jjview.gridAction('");
         script.Append(ComponentName);
         script.Append("','");
-        script.Append(criptMap);
+        script.Append(encryptedActionMap);
         script.Append("'");
         if (!string.IsNullOrEmpty(confirmationMessage))
         {

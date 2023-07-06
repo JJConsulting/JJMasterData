@@ -55,13 +55,15 @@ public class LookupController : MasterDataController
         }
 
         var script = $"jjview.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
-        var selAction = new ScriptAction();
-        selAction.Name = "jjselLookup";
-        selAction.Icon = IconType.ChevronRight;
-        selAction.ToolTip = Translate.Key("Select");
-        selAction.OnClientClick = script;
-        selAction.IsDefaultOption = true;
-        selAction.Order = 100;
+        var selAction = new ScriptAction
+        {
+            Name = "jjselLookup",
+            Icon = IconType.ChevronRight,
+            ToolTip = Translate.Key("Select"),
+            OnClientClick = script,
+            IsDefaultOption = true,
+            Order = 100
+        };
         form.GridView.GridActions.Add(selAction);
 
         foreach (var filter in lookupParameters.Filters)

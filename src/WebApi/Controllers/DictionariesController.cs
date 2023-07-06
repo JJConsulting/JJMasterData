@@ -13,12 +13,16 @@ namespace JJMasterData.WebApi.Controllers;
 [ApiController]
 public class DictionariesController : ControllerBase
 {
+    private AccountService AccountService { get; }
     private readonly DictionariesService _dictionariesService;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DictionariesController(DictionariesService dictionariesService, 
+    public DictionariesController(
+        AccountService accountService,
+        DictionariesService dictionariesService, 
                                   IDataDictionaryRepository dataDictionaryRepository)
     {
+        AccountService = accountService;
         _dictionariesService = dictionariesService;
         _dataDictionaryRepository = dataDictionaryRepository;
     }

@@ -13,6 +13,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -262,7 +263,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
-        string fileName = Cript.Descript64(previewVideo);
+        string fileName = EncryptionService.DecryptStringWithUrlDecode(previewVideo);
         var video = Service.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
@@ -293,7 +294,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
-        string fileName = Cript.Descript64(previewImage);
+        string fileName = EncryptionService.DecryptStringWithUrlDecode(previewImage);
         var file = Service.GetFile(fileName);
 
         if (file == null)
@@ -566,7 +567,7 @@ public class JJFormUpload : JJBaseView
             url += "?";
 
         url += "previewImage=";
-        url += Cript.Cript64(fileName);
+        url += EncryptionService.EncryptStringWithUrlEncode(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
         .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
@@ -592,7 +593,7 @@ public class JJFormUpload : JJBaseView
             videoUrl += "?";
 
         videoUrl += "previewVideo=";
-        videoUrl += Cript.Cript64(fileName);
+        videoUrl += EncryptionService.EncryptStringWithUrlEncode(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
          .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")

@@ -176,7 +176,7 @@ public class JJDataPanel : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        Values ??= GetFormValues().GetAwaiter().GetResult();
+        Values ??= GetFormValues();
         string requestType = CurrentContext.Request.QueryString("t");
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
@@ -261,19 +261,16 @@ public class JJDataPanel : JJBaseView
     /// Load form data with default values and triggers
     /// </summary>
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
-    public async Task<IDictionary<string,dynamic>> GetFormValues()
+    public IDictionary<string,dynamic> GetFormValues()
     {
-        return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
+        return FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState, AutoReloadFormFields).GetAwaiter().GetResult();
     }
     
     public async Task<IDictionary<string,dynamic>> GetFormValuesAsync()
     {
         return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
     }
-
-    /// <summary>
-    /// Load values from database
-    /// </summary>
+    
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]
     public void LoadValuesFromPK(IDictionary<string,dynamic>pks)
     {

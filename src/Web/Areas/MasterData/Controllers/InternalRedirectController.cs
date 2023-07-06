@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
@@ -16,13 +18,15 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class InternalRedirectController : MasterDataController
 {
     private JJMasterDataFactory MasterDataFactory { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
     private IDictionary<string,dynamic>? _relationValues;
 
-    public InternalRedirectController(JJMasterDataFactory masterDataFactory)
+    public InternalRedirectController(JJMasterDataFactory masterDataFactory, JJMasterDataEncryptionService encryptionService)
     {
         MasterDataFactory = masterDataFactory;
+        EncryptionService = encryptionService;
     }
     
     public async Task<ActionResult> Index(string parameters)
@@ -90,11 +94,11 @@ public class InternalRedirectController : MasterDataController
         var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
         panel.PageState = PageState.Update;
 
-        panel.LoadValuesFromPK(_relationValues);
+        await panel.LoadValuesFromPkAsync(_relationValues);
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
-        var values = await panel.GetFormValues();
+        var values = await panel.GetFormValuesAsync();
         var errors = panel.ValidateFields(values, PageState.Update);
         var formElement = panel.FormElement;
         try
@@ -130,7 +134,7 @@ public class InternalRedirectController : MasterDataController
         _dictionaryName = null;
         _relationshipType = RelationshipViewType.List;
         _relationValues = new Dictionary<string, dynamic>();
-        var @params = HttpUtility.ParseQueryString(Cript.EnigmaDecryptRP(parameters));
+        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlDecode(parameters));
         _dictionaryName = @params.Get("formname");
         foreach (string key in @params)
         {

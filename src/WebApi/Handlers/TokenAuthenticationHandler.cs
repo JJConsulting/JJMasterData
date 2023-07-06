@@ -10,14 +10,18 @@ namespace JJMasterData.WebApi.Handlers;
 
 public class TokenAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+    private AccountService AccountService { get; }
     public const string Name = "TokenAuthenticationScheme";
 
-    public TokenAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, 
+    public TokenAuthenticationHandler(
+        AccountService accountService,
+        IOptionsMonitor<AuthenticationSchemeOptions> options, 
                                       ILoggerFactory logger, 
                                       UrlEncoder encoder, 
                                       ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
+        AccountService = accountService;
     }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()

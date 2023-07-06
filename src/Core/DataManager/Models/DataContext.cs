@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -14,6 +16,7 @@ public class DataContext
     
     public string? BrowserInfo { get; internal set; }
     
+    [Obsolete("HttpContext must be injected")]
     public DataContext(DataContextSource source, string? userId)
     {
         Source = source;
@@ -25,7 +28,18 @@ public class DataContext
             IpAddress = context.Request.UserHostAddress;
             BrowserInfo = context.Request.UserAgent;
         }
-
+    }
+    
+    public DataContext(IHttpContext httpContext,DataContextSource source, string? userId)
+    {
+        Source = source;
+        UserId = userId;
+        
+        if (httpContext.HasContext())
+        {
+            IpAddress = httpContext.Request.UserHostAddress;
+            BrowserInfo = httpContext.Request.UserAgent;
+        }
     }
 
 }

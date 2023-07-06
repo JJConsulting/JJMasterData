@@ -1146,14 +1146,15 @@ public class JJGridView : JJBaseView
         var values = new Dictionary<string, dynamic>();
         string currentRow = CurrentContext.Request["current_tablerow_" + Name];
 
-        if (string.IsNullOrEmpty(currentRow)) return values;
+        if (string.IsNullOrEmpty(currentRow)) 
+            return values;
 
-        var decriptId = Cript.Descript64(currentRow);
-        var parms = HttpUtility.ParseQueryString(decriptId);
+        var decriptId = EncryptionService.DecryptStringWithUrlDecode(currentRow);
+        var @params = HttpUtility.ParseQueryString(decriptId);
 
-        foreach (string key in parms)
+        foreach (string key in @params)
         {
-            values.Add(key, parms[key]);
+            values.Add(key, @params[key]);
         }
 
         return values;
@@ -1366,7 +1367,7 @@ public class JJGridView : JJBaseView
         foreach (string pk in pkList)
         {
             var values = new Dictionary<string, dynamic>();
-            string descriptval = Cript.Descript64(pk);
+            string descriptval = EncryptionService.DecryptStringWithUrlDecode(pk);
             string[] ids = descriptval.Split(';');
             for (int i = 0; i < pkFields.Count; i++)
             {
@@ -1399,7 +1400,7 @@ public class JJGridView : JJBaseView
                 selectedKeys.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append(Cript.Cript64(values));
+            selectedKeys.Append(EncryptionService.EncryptStringWithUrlEncode(values));
         }
 
         return selectedKeys.ToString();

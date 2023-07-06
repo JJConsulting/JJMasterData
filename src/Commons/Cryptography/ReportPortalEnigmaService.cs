@@ -3,7 +3,7 @@ using JJMasterData.Commons.Cryptography.Abstractions;
 
 namespace JJMasterData.Commons.Cryptography;
 
-internal class ReportPortalEnigmaService : IEncryptionService
+public class ReportPortalEnigmaService : IEncryptionService
 {
     public string EncryptString(string plainText, string secretKey)
     {

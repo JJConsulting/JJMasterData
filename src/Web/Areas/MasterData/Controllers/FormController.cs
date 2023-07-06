@@ -44,11 +44,26 @@ public class FormController : MasterDataController
 
         if (pageState is not PageState.Insert)
         {
-            formView.DataPanel.LoadValuesFromPK(actionMap.PkFieldValues);
+            await formView.DataPanel.LoadValuesFromPkAsync(actionMap.PkFieldValues);
         }
 
         var form = new HtmlBuilder(HtmlTag.Form);
         form.AppendElement(formView.GetHtmlBuilder());
+        return Content(form.ToString());
+    }
+    
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [HttpPost]
+    //TODO:
+    public async Task<IActionResult> GetPanel(
+        string dictionaryName,
+        string componentName)
+    {
+        var formView = await _formViewFactory.CreateFormViewAsync(dictionaryName);
+        formView.IsExternalRoute = true;
+
+        var form = new HtmlBuilder(HtmlTag.Form);
+        form.AppendElement(formView);
         return Content(form.ToString());
     }
     
@@ -59,7 +74,7 @@ public class FormController : MasterDataController
         if (userId == null) 
             return;
         
-        formView.SetCurrentFilter("USERID", userId);
+        formView.GridView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
     }
 

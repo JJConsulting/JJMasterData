@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -22,6 +24,7 @@ public class JJTextFile : JJBaseControl
 {
     private FormUploadFactory FormUploadFactory { get; }
     private TextGroupFactory TextGroupFactory { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadFormParameterName = "jjuploadform_";
     private IDictionary<string,dynamic> _formValues;
@@ -52,10 +55,12 @@ public class JJTextFile : JJBaseControl
         IHttpContext currentContext, 
         FormUploadFactory formUploadFactory,
         TextGroupFactory textGroupFactory,
+        JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
         FormUploadFactory = formUploadFactory;
         TextGroupFactory = textGroupFactory;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
 
@@ -135,7 +140,7 @@ public class JJTextFile : JJBaseControl
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
-        string value = Cript.Cript64(json);
+        string value = EncryptionService.EncryptStringWithUrlEncode(json);
 
         string title = ElementField.Label;
         if (title == null)
@@ -153,7 +158,7 @@ public class JJTextFile : JJBaseControl
         if (string.IsNullOrEmpty(uploadvalues))
             throw new ArgumentNullException(nameof(uploadvalues));
 
-        string json = Cript.Descript64(uploadvalues);
+        string json = EncryptionService.DecryptStringWithUrlDecode(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
             throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
@@ -326,7 +331,7 @@ public class JJTextFile : JJBaseControl
             url += JJFileDownloader.DownloadParameter;
 
         url += "=";
-        url += Cript.Cript64(filePath);
+        url += EncryptionService.EncryptStringWithUrlEncode(filePath);
 
         return url;
     }

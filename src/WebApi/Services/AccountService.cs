@@ -4,20 +4,37 @@ using JJMasterData.Commons.Util;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Options;
 using JJMasterData.WebApi.Models;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.WebApi.Services;
 
 public class AccountService
 {
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private ReportPortalEnigmaService ReportPortalEnigmaService { get; }
+    private JJMasterDataCoreOptions Options { get; }
+    private ILogger<AccountService> Logger { get; }
     private string? ApiVersion { get; }
     private DataAccess DataAccess { get; }
 
-    public AccountService(IConfiguration configuration)
+    public AccountService(
+        IConfiguration configuration, 
+        JJMasterDataEncryptionService encryptionService,
+        ReportPortalEnigmaService reportPortalEnigmaService,
+        IOptions<JJMasterDataCoreOptions> options,
+        ILogger<AccountService> logger)
     {
+        EncryptionService = encryptionService;
+        ReportPortalEnigmaService = reportPortalEnigmaService;
+        Options = options.Value;
+        Logger = logger;
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
         DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
     }
@@ -33,7 +50,7 @@ public class AccountService
             };
 
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@password", Cript.EnigmaEncryptRP(password)));
+            cmd.Parameters.Add(new DataAccessParameter("@password", ReportPortalEnigmaService.DecryptString(password,Options.SecretKey)));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
             var col = DataAccess.GetFields(cmd);
@@ -53,7 +70,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Log.AddError(ex, ex.Message);
+            Logger.LogError(ex, ex.Message);
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
             ret.ErrorId = 100;
@@ -83,9 +100,9 @@ public class AccountService
                 CmdType = CommandType.StoredProcedure
             };
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", Cript.EnigmaEncryptRP(pwdCurrent)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", Cript.EnigmaEncryptRP(pwdNew)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm", Cript.EnigmaEncryptRP(pwdConfirm)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", ReportPortalEnigmaService.EncryptString(pwdCurrent,Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", ReportPortalEnigmaService.EncryptString(pwdNew,Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm",ReportPortalEnigmaService.EncryptString(pwdConfirm,Options.SecretKey)));
 
             var col = DataAccess.GetFields(cmd);
             if (col != null)
@@ -104,7 +121,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Log.AddError(ex.Message);
+            Logger.LogError(ex.Message);
 
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
@@ -152,7 +169,7 @@ public class AccountService
                     if (ret.ErrorId == 101)
                     {
                         string? email = col["Email"]?.ToString();
-                        string pwd = Cript.EnigmaDecryptRP(col["Password"]?.ToString());
+                        string pwd = ReportPortalEnigmaService.DecryptString(col["Password"]?.ToString(),Options.SecretKey);
                         if (ret.UserId != null)
                         {
                             int userId = int.Parse(ret.UserId);
@@ -166,7 +183,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Log.AddError(ex.Message);
+            Logger.LogError(ex.Message);
 
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
@@ -189,11 +206,10 @@ public class AccountService
     public string BuildToken(string? userId)
     {
         string token = $"{userId}|{ApiVersion}|{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-        token = Cript.EnigmaEncryptRP(token);
-        return Cript.Cript64(token);
+        return EncryptionService.EncryptStringWithUrlEncode(token);
     }
 
-    public static TokenInfo? GetTokenInfo(string? token)
+    public TokenInfo? GetTokenInfo(string? token)
     {
         if (string.IsNullOrEmpty(token))
             return null;
@@ -201,7 +217,7 @@ public class AccountService
         TokenInfo? info = null;
         try
         {
-            string infoToken = Cript.EnigmaDecryptRP(Cript.Descript64(token));
+            string infoToken = EncryptionService.DecryptStringWithUrlDecode(token);
             if (infoToken != null)
             {
                 string[] parms = infoToken.Split('|');
@@ -254,7 +270,7 @@ public class AccountService
             Port = int.Parse(GetParam("EmailPortNumber", userId) ?? string.Empty),
             Email = GetParam("FromEmail", userId),
             User = GetParam("EmailUser", userId),
-            Password = Cript.EnigmaDecryptRP(GetParam("EmailPassword", userId)),
+            Password = ReportPortalEnigmaService.DecryptString(GetParam("EmailPassword", userId),Options.SecretKey),
             EnableSSL = GetParam("EmailSSL", userId)!.Equals("True")
         };
 

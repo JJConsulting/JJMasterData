@@ -46,19 +46,19 @@ public class MasterApiController : ControllerBase
     }
     
     [HttpPost]
-    public ActionResult<ResponseLetter> Post([FromBody] Hashtable[] listParam, string elementName, bool replace = false)
+    public ActionResult<ResponseLetter> Post([FromBody] Dictionary<string,dynamic>[] listParam, string elementName, bool replace = false)
     {
         return GetResponseMessage(_service.SetFields(listParam, elementName, replace));
     }
     
     [HttpPut]
-    public ActionResult<ResponseLetter> Put([FromBody] Hashtable[] listParam, string elementName)
+    public ActionResult<ResponseLetter> Put([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
         return GetResponseMessage(_service.UpdateFields(listParam, elementName));
     }
     
     [HttpPatch]
-    public ActionResult<ResponseLetter> Patch([FromBody] Hashtable[] listParam, string elementName)
+    public ActionResult<ResponseLetter> Patch([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
         return GetResponseMessage(_service.UpdatePart(listParam, elementName));
     }
@@ -72,7 +72,7 @@ public class MasterApiController : ControllerBase
     [HttpPost]
     [Produces(typeof(FormValues[]))]
     [Route("trigger/{pageState?}/{objname?}")]
-    public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody] Hashtable? paramValues,
+    public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody] IDictionary<string,dynamic>? paramValues,
         PageState pageState, string objname = "")
     {
         return Ok(_service.PostTrigger(elementName, paramValues, pageState, objname));

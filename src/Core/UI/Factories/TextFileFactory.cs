@@ -1,4 +1,5 @@
 using System;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -13,23 +14,26 @@ public class TextFileFactory
     private IHttpContext HttpContext { get; }
     private FormUploadFactory FormUploadFactory { get; }
     private TextGroupFactory TextGroupFactory { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
         IHttpContext httpContext,
         FormUploadFactory formUploadFactory,
         TextGroupFactory textGroupFactory,
+        JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
         FormUploadFactory = formUploadFactory;
         TextGroupFactory = textGroupFactory;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
 
     public JJTextFile CreateTextFile()
     {
-        return new JJTextFile(HttpContext, FormUploadFactory, TextGroupFactory, StringLocalizer);
+        return new JJTextFile(HttpContext, FormUploadFactory, TextGroupFactory,EncryptionService, StringLocalizer);
     }
     
     internal JJTextFile CreateTextFile(FormElement formElement,

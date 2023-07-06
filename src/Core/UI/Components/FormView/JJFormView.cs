@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -584,7 +585,7 @@ public class JJFormView : JJBaseView
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
         string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
-        string jsonMap = Cript.Descript64(criptMap);
+        string jsonMap = EncryptionService.DecryptStringWithUrlDecode(criptMap);
         var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
@@ -963,12 +964,25 @@ public class JJFormView : JJBaseView
         return result.Errors;
     }
 
+    
+    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
+    {
+        var painel = DataPanel;
+        var values = await painel.GetFormValuesAsync();
 
-    [Obsolete("Must be async")]
+        if (RelationValues == null)
+            return values;
+
+        DataHelper.CopyIntoDictionary(ref values, RelationValues, true);
+
+        return values;
+    }
+    
+    [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
     public IDictionary<string, dynamic> GetFormValues()
     {
         var painel = DataPanel;
-        var values = painel.GetFormValues().GetAwaiter().GetResult();
+        var values = painel.GetFormValues();
 
         if (RelationValues == null)
             return values;

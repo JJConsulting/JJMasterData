@@ -15,11 +15,16 @@ namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService
 {
+    private ILogger<DictionariesService> Logger { get; }
     private IEntityRepository _entityRepository;
     private IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DictionariesService(IDataDictionaryRepository dataDictionaryRepository, IEntityRepository entityRepository)
+    public DictionariesService(
+        IDataDictionaryRepository dataDictionaryRepository,
+        IEntityRepository entityRepository,
+        ILogger<DictionariesService> logger)
     {
+        Logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
         _entityRepository = entityRepository;
     }
@@ -68,7 +73,7 @@ public class DictionariesService
 
             if (showLogInfo)
             {
-                Log.AddInfo($"- {os.Name}: [{info.RecordSize}] {tsObj.TotalMilliseconds}ms\r\n");
+                Logger.LogInformation($"- {os.Name}: [{info.RecordSize}] {tsObj.TotalMilliseconds}ms\r\n");
             }
 
             if (maxRecordsAllowed > 0 && info.RecordSize > maxRecordsAllowed)
@@ -77,18 +82,18 @@ public class DictionariesService
             }
         }
 
-        TimeSpan ts = DateTime.Now - dStart;
+        var ts = DateTime.Now - dStart;
         syncInfo.TotalProcessMilliseconds = ts.TotalMilliseconds;
 
-        var sLog = new StringBuilder();
-        sLog.AppendLine($"UserId: {userId}");
-        sLog.Append(Translate.Key("Synchronizing"));
-        sLog.Append(listSync.Length);
-        sLog.Append(Translate.Key("objects"));
-        sLog.Append(" ");
-        sLog.AppendLine(" ...");
-        sLog.AppendLine(Translate.Key("{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)));
-        Log.AddInfo(sLog.ToString());
+        var message = new StringBuilder();
+        message.AppendLine($"UserId: {userId}");
+        message.Append(Translate.Key("Synchronizing"));
+        message.Append(listSync.Length);
+        message.Append(Translate.Key("objects"));
+        message.Append(" ");
+        message.AppendLine(" ...");
+        message.AppendLine(Translate.Key("{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)));
+        Logger.LogInformation(message.ToString());
 
         if (syncInfo.ListElement.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No dictionary found"));

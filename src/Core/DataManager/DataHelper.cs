@@ -36,7 +36,7 @@ public static class DataHelper
     /// Returns a list with only the primary keys of the table, if the PK value does not exist,
     /// an exception will be thrown
     /// </summary>
-    public static Hashtable GetPkValues(Element element, IDictionary<string,dynamic> values)
+    public static IDictionary<string,dynamic> GetPkValues(Element element, IDictionary<string,dynamic> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -44,7 +44,7 @@ public static class DataHelper
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var primaryKeys = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         if (elementPks == null || elementPks.Count == 0)
@@ -128,16 +128,16 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static Hashtable? ParseOriginalName(FormElement formElement, Hashtable? paramValues)
+    public static IDictionary<string,dynamic>? ParseOriginalName(FormElement formElement, IDictionary<string,dynamic>? paramValues)
     {
         if (paramValues == null)
             return null;
 
-        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
-        foreach (DictionaryEntry entry in paramValues)
+        var filters = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        foreach (var entry in paramValues)
         {
-            var field = formElement.Fields[entry.Key.ToString()];
-            if (!filters.ContainsKey(entry.Key.ToString()!))
+            var field = formElement.Fields[entry.Key];
+            if (!filters.ContainsKey(entry.Key!))
                 filters.Add(field.Name, entry.Value);
         }
 

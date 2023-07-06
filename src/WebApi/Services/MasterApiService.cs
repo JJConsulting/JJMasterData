@@ -10,23 +10,47 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.WebApi.Services;
 
 public class MasterApiService
 {
-    private readonly HttpContext? _httpContext;
+    private readonly HttpContext _httpContext;
+    private AccountService AccountService { get; }
+    private IExpressionsService ExpressionsService { get; }
+    private IHttpContext HttpContext { get; }
+    private IDataItemService DataItemService { get; }
+    private IFormService FormService { get; }
+    private IFieldsService FieldsService { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
-    public MasterApiService(IHttpContextAccessor httpContextAccessor, 
-                            IEntityRepository entityRepository, 
-                            IDataDictionaryRepository dataDictionaryRepository, IFormEventResolver? formEventResolver)
+
+    public MasterApiService(
+        AccountService accountService,
+        IExpressionsService expressionsService,
+        IHttpContextAccessor httpContextAccessor,
+        IHttpContext httpContext,
+        IDataItemService dataItemService,
+        IFormService formService,
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IFieldsService fieldsService,
+        IFormEventResolver? formEventResolver)
     {
-        _httpContext = httpContextAccessor.HttpContext;
+        _httpContext = httpContextAccessor.HttpContext!;
+        AccountService = accountService;
+        ExpressionsService = expressionsService;
+        HttpContext = httpContext;
+        DataItemService = dataItemService;
+        FormService = formService;
+        FieldsService = fieldsService;
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
         _formEventResolver = formEventResolver;
@@ -43,13 +67,16 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = _entityRepository.GetListFieldsAsText(formElement, filters, orderby, regporpag, pag, showLogInfo);
+        string text = _entityRepository.GetListFieldsAsText(formElement, filters as IDictionary, orderby, regporpag,
+            pag, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
         return text;
     }
-    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby, int total = 0)
+
+    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby,
+        int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -60,7 +87,7 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary;
-        var dt = _entityRepository.GetDataTable(element, filters, orderby, regporpag, pag, ref total);
+        var dt = _entityRepository.GetDataTable(element, filters as IDictionary, orderby, regporpag, pag, ref total);
 
         if (dt == null || dt.Rows.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
@@ -73,6 +100,7 @@ public class MasterApiService
 
         return ret;
     }
+
     public Dictionary<string, object> GetFields(string elementName, string id)
     {
         var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
@@ -82,14 +110,14 @@ public class MasterApiService
         var element = dictionary;
         var primaryKeys = DataHelper.GetPkValues(element, id, ',');
         var filters = ParseFilter(dictionary, primaryKeys);
-        var fields = _entityRepository.GetFields(element, filters);
+        var fields = _entityRepository.GetFields(element, filters as IDictionary);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException(Translate.Key("No records found"));
 
         //We transform to dictionary to preserve the order of fields in parse
         var listRet = new Dictionary<string, object>();
-        foreach (ElementField field in element.Fields)
+        foreach (var field in element.Fields)
         {
             string fieldName = dictionary.ApiOptions.GetFieldNameParsed(field.Name);
             if (fields.ContainsKey(field.Name))
@@ -98,25 +126,27 @@ public class MasterApiService
 
         return listRet;
     }
-    public IEnumerable<ResponseLetter> SetFields(IEnumerable<Hashtable> paramsList, string elementName, bool replace = false)
+
+    public IEnumerable<ResponseLetter> SetFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+        string elementName, bool replace = false)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.ApiOptions.EnableAdd | !dictionary.ApiOptions.EnableUpdate)
+        var formElement = GetDataDictionary(elementName);
+        if (!formElement.ApiOptions.EnableAdd | !formElement.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
-
-        var formService = GetFormService(dictionary);
 
         foreach (var values in paramsList)
         {
-            yield return replace ?
-                InsertOrReplace(formService, values, dictionary.ApiOptions) :
-                Insert(formService, values, dictionary.ApiOptions);
+            yield return replace
+                ? InsertOrReplace(formElement, values, formElement.ApiOptions)
+                : Insert(formElement, values, formElement.ApiOptions);
         }
     }
-    public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<Hashtable> paramsList, string elementName)
+
+    public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+        string elementName)
     {
         if (paramsList == null)
             throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
@@ -125,39 +155,40 @@ public class MasterApiService
         if (!dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
-        var formService = GetFormService(dictionary);
-        
         foreach (var values in paramsList)
         {
-            yield return Update(formService, values, dictionary.ApiOptions);
+            yield return Update(dictionary, values);
         }
     }
-    public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<Hashtable> paramsList, string elementName)
+
+    public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<IDictionary<string, dynamic>> paramsList,
+        string elementName)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var dictionary = GetDataDictionary(elementName);
-        if (!dictionary.ApiOptions.EnableUpdatePart)
+        var formElement = GetDataDictionary(elementName);
+        if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
         if (paramsList == null)
             throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
 
-        var formService = GetFormService(dictionary);
 
         foreach (var values in paramsList)
         {
-            yield return Patch(formService, values, dictionary.ApiOptions);
+            yield return Patch(formElement, values);
         }
     }
-    private ResponseLetter Insert(FormService formService, IDictionary<string,dynamic> apiValues, FormElementApiOptions metadataApiOptions)
+
+    private ResponseLetter Insert(FormElement formElement, IDictionary<string, dynamic> apiValues,
+        FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
         {
-            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Insert, true);
-            var formResult = formService.Insert(values);
+            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Insert, true);
+            var formResult = FormService.Insert(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter
@@ -176,15 +207,17 @@ public class MasterApiService
         {
             ret = ExceptionManager.GetResponse(ex);
         }
+
         return ret;
     }
-    private ResponseLetter Update(FormService formService, IDictionary apiValues, FormElementApiOptions metadataApiOptions)
+
+    private ResponseLetter Update(FormElement formElement, IDictionary<string, dynamic> apiValues)
     {
         ResponseLetter ret;
         try
         {
-            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Update, true);
-            var formResult = formService.Update(values);
+            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Update, true);
+            var formResult = FormService.Update(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 if (formResult.NumberOfRowsAffected == 0)
@@ -194,27 +227,30 @@ public class MasterApiService
                 {
                     Status = (int)HttpStatusCode.OK,
                     Message = Translate.Key("Record updated successfully"),
-                    Data = GetDiff(apiValues, values, metadataApiOptions)
+                    Data = GetDiff(apiValues, values, formElement.ApiOptions)
                 };
             }
             else
             {
-                ret = CreateErrorResponseLetter(formResult.Errors, metadataApiOptions);
+                ret = CreateErrorResponseLetter(formResult.Errors, formElement.ApiOptions);
             }
         }
         catch (Exception ex)
         {
             ret = ExceptionManager.GetResponse(ex);
         }
+
         return ret;
     }
-    private ResponseLetter InsertOrReplace(FormService formService, Hashtable apiValues, FormElementApiOptions metadataApiOptions)
+
+    private ResponseLetter InsertOrReplace(FormElement formElement, IDictionary<string, dynamic> apiValues,
+        FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
         {
-            var values = formService.FormFieldsService.MergeWithExpressionValues(apiValues, PageState.Import, true);
-            var formResult = formService.InsertOrReplace(values);
+            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Import, true);
+            var formResult = FormService.InsertOrReplace(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
@@ -228,6 +264,7 @@ public class MasterApiService
                     ret.Status = (int)HttpStatusCode.OK;
                     ret.Message = Translate.Key("Record updated successfully");
                 }
+
                 ret.Data = GetDiff(apiValues, values, metadataApiOptions);
             }
             else
@@ -239,10 +276,11 @@ public class MasterApiService
         {
             ret = ExceptionManager.GetResponse(ex);
         }
+
         return ret;
     }
 
-    private ResponseLetter Patch(FormService formService, Hashtable values, FormElementApiOptions metadataApiOptions)
+    private ResponseLetter Patch(FormElement formElement, IDictionary<string, dynamic> values)
     {
         ResponseLetter ret;
         try
@@ -250,20 +288,20 @@ public class MasterApiService
             if (values == null || values.Count == 0)
                 throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
 
-            var formManager = formService.FormFieldsService;
-            var parsedValues = DataHelper.ParseOriginalName(formManager.FormElement, values);
-            var pkValues = DataHelper.GetPkValues(formManager.FormElement, parsedValues!);
-            IDictionary currentValues = _entityRepository.GetFields(formManager.FormElement, pkValues);
+            var parsedValues = DataHelper.ParseOriginalName(formElement, values);
+            var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
+            var currentValues = _entityRepository.GetDictionaryAsync(formElement, pkValues).GetAwaiter().GetResult();
             if (currentValues == null)
                 throw new KeyNotFoundException(Translate.Key("No records found"));
 
             DataHelper.CopyIntoDictionary(ref currentValues, parsedValues, true);
-            ret = Update(formService, currentValues, metadataApiOptions);
+            ret = Update(formElement, currentValues);
         }
         catch (Exception ex)
         {
             ret = ExceptionManager.GetResponse(ex);
         }
+
         return ret;
     }
 
@@ -276,11 +314,10 @@ public class MasterApiService
         if (!dictionary.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
 
-        var formService = GetFormService(dictionary);
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
-        var values = formService.FormFieldsService.MergeWithExpressionValues(primaryKeys, PageState.Delete, true);
-        var formResult = formService.Delete(values);
+        var values = FieldsService.MergeWithExpressionValues(formElement, primaryKeys, PageState.Delete, true);
+        var formResult = FormService.Delete(formElement, values, GetDataContext());
 
         if (formResult.IsValid)
         {
@@ -301,7 +338,7 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public Dictionary<string, FormValues> PostTrigger(
-        string elementName, Hashtable? paramValues, PageState pageState, string objname = "")
+        string elementName, IDictionary<string, dynamic>? paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -311,33 +348,32 @@ public class MasterApiService
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
-        var element = dictionary;
         var values = ParseFilter(dictionary, paramValues);
         var userValues = new Hashtable
         {
             { "objname", objname }
         };
 
-        var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FieldValuesService(dictionary, expManager);
-        IDictionary newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
+        var newvalues = FieldsService.MergeWithExpressionValues(dictionary, values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
-        foreach (FormElementField f in element.Fields)
+        foreach (FormElementField f in dictionary.Fields)
         {
             var formValues = new FormValues
             {
-                Enable = formManager.ExpressionsService.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
-                Visible = formManager.ExpressionsService.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
+                Enable = ExpressionsService.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
+                Visible = ExpressionsService.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
             };
 
-            if (newvalues != null && newvalues.Contains(f.Name))
-                formValues.Value = newvalues[f.Name]!;
+            if (newvalues != null && newvalues.TryGetValue(f.Name, out var newvalue))
+                formValues.Value = newvalue!;
 
             if (!f.Name.ToLower().Equals(objname.ToLower()))
             {
                 if (f.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
-                    formValues.DataItems = formManager.GetDataItemValues(f.DataItem, newvalues, pageState);
+                    formValues.DataItems = DataItemService
+                        .GetValues(f.DataItem, null, null, new(newvalues, null, pageState)).GetAwaiter().GetResult()
+                        .ToList();
                 }
             }
 
@@ -350,28 +386,29 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Hashtable ParseFilter(FormElement metadata, IDictionary? paramValues)
+    private IDictionary<string, dynamic> ParseFilter(FormElement metadata, IDictionary<string, dynamic>? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
             return filters;
 
-        foreach (DictionaryEntry entry in paramValues)
+        foreach (var entry in paramValues)
         {
             //if field not exists, generate a exception
-            var field = metadata.Fields[entry.Key.ToString()];
-            if (!filters.ContainsKey(entry.Key.ToString() ?? string.Empty))
+            var field = metadata.Fields[entry.Key];
+            if (!filters.ContainsKey(entry.Key ?? string.Empty))
                 filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()!));
         }
 
         return filters;
     }
-    private Hashtable GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
+
+    private IDictionary<string, dynamic> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
 
-        var filters = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         if (loadQueryString)
         {
             var qnvp = _httpContext.Request.Query.Keys;
@@ -404,6 +441,7 @@ public class MasterApiService
 
         return filters;
     }
+
     private string GetUserId()
     {
         var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
@@ -416,30 +454,14 @@ public class MasterApiService
 
         return userId;
     }
-    private FormService GetFormService(FormElement formElement)
-    {
-        bool logActionIsVisible = formElement.Options.GridToolbarActions.LogAction.IsVisible;
-        string userId = GetUserId();
-        var userValues = new Hashtable
-        {
-            { "USERID", GetUserId() }
-        };
-        
-        var dataContext = new DataContext(DataContextSource.Api, userId);
-        var formEvent = _formEventResolver?.GetFormEvent(formElement.Name);
-        formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
-        
-        var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FieldValuesService(formElement, expManager);
-        var service = new FormService(formManager, dataContext)
-        {
-            EnableAuditLog = logActionIsVisible
-        };
 
-        service.AddFormEvent(formEvent);
-        
-        return service;
+
+    private DataContext GetDataContext()
+    {
+        var userId = GetUserId();
+        return new DataContext(HttpContext, DataContextSource.Api, userId);
     }
+
     private FormElement GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
@@ -447,8 +469,9 @@ public class MasterApiService
 
         return _dataDictionaryRepository.GetMetadata(elementName);
     }
+
     private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName);
-    
+
     /// <summary>
     /// Compares the values of the fields received with those sent to the bank, returning different records
     /// </summary>
@@ -456,9 +479,10 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private Hashtable? GetDiff(IDictionary<string,dynamic> original, IDictionary<string,dynamic> result, FormElementApiOptions apiOptions)
+    private IDictionary<string, dynamic>? GetDiff(IDictionary<string, dynamic> original,
+        IDictionary<string, dynamic> result, FormElementApiOptions apiOptions)
     {
-        var newValues = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
             if (entry.Value == null)
@@ -477,19 +501,21 @@ public class MasterApiService
 
         return newValues.Count > 0 ? newValues : null;
     }
-    private ResponseLetter CreateErrorResponseLetter(IDictionary? errors, FormElementApiOptions apiOptions)
+
+    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, dynamic>? errors,
+        FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
             Status = 400,
             Message = Translate.Key("Invalid data"),
-            ValidationList = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase)
+            ValidationList = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase)
         };
 
         if (errors == null)
             return letter;
 
-        foreach (DictionaryEntry entry in errors)
+        foreach (var entry in errors)
         {
             string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
             letter.ValidationList.Add(fieldName, entry.Value);
