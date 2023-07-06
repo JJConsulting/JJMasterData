@@ -17,7 +17,7 @@ public abstract class JJBaseProcess : JJBaseView
 {
     private string _processKey;
     private ProcessOptions _processOptions;
-    private FieldManager _fieldManager;
+
 
     internal IExpressionsService ExpressionsService { get; }
 
@@ -44,10 +44,8 @@ public abstract class JJBaseProcess : JJBaseView
     /// Configurações pré-definidas do formulário
     /// </summary>
     public FormElement FormElement { get; set; }
-
-    internal FieldManager FieldManager => _fieldManager ??= new FieldManager(FormElement);
-
-    internal IFormFieldsService FormFieldsService { get; } 
+    
+    internal IFieldValuesService FieldValuesService { get; } 
     
     internal IBackgroundTask BackgroundTask { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -55,13 +53,13 @@ public abstract class JJBaseProcess : JJBaseView
     protected JJBaseProcess(
         IEntityRepository entityRepository,
         IExpressionsService expressionsService, 
-        IFormFieldsService formFieldsService,
+        IFieldValuesService fieldValuesService,
         IBackgroundTask backgroundTask,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
-        FormFieldsService = formFieldsService;
+        FieldValuesService = fieldValuesService;
         BackgroundTask = backgroundTask;
         StringLocalizer = stringLocalizer;
     }

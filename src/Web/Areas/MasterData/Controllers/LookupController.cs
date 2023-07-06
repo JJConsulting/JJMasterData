@@ -8,14 +8,22 @@ using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class LookupController : MasterDataController
 {
+    private FormViewFactory FormViewFactory { get; }
+
+    public LookupController(FormViewFactory formViewFactory)
+    {
+        FormViewFactory = formViewFactory;
+    }
+    
     // GET: MasterData/Lookup
-    public ActionResult Index(string p)
+    public async Task<IActionResult> Index(string p)
     {
         if (string.IsNullOrEmpty(p))
             throw new ArgumentNullException();
@@ -45,10 +53,8 @@ public class LookupController : MasterDataController
             throw new JJMasterDataException(Translate.Key("Invalid Parameter"));
 
         //FormView
-        var form = new JJFormView(elementName)
-        {
-            ShowTitle = false
-        };
+        var form = await FormViewFactory.CreateFormViewAsync(elementName);
+        form.ShowTitle = false;
 
         //Actions
         if (!enableAction)

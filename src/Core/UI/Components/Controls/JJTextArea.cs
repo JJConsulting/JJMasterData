@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -9,25 +10,10 @@ public class JJTextArea : JJBaseControl
 {
     public int Rows { get; set; }
 
-    public JJTextArea() 
+    public JJTextArea(IHttpContext httpContext) : base(httpContext)
     {
         Attributes.Add("class", "form-control");
         Rows = 5;
-    }
-
-    internal static JJTextArea GetInstance(FormElementField field, object value)
-    {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field));
-
-        var text = new JJTextArea();
-        text.SetAttr(field.Attributes);
-        text.ToolTip = field.HelpDescription;
-        text.MaxLength = field.Size;
-        text.Text = value != null ? value.ToString() : "";
-        text.Name = field.Name;
-
-        return text;
     }
 
     internal override HtmlBuilder RenderHtml()

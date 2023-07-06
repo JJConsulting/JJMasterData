@@ -9,6 +9,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 
@@ -103,7 +104,7 @@ internal class GridTableBody
             string value = string.Empty;
             if (values.ContainsKey(field.Name))
             {
-                value = GridView.FieldFormattingService.FormatGridValue(field, values, GridView.UserValues).GetAwaiter().GetResult();
+                value = GridView.FieldsService.FormatGridValue(field, values, GridView.UserValues).GetAwaiter().GetResult();
             }
 
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -133,7 +134,7 @@ internal class GridTableBody
                 {
                     if (field.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)GridView.FieldManager.GetField(field, PageState.List, values,GridView.UserValues, value);
+                        var upload = (JJTextFile)GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.List, values,GridView.UserValues, value);
                         td.AppendElement(upload.GetButtonGroupHtml());
                     }
                     else
@@ -166,7 +167,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var baseField = GridView.FieldManager.GetField(field, PageState.List, values,GridView.UserValues, value);
+        var baseField = GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.List, values,GridView.UserValues, value);
         baseField.Name = name;
         baseField.Attributes.Add("nRowId", index);
         baseField.CssClass = field.Name;
@@ -270,13 +271,11 @@ internal class GridTableBody
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
-        var checkBox = new JJCheckBox
-        {
-            Name = "jjchk_" + index,
-            Value = Cript.Cript64(pkValues),
-            Text = string.Empty,
-            IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsKey(pkValues))
-        };
+        var checkBox = new JJCheckBox(GridView.CurrentContext);
+        checkBox.Name = "jjchk_" + index;
+        checkBox.Value = GridView.EncryptionService.EncryptStringWithUrlEncode(pkValues);
+        checkBox.Text = string.Empty;
+        checkBox.IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsKey(pkValues));
 
         if (OnRenderSelectedCell != null)
         {

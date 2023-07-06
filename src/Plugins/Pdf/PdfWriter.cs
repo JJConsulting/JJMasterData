@@ -27,6 +27,7 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Pdf;
 
@@ -266,7 +267,8 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var cbo = (JJComboBox)FieldManager.GetField(field, PageState.List, values,null, selectedValue);
+        var factory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        var cbo = (JJComboBox)factory.CreateControl(FormElement,FormElement.Name,field, PageState.List, values,null, selectedValue);
         var item = cbo.GetValue(selectedValue);
 
         if (item != null)

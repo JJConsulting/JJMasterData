@@ -41,7 +41,7 @@ internal class ActionManager
 
     internal IEntityRepository EntityRepository => JJService.EntityRepository;
 
-    internal IFormFieldsService FormFieldsService => JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    internal IFieldValuesService FieldValuesService => JJService.Provider.GetScopedDependentService<IFieldValuesService>();
     internal JJMasterDataEncryptionService JJMasterDataEncryptionService => JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
     public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
     {
@@ -483,7 +483,7 @@ internal class ActionManager
                 }
                 else
                 {
-                    formValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.List);
+                    formValues = FieldValuesService.GetDefaultValues(FormElement,null, PageState.List);
                 }
 
                 string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);

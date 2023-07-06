@@ -6,6 +6,9 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
+/// <summary>
+/// TODO: Rename this to FormValues? FormContext? FormData?
+/// </summary>
 public class ExpressionOptions
 {
     /// <summary>
@@ -20,14 +23,11 @@ public class ExpressionOptions
     public IDictionary<string,dynamic> FormValues { get; set; }
 
     public PageState PageState { get; set; }
-
-    public IEntityRepository EntityRepository { get; set; }
-
-    public ExpressionOptions(IDictionary<string,dynamic> userValues, IDictionary<string,dynamic>formValues, PageState pageState, IEntityRepository entityRepository)
+    
+    public ExpressionOptions(IDictionary<string,dynamic> userValues, IDictionary<string,dynamic>formValues, PageState pageState)
     {
         UserValues = userValues.DeepCopy();
         FormValues = formValues;
         PageState = pageState;
-        EntityRepository = entityRepository;
     }
 }

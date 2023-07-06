@@ -75,7 +75,6 @@ public static class WriterFactory
     private static void ConfigureWriter(JJDataExp exporter, BaseWriter writer)
     {
         writer.FormElement = exporter.FormElement;
-        writer.FieldManager = exporter.FieldManager;
         writer.Configuration = exporter.ExportOptions;
         writer.UserId = exporter.UserId;
         writer.ProcessOptions = exporter.ProcessOptions;

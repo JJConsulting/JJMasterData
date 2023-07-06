@@ -17,18 +17,16 @@ namespace JJMasterData.Core.DataManager;
 public class FormService : IFormService
 {
     #region Properties
-    
-
     private IEntityRepository EntityRepository { get; }
     
-    private IFormFieldsService FormFieldsService { get; }
+    private IFieldValidationService FieldValidationService { get; }
 
     private IAuditLogService AuditLogService { get; }
 
     public bool EnableErrorLinks { get; set; }
 
     public bool EnableAuditLog { get; set; }
-
+    internal bool Loaded { get; set; }
     #endregion
 
     #region Events
@@ -45,9 +43,9 @@ public class FormService : IFormService
 
     #region Constructor
 
-    public FormService(IFormFieldsService formFieldsService, IEntityRepository entityRepository, IAuditLogService auditLogService)
+    public FormService(IFieldValidationService fieldValidationService, IEntityRepository entityRepository, IAuditLogService auditLogService)
     {
-        FormFieldsService = formFieldsService;
+        FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
     }
@@ -64,7 +62,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public FormLetter Update(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
     {
-        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Update, EnableErrorLinks);
+        var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null)
@@ -102,7 +100,7 @@ public class FormService : IFormService
     {
         IDictionary<string,dynamic>errors;
         if (validateFields)
-            errors = FormFieldsService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLinks);
+            errors = FieldValidationService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLinks);
         else
             errors = new Dictionary<string,dynamic>();
 
@@ -145,7 +143,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public FormLetter<CommandOperation> InsertOrReplace(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
     {
-        var errors = FormFieldsService.ValidateFields(formElement,values, PageState.Import, EnableErrorLinks);
+        var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)

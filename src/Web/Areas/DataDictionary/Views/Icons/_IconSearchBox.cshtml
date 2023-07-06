@@ -1,12 +1,13 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
+@using JJMasterData.Core.Web.Http.Abstractions
 @using JJMasterData.Web.Extensions
-
+@inject IHttpContext HttpContext
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.IconViewModel 
 
 @* ReSharper disable once Html.IdNotResolved *@
 @{
-    var searchBox = new JJSearchBox
+    var searchBox = new JJSearchBox(HttpContext)
     {
         DataItem =
         {

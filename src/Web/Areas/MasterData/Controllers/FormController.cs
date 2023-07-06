@@ -15,11 +15,11 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController : MasterDataController
 {
-    private readonly JJMasterDataFactory _masterDataFactory;
+    private readonly FormViewFactory _formViewFactory;
 
-    public FormController(JJMasterDataFactory masterDataFactory)
+    public FormController(FormViewFactory formViewFactory)
     {
-        _masterDataFactory = masterDataFactory;
+        _formViewFactory = formViewFactory;
     }
     
     public IActionResult Render(string dictionaryName)
@@ -32,17 +32,15 @@ public class FormController : MasterDataController
     [DictionaryNameDecryptionServiceFilter]
     [ActionMapDecryptionServiceFilter]
     [HttpPost]
-    public IActionResult GetFormView(
+    public async Task<IActionResult> GetFormView(
         string dictionaryName,
         PageState pageState,
         ActionMap actionMap)
     {
-        var formView = new JJFormView(dictionaryName)
-        {
-            IsExternalRoute = true,
-            PageState = pageState,
-            IsModal = true,
-        };
+        var formView = await _formViewFactory.CreateFormViewAsync(dictionaryName);
+        formView.IsModal = true;
+        formView.IsExternalRoute = true;
+        formView.PageState = pageState;
 
         if (pageState is not PageState.Insert)
         {

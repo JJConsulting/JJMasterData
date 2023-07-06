@@ -12,7 +12,9 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -20,6 +22,8 @@ namespace JJMasterData.Core.Web.Components;
 //Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
+    private TextGroupFactory TextGroupFactory { get; }
+
     #region "Properties"
 
     private string _selectedValue;
@@ -40,7 +44,7 @@ public class JJLookup : JJBaseControl
         private set => _expressionManager = value;
     }
 
-    internal IDictionary<string,dynamic>FormValues { get; private set; }
+    internal IDictionary<string,dynamic>FormValues { get; set; }
 
     internal PageState PageState { get; set; }
 
@@ -105,42 +109,15 @@ public class JJLookup : JJBaseControl
 
     #region "Constructors"
 
-    public JJLookup()
+    public JJLookup(IHttpContext httpContext, TextGroupFactory textGroupFactory) : base(httpContext)
     {
+        TextGroupFactory = textGroupFactory;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
         PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";
-    }
-
-    internal static JJLookup GetInstance(FormElementField f, ExpressionOptions expOptions, object value, string panelName)
-    {
-        var search = new JJLookup();
-        search.SetAttr(f.Attributes);
-        search.Name = f.Name;
-        search.SelectedValue = value?.ToString();
-        search.Visible = true;
-        search.DataItem = f.DataItem;
-        search.AutoReloadFormFields = false;
-        search.Attributes.Add("pnlname", panelName);
-        search.FormValues = expOptions.FormValues;
-        search.PageState = expOptions.PageState;
-        search.UserValues = expOptions.UserValues;
-        search.EntityRepository = expOptions.EntityRepository;
-
-        if (f.DataType == FieldType.Int)
-        {
-            search.OnlyNumbers = true;
-            search.MaxLength = 11;
-        }
-        else
-        {
-            search.MaxLength = f.Size;
-        }
-
-        return search;
     }
 
     #endregion
@@ -184,26 +161,24 @@ public class JJLookup : JJBaseControl
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
-        var textGroup = new JJTextGroup
+        var textGroup = TextGroupFactory.CreateTextGroup();
+        textGroup.Name = Name;
+        textGroup.CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}";
+        textGroup.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
+        textGroup.MaxLength = MaxLength;
+        textGroup.Text = inputValue;
+        textGroup.Attributes = Attributes;
+        textGroup.ToolTip = ToolTip;
+        textGroup.ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description));
+        textGroup.Enabled = Enabled;
+        textGroup.Actions = new List<JJLinkButton>
         {
-            Name = Name,
-            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
-            InputType = OnlyNumbers ? InputType.Number : InputType.Text,
-            MaxLength = MaxLength,
-            Text = inputValue,
-            Attributes = Attributes,
-            ToolTip = ToolTip,
-            ReadOnly = ReadOnly | (Enabled & !string.IsNullOrEmpty(description)),
-            Enabled = Enabled,
-            Actions = new List<JJLinkButton>
+            new()
             {
-                new()
-                {
-                    Name = $"btn_{Name}",
-                    Enabled = Enabled,
-                    ShowAsButton = true,
-                    IconClass = "fa fa-search"
-                }
+                Name = $"btn_{Name}",
+                Enabled = Enabled,
+                ShowAsButton = true,
+                IconClass = "fa fa-search"
             }
         };
 
@@ -344,7 +319,7 @@ public class JJLookup : JJBaseControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsLookupRoute(JJBaseView view)
+    public static bool IsLookupRoute(JJBaseView view, IHttpContext context)
     {
         string dataPanelName = string.Empty;
         if (view is JJFormView formView)
@@ -352,7 +327,7 @@ public class JJLookup : JJBaseControl
         else if (view is JJDataPanel dataPanel)
             dataPanelName = dataPanel.Name;
 
-        string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + dataPanelName);
+        string lookupRoute = context.Request.QueryString("jjlookup_" + dataPanelName);
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
@@ -365,8 +340,7 @@ public class JJLookup : JJBaseControl
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
         if (field == null) 
             return null;
-
-        var lookup = view.FieldManager.GetField(field, view.PageState, null, view.Values);
+        var lookup = view.FieldControlFactory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
         return lookup.GetHtmlBuilder();
 
     }

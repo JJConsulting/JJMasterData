@@ -3,6 +3,7 @@ using System.Linq;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -27,9 +28,15 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public static JJTextGroup GetInstance(FormElementField f, string name = null)
+    public JJTextGroup(IHttpContext httpContext) : base(httpContext)
     {
-        return WebControlTextFactory.CreateTextGroup(f, name);
+    }
+
+    public JJTextGroup(string name, InputAddons addons, string text, IHttpContext httpContext) : base(httpContext)
+    {
+        Name = name;
+        Addons = addons;
+        Text = text;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -107,6 +114,7 @@ public class JJTextGroup : JJTextBox
 
         return html;
     }
+
 
 
 }

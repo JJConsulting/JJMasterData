@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -20,12 +23,16 @@ public class JJTabNav : JJBaseView
 
     internal string InputHiddenSelectedTabName => $"selected_tab_{Name}";
 
+    
+    internal IHttpContext CurrentContext { get; }
+
     public List<NavContent> ListTab { get; set; }
 
-    public JJTabNav()
+    public JJTabNav(IHttpContext httpContext)
     {
         Name = "nav1";
         ListTab = new List<NavContent>();
+        CurrentContext = httpContext;
     }
 
     internal override HtmlBuilder RenderHtml()

@@ -312,10 +312,10 @@ internal class DataExportationSettings
         return alert;
     }
 
-    private static JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
+    private  JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(DataExportation.CurrentContext)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,
@@ -327,7 +327,7 @@ internal class DataExportationSettings
         return panel;
     }
 
-    private static HtmlBuilder GetLastFilesHtmlElement(List<FileInfo> files)
+    private HtmlBuilder GetLastFilesHtmlElement(List<FileInfo> files)
     {
         if (files == null || files.Count == 0)
             return new HtmlBuilder(Translate.Key("No recently generated files."));
@@ -339,7 +339,7 @@ internal class DataExportationSettings
                 continue;
 
             var icon = JJDataExp.GetFileIcon(file.Extension);
-            string url = JJDataExp.GetDownloadUrl(file.FullName);
+            string url = DataExportation.GetDownloadUrl(file.FullName);
 
             var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("mb-1");

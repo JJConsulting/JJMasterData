@@ -3,18 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJTextFile : JJBaseControl
 {
+    private FormUploadFactory FormUploadFactory { get; }
+    private TextGroupFactory TextGroupFactory { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadFormParameterName = "jjuploadform_";
     private IDictionary<string,dynamic> _formValues;
     private FormFilePathBuilder _pathBuiler;
@@ -37,42 +45,18 @@ public class JJTextFile : JJBaseControl
 
     public FormElement FormElement { get; set; }
 
-    internal FormFilePathBuilder PathBuilder
+    internal FormFilePathBuilder PathBuilder => _pathBuiler ??= new FormFilePathBuilder(FormElement);
+
+
+    public JJTextFile(
+        IHttpContext currentContext, 
+        FormUploadFactory formUploadFactory,
+        TextGroupFactory textGroupFactory,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
-        get
-        {
-            if (_pathBuiler == null)
-                _pathBuiler = new FormFilePathBuilder(FormElement);
-
-            return _pathBuiler;
-        }
-    }
-
-    internal static JJTextFile GetInstance(FormElement formElement,
-        FormElementField field, ExpressionOptions expOptions, object value, string panelName)
-    {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field));
-
-        if (field.DataFile == null)
-            throw new ArgumentException(Translate.Key("Upload config not defined"), field.Name);
-
-        var text = new JJTextFile
-        {
-            ElementField = field,
-            PageState = expOptions.PageState,
-            Text = value != null ? value.ToString() : "",
-            FormValues = expOptions.FormValues,
-            Name = field.Name,
-        };
-
-        text.Attributes.Add("pnlname", panelName);
-        text.UserValues = expOptions.UserValues;
-        text.FormElement = formElement;
-
-        text.SetAttr(field.Attributes);
-
-        return text;
+        FormUploadFactory = formUploadFactory;
+        TextGroupFactory = textGroupFactory;
+        StringLocalizer = stringLocalizer;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -102,7 +86,7 @@ public class JJTextFile : JJBaseControl
         if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var textGroup = new JJTextGroup();
+        var textGroup = TextGroupFactory.CreateTextGroup();
         textGroup.CssClass = CssClass;
         textGroup.ReadOnly = true;
         textGroup.Name = $"v_{Name}";
@@ -204,7 +188,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = new JJFormUpload();
+        var form = FormUploadFactory.CreateFormUpload();
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -284,7 +268,7 @@ public class JJTextFile : JJBaseControl
         {
             0 => string.Empty,
             1 => files[0].Content.FileName,
-            _ => Translate.Key("{0} Selected Files", files.Count)
+            _ => StringLocalizer["{0} Selected Files", files.Count]
         };
     }
 
@@ -337,9 +321,9 @@ public class JJTextFile : JJBaseControl
             url += "?";
 
         if (isExternalLink)
-            url += JJDownloadFile.DirectDownloadParameter;
+            url += JJFileDownloader.DirectDownloadParameter;
         else
-            url += JJDownloadFile.DownloadParameter;
+            url += JJFileDownloader.DownloadParameter;
 
         url += "=";
         url += Cript.Cript64(filePath);
@@ -354,7 +338,7 @@ public class JJTextFile : JJBaseControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsFormUploadRoute(JJBaseView view)
+    public static bool IsFormUploadRoute(JJBaseView view, IHttpContext httpContext)
     {
         string dataPanelName;
         if (view is JJFormView formView)
@@ -364,7 +348,7 @@ public class JJTextFile : JJBaseControl
         else
             dataPanelName = string.Empty;
 
-        return view.CurrentContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
+        return httpContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
     }
 
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
@@ -377,7 +361,9 @@ public class JJTextFile : JJBaseControl
         if (field == null) 
             return null;
 
-        var upload = view.FieldManager.GetField(field, view.PageState, null, view.Values);
+        var factory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        
+        var upload = factory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
         return upload.GetHtmlBuilder();
 
     }
@@ -391,4 +377,5 @@ public class JJTextFile : JJBaseControl
         public string PkValues { get; set; }
 
     }
+
 }

@@ -118,7 +118,7 @@ public class FormElementList : ICollection<FormElementField>
                 if (val.Name.ToLower().Equals(fieldName.ToLower()))
                     return val;
             }
-            throw new ArgumentException(Translate.Key("value {0} not found", fieldName));
+            throw new KeyNotFoundException($"Field {fieldName} not found.");
         }
         set
         {
@@ -135,7 +135,7 @@ public class FormElementList : ICollection<FormElementField>
                 }
             }
             if (!isOk)
-                throw new ArgumentException(Translate.Key("value {0} not found", fieldName));
+                throw new KeyNotFoundException($"Field {fieldName} not found.");
         }
     }
 

@@ -6,10 +6,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Web.Http;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -41,6 +44,9 @@ internal class FormFileService
     /// </remarks>
     public string FolderPath { get; set; }
 
+    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
+        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    
     public List<FormFileInfo> MemoryFiles
     {
         get => JJHttpContext.GetInstance().Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
@@ -72,14 +78,14 @@ internal class FormFileService
             throw new ArgumentNullException(Translate.Key("Required file name"));
 
         if (!Validate.ValidFileName(newName))
-            throw new JJMasterDataException(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
+            throw new JJMasterDataException(StringLocalizer["file name cannot contain [{0}] characters", "* < > | : ? \" / \\"]);
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(Translate.Key("The file extension must remain the same"));
 
         var files = GetFiles();
         if (files.Exists(x => x.Content.FileName.Equals(newName)))
-            throw new JJMasterDataException(Translate.Key("A file with the name {0} already exists", newName));
+            throw new JJMasterDataException(StringLocalizer["A file with the name {0} already exists", newName]);
 
         if (OnBeforeRenameFile != null)
         {
@@ -98,7 +104,7 @@ internal class FormFileService
         {
             var file = files.Find(x => x.Content.FileName.Equals(currentName));
             if (file == null)
-                throw new JJMasterDataException(Translate.Key("file {0} not found!", currentName));
+                throw new JJMasterDataException(StringLocalizer["file {0} not found!", currentName]);
 
             file.Content.FileName = newName;
             if (file.Content.Bytes == null & string.IsNullOrEmpty(file.OriginName))

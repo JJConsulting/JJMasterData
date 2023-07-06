@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.Extensions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -27,7 +28,7 @@ internal class GridFilter
     private JJGridView GridView { get; set; }
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
-
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public GridFilter(JJGridView grid)
     {
         GridView = grid;
@@ -113,7 +114,7 @@ internal class GridFilter
 
         if (GridView.FormElement != null)
         {
-            _currentFilter = GridView.FormFieldsService.MergeWithDefaultValues(GridView.FormElement,values, PageState.List);
+            _currentFilter = GridView.FieldsService.MergeWithDefaultValues(GridView.FormElement,values, PageState.List);
         }
         
         JJHttpContext.GetInstance().Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
@@ -142,8 +143,8 @@ internal class GridFilter
         string objName = CurrentContext.Request.QueryString("objname");
         string panelName = CurrentContext.Request.QueryString("pnlname");
 
-        if (JJSearchBox.IsSearchBoxRoute(GridView))
-            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter);
+        if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
+            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext);
 
         if ("jjsearchbox".Equals(requestType))
         {
@@ -155,7 +156,7 @@ internal class GridFilter
                 return null;
 
             var field = GridView.FormElement.Fields[filterName];
-            var jjSearchBox = GridView.FieldManager.GetField(field, PageState.Filter, GridView.CurrentFilter, GridView.UserValues);
+            var jjSearchBox = GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.Filter, GridView.CurrentFilter, GridView.UserValues);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
         }
@@ -194,7 +195,7 @@ internal class GridFilter
             Text = "Filter",
             IconClass = "fa fa-search",
             Type = LinkButtonType.Submit,
-            OnClientClick = $"{GridView.GridViewToolbarScriptHelper.GetFilterScript(GridView)};return false;"
+            OnClientClick = $"{GridView.GridViewScriptHelper.GetFilterScript(GridView)};return false;"
         };
 
         var btnCancel = new JJLinkButton
@@ -209,7 +210,7 @@ internal class GridFilter
         
         if (action.ShowAsCollapse)
         {
-            var panel = new JJCollapsePanel
+            var panel = new JJCollapsePanel( GridView.CurrentContext)
             {
                 Name = "filter_collapse_" + GridView.Name,
                 HtmlBuilderContent = html,
@@ -254,7 +255,7 @@ internal class GridFilter
         body.WithCssClass("col-sm-12");
         body.AppendElement(GetHtmlToolBarSearch(isToolBar:false));
         
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel( GridView.CurrentContext)
         {
             Name = "filter_collapse_" + GridView.Name,
             HtmlBuilderContent = body,
@@ -269,7 +270,7 @@ internal class GridFilter
     {
         string searchId = "jjsearch_" + GridView.Name;
 
-        var textBox = new JJTextBox()
+        var textBox = new JJTextBox( GridView.CurrentContext)
         {
             Attributes =
             {
@@ -372,13 +373,13 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)GridView.FieldManager.GetField(f, PageState.Filter, values,GridView.UserValues);
+                        var search = (JJSearchBox)GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,f, PageState.Filter, values,GridView.UserValues);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = search.SelectedValue;
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)GridView.FieldManager.GetField(f, PageState.Filter, values,GridView.UserValues);
+                        var lookup = (JJLookup)GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,f, PageState.Filter, values,GridView.UserValues);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;

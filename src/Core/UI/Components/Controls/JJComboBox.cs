@@ -14,6 +14,8 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -22,19 +24,15 @@ public class JJComboBox : JJBaseControl
     private IList<DataItemValue> _values;
     private string _selectedValue;
     private FormElementDataItem _dataItem;
-    private IEntityRepository _entityRepository;
 
-    internal IEntityRepository EntityRepository
-    {
-        get => _entityRepository ??= JJService.EntityRepository;
-        private set => _entityRepository = value;
-    }
+    internal IEntityRepository EntityRepository { get; }
+    internal ILogger<JJComboBox> Logger { get; }
+    
+    private IExpressionsService ExpressionsService { get; } 
 
-    internal IDictionary<string,dynamic>FormValues { get; private set; }
+    internal IDictionary<string,dynamic> FormValues { get; set; }
 
     internal PageState PageState { get; set; }
-
-    public bool EnableSearch { get; set; }
 
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
@@ -61,29 +59,16 @@ public class JJComboBox : JJBaseControl
         set => _selectedValue = value;
     }
 
-    public JJComboBox()
+    public JJComboBox(IHttpContext httpContext,
+        IEntityRepository entityRepository,
+        IExpressionsService expressionsService,
+        ILogger<JJComboBox> logger) : base(httpContext)
     {
+        EntityRepository = entityRepository;
+        Logger = logger;
+        ExpressionsService = expressionsService;
         Enabled = true;
         MultiSelect = false;
-    }
-
-
-    internal static JJComboBox GetInstance(FormElementField f, ExpressionOptions expOptions, object value)
-    {
-        var cbo = new JJComboBox
-        {
-            Name = f.Name,
-            Visible = true,
-            DataItem = f.DataItem,
-            FormValues = expOptions.FormValues,
-            MultiSelect = f.DataItem!.EnableMultiSelect,
-            PageState = expOptions.PageState,
-            SelectedValue = value?.ToString(),
-            UserValues = expOptions.UserValues,
-            EntityRepository = expOptions.EntityRepository
-        };
-
-        return cbo;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -180,8 +165,6 @@ public class JJComboBox : JJBaseControl
         
     }
 
-    private IExpressionsService ExpressionsService { get; } =
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
 
     private string GetSelectedText(IEnumerable<DataItemValue> list)
     {
@@ -211,9 +194,8 @@ public class JJComboBox : JJBaseControl
         }
         catch (Exception ex)
         {
-            var exception = new JJMasterDataException(Translate.Key("Error loading data from JJComboBox {0}. Error Details: {1}", Name, ex.Message),ex);
-            Log.AddError(exception, exception.Message);
-            throw exception;
+            Logger.LogError(ex, "Error loading data from JJComboBox");
+            throw;
         }
 
         return _values;
@@ -296,7 +278,7 @@ public class JJComboBox : JJBaseControl
             }
 
 
-            DataTable dt = EntityRepository.GetDataTable(sql);
+            var dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
             {
                 var item = new DataItemValue

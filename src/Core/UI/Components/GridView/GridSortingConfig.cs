@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -12,7 +13,7 @@ public class GridSortingConfig
     public string CurrentOrder { get; set; }
 
     public FormElement FormElement { get; set; }
-
+    public ComboBoxFactory ComboBoxFactory { get; set; }
     public string Name { get; set; }
 
     public GridSortingConfig(JJGridView grid)
@@ -21,6 +22,7 @@ public class GridSortingConfig
             throw new ArgumentNullException(nameof(grid));
 
         CurrentOrder = grid.CurrentOrder;
+        ComboBoxFactory = grid.ComboBoxFactory;
         FormElement = grid.FormElement;
         Name = grid.Name;
     }
@@ -103,18 +105,13 @@ public class GridSortingConfig
         tbody.WithAttribute("id", $"sortable_{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 
-        var comboBox = new JJComboBox
+        var comboBox = ComboBoxFactory.CreateComboBox();
+        comboBox.DataItem.ShowImageLegend = true;
+        comboBox.DataItem.Items = new List<DataItemValue>
         {
-            DataItem =
-            {
-                ShowImageLegend = true,
-                Items = new List<DataItemValue>
-                {
-                    new("A", Translate.Key("Ascendant"), IconType.SortAmountAsc, null),
-                    new("D", Translate.Key("Descendant"), IconType.SortAmountDesc, null),
-                    new("N", Translate.Key("No Order"), IconType.Genderless, null)
-                }
-            },
+            new("A", Translate.Key("Ascendant"), IconType.SortAmountAsc, null),
+            new("D", Translate.Key("Descendant"), IconType.SortAmountDesc, null),
+            new("N", Translate.Key("No Order"), IconType.Genderless, null)
         };
 
         var sortList = GetSortList();

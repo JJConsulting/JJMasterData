@@ -48,12 +48,12 @@ public static class DataHelper
         var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         if (elementPks == null || elementPks.Count == 0)
-            throw new JJMasterDataException(Translate.Key("Primary key not defined for dictionary {0}", element.Name));
+            throw new JJMasterDataException($"Primary key not defined for dictionary {element.Name}");
 
         foreach (var field in elementPks)
         {
             if (!values.ContainsKey(field.Name))
-                throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
+                throw new JJMasterDataException($"Primary key {field.Name} not entered");
 
             primaryKeys.Add(field.Name, values[field.Name]);
         }
@@ -94,7 +94,7 @@ public static class DataHelper
 
         var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
         if (elementPks == null || elementPks.Count == 0)
-            throw new JJMasterDataException(Translate.Key("Primary key not defined for dictionary {0}", formElement.Name));
+            throw new JJMasterDataException($"Primary key not defined for dictionary {formElement.Name}");
             
         string name = string.Empty;
         foreach (var field in elementPks)
@@ -103,11 +103,11 @@ public static class DataHelper
                 name += separator.ToString();
                 
             if (!formValues.ContainsKey(field.Name) || formValues[field.Name] == null)
-                throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
+                throw new JJMasterDataException($"Primary key {field.Name} not entered");
                     
             string value = formValues[field.Name]!.ToString()!;
             if (value.Contains(separator))
-                throw new JJMasterDataException(Translate.Key("Primary key value {0} contains invalid characters.", value));
+                throw new JJMasterDataException($"Primary key value {value} contains invalid characters.");
                 
             name += value;
         }

@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -13,7 +14,7 @@ public class JJTextBox : JJBaseControl
 
     public double? MaxValue { get; set; }
 
-    public JJTextBox()
+    public JJTextBox(IHttpContext httpContext) : base(httpContext)
     {
         InputType = InputType.Text;
         Visible = true;

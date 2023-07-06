@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -10,6 +9,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
@@ -21,39 +21,48 @@ public class DataExportationFactory
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IExpressionsService ExpressionsService { get; }
 
-    private IFormFieldsService FormFieldsService { get; }
+    private IFieldValuesService FieldValuesService { get; }
     private DataExportationScriptHelper ScriptHelper { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
+    private IHttpContext HttpContext { get; }
+    private FileDownloaderFactory FileDownloaderFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public DataExportationFactory(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IExpressionsService expressionsService, 
-        IFormFieldsService formFieldsService,
+        IExpressionsService expressionsService,
+        IFieldValuesService fieldValuesService,
         DataExportationScriptHelper scriptHelper,
         IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTask backgroundTask,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IHttpContext httpContext,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        FileDownloaderFactory fileDownloaderFactory)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
-        FormFieldsService = formFieldsService;
+        FieldValuesService = fieldValuesService;
         ScriptHelper = scriptHelper;
         Options = options;
         BackgroundTask = backgroundTask;
+        HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
+        FileDownloaderFactory = fileDownloaderFactory;
     }
+
     public async Task<JJDataExp> CreateDataExportationAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask, StringLocalizer);
+        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, ScriptHelper,
+            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory, HttpContext);
     }
 
     public JJDataExp CreateDataExportation(FormElement formElement)
     {
-        return new JJDataExp(formElement,EntityRepository,ExpressionsService,FormFieldsService,ScriptHelper,Options, BackgroundTask, StringLocalizer);
+        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, ScriptHelper,
+            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory, HttpContext);
     }
 }

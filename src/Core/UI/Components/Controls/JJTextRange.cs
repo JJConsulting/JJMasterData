@@ -6,46 +6,24 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJTextRange : JJBaseControl
 {
+    private TextGroupFactory TextGroupFactory { get; }
 
-    private JJBaseControl FromField { get; set; }
-    private JJBaseControl ToField { get; set; }
+    internal JJBaseControl FromField { get; set; }
+    internal JJBaseControl ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    internal static JJBaseControl GetInstance(FormElementField field, IDictionary<string,dynamic> values)
+    public JJTextRange(IHttpContext currentContext, TextGroupFactory textGroupFactory) : base(currentContext)
     {
-        string valueFrom = "";
-        if (values != null && values.ContainsKey(field.Name + "_from"))
-        {
-            valueFrom = values[field.Name + "_from"].ToString();
-        }
-        
-        var range = new JJTextRange();
-        range.FieldType = field.DataType;
-        range.FromField = WebControlTextFactory.CreateTextGroup(field);
-        range.FromField.Text = valueFrom;
-        range.FromField.Name = field.Name + "_from";
-        range.FromField.PlaceHolder = Translate.Key("From");
-        
-        string valueTo = "";
-        if (values != null && values.ContainsKey(field.Name + "_to"))
-        {
-            valueTo = values[field.Name + "_to"].ToString();
-        }
-        
-        range.ToField = WebControlTextFactory.CreateTextGroup(field);
-        range.ToField.Text = valueTo;
-        range.ToField.Name = field.Name + "_to";
-        range.ToField.PlaceHolder = Translate.Key("To");
-
-        return range;
+        TextGroupFactory = textGroupFactory;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -178,4 +156,6 @@ public class JJTextRange : JJBaseControl
         string timeAwareFrom = isTimeAware ? " 00:00" : string.Empty;
         return $"$('#{Name}_from').val('{valueFrom}{timeAwareFrom}');$('#{Name}_to').val('{valueTo}{timeAwareTo}')";
     }
+
+
 }

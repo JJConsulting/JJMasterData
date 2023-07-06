@@ -13,16 +13,16 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataImportationHelp
 {
-    public JJDataImp DataImp { get; private set; }
+    public JJDataImp DataImportation { get; private set; }
 
-    internal DataImportationHelp(JJDataImp dataImp)
+    internal DataImportationHelp(JJDataImp dataImportation)
     {
-        DataImp = dataImp;
+        DataImportation = dataImportation;
     }
 
     public HtmlBuilder GetHtmlHelp()
     {
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(DataImportation.CurrentContext)
         {
             Title = "Import File - Help",
             TitleIcon = new JJIcon(IconType.QuestionCircle),
@@ -195,16 +195,16 @@ internal class DataImportationHelp
         {
             if (field.Size > 0)
             {
-                text.Append(Translate.Key("Max. {0} characters.", field.Size));
+                text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
             }
 
-            text.Append(Translate.Key("Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces));
+            text.Append(DataImportation.StringLocalizer["Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces]);
         }
         else
         {
             if (field.Size > 0)
             {
-                text.Append(Translate.Key("Max. {0} characters.", field.Size));
+                text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
             }
         }
 
@@ -219,7 +219,7 @@ internal class DataImportationHelp
 
     private string GetInfoText(int columnsCount)
     {
-        var upload = DataImp.Upload;
+        var upload = DataImportation.Upload;
         var text = new StringBuilder();
         text.Append(Translate.Key("To bulk insert records, select a file of type"));
         text.Append("<b>");
@@ -246,9 +246,9 @@ internal class DataImportationHelp
 
     private string GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = DataImp.FormFieldsService.GetDefaultValues(DataImp.FormElement,null, PageState.Import);
-        var expOptions = new ExpressionOptions(DataImp.UserValues, defaultValues, PageState.Import, JJService.EntityRepository);
-        var comboBox = JJComboBox.GetInstance(field, expOptions, null);
+        var defaultValues = DataImportation.FieldValuesService.GetDefaultValues(DataImportation.FormElement,null, PageState.Import);
+        var expOptions = new ExpressionOptions(DataImportation.UserValues, defaultValues, PageState.Import);
+        var comboBox = DataImportation.ComboBoxFactory.CreateComboBox(field, expOptions, null);
         var items = comboBox.GetValues();
 
         if (items.Count == 0)
@@ -306,13 +306,13 @@ internal class DataImportationHelp
 
     private List<FormElementField> GetListImportedField()
     {
-        if (DataImp.FormElement == null)
+        if (DataImportation.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
         var list = new List<FormElementField>();
-        foreach (var field in DataImp.FormElement.Fields)
+        foreach (var field in DataImportation.FormElement.Fields)
         {
-            bool visible = DataImp.FieldVisibilityService.IsVisible(field, PageState.Import, null);
+            bool visible = DataImportation.FieldVisibilityService.IsVisible(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

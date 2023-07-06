@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-internal class GridViewScriptHelper
+public class GridViewScriptHelper
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -41,6 +41,31 @@ internal class GridViewScriptHelper
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doPagination('{name}', {enableAjax}, {page})";
+    }
+    
+    public string GetRefreshScript(JJGridView gridView)
+    {
+        string name = gridView.Name;
+        if (gridView.IsExternalRoute)
+        {
+            var url = GetUrl(gridView.FormElement.Name);
+            return $"JJGridView.refresh('{name}', '{url}')";
+        }
+
+        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        return $"jjview.doRefresh('{name}', {enableAjax})";
+    }
+
+    public  string GetFilterScript(JJGridView gridView)
+    {
+        string name = gridView.Name;
+        if (gridView.IsExternalRoute)
+        {
+            var url = GetUrl(gridView.FormElement.Name);
+            return $"JJGridView.filter('{name}', '{url}')";
+        }
+        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        return $"jjview.doFilter('{name}','{enableAjax}')";
     }
 
 }

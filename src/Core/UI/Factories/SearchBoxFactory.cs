@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -14,26 +15,37 @@ public class SearchBoxFactory
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormValuesService FormValuesService { get; }
+    private IHttpContext HttpContext { get; }
 
-    public SearchBoxFactory(IEntityRepository entityRepository,IDataDictionaryRepository dataDictionaryRepository, IFormValuesService formValuesService)
+    public SearchBoxFactory(
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository, 
+        IFormValuesService formValuesService,
+        IHttpContext httpContext)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
+        HttpContext = httpContext;
     }
     
-    internal JJSearchBox GetInstance(FormElementField field, ExpressionOptions expOptions, object value, string dictionaryName)
+    public JJSearchBox CreateSearchBox()
     {
-        var search = new JJSearchBox(expOptions)
+        return new JJSearchBox(HttpContext);
+    }
+    
+    internal JJSearchBox CreateSearchBox(FormElementField field, ExpressionOptions expOptions, object value, string dictionaryName)
+    {
+        var search = new JJSearchBox(expOptions, HttpContext)
         {
-            Name = field.Name,
-            FieldName = field.Name,
-            DictionaryName = dictionaryName,
-            SelectedValue = value?.ToString(),
-            Visible = true,
-            AutoReloadFormFields = false,
             DataItem = field.DataItem
         };
+        search.Name = field.Name;
+        search.FieldName = field.Name;
+        search.DictionaryName = dictionaryName;
+        search.SelectedValue = value?.ToString();
+        search.Visible = true;
+        search.AutoReloadFormFields = false;
 
         return search;
     }
@@ -55,7 +67,7 @@ public class SearchBoxFactory
         }
 
         var field = formElement.Fields[fieldName];
-        var expOptions = new ExpressionOptions(userValues, formValues, pageState, EntityRepository);
-        return GetInstance(field, expOptions, null, dictionaryName);
+        var expOptions = new ExpressionOptions(userValues, formValues, pageState);
+        return CreateSearchBox(field, expOptions, null, dictionaryName);
     }
 }

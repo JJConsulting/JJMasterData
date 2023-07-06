@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -31,6 +32,8 @@ public class JJCollapsePanel : JJBaseView
 
     public PanelColor Color { get; set; }
 
+    internal IHttpContext CurrentContext { get; }
+    
     private bool IsCollapseOpen
     {
         get
@@ -40,8 +43,9 @@ public class JJCollapsePanel : JJBaseView
         }
     }
 
-    public JJCollapsePanel()
+    public JJCollapsePanel(IHttpContext currentContext)
     {
+        CurrentContext = currentContext;
         ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = new List<JJLinkButton>();

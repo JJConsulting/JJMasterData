@@ -24,6 +24,8 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -54,13 +56,10 @@ public class JJFormView : JJBaseView
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
     private JJAuditLogView _auditLogView;
-    private IFormService _service;
-
-
+    private JJDataImp _dataImp;
     internal JJAuditLogView AuditLogView =>
-        _auditLogView ??= new JJAuditLogView(FormElement, EntityRepository);
-
-
+        _auditLogView ??= AuditLogViewFactory.CreateAuditLogView(FormElement);
+    
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
     /// </summary>
@@ -73,12 +72,15 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            var dataImp = _gridView.DataImp;
-            dataImp.OnAfterDelete += OnAfterDelete;
-            dataImp.OnAfterInsert += OnAfterDelete;
-            dataImp.OnAfterUpdate += OnAfterDelete;
+            if (_dataImp != null) 
+                return _dataImp;
+            
+            _dataImp = _gridView.DataImp;
+            _dataImp.OnAfterDelete += OnAfterDelete;
+            _dataImp.OnAfterInsert += OnAfterInsert;
+            _dataImp.OnAfterUpdate += OnAfterUpdate;
 
-            return dataImp;
+            return _dataImp;
         }
     }
 
@@ -89,13 +91,11 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            _dataPanel ??= new JJDataPanel(FormElement)
-            {
-                Name = "jjpanel_" + FormElement.Name.ToLower(),
-                UserValues = UserValues,
-                RenderPanelGroup = true,
-                IsExternalRoute = IsExternalRoute
-            };
+            _dataPanel ??= DataPanelFactory.CreateDataPanel(FormElement);
+            _dataPanel.Name = "jjpanel_" + FormElement.Name.ToLower();
+            _dataPanel.UserValues = UserValues;
+            _dataPanel.RenderPanelGroup = true;
+            _dataPanel.IsExternalRoute = IsExternalRoute;
 
             _dataPanel.PageState = PageState;
 
@@ -114,8 +114,6 @@ public class JJFormView : JJBaseView
 
     public FormElement FormElement { get; set; }
 
-    public IEntityRepository EntityRepository { get; } = JJService.EntityRepository;
-    public GridViewFactory GridViewFactory { get; } = JJService.Provider.GetScopedDependentService<GridViewFactory>();
     public JJGridView GridView
     {
         get
@@ -144,7 +142,7 @@ public class JJFormView : JJBaseView
 
             return _pageState;
         }
-        internal init => _pageState = value;
+        internal set => _pageState = value;
     }
 
     private ActionMap CurrentActionMap
@@ -163,29 +161,6 @@ public class JJFormView : JJBaseView
     }
 
 
-    private IFormService Service
-    {
-        get
-        {
-            if (_service == null)
-            {
-                _service = JJService.Provider.GetScopedDependentService<IFormService>();
-                _service.EnableErrorLinks = true;
-                _service.EnableAuditLog = LogAction.IsVisible;
-
-                _service.OnBeforeInsert += OnBeforeInsert;
-                _service.OnBeforeUpdate += OnBeforeUpdate;
-                _service.OnBeforeDelete += OnBeforeDelete;
-
-                _service.OnAfterDelete += OnAfterDelete;
-                _service.OnAfterUpdate += OnAfterUpdate;
-                _service.OnAfterInsert += OnAfterInsert;
-            }
-
-            return _service;
-        }
-    }
-
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
         => (DeleteSelectedRowsAction)GridView.ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
 
@@ -198,40 +173,109 @@ public class JJFormView : JJBaseView
     public ViewAction ViewAction => (ViewAction)GridView.GridActions.Find(x => x is ViewAction);
 
     public LogAction LogAction => (LogAction)GridView.ToolBarActions.Find(x => x is LogAction);
-    public IDataDictionaryRepository DataDictionaryRepository { get; } =  JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
 
-    internal IExpressionsService ExpressionsService { get; } =
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
-
-    internal IFormFieldsService FormFieldsService { get; } =
-        JJService.Provider.GetScopedDependentService<IFormFieldsService>();
-    
-    internal JJMasterDataEncryptionService EncryptionService { get; } =
-        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
 
     public bool ShowTitle { get; set; }
 
-    internal bool IsModal { get; init; }
+    internal bool IsModal { get; set; }
+
+    internal IHttpContext CurrentContext { get; }
+    internal IEntityRepository EntityRepository { get; }
+    internal AuditLogViewFactory AuditLogViewFactory { get; }
+    internal GridViewFactory GridViewFactory { get; }
+    internal DataPanelFactory DataPanelFactory { get; }
+    internal FormViewFactory FormViewFactory { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IFieldValuesService FieldValuesService { get; }
+    internal IExpressionsService ExpressionsService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IFormService FormService { get; }
 
     #endregion
 
     #region "Constructors"
 
-    internal JJFormView()
+    #if NET48
+    public JJFormView()
     {
-        Name = "jjview";
+        CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
+        EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
+        AuditLogViewFactory = JJService.Provider.GetScopedDependentService<AuditLogViewFactory>();
+        GridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
+        FormViewFactory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
+        FormService = JJService.Provider.GetScopedDependentService<IFormService>();
+        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        FieldValuesService = JJService.Provider.GetScopedDependentService<IFieldValuesService>();
+        ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
+        StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+        DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        DataPanelFactory = JJService.Provider.GetScopedDependentService<DataPanelFactory>();
     }
 
     public JJFormView(string elementName) : this()
     {
-        FormFactory.SetFormViewParams(this, elementName);
-        IsExternalRoute = true;
+        var dataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        var factory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
+        FormElement = dataDictionaryRepository.GetMetadata(elementName);
+        
+        factory.SetFormViewParams(this,FormElement);
     }
-
+    
     public JJFormView(FormElement formElement) : this()
     {
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        Name = "jjview" + formElement.Name.ToLower();
+        FormElement = formElement;
+    }
+    #endif
+    
+    internal JJFormView(
+        IHttpContext currentContext,
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IFormService formService,
+        JJMasterDataEncryptionService encryptionService,
+        IFieldValuesService fieldValuesService,
+        IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        GridViewFactory gridViewFactory,
+        AuditLogViewFactory auditLogViewFactory,
+        DataPanelFactory dataPanelFactory,
+        FormViewFactory formViewFactory)
+    {
+        CurrentContext = currentContext;
+        EntityRepository = entityRepository;
+        AuditLogViewFactory = auditLogViewFactory;
+        GridViewFactory = gridViewFactory;
+        FormViewFactory = formViewFactory;
+        FormService = formService;
+        EncryptionService = encryptionService;
+        FieldValuesService = fieldValuesService;
+        ExpressionsService = expressionsService;
+        StringLocalizer = stringLocalizer;
+        DataDictionaryRepository = dataDictionaryRepository;
+        DataPanelFactory = dataPanelFactory;
+        Name = "jjview";
+    }
+
+    internal JJFormView(
+        FormElement formElement,
+        IHttpContext currentContext,
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IFormService formService,
+        JJMasterDataEncryptionService encryptionService,
+        IFieldValuesService fieldValuesService,
+        IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        GridViewFactory gridViewFactory,
+        AuditLogViewFactory auditLogViewFactory,
+        DataPanelFactory dataPanelFactory,
+        FormViewFactory formViewFactory) : this(currentContext, entityRepository, dataDictionaryRepository, formService,
+        encryptionService, fieldValuesService, expressionsService, stringLocalizer, gridViewFactory,
+        auditLogViewFactory, dataPanelFactory, formViewFactory)
+    {
+        Name = "jjview_" + formElement.Name;
+        FormElement = formElement;
     }
 
     #endregion
@@ -242,18 +286,18 @@ public class JJFormView : JJBaseView
         var objName = CurrentContext.Request.QueryString("objname");
         var dataPanel = DataPanel;
 
-        if (JJLookup.IsLookupRoute(this))
+        if (JJLookup.IsLookupRoute(this, CurrentContext))
             return dataPanel.RenderHtml();
 
-        if (JJTextFile.IsFormUploadRoute(this))
+        if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
             return dataPanel.RenderHtml();
 
-        if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+        if (JJFileDownloader.IsDownloadRoute())
+            return JJFileDownloader.ResponseRoute();
 
-        if (JJSearchBox.IsSearchBoxRoute(this))
-            return JJSearchBox.ResponseJson(DataPanel);
-        
+        if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
+            return JJSearchBox.ResponseJson(DataPanel, CurrentContext);
+
         if ("reloadpainel".Equals(requestType))
         {
             //TODO: eliminar metodo GetSelectedRowId
@@ -502,11 +546,9 @@ public class JJFormView : JJBaseView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var selectedForm = new JJFormView(formElement)
-        {
-            UserValues = UserValues,
-            Name = action.ElementNameToSelect
-        };
+        var selectedForm = FormViewFactory.CreateFormView(formElement);
+        selectedForm.UserValues = UserValues;
+        selectedForm.Name = action.ElementNameToSelect;
         selectedForm.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
@@ -522,7 +564,7 @@ public class JJFormView : JJBaseView
             OnClientClick = goBackScript.ToString(),
             IsDefaultOption = true
         };
-        selectedForm.AddToolBarAction(goBackAction);
+        selectedForm.GridView.AddToolBarAction(goBackAction);
 
         var selAction = new ScriptAction
         {
@@ -531,7 +573,7 @@ public class JJFormView : JJBaseView
             ToolTip = "Select",
             IsDefaultOption = true
         };
-        selectedForm.AddGridAction(selAction);
+        selectedForm.GridView.AddGridAction(selAction);
 
         sHtml.AppendElement(selectedForm);
 
@@ -546,7 +588,7 @@ public class JJFormView : JJBaseView
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var selValues = EntityRepository.GetDictionaryAsync(formElement, map.PkFieldValues).GetAwaiter().GetResult();
-        var values = FormFieldsService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
+        var values = FieldValuesService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
         if (erros.Count > 0)
@@ -668,14 +710,14 @@ public class JJFormView : JJBaseView
                 if (successCount > 0)
                 {
                     message.Append("<p class=\"text-success\">");
-                    message.Append(Translate.Key("{0} Record(s) deleted successfully", successCount));
+                    message.Append(StringLocalizer["{0} Record(s) deleted successfully", successCount]);
                     message.Append("</p><br>");
                 }
 
                 if (errorCount > 0)
                 {
                     message.Append("<p class=\"text-danger\">");
-                    message.Append(Translate.Key("{0} Record(s) with error", successCount));
+                    message.Append(StringLocalizer["{0} Record(s) with error", successCount]);
                     message.Append(Translate.Key("Details:"));
                     message.Append("<br>");
                     message.Append(errorMessage);
@@ -726,7 +768,7 @@ public class JJFormView : JJBaseView
         }
 
         AuditLogView.GridView.AddToolBarAction(goBackAction);
-        AuditLogView.DataPainel = DataPanel;
+        AuditLogView.DataPanel = DataPanel;
         pageState = PageState.Log;
         return AuditLogView.GetHtmlBuilder();
     }
@@ -893,7 +935,7 @@ public class JJFormView : JJBaseView
     public IDictionary<string, dynamic> InsertFormValues(IDictionary<string, dynamic> values,
         bool validateFields = true)
     {
-        var result = Service.Insert(FormElement, values, new DataContext(DataContextSource.Form, UserId),
+        var result = FormService.Insert(FormElement, values, new DataContext(DataContextSource.Form, UserId),
             validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -905,15 +947,15 @@ public class JJFormView : JJBaseView
     /// <returns>The list of errors.</returns>
     public IDictionary<string, dynamic> UpdateFormValues(IDictionary<string, dynamic> values)
     {
-        var result = Service.Update(FormElement, values, new DataContext(DataContextSource.Form, UserId));
+        var result = FormService.Update(FormElement, values, new DataContext(DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
     public IDictionary<string, dynamic> DeleteFormValues(IDictionary<string, dynamic> filter)
     {
-        var values = FormFieldsService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
-        var result = Service.Delete(FormElement, values, new DataContext(DataContextSource.Form, UserId));
+        var values = FieldValuesService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
+        var result = FormService.Delete(FormElement, values, new DataContext(DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -955,7 +997,7 @@ public class JJFormView : JJBaseView
 
     public void SetOptions(FormElementOptions options)
     {
-        FormFactory.SetFormOptions(this, options);
+        FormViewFactory.SetFormOptions(this, options);
     }
 
     private JJLinkButton GetBackButton()

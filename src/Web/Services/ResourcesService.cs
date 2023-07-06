@@ -6,6 +6,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -13,16 +14,19 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ResourcesService : BaseService
 {
+    private FormViewFactory FormViewFactory { get; }
     private IMemoryCache MemoryCache { get; }
     private JJMasterDataCommonsOptions Options { get; }
 
     public ResourcesService(
+        FormViewFactory formViewFactory,
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
         IMemoryCache memoryCache,
         IOptions<JJMasterDataCommonsOptions> options)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        FormViewFactory = formViewFactory;
         MemoryCache = memoryCache;
         Options = options.Value;
     }
@@ -39,7 +43,7 @@ public class ResourcesService : BaseService
             SubTitle = "Languages"
         };
 
-        var formView = new JJFormView(formElement);
+        var formView = FormViewFactory.CreateFormView(formElement);
         
         formView.GridView.ImportAction.SetVisible(true);
         formView.ViewAction.SetVisible(false);

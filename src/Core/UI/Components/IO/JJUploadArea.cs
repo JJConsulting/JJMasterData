@@ -7,6 +7,8 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -88,9 +90,13 @@ public class JJUploadArea : JJBaseView
     public int MaxFileSize { get; set; }
     
     public bool AutoSubmitAfterUploadAll { get; set; }
-    
-    public JJUploadArea()
+
+    internal IHttpContext CurrentContext { get; }
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    public JJUploadArea(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        CurrentContext = currentContext;
+        StringLocalizer = stringLocalizer;
         AllowedTypes = "*";
         Name = "uploadFile1";
         Multiple = true;

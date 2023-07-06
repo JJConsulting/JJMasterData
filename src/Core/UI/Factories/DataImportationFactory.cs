@@ -14,6 +14,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -23,32 +24,41 @@ public class DataImportationFactory
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-    private IFormFieldsService FormFieldsService { get; }
+    private IFieldValuesService FieldValuesService { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IFormService FormService { get; }
     private IFieldVisibilityService FieldVisibilityService { get; }
     private IFormEventResolver FormEventResolver { get; }
+    private IHttpContext HttpContext { get; }
+    private UploadAreaFactory UploadAreaFactory { get; }
+    private ComboBoxFactory ComboBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public DataImportationFactory(
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository, 
         IExpressionsService expressionsService, 
-        IFormFieldsService formFieldsService, 
+        IFieldValuesService fieldValuesService, 
         IBackgroundTask backgroundTask,
         IFormService formService,
         IFieldVisibilityService fieldVisibilityService,
         IFormEventResolver formEventResolver,
+        IHttpContext httpContext,
+        UploadAreaFactory uploadAreaFactory,
+        ComboBoxFactory comboBoxFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
-        FormFieldsService = formFieldsService;
+        FieldValuesService = fieldValuesService;
         BackgroundTask = backgroundTask;
         FormService = formService;
         FieldVisibilityService = fieldVisibilityService;
         FormEventResolver = formEventResolver;
+        HttpContext = httpContext;
+        UploadAreaFactory = uploadAreaFactory;
+        ComboBoxFactory = comboBoxFactory;
         StringLocalizer = stringLocalizer;
     }
 
@@ -74,7 +84,7 @@ public class DataImportationFactory
     
     public JJDataImp CreateDataImportation(FormElement formElement)
     {
-        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FormFieldsService,FormService, FieldVisibilityService, BackgroundTask, StringLocalizer);
+        return new JJDataImp(formElement, EntityRepository,ExpressionsService, FieldValuesService,FormService, FieldVisibilityService, BackgroundTask,HttpContext,UploadAreaFactory,ComboBoxFactory, StringLocalizer);
     }
 
 

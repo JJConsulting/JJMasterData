@@ -18,7 +18,9 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components.Scripts;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
@@ -63,6 +65,8 @@ public class JJDataExp : JJBaseProcess
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
     internal DataExportationScriptHelper ScriptHelper { get; }
+    private FileDownloaderFactory FileDownloaderFactory { get; }
+    internal IHttpContext CurrentContext { get; }
 
     #endregion
 
@@ -71,14 +75,18 @@ public class JJDataExp : JJBaseProcess
         FormElement formElement,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFormFieldsService formFieldsService,
+        IFieldValuesService fieldValuesService,
         DataExportationScriptHelper dataExportationScriptHelper,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask, 
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : 
-        base(entityRepository, expressionsService, formFieldsService, backgroundTask, stringLocalizer)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        FileDownloaderFactory fileDownloaderFactory,
+        IHttpContext currentContext) : 
+        base(entityRepository, expressionsService, fieldValuesService, backgroundTask, stringLocalizer)
     {
         ScriptHelper = dataExportationScriptHelper;
+        FileDownloaderFactory = fileDownloaderFactory;
+        CurrentContext = currentContext;
         MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
     }
@@ -98,9 +106,10 @@ public class JJDataExp : JJBaseProcess
         return new JJIcon(IconType.FileTextO);
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal string GetDownloadUrl(string filePath)
     {
-        return JJDownloadFile.GetDownloadUrl(filePath);
+        var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+        return downloader.GetDownloadUrl(filePath);
     }
 
     private string GetFinishedMessageHtml(DataExportationReporter reporter)
@@ -144,7 +153,7 @@ public class JJDataExp : JJBaseProcess
 
                     string elapsedTime = Format.FormatTimeSpan(reporter.StartDate, reporter.EndDate);
 
-                    div.AppendText(Translate.Key("Process performed on {0}", elapsedTime));
+                    div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
 
                     div.AppendElement(HtmlTag.Br);
 

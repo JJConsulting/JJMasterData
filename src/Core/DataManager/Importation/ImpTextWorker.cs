@@ -17,6 +17,7 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -37,10 +38,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     public CultureInfo Culture { get; set; }
 
-    public FormElement FormElement => FieldManager.FormElement;
-
-    internal FieldManager FieldManager { get; private set; }
-
+    public FormElement FormElement { get; set; }
     internal DataContext DataContext { get; private set; }
 
     internal IExpressionsService ExpressionsService { get; } =
@@ -52,8 +50,11 @@ public class ImpTextWorker : IBackgroundTaskWorker
     internal IFieldVisibilityService FieldVisibilityService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
     
-    internal IFormFieldsService FormFieldsService { get; } =
-        JJService.Provider.GetScopedDependentService<IFormFieldsService>();
+    internal IFieldValuesService FieldValuesService { get; } =
+        JJService.Provider.GetScopedDependentService<IFieldValuesService>();
+    
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
+        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
     
     internal IFormService FormService { get; } 
     public string PostedText { get; private set; }
@@ -61,13 +62,13 @@ public class ImpTextWorker : IBackgroundTaskWorker
     public char SplitChar { get; private set; }
 
 
-    public ImpTextWorker(FieldManager fieldManager,
-                        IFormService formService,
+    public ImpTextWorker(FormElement formElement,
+                         IFormService formService,
                          DataContext dataContext,
                          string postedText,
                          char splitChar)
     {
-        FieldManager = fieldManager;
+        FormElement = formElement;
         FormService = formService;
         DataContext = dataContext;
         PostedText = postedText;
@@ -140,9 +141,9 @@ public class ImpTextWorker : IBackgroundTaskWorker
         string[] stringSeparators = { "\r\n" };
         string[] rows = PostedText.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
-        currentProcess.Message = Translate.Key("Importing {0} records...", currentProcess.TotalRecords.ToString("N0"));
+        currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
         //recupera default values
-        var defaultValues = FormFieldsService.GetDefaultValues(FormElement,null, PageState.Import);
+        var defaultValues = FieldValuesService.GetDefaultValues(FormElement,null, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
@@ -181,7 +182,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 string error = string.Empty;
                 error += Translate.Key("Invalid number of fields.");
                 error += " ";
-                error += Translate.Key("Expected {0} Received {1}.", listField.Count, cols.Length);
+                error += StringLocalizer["Expected {0} Received {1}.", listField.Count, cols.Length];
                 currentProcess.AddError(error);
 
                 error += Translate.Key("Click on the [Help] link for more information regarding the file layout.");
@@ -271,7 +272,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         try
         {
-            var values = FormFieldsService.MergeWithExpressionValues(FormElement,fileValues, PageState.Import, true);
+            var values = FieldValuesService.MergeWithExpressionValues(FormElement,fileValues, PageState.Import, true);
             var ret = FormService.InsertOrReplace(FormElement,values, DataContext);
 
             if (ret.IsValid)

@@ -8,6 +8,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -15,11 +16,27 @@ public class DataItemService : IDataItemService
 {
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
+    private IHttpContext HttpContext { get; }
 
-    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService)
+    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService, IHttpContext httpContext)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
+        HttpContext = httpContext;
+    }
+    
+    public async Task<string> GetSelectedValue(FormElementField field,string searchText, IDictionary<string,dynamic?> values, PageState pageState)
+    {
+        if (HttpContext.IsPost)
+        {
+            string? value = HttpContext.Request.Form(field.Name);
+            if (value is not null)
+                return value;
+        }
+        
+        var list = (await GetValues(field.DataItem!,searchText,null ,new SearchBoxContext(values,null,pageState))).ToList();
+
+        return list.First().Id;
     }
 
     public IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
@@ -65,7 +82,7 @@ public class DataItemService : IDataItemService
         return searchText != null ? values.Where(v=>v.Description.ToLower().Contains(searchText)) : values;
     }
 
-    private string? GetSqlParsed(FormElementDataItem dataItem, string? text, string? searchId, SearchBoxContext searchBoxContext)
+    private string? GetSqlParsed(FormElementDataItem dataItem, string? searchText, string? searchId, SearchBoxContext searchBoxContext)
     {
         var ( values, userValues, pageState) = searchBoxContext;
 
@@ -78,10 +95,10 @@ public class DataItemService : IDataItemService
                     searchBoxContext.UserValues.Add("search_id", StringManager.ClearText(searchId));
             }
 
-            if (text != null)
+            if (searchText != null)
             {
                 if (searchBoxContext.UserValues != null && !searchBoxContext.UserValues.ContainsKey("search_text"))
-                    searchBoxContext.UserValues.Add("search_text", StringManager.ClearText(text));
+                    searchBoxContext.UserValues.Add("search_text", StringManager.ClearText(searchText));
             }
 
             sql = ExpressionsService.ParseExpression(sql, pageState, false,

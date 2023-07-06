@@ -4,14 +4,21 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    public FieldService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
+    public FieldService(
+        IValidationDictionary validationDictionary, 
+        IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        StringLocalizer = stringLocalizer;
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)
@@ -227,10 +234,10 @@ public class FieldService : BaseService
             {
                 var it = itens[i];
                 if (string.IsNullOrEmpty(it.Id))
-                    AddError("DataItem", Translate.Key("Item id {0} required", i));
+                    AddError("DataItem", StringLocalizer["Item id {0} required", i]);
 
                 if (string.IsNullOrEmpty(it.Description))
-                    AddError("DataItem", Translate.Key("Item description {0} required", i));
+                    AddError("DataItem", StringLocalizer["Item description {0} required", i]);
             }
     }
 
@@ -297,10 +304,11 @@ public class FieldService : BaseService
         }
 
         if (string.IsNullOrEmpty(elementMap.FieldKey))
-            AddError(nameof(elementMap.FieldKey), Translate.Key("Required [{0}] field", Translate.Key("Field Key")));
+            AddError(nameof(elementMap.FieldKey),
+                StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
         if (string.IsNullOrEmpty(elementMap.ElementName))
-            AddError(nameof(elementMap.ElementName), Translate.Key("Required [{0}] field", Translate.Key("Field Key")));
+            AddError(nameof(elementMap.ElementName), StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
         if (IsValid)
         {
@@ -308,8 +316,8 @@ public class FieldService : BaseService
             var fieldKey = dataEntry.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
-                string err = Translate.Key("Field [{0}] invalid, as it is not PK or not configured as a filter",
-                    elementMap.FieldKey);
+                string err = StringLocalizer["Field [{0}] invalid, as it is not PK or not configured as a filter",
+                    elementMap.FieldKey];
                 AddError(nameof(elementMap.FieldKey), err);
             }
         }

@@ -13,6 +13,7 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -31,7 +32,8 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-
+    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
+        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
     public IFieldFormattingService FieldFormattingService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
 
@@ -73,7 +75,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             var factory = JJService.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
             GenerateRows(sw, token);
 

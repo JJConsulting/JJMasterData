@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -16,59 +17,57 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 internal class DataPanelControl
 {
-    public string Name { get; set; }
-
+    public string Name { get;  }
+    public FormElement FormElement { get; }
     public FormUI FormUI { get; private set; }
 
-    public FieldManager FieldManager { get; private set; }
+    public FieldControlFactory ControlFactory { get;  }
 
     public PageState PageState { get; private set; }
 
-    public IDictionary<string,dynamic>Errors { get; private set; }
+    public IDictionary<string,dynamic> Errors { get; private set; }
 
     public IDictionary<string,dynamic> UserValues { get; set; }
-    public IDictionary<string,dynamic>Values { get; set; }
+    public IDictionary<string,dynamic> Values { get; set; }
 
     public string FieldNamePrefix { get; set; }
 
     public bool IsExternalRoute { get; }
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
-
-    private IFieldVisibilityService FieldVisibilityService { get; }
     internal IExpressionsService ExpressionsService { get; }
-    private IFieldFormattingService FieldFormattingService { get; }
+    private IFieldsService FieldsService { get; }
     
     public DataPanelControl(JJDataPanel dataPanel)
     {
+        FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
-        FieldManager = dataPanel.FieldManager;
+        ControlFactory = dataPanel.FieldControlFactory;
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
-        FieldVisibilityService = dataPanel.FieldVisibilityService;
         UserValues = dataPanel.UserValues;
+        FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
-        FieldFormattingService = dataPanel.FieldFormattingService;
         IsExternalRoute = dataPanel.IsExternalRoute;
     }
 
     public DataPanelControl(JJGridView gridView)
     {
+        FormElement = gridView.FormElement;
         FormUI = new FormUI
         {
             IsVerticalLayout = false
         };
-        FieldManager = gridView.FieldManager;
         PageState = PageState.Filter;
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
+        ControlFactory = gridView.FieldControlFactory;
         ExpressionsService = gridView.ExpressionsService;
-        FieldFormattingService = gridView.FieldFormattingService;
+        FieldsService = gridView.FieldsService;
         IsExternalRoute = gridView.IsExternalRoute;
-        FieldVisibilityService = gridView.FieldVisibilityService;
     }
 
     public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
@@ -94,7 +93,7 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var field in fields)
         {
-            bool visible = FieldVisibilityService.IsVisible(field, PageState, Values);
+            bool visible = FieldsService.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
             
@@ -103,7 +102,7 @@ internal class DataPanelControl
             {
                 if (field.Component != FormComponent.Currency)
                 {
-                    value = FieldFormattingService.FormatValue(field, Values[field.Name]);
+                    value = FieldsService.FormatValue(field, Values[field.Name]);
                 }
                 else
                 {
@@ -126,7 +125,7 @@ internal class DataPanelControl
             row?.AppendElement(htmlField);
 
             string fieldClass;
-            if (FieldManager.IsRange(field, PageState))
+            if (FieldControlFactory.IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -212,14 +211,14 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = FieldVisibilityService.IsVisible(f, PageState, Values);
+            bool visible = FieldsService.IsVisible(f, PageState, Values);
             if (!visible)
                 continue;
 
             //Value
             object value = null;
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
-                value = FieldFormattingService.FormatValue(f, nonFormattedValue);
+                value = FieldsService.FormatValue(f, nonFormattedValue);
 
             var label = new JJLabel(f)
             {
@@ -260,7 +259,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendElement(label);
 
-            if (FieldManager.IsRange(f, PageState))
+            if (FieldControlFactory.IsRange(f, PageState))
             {
                 row?.AppendElement(GetControlField(f, value));
             }
@@ -284,53 +283,53 @@ internal class DataPanelControl
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(FieldFormattingService.FormatGridValue(f, Values,UserValues).GetAwaiter().GetResult());
+            .AppendText(FieldsService.FormatGridValue(f, Values,UserValues).GetAwaiter().GetResult());
 
         return html;
     }
 
-    private HtmlBuilder GetControlField(FormElementField f, object value)
+    private HtmlBuilder GetControlField(FormElementField field, object value)
     {
-        var field = FieldManager.GetField(f, PageState, Values,UserValues, value);
-        field.IsExternalRoute = IsExternalRoute;
+        var control = ControlFactory.CreateControl(FormElement,Name,field, PageState, Values,UserValues, value);
+        control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
-            field.Name = FieldNamePrefix + f.Name;
+            control.Name = FieldNamePrefix + field.Name;
 
-        field.Enabled = FieldVisibilityService.IsEnabled(f, PageState, Values);
-        if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(f.Name))
+        control.Enabled = FieldsService.IsEnabled(field, PageState, Values);
+        if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(field.Name))
         {
-            field.CssClass = "is-invalid";
+            control.CssClass = "is-invalid";
         }
 
-        if (f.AutoPostBack && PageState is PageState.Insert or PageState.Update)
+        if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update)
         {
-            field.SetAttr("onchange", GetScriptReload(f));
+            control.SetAttr("onchange", GetScriptReload(field));
         }
 
         if (PageState == PageState.Filter)
         {
-            if (field is JJTextGroup textGroup)
+            if (control is JJTextGroup textGroup)
             {
-                if (f.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
+                if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
                 {
                     textGroup.Attributes.Add("data-role", "tagsinput");
                     textGroup.MaxLength = 0;
                 }
             }
-            else if (field is JJComboBox comboBox)
+            else if (control is JJComboBox comboBox)
             {
-                if (f.Filter.IsRequired || f.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
+                if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
                     comboBox.DataItem.FirstOption = FirstOptionMode.None;
                 else
                     comboBox.DataItem.FirstOption = FirstOptionMode.All;
 
-                if (f.Filter.Type == FilterMode.MultValuesEqual)
+                if (field.Filter.Type == FilterMode.MultValuesEqual)
                     comboBox.MultiSelect = true;
             }
         }
 
-        return field.RenderHtml();
+        return control.RenderHtml();
     }
 
     private string GetScriptReload(FormElementField f)

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
@@ -16,6 +14,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
@@ -50,6 +49,8 @@ public class JJDataImp : JJBaseProcess
 
     public JJUploadArea Upload => _upload ??= GetUploadArea();
 
+    
+    
     public bool EnableHistoryLog { get; set; }
 
     /// <summary>
@@ -59,22 +60,33 @@ public class JJDataImp : JJBaseProcess
 
     internal IFieldVisibilityService FieldVisibilityService { get; }
 
+    internal IHttpContext CurrentContext { get; }
+    private UploadAreaFactory UploadAreaFactory { get; }
 
     internal IFormService FormService { get; }
+    internal ComboBoxFactory ComboBoxFactory { get; }
+
     #endregion
 
     #region "Constructors"
-    public JJDataImp(FormElement formElement,
+    public JJDataImp(
+        FormElement formElement,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFormFieldsService formFieldsService,
+        IFieldValuesService fieldValuesService,
         IFormService formService,
         IFieldVisibilityService fieldVisibilityService,
         IBackgroundTask backgroundTask,
+        IHttpContext currentContext,
+        UploadAreaFactory uploadAreaFactory,
+        ComboBoxFactory comboBoxFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(entityRepository, expressionsService, formFieldsService, backgroundTask, stringLocalizer)
+        : base(entityRepository, expressionsService, fieldValuesService, backgroundTask, stringLocalizer)
     {
         FieldVisibilityService = fieldVisibilityService;
+        CurrentContext = currentContext;
+        UploadAreaFactory = uploadAreaFactory;
+        ComboBoxFactory = comboBoxFactory;
         FormService = formService;
         FormElement = formElement;
         var importAction = formElement.Options.GridToolbarActions.ImportAction;
@@ -224,14 +236,14 @@ public class JJDataImp : JJBaseProcess
             });
             
 
-        var collapsePanel = new JJCollapsePanel();
+        var collapsePanel = new JJCollapsePanel(CurrentContext);
         collapsePanel.TitleIcon = new JJIcon(IconType.FolderOpenO);
         collapsePanel.Title = "Import File";
         collapsePanel.ExpandedByDefault = ExpandedByDefault;
         collapsePanel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));
+                label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
             })
             .AppendElement(Upload);
 
@@ -283,7 +295,7 @@ public class JJDataImp : JJBaseProcess
         FormService.OnAfterDelete += OnAfterDelete;
         FormService.OnBeforeImport += OnBeforeImport;
 
-        var worker = new ImpTextWorker(FieldManager, FormService,dataContext, postedText, splitChar)
+        var worker = new ImpTextWorker(FormElement, FormService,dataContext, postedText, splitChar)
         {
             UserId = UserId,
             OnAfterProcess = OnAfterProcess,
@@ -368,12 +380,11 @@ public class JJDataImp : JJBaseProcess
 
     private JJUploadArea GetUploadArea()
     {
-        return new JJUploadArea
-        {
-            Multiple = false,
-            EnableCopyPaste = false,
-            Name = Name + "_upload",
-            AllowedTypes = "txt,csv,log"
-        };
+        var area = UploadAreaFactory.CreateUploadArea();
+        area.Multiple = false;
+        area.EnableCopyPaste = false;
+        area.Name = Name + "_upload";
+        area.AllowedTypes = "txt,csv,log";
+        return area;
     }
 }

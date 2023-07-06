@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -28,6 +29,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadArea"/>
+/// TODO: New name suggestion: JJUploadView (I think we should use view for components with other components inside)
 public class JJFormUpload : JJBaseView
 {
     private const string FileName = "Name";
@@ -90,17 +92,8 @@ public class JJFormUpload : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public JJUploadArea Upload
-    {
-        get
-        {
-            if (_upload == null)
-                _upload = new JJUploadArea();
+    public JJUploadArea Upload => _upload ??= UploadAreaFactory.CreateUploadArea();
 
-            return _upload;
-        }
-    }
-    
     public JJGridView GridView
     {
         get
@@ -108,13 +101,11 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView
-            {
-                Name = Name + "_gridview",
-                UserValues = UserValues,
-                ShowPagging = false,
-                ShowTitle = false
-            };
+            _gridView = GridViewFactory.Value.CreateGridView();
+            _gridView.Name = Name + "_gridview";
+            _gridView.UserValues = UserValues;
+            _gridView.ShowPagging = false;
+            _gridView.ShowTitle = false;
 
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
@@ -215,8 +206,28 @@ public class JJFormUpload : JJBaseView
         }
     }
 
-    public JJFormUpload()
+    internal IHttpContext CurrentContext { get; }
+    private FileDownloaderFactory FileDownloaderFactory { get; }
+    private TextGroupFactory TextGroupFactory { get; }
+    internal UploadAreaFactory UploadAreaFactory { get; }
+    internal Lazy<GridViewFactory> GridViewFactory { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal ILogger<JJFormUpload> Logger { get; }
+    public JJFormUpload(
+        IHttpContext currentContext,
+        FileDownloaderFactory fileDownloaderFactory,
+        TextGroupFactory textGroupFactory,
+        UploadAreaFactory uploadAreaFactory, 
+        Lazy<GridViewFactory> gridViewFactory,
+        JJMasterDataEncryptionService encryptionService, ILogger<JJFormUpload> logger)
     {
+        CurrentContext = currentContext;
+        FileDownloaderFactory = fileDownloaderFactory;
+        TextGroupFactory = textGroupFactory;
+        UploadAreaFactory = uploadAreaFactory;
+        GridViewFactory = gridViewFactory;
+        EncryptionService = encryptionService;
+        Logger = logger;
         Name = "jjuploadform1";
         ShowAddFile = true;
         ExpandedByDefault = true;
@@ -296,8 +307,10 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
+ 
             var filePath = Path.Combine(Service.FolderPath, fileName);
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+            src = downloader.GetDownloadUrl(filePath);
         }
 
         const string script = """
@@ -352,7 +365,7 @@ public class JJFormUpload : JJBaseView
         if (!ShowAddFile)
             return html;
 
-        html.AppendElement(new JJCollapsePanel
+        html.AppendElement(new JJCollapsePanel(CurrentContext)
         {
             Title = "New File",
             ExpandedByDefault = ExpandedByDefault,
@@ -543,7 +556,8 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+            src = downloader.GetDownloadUrl(filePath);
         }
 
         if (url.Contains('?'))
@@ -615,7 +629,7 @@ public class JJFormUpload : JJBaseView
                        LabelFor = $"preview_filename_{Upload.Name}",
                        Text = "File name"
                    })
-                   .AppendElement(new JJTextGroup
+                   .AppendElement(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename_{Upload.Name}",
                        Addons = new InputAddons(".png"),
@@ -745,13 +759,12 @@ public class JJFormUpload : JJBaseView
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
-                Log.AddError(exception, exception.Message);
+                Logger.LogError(exception, "Error on OnBeforeDownloadFile event");
                 throw exception;
             }
         }
-
-        var download = new JJDownloadFile(fileName);
-        download.DirectDownload();
+        var downloader = FileDownloaderFactory.CreateFileDownloader(fileName);
+        downloader.DirectDownload();
     }
 
     /// <summary>
@@ -760,9 +773,9 @@ public class JJFormUpload : JJBaseView
     public void Disable()
     {
         ShowAddFile = false;
-        foreach (BasicAction ac in GridView.GridActions)
+        foreach (var action in GridView.GridActions)
         {
-            ac.SetVisible(false);
+            action.SetVisible(false);
         }
         DownloadAction.SetVisible(true);
     }

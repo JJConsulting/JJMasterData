@@ -319,7 +319,7 @@ public class MasterApiService
         };
 
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormFieldsService(dictionary, expManager);
+        var formManager = new FieldValuesService(dictionary, expManager);
         IDictionary newvalues = formManager.MergeWithExpressionValues(values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in element.Fields)
@@ -430,7 +430,7 @@ public class MasterApiService
         formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
         
         var expManager = new ExpressionManager(userValues, _entityRepository);
-        var formManager = new FormFieldsService(formElement, expManager);
+        var formManager = new FieldValuesService(formElement, expManager);
         var service = new FormService(formManager, dataContext)
         {
             EnableAuditLog = logActionIsVisible

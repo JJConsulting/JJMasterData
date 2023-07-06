@@ -183,7 +183,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var dataTable = _entityRepository.GetDataTable(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
+            throw new KeyNotFoundException($"Dictionary {dictionaryName} not found");
 
         foreach (DataRow row in dataTable.Rows)
         {
@@ -205,7 +205,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var dataTable = await _entityRepository.GetDataTableAsync(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
+            throw new KeyNotFoundException($"Dictionary {dictionaryName} not found");
 
         foreach (DataRow row in dataTable.Rows)
         {

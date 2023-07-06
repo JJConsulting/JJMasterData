@@ -10,6 +10,6 @@ public static class ScriptHelperServiceExtensions
         services.AddTransient<DataExportationScriptHelper>();
         services.AddTransient<FormViewScriptHelper>();
         services.AddTransient<GridViewScriptHelper>();
-        services.AddTransient<GridViewToolbarScriptHelper>();
+        services.AddTransient<ScriptsHelper>();
     }
 }

@@ -7,6 +7,7 @@ namespace JJMasterData.Commons.Util;
 /// <summary>
 /// Static acessor to encryption services.
 /// </summary>
+[Obsolete("This class is controlled by JJService.")]
 public class Cript
 {
     private const string SecretKeyErrorMessage = "You must config or pass a secret key";

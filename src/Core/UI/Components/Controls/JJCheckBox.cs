@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -34,22 +35,11 @@ public class JJCheckBox : JJBaseControl
     private static IExpressionsService ExpressionsService =>
         JJService.Provider.GetScopedDependentService<IExpressionsService>();
     
-    public JJCheckBox()
+    public JJCheckBox(IHttpContext httpContext) : base(httpContext)
     {
         Visible = true;
         Enabled = true;
         Value = "1";
-    }
-
-    internal static JJCheckBox GetInstance(FormElementField field, object value)
-    {
-        var check = new JJCheckBox
-        {
-            Name = field.Name,
-            IsChecked = ExpressionsService.ParseBool(value),
-            ToolTip = field.HelpDescription
-        };
-        return check;
     }
 
 

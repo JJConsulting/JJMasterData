@@ -4,19 +4,23 @@ using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationshipsService : BaseService
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly PanelService _panelService;
 
     public RelationshipsService(
         IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         PanelService panelService)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        StringLocalizer = stringLocalizer;
         _panelService = panelService;
     }
 
@@ -69,7 +73,7 @@ public class RelationshipsService : BaseService
 
         if (!DataDictionaryRepository.Exists(childElementName))
         {
-            AddError("Entity", Translate.Key("Entity {0} not found", childElementName));
+            AddError("Entity", StringLocalizer["Entity {0} not found", childElementName]);
             return IsValid;
         }
 
@@ -88,27 +92,27 @@ public class RelationshipsService : BaseService
         var fkColumn = GetField(childElementName, fkColumnName);
         if (fkColumn == null)
         {
-            AddError("", Translate.Key("Column {0} not found in {1}.", fkColumnName, childElementName));
+            AddError("", StringLocalizer["Column {0} not found in {1}.", fkColumnName, childElementName]);
             return IsValid;
         }
 
         var pkColumn = GetField(dictionaryName, pkColumnName);
         if (pkColumn == null)
         {
-            AddError("", Translate.Key("Column {0} not found.", pkColumnName));
+            AddError("", StringLocalizer["Column {0} not found.", pkColumnName]);
             return IsValid;
         }
 
         if (fkColumn.Filter.Type == FilterMode.None && !fkColumn.IsPk)
         {
-            AddError("", Translate.Key("Column {0} has no filter or is not a primary key.", fkColumnName));
+            AddError("", StringLocalizer["Column {0} has no filter or is not a primary key.", fkColumnName]);
             return IsValid;
         }
 
         if (pkColumn.DataType != fkColumn.DataType)
         {
             AddError("",
-                Translate.Key("Column {0} has incompatible types with column {1}", pkColumnName, fkColumnName));
+                StringLocalizer["Column {0} has incompatible types with column {1}", pkColumnName, fkColumnName]);
             return IsValid;
         }
 

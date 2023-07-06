@@ -5,15 +5,20 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataImportationLog
 {
-    public DataImpReporter Reporter { get; private set; }
-
+    internal DataImpReporter Reporter { get; private set; }
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IHttpContext CurrentContext { get; }
     internal DataImportationLog(JJDataImp dataImp)
     {
+        StringLocalizer = dataImp.StringLocalizer;
+        CurrentContext = dataImp.CurrentContext;
         Reporter = dataImp.GetCurrentReporter();
     }
 
@@ -40,7 +45,7 @@ internal class DataImportationLog
         html.AppendElementIf(Reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
         {
             string elapsedTime = Format.FormatTimeSpan(Reporter.StartDate, Reporter.EndDate);
-            div.AppendText(Translate.Key("Process performed on {0}", elapsedTime));
+            div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
         });
 
         html.AppendElement(HtmlTag.Span, s =>
@@ -48,7 +53,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblInsert")
              .WithAttributeIf(Reporter.Insert == 0, "style", "display:none;")
-             .AppendText(Translate.Key("Inserted:"))
+             .AppendText(StringLocalizer["Inserted::"])
              .AppendElement(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblInsertCount")
@@ -60,7 +65,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblUpdate")
              .WithAttributeIf(Reporter.Update == 0, "style", "display:none;")
-             .AppendText(Translate.Key("Updated:"))
+             .AppendText(StringLocalizer["Updated::"])
              .AppendElement(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblUpdateCount")
@@ -72,7 +77,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelDefault)
              .WithAttribute("id", "lblDelete")
              .WithAttributeIf(Reporter.Delete == 0, "style", "display:none;")
-             .AppendText(Translate.Key("Deleted:"))
+             .AppendText(StringLocalizer["Deleted::"])
              .AppendElement(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblDeleteCount")
@@ -85,7 +90,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelWarning)
              .WithAttribute("id", "lblIgnore")
              .WithAttributeIf(Reporter.Ignore == 0, "style", "display:none;")
-             .AppendText(Translate.Key("Ignored:"))
+             .AppendText(StringLocalizer["Ignored:"])
              .AppendElement(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblIgnoreCount")
@@ -98,7 +103,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelDanger)
              .WithAttribute("id", "lblError")
              .WithAttributeIf(Reporter.Error == 0, "style", "display:none;")
-             .AppendText(Translate.Key("Errors:"))
+             .AppendText(StringLocalizer["Errors::"])
              .AppendElement(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblErrorCount")
@@ -111,21 +116,21 @@ internal class DataImportationLog
 
     private HtmlBuilder GetHtmlLogDetails()
     {
-        var panel = new JJCollapsePanel();
+        var panel = new JJCollapsePanel(CurrentContext);
         panel.Title = "(Click here for more details)";
         panel.TitleIcon = new JJIcon(IconType.Film);
         panel.ExpandedByDefault = false;
         panel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Label, label =>
             {
-                label.AppendText(Translate.Key("Date:"));
+                label.AppendText(StringLocalizer["Date::"]);
             })
             .AppendText("&nbsp;")
-            .AppendText(Translate.Key("start"))
+            .AppendText(StringLocalizer["start:"])
             .AppendText("&nbsp;")
             .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
             .AppendText("&nbsp;")
-            .AppendText(Translate.Key("end"))
+            .AppendText(StringLocalizer["end:"])
             .AppendText("&nbsp;")
             .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
             .AppendElement(HtmlTag.Br);
@@ -134,7 +139,7 @@ internal class DataImportationLog
         {
             panel.HtmlBuilderContent.AppendElement(HtmlTag.Label, label =>
             {
-                label.AppendText(Translate.Key("User Id:"));
+                label.AppendText(StringLocalizer["User Id::"]);
             })
             .AppendText("&nbsp;")
             .AppendText(Reporter.UserId)

@@ -149,9 +149,9 @@ internal class GridPagination
     private HtmlBuilder GetEnableMultSelectTotalRecords()
     {
         var selectedValues = GridView.GetSelectedGridValues();
-        string noRecordSelected = Translate.Key("No record selected");
-        string oneRecordSelected = Translate.Key("A selected record");
-        string multipleRecordsSelected = Translate.Key("{0} selected records", selectedValues?.Count);
+        string noRecordSelected = GridView.StringLocalizer["No record selected"];
+        string oneRecordSelected = GridView.StringLocalizer["A selected record"];
+        string multipleRecordsSelected = GridView.StringLocalizer["{0} selected records", selectedValues?.Count];
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithAttribute("id", $"selectedtext_{GridView.Name}");

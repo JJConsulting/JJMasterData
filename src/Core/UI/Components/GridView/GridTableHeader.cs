@@ -233,7 +233,7 @@ internal class GridTableHeader
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", $"jjview.doSelectAll('{GridView.Name}')");
-                        a.AppendText(Translate.Key("Mark all {0} records", GridView.TotalRecords));
+                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalRecords]);
                     });
                 });
             });

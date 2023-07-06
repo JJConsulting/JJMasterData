@@ -20,6 +20,7 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -32,13 +33,16 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     public const int RegPerPag = 100000;
 
     #region "Properties"
-
-    private FieldManager _fieldManager;
+    
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
     protected IFieldVisibilityService FieldVisibilityService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
+    
+    protected TextFileFactory TextFileFactory { get; } =
+        JJService.Provider.GetScopedDependentService<TextFileFactory>();
+
     
     public List<FormElementField> Fields
     {
@@ -62,20 +66,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ExportOptions Configuration { get; set; }
 
-    public FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-            {
-                _fieldManager = new FieldManager(FormElement);
-            }
-                
-
-            return _fieldManager;
-        }
-        set => _fieldManager = value;
-    }
+    public FieldControlFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
@@ -150,8 +141,6 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     public async Task RunWorkerAsync(CancellationToken token)
     {
         if (FormElement == null) throw new ArgumentNullException(nameof(FormElement));
-        if (FieldManager == null) throw new ArgumentNullException(nameof(FieldManager));
-
         await Task.Run(() =>
             {
 #if NETFRAMEWORK
@@ -243,15 +232,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = new JJTextFile
-        {
-            FormElement = FormElement,
-            ElementField = field,
-            PageState = PageState.List,
-            Text = value,
-            FormValues = values,
-            Name = field.Name
-        };
+        var textFile = TextFileFactory.CreateTextFile();
+        textFile.FormElement = FormElement;
+        textFile.ElementField = field;
+        textFile.PageState = PageState.List;
+        textFile.Text = value;
+        textFile.FormValues = values;
+        textFile.Name = field.Name;
 
         return textFile.GetDownloadLink(fileName, true, AbsoluteUri);
     }

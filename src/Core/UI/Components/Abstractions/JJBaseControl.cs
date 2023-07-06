@@ -1,9 +1,11 @@
-﻿namespace JJMasterData.Core.Web.Components;
+﻿using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
+
+namespace JJMasterData.Core.Web.Components;
 
 public abstract class JJBaseControl : JJBaseView
 {
     private string _text;
-
 
     /// <summary>
     /// Obtém ou define um valor que indica se o controle está habilitado.
@@ -31,6 +33,8 @@ public abstract class JJBaseControl : JJBaseView
     /// </summary>
     public int MaxLength { get; set; }
 
+    internal IHttpContext CurrentContext { get; }
+    
     /// <summary>
     /// Conteudo da caixa de texto 
     /// </summary>
@@ -47,5 +51,9 @@ public abstract class JJBaseControl : JJBaseView
         set => _text = value;
     }
 
+    protected JJBaseControl(IHttpContext currentContext)
+    {
+        CurrentContext = currentContext;
+    }
 
 }

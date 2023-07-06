@@ -1,5 +1,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -33,17 +34,19 @@ public class JJCollapsePanelTagHelper : TagHelper
     public PanelColor Color { get; set; }
     
     private RazorPartialRendererService RendererService { get; }
-    
-    public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService)
+    private IHttpContext HttpContext { get; }
+
+    public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService, IHttpContext httpContext)
     {
         RendererService = rendererService;
+        HttpContext = httpContext;
     }
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         AssertAttributes();
         
-        var panel = new JJCollapsePanel
+        var panel = new JJCollapsePanel(HttpContext)
         {
             Name = Title!.ToLower().Replace(" ", "_"),
             Title = Title,

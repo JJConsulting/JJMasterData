@@ -5,6 +5,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,17 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController : MasterDataController
 {
+    private JJMasterDataFactory MasterDataFactory { get; }
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
     private IDictionary<string,dynamic>? _relationValues;
 
-    public ActionResult Index(string parameters)
+    public InternalRedirectController(JJMasterDataFactory masterDataFactory)
+    {
+        MasterDataFactory = masterDataFactory;
+    }
+    
+    public async Task<ActionResult> Index(string parameters)
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
@@ -29,11 +36,9 @@ public class InternalRedirectController : MasterDataController
         switch (_relationshipType)
         {
             case RelationshipViewType.List:
-                {
-                    var form = new JJFormView(_dictionaryName)
-                    {
-                        RelationValues = _relationValues
-                    };
+            {
+                    var form = await MasterDataFactory.CreateFormViewAsync(_dictionaryName);
+                    form.RelationValues = _relationValues;
 
                     if (userId != null)
                     {
@@ -45,11 +50,9 @@ public class InternalRedirectController : MasterDataController
                     break;
                 }
             case RelationshipViewType.View:
-                {
-                    var panel = new JJDataPanel(_dictionaryName)
-                    {
-                        PageState = PageState.View
-                    };
+            {
+                var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+                    panel.PageState = PageState.View;
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
@@ -60,10 +63,8 @@ public class InternalRedirectController : MasterDataController
                 }
             case RelationshipViewType.Update:
                 {
-                    var panel = new JJDataPanel(_dictionaryName)
-                    {
-                        PageState = PageState.Update
-                    };
+                    var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+                    panel.PageState = PageState.Update;
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
@@ -86,10 +87,8 @@ public class InternalRedirectController : MasterDataController
 
         var userId = HttpContext.GetUserId();
 
-        var panel = new JJDataPanel(_dictionaryName)
-        {
-            PageState = PageState.Update
-        };
+        var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+        panel.PageState = PageState.Update;
 
         panel.LoadValuesFromPK(_relationValues);
         if (userId != null)

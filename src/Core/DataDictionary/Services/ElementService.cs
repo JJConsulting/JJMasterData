@@ -17,19 +17,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
+    private GridViewFactory GridViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
-    public ElementService(IValidationDictionary validationDictionary, 
+    public ElementService(GridViewFactory gridViewFactory,
+        IValidationDictionary validationDictionary, 
                           IOptions<JJMasterDataCoreOptions> options,
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
+        GridViewFactory = gridViewFactory;
         _entityRepository = entityRepository;
         _options = options.Value;
     }
@@ -215,16 +219,11 @@ public class ElementService : BaseService
         formElement.Title = "JJMasterData";
         
         formElement.Options.GridTableActions.Clear();
-        
-        var gridView = new JJGridView(formElement, true)
-        {
-            Name = "List",
-            FilterAction =
-            {
-                ExpandedByDefault = true
-            }
-        };
-        
+
+        var gridView = GridViewFactory.CreateGridView(formElement);
+        gridView.Name = "List";
+        gridView.FilterAction.ExpandedByDefault = true;
+
         gridView.MaintainValuesOnLoad = true;
         gridView.EnableMultiSelect = true;
         gridView.ExportAction.SetVisible(false);

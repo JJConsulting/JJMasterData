@@ -9,7 +9,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FormFieldsService : IFormFieldsService
+public class FieldValuesService : IFieldValuesService
 {
     private IEntityRepository EntityRepository { get; }
     private IFieldValidationService FieldValidationService { get; }
@@ -17,52 +17,11 @@ public class FormFieldsService : IFormFieldsService
     private IExpressionsService ExpressionsService { get; }
 
 
-    public FormFieldsService(IExpressionsService expressionsService, IEntityRepository entityRepository, IFieldValidationService fieldValidationService)
+    public FieldValuesService(IExpressionsService expressionsService, IEntityRepository entityRepository, IFieldValidationService fieldValidationService)
     {
         ExpressionsService = expressionsService;
         EntityRepository = entityRepository;
         FieldValidationService = fieldValidationService;
-    }
-
-    /// <summary>
-    /// Validates form fields and returns a list of errors found
-    /// </summary>
-    /// <param name="formElement">FormElement</param>
-    /// <param name="formValues">Form values</param>
-    /// <param name="pageState">Context</param>
-    /// <param name="enableErrorLink">Add html link in error fields</param>
-    /// <returns>
-    /// Key = Field name
-    /// Value = Error message
-    /// </returns>
-    public IDictionary<string,dynamic>ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
-    {
-        if (formValues == null)
-            throw new ArgumentNullException(nameof(formValues));
-
-        var errors = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
-
-        foreach (var field in formElement.Fields)
-        {
-            bool isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
-            if (!isVisible)
-                continue;
-
-            bool isEnable = ExpressionsService.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
-            if (!isEnable)
-                continue;
-
-            string value;
-            if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
-                value = formValues[field.Name].ToString();
-            else
-                value = "";
-
-            var error = FieldValidationService.ValidateField(field, field.Name, value, enableErrorLink);
-            if (!string.IsNullOrEmpty(error))
-                errors.Add(field.Name, error);
-        }
-        return errors;
     }
 
     /// <summary>

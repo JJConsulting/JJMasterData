@@ -1,24 +1,24 @@
 ﻿using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJLegendView : JJBaseView
 {
-    /// <summary>
-    /// Pre-defined Form settings.
-    /// </summary>
-    public FormElement FormElement { get; set; }
-
+    private ComboBoxFactory ComboBoxFactory { get; }
     public bool ShowAsModal { get; set; }
+    
+    public required FormElement FormElement { get; init; }
 
     #region "Constructors"
 
-    public JJLegendView(FormElement formElement)
+    public JJLegendView(ComboBoxFactory comboBoxFactory)
     {
-        FormElement = formElement;
+        ComboBoxFactory = comboBoxFactory;
         Name = "iconLegend";
         ShowAsModal = false;
     }
@@ -29,10 +29,10 @@ public class JJLegendView : JJBaseView
     {
         if (ShowAsModal)
         {
-            return GetHtmlModal();
+            return GetHtmlModal(FormElement);
         }
 
-        var field = GetFieldLegend();
+        var field = GetFieldLegend(FormElement);
         return GetHtmlLegend(field);
     }
 
@@ -42,12 +42,10 @@ public class JJLegendView : JJBaseView
 
         if (field != null)
         {
-            var cbo = new JJComboBox()
-            {
-                Name = field.Name,
-                DataItem = field.DataItem
-            };
-            
+            var cbo = ComboBoxFactory.CreateComboBox();
+            cbo.Name = field.Name;
+            cbo.DataItem = field.DataItem;
+
             var values = cbo.GetValues();
             
             if (values is { Count: > 0 })
@@ -78,9 +76,9 @@ public class JJLegendView : JJBaseView
         return div;
     }
 
-    private HtmlBuilder GetHtmlModal()
+    private HtmlBuilder GetHtmlModal(FormElement formElement)
     {
-        var field = GetFieldLegend();
+        var field = GetFieldLegend(formElement);
 
         var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
@@ -97,9 +95,9 @@ public class JJLegendView : JJBaseView
         return dialog.RenderHtml();
     }
     
-    private FormElementField GetFieldLegend()
+    private FormElementField GetFieldLegend(FormElement formElement)
     {
-        return FormElement.Fields.FirstOrDefault(f 
+        return formElement.Fields.FirstOrDefault(f 
             => f.Component == FormComponent.ComboBox && f.DataItem.ShowImageLegend);
     }
 

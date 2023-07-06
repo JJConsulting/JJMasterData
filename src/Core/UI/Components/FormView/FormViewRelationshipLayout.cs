@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
@@ -39,7 +38,7 @@ internal class FormViewRelationshipLayout
 
     private HtmlBuilder GetTabRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
-        var tabNav = new JJTabNav
+        var tabNav = new JJTabNav(ParentFormView.CurrentContext)
         {
             Name = $"nav_relationships_{parentPanel.Name}"
         };
@@ -57,13 +56,13 @@ internal class FormViewRelationshipLayout
         return tabNav.GetHtmlBuilder();
     }
 
-    private static HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
+    private HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
     {
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse or PanelLayout.Panel:
                 {
-                    var collapse = new JJCollapsePanel
+                    var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
                     {
                         Name = "collapse_" + relationship.Id,
                         Title = relationship.Panel.Title,
@@ -127,26 +126,22 @@ internal class FormViewRelationshipLayout
             case RelationshipViewType.View or RelationshipViewType.Update:
                 {
                     var childValues = ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter).GetAwaiter().GetResult();
-                    
-                    var childDataPanel = new JJDataPanel(childElement)
-                    {
-                        PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update,
-                        UserValues = ParentFormView.UserValues,
-                        Values = childValues,
-                        RenderPanelGroup = false,
-                        FormUI = childElement.Options.Form
-                    };
+
+                    var childDataPanel = ParentFormView.DataPanelFactory.CreateDataPanel(childElement);
+                    childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
+                    childDataPanel.UserValues = ParentFormView.UserValues;
+                    childDataPanel.Values = childValues;
+                    childDataPanel.RenderPanelGroup = false;
+                    childDataPanel.FormUI = childElement.Options.Form;
 
                     return childDataPanel.GetHtmlBuilder();
                 }
             case RelationshipViewType.List:
-                {
-                    var childGrid = new JJFormView(childElement)
-                    {
-                        UserValues = ParentFormView.UserValues,
-                        IsExternalRoute = true,
-                        RelationValues = mappedForeignKeys
-                    };
+            {
+                    var childGrid = ParentFormView.FormViewFactory.CreateFormView(childElement);
+                    childGrid.UserValues = ParentFormView.UserValues;
+                    childGrid.IsExternalRoute = true;
+                    childGrid.RelationValues = mappedForeignKeys;
                     childGrid.GridView.Filter.ApplyCurrentFilter(filter);
                     childGrid.SetOptions(childElement.Options);
 

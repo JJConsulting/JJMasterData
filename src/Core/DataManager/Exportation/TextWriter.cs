@@ -4,12 +4,14 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
@@ -18,7 +20,8 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-
+    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
+        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -42,7 +45,7 @@ public class TextWriter : BaseWriter, ITextWriter
             var factory = JJService.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
             GenerateRows(sw, token);
 

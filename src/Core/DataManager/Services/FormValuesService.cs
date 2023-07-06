@@ -1,37 +1,39 @@
 ﻿#nullable enable
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FormValuesService : IFormValuesService
 {
     private IEntityRepository EntityRepository { get; }
-    private IFormFieldsService FormFieldsService { get; }
+    private IFieldValuesService FieldValuesService { get; }
+    private IDataItemService DataItemService { get; }
+    private LookupFactory LookupFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IHttpContext CurrentContext { get; }
     public FormValuesService(
         IEntityRepository entityRepository,
-        IFormFieldsService formFieldsService,
+        IFieldValuesService fieldValuesService,
+        IDataItemService dataItemService,
+        LookupFactory lookupFactory,
         JJMasterDataEncryptionService encryptionService,
         IHttpContext currentContext)
     {
         EntityRepository = entityRepository;
-        FormFieldsService = formFieldsService;
+        FieldValuesService = fieldValuesService;
+        DataItemService = dataItemService;
+        LookupFactory = lookupFactory;
         EncryptionService = encryptionService;
         CurrentContext = currentContext;
     }
@@ -48,21 +50,19 @@ public class FormValuesService : IFormValuesService
             var value = field.ValidateRequest
                 ? CurrentContext.Request.Form(fieldName)
                 : CurrentContext.Request.GetUnvalidated(fieldName);
-
-            var fieldManager = new FieldManager(formElement);
+            
             
             switch (field.Component)
             {
                 case FormComponent.Search:
                 {
-                    var search = (JJSearchBox)fieldManager.GetField(field, pageState, values, null);
-                    search.AutoReloadFormFields = true;
-                    value = search.SelectedValue;
+                    value = DataItemService.GetSelectedValue(field,null,values,pageState);
                     break;
                 }
                 case FormComponent.Lookup:
                 {
-                    var lookup = (JJLookup)fieldManager.GetField(field, pageState, values,null);
+                    //TODO: use a service instead of the component
+                    var lookup = LookupFactory.CreateLookup(field, new ExpressionOptions(null, values, pageState),null,null);
                     lookup.AutoReloadFormFields = true;
                     value = lookup.SelectedValue;
                     break;
@@ -129,7 +129,7 @@ public class FormValuesService : IFormValuesService
             DataHelper.CopyIntoDictionary(ref newValues, requestedValues, true);
         }
         
-        return FormFieldsService.MergeWithExpressionValues(formElement,newValues, pageState, !CurrentContext.IsPost);
+        return FieldValuesService.MergeWithExpressionValues(formElement,newValues, pageState, !CurrentContext.IsPost);
     }
     
     

@@ -13,4 +13,6 @@ public interface IDataItemService
         string searchText,
         string searchId,
         SearchBoxContext searchBoxContext);
+
+    Task<string> GetSelectedValue(FormElementField field,string searchText, IDictionary<string,dynamic> values, PageState pageState);
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -23,6 +24,7 @@ public class JJHttpContext : IHttpContext
     {
     }
 
+    [Obsolete("Development time workaround, use dependency injection.")]
     public static IHttpContext GetInstance()
     {
         using var scope = JJService.Provider.CreateScope();

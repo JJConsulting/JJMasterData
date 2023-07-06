@@ -1,21 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager;
 
 public class FieldValidationService : IFieldValidationService
 {
+    private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> Localizer { get; }
 
-    public FieldValidationService(IStringLocalizer<JJMasterDataResources> localizer)
+    public FieldValidationService(IExpressionsService expressionsService,IStringLocalizer<JJMasterDataResources> localizer)
     {
+        ExpressionsService = expressionsService;
         Localizer = localizer;
     }
+    
+    public IDictionary<string,dynamic>ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
+    {
+        if (formValues == null)
+            throw new ArgumentNullException(nameof(formValues));
+
+        var errors = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+
+        foreach (var field in formElement.Fields)
+        {
+            bool isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
+            if (!isVisible)
+                continue;
+
+            bool isEnable = ExpressionsService.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
+            if (!isEnable)
+                continue;
+
+            string value;
+            if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
+                value = formValues[field.Name].ToString();
+            else
+                value = "";
+
+            var error = ValidateField(field, field.Name, value, enableErrorLink);
+            if (!string.IsNullOrEmpty(error))
+                errors.Add(field.Name, error);
+        }
+        return errors;
+    }
+
     public string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true)
     {
         if (field == null)

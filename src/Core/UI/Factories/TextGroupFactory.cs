@@ -4,12 +4,25 @@ using System.Globalization;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public static class WebControlTextFactory
+public class TextGroupFactory
 {
-    public static JJTextGroup CreateTextGroup(FormElementField field, object value)
+    private IHttpContext HttpContext { get; }
+
+    public TextGroupFactory(IHttpContext httpContext)
+    {
+        HttpContext = httpContext;
+    }
+    
+    public JJTextGroup CreateTextGroup()
+    {
+        return new JJTextGroup(HttpContext);
+    }
+    
+    public JJTextGroup CreateTextGroup(FormElementField field, object value)
     {
         var textGroup = CreateTextGroup(field);
 
@@ -21,12 +34,12 @@ public static class WebControlTextFactory
         return textGroup;
     }
 
-    public static JJTextGroup CreateTextGroup(FormElementField field)
+    public JJTextGroup CreateTextGroup(FormElementField field)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var textGroup = new JJTextGroup();
+        var textGroup = new JJTextGroup(HttpContext);
         textGroup.SetAttr(field.Attributes);
         textGroup.MaxLength = field.Size;
         textGroup.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
@@ -48,9 +61,9 @@ public static class WebControlTextFactory
         return textGroup;
     }
 
-    public static JJTextGroup CreateTextDate()
+    public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup();
+        var textGroup = new JJTextGroup(HttpContext);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }

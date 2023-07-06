@@ -1,23 +1,23 @@
-﻿using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Configuration.Options.Abstractions;
-using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+
 
 namespace JJMasterData.Commons.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static void ConfigureWritableOptions<T>(
-        this IServiceCollection services,
-        IConfigurationSection section,
-        string file) where T : class, new()
+    public static IServiceCollection AllowLazyInicialization(this IServiceCollection services) 
     {
-        services.Configure<T>(section);
-        services.AddTransient<IWritableOptions<T>>(provider =>
-        {
-            var options = provider.GetService<IOptionsMonitor<T>>()!;
-            return new WritableJsonOptions<T>(options, section.Key, file);
-        });
+        var lastRegistration = services.Last();
+        
+        var lazyServiceType = typeof(Lazy<>).MakeGenericType(
+            lastRegistration.ServiceType);
+        
+        var lazyServiceImplementationType = typeof(LazyService<>).MakeGenericType(
+            lastRegistration.ServiceType);
+        
+        services.Add(new ServiceDescriptor(lazyServiceType, lazyServiceImplementationType,lastRegistration.Lifetime));
+        return services;
     }
 }

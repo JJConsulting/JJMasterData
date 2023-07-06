@@ -1,6 +1,7 @@
 using System.Globalization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -12,22 +13,10 @@ public class JJSlider : JJBaseControl
     public double Step { get; set; } = 1;
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
-    public JJSlider(double minValue = 0, double maxValue = 100)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
     
-    public static JJBaseControl GetInstance(FormElementField field, object value)
+    public JJSlider(IHttpContext httpContext) : base(httpContext)
     {
-        var slider = new JJSlider(field.Attributes[FormElementField.MinValueAttribute] ?? 0f, field.Attributes[FormElementField.MaxValueAttribute] ?? 100)
-        {
-            Name =  field.Name,
-            NumberOfDecimalPlaces = field.NumberOfDecimalPlaces,
-            Step = (double)field.Attributes![FormElementField.StepAttribute],
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? double.Parse(value.ToString()) : null
-        };
-        return slider;
+
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -44,7 +33,7 @@ public class JJSlider : JJBaseControl
 
         if (ShowInput)
         {
-            var number = new JJTextBox
+            var number = new JJTextBox(CurrentContext)
             {
                 InputType = InputType.Number,
                 Name = $"{Name}-value",
@@ -53,10 +42,12 @@ public class JJSlider : JJBaseControl
                 Text = Value.ToString(),
                 NumberOfDecimalPlaces = NumberOfDecimalPlaces,
                 MaxValue = MaxValue,
-                CssClass = "jjslider-value"
+                CssClass = "jjslider-value",
+                Attributes =
+                {
+                    ["step"] = Step
+                }
             };
-
-            number.Attributes["step"] = Step;
 
             html.AppendElement(HtmlTag.Div, row =>
             {

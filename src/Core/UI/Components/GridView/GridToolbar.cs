@@ -106,7 +106,7 @@ internal class GridToolbar
                     GridView.IsExternalRoute);
                 break;
             case RefreshAction:
-                script = GridView.GridViewToolbarScriptHelper.GetRefreshScript(GridView);
+                script = GridView.GridViewScriptHelper.GetRefreshScript(GridView);
                 break;
             case FilterAction:
                 script = BootstrapHelper.GetModalScript($"filter_modal_{GridView.Name}");

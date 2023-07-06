@@ -17,6 +17,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
@@ -33,34 +34,15 @@ public class JJDataPanel : JJBaseView
     #endregion
 
     #region "Properties"
-
-    private FieldManager _fieldManager;
+    
     private FormUI _formUI;
-
-    public IEntityRepository EntityRepository { get; } = JJService.EntityRepository;
-
-    public IDataDictionaryRepository DataDictionaryRepository { get; } =
-        JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-
-    public FieldManager FieldManager
-    {
-        get
-        {
-            if (_fieldManager == null)
-            {
-                _fieldManager = new FieldManager(Name, FormElement);
-            }
-            return _fieldManager;
-        }
-    }
-
 
     /// <summary>
     /// Layout form settings
     /// </summary>
     public FormUI FormUI
     {
-        get => _formUI ??= new FormUI();
+        get => _formUI ??= FormElement.Options.Form ?? new FormUI();
         internal set => _formUI = value;
     }
 
@@ -97,45 +79,94 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    public IFieldFormattingService FieldFormattingService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+    public IEntityRepository EntityRepository { get; } 
 
-    private JJMasterDataEncryptionService EncryptionService { get; } =
-        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+    public IDataDictionaryRepository DataDictionaryRepository { get; }
+
+    internal IHttpContext CurrentContext { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    public IFieldsService FieldsService { get; }
+    public IFormValuesService FormValuesService { get; } 
+    public IExpressionsService ExpressionsService { get; }
     
-    public IFieldVisibilityService FieldVisibilityService { get; } = JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
-    public IFormFieldsService FormFieldsService { get; } = JJService.Provider.GetScopedDependentService<IFormFieldsService>();
-    public IFormValuesService FormValuesService { get; } = JJService.Provider.GetScopedDependentService<IFormValuesService>();
-    public IExpressionsService ExpressionsService { get; } = JJService.Provider.GetScopedDependentService<IExpressionsService>();
+    public FieldControlFactory FieldControlFactory { get; }
+
     #endregion
 
     #region "Constructors"
-
-    internal JJDataPanel()
+#if NET48
+    public JJDataPanel()
     {
+        FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        EntityRepository = JJService.EntityRepository;
+        DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        CurrentContext =  JJService.Provider.GetScopedDependentService<IHttpContext>();
+        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
+        FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
+        ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
+        
         Values = new Dictionary<string,dynamic>();
         Errors =  new Dictionary<string,dynamic>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
-
-    public JJDataPanel(string elementName) : this()
+    
+    [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use JJMasterDataFactory.")]
+    public JJDataPanel(string elementName): this()
     {
-        DataPanelFactory.SetDataPanelParams(this, elementName);
+        Name = "pnl_" + elementName;
+        FormElement = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>()
+            .GetMetadata(elementName);
+        RenderPanelGroup = FormElement.Panels.Count > 0;
     }
-
-    public JJDataPanel(FormElement formElement) : this()
+    
+    [Obsolete("This constructor uses a static service locator. This an anti pattern. Please use JJMasterDataFactory.")]
+    public JJDataPanel(
+        FormElement formElement) : this()
     {
-        DataPanelFactory.SetDataPanelParams(this, formElement);   
+        Name = "pnl_" + formElement.Name.ToLower();
+        FormElement = formElement;
+        RenderPanelGroup = formElement.Panels.Count > 0;
     }
-
-    public JJDataPanel(FormElement formElement, IDictionary<string,dynamic>values, IDictionary<string,dynamic>errors, PageState pageState) : this(formElement)
+#endif
+    
+    public JJDataPanel(
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IHttpContext currentContext,
+        JJMasterDataEncryptionService encryptionService,
+        IFieldsService fieldsService, 
+        IFormValuesService formValuesService, 
+        IExpressionsService expressionsService, 
+        FieldControlFactory fieldControlFactory)
     {
-        Values = values;
-        Errors = errors;
-        PageState = pageState;
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
+        CurrentContext = currentContext;
+        EncryptionService = encryptionService;
+        FieldsService = fieldsService;
+        FormValuesService = formValuesService;
+        ExpressionsService = expressionsService;
+        FieldControlFactory = fieldControlFactory;
     }
-
+    
+    public JJDataPanel(
+        FormElement formElement,
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IHttpContext currentContext,
+        JJMasterDataEncryptionService encryptionService,
+        IFieldsService fieldsService, 
+        IFormValuesService formValuesService, 
+        IExpressionsService expressionsService, 
+        FieldControlFactory fieldControlFactory) : this(entityRepository,dataDictionaryRepository,currentContext, encryptionService, fieldsService, formValuesService, expressionsService, fieldControlFactory)
+    {
+        Name = "pnl_" + formElement.Name.ToLower();
+        FormElement = formElement;
+        RenderPanelGroup = formElement.Panels.Count > 0;
+    }
+    
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -145,19 +176,19 @@ public class JJDataPanel : JJBaseView
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
         //Lookup Route
-        if (JJLookup.IsLookupRoute(this))
+        if (JJLookup.IsLookupRoute(this,CurrentContext))
             return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
-        if (JJTextFile.IsFormUploadRoute(this))
+        if (JJTextFile.IsFormUploadRoute(this,CurrentContext))
             return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route
-        if (JJDownloadFile.IsDownloadRoute(this))
-            return JJDownloadFile.ResponseRoute(this);
+        if (JJFileDownloader.IsDownloadRoute())
+            return JJFileDownloader.ResponseRoute();
 
-        if (JJSearchBox.IsSearchBoxRoute(this))
-            return JJSearchBox.ResponseJson(this);
+        if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
+            return JJSearchBox.ResponseJson(this,CurrentContext);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
@@ -260,7 +291,7 @@ public class JJDataPanel : JJBaseView
     /// </returns>
     public IDictionary<string,dynamic>ValidateFields(IDictionary<string,dynamic>values, PageState pageState, bool enableErrorLink)
     {
-        return FormFieldsService.ValidateFields(FormElement,values, pageState, enableErrorLink);
+        return FieldsService.ValidateFields(FormElement,values, pageState, enableErrorLink);
     }
 
     internal async Task ResponseUrlAction()

@@ -2,14 +2,21 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService : BaseService
 {
-    public EntityService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
+    public EntityService(
+        IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        StringLocalizer = stringLocalizer;
     }
 
     private bool ValidateEntity(Element formElement, string originName)
@@ -17,7 +24,7 @@ public class EntityService : BaseService
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
             if (DataDictionaryRepository.Exists(formElement.Name))
-                AddError("Name", Translate.Key("There is already a dictionary with the name {0}",formElement.Name));
+                AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",formElement.Name]);
         }
 
         if (string.IsNullOrEmpty(formElement.TableName))

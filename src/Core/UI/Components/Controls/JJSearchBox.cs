@@ -16,6 +16,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -64,10 +65,7 @@ public class JJSearchBox : JJBaseControl
 
     internal string DictionaryName { get; set; }
 
-    internal string Id
-    {
-        get => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-    }
+    internal string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
 
     public new string Text
@@ -107,17 +105,11 @@ public class JJSearchBox : JJBaseControl
     {
         get
         {
-            if (Attributes.ContainsKey(NumberOfItemsAttribute))
-                return int.Parse(Attributes[NumberOfItemsAttribute].ToString());
+            if (Attributes.TryGetValue(NumberOfItemsAttribute, out var attribute))
+                return int.Parse(attribute.ToString());
             return 0;
         }
-        set
-        {
-            if (Attributes.ContainsKey(NumberOfItemsAttribute))
-                Attributes[NumberOfItemsAttribute] = value;
-            else
-                Attributes.Add(NumberOfItemsAttribute, value);
-        }
+        set => Attributes[NumberOfItemsAttribute] = value;
     }
 
     /// <summary>
@@ -176,7 +168,7 @@ public class JJSearchBox : JJBaseControl
     public FormElementDataItem DataItem
     {
         get => _dataItem ??= new FormElementDataItem();
-        set => _dataItem = value;
+        init => _dataItem = value;
     }
 
     /// <summary>
@@ -193,7 +185,7 @@ public class JJSearchBox : JJBaseControl
 
     #region "Constructors"
 
-    public JJSearchBox()
+    public JJSearchBox(IHttpContext httpContext) : base(httpContext)
     {
         Enabled = true;
         TriggerLength = 1;
@@ -205,7 +197,7 @@ public class JJSearchBox : JJBaseControl
         Context = new(null,UserValues,PageState.List);
     }
 
-    public JJSearchBox(ExpressionOptions expOptions) : this()
+    public JJSearchBox(ExpressionOptions expOptions, IHttpContext httpContext) : this(httpContext)
     {
         Context = new(expOptions.FormValues,expOptions.UserValues,expOptions.PageState);
         UserValues = expOptions.UserValues;
@@ -215,41 +207,45 @@ public class JJSearchBox : JJBaseControl
 
     internal override HtmlBuilder RenderHtml()
     {
-        if (IsSearchBoxRoute(this))
+#if NET48
+        if (IsSearchBoxRoute(this, JJService.Provider.GetScopedDependentService<IHttpContext>()))
         {
             ResponseJson();
             return null;
         }
-
+#endif
         return GetSearchBoxHtml();
     }
 
 
-    public static bool IsSearchBoxRoute(JJBaseView view)
+    public static bool IsSearchBoxRoute(JJBaseView view, IHttpContext httpContext)
     {
-        string requestType = view.CurrentContext.Request.QueryString("t");
+        string requestType = httpContext.Request.QueryString("t");
         return "jjsearchbox".Equals(requestType);
     }
 
 
-    public static HtmlBuilder ResponseJson(JJDataPanel view)
+    public static HtmlBuilder ResponseJson(JJDataPanel view, IHttpContext httpContext)
     {
-        return ResponseJson(view, view.FormElement, view.Values);
+        return ResponseJson(view, view.FormElement, view.Values, httpContext);
     }
 
-    internal static HtmlBuilder ResponseJson(JJBaseView view, FormElement formElement, IDictionary<string,dynamic>formValues)
+    internal static HtmlBuilder ResponseJson(JJBaseView view,
+        FormElement formElement,
+        IDictionary<string, dynamic> formValues, 
+        IHttpContext httpContext)
     {
-        string dictionaryName = view.CurrentContext.Request.QueryString("dictionaryName");
-        string fieldName = view.CurrentContext.Request.QueryString("fieldName");
-        var pageState = (PageState)int.Parse(view.CurrentContext.Request.QueryString("pageState"));
+        string dictionaryName = httpContext.Request.QueryString("dictionaryName");
+        string fieldName = httpContext.Request.QueryString("fieldName");
+        var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
         
         if (!formElement.Name.Equals(dictionaryName))
             return null;
 
         var field = formElement.Fields[fieldName];
-        var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState, JJService.EntityRepository);
+        var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState);
         
-        var searchBox = JJService.Provider.GetScopedDependentService<SearchBoxFactory>().GetInstance(field, expOptions, null, dictionaryName);
+        var searchBox = JJService.Provider.GetScopedDependentService<SearchBoxFactory>().CreateSearchBox(field, expOptions, null, dictionaryName);
         searchBox.ResponseJson();
 
         return null;

@@ -2,64 +2,109 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public class GridViewFactory
 {
+    private IFieldsService FieldsService { get; }
+    private IExpressionsService ExpressionsService { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private DataExportationFactory DataExportationFactory { get; }
+    private DataImportationFactory DataImportationFactory { get; }
+    private FieldControlFactory FieldControlFactory { get; }
+    private IEntityRepository EntityRepository { get; }
+    private ScriptsHelper ScriptsHelper { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IHttpSession Session { get; }
+    private IHttpContext CurrentContext { get; }
 
-    public GridViewFactory(IDataDictionaryRepository dataDictionaryRepository, IHttpSession session)
+
+    public GridViewFactory(
+        IDataDictionaryRepository dataDictionaryRepository,
+        IHttpContext currentContext,
+        IEntityRepository entityRepository,
+        IExpressionsService expressionsService,
+        JJMasterDataEncryptionService encryptionService,
+        IFieldsService fieldsService,
+        ScriptsHelper scriptsHelper,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        DataExportationFactory dataExportationFactory,
+        DataImportationFactory dataImportationFactory,
+        FieldControlFactory fieldControlFactory)
     {
         DataDictionaryRepository = dataDictionaryRepository;
-        Session = session;
+        CurrentContext = currentContext;
+        FieldsService = fieldsService;
+        ExpressionsService = expressionsService;
+        EncryptionService = encryptionService;
+        StringLocalizer = stringLocalizer;
+        DataExportationFactory = dataExportationFactory;
+        DataImportationFactory = dataImportationFactory;
+        FieldControlFactory = fieldControlFactory;
+        EntityRepository = entityRepository;
+        ScriptsHelper = scriptsHelper;
     }
 
-    public JJGridView CreateGridView(DataTable dataTable)
+    public JJGridView CreateGridView()
     {
-        var gridView = new JJGridView(dataTable);
+        var gridView = new JJGridView(CurrentContext, EntityRepository, ExpressionsService, EncryptionService,
+            FieldsService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
+            FieldControlFactory);
 
         return gridView;
     }
     
     public JJGridView CreateGridView(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, true);
+        var gridView = new JJGridView(formElement,CurrentContext, EntityRepository, ExpressionsService, EncryptionService,
+            FieldsService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
+            FieldControlFactory);
 
-        SetGridOptions(gridView, formElement.Options);
+        SetGridOptions(gridView,formElement.Options);
         
         return gridView;
     }
-    
+
+    public JJGridView CreateGridView(DataTable dataTable)
+    {
+        var gridView = CreateGridView(new FormElement(dataTable));
+
+        return gridView;
+    }
+
     public async Task<JJGridView> CreateGridViewAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        var gridView = new JJGridView(formElement, true);
+        var gridView = CreateGridView(formElement);
 
-        SetGridOptions(gridView, formElement.Options);
-        
         return gridView;
     }
-    
-    public static JJGridView CreateGridView<T>(IEnumerable<T> list)
+
+    public JJGridView CreateGridView<T>(IEnumerable<T> list)
     {
-        var data = EnumerableHelper.ConvertToDataTable(list);
-        var grid = new JJGridView(data);
+        var dataTable = EnumerableHelper.ConvertToDataTable(list);
+        var grid = CreateGridView(dataTable);
         return grid;
     }
-    
+
     internal void SetGridOptions(JJGridView grid, FormElementOptions options)
     {
         var gridOptions = options.Grid;
-        
+
         if (gridOptions == null)
             throw new ArgumentNullException(nameof(gridOptions), "Grid Options");
 
@@ -69,7 +114,7 @@ public class GridViewFactory
         {
             grid.GridActions.Add(action);
         }
-        
+
         foreach (var action in options.FormToolbarActions)
         {
             grid.ToolBarActions.Add(action);
@@ -89,7 +134,7 @@ public class GridViewFactory
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad && grid.FormElement != null)
-                settings = Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
+                settings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)
             {
