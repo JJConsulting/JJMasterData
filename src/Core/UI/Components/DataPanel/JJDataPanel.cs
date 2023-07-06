@@ -7,6 +7,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
@@ -259,7 +260,13 @@ public class JJDataPanel : JJBaseView
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
+    [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
     public async Task<IDictionary<string,dynamic>> GetFormValues()
+    {
+        return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
+    }
+    
+    public async Task<IDictionary<string,dynamic>> GetFormValuesAsync()
     {
         return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
     }
@@ -267,11 +274,17 @@ public class JJDataPanel : JJBaseView
     /// <summary>
     /// Load values from database
     /// </summary>
-    [Obsolete("Make this async")]
+    [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]
     public void LoadValuesFromPK(IDictionary<string,dynamic>pks)
     {
         var entityRepository = JJService.EntityRepository;
         Values = entityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
+    }
+    
+    public async Task LoadValuesFromPkAsync(IDictionary<string,dynamic>pks)
+    {
+        var entityRepository = JJService.EntityRepository;
+        Values = await entityRepository.GetDictionaryAsync(FormElement, pks);
     }
 
     /// <summary>
@@ -310,7 +323,7 @@ public class JJDataPanel : JJBaseView
         var parms = EncryptionService.DecryptActionMap(encryptedActionMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
-        var values = await GetFormValues();
+        var values = await GetFormValuesAsync();
 
         if (action is UrlRedirectAction urlAction)
         {

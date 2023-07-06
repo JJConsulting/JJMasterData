@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -152,7 +153,7 @@ internal class DataPanelControl
                 htmlField.AppendElement(new JJLabel(field));
 
             if (IsViewModeAsStatic)
-                htmlField.AppendElement(GetStaticField(field));
+                htmlField.AppendElement(GetStaticField(field).GetAwaiter().GetResult());
             else
                 htmlField.AppendElement(GetControlField(field, value));
         }
@@ -268,7 +269,7 @@ internal class DataPanelControl
                 row.AppendElement(HtmlTag.Div, col =>
                 {
                     col.WithCssClass(colClass);
-                    col.AppendElement(IsViewModeAsStatic ? GetStaticField(f) : GetControlField(f, value));
+                    col.AppendElement(IsViewModeAsStatic ? GetStaticField(f).GetAwaiter().GetResult() : GetControlField(f, value));
                 });
             }
 
@@ -277,13 +278,13 @@ internal class DataPanelControl
         return html;
     }
 
-    [Obsolete("Must be async")]
-    private HtmlBuilder GetStaticField(FormElementField f)
+    
+    private async Task<HtmlBuilder> GetStaticField(FormElementField f)
     {
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(FieldsService.FormatGridValue(f, Values,UserValues).GetAwaiter().GetResult());
+            .AppendText(await FieldsService.FormatGridValue(f, Values,UserValues));
 
         return html;
     }

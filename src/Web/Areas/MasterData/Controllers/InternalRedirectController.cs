@@ -43,7 +43,7 @@ public class InternalRedirectController : MasterDataController
                     if (userId != null)
                     {
                         form.SetUserValues("USERID", userId);
-                        form.SetCurrentFilter("USERID", userId);
+                        form.GridView.SetCurrentFilter("USERID", userId);
                     }
 
                     model = new(form.GetHtml(), false);
@@ -56,7 +56,7 @@ public class InternalRedirectController : MasterDataController
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
-                    panel.LoadValuesFromPK(_relationValues);
+                    await panel.LoadValuesFromPkAsync(_relationValues);
 
                     model = new(panel.GetHtml(), false);
                     break;
@@ -68,7 +68,7 @@ public class InternalRedirectController : MasterDataController
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
-                    panel.LoadValuesFromPK(_relationValues);
+                    await panel.LoadValuesFromPkAsync(_relationValues);
 
                     model = new(panel.GetHtml(), !isAjax);
                     break;
