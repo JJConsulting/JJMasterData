@@ -73,7 +73,7 @@ public class DataImportationFactory
         
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         
-        var dataContext = new DataContext(DataContextSource.Upload, DataHelper.GetCurrentUserId(null));
+        var dataContext = new DataContext(HttpContext,DataContextSource.Upload, DataHelper.GetCurrentUserId(HttpContext,null));
         
         var formEvent = FormEventResolver.GetFormEvent(elementName);
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));

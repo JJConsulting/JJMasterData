@@ -26,8 +26,17 @@ public class JJAuditLogView : JJBaseView
     private IAuditLogService _service;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
-
-    public DataContext DataContext => new(DataContextSource.Form, UserId);
+    private string _userId;
+    public DataContext DataContext => new(CurrentContext,DataContextSource.Form, UserId);
+    
+    /// <summary>
+    /// Id do usuário Atual
+    /// </summary>
+    /// <remarks>
+    /// Se a variavel não for atribuida diretamente,
+    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
+    /// </remarks>
+    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
     
     private IHttpContext CurrentContext { get; }
 

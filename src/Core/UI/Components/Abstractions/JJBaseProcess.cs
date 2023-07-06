@@ -9,6 +9,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +19,7 @@ public abstract class JJBaseProcess : JJBaseView
 {
     private string _processKey;
     private ProcessOptions _processOptions;
-
+    private string _userId;
 
     internal IExpressionsService ExpressionsService { get; }
 
@@ -34,6 +35,17 @@ public abstract class JJBaseProcess : JJBaseView
             return _processKey;
         }
     }
+
+    /// <summary>
+    /// Id do usuário Atual
+    /// </summary>
+    /// <remarks>
+    /// Se a variavel não for atribuida diretamente,
+    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
+    /// </remarks>
+    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+
+    public IHttpContext CurrentContext { get; }
 
     public ProcessOptions ProcessOptions
     {
@@ -52,9 +64,8 @@ public abstract class JJBaseProcess : JJBaseView
     private ILogger<JJBaseProcess> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    protected JJBaseProcess(
-        IEntityRepository entityRepository,
-        IExpressionsService expressionsService, 
+    protected JJBaseProcess(IHttpContext currentContext, IEntityRepository entityRepository,
+        IExpressionsService expressionsService,
         IFieldValuesService fieldValuesService,
         IBackgroundTask backgroundTask,
         ILogger<JJBaseProcess> logger,
@@ -66,6 +77,7 @@ public abstract class JJBaseProcess : JJBaseView
         BackgroundTask = backgroundTask;
         Logger = logger;
         StringLocalizer = stringLocalizer;
+        CurrentContext = currentContext;
     }
     
     internal bool IsRunning() => BackgroundTask.IsRunning(ProcessKey);

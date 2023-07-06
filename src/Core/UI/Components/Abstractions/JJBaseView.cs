@@ -18,7 +18,7 @@ public abstract class JJBaseView
 
     private IDictionary<string,dynamic>_userValues;
     private IDictionary<string,dynamic> _attributes;
-    private string _userId;
+
     
     /// <summary>
     /// Values specified by the user.
@@ -49,25 +49,6 @@ public abstract class JJBaseView
     }
 
     public string CssClass { get; set; }
-
-
-    /// <summary>
-    /// Id do usuário Atual
-    /// </summary>
-    /// <remarks>
-    /// Se a variavel não for atribuida diretamente,
-    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
-    /// </remarks>
-    internal string UserId
-    {
-        get
-        {
-            if (_userId == null)
-                _userId = DataHelper.GetCurrentUserId(UserValues);
-
-            return _userId;
-        }
-    }
 
     #endregion
 

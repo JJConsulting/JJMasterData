@@ -58,6 +58,8 @@ public class JJFormView : JJBaseView
     private ActionMap _currentActionMap;
     private JJAuditLogView _auditLogView;
     private JJDataImp _dataImp;
+    private string _userId;
+    
     internal JJAuditLogView AuditLogView =>
         _auditLogView ??= AuditLogViewFactory.CreateAuditLogView(FormElement);
     
@@ -66,6 +68,17 @@ public class JJFormView : JJBaseView
     /// </summary>
     internal string UrlRedirect { get; set; }
 
+
+
+    /// <summary>
+    /// Id do usuário Atual
+    /// </summary>
+    /// <remarks>
+    /// Se a variavel não for atribuida diretamente,
+    /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
+    /// </remarks>
+    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    
     /// <summary>
     /// Configurações de importação
     /// </summary>
@@ -939,7 +952,7 @@ public class JJFormView : JJBaseView
     public IDictionary<string, dynamic> InsertFormValues(IDictionary<string, dynamic> values,
         bool validateFields = true)
     {
-        var result = FormService.Insert(FormElement, values, new DataContext(DataContextSource.Form, UserId),
+        var result = FormService.Insert(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId),
             validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -951,7 +964,7 @@ public class JJFormView : JJBaseView
     /// <returns>The list of errors.</returns>
     public IDictionary<string, dynamic> UpdateFormValues(IDictionary<string, dynamic> values)
     {
-        var result = FormService.Update(FormElement, values, new DataContext(DataContextSource.Form, UserId));
+        var result = FormService.Update(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -959,7 +972,7 @@ public class JJFormView : JJBaseView
     public IDictionary<string, dynamic> DeleteFormValues(IDictionary<string, dynamic> filter)
     {
         var values = FieldValuesService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
-        var result = FormService.Delete(FormElement, values, new DataContext(DataContextSource.Form, UserId));
+        var result = FormService.Delete(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

@@ -58,7 +58,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        var sessionFilter = JJHttpContext.GetInstance().Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);
+        var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);
         if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sessionFilter;
@@ -117,7 +117,7 @@ internal class GridFilter
             _currentFilter = GridView.FieldsService.MergeWithDefaultValues(GridView.FormElement,values, PageState.List);
         }
         
-        JJHttpContext.GetInstance().Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
+        CurrentContext.Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
     
     public HtmlBuilder GetFilterHtml()

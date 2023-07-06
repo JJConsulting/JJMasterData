@@ -10,19 +10,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IDictionary<string,dynamic>? userValues)
+    public static string? GetCurrentUserId(IHttpContext currentContext,IDictionary<string,dynamic>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
             return value!.ToString();
         }
-
-        var currentContext = JJHttpContext.GetInstance();
+        
         if (currentContext.HasContext() &&
             currentContext.Session?["USERID"] != null)
         {

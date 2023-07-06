@@ -84,7 +84,7 @@ public class JJDataExp : JJBaseProcess
         FileDownloaderFactory fileDownloaderFactory,
         ILoggerFactory loggerFactory,
         IHttpContext currentContext) : 
-        base(entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
     {
         ScriptHelper = dataExportationScriptHelper;
         FileDownloaderFactory = fileDownloaderFactory;

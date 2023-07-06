@@ -90,7 +90,7 @@ public class FormViewFactory
 
         form.Name = "jjview" + formElement.Name.ToLower();
 
-        var dataContext = new DataContext(DataContextSource.Form, DataHelper.GetCurrentUserId(null));
+        var dataContext = new DataContext(CurrentContext,DataContextSource.Form, DataHelper.GetCurrentUserId(CurrentContext,null));
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
 
         SetFormOptions(form, formElement.Options);

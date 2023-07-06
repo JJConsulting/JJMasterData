@@ -83,7 +83,7 @@ public class JJDataImp : JJBaseProcess
         ComboBoxFactory comboBoxFactory,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
     {
         FieldVisibilityService = fieldVisibilityService;
         CurrentContext = currentContext;
@@ -291,7 +291,7 @@ public class JJDataImp : JJBaseProcess
 
     private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
     {
-        var dataContext = new DataContext(DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(CurrentContext,DataContextSource.Upload, UserId);
         FormService.OnAfterUpdate += OnAfterUpdate;
         FormService.OnAfterInsert += OnAfterInsert;
         FormService.OnAfterDelete += OnAfterDelete;

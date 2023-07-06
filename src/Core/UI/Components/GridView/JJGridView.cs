@@ -334,7 +334,7 @@ public class JJGridView : JJBaseView
 
             if (MaintainValuesOnLoad && FormElement != null)
             {
-                CurrentSettings = JJHttpContext.GetInstance().Session
+                CurrentSettings = CurrentContext.Session
                     .GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
             }
 
@@ -349,7 +349,7 @@ public class JJGridView : JJBaseView
         set
         {
             if (MaintainValuesOnLoad && FormElement != null)
-                JJHttpContext.GetInstance().Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
+                CurrentContext.Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
 
             _currentSettings = value;
         }
