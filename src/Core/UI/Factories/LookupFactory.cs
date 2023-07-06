@@ -1,6 +1,10 @@
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -9,17 +13,37 @@ namespace JJMasterData.Core.Web.Factories;
 public class LookupFactory
 {
     private IHttpContext HttpContext { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private IEntityRepository EntityRepository { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IExpressionsService ExpressionsService { get; }
 
-    public LookupFactory(IHttpContext httpContext, TextGroupFactory textGroupFactory)
+    public LookupFactory(
+        IHttpContext httpContext,
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
+        JJMasterDataUrlHelper urlHelper,
+        JJMasterDataEncryptionService encryptionService,
+        IExpressionsService expressionsService)
     {
         HttpContext = httpContext;
-        TextGroupFactory = textGroupFactory;
+        EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
+        UrlHelper = urlHelper;
+        EncryptionService = encryptionService;
+        ExpressionsService = expressionsService;
     }
-    
+
     internal JJLookup CreateLookup(FormElementField field, ExpressionOptions expOptions, object value, string panelName)
     {
-        var search = new JJLookup(HttpContext, TextGroupFactory);
+        var search = new JJLookup(
+            HttpContext, 
+            EntityRepository,
+            DataDictionaryRepository, 
+            UrlHelper,
+            EncryptionService,
+            ExpressionsService);
         search.SetAttr(field.Attributes);
         search.Name = field.Name;
         search.SelectedValue = value?.ToString();

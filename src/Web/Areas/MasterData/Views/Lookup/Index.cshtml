@@ -1,7 +1,8 @@
-﻿
+﻿@using JJMasterData.Web.TagHelpers
+@model JJMasterData.Web.Areas.MasterData.Models.LookupViewModel
 
 @using (Html.BeginForm())
 {
-    @Html.Raw(ViewBag.HtmlPage)
+    <jj-form-view element-name="@Model.LookupParameters.ElementName"
+                  configure="form => Model.LookupFormConfiguration(form, Model.LookupParameters)"/>
 }
-

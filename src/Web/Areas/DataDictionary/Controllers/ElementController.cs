@@ -19,10 +19,14 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class ElementController : DataDictionaryController
 {
     private readonly ElementService _elementService;
+    private readonly ClassGenerationService _classGenerationService;
+    private readonly ScriptsService _scriptsService;
 
-    public ElementController(ElementService elementService)
+    public ElementController(ElementService elementService, ClassGenerationService classGenerationService, ScriptsService scriptsService)
     {
         _elementService = elementService;
+        _classGenerationService = classGenerationService;
+        _scriptsService = scriptsService;
     }
 
     public ActionResult Index()
@@ -112,9 +116,9 @@ public class ElementController : DataDictionaryController
         return View(new { originName = dictionaryName });
     }
 
-    public IActionResult ClassSourceCode(string dictionaryName)
+    public async Task<IActionResult> ClassSourceCode(string dictionaryName)
     {
-        ViewBag.ClassSourceCode = _elementService.GetClassSourceCode(dictionaryName);
+        ViewBag.ClassSourceCode = await _classGenerationService.GetClassSourceCode(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
 
         return View("ClassSourceCode", "_MasterDataLayout.Popup");
@@ -122,7 +126,7 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Scripts(string dictionaryName)
     {
-        var scripts = await _elementService.GetScriptsListAsync(dictionaryName);
+        var scripts = await _scriptsService.GetScriptsListAsync(dictionaryName);
 
         var model = new ElementScriptsViewModel
         {
@@ -168,7 +172,7 @@ public class ElementController : DataDictionaryController
     {
         try
         {
-            await _elementService.ExecuteScriptsAsync(dictionaryName, scriptOption);
+            await _scriptsService.ExecuteScriptsAsync(dictionaryName, scriptOption);
             return new JsonResult(new { success = true });
         }
         catch (Exception ex)

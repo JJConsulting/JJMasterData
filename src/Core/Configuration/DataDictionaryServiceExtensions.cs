@@ -15,6 +15,8 @@ public static class DataDictionaryServiceExtensions
         services.AddTransient<IndexesService>();
         services.AddTransient<UIOptionsService>();
         services.AddTransient<PanelService>();
+        services.AddTransient<ClassGenerationService>();
+        services.AddTransient<ScriptsService>();
         services.AddTransient<RelationshipsService>();
 
         return services;

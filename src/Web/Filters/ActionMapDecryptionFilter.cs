@@ -9,14 +9,6 @@ namespace JJMasterData.Web.Filters;
 
 using Microsoft.AspNetCore.Mvc.Filters;
 
-
-public class ActionMapDecryptionServiceFilter : ServiceFilterAttribute
-{
-    public ActionMapDecryptionServiceFilter() : base(typeof(ActionMapDecryptionFilter))
-    {
-    }
-}
-
 public class ActionMapDecryptionFilter : ActionFilterAttribute
 {
     private readonly JJMasterDataEncryptionService _encryptionService;

@@ -16,7 +16,7 @@ public class GridController : MasterDataController
 
 
     [HttpPost]
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> GetGridViewTable(string dictionaryName, string componentName)
     {
         var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);

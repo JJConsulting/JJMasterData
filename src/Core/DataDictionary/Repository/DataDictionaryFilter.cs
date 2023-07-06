@@ -38,9 +38,9 @@ public class DataDictionaryFilter
 
         return result;
     }
-    public Hashtable ToHashtable()
+    public IDictionary<string,dynamic> ToDictionary()
     {
-        var result = new Hashtable();
+        var result = new Dictionary<string, dynamic>();
         if (Name != null)
         {
             result[DataDictionaryStructure.NameFilter] = Name;

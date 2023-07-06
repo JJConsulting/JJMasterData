@@ -84,7 +84,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public IEnumerable<string> GetNameList()
     {
         var totalRecords = 10000;
-        var filter = new Hashtable { { "type", "F" } };
+        var filter = new Dictionary<string,dynamic> { { "type", "F" } };
 
         var dt = _entityRepository.GetDataTable(MasterDataElement, filter, null, totalRecords, 1, ref totalRecords);
         foreach (DataRow row in dt.Rows)
@@ -96,7 +96,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public async IAsyncEnumerable<string> GetNameListAsync()
     {
         const int totalRecords = 10000;
-        var filter = new Hashtable { { "type", "F" } };
+        var filter = new Dictionary<string,dynamic>{ { "type", "F" } };
 
         var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1,
             totalRecords);
@@ -110,7 +110,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public FormElement GetMetadata(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
+            throw new ArgumentNullException(nameof(dictionaryName), "Invalid FormElement (Data Dictionary) name.");
 
         var filter = new Hashtable { { "name", dictionaryName },{"type", "F"} };
         var model = _entityRepository.GetFields(MasterDataElement, filter).ToModel<DataDictionaryModel>();
@@ -201,7 +201,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentException();
 
-        var filters = new Hashtable { { "name", dictionaryName } };
+        var filters = new Dictionary<string,dynamic> { { "name", dictionaryName } };
 
         var dataTable = await _entityRepository.GetDataTableAsync(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
@@ -209,7 +209,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var delFilter = new Hashtable
+            var delFilter = new Dictionary<string,dynamic>()
             {
                 { "name", dictionaryName },
                 { "type", row["type"].ToString() }
@@ -256,7 +256,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy,
         int recordsPerPage, int currentPage, ref int totalRecords)
     {
-        var filters = filter.ToHashtable();
+        var filters = (IDictionary)filter.ToDictionary();
         filters.Add("type", "F");
 
         var dt = _entityRepository.GetDataTable(MasterDataElement, filters, orderBy, recordsPerPage, currentPage,
@@ -268,7 +268,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         string orderBy, int recordsPerPage, int currentPage,
         int totalRecords)
     {
-        var filters = filter.ToHashtable();
+        var filters = (IDictionary)filter.ToDictionary();
         filters.Add("type", "F");
 
         var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filters, orderBy, recordsPerPage,

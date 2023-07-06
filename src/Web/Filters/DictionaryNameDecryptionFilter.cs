@@ -5,14 +5,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace JJMasterData.Web.Filters;
 
-public class DictionaryNameDecryptionServiceFilter : ServiceFilterAttribute
-{
-    public DictionaryNameDecryptionServiceFilter() : base(typeof(DictionaryNameDecryptionFilter))
-    {
-    }
-}
-
-
 public class DictionaryNameDecryptionFilter : ActionFilterAttribute
 {
     private readonly JJMasterDataEncryptionService _encryptionService;

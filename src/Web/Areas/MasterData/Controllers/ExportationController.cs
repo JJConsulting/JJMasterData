@@ -16,7 +16,7 @@ public class ExportationController : MasterDataController
         DataExportationFactory = dataExportationFactory;
     }
     
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> StartExportation(string dictionaryName, string componentName)
     {
         var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);
@@ -29,7 +29,7 @@ public class ExportationController : MasterDataController
         return Content(html);
     }
     
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> StopExportation(string dictionaryName, string componentName)
     {
         var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
@@ -40,7 +40,7 @@ public class ExportationController : MasterDataController
         return Json(new {});
     }
     
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> Settings(string dictionaryName, string componentName)
     {
         var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
@@ -51,7 +51,7 @@ public class ExportationController : MasterDataController
         return Content(settings.GetHtmlElement().ToString());
     }
     
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> CheckProgress(string dictionaryName, string componentName)
     {
         var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);

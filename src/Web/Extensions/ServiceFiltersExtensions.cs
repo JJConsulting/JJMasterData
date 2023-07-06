@@ -10,6 +10,7 @@ public static class ServiceFiltersExtensions
     {
         services.AddScoped<DictionaryNameDecryptionFilter>();
         services.AddScoped<ActionMapDecryptionFilter>();
+        services.AddScoped<LookupParametersDecryptionFilter>();
 
         return services;
     }

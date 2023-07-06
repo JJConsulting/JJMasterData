@@ -29,8 +29,8 @@ public class FormController : MasterDataController
     }
 
     
-    [DictionaryNameDecryptionServiceFilter]
-    [ActionMapDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [ServiceFilter<ActionMapDecryptionFilter>]
     [HttpPost]
     public async Task<IActionResult> GetFormView(
         string dictionaryName,

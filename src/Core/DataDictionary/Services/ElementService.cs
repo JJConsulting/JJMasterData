@@ -26,6 +26,7 @@ public class ElementService : BaseService
     private GridViewFactory GridViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
+
     public ElementService(GridViewFactory gridViewFactory,
         IValidationDictionary validationDictionary, 
                           IOptions<JJMasterDataCoreOptions> options,
@@ -37,65 +38,7 @@ public class ElementService : BaseService
         _entityRepository = entityRepository;
         _options = options.Value;
     }
-
-    #region Exec Scripts GET/SET/TABLE
-
-    public async Task<List<string?>> GetScriptsListAsync(string id)
-    {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(id);
-        Element element = formElement;
-
-        var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
-        
-        var listScripts = new List<string?>
-        {
-            _entityRepository.GetScriptCreateTable(element),
-            _entityRepository.GetScriptReadProcedure(element),
-            _entityRepository.GetScriptWriteProcedure(element),
-            _entityRepository.GetAlterTableScript(element, addedFields),
-        };
-
-        return listScripts;
-    }
     
-    public async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
-    {
-        if (!await _entityRepository.TableExistsAsync(element.TableName))
-            yield break;
-        
-        foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
-        {
-            if (!await _entityRepository.ColumnExistsAsync(element.TableName, field.Name))
-            {
-                yield return field;
-            }
-        }
-    }
-    
-    public async Task ExecuteScriptsAsync(string id, string scriptOption)
-    {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(id);
-        var element = dictionary;
-
-        switch (scriptOption)
-        {
-            case "ExecuteProcedures":
-                var sql = new StringBuilder();
-                sql.AppendLine(_entityRepository.GetScriptWriteProcedure(element));
-                sql.AppendLine(_entityRepository.GetScriptReadProcedure(element));
-                await _entityRepository.ExecuteBatchAsync(sql.ToString());
-                break;
-            case "ExecuteCreateDataModel":
-                await _entityRepository.CreateDataModelAsync(element);
-                break;
-            case "ExecuteAlterTable":
-                var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
-                await _entityRepository.ExecuteBatchAsync(_entityRepository.GetAlterTableScript(element,addedFields));
-                break;
-        }
-    }
-    #endregion
-
     #region Add Dictionary
 
     public Element? CreateEntity(string tableName, bool importFields)
@@ -246,60 +189,6 @@ public class ElementService : BaseService
         e.Tot = tot;
     }
 
-    #endregion
-
-    #region Class Source Code Generation
-    public string GetClassSourceCode(string dicName)
-    {
-        string prop = "public @PropType @PropName { get; set; } ";
-
-        var dicParser = DataDictionaryRepository.GetMetadata(dicName);
-        var propsBuilder = new StringBuilder();
-
-        foreach (var item in dicParser.Fields.ToList())
-        {
-            var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
-            var typeProp = GetTypeProp(item.DataType, item.IsRequired);
-            var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
-
-            propsBuilder.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
-            propsBuilder.AppendLine($"\t[Display(Name = \"{item.Label}\")]");
-            propsBuilder.AppendLine("\t"+propField);
-            propsBuilder.AppendLine("");
-
-        }
-
-        var resultClass = new StringBuilder();
-
-        resultClass.AppendLine($"public class {dicParser.Name}" + "\r\n{");
-        resultClass.AppendLine(propsBuilder.ToString());
-        resultClass.AppendLine("\r\n}");
-
-        return resultClass.ToString();
-    }
-
-    private string GetTypeProp(FieldType dataTypeField, bool required)
-    {
-        return dataTypeField switch
-        {
-            FieldType.Date or FieldType.DateTime or FieldType.DateTime2 => "DateTime",
-            FieldType.Float => "double",
-            FieldType.Int => "int",
-            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
-            _ => "",
-        };
-    }
-
-    private string ToCamelCase(string value)
-    {
-        if (string.IsNullOrEmpty(value)) return value;
-        
-        string formattedValue = string.Empty;
-        value.Split(' ').ToList().ForEach(x => formattedValue += x.FirstCharToUpper());
-
-        return formattedValue;
-
-    }
     #endregion
 
     public byte[] ExportSingleRow(IDictionary<string,dynamic>row)

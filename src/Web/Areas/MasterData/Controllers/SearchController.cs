@@ -28,7 +28,7 @@ public class SearchController : MasterDataController
     }
     
     [HttpPost]
-    [DictionaryNameDecryptionServiceFilter]
+    [ServiceFilter<DictionaryNameDecryptionFilter>]
     public async Task<IActionResult> GetItems(
         string dictionaryName,
         string fieldName,
