@@ -309,6 +309,8 @@ class JJSearchBox {
         });
     }
 }
+class Lookup {
+}
 class UrlBuilder {
     constructor(url = null) {
         this.url = url;

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -19,21 +19,21 @@ public class FormValuesService : IFormValuesService
     private IEntityRepository EntityRepository { get; }
     private IFieldValuesService FieldValuesService { get; }
     private IDataItemService DataItemService { get; }
-    private LookupFactory LookupFactory { get; }
+    private ILookupService LookupService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IHttpContext CurrentContext { get; }
     public FormValuesService(
         IEntityRepository entityRepository,
         IFieldValuesService fieldValuesService,
         IDataItemService dataItemService,
-        LookupFactory lookupFactory,
+        ILookupService lookupService,
         JJMasterDataEncryptionService encryptionService,
         IHttpContext currentContext)
     {
         EntityRepository = entityRepository;
         FieldValuesService = fieldValuesService;
         DataItemService = dataItemService;
-        LookupFactory = lookupFactory;
+        LookupService = lookupService;
         EncryptionService = encryptionService;
         CurrentContext = currentContext;
     }
@@ -61,10 +61,7 @@ public class FormValuesService : IFormValuesService
                 }
                 case FormComponent.Lookup:
                 {
-                    //TODO: use a service instead of the component
-                    var lookup = LookupFactory.CreateLookup(field, new ExpressionOptions(null, values, pageState),null,null);
-                    lookup.AutoReloadFormFields = true;
-                    value = lookup.SelectedValue;
+                    value = LookupService.GetSelectedValue(field.Name);
                     break;
                 }
                 case FormComponent.Slider:

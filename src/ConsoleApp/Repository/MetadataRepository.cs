@@ -265,10 +265,10 @@ public class MetadataRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
     public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
-        var filters = filter.ToHashtable();
+        var filters = filter.ToDictionary();
         filters.Add("type","F");
 
-        var dt = _entityRepository.GetDataTable(MasterDataElement, filters, orderBy, recordsPerPage, currentPage, ref totalRecords); 
+        var dt = _entityRepository.GetDataTable(MasterDataElement, filters as IDictionary, orderBy, recordsPerPage, currentPage, ref totalRecords); 
         return dt.ToModelList<MetadataInfo>();
     }
     

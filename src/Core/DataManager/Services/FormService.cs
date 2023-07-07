@@ -43,7 +43,9 @@ public class FormService : IFormService
 
     #region Constructor
 
-    public FormService(IFieldValidationService fieldValidationService, IEntityRepository entityRepository, IAuditLogService auditLogService)
+    public FormService(IEntityRepository entityRepository,
+        IFieldValidationService fieldValidationService,
+        IAuditLogService auditLogService)
     {
         FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;

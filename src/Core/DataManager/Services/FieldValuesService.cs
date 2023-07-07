@@ -32,7 +32,7 @@ public class FieldValuesService : IFieldValuesService
     /// <param name="pageState">Context</param>
     /// <param name="replaceNullValues">Change the field's default value even if it is empty</param>
     /// <returns>
-    /// Returns a new hashtable with the updated values
+    /// Returns a new Dictionary with the updated values
     /// </returns>
     public IDictionary<string,dynamic> MergeWithExpressionValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
     {

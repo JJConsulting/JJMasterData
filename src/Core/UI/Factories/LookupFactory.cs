@@ -1,10 +1,7 @@
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -14,39 +11,25 @@ namespace JJMasterData.Core.Web.Factories;
 public class LookupFactory
 {
     private IHttpContext HttpContext { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private ILookupService LookupService { get; }
     private ILoggerFactory LoggerFactory { get; }
-    private IExpressionsService ExpressionsService { get; }
 
-    public LookupFactory(IHttpContext httpContext,
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
-        IExpressionsService expressionsService,
+    public LookupFactory(       
+        IHttpContext httpContext,
+        ILookupService lookupService,
         ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
+        LookupService = lookupService;
         LoggerFactory = loggerFactory;
-        ExpressionsService = expressionsService;
     }
 
     internal JJLookup CreateLookup(FormElementField field, ExpressionOptions expOptions, object value, string panelName)
     {
         var search = new JJLookup(
-            HttpContext, 
-            EntityRepository,
-            DataDictionaryRepository, 
-            UrlHelper,
-            EncryptionService,
-            ExpressionsService, LoggerFactory.CreateLogger<JJLookup>());
+            HttpContext,
+            LookupService,
+            LoggerFactory.CreateLogger<JJLookup>());
         search.SetAttr(field.Attributes);
         search.Name = field.Name;
         search.SelectedValue = value?.ToString();

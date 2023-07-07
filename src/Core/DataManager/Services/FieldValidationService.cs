@@ -7,6 +7,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager;
@@ -205,6 +206,12 @@ public class FieldValidationService : IFieldValidationService
 
     private static string GetFieldLinkHtml(string fieldName, string label)
     {
-        return $"<a href=\"#void\" onclick=\"javascript:$('#{fieldName}').focus();\" class=\"alert-link\">{label ?? fieldName}</a>";
+        var link = new HtmlBuilder(HtmlTag.A);
+        link.WithAttribute("href", "#void");
+        link.WithAttribute("onclick", "javascript:$('#{fieldName}').focus();");
+        link.WithCssClass("alert-link");
+        link.AppendText(label ?? fieldName);
+
+        return link.ToString();
     }
 }

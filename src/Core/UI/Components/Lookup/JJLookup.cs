@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
@@ -17,12 +19,9 @@ namespace JJMasterData.Core.Web.Components;
 /// Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJBaseControl
 {
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private ILookupService LookupService { get; }
     private ILogger<JJLookup> Logger { get; }
-    private IExpressionsService ExpressionsService { get; }
+
 
     #region "Properties"
 
@@ -74,9 +73,9 @@ public class JJLookup : JJBaseControl
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue))
             {
-                _selectedValue = CurrentContext.Request["id_" + Name];
+                _selectedValue = LookupService.GetSelectedValue(Name).ToString();
             }
 
             return _selectedValue;
@@ -97,19 +96,11 @@ public class JJLookup : JJBaseControl
 
     public JJLookup(
         IHttpContext httpContext,
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
-        IExpressionsService expressionsService,
+        ILookupService lookupService,
         ILogger<JJLookup> logger) : base(httpContext)
     {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
+        LookupService = lookupService;
         Logger = logger;
-        ExpressionsService = expressionsService;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
@@ -127,9 +118,9 @@ public class JJLookup : JJBaseControl
             return GetLookupHtmlElement();
 
         if (IsAjaxGetDescription())
-            SendDescription();
+            SendResult();
         else
-            SendUrl();
+            SendLookupUrlDto();
 
         return null;
     }
@@ -141,7 +132,7 @@ public class JJLookup : JJBaseControl
         string description = Text;
 
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description = GetDescription(inputValue);
+            description = LookupService.GetDescriptionAsync(DataItem,inputValue,PageState,FormValues,OnlyNumbers).GetAwaiter().GetResult();
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
@@ -182,27 +173,22 @@ public class JJLookup : JJBaseControl
         return null;
     }
 
-    public void SendUrl()
+    public void SendLookupUrlDto()
     {
-        var elementMap = DataItem.ElementMap;
-
-        var lookupParameters = new LookupParameters(elementMap.ElementName,Name,elementMap.FieldKey,elementMap.EnableElementActions,elementMap.Filters);
-
-        var encryptedLookupParameters =
-            EncryptionService.EncryptStringWithUrlEncode(lookupParameters.ToQueryString(ExpressionsService, PageState, FormValues));
-        
-        var dto = new LookupUrlDto(UrlHelper.GetUrl("Index", "Lookup", new { lookupParameters = encryptedLookupParameters}));
+        LookupUrlDto dto = LookupService.GetLookupUrlDto(DataItem,Name,PageState,FormValues);
 
         CurrentContext.Response.SendResponse(dto.ToJson(), "application/json");
     }
 
-    private void SendDescription()
+
+
+    private void SendResult()
     {
         LookupResultDto dto = null;
         try
         {
             string searchId = CurrentContext.Request["lkid"];
-            string description = GetDescription(searchId);
+            string description = GetDescriptionAsync().GetAwaiter().GetResult();
             dto = new LookupResultDto(searchId, description);
         }
         catch (Exception ex)
@@ -217,55 +203,9 @@ public class JJLookup : JJBaseControl
     /// Recovers the description based on the selected value
     /// </summary>
     /// <returns>Returns the description of the id</returns>
-    public string GetDescription() => GetDescription(SelectedValue);
-
-    private string GetDescription(string searchId)
+    public async Task<string> GetDescriptionAsync()
     {
-        if (string.IsNullOrEmpty(searchId))
-            return null;
-
-        if (DataItem.ElementMap.Filters == null)
-            return null;
-
-        if (OnlyNumbers)
-        {
-            bool isNumeric = int.TryParse(searchId, out _);
-            if (!isNumeric)
-                return null;
-        }
-
-        var filters = new Dictionary<string,dynamic>();
-
-        if (DataItem.ElementMap.Filters.Count > 0)
-        {
-            foreach (var filter in DataItem.ElementMap.Filters)
-            {
-                string filterParsed =
-                    ExpressionsService.ParseExpression(filter.Value?.ToString(), PageState, false, FormValues);
-                filters[filter.Key] = StringManager.ClearText(filterParsed);
-            }
-        }
-
-        filters[DataItem.ElementMap.FieldKey] = StringManager.ClearText(searchId);
-        
-        IDictionary<string,dynamic> fields;
-        try
-        {
-            var dictionary = DataDictionaryRepository.GetMetadata(DataItem.ElementMap.ElementName);
-            fields = EntityRepository.GetDictionaryAsync(dictionary, filters).GetAwaiter().GetResult();
-        }
-        catch
-        {
-            fields = null;
-        }
-
-        if (fields == null)
-            return null;
-
-        if (string.IsNullOrEmpty(DataItem.ElementMap.FieldDescription))
-            return fields[DataItem.ElementMap.FieldKey]?.ToString();
-
-        return fields[DataItem.ElementMap.FieldDescription]?.ToString();
+        return await LookupService.GetDescriptionAsync(DataItem, SelectedValue, PageState, FormValues, OnlyNumbers);
     }
 
     private bool IsAjaxGetDescription()
