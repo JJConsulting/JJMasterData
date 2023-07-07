@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 
@@ -38,7 +39,7 @@ internal class DataPanelControl
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
     internal IExpressionsService ExpressionsService { get; }
     private IFieldsService FieldsService { get; }
-    
+    private ScriptsHelper ScriptsHelper { get; }
     public DataPanelControl(JJDataPanel dataPanel)
     {
         FormElement = dataPanel.FormElement;
@@ -47,6 +48,7 @@ internal class DataPanelControl
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
+        ScriptsHelper = dataPanel.ScriptsHelper;
         UserValues = dataPanel.UserValues;
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
@@ -62,6 +64,7 @@ internal class DataPanelControl
             IsVerticalLayout = false
         };
         PageState = PageState.Filter;
+        ScriptsHelper = gridView.ScriptsHelper;
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
@@ -340,12 +343,12 @@ internal class DataPanelControl
         {
             var script = new StringBuilder();
             script.Append("setTimeout(function() { ");
-            script.Append($"JJDataPanel.doReload('{Name}','{f.Name}'); ");
+            script.Append(ScriptsHelper.DataPanelScriptHelper.GetReloadPanelScript(FormElement.Name,f.Name,Name,IsExternalRoute));
             script.Append("}, 200);");
             return script.ToString();
         }
 
-        return $"JJDataPanel.doReload('{Name}','{f.Name}');";
+        return ScriptsHelper.DataPanelScriptHelper.GetReloadPanelScript(FormElement.Name,f.Name,Name,IsExternalRoute);
     }
 
 }

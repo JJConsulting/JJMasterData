@@ -538,8 +538,7 @@ public class JJGridView : JJBaseView
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal GridViewScriptHelper GridViewScriptHelper { get; }
-    internal DataExportationScriptHelper DataExportationScriptHelper { get; }
+    internal ScriptsHelper ScriptsHelper { get; }
     internal IHttpContext CurrentContext { get; }
     internal DataExportationFactory DataExportationFactory { get; }
     internal DataImportationFactory DataImportationFactory { get; }
@@ -559,8 +558,7 @@ public class JJGridView : JJBaseView
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         EntityRepository = JJService.EntityRepository;
-        GridViewScriptHelper = JJService.Provider.GetScopedDependentService<GridViewScriptHelper>();
-        DataExportationScriptHelper = JJService.Provider.GetScopedDependentService<DataExportationScriptHelper>();
+        ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
         DataExportationFactory = JJService.Provider.GetScopedDependentService<DataExportationFactory>();
         DataImportationFactory = JJService.Provider.GetScopedDependentService<DataImportationFactory>();
@@ -624,8 +622,7 @@ public class JJGridView : JJBaseView
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         EntityRepository = entityRepository;
-        GridViewScriptHelper = scriptsHelper.GridViewScriptHelper;
-        DataExportationScriptHelper = scriptsHelper.DataExportationScriptHelper;
+        ScriptsHelper = scriptsHelper;
         CurrentContext = currentContext;
         FieldControlFactory = fieldControlFactory;
         DataExportationFactory = dataExportationFactory;

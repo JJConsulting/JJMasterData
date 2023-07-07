@@ -149,6 +149,29 @@ class DataExportation {
         });
     }
 }
+class DataPanel {
+    static Reload(url, componentName, fieldName) {
+        const form = document.querySelector("form");
+        fetch(url, {
+            method: form.method,
+            body: new FormData(form),
+        })
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.text();
+        })
+            .then(data => {
+            document.getElementById(componentName).innerHTML = data;
+            jjloadform();
+            jjutil.gotoNextFocus(fieldName);
+        })
+            .catch(error => {
+            console.error(error);
+        });
+    }
+}
 var _a, _b;
 var showWaitOnPost = true;
 var bootstrapVersion = 3;
@@ -185,12 +208,12 @@ class GridView {
         GridView.refreshGrid(componentName, url);
     }
     static refreshGrid(componentName, url) {
-        const frm = document.querySelector("form");
+        const form = document.querySelector("form");
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
         fetch(urlBuilder.build(), {
-            method: frm.method,
-            body: new FormData(frm)
+            method: form.method,
+            body: new FormData(form)
         })
             .then(response => response.text())
             .then(data => {
@@ -574,28 +597,10 @@ JJDataImp.ignoreCount = 0;
 JJDataImp.errorCount = 0;
 class JJDataPanel {
     static doReload(panelname, objid) {
-        const frm = $("form");
-        let surl = frm.attr("action");
-        surl += surl.includes("?") ? "&" : "?";
-        surl += "t=reloadpainel";
-        surl += "&pnlname=" + panelname;
-        surl += "&objname=" + objid;
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            data: frm.serialize(),
-            success: function (data) {
-                $("#" + panelname).html(data);
-                jjloadform();
-                jjutil.gotoNextFocus(objid);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
+        let url = new UrlBuilder();
+        url.addQueryParameter("pnlname", panelname);
+        url.addQueryParameter("objname", objid);
+        DataPanel.Reload(url.build(), panelname, objid);
     }
 }
 function applyDecimalPlaces() {

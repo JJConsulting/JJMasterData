@@ -23,12 +23,10 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJAuditLogView : JJBaseView
 {
-    private IAuditLogService _service;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
     private string _userId;
-    public DataContext DataContext => new(CurrentContext,DataContextSource.Form, UserId);
-    
+
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -50,7 +48,7 @@ public class JJAuditLogView : JJBaseView
     {
         get
         {
-            var panel = DataPanelFactory.CreateDataPanel(FormElement);
+            var panel = DataPanelFactory.Value.CreateDataPanel(FormElement);
             panel.Name = "jjpainellog_" + Name;
             return _dataPainel ??= panel;
         }
@@ -58,16 +56,16 @@ public class JJAuditLogView : JJBaseView
     }
 
     public FormElement FormElement { get; private set; }
-    private GridViewFactory GridViewFactory { get; }
-    private DataPanelFactory DataPanelFactory { get; }
+    private Lazy<GridViewFactory> GridViewFactory { get; }
+    private Lazy<DataPanelFactory> DataPanelFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
         FormElement formElement, 
-        GridViewFactory gridViewFactory,
-        DataPanelFactory dataPanelFactory,
+        Lazy<GridViewFactory> gridViewFactory,
+        Lazy<DataPanelFactory> dataPanelFactory,
         IHttpContext currentContext, 
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
@@ -155,7 +153,7 @@ public class JJAuditLogView : JJBaseView
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Dictionary<string,dynamic>() { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string,dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
         var values = EntityRepository.GetFields(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
@@ -244,7 +242,7 @@ public class JJAuditLogView : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = GridViewFactory.CreateGridView(FormElement);
+        var grid = GridViewFactory.Value.CreateGridView(FormElement);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";

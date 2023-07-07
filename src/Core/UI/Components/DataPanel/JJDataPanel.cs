@@ -17,6 +17,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
@@ -89,7 +90,7 @@ public class JJDataPanel : JJBaseView
     public IFieldsService FieldsService { get; }
     public IFormValuesService FormValuesService { get; } 
     public IExpressionsService ExpressionsService { get; }
-    
+    public ScriptsHelper ScriptsHelper { get; }
     public FieldControlFactory FieldControlFactory { get; }
 
     #endregion
@@ -106,6 +107,7 @@ public class JJDataPanel : JJBaseView
         FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
+        ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
         
         Values = new Dictionary<string,dynamic>();
         Errors =  new Dictionary<string,dynamic>();
@@ -140,7 +142,9 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService, 
         IFormValuesService formValuesService, 
         IExpressionsService expressionsService, 
-        FieldControlFactory fieldControlFactory)
+        FieldControlFactory fieldControlFactory,
+        ScriptsHelper scriptsHelper
+        )
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -150,6 +154,7 @@ public class JJDataPanel : JJBaseView
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         FieldControlFactory = fieldControlFactory;
+        ScriptsHelper = scriptsHelper;
         Values = new Dictionary<string,dynamic>();
         Errors =  new Dictionary<string,dynamic>();
         AutoReloadFormFields = true;
@@ -165,7 +170,9 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService, 
         IFormValuesService formValuesService, 
         IExpressionsService expressionsService, 
-        FieldControlFactory fieldControlFactory) : this(entityRepository,dataDictionaryRepository,currentContext, encryptionService, fieldsService, formValuesService, expressionsService, fieldControlFactory)
+        FieldControlFactory fieldControlFactory,
+        ScriptsHelper scriptsHelper
+        ) : this(entityRepository,dataDictionaryRepository,currentContext, encryptionService, fieldsService, formValuesService, expressionsService, fieldControlFactory,scriptsHelper)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;

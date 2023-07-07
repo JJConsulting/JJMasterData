@@ -9,6 +9,7 @@ public static class ScriptHelperServiceExtensions
     {
         services.AddTransient<DataExportationScriptHelper>();
         services.AddTransient<FormViewScriptHelper>();
+        services.AddTransient<DataPanelScriptHelper>();
         services.AddTransient<GridViewScriptHelper>();
         services.AddTransient<ScriptsHelper>();
     }

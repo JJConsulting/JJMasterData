@@ -54,17 +54,17 @@ public class FormController : MasterDataController
     
     [ServiceFilter<DictionaryNameDecryptionFilter>]
     [HttpPost]
-    //TODO:
-    public async Task<IActionResult> GetPanel(
+    public async Task<IActionResult> ReloadPanel(
         string dictionaryName,
         string componentName)
     {
         var formView = await _formViewFactory.CreateFormViewAsync(dictionaryName);
+        formView.Name = componentName;
         formView.IsExternalRoute = true;
 
-        var form = new HtmlBuilder(HtmlTag.Form);
-        form.AppendElement(formView);
-        return Content(form.ToString());
+        var html = await formView.GetReloadPanelHtmlAsync();
+        
+        return Content(html);
     }
     
     private void ConfigureFormView(JJFormView formView)
@@ -73,7 +73,7 @@ public class FormController : MasterDataController
 
         if (userId == null) 
             return;
-        
+        formView.IsExternalRoute = true;
         formView.GridView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
     }

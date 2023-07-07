@@ -46,6 +46,88 @@
         <Content Update="package-lock.json" Pack="false">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
+        <Content Remove="Scripts\Areas\MasterData\Views\_ViewStart.cshtml" />
+        <Content Remove="Scripts\Areas\MasterData\Views\Lookup\Index.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\_ViewImports.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\UIOptions\_FormView.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\UIOptions\Edit.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Relationships\_IndexElement.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Relationships\DetailLayout.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Panel\_DetailData.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Panel\_Detail.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Options\_ConnectionString.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Indexes\Index.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Icons\_Icons.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Field\_Lookup.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Field\_Detail.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Field\_DataFile.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Field\_Attributes.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Entity\_EventsPanel.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Entity\_DataDictionaryPanel.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Entity\Index.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Element\Scripts.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Element\Import.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Element\Duplicate.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Element\ClassSourceCode.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Api\Index.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\_ProcessOptions.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\_NavGeneral.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\_List.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\ViewAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\SqlCommandAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\ScriptAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\RefreshAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\LegendAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\InsertAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\Index.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\FilterAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\ExportAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\DeleteAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\ConfigAction.cshtml" />
+        <Content Remove="Scripts\Areas\DataDictionary\Views\Actions\CancelAction.cshtml" />
     </ItemGroup>
+    
+	<ItemGroup>
+	  <Compile Remove="Scripts\Areas\MasterData\Models\LookupViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Models\InternalRedirectViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\SearchController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\MasterDataController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\LookupController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\InternalRedirectController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\GridController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\FormController.cs" />
+	  <Compile Remove="Scripts\Areas\MasterData\Controllers\FileController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\RelationshipsListViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\RelationshipsLayoutDetailsViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\RelationshipsElementDetailsViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\OptionsViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\LogViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\ImportViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\IconViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\EntityViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\ElementScriptsViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\DataDictionaryViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\ApiViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\ActionsListViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ViewModels\ActionsListDetailsViewModel.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ConnectionStrings.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ConnectionString.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ConnectionResult.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Models\ConnectionProviders.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\UIOptionsController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\ResourcesController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\RelationshipsController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\PanelController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\OptionsController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\LogController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\IndexesController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\IconsController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\FieldController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\EntityController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\ElementController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\DataDictionaryController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\ApiController.cs" />
+	  <Compile Remove="Scripts\Areas\DataDictionary\Controllers\ActionsController.cs" />
+	</ItemGroup>
     
 </Project>

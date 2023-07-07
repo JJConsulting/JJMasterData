@@ -37,7 +37,7 @@ public class FieldValuesService : IFieldValuesService
     public IDictionary<string,dynamic> MergeWithExpressionValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
-            throw new ArgumentNullException(Translate.Key("Invalid parameter or not found"), nameof(formValues));
+            throw new ArgumentNullException(nameof(formValues));
 
         IDictionary<string,dynamic> newValues = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in formElement.Fields)
@@ -125,24 +125,18 @@ public class FieldValuesService : IFieldValuesService
         }
     }
 
-    private object ClearSpecialChars(FormElementField f, object val)
+    private static object ClearSpecialChars(FormElementField f, object val)
     {
         if (val != null)
         {
-            if (f.Component == FormComponent.Cnpj ||
-                f.Component == FormComponent.Cnpj ||
-                f.Component == FormComponent.CnpjCpf)
+            val = f.Component switch
             {
-                val = StringManager.ClearCpfCnpjChars(val.ToString());
-            }
-            else if (f.Component == FormComponent.Tel)
-            {
-                val = StringManager.ClearTelChars(val.ToString());
-            }
-            else if (f.Component == FormComponent.Cep)
-            {
-                val = val.ToString().Replace("-", "");
-            }
+                FormComponent.Cnpj or FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
+                    val.ToString()),
+                FormComponent.Tel => StringManager.ClearTelChars(val.ToString()),
+                FormComponent.Cep => val.ToString().Replace("-", ""),
+                _ => val
+            };
         }
 
         return val;

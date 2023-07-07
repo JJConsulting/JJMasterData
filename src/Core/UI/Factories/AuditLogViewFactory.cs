@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -12,8 +13,8 @@ namespace JJMasterData.Core.Web.Factories;
 
 public class AuditLogViewFactory
 {
-    private GridViewFactory GridViewFactory { get; }
-    private DataPanelFactory DataPanelFactory { get; }
+    private Lazy<GridViewFactory> GridViewFactory { get; }
+    private Lazy<DataPanelFactory> DataPanelFactory { get; }
     private IHttpContext HttpContext { get; }
     private IEntityRepository EntityRepository { get; }
     private IAuditLogService AuditLogService { get; }
@@ -21,8 +22,8 @@ public class AuditLogViewFactory
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public AuditLogViewFactory(
-        GridViewFactory gridViewFactory,
-        DataPanelFactory dataPanelFactory,
+        Lazy<GridViewFactory> gridViewFactory,
+        Lazy<DataPanelFactory> dataPanelFactory,
         IHttpContext httpContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,

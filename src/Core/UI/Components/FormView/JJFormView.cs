@@ -68,8 +68,7 @@ public class JJFormView : JJBaseView
     /// </summary>
     internal string UrlRedirect { get; set; }
 
-
-
+    
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -320,14 +319,10 @@ public class JJFormView : JJBaseView
 
         if ("reloadpainel".Equals(requestType))
         {
-            //TODO: eliminar metodo GetSelectedRowId
-            var filter = GridView.GetSelectedRowId();
-            IDictionary<string, dynamic> values = null;
-            if (filter is { Count: > 0 })
-                values = EntityRepository.GetDictionaryAsync(FormElement, filter).GetAwaiter().GetResult();
-
-            string htmlPanel = GetDataPanelHtml(new(values, null, PageState), true).ToString();
-            CurrentContext.Response.SendResponse(htmlPanel);
+            var panelHtml = GetReloadPanelHtmlAsync().GetAwaiter().GetResult();
+#pragma warning disable CS0618
+            CurrentContext.Response.SendResponse(panelHtml);
+#pragma warning restore CS0618
             return null;
         }
 
@@ -355,6 +350,17 @@ public class JJFormView : JJBaseView
         }
 
         return htmlForm;
+    }
+
+    internal async Task<string> GetReloadPanelHtmlAsync()
+    {
+        var filter = GridView.GetSelectedRowId();
+        IDictionary<string, dynamic> values = null;
+        if (filter is { Count: > 0 })
+            values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
+
+        string htmlPanel = GetDataPanelHtml(new(values, null, PageState), true).ToString();
+        return htmlPanel;
     }
 
     private HtmlBuilder GetHtmlForm()
@@ -673,7 +679,7 @@ public class JJFormView : JJBaseView
             else
             {
                 if (GridView.EnableMultiSelect)
-                    ClearSelectedGridValues();
+                    GridView.ClearSelectedGridValues();
             }
         }
         catch (Exception ex)

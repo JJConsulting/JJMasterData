@@ -130,7 +130,7 @@ internal class GridTableHeader
     private void SetSortAttributes(HtmlBuilder span, FormElementField field)
     {
         span.WithCssClass("jjenable-sorting");
-        span.WithAttribute("onclick", GridView.GridViewScriptHelper.GetSortingScript(GridView,field.Name));
+        span.WithAttribute("onclick", GridView.ScriptsHelper.GridViewScriptHelper.GetSortingScript(GridView,field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()

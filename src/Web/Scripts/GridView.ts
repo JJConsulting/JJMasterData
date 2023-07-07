@@ -36,15 +36,15 @@
     }
 
     static refreshGrid(componentName, url) {
-        const frm = document.querySelector("form");
+        const form = document.querySelector("form");
         
         let urlBuilder = new UrlBuilder(url)
         
         urlBuilder.addQueryParameter("componentName",componentName)
         
         fetch(urlBuilder.build(), {
-            method: frm.method,
-            body: new FormData(frm)
+            method: form.method,
+            body: new FormData(form)
         })
             .then(response => response.text())
             .then(data => {
