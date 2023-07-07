@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -24,9 +25,9 @@ public class FormViewFactory
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private GridViewFactory GridViewFactory { get; }
-    private AuditLogViewFactory AuditLogViewFactory { get; }
-    private DataPanelFactory DataPanelFactory { get; }
+    private Lazy<GridViewFactory> GridViewFactory { get; }
+    private Lazy<AuditLogViewFactory> AuditLogViewFactory { get; }
+    private Lazy<DataPanelFactory> DataPanelFactory { get; }
     private IFormEventResolver FormEventResolver { get; }
 
     public FormViewFactory(
@@ -38,9 +39,9 @@ public class FormViewFactory
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        GridViewFactory gridViewFactory,
-        AuditLogViewFactory auditLogViewFactory,
-        DataPanelFactory dataPanelFactory, 
+        Lazy<GridViewFactory> gridViewFactory,
+        Lazy<AuditLogViewFactory> auditLogViewFactory,
+        Lazy<DataPanelFactory> dataPanelFactory, 
         IFormEventResolver formEventResolver
         )
     {

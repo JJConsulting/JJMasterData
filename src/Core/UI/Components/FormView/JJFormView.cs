@@ -61,7 +61,7 @@ public class JJFormView : JJBaseView
     private string _userId;
     
     internal JJAuditLogView AuditLogView =>
-        _auditLogView ??= AuditLogViewFactory.CreateAuditLogView(FormElement);
+        _auditLogView ??= AuditLogViewFactory.Value.CreateAuditLogView(FormElement);
     
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
@@ -105,7 +105,7 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            _dataPanel ??= DataPanelFactory.CreateDataPanel(FormElement);
+            _dataPanel ??= DataPanelFactory.Value.CreateDataPanel(FormElement);
             _dataPanel.Name = "jjpanel_" + FormElement.Name.ToLower();
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
@@ -132,13 +132,17 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            var gridView = GridViewFactory.CreateGridView(FormElement);
-            gridView.Name = Name.ToLower();
-            gridView.FormElement = FormElement;
-            gridView.UserValues = UserValues;
-            gridView.IsExternalRoute = IsExternalRoute;
-            gridView.ShowTitle = true;
-            return _gridView ??= gridView;
+            if (_gridView is not null)
+                return _gridView;
+            
+            _gridView = GridViewFactory.Value.CreateGridView(FormElement);
+            _gridView.Name = Name.ToLower();
+            _gridView.FormElement = FormElement;
+            _gridView.UserValues = UserValues;
+            _gridView.IsExternalRoute = IsExternalRoute;
+            _gridView.ShowTitle = true;
+            
+            return _gridView;
         }
     }
 
@@ -195,9 +199,9 @@ public class JJFormView : JJBaseView
 
     internal IHttpContext CurrentContext { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal AuditLogViewFactory AuditLogViewFactory { get; }
-    internal GridViewFactory GridViewFactory { get; }
-    internal DataPanelFactory DataPanelFactory { get; }
+    internal Lazy<AuditLogViewFactory> AuditLogViewFactory { get; }
+    internal Lazy<GridViewFactory> GridViewFactory { get; }
+    internal Lazy<DataPanelFactory> DataPanelFactory { get; }
     internal FormViewFactory FormViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal IFieldValuesService FieldValuesService { get; }
@@ -215,8 +219,9 @@ public class JJFormView : JJBaseView
     {
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        AuditLogViewFactory = JJService.Provider.GetScopedDependentService<AuditLogViewFactory>();
-        GridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
+        AuditLogViewFactory = JJService.Provider.GetScopedDependentService<Lazy<AuditLogViewFactory>>();
+        GridViewFactory = JJService.Provider.GetScopedDependentService<Lazy<GridViewFactory>>();
+        DataPanelFactory = JJService.Provider.GetScopedDependentService<Lazy<DataPanelFactory>>();
         FormViewFactory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
         FormService = JJService.Provider.GetScopedDependentService<IFormService>();
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
@@ -224,7 +229,7 @@ public class JJFormView : JJBaseView
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        DataPanelFactory = JJService.Provider.GetScopedDependentService<DataPanelFactory>();
+
     }
 
     public JJFormView(string elementName) : this()
@@ -252,9 +257,9 @@ public class JJFormView : JJBaseView
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        GridViewFactory gridViewFactory,
-        AuditLogViewFactory auditLogViewFactory,
-        DataPanelFactory dataPanelFactory,
+        Lazy<GridViewFactory> gridViewFactory,
+        Lazy<AuditLogViewFactory> auditLogViewFactory,
+        Lazy<DataPanelFactory> dataPanelFactory,
         FormViewFactory formViewFactory)
     {
         CurrentContext = currentContext;
@@ -282,9 +287,9 @@ public class JJFormView : JJBaseView
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        GridViewFactory gridViewFactory,
-        AuditLogViewFactory auditLogViewFactory,
-        DataPanelFactory dataPanelFactory,
+        Lazy<GridViewFactory> gridViewFactory,
+        Lazy<AuditLogViewFactory> auditLogViewFactory,
+        Lazy<DataPanelFactory> dataPanelFactory,
         FormViewFactory formViewFactory) : this(currentContext, entityRepository, dataDictionaryRepository, formService,
         encryptionService, fieldValuesService, expressionsService, stringLocalizer, gridViewFactory,
         auditLogViewFactory, dataPanelFactory, formViewFactory)
@@ -597,12 +602,11 @@ public class JJFormView : JJBaseView
 
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
-        string criptMap = CurrentContext.Request.Form("current_selaction_" + Name);
-        string jsonMap = EncryptionService.DecryptStringWithUrlDecode(criptMap);
-        var map = JsonConvert.DeserializeObject<ActionMap>(jsonMap);
+        string encryptedActionMap = CurrentContext.Request.Form("current_selaction_" + Name);
+        var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
-        var selValues = EntityRepository.GetDictionaryAsync(formElement, map.PkFieldValues).GetAwaiter().GetResult();
+        var selValues = EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues).GetAwaiter().GetResult();
         var values = FieldValuesService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
         var erros = InsertFormValues(values, false);
 
@@ -668,7 +672,7 @@ public class JJFormView : JJBaseView
             }
             else
             {
-                if (EnableMultSelect)
+                if (GridView.EnableMultiSelect)
                     ClearSelectedGridValues();
             }
         }
@@ -721,7 +725,7 @@ public class JJFormView : JJBaseView
             if (rows.Count > 0)
             {
                 var message = new StringBuilder();
-                MessageIcon icon = MessageIcon.Info;
+                var icon = MessageIcon.Info;
                 if (successCount > 0)
                 {
                     message.Append("<p class=\"text-success\">");
@@ -1074,30 +1078,25 @@ public class JJFormView : JJBaseView
     }
 
     #region "Legacy GridView inherited compatibility"
-
     [Obsolete("Please use GridView.GridActions")]
     public List<BasicAction> GridActions
     {
         get => GridView.GridActions;
         internal set => GridView.GridActions = value;
     }
-
     [Obsolete("Please use GridView.ToolBarActions")]
     public List<BasicAction> ToolBarActions
     {
         get => GridView.ToolBarActions;
         internal set => GridView.ToolBarActions = value;
     }
-
     [Obsolete("Please use GridView.SetCurrentFilter")]
     public void SetCurrentFilter(string userid, string userId)
     {
         GridView.SetCurrentFilter(UserId, UserId);
     }
-
     [Obsolete("Please use GridView.ImportAction")]
     public ImportAction ImportAction => GridView.ImportAction;
-
 
     [Obsolete("Please use GridView.FilterAction")]
     public FilterAction FilterAction { get; set; }
@@ -1157,6 +1156,5 @@ public class JJFormView : JJBaseView
         get => GridView.EnableMultiSelect;
         set => GridView.EnableMultiSelect = value;
     }
-
     #endregion
 }

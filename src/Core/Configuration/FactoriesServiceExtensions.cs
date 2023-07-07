@@ -12,14 +12,15 @@ public static class FactoriesServiceExtensions
         services.AddTransient<DataExportationFactory>();
         services.AddTransient<ComboBoxFactory>();
         services.AddTransient<DataImportationFactory>();
-        services.AddTransient<AuditLogViewFactory>();
         services.AddTransient<CheckBoxFactory>();
         services.AddTransient<FieldControlFactory>();
-        services.AddTransient<DataPanelFactory>();
+
         services.AddTransient<FormUploadFactory>();
         services.AddTransient<FileDownloaderFactory>();
-        services.AddTransient<FormViewFactory>();
         
+        services.AddTransient<AuditLogViewFactory>().AllowLazyInicialization();
+        services.AddTransient<DataPanelFactory>().AllowLazyInicialization();
+        services.AddTransient<FormViewFactory>().AllowLazyInicialization();
         services.AddTransient<GridViewFactory>().AllowLazyInicialization();
         
         services.AddTransient<JJMasterDataFactory>();

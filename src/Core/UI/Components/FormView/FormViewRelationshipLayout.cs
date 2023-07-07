@@ -127,7 +127,7 @@ internal class FormViewRelationshipLayout
                 {
                     var childValues = ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter).GetAwaiter().GetResult();
 
-                    var childDataPanel = ParentFormView.DataPanelFactory.CreateDataPanel(childElement);
+                    var childDataPanel = ParentFormView.DataPanelFactory.Value.CreateDataPanel(childElement);
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                     childDataPanel.UserValues = ParentFormView.UserValues;
                     childDataPanel.Values = childValues;
