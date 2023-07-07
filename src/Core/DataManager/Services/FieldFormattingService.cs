@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +8,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -17,10 +15,12 @@ namespace JJMasterData.Core.DataManager.Services;
 public class FieldFormattingService : IFieldFormattingService
 {
     private IDataItemService DataItemService { get; }
+    private ILookupService LookupService { get; }
 
-    public FieldFormattingService(IDataItemService dataItemService)
+    public FieldFormattingService(IDataItemService dataItemService, ILookupService lookupService)
     {
         DataItemService = dataItemService;
+        LookupService = lookupService;
     }
     
     public async Task<string> FormatGridValue(FormElementField field, IDictionary<string,dynamic> values, IDictionary<string,dynamic> userValues)
@@ -60,9 +60,8 @@ public class FieldFormattingService : IFieldFormattingService
             case FormComponent.Lookup 
                  when field.DataItem is { ReplaceTextOnGrid: true }:
             {
-                // var lookup = (JJLookup)GetField(field, PageState.List, values,userValues, value);
-                // stringValue = lookup.GetDescription() ?? value.ToString();
-                // break;
+                var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem, value, PageState.List, values,allowOnlyNumerics);
                 break;
             }
             case FormComponent.CheckBox:
