@@ -7,6 +7,6 @@ public class ApiViewModel : DataDictionaryViewModel
 {
     public bool IsSync { get; set; }
     public SyncMode Mode { get; set; }
-    public List<ElementField> Fields { get; set; } = null!;
-    public MetadataApiOptions MetadataApiOptions { get; set; } = null!;
+    public List<ElementField>? Fields { get; set; } = null!;
+    public MetadataApiOptions? MetadataApiOptions { get; set; } = null!;
 }
