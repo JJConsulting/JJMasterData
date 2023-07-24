@@ -593,7 +593,7 @@ public class JJGridView : JJBaseView
         ShowHeaderWhenEmpty = true;
         ShowPagging = true;
         ShowToolbar = true;
-        EmptyDataText = "No records found";
+        EmptyDataText = Translate.Key("No records found");
         AutoReloadFormFields = true;
         RelationValues = new Hashtable();
         TitleSize = HeadingSize.H1;
