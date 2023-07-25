@@ -1163,4 +1163,7 @@ public class JJFormView : JJBaseView
         set => GridView.EnableMultiSelect = value;
     }
     #endregion
+    
+    public static implicit operator JJGridView(JJFormView formView) => formView.GridView;
+    public static implicit operator JJDataPanel(JJFormView formView) => formView.DataPanel;
 }
