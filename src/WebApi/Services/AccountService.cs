@@ -1,18 +1,16 @@
-﻿using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Util;
-using System.Data;
-using System.Globalization;
-using System.Reflection;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Options;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using System.Data;
+using System.Globalization;
+using System.Reflection;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -27,7 +25,7 @@ public class AccountService
     private DataAccess DataAccess { get; }
 
     public AccountService(
-        IConfiguration configuration, 
+        IConfiguration configuration,
         JJMasterDataEncryptionService encryptionService,
         ReportPortalEnigmaService reportPortalEnigmaService,
         IOptions<JJMasterDataCoreOptions> options,
@@ -54,14 +52,16 @@ public class AccountService
             };
 
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@password", ReportPortalEnigmaService.DecryptString(password,Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@password", ReportPortalEnigmaService.DecryptString(password, Options.SecretKey)));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message = StringLocalizer[col["Message"]?.ToString()];
+                if (col.ContainsKey("Message"))
+                    ret.Message = StringLocalizer[col["Message"]?.ToString()!];
+
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -87,7 +87,7 @@ public class AccountService
     public UserAccessInfo ChangePassword(AccountChange form)
     {
         if (form == null)
-            throw new ArgumentNullException(nameof(AccountChange));
+            throw new ArgumentNullException(nameof(form));
 
         return ChangePassword(form.User, form.PwdCurrent, form.PwdNew, form.PwdConfirm);
     }
@@ -104,15 +104,17 @@ public class AccountService
                 CmdType = CommandType.StoredProcedure
             };
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", ReportPortalEnigmaService.EncryptString(pwdCurrent,Options.SecretKey)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", ReportPortalEnigmaService.EncryptString(pwdNew,Options.SecretKey)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm",ReportPortalEnigmaService.EncryptString(pwdConfirm,Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", ReportPortalEnigmaService.EncryptString(pwdCurrent, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", ReportPortalEnigmaService.EncryptString(pwdNew, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm", ReportPortalEnigmaService.EncryptString(pwdConfirm, Options.SecretKey)));
 
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
+                if (col.ContainsKey("Message"))
+                    ret.Message = StringLocalizer[col["Message"]?.ToString()!];
+
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message = StringLocalizer[col["Message"]?.ToString()];
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -138,7 +140,7 @@ public class AccountService
     public UserAccessInfo RecoverPassword(AccountRecover form)
     {
         if (form == null)
-            throw new ArgumentNullException(nameof(AccountChange));
+            throw new ArgumentNullException(nameof(form));
 
         return RecoverPassword(form.User, form.AppId);
     }
@@ -160,8 +162,10 @@ public class AccountService
             var col = DataAccess.GetFields(cmd);
             if (col != null)
             {
+                if (col.ContainsKey("Message"))
+                    ret.Message = StringLocalizer[col["Message"]?.ToString()!];
+
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message =StringLocalizer[col["Message"]?.ToString()];
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -173,12 +177,12 @@ public class AccountService
                     if (ret.ErrorId == 101)
                     {
                         string? email = col["Email"]?.ToString();
-                        string pwd = ReportPortalEnigmaService.DecryptString(col["Password"]?.ToString(),Options.SecretKey);
+                        string pwd = ReportPortalEnigmaService.DecryptString(col["Password"]?.ToString(), Options.SecretKey);
                         if (ret.UserId != null)
                         {
                             int userId = int.Parse(ret.UserId);
 
-                            if (email != null) 
+                            if (email != null)
                                 NotifyPasswordRecovered(userId, email, pwd);
                         }
                     }
@@ -244,7 +248,7 @@ public class AccountService
         return info;
     }
 
-    private  string? GetParam(string param, object? userId)
+    private string? GetParam(string param, object? userId)
     {
         string? value = null;
         var cmd = new DataAccessCommand
@@ -274,7 +278,7 @@ public class AccountService
             Port = int.Parse(GetParam("EmailPortNumber", userId) ?? string.Empty),
             Email = GetParam("FromEmail", userId),
             User = GetParam("EmailUser", userId),
-            Password = ReportPortalEnigmaService.DecryptString(GetParam("EmailPassword", userId),Options.SecretKey),
+            Password = ReportPortalEnigmaService.DecryptString(GetParam("EmailPassword", userId), Options.SecretKey),
             EnableSSL = GetParam("EmailSSL", userId)!.Equals("True")
         };
 
