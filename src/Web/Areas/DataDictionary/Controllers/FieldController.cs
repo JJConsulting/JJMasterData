@@ -4,8 +4,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections;
-using System.Globalization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 

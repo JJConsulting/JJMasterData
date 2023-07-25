@@ -1,4 +1,3 @@
-using JJMasterData.Core.DataManager;
 using JJMasterData.Web.Filters;
 using Microsoft.Extensions.DependencyInjection;
 

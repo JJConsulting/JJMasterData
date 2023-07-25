@@ -1,10 +1,7 @@
-@using JJMasterData.Commons.Localization
 @using JJMasterData.Web.Options
-@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
-@inject IOptions<JJMasterDataWebOptions> Options
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
+@inject IOptions<JJMasterDataWebOptions> Options
 @{
     Layout = string.IsNullOrEmpty(Options.Value.LayoutPath) ? "_MasterDataLayout" : Options.Value.LayoutPath;
 }
