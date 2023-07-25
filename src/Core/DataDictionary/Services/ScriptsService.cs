@@ -25,7 +25,7 @@ public class ScriptsService
 
         var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
         
-        var listScripts = new List<string?>
+        var listScripts = new List<string>
         {
             _entityRepository.GetScriptCreateTable(element),
             _entityRepository.GetScriptReadProcedure(element),

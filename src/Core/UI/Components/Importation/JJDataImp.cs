@@ -60,8 +60,7 @@ public class JJDataImp : JJBaseProcess
     public bool ExpandedByDefault { get; set; }
 
     internal IFieldVisibilityService FieldVisibilityService { get; }
-
-    internal IHttpContext CurrentContext { get; }
+    
     private UploadAreaFactory UploadAreaFactory { get; }
 
     internal IFormService FormService { get; }

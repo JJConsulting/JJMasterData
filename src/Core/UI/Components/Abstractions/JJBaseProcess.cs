@@ -64,7 +64,9 @@ public abstract class JJBaseProcess : JJBaseView
     private ILogger<JJBaseProcess> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    protected JJBaseProcess(IHttpContext currentContext, IEntityRepository entityRepository,
+    protected JJBaseProcess(
+        IHttpContext currentContext,
+        IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFieldValuesService fieldValuesService,
         IBackgroundTask backgroundTask,

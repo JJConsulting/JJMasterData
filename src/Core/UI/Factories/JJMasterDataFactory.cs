@@ -38,22 +38,7 @@ public class JJMasterDataFactory
         SearchBoxFactory = searchBoxFactory;
         LookupFactory = lookupFactory;
     }
-    
-    #if NET48
-    public static JJMasterDataFactory GetInstance()
-    {
-        return new JJMasterDataFactory(
-            JJService.Provider.GetScopedDependentService<FormViewFactory>(),
-            JJService.Provider.GetScopedDependentService<DataPanelFactory>(),
-            JJService.Provider.GetScopedDependentService<GridViewFactory>(),
-            JJService.Provider.GetScopedDependentService<DataExportationFactory>(),
-            JJService.Provider.GetScopedDependentService<DataImportationFactory>(),
-            JJService.Provider.GetScopedDependentService<ComboBoxFactory>(),
-            JJService.Provider.GetScopedDependentService<SearchBoxFactory>(), 
-            JJService.Provider.GetScopedDependentService<LookupFactory>());
-    }
-    #endif
-    
+
     public JJComboBox CreateComboBox()
     {
         return ComboBoxFactory.CreateComboBox();

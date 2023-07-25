@@ -10,7 +10,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public ActionsService(
         IValidationDictionary validationDictionary, 
@@ -18,7 +17,7 @@ public class ActionsService : BaseService
         IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
+
     }
 
     public bool DeleteAction(string elementName, string actionName, ActionSource context, string fieldName = null)
