@@ -45,7 +45,7 @@ public abstract class JJBaseProcess : JJBaseView
     /// </remarks>
     internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
-    public IHttpContext CurrentContext { get; }
+    public IHttpContext CurrentContext { get; set; }
 
     public ProcessOptions ProcessOptions
     {
