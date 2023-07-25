@@ -29,15 +29,15 @@ public class FormController : MasterDataController
     }
 
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [ServiceFilter<FormElementDecryptionFilter>]
     [ServiceFilter<ActionMapDecryptionFilter>]
     [HttpPost]
     public async Task<IActionResult> GetFormView(
-        string dictionaryName,
+        FormElement formElement,
         PageState pageState,
         ActionMap actionMap)
     {
-        var formView = await _formViewFactory.CreateFormViewAsync(dictionaryName);
+        var formView = _formViewFactory.CreateFormView(formElement);
         formView.IsModal = true;
         formView.IsExternalRoute = true;
         formView.PageState = pageState;

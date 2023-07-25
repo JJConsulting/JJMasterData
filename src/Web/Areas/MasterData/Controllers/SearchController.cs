@@ -28,15 +28,14 @@ public class SearchController : MasterDataController
     }
     
     [HttpPost]
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [ServiceFilter<FormElementDecryptionFilter>]
     public async Task<IActionResult> GetItems(
-        string dictionaryName,
+        FormElement formElement,
         string fieldName,
         string fieldSearchName,
         int pageState
     )
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var searchText = HttpContext.Request.Form[fieldSearchName];
         var dataItem = formElement.Fields[fieldName].DataItem;
 
