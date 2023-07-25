@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -11,9 +7,12 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
-using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -130,7 +129,7 @@ public class GridViewFactory
         grid.ShowPagging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
 
-        if (!GridSettings.HasFormValues(grid.CurrentContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
+        if (!GridFormSettings.HasFormValues(grid.CurrentContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad && grid.FormElement != null)
