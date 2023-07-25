@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 

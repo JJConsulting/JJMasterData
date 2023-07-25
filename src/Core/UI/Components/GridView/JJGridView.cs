@@ -326,24 +326,19 @@ public class JJGridView : JJBaseView
             // Removing it from here when calling the GetMetadataInfoList() method outside the class does not respect pagination
             var actionMap = CurrentActionMap;
             var action = GetCurrentAction(actionMap);
+            var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
-                CurrentSettings = GridSettings.LoadFromForm(CurrentContext,StringLocalizer);
+                CurrentSettings = form.LoadFromForm();
                 return _currentSettings;
             }
 
             if (MaintainValuesOnLoad && FormElement != null)
-            {
-                CurrentSettings = CurrentContext.Session
-                    .GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
-            }
+                CurrentSettings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
 
             if (_currentSettings == null)
-                CurrentSettings = GridSettings.LoadFromForm(CurrentContext,StringLocalizer);
-
-            if (_currentSettings == null)
-                CurrentSettings = new GridSettings(StringLocalizer);
-
+                CurrentSettings = form.LoadFromForm();
+                
             return _currentSettings;
         }
         set
@@ -904,7 +899,7 @@ public class JJGridView : JJBaseView
 
         if (EnableMultiSelect && PrimaryKeyFields.Count == 0)
             throw new JJMasterDataException(
-                
+
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary");
     }
 
@@ -1077,7 +1072,9 @@ public class JJGridView : JJBaseView
             OnClientClick = $"jjview.doConfigCancel('{Name}');"
         };
         modal.Buttons.Add(btnCancel);
-        modal.HtmlBuilderContent = CurrentSettings.GetHtmlElement(IsPaggingEnabled());
+
+        var form = new GridFormSettings(CurrentContext, StringLocalizer);
+        modal.HtmlBuilderContent = form.GetHtmlElement(IsPaggingEnabled(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
@@ -1143,7 +1140,7 @@ public class JJGridView : JJBaseView
         var values = new Dictionary<string, dynamic>();
         string currentRow = CurrentContext.Request["current_tablerow_" + Name];
 
-        if (string.IsNullOrEmpty(currentRow)) 
+        if (string.IsNullOrEmpty(currentRow))
             return values;
 
         var decriptId = EncryptionService.DecryptStringWithUrlDecode(currentRow);
@@ -1168,49 +1165,49 @@ public class JJGridView : JJBaseView
 #pragma warning restore CS0618
                 break;
             case "export":
-            {
-                if (IsUserSetDataSource || OnDataLoad != null)
                 {
-                    var tot = int.MaxValue;
-                    var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
-                    DataExportation.StartExportation(dt);
-                }
-                else
-                {
-                    try
+                    if (IsUserSetDataSource || OnDataLoad != null)
                     {
-                        ExportFileInBackground();
+                        var tot = int.MaxValue;
+                        var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
+                        DataExportation.StartExportation(dt);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        var err = new JJValidationSummary(ExceptionManager.GetMessage(ex))
+                        try
                         {
-                            MessageTitle = "Error"
-                        };
+                            ExportFileInBackground();
+                        }
+                        catch (Exception ex)
+                        {
+                            var err = new JJValidationSummary(ExceptionManager.GetMessage(ex))
+                            {
+                                MessageTitle = "Error"
+                            };
 
 #pragma warning disable CS0618
-                        CurrentContext.Response.SendResponse(err.GetHtml());
+                            CurrentContext.Response.SendResponse(err.GetHtml());
 #pragma warning restore CS0618
-                        return;
+                            return;
+                        }
                     }
+
+                    var html = new DataExportationLog(DataExportation).GetHtmlProcess();
+
+#pragma warning disable CS0618
+                    CurrentContext.Response.SendResponse(html.ToString());
+#pragma warning restore CS0618
+                    break;
                 }
-
-                var html = new DataExportationLog(DataExportation).GetHtmlProcess();
-
-#pragma warning disable CS0618
-                CurrentContext.Response.SendResponse(html.ToString());
-#pragma warning restore CS0618
-                break;
-            }
             case "checkProgress":
-            {
-                var dto = DataExportation.GetCurrentProgress();
-                var json = JsonConvert.SerializeObject(dto);
+                {
+                    var dto = DataExportation.GetCurrentProgress();
+                    var json = JsonConvert.SerializeObject(dto);
 #pragma warning disable CS0618
-                CurrentContext.Response.SendResponse(json, "text/json");
+                    CurrentContext.Response.SendResponse(json, "text/json");
 #pragma warning restore CS0618
-                break;
-            }
+                    break;
+                }
             case "stopProcess":
                 DataExportation.StopExportation();
 #pragma warning disable CS0618

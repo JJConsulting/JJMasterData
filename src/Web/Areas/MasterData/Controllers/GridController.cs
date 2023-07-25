@@ -1,5 +1,4 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;

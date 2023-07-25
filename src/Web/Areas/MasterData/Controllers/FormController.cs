@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -9,7 +7,6 @@ using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 

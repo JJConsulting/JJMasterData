@@ -1,8 +1,5 @@
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Filters;
 

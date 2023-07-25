@@ -2,12 +2,10 @@
     Layout = "_MasterDataLayout.Popup";
 }
 
-@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Core.DataDictionary.Actions.FormToolbar.FormToolbarAction
-@using JJMasterData.Commons.Localization
-@using Microsoft.Extensions.Localization
+
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @using (Html.BeginForm("BackAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))

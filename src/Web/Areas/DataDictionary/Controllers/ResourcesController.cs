@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
+﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Options;
 using Microsoft.AspNetCore.Builder;

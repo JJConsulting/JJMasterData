@@ -1,5 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+﻿using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 

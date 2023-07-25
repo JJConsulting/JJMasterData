@@ -1,8 +1,5 @@
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Web.Models;
 using JJMasterData.Web.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 #if DEBUG
 using Microsoft.Extensions.FileProviders;
