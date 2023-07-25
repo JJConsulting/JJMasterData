@@ -593,7 +593,7 @@ public class JJGridView : JJBaseView
         ShowHeaderWhenEmpty = true;
         ShowPagging = true;
         ShowToolbar = true;
-        EmptyDataText = "No records found";
+        EmptyDataText = Translate.Key("No records found");
         AutoReloadFormFields = true;
         RelationValues = new Hashtable();
         TitleSize = HeadingSize.H1;
@@ -864,13 +864,13 @@ public class JJGridView : JJBaseView
         {
             ShowCloseButton = true,
             Color = PanelColor.Default,
-            Title = Translate.Key("No records found."),
+            Title = Translate.Key("No records found"),
             Icon = IconType.InfoCircle
         };
 
         if (!Filter.HasFilter()) return alert.GetHtmlBuilder();
 
-        alert.Messages.Add("There are filters applied for this query.");
+        alert.Messages.Add(Translate.Key("There are filters applied for this query."));
         alert.Icon = IconType.Filter;
 
         return alert.GetHtmlBuilder();
