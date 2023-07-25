@@ -1,4 +1,4 @@
-﻿class JJSearchBox{
+﻿class SearchBox {
     static setup(){
         $("input.jjsearchbox").each(function () {
             const componentName = $(this).attr("jjid");

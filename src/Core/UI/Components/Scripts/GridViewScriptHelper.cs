@@ -67,5 +67,18 @@ public class GridViewScriptHelper
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doFilter('{name}','{enableAjax}')";
     }
+    
+    //todo
+    public string GetSelectAllScript(JJGridView gridView)
+    {
+        string name = gridView.Name;
+        if (gridView.IsExternalRoute)
+        {
+            var url = GetUrl(gridView.FormElement.Name);
+            return $"GridView.selectAll('{name}', '{url}')";
+        }
+        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        return $"jjview.doFilter('{name}','{enableAjax}')";
+    }
 
 }

@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Web.Components.Scripts;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,10 +8,10 @@ public static class ScriptHelperServiceExtensions
 {
     public static void AddScriptHelpers(this IServiceCollection services)
     {
-        services.AddTransient<DataExportationScriptHelper>();
-        services.AddTransient<FormViewScriptHelper>();
-        services.AddTransient<DataPanelScriptHelper>();
-        services.AddTransient<GridViewScriptHelper>();
+        services.AddTransient<DataExportationScriptHelper>().AllowLazyInicialization();
+        services.AddTransient<FormViewScriptHelper>().AllowLazyInicialization();
+        services.AddTransient<DataPanelScriptHelper>().AllowLazyInicialization();
+        services.AddTransient<GridViewScriptHelper>().AllowLazyInicialization();
         services.AddTransient<ScriptsHelper>();
     }
 }

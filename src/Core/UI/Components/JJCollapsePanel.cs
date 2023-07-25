@@ -6,14 +6,13 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public enum Position
-{
-    Right = 0,
-    Left = 1
-}
-
 public class JJCollapsePanel : JJBaseView
 {
+    public enum Position
+    {
+        Right = 0,
+        Left = 1
+    }
     public Position ButtonPosition { get; set; }
 
     public string Title { get; set; }

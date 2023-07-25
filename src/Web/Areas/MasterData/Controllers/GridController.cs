@@ -14,6 +14,20 @@ public class GridController : MasterDataController
         GridViewFactory = gridViewFactory;
     }
     
+        
+    [HttpPost]
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult SelectAllRows(FormElement formElement, string componentName)
+    {
+        var gridView = GridViewFactory.CreateGridView(formElement);
+        gridView.Name = componentName;
+        gridView.IsExternalRoute = true;
+
+        var selectedRows = gridView.GetEncryptedSelectedRows();
+        
+        return Content(selectedRows);
+    }
+    
     [HttpPost]
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult GetGridViewTable(FormElement formElement, string componentName)
