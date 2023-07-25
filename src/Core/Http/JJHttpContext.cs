@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace JJMasterData.Core.Web.Http;
 
 /// <summary>
-/// Wrapper to HttpContext that uses SystemWebAdapters
+/// Wrapper to HttpContext that works on both .NET 4.8 and .NET 6+
 /// </summary>
 public class JJHttpContext : IHttpContext
 {
@@ -19,16 +19,8 @@ public class JJHttpContext : IHttpContext
 
     public IHttpResponse Response { get; }
     
-
     private JJHttpContext()
     {
-    }
-
-    [Obsolete("Development time workaround, use dependency injection.")]
-    public static IHttpContext GetInstance()
-    {
-        using var scope = JJService.Provider.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<IHttpContext>();
     }
 
 #if NET || NETSTANDARD

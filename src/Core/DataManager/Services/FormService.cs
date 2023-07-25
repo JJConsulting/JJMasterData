@@ -18,7 +18,8 @@ public class FormService : IFormService
 {
     #region Properties
     private IEntityRepository EntityRepository { get; }
-    
+    private FormFileService FormFileService { get; }
+
     private IFieldValidationService FieldValidationService { get; }
 
     private IAuditLogService AuditLogService { get; }
@@ -43,12 +44,15 @@ public class FormService : IFormService
 
     #region Constructor
 
-    public FormService(IEntityRepository entityRepository,
+    public FormService(
+        IEntityRepository entityRepository,
+        FormFileService formFileService,
         IFieldValidationService fieldValidationService,
         IAuditLogService auditLogService)
     {
         FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;
+        FormFileService = formFileService;
         AuditLogService = auditLogService;
     }
 

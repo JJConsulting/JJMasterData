@@ -60,6 +60,6 @@ public class FormUploadFactory
             GridViewFactory,
             EncryptionService, 
             StringLocalizer,
-            LoggerFactory.CreateLogger<JJFormUpload>());
+            LoggerFactory);
     }
 }

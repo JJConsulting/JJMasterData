@@ -12,13 +12,15 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Core.Web.Http;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
-internal class FormFileService
+internal class FormFileManager
 {
+    private IHttpContext HttpContext { get; }
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
@@ -45,21 +47,23 @@ internal class FormFileService
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
-        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     
-    public ILogger<FormFileService> Logger { get; } =
-        JJService.Provider.GetScopedDependentService<ILogger<FormFileService>>();
-
+    public ILogger<FormFileManager> Logger { get; }
     
     public List<FormFileInfo> MemoryFiles
     {
-        get => JJHttpContext.GetInstance().Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
-        set => JJHttpContext.GetInstance().Session.SetSessionValue(MemoryFilesSessionName, value);
+        get => HttpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
+        set => HttpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
     }
 
-    public FormFileService(string memoryFilesSessionName)
+    public FormFileManager(
+        string memoryFilesSessionName,
+        IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer, ILogger<FormFileManager> logger)
     {
+        HttpContext = httpContext;
+        StringLocalizer = stringLocalizer;
+        Logger = logger;
         MemoryFilesSessionName = $"{memoryFilesSessionName}_files";
         AutoSave = true;
     }
@@ -312,33 +316,4 @@ internal class FormFileService
         ms.CopyTo(fileStream);
         fileStream.Close();
     }
-
-    internal static void SaveFormMemoryFiles(FormElement FormElement, IDictionary<string,dynamic> primaryKeys)
-    {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
-        if (uploadFields.Count == 0)
-            return;
-
-        var pathBuilder = new FormFilePathBuilder(FormElement);
-        foreach (var field in uploadFields)
-        {
-            string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var fileService = new FormFileService(field.Name + "_formupload");
-            fileService.SaveMemoryFiles(folderPath);
-        }
-    }
-
-    internal static void DeleteFiles(FormElement FormElement, IDictionary<string,dynamic> primaryKeys)
-    {
-        var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
-        if (uploadFields.Count == 0)
-            return;
-        
-        foreach (var field in uploadFields)
-        {
-            var fileService = new FormFileService(field.Name + "_formupload");
-            fileService.DeleteAll();
-        }
-    }
-
 }

@@ -1,14 +1,4 @@
 ﻿using System;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.DI;
 

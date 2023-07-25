@@ -21,6 +21,8 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IFieldsService, FieldsService>();
         services.AddScoped<IFormValuesService,FormValuesService>();
         
+        services.AddTransient<FormFileService>();
+        
         return services;
     }
 }

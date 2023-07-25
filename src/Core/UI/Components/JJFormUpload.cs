@@ -44,7 +44,7 @@ public class JJFormUpload : JJBaseView
     private ScriptAction _renameAction;
     private JJGridView _gridView;
     private JJUploadArea _upload;
-    private FormFileService _service;
+    private FormFileManager _service;
 
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
@@ -120,7 +120,7 @@ public class JJFormUpload : JJBaseView
                 if(args.Action.Name.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
-                    var isInMemory = Service.GetFile(fileName).IsInMemory;
+                    var isInMemory = FormFileManager.GetFile(fileName).IsInMemory;
                     if (isInMemory)
                     {
                         args.LinkButton.Enabled = false;
@@ -191,13 +191,13 @@ public class JJFormUpload : JJBaseView
         set => _renameAction = value;
     }
 
-    private FormFileService Service
+    private FormFileManager FormFileManager
     {
         get
         {
             if (_service == null)
             {
-                _service = new FormFileService(Name);
+                _service = new FormFileManager(Name, CurrentContext,StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
                 _service.OnBeforeCreateFile += OnBeforeCreateFile;
                 _service.OnBeforeDeleteFile += OnBeforeDeleteFile;
                 _service.OnBeforeRenameFile += OnBeforeRenameFile;
@@ -215,6 +215,7 @@ public class JJFormUpload : JJBaseView
     internal Lazy<GridViewFactory> GridViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private ILoggerFactory LoggerFactory { get; }
     internal ILogger<JJFormUpload> Logger { get; }
     public JJFormUpload(
         IHttpContext currentContext,
@@ -224,7 +225,7 @@ public class JJFormUpload : JJBaseView
         Lazy<GridViewFactory> gridViewFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ILogger<JJFormUpload> logger)
+        ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
         FileDownloaderFactory = fileDownloaderFactory;
@@ -233,7 +234,8 @@ public class JJFormUpload : JJBaseView
         GridViewFactory = gridViewFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        Logger = logger;
+        LoggerFactory = loggerFactory;
+        Logger = loggerFactory.CreateLogger<JJFormUpload>();
         Name = "jjuploadform1";
         ShowAddFile = true;
         ExpandedByDefault = true;
@@ -269,7 +271,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewVideo);
-        var video = Service.GetFile(fileName).Content;
+        var video = FormFileManager.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
                           Convert.ToBase64String(video.Bytes.ToArray(), 0, video.Bytes.ToArray().Length);
@@ -300,7 +302,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewImage);
-        var file = Service.GetFile(fileName);
+        var file = FormFileManager.GetFile(fileName);
 
         if (file == null)
             return null;
@@ -314,7 +316,7 @@ public class JJFormUpload : JJBaseView
         else
         {
  
-            var filePath = Path.Combine(Service.FolderPath, fileName);
+            var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
             var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
             src = downloader.GetDownloadUrl(filePath);
         }
@@ -350,7 +352,7 @@ public class JJFormUpload : JJBaseView
             if ("DELFILE".Equals(uploadAction))
                 DeleteFile(fileName);
             else if ("DOWNLOADFILE".Equals(uploadAction))
-                DownloadFile(Path.Combine(Service.FolderPath, fileName));
+                DownloadFile(Path.Combine(FormFileManager.FolderPath, fileName));
             else if ("RENAMEFILE".Equals(uploadAction))
                 RenameFile(fileName);
         }
@@ -392,7 +394,7 @@ public class JJFormUpload : JJBaseView
             });
         }
 
-        if (!Upload.Multiple && Service.CountFiles() > 0)
+        if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
         panelContent.AppendElement(Upload);
@@ -425,7 +427,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlGallery()
     {
-        var files = Service.GetFiles();
+        var files = FormFileManager.GetFiles();
         if (files.Count <= 0) return null;
 
         foreach (var ac in GridView.GridActions)
@@ -549,11 +551,11 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
-        var file = Service.GetFile(fileName);
+        var file = FormFileManager.GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-        string filePath = Path.Combine(Service.FolderPath, fileName);
+        string filePath = Path.Combine(FormFileManager.FolderPath, fileName);
 
         if (file.IsInMemory)
         {
@@ -692,7 +694,7 @@ public class JJFormUpload : JJBaseView
 
     private DataTable GetDataTableFiles()
     {
-        var files = Service.GetFiles();
+        var files = FormFileManager.GetFiles();
         var dt = new DataTable();
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
@@ -734,25 +736,25 @@ public class JJFormUpload : JJBaseView
     }
 
     public void RenameFile(string currentName, string newName) =>
-      Service.RenameFile(currentName, newName);
+      FormFileManager.RenameFile(currentName, newName);
 
     public void CreateFile(FormFileContent file) =>
-        Service.CreateFile(file, !Upload.Multiple);
+        FormFileManager.CreateFile(file, !Upload.Multiple);
 
     public void DeleteFile(string fileName) =>
-        Service.DeleteFile(fileName);
+        FormFileManager.DeleteFile(fileName);
 
     internal void DeleteAll() => 
-        Service.DeleteAll();
+        FormFileManager.DeleteAll();
 
     public List<FormFileInfo> GetFiles() => 
-        Service.GetFiles();
+        FormFileManager.GetFiles();
 
     public void ClearMemoryFiles() => 
-        Service.MemoryFiles = null;
+        FormFileManager.MemoryFiles = null;
 
     public void SaveMemoryFiles(string folderPath) =>
-        Service.SaveMemoryFiles(folderPath);
+        FormFileManager.SaveMemoryFiles(folderPath);
 
     public void DownloadFile(string fileName)
     {
