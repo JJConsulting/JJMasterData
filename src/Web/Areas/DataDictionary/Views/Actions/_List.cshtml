@@ -123,7 +123,7 @@
         script.Append(Url.Action("Remove", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append("', '");
-        script.Append(Translate.Key("Are you sure you want to delete [{0}] action?", action.Name));
+        script.Append(StringLocalizer["Are you sure you want to delete [{0}] action?", action.Name]);
         script.Append("');");
 
         return script.ToString();

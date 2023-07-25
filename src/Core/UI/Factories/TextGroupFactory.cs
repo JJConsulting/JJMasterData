@@ -5,16 +5,19 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public class TextGroupFactory
 {
     private IHttpContext HttpContext { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextGroupFactory(IHttpContext httpContext)
+    public TextGroupFactory(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
+        StringLocalizer = stringLocalizer;
     }
     
     public JJTextGroup CreateTextGroup()
@@ -68,7 +71,7 @@ public class TextGroupFactory
         return textGroup;
     }
 
-    private static void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
+    private void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
     {
         var listClass = new List<string>
         {
@@ -168,12 +171,12 @@ public class TextGroupFactory
         textGroup.SetAttr("class", string.Join(" ", listClass));
     }
 
-    private static JJLinkButton GetDateAction()
+    private JJLinkButton GetDateAction()
     {
         var btn = new JJLinkButton
         {
             IconClass = $"fa fa-{BootstrapHelper.DateIcon}",
-            ToolTip = Translate.Key("Calendar"),
+            ToolTip = StringLocalizer["Calendar"],
             ShowInFilter = true
         };
 

@@ -52,13 +52,13 @@ public static class ExceptionManager
         switch (ex.Number)
         {
             case 547:
-                message = Translate.Key("The record cannot be deleted because it is being used as a dependency.");
+                message = "The record cannot be deleted because it is being used as a dependency.";
                 break;
             case 2627 or 2601:
-                message = Translate.Key("Record already registered.");
+                message = "Record already registered.";
                 break;
             case 170:
-                message = Translate.Key("Invalid character.");
+                message = "Invalid character.";
                 break;
             case >= 50000:
                 message = ex.Message;

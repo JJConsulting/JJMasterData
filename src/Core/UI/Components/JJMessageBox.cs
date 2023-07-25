@@ -61,11 +61,11 @@ public class JJMessageBox : JJBaseView
     {
         var javaScript = new StringBuilder();
         
-        string msg = Translate.Key(Text);
+        string msg = Text;
         javaScript.AppendLine("$(document).ready(function() {");
         javaScript.Append("\t\t\t");
         javaScript.Append("messageBox.show('");
-        javaScript.Append(Translate.Key(Title));
+        javaScript.Append(Title);
         javaScript.Append("','");
         javaScript.Append(msg.Replace("<br>", "\\r\\n").Replace("\r\n", ""));
         javaScript.Append("', ");

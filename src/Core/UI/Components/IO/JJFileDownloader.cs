@@ -51,7 +51,7 @@ public class JJFileDownloader : JJBaseView
     internal override HtmlBuilder RenderHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
-            throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
+            throw new JJMasterDataException(StringLocalizer["Invalid file path or badly formatted URL"]);
     
         if (IsExternalLink)
             return GetDownloadHtmlElement();
@@ -70,7 +70,7 @@ public class JJFileDownloader : JJBaseView
         string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
+            .AppendElement(new JJTitle(StringLocalizer["Downloading"],fileName.ToLower()))
             .AppendElement(HtmlTag.Section, section =>
             {
                 section.WithCssClass("container mt-3");
@@ -86,9 +86,9 @@ public class JJFileDownloader : JJBaseView
                         });
                         div.AppendElement(HtmlTag.P, p =>
                         {
-                            p.AppendText($"{Translate.Key("File Size:")} {size}");
+                            p.AppendText($"{StringLocalizer["File Size:"]} {size}");
                             p.AppendElement(HtmlTag.Br);
-                            p.AppendText($"{Translate.Key("Last write time:")} {lastWriteTime}");
+                            p.AppendText($"{StringLocalizer["Last write time:"]} {lastWriteTime}");
                         });
                         div.AppendElement(HtmlTag.Hr, hr =>
                         {
@@ -98,11 +98,11 @@ public class JJFileDownloader : JJBaseView
                         {
                             p.AppendText(StringLocalizer["You are downloading file {0}.", fileName]);
                             p.AppendText(" ");
-                            p.AppendText(Translate.Key("If the download not start automatically") + ", ");
+                            p.AppendText(StringLocalizer["If the download not start automatically"] + ", ");
                             p.AppendElement(HtmlTag.A, a =>
                             {
                                 a.WithAttribute("href", url);
-                                a.AppendText(Translate.Key("click here."));
+                                a.AppendText(StringLocalizer["click here."]);
                             });
                         });
                     });

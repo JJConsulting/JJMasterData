@@ -33,7 +33,7 @@ public class FileService
         string? file = Directory.GetFiles(path).FirstOrDefault(f => f.EndsWith(fileName));
 
         if (file == null)
-            throw new KeyNotFoundException(Translate.Key("File not found"));
+            throw new KeyNotFoundException("File not found");
 
         var fileStream = new FileStream(Path.Combine(path, file), FileMode.Open, FileAccess.Read, FileShare.Read);
         
@@ -123,7 +123,7 @@ public class FileService
         if (File.Exists(filePath))
             File.Delete(filePath);
         else
-            throw new KeyNotFoundException(Translate.Key("File not found"));
+            throw new KeyNotFoundException("File not found");
     }
     
     private void DeleteEntityFile(Element element, FormElementField field, string pkValues, string fileName)
@@ -176,7 +176,7 @@ public class FileService
         if (File.Exists(oldFilePath))
             File.Move(oldFilePath, newFilePath);
         else
-            throw new KeyNotFoundException(Translate.Key("File not found"));
+            throw new KeyNotFoundException("File not found");
     }
     
     private void RenameEntityFile(FormElement formElement, FormElementField field, string pkValues, string oldName,

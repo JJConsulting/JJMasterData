@@ -143,13 +143,13 @@ public class JJUploadArea : JJBaseView
                     div.WithAttribute("showFileSize", ShowFileSize.ToString().ToLower());
                     div.WithAttribute("autoSubmit", AutoSubmitAfterUploadAll.ToString().ToLower());
                     div.WithAttribute("allowedTypes", AllowedTypes);
-                    div.WithAttribute("uploadStr", Translate.Key(AddLabel));
-                    div.WithAttribute("dragDropStr", Translate.Key(DragDropLabel));
-                    div.WithAttribute("doneStr", Translate.Key(DoneLabel));
-                    div.WithAttribute("cancelStr", Translate.Key(CancelLabel));
-                    div.WithAttribute("abortStr", Translate.Key(AbortLabel));
-                    div.WithAttribute("extErrorStr", Translate.Key(NotAllowedExtensionErrorLabel));
-                    div.WithAttribute("sizeErrorStr", Translate.Key(SizeErrorLabel));
+                    div.WithAttribute("uploadStr", StringLocalizer[AddLabel]);
+                    div.WithAttribute("dragDropStr", StringLocalizer[DragDropLabel]);
+                    div.WithAttribute("doneStr", StringLocalizer[DoneLabel]);
+                    div.WithAttribute("cancelStr", StringLocalizer[CancelLabel]);
+                    div.WithAttribute("abortStr", StringLocalizer[AbortLabel]);
+                    div.WithAttribute("extErrorStr", StringLocalizer[NotAllowedExtensionErrorLabel]);
+                    div.WithAttribute("sizeErrorStr", StringLocalizer[SizeErrorLabel]);
                 });
 
         return div;
@@ -307,7 +307,7 @@ public class JJUploadArea : JJBaseView
 
         string ext = FileIO.GetFileNameExtension(filename);
         if (list.Contains(ext))
-            throw new JJMasterDataException(Translate.Key("You cannot upload system files"));
+            throw new JJMasterDataException(StringLocalizer["You cannot upload system files"]);
 
     }
     public bool IsPostAfterUploadAllFiles()

@@ -53,7 +53,7 @@ public class JJIcon : JJBaseView
             .WithAttributes(Attributes)
             .WithCssClass(IconClass)
             .WithCssClass(CssClass)
-            .WithToolTip(Translate.Key(Title))
+            .WithToolTip(Title)
             .WithAttributeIf(!string.IsNullOrEmpty(Color), "style",$"color:{Color}");
 
         return element;

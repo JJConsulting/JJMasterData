@@ -61,7 +61,7 @@ public class JJLegendView : JJBaseView
                             CssClass = "fa-fw fa-2x"
                         });
                         div.AppendText("&nbsp;&nbsp;");
-                        div.AppendText(Translate.Key(item.Description));
+                        div.AppendText(ComboBoxFactory.StringLocalizer[item.Description]);
                         div.AppendElement(HtmlTag.Br);
                     });
                 }
@@ -70,7 +70,7 @@ public class JJLegendView : JJBaseView
         else
         {
             div.AppendElement(HtmlTag.Br);
-            div.AppendText(Translate.Key("There is no caption to be displayed"));
+            div.AppendText(ComboBoxFactory.StringLocalizer["There is no caption to be displayed"]);
         }
 
         return div;
@@ -88,7 +88,7 @@ public class JJLegendView : JJBaseView
         var dialog = new JJModalDialog
         {
             Name = Name,
-            Title = Translate.Key("Information"),
+            Title = ComboBoxFactory.StringLocalizer["Information"],
             HtmlBuilderContent = form
         };
         

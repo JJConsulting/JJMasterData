@@ -18,6 +18,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
@@ -157,7 +158,7 @@ public class JJFormUpload : JJBaseView
             if (_deleteAction != null)
                 return _deleteAction;
 
-            string promptStr = Translate.Key("Would you like to delete this record?");
+            string promptStr = StringLocalizer["Would you like to delete this record?"];
             _deleteAction = new ScriptAction
             {
                 Icon = IconType.Trash,
@@ -176,7 +177,7 @@ public class JJFormUpload : JJBaseView
             if (_renameAction != null)
                 return _renameAction;
 
-            string promptStr = Translate.Key("Enter the new name for the file:");
+            string promptStr = StringLocalizer["Enter the new name for the file:"];
             _renameAction = new ScriptAction
             {
                 Icon = IconType.PencilSquareO,
@@ -213,6 +214,7 @@ public class JJFormUpload : JJBaseView
     internal UploadAreaFactory UploadAreaFactory { get; }
     internal Lazy<GridViewFactory> GridViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal ILogger<JJFormUpload> Logger { get; }
     public JJFormUpload(
         IHttpContext currentContext,
@@ -220,7 +222,9 @@ public class JJFormUpload : JJBaseView
         TextGroupFactory textGroupFactory,
         UploadAreaFactory uploadAreaFactory, 
         Lazy<GridViewFactory> gridViewFactory,
-        JJMasterDataEncryptionService encryptionService, ILogger<JJFormUpload> logger)
+        JJMasterDataEncryptionService encryptionService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        ILogger<JJFormUpload> logger)
     {
         CurrentContext = currentContext;
         FileDownloaderFactory = fileDownloaderFactory;
@@ -228,6 +232,7 @@ public class JJFormUpload : JJBaseView
         UploadAreaFactory = uploadAreaFactory;
         GridViewFactory = gridViewFactory;
         EncryptionService = encryptionService;
+        StringLocalizer = stringLocalizer;
         Logger = logger;
         Name = "jjuploadform1";
         ShowAddFile = true;
@@ -383,12 +388,12 @@ public class JJFormUpload : JJBaseView
         {
             panelContent.AppendElement(new JJLabel
             {
-                Text = $"{Translate.Key("File Type:")}&nbsp;<b>{Upload.AllowedTypes}</b>"
+                Text = $"{StringLocalizer["File Type:"]}&nbsp;<b>{Upload.AllowedTypes}</b>"
             });
         }
 
         if (!Upload.Multiple && Service.CountFiles() > 0)
-            Upload.AddLabel = Translate.Key("Update");
+            Upload.AddLabel = StringLocalizer["Update"];
 
         panelContent.AppendElement(Upload);
         return panelContent;
@@ -466,7 +471,7 @@ public class JJFormUpload : JJBaseView
             .WithCssClass("list-group-item")
             .AppendElement(HtmlTag.B, b =>
             {
-                b.AppendText(Translate.Key(label));
+                b.AppendText(StringLocalizer[label]);
             })
             .AppendText(value);
     }
@@ -654,7 +659,7 @@ public class JJFormUpload : JJBaseView
                 {
                     img.WithAttribute("id", "pastedimage_0")
                        .WithAttribute("style", "max-height:350px;")
-                       .WithAttribute("alt", Translate.Key("Preview Image"))
+                       .WithAttribute("alt", StringLocalizer["Preview Image"])
                        .WithCssClass("img-responsive");
                 });
             });

@@ -109,7 +109,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             var factory = JJService.EntityRepository;
             DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = Translate.Key("Exporting {0} records...", tot.ToString("N0"));
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
             GenerateRows(table, token);
 

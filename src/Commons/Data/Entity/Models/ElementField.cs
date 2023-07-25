@@ -108,9 +108,4 @@ public class ElementField
         DataType = FieldType.Varchar;
         DataBehavior = FieldBehavior.Real;
     }
-
-    public string GetTranslatedLabel()
-    {
-        return string.IsNullOrEmpty(Label) ? Name : Translate.Key(Label);
-    }
 }

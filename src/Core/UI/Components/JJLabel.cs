@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
@@ -29,7 +30,7 @@ public class JJLabel : JJBaseView
     /// Descrição do label
     /// </summary>
     public string Text { get; set; }
-
+    public string RequiredText { get; set; }
     public bool IsRequired { get; set; }
 
     /// <summary>
@@ -60,17 +61,17 @@ public class JJLabel : JJBaseView
             .WithAttributes(Attributes)
             .WithCssClass(BootstrapHelper.Label)
             .WithCssClass(CssClass)
-            .AppendText(Translate.Key(Text))
+            .AppendText(Text)
             .AppendElementIf(IsRequired, HtmlTag.Span, s =>
             {
                 s.WithCssClass("required-symbol");
                 s.AppendText("*");
-                s.WithToolTip(Translate.Key("Required"));
+                s.WithToolTip(RequiredText ?? "Required");
             })
             .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
             {
                 s.WithCssClass("fa fa-question-circle help-description");
-                s.WithToolTip(Translate.Key(ToolTip));
+                s.WithToolTip(ToolTip);
             });
           
         return element;

@@ -35,7 +35,7 @@ public class ElementService : BaseService
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         GridViewFactory = gridViewFactory;
         StringLocalizer = stringLocalizer;

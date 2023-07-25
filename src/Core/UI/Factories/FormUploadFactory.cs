@@ -1,8 +1,10 @@
 using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -12,6 +14,7 @@ public class FormUploadFactory
     public ILoggerFactory LoggerFactory { get; }
 
     private JJMasterDataEncryptionService EncryptionService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     //This prevents a circular dependency:
     //GridViewFactory depends on FieldControlFactory
@@ -34,6 +37,7 @@ public class FormUploadFactory
         UploadAreaFactory uploadAreaFactory,
         Lazy<GridViewFactory> gridViewFactory,
         JJMasterDataEncryptionService encryptionService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
@@ -42,6 +46,7 @@ public class FormUploadFactory
         UploadAreaFactory = uploadAreaFactory;
         GridViewFactory = gridViewFactory;
         EncryptionService = encryptionService;
+        StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
     }
 
@@ -54,6 +59,7 @@ public class FormUploadFactory
             UploadAreaFactory,
             GridViewFactory,
             EncryptionService, 
+            StringLocalizer,
             LoggerFactory.CreateLogger<JJFormUpload>());
     }
 }

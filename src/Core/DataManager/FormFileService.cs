@@ -80,13 +80,13 @@ internal class FormFileService
             throw new ArgumentNullException(nameof(currentName));
 
         if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentNullException(Translate.Key("Required file name"));
+            throw new ArgumentNullException(StringLocalizer["Required file name"]);
 
         if (!Validate.ValidFileName(newName))
             throw new JJMasterDataException(StringLocalizer["file name cannot contain [{0}] characters", "* < > | : ? \" / \\"]);
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
-            throw new JJMasterDataException(Translate.Key("The file extension must remain the same"));
+            throw new JJMasterDataException(StringLocalizer["The file extension must remain the same"]);
 
         var files = GetFiles();
         if (files.Exists(x => x.Content.FileName.Equals(newName)))

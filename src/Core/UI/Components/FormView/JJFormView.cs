@@ -484,7 +484,7 @@ public class JJFormView : JJBaseView
         bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
             RelationValues);
         if (!isVisible)
-            throw new UnauthorizedAccessException(Translate.Key("Insert action not enabled"));
+            throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
 
         string formAction = "";
 
@@ -515,7 +515,7 @@ public class JJFormView : JJBaseView
                         ShowIcon = true,
                         Icon = IconType.CheckCircleO
                     };
-                    alert.Messages.Add(Translate.Key("Record added successfully"));
+                    alert.Messages.Add(StringLocalizer["Record added successfully"]);
                     var alertHtml = alert.GetHtmlBuilder();
                     alertHtml.AppendElement(HtmlTag.Div, div =>
                     {
@@ -743,7 +743,7 @@ public class JJFormView : JJBaseView
                 {
                     message.Append("<p class=\"text-danger\">");
                     message.Append(StringLocalizer["{0} Record(s) with error", successCount]);
-                    message.Append(Translate.Key("Details:"));
+                    message.Append(StringLocalizer["Details:"]);
                     message.Append("<br>");
                     message.Append(errorMessage);
                     icon = MessageIcon.Warning;
@@ -804,7 +804,7 @@ public class JJFormView : JJBaseView
         bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
             RelationValues);
         if (!isVisible)
-            throw new UnauthorizedAccessException(Translate.Key("Import action not enabled"));
+            throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
 
         var html = new HtmlBuilder(HtmlTag.Div);
 

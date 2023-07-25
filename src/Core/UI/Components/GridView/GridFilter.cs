@@ -276,8 +276,8 @@ internal class GridFilter
             {
                 { "onkeyup", $"jjview.doSearch('{GridView.Name}', this);" }
             },
-            ToolTip = Translate.Key("Filter by any field visible in the list"),
-            PlaceHolder = Translate.Key("Filter"),
+            ToolTip = StringLocalizer["Filter by any field visible in the list"],
+            PlaceHolder = StringLocalizer["Filter"],
             CssClass = "jj-icon-search",
             Name = searchId,
             Text = CurrentContext.Request.Form(searchId)
@@ -301,7 +301,7 @@ internal class GridFilter
                 div.AppendElement(HtmlTag.Label, label =>
                 {
                     label.WithCssClass(BootstrapHelper.Label);
-                    label.AppendText(Translate.Key("Filter by any field visible in the list"));
+                    label.AppendText(StringLocalizer["Filter by any field visible in the list"]);
                 });
                 div.AppendElement(textBox);
             });

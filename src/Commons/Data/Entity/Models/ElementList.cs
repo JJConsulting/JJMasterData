@@ -59,11 +59,11 @@ public class ElementList : IList<ElementField>
     public void Add(ElementField item)
     {
         if (item == null)
-            throw new ArgumentException(Translate.Key("ElementField can not be null"));
+            throw new ArgumentException("ElementField can not be null");
 
         int qtd = _list.Count(x => x.Name.Equals(item.Name));
         if (qtd > 0)
-            throw new JJMasterDataException(Translate.Key("Field [{0}] already exists in Element.Fields", item.Name));
+            throw new JJMasterDataException($"Field [{item.Name}] already exists in Element.Fields");
 
         _list.Add(item);
     }
@@ -211,7 +211,7 @@ public class ElementList : IList<ElementField>
                     return val;
             }
 
-            throw new ArgumentException(Translate.Key("Value {0} not found", fieldName));
+            throw new ArgumentException($"Value {fieldName} not found");
         }
         set
         {
@@ -227,7 +227,7 @@ public class ElementList : IList<ElementField>
                 }
             }
             if (!isOk)
-                throw new ArgumentException(Translate.Key("Value {0} not found", fieldName));
+                throw new ArgumentException($"Value {fieldName} not found");
         }
     }
 

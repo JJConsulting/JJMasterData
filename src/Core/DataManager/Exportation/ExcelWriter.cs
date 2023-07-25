@@ -176,7 +176,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
                 thStyle = " style=\"text-align:right;\" ";
             }
             sw.Write("\t\t\t\t<td" + thStyle + ">");
-            sw.Write(field.GetTranslatedLabel());
+            sw.Write(StringLocalizer[field.Label]);
             sw.WriteLine("</td>");
         }
         sw.WriteLine("\t\t\t</tr>");

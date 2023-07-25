@@ -67,11 +67,11 @@ public static class DataHelper
 
         var values = parsedValues.Split(separator);
         if (values == null || values.Length == 0)
-            throw new ArgumentException(Translate.Key("Invalid parameter or not found in {values}"), nameof(values));
+            throw new ArgumentException("Invalid parameter or not found in values");
 
         var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
         if (values.Length != elementPks.Count)
-            throw new JJMasterDataException(Translate.Key("Invalid primary key"));
+            throw new JJMasterDataException("Invalid primary key");
             
         for (int i = 0; i < values.Length; i++)
         {

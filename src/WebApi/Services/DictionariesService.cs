@@ -10,11 +10,13 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILogger<DictionariesService> Logger { get; }
     private IEntityRepository _entityRepository;
     private IDataDictionaryRepository _dataDictionaryRepository;
@@ -22,8 +24,10 @@ public class DictionariesService
     public DictionariesService(
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<DictionariesService> logger)
     {
+        StringLocalizer = stringLocalizer;
         Logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
         _entityRepository = entityRepository;
@@ -45,7 +49,7 @@ public class DictionariesService
             throw new ArgumentNullException(nameof(listSync));
 
         if (listSync.Length == 0)
-            throw new ArgumentException(Translate.Key("DicSyncParam invalid"));
+            throw new ArgumentException("DicSyncParam invalid");
 
         var dStart = DateTime.Now;
         var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
@@ -59,7 +63,7 @@ public class DictionariesService
             var dStartObj = DateTime.Now;
             var dictionary = dictionaries.First(x => x.Name.Equals(os.Name));
             if (dictionary == null)
-                throw new JJMasterDataException(Translate.Key("Dictionary {0} not found or not configured for sync", os.Name));
+                throw new JJMasterDataException($"Dictionary {os.Name} not found or not configured for sync");
 
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
             var info = new DicSyncInfoElement();
@@ -78,7 +82,7 @@ public class DictionariesService
 
             if (maxRecordsAllowed > 0 && info.RecordSize > maxRecordsAllowed)
             {
-                throw new JJMasterDataException(Translate.Key("Number maximum of records exceeded on {0}, contact the administrator.", os.Name));
+                throw new JJMasterDataException($"Number maximum of records exceeded on {os.Name}, contact the administrator.");
             }
         }
 
@@ -87,16 +91,16 @@ public class DictionariesService
 
         var message = new StringBuilder();
         message.AppendLine($"UserId: {userId}");
-        message.Append(Translate.Key("Synchronizing"));
+        message.Append(StringLocalizer["Synchronizing"]);
         message.Append(listSync.Length);
-        message.Append(Translate.Key("objects"));
+        message.Append(StringLocalizer["objects"]);
         message.Append(" ");
         message.AppendLine(" ...");
-        message.AppendLine(Translate.Key("{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)));
+        message.AppendLine(StringLocalizer["{0} records analyzed in {1}", totRecords, Format.FormatTimeSpan(ts)]);
         Logger.LogInformation(message.ToString());
 
         if (syncInfo.ListElement.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("No dictionary found"));
+            throw new KeyNotFoundException(StringLocalizer["No dictionary found"]);
 
         return syncInfo;
     }
@@ -127,7 +131,7 @@ public class DictionariesService
         else
         {
             if (!filters[fieldApplyUser]!.ToString()!.Equals(userId))
-                throw new UnauthorizedAccessException(Translate.Key("Access denied to change user filter on {0}", metadata.Name));
+                throw new UnauthorizedAccessException($"Access denied to change user filter on {metadata.Name}");
         }
 
         return filters;

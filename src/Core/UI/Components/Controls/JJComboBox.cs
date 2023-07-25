@@ -15,6 +15,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
@@ -28,7 +29,8 @@ public class JJComboBox : JJBaseControl
     internal IEntityRepository EntityRepository { get; }
     internal ILogger<JJComboBox> Logger { get; }
     
-    private IExpressionsService ExpressionsService { get; } 
+    private IExpressionsService ExpressionsService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal IDictionary<string,dynamic> FormValues { get; set; }
 
@@ -62,11 +64,13 @@ public class JJComboBox : JJBaseControl
     public JJComboBox(IHttpContext httpContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<JJComboBox> logger) : base(httpContext)
     {
         EntityRepository = entityRepository;
         Logger = logger;
         ExpressionsService = expressionsService;
+        StringLocalizer = stringLocalizer;
         Enabled = true;
         MultiSelect = false;
     }
@@ -74,12 +78,12 @@ public class JJComboBox : JJBaseControl
     internal override HtmlBuilder RenderHtml()
     {
         if (DataItem == null)
-            throw new ArgumentException(Translate.Key("[DataItem] properties not defined for combo"), Name);
+            throw new ArgumentException("[DataItem] properties not defined for combo", Name);
 
         var values = GetValues();
 
         if (values == null)
-            throw new ArgumentException(Translate.Key("Data source not defined for combo"), Name);
+            throw new ArgumentException("Data source not defined for combo", Name);
         
         if (ReadOnly)
         {
@@ -99,7 +103,7 @@ public class JJComboBox : JJBaseControl
             .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
             .WithAttributeIf(MultiSelect, "multiple")
-            .WithAttributeIf(MultiSelect, "title", Translate.Key("All"))
+            .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
             .WithAttributeIf(MultiSelect && PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
@@ -114,15 +118,15 @@ public class JJComboBox : JJBaseControl
     {
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, Translate.Key("(All)"))
-            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, Translate.Key("(Choose)"));
+            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, StringLocalizer["(All)"])
+            .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, StringLocalizer["(Choose)"]);
 
         if (DataItem.FirstOption != FirstOptionMode.None)
              yield return firstOption;
 
         foreach (var value in values)
         {
-            var label = IsManualValues() ? Translate.Key(value.Description) : value.Description;
+            var label = IsManualValues() ? StringLocalizer[value.Description] : value.Description;
 
             var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
             
@@ -178,7 +182,7 @@ public class JJComboBox : JJBaseControl
             selectedText = item.Description;
 
             if (IsManualValues())
-                selectedText = Translate.Key(selectedText);
+                selectedText = StringLocalizer[selectedText];
 
             break;
         }
@@ -212,7 +216,7 @@ public class JJComboBox : JJBaseControl
         if (item == null)
             return null;
 
-        var label = IsManualValues() ? Translate.Key(item.Description) : item.Description;
+        var label = IsManualValues() ? StringLocalizer[item.Description] : item.Description;
 
         if (DataItem.ShowImageLegend)
         {

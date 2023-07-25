@@ -55,7 +55,7 @@ public class JJCard : JJBaseView
         html.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
         {
             header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()));
-            header.AppendText(Translate.Key(Title));
+            header.AppendText(Title);
         });
 
         html.AppendElement(HtmlTag.Div, d =>

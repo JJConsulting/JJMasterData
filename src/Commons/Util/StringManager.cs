@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;
 
@@ -88,16 +89,16 @@ public static class StringManager
     /// <returns>
     /// Good Morning, Good Afternoon or Good Night. i18n supported.
     /// </returns>
-    public static string GetGreeting()
+    public static string GetGreeting(IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         var now = DateTime.Now;
         string greeting;
         if (now.Hour > 0 && (DateTime.Now.Hour <= 12))
-            greeting = Translate.Key("Good Morning");
+            greeting = stringLocalizer["Good Morning"];
         else if ((DateTime.Now.Hour > 12) && (DateTime.Now.Hour <= 18))
-            greeting = Translate.Key("Good Afternoon");
+            greeting = stringLocalizer["Good Afternoon"];
         else
-            greeting = Translate.Key("Good Night");
+            greeting = stringLocalizer["Good Night"];
 
         return greeting;
     }

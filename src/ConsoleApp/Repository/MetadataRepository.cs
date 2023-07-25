@@ -115,12 +115,12 @@ public class MetadataRepository
     public Metadata GetMetadata(string dictionaryName)
     {
         if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), Translate.Key("Dictionary invalid"));
+            throw new ArgumentNullException(nameof(dictionaryName), "Dictionary invalid");
 
         var filter = new Hashtable { { "name", dictionaryName } };
         var dataTable = _entityRepository.GetDataTable(MasterDataElement, filter);
         if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
+            throw new KeyNotFoundException("Dictionary not found");
 
         var metadata = new Metadata();
         foreach (DataRow row in dataTable.Rows)
@@ -233,7 +233,7 @@ public class MetadataRepository
 
         var dataTable = _entityRepository.GetDataTable(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("Dictionary {0} not found", dictionaryName));
+            throw new KeyNotFoundException("Dictionary not found");
 
         foreach (DataRow row in dataTable.Rows)
         {

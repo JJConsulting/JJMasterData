@@ -149,7 +149,7 @@ public class JJDataExp : JJBaseProcess
                             span.WithAttribute("aria-hidden", "true");
                         });
 
-                        span.AppendText(Translate.Key("File generated successfully!"));
+                        span.AppendText(StringLocalizer["File generated successfully!"]);
                     });
                     div.AppendElement(HtmlTag.Br);
 
@@ -162,7 +162,7 @@ public class JJDataExp : JJBaseProcess
                     div.AppendElement(HtmlTag.I, i =>
                     {
                         i.AppendText(
-                            Translate.Key("If the download does not start automatically, click on the icon below."));
+                            StringLocalizer["If the download does not start automatically, click on the icon below."]);
                     });
 
                     div.AppendElement(HtmlTag.Br);
@@ -260,7 +260,7 @@ public class JJDataExp : JJBaseProcess
         }
         else
         {
-            dto.Message = Translate.Key("Waiting...");
+            dto.Message = StringLocalizer["Waiting..."];
             dto.StartDate = DateTime.Now.ToShortDateString();
         }
 

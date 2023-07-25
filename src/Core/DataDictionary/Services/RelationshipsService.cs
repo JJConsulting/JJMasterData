@@ -10,7 +10,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class RelationshipsService : BaseService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly PanelService _panelService;
 
     public RelationshipsService(
@@ -18,9 +17,8 @@ public class RelationshipsService : BaseService
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         PanelService panelService)
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
         _panelService = panelService;
     }
 
@@ -67,7 +65,7 @@ public class RelationshipsService : BaseService
     {
         if (string.IsNullOrEmpty(childElementName))
         {
-            AddError("ChildElement", Translate.Key("Required ChildElement Field"));
+            AddError("ChildElement", StringLocalizer["Required ChildElement Field"]);
             return IsValid;
         }
 
@@ -79,13 +77,13 @@ public class RelationshipsService : BaseService
 
         if (string.IsNullOrEmpty(pkColumnName))
         {
-            AddError("PkColumn", Translate.Key("Required PkColumn field"));
+            AddError("PkColumn", StringLocalizer["Required PkColumn field"]);
             return IsValid;
         }
 
         if (string.IsNullOrEmpty(fkColumnName))
         {
-            AddError("FkColumn", Translate.Key("Required FkColumn field"));
+            AddError("FkColumn", StringLocalizer["Required FkColumn field"]);
             return IsValid;
         }
 
@@ -130,12 +128,12 @@ public class RelationshipsService : BaseService
         int? index)
     {
         if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
-            AddError("", Translate.Key("Mandatory <b>PKTable </b> field"));
+            AddError("", StringLocalizer["Mandatory <b>PKTable </b> field"]);
 
         if (IsValid)
         {
             if (elementRelationship.Columns.Count == 0)
-                AddError("", Translate.Key("No relationship registered."));
+                AddError("", StringLocalizer["No relationship registered."]);
         }
 
         if (IsValid)
@@ -153,7 +151,7 @@ public class RelationshipsService : BaseService
                 .GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (relationships.Count > 0)
                 AddError("",
-                    Translate.Key("There is already a relationship registered for ") +
+                    StringLocalizer["There is already a relationship registered for "] +
                     elementRelationship.ChildElement);
         }
 
@@ -170,7 +168,7 @@ public class RelationshipsService : BaseService
                 x.FkColumn.Equals(fkColumnName));
 
             if (list.Count > 0)
-                AddError("", Translate.Key("Relationship already registered"));
+                AddError("", StringLocalizer["Relationship already registered"]);
         }
 
         return IsValid;

@@ -10,13 +10,20 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
 internal class TaskTrigger
 {
-    private BackgroundTask _backgroundTask;
-    public BackgroundTask BackgroundTask => _backgroundTask ??= new BackgroundTask();
+    private BackgroundTask BackgroundTask { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
+    public TaskTrigger(BackgroundTask backgroundTask, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    {
+        BackgroundTask = backgroundTask;
+        StringLocalizer = stringLocalizer;
+    }
 
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {
@@ -75,7 +82,7 @@ internal class TaskTrigger
     {
         var taskWrapper = BackgroundTask.GetTask(key);
         if (taskWrapper?.TaskWorker == null)
-            throw new JJMasterDataException(Translate.Key("This task has expired and can no longer run"));
+            throw new JJMasterDataException("This task has expired and can no longer run");
 
         IBackgroundTaskWorker worker = taskWrapper.TaskWorker;
         IProgressBar consoleProgress = null;
@@ -91,7 +98,7 @@ internal class TaskTrigger
             {
                 consoleProgress = context.WriteProgressBar();
                 if (!string.IsNullOrEmpty(e.UserId))
-                    context.WriteLine(Translate.Key("User [{0}] started the process.", e.UserId));
+                    context.WriteLine(StringLocalizer["User [{0}] started the process."], e.UserId);
             }
 
             if (consoleProgress != null)

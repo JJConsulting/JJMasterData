@@ -11,6 +11,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Options;
 using JJMasterData.WebApi.Models;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.WebApi.Services;
@@ -19,6 +20,7 @@ public class AccountService
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private ReportPortalEnigmaService ReportPortalEnigmaService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataCoreOptions Options { get; }
     private ILogger<AccountService> Logger { get; }
     private string? ApiVersion { get; }
@@ -29,10 +31,12 @@ public class AccountService
         JJMasterDataEncryptionService encryptionService,
         ReportPortalEnigmaService reportPortalEnigmaService,
         IOptions<JJMasterDataCoreOptions> options,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<AccountService> logger)
     {
         EncryptionService = encryptionService;
         ReportPortalEnigmaService = reportPortalEnigmaService;
+        StringLocalizer = stringLocalizer;
         Options = options.Value;
         Logger = logger;
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
@@ -57,7 +61,7 @@ public class AccountService
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.Message = StringLocalizer[col["Message"]?.ToString()];
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -108,7 +112,7 @@ public class AccountService
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.Message = StringLocalizer[col["Message"]?.ToString()];
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -157,7 +161,7 @@ public class AccountService
             if (col != null)
             {
                 ret.ErrorId = int.Parse(col["ErrorId"]?.ToString() ?? string.Empty);
-                ret.Message = Translate.Key(col["Message"]?.ToString());
+                ret.Message =StringLocalizer[col["Message"]?.ToString()];
                 ret.IsValid = "1".Equals(col["IsValid"]?.ToString());
 
                 if (ret.IsValid)
@@ -197,8 +201,8 @@ public class AccountService
     private void NotifyPasswordRecovered(int userId, string email, string password)
     {
         ConfigSmtp config = GetConfigSmtp(userId);
-        string subject = Translate.Key("Recover password") + " " + Translate.Key("WebSales");
-        string body = Translate.Key("Your current password is:") + " " + password;
+        string subject = StringLocalizer["Recover password"] + " " + StringLocalizer["WebSales"];
+        string body = StringLocalizer["Your current password is:"] + " " + password;
 
         Email.SendMailConfig(email, null, "", subject, body, false, null, config);
     }

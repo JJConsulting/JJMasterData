@@ -92,7 +92,7 @@ public class PlainTextReader
                     {
                         currentField = field.Name;
                         if (!columns.ContainsKey(field.Name))
-                            throw new JJMasterDataException(Translate.Key("{0} field not found", field.Name));
+                            throw new JJMasterDataException($"{field.Name} field not found");
 
                         if (col > 0)
                             sRet.Append(Delimiter);

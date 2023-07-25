@@ -904,8 +904,8 @@ public class JJGridView : JJBaseView
 
         if (EnableMultiSelect && PrimaryKeyFields.Count == 0)
             throw new JJMasterDataException(
-                Translate.Key(
-                    "It is not allowed to enable multiple selection without defining a primary key in the data dictionary"));
+                
+                    "It is not allowed to enable multiple selection without defining a primary key in the data dictionary");
     }
 
     private HtmlBuilder GetNoRecordsAlert()
@@ -914,7 +914,7 @@ public class JJGridView : JJBaseView
         {
             ShowCloseButton = true,
             Color = PanelColor.Default,
-            Title = Translate.Key("No records found."),
+            Title = StringLocalizer["No records found."],
             Icon = IconType.InfoCircle
         };
 
@@ -1434,7 +1434,7 @@ public class JJGridView : JJBaseView
                     string err = FieldsService.ValidateField(field, objname, val);
                     if (!string.IsNullOrEmpty(err))
                     {
-                        string errMsg = $"{Translate.Key("Line")} {line}: {err}";
+                        string errMsg = $"{StringLocalizer["Line"]} {line}: {err}";
                         errors.Add(objname, errMsg);
                     }
                 }
@@ -1500,7 +1500,7 @@ public class JJGridView : JJBaseView
                 ToolBarActions.Remove(action);
                 break;
             default:
-                throw new ArgumentException(Translate.Key("This action can not be removed"));
+                throw new ArgumentException("This action can not be removed");
         }
     }
 
@@ -1555,7 +1555,7 @@ public class JJGridView : JJBaseView
                 GridActions.Remove(action);
                 break;
             default:
-                throw new ArgumentException(Translate.Key("This action can not be removed"));
+                throw new ArgumentException("This action can not be removed");
         }
     }
 
@@ -1587,7 +1587,7 @@ public class JJGridView : JJBaseView
             throw new ArgumentNullException(nameof(action));
 
         if (string.IsNullOrEmpty(action.Name))
-            throw new ArgumentException(Translate.Key("Property name action is not valid"));
+            throw new ArgumentException("Property name action is not valid");
     }
 
     public void SetGridOptions(GridUI options)

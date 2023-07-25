@@ -7,12 +7,14 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJTextRange : JJBaseControl
 {
     private TextGroupFactory TextGroupFactory { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal JJBaseControl FromField { get; set; }
     internal JJBaseControl ToField { get; set; }
@@ -21,9 +23,10 @@ public class JJTextRange : JJBaseControl
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    public JJTextRange(IHttpContext currentContext, TextGroupFactory textGroupFactory) : base(currentContext)
+    public JJTextRange(IHttpContext currentContext, TextGroupFactory textGroupFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
         TextGroupFactory = textGroupFactory;
+        StringLocalizer = stringLocalizer;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -69,12 +72,12 @@ public class JJTextRange : JJBaseControl
             {
                 ul.WithCssClass("dropdown-menu");
                 ul.WithAttribute("aria-labelledby", $"dropdown_{Name}");
-                ul.AppendElement(GetListItem(Translate.Key("Today"), GetTodayScript(now)));
-                ul.AppendElement(GetListItem(Translate.Key("Yesterday"), GetYesterdayScript(now)));
-                ul.AppendElement(GetListItem(Translate.Key("This month"), GetThisMonthScript(now)));
-                ul.AppendElement(GetListItem(Translate.Key("Last month"), GetLastMonthScript(now)));
-                ul.AppendElement(GetListItem(Translate.Key("Last three months"), GetLastThreeMonthsScript(now)));
-                ul.AppendElement(GetListItem(Translate.Key("Clear"), GetClearScript()));
+                ul.AppendElement(GetListItem(StringLocalizer["Today"], GetTodayScript(now)));
+                ul.AppendElement(GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now)));
+                ul.AppendElement(GetListItem(StringLocalizer["This month"], GetThisMonthScript(now)));
+                ul.AppendElement(GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now)));
+                ul.AppendElement(GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now)));
+                ul.AppendElement(GetListItem(StringLocalizer["Clear"], GetClearScript()));
             });
 
         return dropdown;
@@ -89,7 +92,7 @@ public class JJTextRange : JJBaseControl
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
-            .AppendText(Translate.Key("Periods") + "&nbsp;")
+            .AppendText(StringLocalizer["Periods"] + "&nbsp;")
             .AppendElement(HtmlTag.Span, span => { span.WithCssClass("caret"); });
     }
 

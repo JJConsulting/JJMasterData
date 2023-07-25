@@ -3,6 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -10,11 +11,13 @@ public class TextRangeFactory
 {
     private IHttpContext HttpContext { get; }
     private TextGroupFactory TextGroupFactory { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextRangeFactory(IHttpContext httpContext, TextGroupFactory textGroupFactory)
+    public TextRangeFactory(IHttpContext httpContext, TextGroupFactory textGroupFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
         TextGroupFactory = textGroupFactory;
+        StringLocalizer = stringLocalizer;
     }
     internal JJTextRange CreateTextRange(FormElementField field, IDictionary<string,dynamic> values)
     {
@@ -24,12 +27,12 @@ public class TextRangeFactory
             valueFrom = values[field.Name + "_from"].ToString();
         }
         
-        var range = new JJTextRange(HttpContext,TextGroupFactory);
+        var range = new JJTextRange(HttpContext,TextGroupFactory,StringLocalizer);
         range.FieldType = field.DataType;
         range.FromField = TextGroupFactory.CreateTextGroup(field);
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
-        range.FromField.PlaceHolder = Translate.Key("From");
+        range.FromField.PlaceHolder = StringLocalizer["From"];
         
         string valueTo = "";
         if (values != null && values.ContainsKey(field.Name + "_to"))
@@ -40,7 +43,7 @@ public class TextRangeFactory
         range.ToField = TextGroupFactory.CreateTextGroup(field);
         range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
-        range.ToField.PlaceHolder = Translate.Key("To");
+        range.ToField.PlaceHolder = StringLocalizer["To"];
 
         return range;
     }

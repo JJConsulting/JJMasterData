@@ -93,16 +93,16 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 RunWorker(currentProcess, token);
 
                 if (currentProcess.Error > 0)
-                    currentProcess.Message = Translate.Key("File imported with errors!");
+                    currentProcess.Message = StringLocalizer["File imported with errors!"];
                 else
-                    currentProcess.Message = Translate.Key("File imported successfully!");
+                    currentProcess.Message = StringLocalizer["File imported successfully!"];
             }
             catch (Exception ex)
             {
                 currentProcess.HasError = true;
                 if (ex is OperationCanceledException or ThreadAbortException)
                 {
-                    currentProcess.Message = Translate.Key("Process aborted by user");
+                    currentProcess.Message = StringLocalizer["Process aborted by user"];
                     currentProcess.AddError(currentProcess.Message);
                 }
                 else if (ex is JJMasterDataException)
@@ -112,7 +112,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 }
                 else
                 {
-                    currentProcess.Message = Translate.Key("Unexpected error");
+                    currentProcess.Message = StringLocalizer["Unexpected error"];
                     currentProcess.Message += " ";
                     currentProcess.Message += ExceptionManager.GetMessage(ex);
                     currentProcess.AddError(currentProcess.Message);
@@ -172,7 +172,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             //Ignora conteudo vazio
             if (string.IsNullOrWhiteSpace(line.Replace(SplitChar.ToString(), string.Empty)))
             {
-                currentProcess.AddError(Translate.Key("Empty line ignored"));
+                currentProcess.AddError(StringLocalizer["Empty line ignored"]);
                 currentProcess.Ignore++;
                 continue;
             }
@@ -184,12 +184,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 currentProcess.Error++;
 
                 string error = string.Empty;
-                error += Translate.Key("Invalid number of fields.");
+                error += StringLocalizer["Invalid number of fields."];
                 error += " ";
                 error += StringLocalizer["Expected {0} Received {1}.", listField.Count, cols.Length];
                 currentProcess.AddError(error);
 
-                error += Translate.Key("Click on the [Help] link for more information regarding the file layout.");
+                error += StringLocalizer["Click on the [Help] link for more information regarding the file layout."];
                 throw new JJMasterDataException(error);
             }
 
@@ -200,7 +200,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 string colName1 = string.IsNullOrEmpty(listField[0].Label) ? listField[0].Name : listField[0].Label;
                 if (colName1.Trim().ToLower().Equals(cols[0].Trim().ToLower()))
                 {
-                    currentProcess.AddError(Translate.Key("File header ignored"));
+                    currentProcess.AddError(StringLocalizer["File header ignored"]);
                     currentProcess.Ignore++;
                     continue;
                 }

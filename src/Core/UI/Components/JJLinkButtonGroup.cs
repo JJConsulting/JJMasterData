@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
 
@@ -21,7 +22,9 @@ public class JJLinkButtonGroup : JJBaseView
     public bool ShowAsButton { get; set; }
 
     public string CaretText { get; set; }
-
+    
+    public string MoreActionsText { get; set; }
+    
     internal override HtmlBuilder RenderHtml()
     {
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
@@ -94,7 +97,7 @@ public class JJLinkButtonGroup : JJBaseView
             .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("caret")
-                    .WithToolTip(Translate.Key("More Options"));
+                    .WithToolTip(MoreActionsText ?? "More Options");
             });
             
         return html;

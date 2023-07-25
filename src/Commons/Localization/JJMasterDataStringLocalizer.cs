@@ -45,14 +45,26 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
     {
         get
         {
+            if (name == null)
+                return new LocalizedString(string.Empty,string.Empty);
+            
             var value = GetString(name);
             return new LocalizedString(name, value ?? name, value == null);
         }
     }
 
-    public LocalizedString this[string name, params object[] arguments] => new(name, string.Format(this[name],arguments));
+    public LocalizedString this[string name, params object[] arguments]
+    {
+        get
+        {
+            if (name == null)
+                return new LocalizedString(string.Empty,string.Empty);
+            
+            return new LocalizedString(name, string.Format(this[name], arguments));
+        }
+    }
 
-    
+
     private string GetString(string key)
     {
         if (string.IsNullOrEmpty(key))

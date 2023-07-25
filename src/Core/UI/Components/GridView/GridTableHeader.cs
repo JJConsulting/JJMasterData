@@ -10,16 +10,18 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class GridTableHeader
 {
     private JJGridView GridView { get; }
-
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public GridTableHeader(JJGridView gridView)
     {
         GridView = gridView;
+        StringLocalizer = GridView.StringLocalizer;
     }
 
     public HtmlBuilder GetHtmlElement()
@@ -75,10 +77,10 @@ internal class GridTableHeader
                 {
                     if (!string.IsNullOrEmpty(field.HelpDescription))
                     {
-                        span.WithToolTip(Translate.Key(field.HelpDescription));
+                        span.WithToolTip(field.HelpDescription);
                     }
 
-                    span.AppendText(field.GetTranslatedLabel());
+                    span.AppendText(StringLocalizer[field.Label]);
                 });
             });
 
@@ -120,7 +122,7 @@ internal class GridTableHeader
             {
                 th.AppendText("&nbsp;");
                 th.AppendElement(new JJIcon("fa fa-filter").GetHtmlBuilder()
-                    .WithToolTip(Translate.Key("Applied filter")));
+                    .WithToolTip(StringLocalizer["Applied filter"]));
             }
 
             yield return th;
@@ -134,10 +136,10 @@ internal class GridTableHeader
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
-        .WithToolTip(Translate.Key("Descending order"));
+        .WithToolTip(StringLocalizer["Descending order"]);
 
     private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
-        .WithToolTip(Translate.Key("Ascending order"));
+        .WithToolTip(StringLocalizer["Ascending order"]);
 
     private string GetFieldStyle(FormElementField field)
     {
@@ -196,7 +198,7 @@ internal class GridTableHeader
                 input.WithAttribute("type", "checkbox")
                     .WithNameAndId("jjchk_all")
                     .WithCssClass("form-check-input")
-                    .WithToolTip(Translate.Key("Mark|Unmark all from page"))
+                    .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
                     .WithAttribute("onclick",
                         "$('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();");
             });
@@ -223,7 +225,7 @@ internal class GridTableHeader
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", $"jjview.doUnSelectAll('{GridView.Name}')");
-                        a.AppendText(Translate.Key("Unmark all selected records"));
+                        a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });
                 ul.AppendElementIf(GridView.TotalRecords <= 50000, HtmlTag.Li, li =>

@@ -25,7 +25,7 @@ public class JJSpinner : JJBaseView
             .AppendElementIf(BootstrapHelper.Version != 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("visually-hidden");
-                s.AppendText(Translate.Key("Background Process Loading..."));
+                s.AppendText("Loading...");
 
             });
 

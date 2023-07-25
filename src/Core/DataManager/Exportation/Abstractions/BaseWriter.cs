@@ -21,6 +21,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -40,7 +41,9 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     protected IFieldVisibilityService FieldVisibilityService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
-    
+    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
+        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+
     protected TextFileFactory TextFileFactory { get; } =
         JJService.Provider.GetScopedDependentService<TextFileFactory>();
     
@@ -154,7 +157,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                     _processReporter = new DataExportationReporter();
                     ProcessReporter.UserId = UserId;
                     ProcessReporter.StartDate = DateTime.Now;
-                    ProcessReporter.Message = Translate.Key("Retrieving records...");
+                    ProcessReporter.Message = StringLocalizer["Retrieving records..."];
 
                     Reporter(ProcessReporter);
 
@@ -168,7 +171,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                     ProcessReporter.FilePath = filePath;
 
                     ProcessReporter.EndDate = DateTime.Now;
-                    ProcessReporter.Message = Translate.Key("File generated successfully!");
+                    ProcessReporter.Message = StringLocalizer["File generated successfully!"];
 
                 }
                 catch (Exception ex)
@@ -182,11 +185,11 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                     {
                         case OperationCanceledException:
                         case ThreadAbortException:
-                            ProcessReporter.Message = Translate.Key("Process aborted by the user.");
+                            ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
                             break;
                         case IOException:
                             if (FileIO.IsFileLocked(FolderPath))
-                                ProcessReporter.Message = Translate.Key("File is already being used by another process. Try downloading it from \"Recently generated files\".");
+                                ProcessReporter.Message = StringLocalizer["File is already being used by another process. Try downloading it from \"Recently generated files\"."];
                             else
                                 goto default;
                             break;
@@ -194,7 +197,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                             ProcessReporter.Message = ex.Message;
                             break;
                         default:
-                            ProcessReporter.Message = Translate.Key("Unexpected error") + "\n";
+                            ProcessReporter.Message = StringLocalizer["Unexpected error"] + "\n";
                             ProcessReporter.Message += ExceptionManager.GetMessage(ex);
                             Logger.LogError(ex, "Error at data exportation");
                             break;
@@ -251,7 +254,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         string title;
         if (!string.IsNullOrEmpty(FormElement.Title))
-            title = Translate.Key(FormElement.Title).Trim().ToLower();
+            title = StringLocalizer[FormElement.Title].Value.Trim().ToLower();
         else if (!string.IsNullOrEmpty(FormElement.Name))
             title = FormElement.Name.Trim().ToLower();
         else

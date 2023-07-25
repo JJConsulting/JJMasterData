@@ -14,7 +14,7 @@ public class EntityService : BaseService
         IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }
@@ -28,7 +28,7 @@ public class EntityService : BaseService
         }
 
         if (string.IsNullOrEmpty(formElement.TableName))
-            AddError("TableName", Translate.Key("Required table name field"));
+            AddError("TableName", StringLocalizer["Required table name field"]);
 
     
         if (!string.IsNullOrEmpty(formElement.CustomProcNameGet) &&
@@ -36,7 +36,7 @@ public class EntityService : BaseService
         { 
             if (formElement.CustomProcNameGet.ToLower().Equals(formElement.CustomProcNameSet.ToLower()))
             {
-                AddError("CustomProcNameGet", Translate.Key("Procedure names cannot be identical"));
+                AddError("CustomProcNameGet", StringLocalizer["Procedure names cannot be identical"]);
             }
         }
                 

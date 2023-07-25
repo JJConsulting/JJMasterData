@@ -22,6 +22,7 @@ using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
@@ -40,7 +41,7 @@ internal class ActionManager
     public string ComponentName { get; set; }
 
     internal IEntityRepository EntityRepository => JJService.EntityRepository;
-
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer => JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
     internal IFieldValuesService FieldValuesService => JJService.Provider.GetScopedDependentService<IFieldValuesService>();
     internal JJMasterDataEncryptionService JJMasterDataEncryptionService => JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
     public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
@@ -57,7 +58,7 @@ internal class ActionManager
         var dicRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var formElement = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = formElement.Title;
-        string confirmationMessage = Translate.Key(action.ConfirmationMessage);
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
         string popup = "true";
         int popupSize = (int)elementRedirect.PopupSize;
 
@@ -105,7 +106,7 @@ internal class ActionManager
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         actionMap.FieldName = fieldName;
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = Translate.Key(action.ConfirmationMessage);
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
         int popupSize = (int)action.PopupSize;
         
         var script = new StringBuilder();
@@ -152,7 +153,7 @@ internal class ActionManager
     {
         var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = Translate.Key(action.ConfirmationMessage);
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
 
         string functionSignature;
         if (isPopup)
@@ -253,7 +254,7 @@ internal class ActionManager
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = Translate.Key(action.ConfirmationMessage);
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         var script = new StringBuilder();
         script.Append("jjview.gridAction('");
@@ -320,11 +321,11 @@ internal class ActionManager
                         element.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
                         element.WithAttribute("aria-haspopup", "true");
                         element.WithAttribute("aria-expanded", "false");
-                        element.AppendTextIf(actionContext.PageState is not PageState.List, Translate.Key("More"));
+                        element.AppendTextIf(actionContext.PageState is not PageState.List, StringLocalizer["More"]);
                         element.AppendElement(HtmlTag.Span, span =>
                         {
                             span.WithCssClass("caret");
-                            span.WithToolTip(Translate.Key("More Options"));
+                            span.WithToolTip(StringLocalizer["More Options"]);
                         });
                     });
                 div.AppendElement(HtmlTag.Ul, ul =>
@@ -458,7 +459,7 @@ internal class ActionManager
                 var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)
                 {
-                    string msg = Translate.Key("No lines selected.");
+                    string msg = StringLocalizer["No lines selected."];
                     return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
                 }
 

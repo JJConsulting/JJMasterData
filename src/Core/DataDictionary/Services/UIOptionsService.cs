@@ -2,13 +2,14 @@
 using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class UIOptionsService : BaseService
 {
-    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
-        : base(validationDictionary, dataDictionaryRepository)
+    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }
 
@@ -21,7 +22,7 @@ public class UIOptionsService : BaseService
             var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
-                AddError("EnableMultSelect", Translate.Key("You cannot enable MultiSelect without setting a primary key"));
+                AddError("EnableMultSelect", StringLocalizer["You cannot enable MultiSelect without setting a primary key"]);
             }
         }
 

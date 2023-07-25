@@ -1193,7 +1193,7 @@ public class SqlServerProvider : BaseProvider
             throw new ArgumentNullException(nameof(tableName));
 
         if (!DataAccess.TableExists(tableName))
-            throw new JJMasterDataException(Translate.Key("Table {0} not found", tableName));
+            throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element
         {
@@ -1250,7 +1250,7 @@ public class SqlServerProvider : BaseProvider
             throw new ArgumentNullException(nameof(tableName));
 
         if (!await DataAccess.TableExistsAsync(tableName))
-            throw new JJMasterDataException(Translate.Key("Table {0} not found", tableName));
+            throw new JJMasterDataException($"Table {tableName} not found");
 
         var element = new Element
         {

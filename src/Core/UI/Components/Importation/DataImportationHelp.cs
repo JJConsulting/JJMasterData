@@ -168,13 +168,13 @@ internal class DataImportationHelp
         var text = new StringBuilder();
         if (field.Component == FormComponent.Date)
         {
-            text.Append(Translate.Key($"Format ({Format.DateFormat}) example:"));
+            text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
             text.Append(" ");
             text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
         }
         else if (field.Component == FormComponent.DateTime)
         {
-            text.Append(Translate.Key($"Format ({Format.DateTimeFormat}) example:"));
+            text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
             text.Append(" ");
             text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
         }

@@ -101,7 +101,7 @@ public class JJCollapsePanel : JJBaseView
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
             button.AppendElement(TitleIcon);
             button.AppendTextIf(TitleIcon != null, "&nbsp;");
-            button.AppendText(Translate.Key(Title));
+            button.AppendText(Title);
         });
 
         return h2;
@@ -153,7 +153,7 @@ public class JJCollapsePanel : JJBaseView
                 {
                     a.AppendElement(TitleIcon);
                     a.AppendTextIf(TitleIcon != null, "&nbsp;");
-                    a.AppendText(Translate.Key(Title));
+                    a.AppendText(Title);
                 });
             });
         return panelHeading;

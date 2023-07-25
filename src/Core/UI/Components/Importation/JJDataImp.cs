@@ -177,7 +177,7 @@ public class JJDataImp : JJBaseProcess
                     .WithAttribute("style", "position: relative; height: 80px");
             })
             .AppendText("&nbsp;&nbsp;&nbsp;")
-            .AppendText(Translate.Key("Waiting..."))
+            .AppendText(StringLocalizer["Waiting..."])
             .AppendElement(HtmlTag.Br).AppendElement(HtmlTag.Br)
             .AppendElement(HtmlTag.Div, msg =>
             {
@@ -215,9 +215,9 @@ public class JJDataImp : JJBaseProcess
 
         var btnStop = new JJLinkButton
         {
-            OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{Translate.Key("Stopping Processing...")}');",
+            OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{StringLocalizer["Stopping Processing..."]}');",
             IconClass = IconType.Stop.GetCssClass(),
-            Text = Translate.Key("Stop the import.")
+            Text = StringLocalizer["Stop the import."]
         };
         html.AppendElement(btnStop);
 
@@ -340,7 +340,7 @@ public class JJDataImp : JJBaseProcess
         }
         else
         {
-            dto.Message = Translate.Key("Waiting...");
+            dto.Message = StringLocalizer["Waiting..."];
             dto.StartDate = DateTime.Now.ToDateTimeString();
         }
 

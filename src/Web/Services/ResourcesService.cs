@@ -8,6 +8,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -23,8 +24,10 @@ public class ResourcesService : BaseService
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
         IMemoryCache memoryCache,
-        IOptions<JJMasterDataCommonsOptions> options)
-        : base(validationDictionary, dataDictionaryRepository)
+        IOptions<JJMasterDataCommonsOptions> options,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        )
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         FormViewFactory = formViewFactory;
         MemoryCache = memoryCache;
@@ -99,7 +102,7 @@ public class ResourcesService : BaseService
             e.Values["resourceValue"]!.ToString()!.Contains("'") ||
             e.Values["resourceValue"]!.ToString()!.Contains("\""))
         {
-            e.Errors.Add("Error", Translate.Key("Character {0} not allowed", "'"));
+            e.Errors.Add("Error", "Character \' not allowed");
         }
     }
 

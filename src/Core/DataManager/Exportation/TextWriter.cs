@@ -116,7 +116,7 @@ public class TextWriter : BaseWriter, ITextWriter
             else
                 sw.Write(Delimiter);
 
-            sw.Write(field.GetTranslatedLabel());
+            sw.Write(StringLocalizer[field.Label]);
         }
         sw.WriteLine("");
         sw.Flush();

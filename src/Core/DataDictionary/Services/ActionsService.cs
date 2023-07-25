@@ -16,7 +16,7 @@ public class ActionsService : BaseService
         IValidationDictionary validationDictionary, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IDataDictionaryRepository dataDictionaryRepository) 
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }

@@ -37,7 +37,7 @@ public class JJTextBox : JJBaseControl
             .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)
-            .WithToolTip(Translate.Key(ToolTip))
+            .WithToolTip(ToolTip)
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress", "return jjutil.justNumber(event);")
             .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimalplaces", NumberOfDecimalPlaces.ToString())

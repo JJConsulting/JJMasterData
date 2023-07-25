@@ -126,9 +126,9 @@ public abstract class BaseProvider
         {
             if (!int.TryParse(ret.Value.ToString(), out var nret))
             {
-                string err = Translate.Key("Element");
+                string err = "Element";
                 err += " " + element.Name;
-                err += ": " + Translate.Key("Invalid return of @RET variable in procedure");
+                err += ": " + "Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
 
@@ -208,7 +208,7 @@ public abstract class BaseProvider
             throw new ArgumentNullException(nameof(element));
 
         if (!ValidateOrderByClause(element, orderBy))
-            throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
+            throw new ArgumentException("[order by] clause is not valid");
 
         var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
@@ -228,7 +228,7 @@ public abstract class BaseProvider
             throw new ArgumentNullException(nameof(element));
 
         if (!ValidateOrderByClause(element, orderBy))
-            throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
+            throw new ArgumentException("[order by] clause is not valid");
 
         var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
@@ -247,7 +247,7 @@ public abstract class BaseProvider
             throw new ArgumentNullException(nameof(element));
 
         if (!ValidateOrderByClause(element, orderBy))
-            throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
+            throw new ArgumentException("[order by] clause is not valid");
 
         var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
@@ -320,7 +320,7 @@ public abstract class BaseProvider
             throw new ArgumentNullException(nameof(element));
 
         if (!ValidateOrderByClause(element, orderBy))
-            throw new ArgumentException(Translate.Key("[order by] clause is not valid"));
+            throw new ArgumentException("[order by] clause is not valid");
 
         var plainTextWriter = new PlainTextReader(this,LoggerFactory.CreateLogger<PlainTextReader>());
         plainTextWriter.ShowLogInfo = showLogInfo;
@@ -377,9 +377,9 @@ public abstract class BaseProvider
         {
             if (!int.TryParse(oret.Value.ToString(), out var result))
             {
-                string err = Translate.Key("Element");
+                string err = "Element";
                 err += " " + element.Name;
-                err += ": " + Translate.Key("Invalid return of @RET variable in procedure");
+                err += ": " + "Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
 

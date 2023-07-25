@@ -5,6 +5,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -15,7 +16,9 @@ public class GridSortingConfig
     public FormElement FormElement { get; set; }
     public ComboBoxFactory ComboBoxFactory { get; set; }
     public string Name { get; set; }
-
+    
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    
     public GridSortingConfig(JJGridView grid)
     {
         if (grid == null)
@@ -23,6 +26,7 @@ public class GridSortingConfig
 
         CurrentOrder = grid.CurrentOrder;
         ComboBoxFactory = grid.ComboBoxFactory;
+        StringLocalizer = grid.StringLocalizer;
         FormElement = grid.FormElement;
         Name = grid.Name;
     }
@@ -61,7 +65,7 @@ public class GridSortingConfig
             {
                 div.AppendElement(new JJIcon("text-info fa fa-triangle-exclamation"));
                 div.AppendText("&nbsp;");
-                div.AppendText(Translate.Key("Drag and drop to change order."));
+                div.AppendText(StringLocalizer["Drag and drop to change order."]);
             })
             .AppendElement(HtmlTag.Table, table =>
             {
@@ -75,7 +79,7 @@ public class GridSortingConfig
         return dialog.RenderHtml();
     }
 
-    private static HtmlBuilder GetHtmlHeader()
+    private HtmlBuilder GetHtmlHeader()
     {
         var thead = new HtmlBuilder(HtmlTag.Thead);
         thead.AppendElement(HtmlTag.Tr, tr =>
@@ -87,12 +91,12 @@ public class GridSortingConfig
             });
             tr.AppendElement(HtmlTag.Th, th =>
             {
-                th.AppendText(Translate.Key("Column"));
+                th.AppendText(StringLocalizer["Column"]);
             });
             tr.AppendElement(HtmlTag.Th, th =>
             {
                 th.WithAttribute("style", "width:220px");
-                th.AppendText(Translate.Key("Order"));
+                th.AppendText(StringLocalizer["Order"]);
             });
         });
 
@@ -109,9 +113,9 @@ public class GridSortingConfig
         comboBox.DataItem.ShowImageLegend = true;
         comboBox.DataItem.Items = new List<DataItemValue>
         {
-            new("A", Translate.Key("Ascendant"), IconType.SortAmountAsc, null),
-            new("D", Translate.Key("Descendant"), IconType.SortAmountDesc, null),
-            new("N", Translate.Key("No Order"), IconType.Genderless, null)
+            new("A", StringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
+            new("D", StringLocalizer["Descendant"], IconType.SortAmountDesc, null),
+            new("N", StringLocalizer["No Order"], IconType.Genderless, null)
         };
 
         var sortList = GetSortList();
@@ -145,7 +149,7 @@ public class GridSortingConfig
                 });
                 tr.AppendElement(HtmlTag.Td, td =>
                 {
-                    td.AppendText(Translate.Key(item.Label ?? item.Name));
+                    td.AppendText(StringLocalizer[item.Label ?? item.Name]);
                 });
                 tr.AppendElement(HtmlTag.Td, td =>
                 {

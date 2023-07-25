@@ -80,7 +80,7 @@ public class JJTabNav : JJBaseView
                        .WithDataAttribute("toggle", "tab")
                        .WithCssClass("jj-tab-link nav-link")
                        .WithCssClassIf(SelectedTabIndex == index && BootstrapHelper.Version > 3, "active")
-                       .AppendText(Translate.Key(nav.Title));
+                       .AppendText(nav.Title);
                   });
             });
         }

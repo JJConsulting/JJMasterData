@@ -7,17 +7,13 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
 public sealed class BackgroundTask : IBackgroundTask
 {
-    private static BackgroundTask _instance;
-
-    public static BackgroundTask GetInstance()
-    {
-        return _instance ??= new BackgroundTask();
-    }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private static Lazy<List<TaskWrapper>> _taskList;
     internal static List<TaskWrapper> TaskList
@@ -35,10 +31,15 @@ public sealed class BackgroundTask : IBackgroundTask
         return TaskList.Find(x => x.Key.Equals(key));
     }
 
+    public BackgroundTask(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    {
+        StringLocalizer = stringLocalizer;
+    }
+    
     public void Run(string key, IBackgroundTaskWorker worker)
     {
         if (IsRunning(key))
-            throw new JJMasterDataException(Translate.Key("Background task is already running."));
+            throw new JJMasterDataException("Background task is already running.");
 
         var taskWrapper = new TaskWrapper
         {
@@ -51,7 +52,7 @@ public sealed class BackgroundTask : IBackgroundTask
             TaskList.Remove(olderPipeline);
 
         //Workaround: Interfaces are not a good idea with Hangfire.
-        var taskTrigger = new TaskTrigger();
+        var taskTrigger = new TaskTrigger(this, StringLocalizer);
         taskWrapper.JobId = taskTrigger.RunInBackground(key, worker);
 
         TaskList.Add(taskWrapper);

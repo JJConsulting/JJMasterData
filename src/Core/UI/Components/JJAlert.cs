@@ -41,7 +41,7 @@ public class JJAlert : JJBaseView
             html.AppendElement(new JJIcon(Icon.Value));
 
         if (!string.IsNullOrEmpty(Title))
-            html.AppendElement(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Translate.Key(Title)}"));
+            html.AppendElement(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Title}"));
 
         if (Messages == null) 
             return html;
@@ -49,7 +49,7 @@ public class JJAlert : JJBaseView
         for (var index = 0; index < Messages.Count; index++)
         {
             var message = Messages[index];
-            html.AppendText(Translate.Key(message));
+            html.AppendText(message);
             
             if(index > 0) 
                 html.AppendElement(HtmlTag.Br);
@@ -71,7 +71,7 @@ public class JJAlert : JJBaseView
     {
         var btn = new HtmlBuilder(HtmlTag.Button)
             .WithAttribute("type", "button")
-            .WithAttribute("aria-label", Translate.Key("Close"))
+            .WithAttribute("aria-label", "Close")
             .WithDataAttribute("dismiss", dimissValue)
             .WithCssClass(BootstrapHelper.Close)
             .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>

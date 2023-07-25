@@ -16,6 +16,7 @@ using JJMasterData.WebApi.Models;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -28,6 +29,7 @@ public class MasterApiService
     private IDataItemService DataItemService { get; }
     private IFormService FormService { get; }
     private IFieldsService FieldsService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
     private readonly IFormEventResolver? _formEventResolver;
@@ -42,7 +44,9 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFieldsService fieldsService,
-        IFormEventResolver? formEventResolver)
+        IFormEventResolver? formEventResolver,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        )
     {
         _httpContext = httpContextAccessor.HttpContext!;
         AccountService = accountService;
@@ -51,6 +55,7 @@ public class MasterApiService
         DataItemService = dataItemService;
         FormService = formService;
         FieldsService = fieldsService;
+        StringLocalizer = stringLocalizer;
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
         _formEventResolver = formEventResolver;
@@ -70,7 +75,7 @@ public class MasterApiService
         string text = _entityRepository.GetListFieldsAsText(formElement, filters as IDictionary, orderby, regporpag,
             pag, showLogInfo);
         if (string.IsNullOrEmpty(text))
-            throw new KeyNotFoundException(Translate.Key("No records found"));
+            throw new KeyNotFoundException("No records found");
 
         return text;
     }
@@ -90,7 +95,7 @@ public class MasterApiService
         var dt = _entityRepository.GetDataTable(element, filters as IDictionary, orderby, regporpag, pag, ref total);
 
         if (dt == null || dt.Rows.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("No records found"));
+            throw new KeyNotFoundException("No records found");
 
         var ret = new MasterApiListResponse
         {
@@ -113,7 +118,7 @@ public class MasterApiService
         var fields = _entityRepository.GetFields(element, filters as IDictionary);
 
         if (fields == null || fields.Count == 0)
-            throw new KeyNotFoundException(Translate.Key("No records found"));
+            throw new KeyNotFoundException("No records found");
 
         //We transform to dictionary to preserve the order of fields in parse
         var listRet = new Dictionary<string, object>();
@@ -149,7 +154,7 @@ public class MasterApiService
         string elementName)
     {
         if (paramsList == null)
-            throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
+            throw new JJMasterDataException("Invalid parameter or not a list");
 
         var dictionary = GetDataDictionary(elementName);
         if (!dictionary.ApiOptions.EnableUpdate)
@@ -172,7 +177,7 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         if (paramsList == null)
-            throw new JJMasterDataException(Translate.Key("Invalid parameter or not a list"));
+            throw new JJMasterDataException("Invalid parameter or not a list");
 
 
         foreach (var values in paramsList)
@@ -194,7 +199,7 @@ public class MasterApiService
                 ret = new ResponseLetter
                 {
                     Status = (int)HttpStatusCode.Created,
-                    Message = Translate.Key("Record added successfully"),
+                    Message = StringLocalizer["Record added successfully"],
                     Data = GetDiff(apiValues, values, metadataApiOptions)
                 };
             }
@@ -221,12 +226,12 @@ public class MasterApiService
             if (formResult.IsValid)
             {
                 if (formResult.NumberOfRowsAffected == 0)
-                    throw new KeyNotFoundException(Translate.Key("No records found"));
+                    throw new KeyNotFoundException("No records found");
 
                 ret = new ResponseLetter
                 {
                     Status = (int)HttpStatusCode.OK,
-                    Message = Translate.Key("Record updated successfully"),
+                    Message = StringLocalizer["Record updated successfully"],
                     Data = GetDiff(apiValues, values, formElement.ApiOptions)
                 };
             }
@@ -257,12 +262,12 @@ public class MasterApiService
                 if (formResult.Result == CommandOperation.Insert)
                 {
                     ret.Status = (int)HttpStatusCode.Created;
-                    ret.Message = Translate.Key("Record added successfully");
+                    ret.Message = StringLocalizer["Record added successfully"];
                 }
                 else
                 {
                     ret.Status = (int)HttpStatusCode.OK;
-                    ret.Message = Translate.Key("Record updated successfully");
+                    ret.Message = StringLocalizer["Record updated successfully"];
                 }
 
                 ret.Data = GetDiff(apiValues, values, metadataApiOptions);
@@ -286,13 +291,13 @@ public class MasterApiService
         try
         {
             if (values == null || values.Count == 0)
-                throw new ArgumentException(Translate.Key("Invalid parameter or not found"), nameof(values));
+                throw new ArgumentException("Invalid parameter or not found", nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
             var currentValues = _entityRepository.GetDictionaryAsync(formElement, pkValues).GetAwaiter().GetResult();
             if (currentValues == null)
-                throw new KeyNotFoundException(Translate.Key("No records found"));
+                throw new KeyNotFoundException("No records found");
 
             DataHelper.CopyIntoDictionary(ref currentValues, parsedValues, true);
             ret = Update(formElement, currentValues);
@@ -322,12 +327,12 @@ public class MasterApiService
         if (formResult.IsValid)
         {
             if (formResult.NumberOfRowsAffected == 0)
-                throw new KeyNotFoundException(Translate.Key("No records found"));
+                throw new KeyNotFoundException("No records found");
 
             return new ResponseLetter
             {
                 Status = (int)HttpStatusCode.NoContent,
-                Message = Translate.Key("Record successfully deleted")
+                Message = StringLocalizer["Record successfully deleted"]
             };
         }
 
@@ -435,7 +440,7 @@ public class MasterApiService
             if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn]!.ToString()))
             {
                 throw new UnauthorizedAccessException(
-                    Translate.Key("Access denied to change user filter on {0}", formElement.Name));
+                    "Access denied to change user filter on {formElement.Name}");
             }
         }
 
@@ -508,7 +513,7 @@ public class MasterApiService
         var letter = new ResponseLetter
         {
             Status = 400,
-            Message = Translate.Key("Invalid data"),
+            Message = StringLocalizer["Invalid data"],
             ValidationList = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase)
         };
 

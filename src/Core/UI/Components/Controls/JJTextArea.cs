@@ -3,15 +3,18 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJTextArea : JJBaseControl
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IHttpContext httpContext) : base(httpContext)
+    public JJTextArea(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpContext)
     {
+        StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");
         Rows = 5;
     }
@@ -25,8 +28,8 @@ public class JJTextArea : JJBaseControl
             .WithToolTip(ToolTip)
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("cols", "20")
-            .WithAttribute("strvalid", Translate.Key("Maximum limit of {0} characters!"))
-            .WithAttribute("strchars", Translate.Key("({0} characters remaining)"))
+            .WithAttribute("strvalid", StringLocalizer["Maximum limit of {0} characters!"])
+            .WithAttribute("strchars", StringLocalizer["({0} characters remaining)"])
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled")

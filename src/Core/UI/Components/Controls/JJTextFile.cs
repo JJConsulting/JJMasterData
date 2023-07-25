@@ -148,7 +148,7 @@ public class JJTextFile : JJBaseControl
         else
             title = title.Replace('\'', '`').Replace('\"', ' ');
 
-        title = Translate.Key(title);
+        title = StringLocalizer[title];
         return $"jjview.openUploadForm('{Name}','{title}','{value}');";
     }
 
@@ -161,7 +161,7 @@ public class JJTextFile : JJBaseControl
         string json = EncryptionService.DecryptStringWithUrlDecode(uploadvalues);
         var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
         if (parms == null)
-            throw new JJMasterDataException(Translate.Key("Invalid parameters when opening file upload"));
+            throw new JJMasterDataException("Invalid parameters when opening file upload");
 
         PageState = parms.PageState;
         Enabled = parms.Enable;
@@ -291,7 +291,7 @@ public class JJTextFile : JJBaseControl
 
         var btnGroup = new JJLinkButtonGroup
         {
-            CaretText = $"{files.Length}&nbsp;{Translate.Key("Files")}"
+            CaretText = $"{files.Length}&nbsp;{StringLocalizer["Files"]}"
         };
 
         foreach (var filename in files)

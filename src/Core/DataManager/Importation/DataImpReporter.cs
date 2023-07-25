@@ -49,7 +49,7 @@ public class DataImpReporter : ProgressReporter
 
     public void AddError(string value)
     {
-        ErrorLog.Append(Translate.Key("Row:"));
+        ErrorLog.Append("Row:");
         ErrorLog.Append(" ");
         ErrorLog.AppendLine(TotalProcessed.ToString());
         ErrorLog.Append(value);

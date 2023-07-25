@@ -1,14 +1,16 @@
 ﻿using JJMasterData.Commons.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService : BaseService
 {
-    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
-        : base(validationDictionary, dataDictionaryRepository)
+    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }
 

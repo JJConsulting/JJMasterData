@@ -8,8 +8,11 @@ public class ApiService : BaseService
 {
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public ApiService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository)
+    public ApiService(
+        IValidationDictionary validationDictionary, 
+        IDataDictionaryRepository dataDictionaryRepository, 
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }

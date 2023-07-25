@@ -108,7 +108,7 @@ public class GridActions
         }
         else
         {
-            throw new ArgumentException(Translate.Key("Invalid Action"));
+            throw new ArgumentException("Invalid Action");
         }
     }
 
@@ -181,7 +181,7 @@ public class GridActions
         }
         else
         {
-            throw new ArgumentException(Translate.Key("Invalid Action"));
+            throw new ArgumentException("Invalid Action");
         }
     }
 
@@ -197,7 +197,7 @@ public class GridActions
             throw new ArgumentNullException(nameof(action));
 
         if (string.IsNullOrEmpty(action.Name))
-            throw new ArgumentException(Translate.Key("Property name action is not valid"));
+            throw new ArgumentException("Property name action is not valid");
     }
 
     public BasicAction Get(string name)

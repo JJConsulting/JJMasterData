@@ -7,12 +7,14 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataExportationSettings
 {
     private JJDataExp DataExportation { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
@@ -22,6 +24,7 @@ internal class DataExportationSettings
     public DataExportationSettings(JJDataExp dataExportation)
     {
         DataExportation = dataExportation;
+        StringLocalizer = dataExportation.StringLocalizer;
     }
 
     internal HtmlBuilder GetHtmlElement()
@@ -41,7 +44,7 @@ internal class DataExportationSettings
                 
                 var btnOk = new JJLinkButton
                 {
-                    Text = Translate.Key("Export"),
+                    Text = StringLocalizer["Export"],
                     IconClass = "fa fa-check",
                     ShowAsButton = true,
                     OnClientClick = onClientClick
@@ -98,7 +101,7 @@ internal class DataExportationSettings
                         IconClass = "text-info fa fa-info-circle"
                     });
                     label.AppendText(
-                        "&nbsp;" + Translate.Key("Filters performed in the previous screen will be considered in the export"));
+                        "&nbsp;" + StringLocalizer["Filters performed in the previous screen will be considered in the export"]);
                 });
             });
 
@@ -116,7 +119,7 @@ internal class DataExportationSettings
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.FileName}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
-                label.AppendText(Translate.Key("Export to"));
+                label.AppendText(StringLocalizer["Export to"]);
             })
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -165,7 +168,7 @@ internal class DataExportationSettings
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.TableOrientation}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
-                label.AppendText(Translate.Key("Orientation"));
+                label.AppendText(StringLocalizer["Orientation"]);
             })
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -198,7 +201,7 @@ internal class DataExportationSettings
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportAll}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
-                label.AppendText(Translate.Key("Fields"));
+                label.AppendText(StringLocalizer["Fields"]);
             })
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -211,12 +214,12 @@ internal class DataExportationSettings
                     {
                         option.WithValue("1");
                         option.WithAttribute("selected", "selected");
-                        option.AppendText(Translate.Key("All"));
+                        option.AppendText(StringLocalizer["All"]);
                     });
                     select.AppendElement(HtmlTag.Option, option =>
                     {
                         option.WithValue("2");
-                        option.AppendText(Translate.Key("Only the fields visible on the screen"));
+                        option.AppendText(StringLocalizer["Only the fields visible on the screen"]);
                     });
                 });
             });
@@ -232,7 +235,7 @@ internal class DataExportationSettings
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
-                label.AppendText(Translate.Key("Delimiter"));
+                label.AppendText(StringLocalizer["Delimiter"]);
             })
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -245,17 +248,17 @@ internal class DataExportationSettings
                     {
                         option.WithValue(";");
                         option.WithAttribute("selected", "selected");
-                        option.AppendText(Translate.Key("Semicolon (;)"));
+                        option.AppendText(StringLocalizer["Semicolon (;)"]);
                     });
                     select.AppendElement(HtmlTag.Option, option =>
                     {
                         option.WithValue(",");
-                        option.AppendText(Translate.Key("Comma (,)"));
+                        option.AppendText(StringLocalizer["Comma (,)"]);
                     });
                     select.AppendElement(HtmlTag.Option, option =>
                     {
                         option.WithValue("|");
-                        option.AppendText(Translate.Key("Pipe (|)"));
+                        option.AppendText(StringLocalizer["Pipe (|)"]);
                     });
                 });
             });
@@ -270,7 +273,7 @@ internal class DataExportationSettings
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
                 label.WithCssClass($"{_bsLabel} col-sm-4");
-                label.AppendText(Translate.Key("Export first line as title"));
+                label.AppendText(StringLocalizer["Export first line as title"]);
             })
             .AppendElement(HtmlTag.Div, div =>
             {
@@ -282,15 +285,15 @@ internal class DataExportationSettings
                     input.WithCssClass("form-control");
                     input.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
                     input.WithAttribute("data-toggle", "toggle");
-                    input.WithAttribute("data-on", Translate.Key("Yes"));
-                    input.WithAttribute("data-off", Translate.Key("No"));
+                    input.WithAttribute("data-on", StringLocalizer["Yes"]);
+                    input.WithAttribute("data-off", StringLocalizer["No"]);
                     if (DataExportation.ExportOptions.ExportFirstLine)
                         input.WithAttribute("checked", "checked");
                 });
             });
     }
 
-    private static JJAlert GetTooManyRecordsAlert(string name)
+    private JJAlert GetTooManyRecordsAlert(string name)
     {
         var alert = new JJAlert
         {
@@ -302,10 +305,10 @@ internal class DataExportationSettings
             Color = PanelColor.Warning,
             Messages =
             {
-                Translate.Key(
-                    "You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."),
-                Translate.Key(
-                    "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator.")
+                StringLocalizer[
+                    "You are trying to export more than 50,000 records, this can cause system overhead and slowdowns."],
+                StringLocalizer[
+                    "Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator."]
             }
         };
         alert.SetAttr("style", "display:none;");
@@ -320,7 +323,7 @@ internal class DataExportationSettings
             Name = "exportCollapse",
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
-            Title = Translate.Key("Recently generated files") + $" ({files.Count})",
+            Title = StringLocalizer["Recently generated files"] + $" ({files.Count})",
             HtmlBuilderContent = GetLastFilesHtmlElement(files)
         };
 
@@ -330,7 +333,7 @@ internal class DataExportationSettings
     private HtmlBuilder GetLastFilesHtmlElement(List<FileInfo> files)
     {
         if (files == null || files.Count == 0)
-            return new HtmlBuilder(Translate.Key("No recently generated files."));
+            return new HtmlBuilder(StringLocalizer["No recently generated files."]);
 
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (var file in files)

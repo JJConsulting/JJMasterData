@@ -189,7 +189,7 @@ public class JJSearchBox : JJBaseControl
     {
         Enabled = true;
         TriggerLength = 1;
-        PlaceHolder = Translate.Key("Search...");
+        PlaceHolder = "Search...";
         NumberOfItems = 10;
         ScrollBar = false;
         AutoReloadFormFields = true;
@@ -255,7 +255,7 @@ public class JJSearchBox : JJBaseControl
     private HtmlBuilder GetSearchBoxHtml()
     {
         if (DataItem == null)
-            throw new ArgumentException(Translate.Key("[DataItem] property not set"), Name);
+            throw new ArgumentException("[DataItem] property not set");
 
         var div = new HtmlBuilder(HtmlTag.Div)
             .AppendElement(HtmlTag.Input, input =>

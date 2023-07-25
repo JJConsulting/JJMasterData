@@ -8,6 +8,7 @@ using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Configuration.Options.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Services;
 
@@ -19,10 +20,11 @@ public class OptionsService : BaseService
 
     public OptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
         IWritableOptions<JJMasterDataCommonsOptions>? masterDataWritableOptions = null,
         IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
         ConnectionStringsWritableOptions = connectionStringsWritableOptions;
@@ -71,7 +73,7 @@ public class OptionsService : BaseService
 
         if (!viewModel.PathExists)
             AddError(nameof(OptionsViewModel.FilePath),
-                Translate.Key("{0} does not exists.", viewModel.FilePath ?? "File path"));
+                StringLocalizer["{0} does not exists.", viewModel.FilePath ?? "File path"]);
 
         if (!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
             AddError(nameof(OptionsViewModel.ConnectionString), connectionResult.ErrorMessage);
@@ -91,19 +93,19 @@ public class OptionsService : BaseService
                 GetWritableOptionsErrorMessage());
     }
 
-    private static string GetWritableOptionsErrorMessage()
+    private string GetWritableOptionsErrorMessage()
     {
         var message = new StringBuilder();
-        message.AppendLine(Translate.Key(
+        message.AppendLine(StringLocalizer[
             "You cannot save your options because they don't use <a href=\"{0}\">IWritableOptions.</a>",
             "https://portal.jjconsulting.com.br/jjdoc/" +
-            "lib/JJMasterData.Web.Models.Abstractions.IWritableOptions.html"));
-        message.AppendLine(Translate.Key(
+            "lib/JJMasterData.Web.Models.Abstractions.IWritableOptions.html"]);
+        message.AppendLine(StringLocalizer[
             "You can manually inject them or use the " +
             "<a href=\"{0}\">builder.Services.AddJJMasterData(IConfiguration configuration)</a> overload.",
             "https://portal.jjconsulting.com.br/jjdoc/" +
             "lib/JJMasterData.Web.Extensions.ServiceCollectionExtensions.html" +
-            "#JJMasterData_Web_Extensions_ServiceCollectionExtensions_AddJJMasterDataWeb_IServiceCollection_IConfiguration"));
+            "#JJMasterData_Web_Extensions_ServiceCollectionExtensions_AddJJMasterDataWeb_IServiceCollection_IConfiguration"]);
         return message.ToString();
     }
 

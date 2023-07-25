@@ -123,7 +123,7 @@ public class JJLinkButton : JJBaseView
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
-        html.WithToolTip(Translate.Key(ToolTip));
+        html.WithToolTip(ToolTip);
         html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
         html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");
@@ -134,7 +134,7 @@ public class JJLinkButton : JJBaseView
         if (!string.IsNullOrEmpty(Text))
             html.AppendElement(HtmlTag.Span, s =>
                 {
-                    s.AppendText("&nbsp;" + Translate.Key(Text));
+                    s.AppendText("&nbsp;" + Text);
                 });
 
         if (_spinner != null)

@@ -16,7 +16,7 @@ public class FieldService : BaseService
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }
@@ -98,7 +98,7 @@ public class FieldService : BaseService
         if (!string.IsNullOrEmpty(field.Name) && !field.Name.Equals(originalName))
         {
             if (formElement.Fields.Contains(field.Name))
-                AddError(nameof(field.Name), Translate.Key("Name of field already exists"));
+                AddError(nameof(field.Name), StringLocalizer["Name of field already exists"]);
         }
 
         ValidateExpressions(field);
@@ -106,21 +106,21 @@ public class FieldService : BaseService
         if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
         {
             if (field.Size <= 0)
-                AddError(nameof(field.Size), Translate.Key("Invalid [Size] field"));
+                AddError(nameof(field.Size), StringLocalizer["Invalid [Size] field"]);
         }
         else
         {
             if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
             {
                 AddError(nameof(field.Filter.Type),
-                    Translate.Key("MULTVALUES filters are only allowed for text type fields"));
+                    StringLocalizer["MULTVALUES filters are only allowed for text type fields"]);
             }
         }
 
         if (field.AutoNum && field.DataType != FieldType.Int)
             AddError(nameof(field.AutoNum),
-                Translate.Key(
-                    "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"));
+                StringLocalizer[
+                    "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"]);
 
         if (field.DataType != FieldType.Varchar && 
             field.DataType != FieldType.NVarchar && 
@@ -130,7 +130,7 @@ public class FieldService : BaseService
             if (field.Filter.Type is FilterMode.Contain)
             {
                 AddError(nameof(field.Filter.Type),
-                    Translate.Key("Only fields of type VarChar or Text can be of type Contains."));
+                    StringLocalizer["Only fields of type VarChar or Text can be of type Contains."]);
             }
         }
 
@@ -141,13 +141,13 @@ public class FieldService : BaseService
                 if (field.DataType != FieldType.Float)
                 {
                     AddError(nameof(field.DataType),
-                        Translate.Key("The field [NumberOfDecimalPlaces] cannot be defined with the type ") +
+                        StringLocalizer["The field [NumberOfDecimalPlaces] cannot be defined with the type "] +
                         field.DataType);
                 }
 
                 if (field.IsPk)
                     AddError(nameof(field.DataType),
-                        Translate.Key("The primary key field must not contain [NumberOfDecimalPlaces]"));
+                        StringLocalizer["The primary key field must not contain [NumberOfDecimalPlaces]"]);
             }
             else
             {
@@ -169,25 +169,25 @@ public class FieldService : BaseService
     private void ValidateExpressions(FormElementField field)
     {
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
-            AddError(nameof(field.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
+            AddError(nameof(field.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
         else if (!ValidateExpression(field.VisibleExpression, "val:", "exp:"))
-            AddError(nameof(field.VisibleExpression), Translate.Key("Invalid [VisibleExpression] field"));
+            AddError(nameof(field.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(field.EnableExpression))
-            AddError(nameof(field.EnableExpression), Translate.Key("Required [EnableExpression] field"));
+            AddError(nameof(field.EnableExpression), StringLocalizer["Required [EnableExpression] field"]);
         else if (!ValidateExpression(field.EnableExpression, "val:", "exp:"))
-            AddError(nameof(field.EnableExpression), Translate.Key("Invalid [EnableExpression] field"));
+            AddError(nameof(field.EnableExpression), StringLocalizer["Invalid [EnableExpression] field"]);
 
         if (!string.IsNullOrEmpty(field.DefaultValue))
         {
             if (!ValidateExpression(field.DefaultValue, "val:", "exp:", "sql:", "protheus:"))
-                AddError(nameof(field.DefaultValue), Translate.Key("Invalid [DefaultValue] field"));
+                AddError(nameof(field.DefaultValue), StringLocalizer["Invalid [DefaultValue] field"]);
         }
 
         if (!string.IsNullOrEmpty(field.TriggerExpression))
         {
             if (!ValidateExpression(field.TriggerExpression, "val:", "exp:", "sql:", "protheus:"))
-                AddError(nameof(field.TriggerExpression), Translate.Key("Invalid [TriggerExpression] field"));
+                AddError(nameof(field.TriggerExpression), StringLocalizer["Invalid [TriggerExpression] field"]);
         }
     }
 
@@ -195,7 +195,7 @@ public class FieldService : BaseService
     {
         if (data == null)
         {
-            AddError("DataItem", Translate.Key("Undefined font settings"));
+            AddError("DataItem", StringLocalizer["Undefined font settings"]);
         }
 
         switch (data!.DataItemType)
@@ -203,7 +203,7 @@ public class FieldService : BaseService
             case DataItemType.SqlCommand:
             {
                 if (string.IsNullOrEmpty(data.Command.Sql))
-                    AddError("Command.Sql", Translate.Key("[Field Command.Sql] required"));
+                    AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
                 if (data.ReplaceTextOnGrid && !data.Command!.Sql!.Contains("{search_id}"))
                 {
@@ -226,7 +226,7 @@ public class FieldService : BaseService
     {
         if (itens == null || itens.Count == 0)
         {
-            AddError("DataItem", Translate.Key("Item list not defined"));
+            AddError("DataItem", StringLocalizer["Item list not defined"]);
         }
 
         if (itens != null)
@@ -245,32 +245,32 @@ public class FieldService : BaseService
     {
         if (data == null)
         {
-            AddError("ElementMap", Translate.Key("Undefined mapping settings"));
+            AddError("ElementMap", StringLocalizer["Undefined mapping settings"]);
         }
 
         if (string.IsNullOrEmpty(data!.ElementName))
-            AddError(nameof(data.ElementName), Translate.Key("Required field [ElementName]"));
+            AddError(nameof(data.ElementName), StringLocalizer["Required field [ElementName]"]);
     }
 
     private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
     {
         if (dataFile == null)
         {
-            AddError("DataFile", Translate.Key("Undefined file settings"));
+            AddError("DataFile", StringLocalizer["Undefined file settings"]);
         }
 
         if (dataBehavior == FieldBehavior.Virtual)
-            AddError("DataFile", Translate.Key("Fields of type FILE cannot be virtual"));
+            AddError("DataFile", StringLocalizer["Fields of type FILE cannot be virtual"]);
 
         if (string.IsNullOrEmpty(dataFile?.FolderPath))
-            AddError(nameof(dataFile.FolderPath), Translate.Key($"Field [{nameof(dataFile.FolderPath)}] required"));
+            AddError(nameof(dataFile.FolderPath), StringLocalizer["Field [{nameof(dataFile.FolderPath)}] required"]);
 
         if (string.IsNullOrEmpty(dataFile?.AllowedTypes))
-            AddError(nameof(dataFile.AllowedTypes), Translate.Key("Required [AllowedTypes] field"));
+            AddError(nameof(dataFile.AllowedTypes), StringLocalizer["Required [AllowedTypes] field"]);
 
         if (dataFile!.MultipleFile & dataFile.ExportAsLink)
             AddError(nameof(dataFile.ExportAsLink),
-                Translate.Key("The [ExportAsLink] field cannot be enabled with [MultipleFile]"));
+                StringLocalizer["The [ExportAsLink] field cannot be enabled with [MultipleFile]"]);
     }
 
     public bool SortFields(string elementName, string[] orderFields)
@@ -292,7 +292,7 @@ public class FieldService : BaseService
         var elementMap = field.DataItem!.ElementMap;
 
         if (string.IsNullOrEmpty(mapFilter.FieldName))
-            AddError(nameof(mapFilter.FieldName), Translate.Key("Required filter field"));
+            AddError(nameof(mapFilter.FieldName), StringLocalizer["Required filter field"]);
 
         if (!string.IsNullOrEmpty(mapFilter.ExpressionValue) &&
             !mapFilter.ExpressionValue.Contains("val:") &&
@@ -300,7 +300,7 @@ public class FieldService : BaseService
             !mapFilter.ExpressionValue.Contains("sql:") &&
             !mapFilter.ExpressionValue.Contains("protheus:"))
         {
-            AddError(nameof(mapFilter.ExpressionValue), Translate.Key("Invalid filter field"));
+            AddError(nameof(mapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
         if (string.IsNullOrEmpty(elementMap.FieldKey))
@@ -364,7 +364,7 @@ public class FieldService : BaseService
     public Dictionary<string, string> GetElementFieldList(FormElementField currentField)
     {
         var dicFields = new Dictionary<string, string>();
-        dicFields.Add(string.Empty, Translate.Key("--Select--"));
+        dicFields.Add(string.Empty, StringLocalizer["--Select--"]);
 
         var map = currentField.DataItem!.ElementMap;
         if (string.IsNullOrEmpty(map.ElementName))
@@ -388,7 +388,7 @@ public class FieldService : BaseService
 
         if (formElement.Fields.Contains(newField.Name))
         {
-            AddError(newField.Name, Translate.Key("Name of field already exists"));
+            AddError(newField.Name, StringLocalizer["Name of field already exists"]);
             return IsValid;
         }
 

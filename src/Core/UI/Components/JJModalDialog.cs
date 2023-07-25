@@ -70,7 +70,7 @@ public class JJModalDialog : JJBaseView
             .AppendElement(HtmlTag.H4, h4 =>
             {
                 h4.WithCssClass("modal-title")
-                  .AppendText(Translate.Key(Title));
+                  .AppendText(Title);
             })
             .AppendElementIf(BootstrapHelper.Version > 3,()=> btn);
 

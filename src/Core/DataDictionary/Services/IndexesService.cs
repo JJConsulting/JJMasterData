@@ -1,13 +1,17 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class IndexesService : BaseService
 {
-    public IndexesService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
-        : base(validationDictionary, dataDictionaryRepository)
+    public IndexesService(
+        IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }
 
@@ -37,7 +41,7 @@ public class IndexesService : BaseService
     public bool Validate(ElementIndex elementIndext)
     {
         if (elementIndext.Columns == null || elementIndext.Columns.Count == 0)
-            AddError("", Translate.Key("Select a field to compose the index"));
+            AddError("", StringLocalizer["Select a field to compose the index"]);
 
         return IsValid;
     }
