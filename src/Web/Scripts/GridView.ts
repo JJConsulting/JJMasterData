@@ -34,6 +34,17 @@
         document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
+    
+    //todo
+    static selectAllRows(componentName, rows) {
+        const values = rows.split(",");
+        $(".jjselect input").not(":disabled").prop("checked", true);
+        $("#selectedrows_" + componentName).val(values);
+
+        const selectedText = $("#selectedtext_" + componentName);
+        var promptStr = selectedText.attr("paramSelStr").replace("{0}", values.length.toString());
+        selectedText.text(promptStr);
+    }
 
     static refreshGrid(componentName, url) {
         const form = document.querySelector("form");

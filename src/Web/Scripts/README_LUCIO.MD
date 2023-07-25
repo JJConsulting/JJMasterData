@@ -1,2 +1,0 @@
-# Arquivos com letra maiuscula *quase* ou não possuem dependência no jQuery e só funcionam em rotas externas ou não dependem de rotas.
-# Quando matarmos do sistema legado todas rotas internas, podemos matar os arquivos minusculos.

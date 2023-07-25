@@ -63,7 +63,7 @@
     });
 
     JJTextArea.setup();
-    JJSearchBox.setup();
+    SearchBox.setup();
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();

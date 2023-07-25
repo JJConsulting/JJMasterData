@@ -56,13 +56,26 @@ public class GridViewScriptHelper
         return $"jjview.doRefresh('{name}', {enableAjax})";
     }
 
-    public  string GetFilterScript(JJGridView gridView)
+    public string GetFilterScript(JJGridView gridView)
     {
         string name = gridView.Name;
         if (gridView.IsExternalRoute)
         {
             var url = GetUrl(gridView.FormElement.Name);
             return $"GridView.filter('{name}', '{url}')";
+        }
+        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        return $"jjview.doFilter('{name}','{enableAjax}')";
+    }
+    
+    //todo
+    public string GetSelectAllScript(JJGridView gridView)
+    {
+        string name = gridView.Name;
+        if (gridView.IsExternalRoute)
+        {
+            var url = GetUrl(gridView.FormElement.Name);
+            return $"GridView.selectAll('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doFilter('{name}','{enableAjax}')";

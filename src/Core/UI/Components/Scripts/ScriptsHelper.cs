@@ -1,21 +1,31 @@
+using System;
+
 namespace JJMasterData.Core.Web.Components.Scripts;
 
 public class ScriptsHelper
 {
-    public DataPanelScriptHelper DataPanelScriptHelper { get; }
-    public FormViewScriptHelper FormViewScriptHelper { get; }
-    public GridViewScriptHelper GridViewScriptHelper { get; }
-    public DataExportationScriptHelper DataExportationScriptHelper { get; }
+    private readonly Lazy<DataPanelScriptHelper> _dataPanelScriptHelper;
+    private readonly Lazy<FormViewScriptHelper> _formViewScriptHelper;
+    private readonly Lazy<GridViewScriptHelper> _gridViewScriptHelper;
+    private readonly Lazy<DataExportationScriptHelper> _dataExportationScriptHelper;
+
+    public DataPanelScriptHelper DataPanelScriptHelper => _dataPanelScriptHelper.Value;
+
+    public FormViewScriptHelper FormViewScriptHelper => _formViewScriptHelper.Value;
+
+    public GridViewScriptHelper GridViewScriptHelper => _gridViewScriptHelper.Value;
+
+    public DataExportationScriptHelper DataExportationScriptHelper => _dataExportationScriptHelper.Value;
 
     public ScriptsHelper(
-        FormViewScriptHelper formViewScriptHelper,
-        GridViewScriptHelper gridViewScriptHelper,
-        DataExportationScriptHelper dataExportationScriptHelper,
-        DataPanelScriptHelper dataPanelScriptHelper)
+        Lazy<FormViewScriptHelper> formViewScriptHelper,
+        Lazy<GridViewScriptHelper> gridViewScriptHelper,
+        Lazy<DataExportationScriptHelper> dataExportationScriptHelper,
+        Lazy<DataPanelScriptHelper> dataPanelScriptHelper)
     {
-        FormViewScriptHelper = formViewScriptHelper;
-        GridViewScriptHelper = gridViewScriptHelper;
-        DataExportationScriptHelper = dataExportationScriptHelper;
-        DataPanelScriptHelper = dataPanelScriptHelper;
+        _formViewScriptHelper = formViewScriptHelper;
+        _gridViewScriptHelper = gridViewScriptHelper;
+        _dataExportationScriptHelper = dataExportationScriptHelper;
+        _dataPanelScriptHelper = dataPanelScriptHelper;
     }
 }

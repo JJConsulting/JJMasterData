@@ -169,8 +169,7 @@ public class JJGridView : JJBaseView
     internal ActionManager ActionManager =>
         _actionManager ??= new ActionManager(FormElement, ExpressionsService, Name);
 
-    internal IFormValuesService FormValuesService { get; } =
-        JJService.Provider.GetScopedDependentService<IFormValuesService>();
+    internal IFormValuesService FormValuesService { get; } 
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -560,6 +559,7 @@ public class JJGridView : JJBaseView
         LookupFactory = JJService.Provider.GetScopedDependentService<LookupFactory>();
         ComboBoxFactory = JJService.Provider.GetScopedDependentService<ComboBoxFactory>();
         FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
         
         Name = "jjview";
         ShowTitle = true;
@@ -600,12 +600,12 @@ public class JJGridView : JJBaseView
     }
 #endif
 
-    public JJGridView(
-        IHttpContext currentContext,
+    public JJGridView(IHttpContext currentContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
         IFieldsService fieldsService,
+        IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         DataExportationFactory dataExportationFactory,
@@ -620,6 +620,7 @@ public class JJGridView : JJBaseView
         ScriptsHelper = scriptsHelper;
         CurrentContext = currentContext;
         FieldControlFactory = fieldControlFactory;
+        FormValuesService = formValuesService;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
         LookupFactory = fieldControlFactory.LookupFactory;
@@ -639,18 +640,20 @@ public class JJGridView : JJBaseView
         TitleSize = HeadingSize.H1;
     }
 
-    public JJGridView(FormElement formElement,
+    public JJGridView(
+        FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
         IFieldsService fieldsService,
+        IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         DataExportationFactory dataExportationFactory,
         DataImportationFactory dataImportationFactory,
         FieldControlFactory fieldControlFactory) : this(currentContext,
-        entityRepository, expressionsService, encryptionService, fieldsService, scriptsHelper, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
+        entityRepository, expressionsService, encryptionService, fieldsService, formValuesService, scriptsHelper, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
     {
         Name = "jjview" + formElement.Name.ToLower();
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
@@ -781,8 +784,8 @@ public class JJGridView : JJBaseView
     {
         if ("selectall".Equals(requestType))
         {
-            string values = GetAllSelectedRows();
-            CurrentContext.Response.SendResponse(values);
+            string values = GetEncryptedSelectedRows();
+            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new {selectedRows = values}));
             return true;
         }
 
@@ -1380,7 +1383,7 @@ public class JJGridView : JJBaseView
         SelectedRowsId = string.Empty;
     }
 
-    private string GetAllSelectedRows()
+    public string GetEncryptedSelectedRows()
     {
         int tot = 0;
         var dt = GetDataTable(CurrentFilter, CurrentOrder, 999999, 1, ref tot);

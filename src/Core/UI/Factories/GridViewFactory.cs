@@ -13,12 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public class GridViewFactory
 {
     private IFieldsService FieldsService { get; }
+    private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -38,6 +40,7 @@ public class GridViewFactory
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
         IFieldsService fieldsService,
+        IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         DataExportationFactory dataExportationFactory,
@@ -47,6 +50,7 @@ public class GridViewFactory
         DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
         FieldsService = fieldsService;
+        FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
@@ -60,8 +64,7 @@ public class GridViewFactory
     public JJGridView CreateGridView()
     {
         var gridView = new JJGridView(CurrentContext, EntityRepository, ExpressionsService, EncryptionService,
-            FieldsService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
-            FieldControlFactory);
+            FieldsService,FormValuesService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory, FieldControlFactory);
 
         return gridView;
     }
@@ -69,7 +72,7 @@ public class GridViewFactory
     public JJGridView CreateGridView(FormElement formElement)
     {
         var gridView = new JJGridView(formElement,CurrentContext, EntityRepository, ExpressionsService, EncryptionService,
-            FieldsService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
+            FieldsService,FormValuesService, ScriptsHelper, StringLocalizer, DataExportationFactory, DataImportationFactory,
             FieldControlFactory);
         
         SetGridOptions(gridView,formElement.Options);
