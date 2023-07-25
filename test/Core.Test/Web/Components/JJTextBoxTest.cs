@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Moq;
 
 namespace JJMasterData.Core.Test.Web.Components
 {
@@ -47,7 +49,7 @@ namespace JJMasterData.Core.Test.Web.Components
 
         private JJTextBox GetTextBox()
         {
-            return new JJTextBox
+            return new JJTextBox(new Mock<IHttpContext>().Object)
             {
                 Name = "id1",
                 ToolTip = "teste",

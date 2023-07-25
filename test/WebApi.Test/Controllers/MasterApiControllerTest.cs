@@ -10,12 +10,14 @@ using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using Newtonsoft.Json;
 using Xunit.Extensions.Ordering;
 
@@ -41,10 +43,7 @@ public class MasterApiControllerTest
             }
         };
 
-        var entityRepository = JJService.EntityRepository; 
-        var dataDictionaryRepository = new SqlDataDictionaryRepository(entityRepository,JJService.Provider.GetRequiredService<IConfiguration>());
-        var masterApiService = new MasterApiService(accessor, entityRepository, dataDictionaryRepository, null);
-        _controller = new MasterApiController(masterApiService);
+        _controller = new MasterApiController(new Mock<MasterApiService>().Object);
     }
     
     [Order(4)]
@@ -74,7 +73,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"new_string\",\"Age\":100}]", "ApiTestDictionary", true)]
     public void PostTest(string parametersString, string elementName, bool replace)
     {
-        var parameterList = JsonConvert.DeserializeObject<Hashtable[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
 
         if (parameterList == null) 
             return;
@@ -91,7 +90,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"put_string\",\"Age\":0}]", "ApiTestDictionary")]
     public void PutTest(string parametersString, string elementName)
     {
-        var parameterList = JsonConvert.DeserializeObject<Hashtable[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
         
         var result = _controller.Put(parameterList!, elementName);
 
@@ -105,7 +104,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"patch_string\",\"Age\":0}]", "ApiTestDictionary")]
     public void PatchTest(string parametersString, string elementName)
     {
-        var parameterList = JsonConvert.DeserializeObject<Hashtable[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
         
         var result = _controller.Patch(parameterList!, elementName);
 

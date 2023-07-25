@@ -28,6 +28,7 @@
     <ItemGroup>
       <None Remove="JJExportationFiles\Item\item_20230703_161006.xls" />
       <None Remove="JJExportationFiles\Item\item_20230703_155047.xls" />
+      <None Remove="JJExportationFiles\Item\item_20230707_093338.csv" />
     </ItemGroup>
   
 </Project>

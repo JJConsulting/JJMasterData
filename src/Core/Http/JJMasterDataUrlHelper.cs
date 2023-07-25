@@ -9,8 +9,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -48,7 +46,7 @@ public class JJMasterDataUrlHelper
         return scope.ServiceProvider.GetRequiredService<JJMasterDataUrlHelper>();
     }
 
-    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController]string? controller = null,object? values = null)
+    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,object? values = null)
     {
         if (OptionsUrl is not null)
         {

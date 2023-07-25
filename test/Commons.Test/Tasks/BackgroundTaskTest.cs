@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Test.Tasks;
 
@@ -32,7 +33,7 @@ public class BackgroundTaskTest
     public static IBackgroundTaskWorker Worker => new TaskWorkerTest();
 
     //Implement your own IBackgroundTaskManager here if you want a specific test.
-    public static IBackgroundTask BackgroundTask => JJService.BackgroundTask;
+    public static IBackgroundTask BackgroundTask => JJService.Provider.GetRequiredService<IBackgroundTask>();
 
     [Fact]
     public void RunTaskTest()
