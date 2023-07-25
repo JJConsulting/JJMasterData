@@ -14,12 +14,12 @@ namespace JJMasterData.Core.FormEvents;
 /// </summary>
 public class FormEventResolver : IFormEventResolver
 {
-    private IServiceProvider ServiceProvider { get; }
+    private IServiceScopeFactory ServiceScopeFactory { get; }
     private IEnumerable<Assembly> Assemblies { get; }
 
-    public FormEventResolver(IOptions<FormEventOptions> options, IServiceProvider serviceProvider)
+    public FormEventResolver(IOptions<FormEventOptions> options, IServiceScopeFactory serviceScopeFactory)
     {
-        ServiceProvider = serviceProvider;
+        ServiceScopeFactory = serviceScopeFactory;
         Assemblies = options.Value.Assemblies;
     }
 
@@ -42,7 +42,7 @@ public class FormEventResolver : IFormEventResolver
         if (formEventType == null) 
             return null;
         
-        using var scope = JJService.Provider.CreateScope();
+        using var scope = ServiceScopeFactory.CreateScope();
         return (IFormEvent)ActivatorUtilities.CreateInstance(scope.ServiceProvider, formEventType);
     }
 

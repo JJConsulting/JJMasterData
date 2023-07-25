@@ -100,7 +100,7 @@ public class JJDataPanel : JJBaseView
     public JJDataPanel()
     {
         FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
-        EntityRepository = JJService.EntityRepository;
+        EntityRepository =  JJService.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  JJService.Provider.GetScopedDependentService<IHttpContext>();
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
@@ -281,14 +281,12 @@ public class JJDataPanel : JJBaseView
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]
     public void LoadValuesFromPK(IDictionary<string,dynamic>pks)
     {
-        var entityRepository = JJService.EntityRepository;
-        Values = entityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
+        Values = EntityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
     }
     
     public async Task LoadValuesFromPkAsync(IDictionary<string,dynamic>pks)
     {
-        var entityRepository = JJService.EntityRepository;
-        Values = await entityRepository.GetDictionaryAsync(FormElement, pks);
+        Values = await EntityRepository.GetDictionaryAsync(FormElement, pks);
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
@@ -32,8 +33,8 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
-        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    public IEntityRepository EntityRepository { get; } =
+        JJService.Provider.GetScopedDependentService<IEntityRepository>();
     public IFieldFormattingService FieldFormattingService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
 
@@ -72,8 +73,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = JJService.EntityRepository;
-            DataSource = factory.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, 1, ref tot);
+            DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
@@ -82,7 +82,7 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = factory.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, i, ref tot);
+                DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, i, ref tot);
                 GenerateRows(sw, token);
             }
         }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -20,8 +21,8 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
-        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    public IEntityRepository EntityRepository { get; } =
+        JJService.Provider.GetScopedDependentService<IEntityRepository>();
     public override void GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -42,8 +43,7 @@ public class TextWriter : BaseWriter, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = JJService.EntityRepository;
-            DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
@@ -52,7 +52,7 @@ public class TextWriter : BaseWriter, ITextWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
                 GenerateRows(sw, token);
             }
         }

@@ -25,7 +25,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ElementService : BaseService
 {
     private GridViewFactory GridViewFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
 
@@ -38,7 +37,6 @@ public class ElementService : BaseService
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
         GridViewFactory = gridViewFactory;
-        StringLocalizer = stringLocalizer;
         _entityRepository = entityRepository;
         _options = options.Value;
     }
@@ -83,8 +81,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var dataAccess = JJService.EntityRepository;
-            if (!dataAccess.TableExists(tableName))
+            if (!_entityRepository.TableExists(tableName))
                 AddError("Name", StringLocalizer["Table not found"]);
 
         }

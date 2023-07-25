@@ -1,7 +1,10 @@
 ﻿#if NET48
 using System;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Util;
 
@@ -26,7 +29,7 @@ public class Cript
     /// </summary>
     public static string Cript64(string value)
     {
-        return Cript64(value, JJService.Options.SecretKey);
+        return Cript64(value, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>().Value.SecretKey);
     }
 
     public static string Cript64(string value, string secretKey)
@@ -46,7 +49,7 @@ public class Cript
     /// </summary>
     public static string Descript64(string value)
     {
-        return Descript64(value, JJService.Options.SecretKey);
+        return Descript64(value, JJService.Provider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>().Value.SecretKey);
     }
 
     public static string Descript64(string value, string secretKey)

@@ -40,7 +40,7 @@ internal class ActionManager
 
     public string ComponentName { get; set; }
 
-    internal IEntityRepository EntityRepository => JJService.EntityRepository;
+    internal IEntityRepository EntityRepository => JJService.Provider.GetRequiredService<IEntityRepository>();
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer => JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
     internal IFieldValuesService FieldValuesService => JJService.Provider.GetScopedDependentService<IFieldValuesService>();
     internal JJMasterDataEncryptionService JJMasterDataEncryptionService => JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();

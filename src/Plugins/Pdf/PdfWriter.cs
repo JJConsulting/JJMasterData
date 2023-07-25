@@ -20,6 +20,7 @@ using iText.Layout.Properties;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
@@ -41,6 +42,9 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
+    public IEntityRepository EntityRepository { get; } =
+        JJService.Provider.GetScopedDependentService<IEntityRepository>();
+    
     public IFieldFormattingService FieldFormattingService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
     
@@ -106,8 +110,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var factory = JJService.EntityRepository;
-            DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
@@ -116,7 +119,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = factory.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
                 GenerateRows(table, token);
             }
         }

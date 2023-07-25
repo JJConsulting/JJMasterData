@@ -19,24 +19,4 @@ namespace JJMasterData.Commons.DI;
 public static class JJService
 {
     public static IServiceProvider Provider { get; internal set; }
-
-    public static IEntityRepository EntityRepository
-    {
-        get
-        {
-            using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<IEntityRepository>();
-        }
-    }
-    
-    public static JJMasterDataCommonsOptions Options
-    {
-        get
-        {
-            using var scope = Provider.CreateScope();
-            return scope.ServiceProvider.GetService<IOptionsSnapshot<JJMasterDataCommonsOptions>>()!.Value;
-        }
-    }
-
-    public static ILogger Logger => Provider.GetRequiredService<ILogger<JJServiceBuilder>>();
 }

@@ -557,7 +557,7 @@ public class JJGridView : JJBaseView
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        EntityRepository = JJService.EntityRepository;
+        EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
         ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
         DataExportationFactory = JJService.Provider.GetScopedDependentService<DataExportationFactory>();
