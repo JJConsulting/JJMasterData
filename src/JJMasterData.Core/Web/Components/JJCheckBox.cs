@@ -65,13 +65,15 @@ public class JJCheckBox : JJBaseControl
         
         div.AppendElement(HtmlTag.Input, input =>
         {
+            Attributes["onchange"] = $"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');" +
+                                     Attributes["onchange"];
+            
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
                 .WithNameAndId(Name)
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithCssClass(CssClass)
-                .WithAttribute("onchange",$"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');")
                 .WithToolTip(Translate.Key(ToolTip))
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
