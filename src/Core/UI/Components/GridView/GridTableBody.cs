@@ -1,17 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -41,10 +38,10 @@ internal class GridTableBody
     private IEnumerable<HtmlBuilder> GetRowsList()
     {
         var rows = GridView.DataSource.Rows;
-        
+
         for (int i = 0; i < rows.Count; i++)
         {
-            yield return GetRowHtml(rows[i],i);
+            yield return GetRowHtml(rows[i], i);
         }
     }
 
@@ -58,11 +55,11 @@ internal class GridTableBody
         bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
         html.WithCssClassIf(enableGridAction, "jjgrid-action");
 
-        html.AppendRange(GetTdHtmlList(row,index));
-        
+        html.AppendRange(GetTdHtmlList(row, index));
+
         return html;
     }
-    
+
     internal IEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
     {
         var values = GetValues(row);
@@ -71,10 +68,10 @@ internal class GridTableBody
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
         var html = new List<HtmlBuilder>();
-        
+
 
         string onClickScript = GetOnClickScript(values, defaultAction);
-        
+
         if (GridView.EnableMultiSelect)
         {
             var checkBox = GetMultiSelect(row, index, values);
@@ -97,7 +94,7 @@ internal class GridTableBody
     }
 
     [Obsolete("Must be async")]
-    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string,dynamic>values, string onClickScript)
+    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
     {
         foreach (var field in GridView.VisibleFields)
         {
@@ -134,7 +131,7 @@ internal class GridTableBody
                 {
                     if (field.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.List, values,GridView.UserValues, value);
+                        var upload = (JJTextFile)GridView.FieldControlFactory.CreateControl(GridView.FormElement, GridView.Name, field, PageState.List, values, GridView.UserValues, value);
                         td.AppendElement(upload.GetButtonGroupHtml());
                     }
                     else
@@ -143,12 +140,12 @@ internal class GridTableBody
                     }
                 }
             }
-            
+
             yield return td;
         }
     }
 
-    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string,dynamic>values,
+    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, dynamic> values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
@@ -157,9 +154,9 @@ internal class GridTableBody
         var div = new HtmlBuilder(HtmlTag.Div);
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
-        if (field.Component 
-                is FormComponent.ComboBox 
-                or FormComponent.CheckBox 
+        if (field.Component
+                is FormComponent.ComboBox
+                or FormComponent.CheckBox
                 or FormComponent.Search
                 or FormComponent.Number
             && values.TryGetValue(field.Name, out var value1))
@@ -167,7 +164,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var baseField = GridView.FieldControlFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.List, values,GridView.UserValues, value);
+        var baseField = GridView.FieldControlFactory.CreateControl(GridView.FormElement, GridView.Name, field, PageState.List, values, GridView.UserValues, value);
         baseField.Name = name;
         baseField.Attributes.Add("nRowId", index);
         baseField.CssClass = field.Name;
@@ -188,12 +185,12 @@ internal class GridTableBody
         return div;
     }
 
-    public IEnumerable<HtmlBuilder> GetActionsHtmlList(IDictionary<string,dynamic>values)
+    public IEnumerable<HtmlBuilder> GetActionsHtmlList(IDictionary<string, dynamic> values)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-        
+
         foreach (var action in GetActionsWithoutGroupHtml(actionsWithoutGroup, values))
         {
             yield return action;
@@ -202,13 +199,29 @@ internal class GridTableBody
         if (groupedActions.Count > 0)
         {
             var context = new ActionContext(values, PageState.List, ActionSource.GridTable, OnRenderAction);
-            yield return GridView.ActionManager.GetGroupedActionsHtml(groupedActions, context);
+            yield return GetActionsGroupHtml(groupedActions, values);
         }
-        
     }
 
-    private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup,
-        IDictionary<string,dynamic>values)
+
+    private HtmlBuilder GetActionsGroupHtml(IEnumerable<BasicAction> actions, IDictionary<string, dynamic> values)
+    {
+        var td = new HtmlBuilder(HtmlTag.Td);
+        td.WithCssClass("table-action");
+
+        var btnGroup = new JJLinkButtonGroup();
+        foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
+        {
+            btnGroup.ShowAsButton = groupedAction.ShowAsButton;
+            btnGroup.Actions.Add(GridView.ActionManager.GetLinkGrid(groupedAction, values));
+        }
+
+        td.AppendElement(btnGroup);
+        return td;
+    }
+
+
+    private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup, IDictionary<string, dynamic> values)
     {
         foreach (var action in actionsWithoutGroup)
         {
@@ -230,7 +243,7 @@ internal class GridTableBody
 
             if (link != null)
                 td.AppendElement(link);
-            
+
             yield return td;
         }
     }
@@ -240,32 +253,27 @@ internal class GridTableBody
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-            {
                 if (field.DataItem is { ShowImageLegend: true, ReplaceTextOnGrid: false })
                 {
                     return "text-align:center;";
                 }
 
                 break;
-            }
             case FormComponent.CheckBox:
                 return "text-align:center";
             default:
-            {
                 if (field.DataType is FieldType.Float or FieldType.Int)
                 {
                     if (!field.IsPk)
                         return "text-align:right";
                 }
-
                 break;
-            }
         }
 
         return string.Empty;
     }
 
-    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary<string,dynamic>values)
+    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary<string, dynamic> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -289,12 +297,12 @@ internal class GridTableBody
                 return checkBox;
         }
 
-        return checkBox;  
+        return checkBox;
     }
 
-    private string GetOnClickScript(IDictionary<string,dynamic>values, BasicAction defaultAction)
+    private string GetOnClickScript(IDictionary<string, dynamic> values, BasicAction defaultAction)
     {
-        if (GridView.EnableEditMode || defaultAction == null) 
+        if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
 
         var linkDefaultAction = GridView.ActionManager.GetLinkGrid(defaultAction, values);
@@ -323,18 +331,18 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private IDictionary<string,dynamic>GetValues(DataRow row)
+    private IDictionary<string, dynamic> GetValues(DataRow row)
     {
-        var values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
         }
 
-        if (!GridView.EnableEditMode) 
+        if (!GridView.EnableEditMode)
             return values;
 
         var prefixName = GridView.GetFieldName(string.Empty, values);
-        return GridView.FormValuesService.GetFormValuesWithMergedValues(GridView.FormElement,PageState.List, GridView.AutoReloadFormFields, prefixName).GetAwaiter().GetResult();
+        return GridView.FormValuesService.GetFormValuesWithMergedValues(GridView.FormElement, PageState.List, GridView.AutoReloadFormFields, prefixName).GetAwaiter().GetResult();
     }
 }

@@ -1,4 +1,8 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -10,23 +14,18 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
-using Newtonsoft.Json;
+using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -59,16 +58,16 @@ public class JJFormView : JJBaseView
     private JJAuditLogView _auditLogView;
     private JJDataImp _dataImp;
     private string _userId;
-    
+
     internal JJAuditLogView AuditLogView =>
         _auditLogView ??= AuditLogViewFactory.Value.CreateAuditLogView(FormElement);
-    
+
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
     /// </summary>
     internal string UrlRedirect { get; set; }
 
-    
+
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -77,7 +76,7 @@ public class JJFormView : JJBaseView
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
     internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
-    
+
     /// <summary>
     /// Configurações de importação
     /// </summary>
@@ -85,9 +84,9 @@ public class JJFormView : JJBaseView
     {
         get
         {
-            if (_dataImp != null) 
+            if (_dataImp != null)
                 return _dataImp;
-            
+
             _dataImp = _gridView.DataImp;
             _dataImp.OnAfterDelete += OnAfterDelete;
             _dataImp.OnAfterInsert += OnAfterInsert;
@@ -133,14 +132,14 @@ public class JJFormView : JJBaseView
         {
             if (_gridView is not null)
                 return _gridView;
-            
+
             _gridView = GridViewFactory.Value.CreateGridView(FormElement);
             _gridView.Name = Name.ToLower();
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowTitle = true;
-            
+
             return _gridView;
         }
     }
@@ -213,7 +212,7 @@ public class JJFormView : JJBaseView
 
     #region "Constructors"
 
-    #if NET48
+#if NET48
     public JJFormView()
     {
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
@@ -245,8 +244,8 @@ public class JJFormView : JJBaseView
         IsExternalRoute = false;
         FormElement = formElement;
     }
-    #endif
-    
+#endif
+
     internal JJFormView(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -881,7 +880,7 @@ public class JJFormView : JJBaseView
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
 
         var toolbar = GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values);
-        
+
         parentPanelHtml.AppendElement(toolbar);
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
@@ -930,8 +929,19 @@ public class JJFormView : JJBaseView
 
         if (actions.Any(a => a.IsGroup))
         {
-            toolbar.Items.Add(
-                GridView.ActionManager.GetGroupedActionsHtml(actions.Where(a => a.IsGroup).ToList(), context));
+
+            var btnGroup = new JJLinkButtonGroup
+            {
+                CaretText = "More"
+            };
+
+            foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
+            {
+                btnGroup.ShowAsButton = groupedAction.ShowAsButton;
+                btnGroup.Actions.Add(GridView.ActionManager.GetLinkFormToolbar(groupedAction, values, pageState));
+            }
+
+            toolbar.Items.Add(btnGroup.GetHtmlBuilder());
         }
 
 
@@ -962,7 +972,7 @@ public class JJFormView : JJBaseView
     public IDictionary<string, dynamic> InsertFormValues(IDictionary<string, dynamic> values,
         bool validateFields = true)
     {
-        var result = FormService.Insert(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId),
+        var result = FormService.Insert(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId),
             validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -974,7 +984,7 @@ public class JJFormView : JJBaseView
     /// <returns>The list of errors.</returns>
     public IDictionary<string, dynamic> UpdateFormValues(IDictionary<string, dynamic> values)
     {
-        var result = FormService.Update(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId));
+        var result = FormService.Update(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -982,12 +992,12 @@ public class JJFormView : JJBaseView
     public IDictionary<string, dynamic> DeleteFormValues(IDictionary<string, dynamic> filter)
     {
         var values = FieldValuesService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
-        var result = FormService.Delete(FormElement, values, new DataContext(CurrentContext,DataContextSource.Form, UserId));
+        var result = FormService.Delete(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
-    
+
     public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
     {
         var painel = DataPanel;
@@ -1000,7 +1010,7 @@ public class JJFormView : JJBaseView
 
         return values;
     }
-    
+
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
     public IDictionary<string, dynamic> GetFormValues()
     {
@@ -1105,7 +1115,7 @@ public class JJFormView : JJBaseView
     public ImportAction ImportAction => GridView.ImportAction;
 
     [Obsolete("Please use GridView.FilterAction")]
-    public FilterAction FilterAction { get; set; }
+    public FilterAction FilterAction => GridView.FilterAction;
 
     [Obsolete("Please use GridView.GetSelectedGridValues")]
     private List<IDictionary<string, dynamic>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
@@ -1163,7 +1173,7 @@ public class JJFormView : JJBaseView
         set => GridView.EnableMultiSelect = value;
     }
     #endregion
-    
+
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;
     public static implicit operator JJDataPanel(JJFormView formView) => formView.DataPanel;
 }

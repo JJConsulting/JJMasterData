@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
@@ -52,7 +53,7 @@ internal class ActionManager
     }
 
 
-    public string GetInternalUrlScript(InternalAction action, IDictionary<string,dynamic>formValues)
+    public string GetInternalUrlScript(InternalAction action, IDictionary<string, dynamic> formValues)
     {
         var elementRedirect = action.ElementRedirect;
         var dicRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
@@ -80,9 +81,9 @@ internal class ActionManager
             }
         }
 
-        
+
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = urlHelper.GetUrl(null,"InternalRedirect", new { parameters =  JJMasterDataEncryptionService.EncryptStringWithUrlEncode(@params.ToString()), Area="MasterData"});
+        string url = urlHelper.GetUrl(null, "InternalRedirect", new { parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEncode(@params.ToString()), Area = "MasterData" });
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -100,7 +101,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string,dynamic>formValues, PageState pageState,
+    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string, dynamic> formValues, PageState pageState,
         ActionSource contextAction, string fieldName)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
@@ -108,7 +109,7 @@ internal class ActionManager
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
         int popupSize = (int)action.PopupSize;
-        
+
         var script = new StringBuilder();
 
         if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
@@ -149,7 +150,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource actionSource, bool isPopup = false)
+    public string GetFormActionScript(BasicAction action, IDictionary<string, dynamic> formValues, ActionSource actionSource, bool isPopup = false)
     {
         var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
@@ -213,14 +214,16 @@ internal class ActionManager
 
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
         var encryptedActionMap = encryptionService.EncryptActionMap(actionMap);
-        return urlHelper.GetUrl("GetFormView", "Form", new { 
-            dictionaryName = encryptedDictionaryName, 
-            actionMap = encryptedActionMap, 
-            pageState, 
-            Area="MasterData"});
+        return urlHelper.GetUrl("GetFormView", "Form", new
+        {
+            dictionaryName = encryptedDictionaryName,
+            actionMap = encryptedActionMap,
+            pageState,
+            Area = "MasterData"
+        });
     }
 
-    internal string GetExportScript(ExportAction action, IDictionary<string,dynamic> formValues)
+    internal string GetExportScript(ExportAction action, IDictionary<string, dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
@@ -235,7 +238,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    internal string GetConfigUIScript(ConfigAction action, IDictionary<string,dynamic>formValues)
+    internal string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
@@ -250,7 +253,7 @@ internal class ActionManager
         return script.ToString();
     }
 
-    public string GetCommandScript(BasicAction action, IDictionary<string,dynamic>formValues, ActionSource contextAction)
+    public string GetCommandScript(BasicAction action, IDictionary<string, dynamic> formValues, ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
@@ -275,7 +278,7 @@ internal class ActionManager
     }
 
 
-    public JJLinkButton GetLinkGrid(BasicAction action, IDictionary<string,dynamic>formValues)
+    public JJLinkButton GetLinkGrid(BasicAction action, IDictionary<string, dynamic> formValues)
     {
         return GetLink(action, formValues, PageState.List, ActionSource.GridTable);
     }
@@ -285,12 +288,12 @@ internal class ActionManager
     //    return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
     //}
 
-    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary<string,dynamic>formValues, PageState pageState)
+    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary<string, dynamic> formValues, PageState pageState)
     {
         return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, IDictionary<string,dynamic>formValues, PageState pageState, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary<string, dynamic> formValues, PageState pageState, string panelName)
     {
         return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
@@ -303,72 +306,15 @@ internal class ActionManager
 
         return li;
     }
+    
 
-    public HtmlBuilder GetGroupedActionsHtml(List<BasicAction> actionsWithGroup, ActionContext actionContext)
-    {
-        var td = new HtmlBuilder(HtmlTag.Td)
-            .WithCssClass("table-action")
-            .AppendElement(HtmlTag.Div, div =>
-            {
-                div.WithCssClass(BootstrapHelper.InputGroupBtn);
-                div.AppendElement(BootstrapHelper.Version == 3 ? HtmlTag.Button : HtmlTag.A,
-                    element =>
-                    {
-                        element.WithAttribute("type", "button");
-                        element.WithCssClassIf(actionContext.PageState is PageState.List, "btn-link");
-                        element.WithCssClassIf(actionContext.PageState is not PageState.List, "btn btn-secondary");
-                        element.WithCssClass("dropdown-toggle");
-                        element.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
-                        element.WithAttribute("aria-haspopup", "true");
-                        element.WithAttribute("aria-expanded", "false");
-                        element.AppendTextIf(actionContext.PageState is not PageState.List, StringLocalizer["More"]);
-                        element.AppendElement(HtmlTag.Span, span =>
-                        {
-                            span.WithCssClass("caret");
-                            span.WithToolTip(StringLocalizer["More Options"]);
-                        });
-                    });
-                div.AppendElement(HtmlTag.Ul, ul =>
-                {
-                    ul.WithCssClass("dropdown-menu dropdown-menu-right");
-                    foreach (var action in actionsWithGroup)
-                    {
-                        var link = actionContext.Source == ActionSource.GridTable
-                            ? GetLinkGrid(action, actionContext.Values)
-                            : GetLinkFormToolbar(action, actionContext.Values, actionContext.PageState);
-
-                        link.Attributes.Add("style", "display:block");
-
-                        var onRender = actionContext.OnRenderAction;
-                        if (onRender != null)
-                        {
-                            var args = new ActionEventArgs(action, link, actionContext.Values);
-                            onRender.Invoke(this, args);
-                        }
-
-                        if (link is { Visible: true })
-                        {
-                            ul.AppendElementIf(action.DividerLine, GetDividerHtml);
-                            ul.AppendElement(HtmlTag.Li, li =>
-                            {
-                                li.WithCssClass("dropdown-item");
-                                li.AppendElement(link);
-                            });
-                        }
-                    }
-                });
-            });
-        return td;
-    }
-
-
-    private JJLinkButton GetLink(BasicAction action, IDictionary<string,dynamic>formValues, PageState pagestate,
+    private JJLinkButton GetLink(BasicAction action, IDictionary<string, dynamic> formValues, PageState pagestate,
         ActionSource contextAction, string fieldName = null)
     {
         var enabled = Expression.GetBoolValue(action.EnableExpression, action.Name, pagestate, formValues);
         var visible = Expression.GetBoolValue(action.VisibleExpression, action.Name, pagestate, formValues);
         var link = JJLinkButton.GetInstance(action, enabled, visible);
-        
+
         string script;
         switch (action)
         {
@@ -405,7 +351,7 @@ internal class ActionManager
                     link.Type = LinkButtonType.Submit;
                 else
                     link.Type = save.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
-                
+
                 script = $"return ActionManager.executePanelAction('{ComponentName}','OK');";
                 break;
             case CancelAction or BackAction:
@@ -415,13 +361,13 @@ internal class ActionManager
                 script = $"jjview.doRefresh('{ComponentName}');";
                 break;
             case FilterAction filterAction:
-            {
-                if (filterAction.ShowAsCollapse)
-                    link.Visible = false;
+                {
+                    if (filterAction.ShowAsCollapse)
+                        link.Visible = false;
 
-                script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
-                break;
-            }
+                    script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
+                    break;
+                }
             case LegendAction:
                 script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
                 break;
@@ -474,7 +420,7 @@ internal class ActionManager
             }
             else
             {
-                IDictionary<string,dynamic> formValues;
+                IDictionary<string, dynamic> formValues;
                 if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                                   map.PkFieldValues.Count > 0))
                 {
@@ -483,7 +429,7 @@ internal class ActionManager
                 }
                 else
                 {
-                    formValues = FieldValuesService.GetDefaultValues(FormElement,null, PageState.List);
+                    formValues = FieldValuesService.GetDefaultValues(FormElement, null, PageState.List);
                 }
 
                 string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);

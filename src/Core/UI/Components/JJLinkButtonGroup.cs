@@ -30,7 +30,7 @@ public class JJLinkButtonGroup : JJBaseView
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
-            .WithCssClass("btn-group")
+            .WithCssClass(BootstrapHelper.InputGroupBtn)
             .WithCssClass(CssClass);
 
         AddActionsAt(inputGroup);

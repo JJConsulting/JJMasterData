@@ -12,7 +12,7 @@ public class GridViewScriptHelper
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
     }
-    
+
     internal string GetUrl(string dictionaryName)
     {
         string dictionaryNameEncrypted = EncryptionService.EncryptString(dictionaryName);
@@ -42,7 +42,7 @@ public class GridViewScriptHelper
         string enableAjax = gridView.EnableAjax ? "true" : "false";
         return $"jjview.doPagination('{name}', {enableAjax}, {page})";
     }
-    
+
     public string GetRefreshScript(JJGridView gridView)
     {
         string name = gridView.Name;
@@ -56,7 +56,7 @@ public class GridViewScriptHelper
         return $"jjview.doRefresh('{name}', {enableAjax})";
     }
 
-    public  string GetFilterScript(JJGridView gridView)
+    public string GetFilterScript(JJGridView gridView)
     {
         string name = gridView.Name;
         if (gridView.IsExternalRoute)

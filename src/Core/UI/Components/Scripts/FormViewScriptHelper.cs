@@ -9,4 +9,8 @@ namespace JJMasterData.Core.Web.Components.Scripts;
 public class FormViewScriptHelper
 {
     //TODO: Migrate Actions from ActionManager
+
+
+
+
 }
