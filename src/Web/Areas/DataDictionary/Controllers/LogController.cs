@@ -8,6 +8,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -19,10 +20,12 @@ public class LogController : DataDictionaryController
     private Element LoggerElement { get;  }
     
     private IEntityRepository EntityRepository { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository)
+    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
+        StringLocalizer = stringLocalizer;
         Options = options.Value;
         LoggerElement = DbLoggerElement.GetInstance(Options);
     }
@@ -57,9 +60,9 @@ public class LogController : DataDictionaryController
         {
             Name = "btnClearLog",
             Icon = IconType.Trash,
-            Text = Translate.Key("Clear Log"),
+            Text = StringLocalizer["Clear Log"],
             ShowAsButton = true,
-            ConfirmationMessage = Translate.Key("Do you want to clear ALL logs?"),
+            ConfirmationMessage = StringLocalizer["Do you want to clear ALL logs?"],
             UrlRedirect = Url.Action("ClearAll")
         };
 
@@ -86,7 +89,7 @@ public class LogController : DataDictionaryController
     {
         var formElement = new FormElement(LoggerElement)
         {
-            Title = Translate.Key("Application Log"),
+            Title = StringLocalizer["Application Log"],
             SubTitle = string.Empty
         };
 

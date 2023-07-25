@@ -4,6 +4,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model RelationshipsListViewModel
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 <partial name="_Menu" model="Model"/>
 
 @{
@@ -36,10 +39,10 @@
     
     <ul class="nav nav-tabs">
         <li id="navGrid" class="nav-item active">
-            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divElements">@Translate.Key("Elements")</a>
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divElements">@StringLocalizer["Elements"]</a>
         </li>
         <li id="navToolbar" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divLayout">@Translate.Key("Layout")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divLayout">@StringLocalizer["Layout"]</a>
         </li>
     </ul>
 

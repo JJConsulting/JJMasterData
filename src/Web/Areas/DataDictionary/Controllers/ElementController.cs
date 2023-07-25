@@ -12,18 +12,21 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController : DataDictionaryController
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
 
-    public ElementController(ElementService elementService, ClassGenerationService classGenerationService, ScriptsService scriptsService)
+    public ElementController(ElementService elementService, ClassGenerationService classGenerationService, ScriptsService scriptsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        StringLocalizer = stringLocalizer;
         _elementService = elementService;
         _classGenerationService = classGenerationService;
         _scriptsService = scriptsService;
@@ -90,7 +93,7 @@ public class ElementController : DataDictionaryController
 
     private void ConfigureUploadArea(JJUploadArea upload)
     {
-        upload.AddLabel = Translate.Key("Select Dictionaries");
+        upload.AddLabel = StringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
         upload.AutoSubmitAfterUploadAll = false;
         upload.OnPostFile += OnPostFile;
@@ -101,7 +104,7 @@ public class ElementController : DataDictionaryController
         await _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
-            e.SuccessMessage = Translate.Key("Dictionary imported successfully!");
+            e.SuccessMessage = StringLocalizer["Dictionary imported successfully!"];
         }
         else
         {
@@ -190,7 +193,7 @@ public class ElementController : DataDictionaryController
         {
             Icon = IconType.Pencil,
             Name = "tools",
-            ToolTip = Translate.Key("Field Maintenance"),
+            ToolTip = StringLocalizer["Field Maintenance"],
             EnableExpression = "exp:'T' <> {type}",
             IsDefaultOption = true
         };
@@ -200,7 +203,7 @@ public class ElementController : DataDictionaryController
         {
             Icon = IconType.Eye,
             Name = "preview",
-            Text = Translate.Key("Preview"),
+            Text = StringLocalizer["Preview"],
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
@@ -210,7 +213,7 @@ public class ElementController : DataDictionaryController
         {
             Icon = IconType.FilesO,
             Name = "duplicate",
-            Text = Translate.Key("Duplicate"),
+            Text = StringLocalizer["Duplicate"],
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
@@ -219,7 +222,7 @@ public class ElementController : DataDictionaryController
         var btnAdd = new UrlRedirectAction
         {
             Name = "btnadd",
-            Text = Translate.Key("New"),
+            Text = StringLocalizer["New"],
             Icon = IconType.Plus,
             ShowAsButton = true,
             UrlRedirect = Url.Action("Add")
@@ -229,7 +232,7 @@ public class ElementController : DataDictionaryController
         var btnImport = new UrlRedirectAction
         {
             Name = "btnImport",
-            ToolTip = Translate.Key("Import"),
+            ToolTip = StringLocalizer["Import"],
             Icon = IconType.Upload,
             ShowAsButton = true,
             UrlAsPopUp = true,
@@ -243,24 +246,24 @@ public class ElementController : DataDictionaryController
         var btnExport = new ScriptAction
         {
             Name = "btnExport",
-            ToolTip = Translate.Key("Export Selected"),
+            ToolTip = StringLocalizer["Export Selected"],
             Icon = IconType.Download,
             ShowAsButton = true,
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"jjdictionary.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{Translate.Key("Select one or more dictionaries")}');"
+                $"jjdictionary.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
         gridView.AddToolBarAction(btnExport);
 
         var btnAbout = new UrlRedirectAction
         {
             Name = "btnAbout",
-            ToolTip = Translate.Key("About"),
+            ToolTip = StringLocalizer["About"],
             Icon = IconType.InfoCircle,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = Translate.Key("About"),
+            TitlePopUp = StringLocalizer["About"],
             UrlRedirect = Url.Action("Index", "About", new { Area = "DataDictionary" }),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
@@ -271,11 +274,11 @@ public class ElementController : DataDictionaryController
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
-            ToolTip = Translate.Key("Log"),
+            ToolTip = StringLocalizer["Log"],
             Icon = IconType.FileTextO,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = Translate.Key("Log"),
+            TitlePopUp = StringLocalizer["Log"],
             UrlRedirect = Url.Action("Index", "Log", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
@@ -286,11 +289,11 @@ public class ElementController : DataDictionaryController
         var btnSettings = new UrlRedirectAction
         {
             Name = "btnAppSettings",
-            ToolTip = Translate.Key("Application Options"),
+            ToolTip = StringLocalizer["Application Options"],
             Icon = IconType.Code,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = Translate.Key("Application Options"),
+            TitlePopUp = StringLocalizer["Application Options"],
             UrlRedirect = Url.Action("Index", "Options", new { Area = "DataDictionary" }),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
@@ -301,11 +304,11 @@ public class ElementController : DataDictionaryController
         var btnResources = new UrlRedirectAction
         {
             Name = "btnResources",
-            ToolTip = Translate.Key("Resources"),
+            ToolTip = StringLocalizer["Resources"],
             Icon = IconType.Globe,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = Translate.Key("Resources"),
+            TitlePopUp = StringLocalizer["Resources"],
             UrlRedirect = Url.Action("Index", "Resources", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
@@ -318,9 +321,9 @@ public class ElementController : DataDictionaryController
             Name = "btnDeleteMetadata",
             Order = 0,
             Icon = IconType.Trash,
-            Text = Translate.Key("Delete Selected"),
+            Text = StringLocalizer["Delete Selected"],
             IsGroup = false,
-            ConfirmationMessage = Translate.Key("Do you want to delete ALL selected records?"),
+            ConfirmationMessage = StringLocalizer["Do you want to delete ALL selected records?"],
             ShowAsButton = true,
             FormAction = Url.Action("Delete", "Element")
         });

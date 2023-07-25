@@ -4,6 +4,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.OptionsViewModel
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 <div class="@BootstrapHelper.FormGroup">
     <div class="row">
         <div class="col-sm-3">
@@ -94,7 +97,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("TestConnection", "Options")" type="submit"><span class="fa fa-chain"></span>&nbsp;@Translate.Key("Test Connection")</button>
+        <button class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("TestConnection", "Options")" type="submit"><span class="fa fa-chain"></span>&nbsp;@StringLocalizer["Test Connection"]</button>
     </div>
 </div>
 

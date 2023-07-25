@@ -1,6 +1,12 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
 
@@ -9,23 +15,23 @@
         <label asp-for="FormElement.Title"
                class=" col-form-label form-label"
                data-bs-toggle="tooltip"
-               aria-label="@Translate.Key("Supports runtime values from fields. Example: Order {OrderId}")">
-            @Translate.Key("Title")
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@Translate.Key("Supports runtime values. Example: Order {OrderId}")"></span>
+               aria-label="@StringLocalizer["Supports runtime values from fields. Example: Order {OrderId}"]">
+            @StringLocalizer["Title"]
+            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"></span>
         </label>
         @Html.TextBoxFor(model => model.FormElement.Title, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-8">
         <label asp-for="FormElement.SubTitle" class=" col-form-label form-label">
-            @Translate.Key("SubTitle")
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@Translate.Key("Supports runtime from fields. Example: {CustomerName}")"></span>
+            @StringLocalizer["SubTitle"]
+            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Supports runtime from fields. Example: {CustomerName}"]"></span>
         </label>
         @Html.TextBoxFor(model => model.FormElement.SubTitle, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12">
         <label asp-for="FormElement.Info" class=" col-form-label form-label">
-            @Translate.Key("Info")
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@Translate.Key("Developer only information about the data dictionary.")"></span>
+            @StringLocalizer["Info"]
+            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Developer only information about the data dictionary."]"></span>
         </label>
         @Html.TextBoxFor(model => model.FormElement.Info, Model.HtmlAttributes)
     </div>

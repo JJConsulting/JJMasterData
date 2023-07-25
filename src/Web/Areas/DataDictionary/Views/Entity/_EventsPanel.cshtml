@@ -1,14 +1,20 @@
 ﻿@using JJMasterData.Commons.Localization
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @using JJMasterData.Core.Web
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        @Html.LabelFor(model => model.FormEventType, Translate.Key("Type"),
+        @Html.LabelFor(model => model.FormEventType, StringLocalizer["Type"],
         new Dictionary<string, string>
         {
             { BootstrapHelper.DataToggle, "tooltip" },
-            { "title", Translate.Key("Type") }
+            { "title", StringLocalizer["Type"] }
         })
         @Html.TextBoxFor((model => model.FormEventType),Model.HtmlAttributes)
     </div>

@@ -3,9 +3,13 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 <div class="page-header">
     <h1>
-        <img alt="JJMasterData" style="width:12%;height:12%;" src="~/_content/JJMasterData.Web/images/JJMasterData.png"><small>@Translate.Key("Duplicate Dictionary")</small>
+        <img alt="JJMasterData" style="width:12%;height:12%;" src="~/_content/JJMasterData.Web/images/JJMasterData.png"><small>@StringLocalizer["Duplicate Dictionary"]</small>
     </h1>
 </div>
 
@@ -14,13 +18,13 @@
 {
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("Source dictionary")</label>
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["Source dictionary"]</label>
             @Html.TextBox("originName", null, new { @class = "form-control", @readonly = "readonly" })
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-8 required">
-            <label class="@BootstrapHelper.Label" for="txtTableName" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("New Dictionary Name")</label>
-            @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = Translate.Key("Enter a table or view name") })
+            <label class="@BootstrapHelper.Label" for="txtTableName" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["New Dictionary Name"]</label>
+            @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = StringLocalizer["Enter a table or view name"] })
         </div>
     </div>
 
@@ -37,12 +41,12 @@
         <div class="col-sm-12">
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="location.href='@Url.Action("Index")'">
                 <span class="fa fa-arrow-left"></span>
-                <span>&nbsp;@Translate.Key("Back")</span>
+                <span>&nbsp;@StringLocalizer["Back"]</span>
             </button>
 
             <button id="btnNext" class="@BootstrapHelper.DefaultButton" type="submit">
                 <span class="fa fa-forward"></span>
-                @Translate.Key("Next")
+                @StringLocalizer["Next"]
             </button>
         </div>
     </div>

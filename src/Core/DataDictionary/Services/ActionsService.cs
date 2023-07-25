@@ -4,16 +4,21 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
     public ActionsService(
         IValidationDictionary validationDictionary, 
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
+        StringLocalizer = stringLocalizer;
     }
 
     public bool DeleteAction(string elementName, string actionName, ActionSource context, string fieldName = null)
@@ -112,7 +117,7 @@ public class ActionsService : BaseService
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
-            AddError(nameof(actionName), Translate.Key("Required [Name] field"));
+            AddError(nameof(actionName), StringLocalizer["Required [Name] field"]);
         }
 
         if (originalName != null && originalName.Equals(actionName))
@@ -142,16 +147,16 @@ public class ActionsService : BaseService
         {
             if (a.Name.Equals(actionName))
                 AddError(nameof(actionName),
-                    Translate.Key("Invalid[Name] field! There is already an action registered with that name."));
+                    StringLocalizer["Invalid[Name] field! There is already an action registered with that name."]);
         }
     }
 
     private void ValidateAction(FormElement formElement, BasicAction action)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
-            AddError(nameof(action.VisibleExpression), Translate.Key("Required [VisibleExpression] field"));
+            AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
         else if (!ValidateExpression(action.VisibleExpression, "val:", "exp:", "sql:"))
-            AddError(nameof(action.VisibleExpression), Translate.Key("Invalid [VisibleExpression] field"));
+            AddError(nameof(action.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(action.EnableExpression))
             AddError(nameof(action.EnableExpression), "Required [EnableExpression] field");
@@ -161,26 +166,26 @@ public class ActionsService : BaseService
         if (action is SqlCommandAction sqlAction)
         {
             if (string.IsNullOrEmpty(sqlAction.CommandSql))
-                AddError(nameof(sqlAction.CommandSql), Translate.Key("Required [Sql Command] field"));
+                AddError(nameof(sqlAction.CommandSql), StringLocalizer["Required [Sql Command] field"]);
 
             if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
-                AddError(nameof(sqlAction.ApplyOnSelected), Translate.Key("[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"));
+                AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"]);
         }
 
         else if (action is UrlRedirectAction urlAction)
         {
             if (string.IsNullOrEmpty(urlAction.UrlRedirect))
-                AddError(nameof(urlAction.UrlRedirect), Translate.Key("Required [Url Redirect] field"));
+                AddError(nameof(urlAction.UrlRedirect), StringLocalizer["Required [Url Redirect] field"]);
         }
         else if (action is ScriptAction scriptAction)
         {
             if (string.IsNullOrEmpty(scriptAction.OnClientClick))
-                AddError(nameof(scriptAction.OnClientClick), Translate.Key("Required [JavaScript Command] field"));
+                AddError(nameof(scriptAction.OnClientClick), StringLocalizer["Required [JavaScript Command] field"]);
         }
         else if (action is InternalAction internalAction)
         {
             if (string.IsNullOrEmpty(internalAction.ElementRedirect.ElementNameRedirect))
-                AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), Translate.Key("Required [Entity Name] field"));
+                AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), StringLocalizer["Required [Entity Name] field"]);
         }
     }
 
@@ -225,7 +230,7 @@ public class ActionsService : BaseService
 
     public Dictionary<string, string> GetFieldList(string elementName)
     {
-        var dicFields = new Dictionary<string, string> { { string.Empty, Translate.Key("--Select--") } };
+        var dicFields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
         if (string.IsNullOrEmpty(elementName))
             return dicFields;

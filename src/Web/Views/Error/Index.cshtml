@@ -1,6 +1,11 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Web.TagHelpers
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model ErrorViewModel
 
 <style>
@@ -19,7 +24,7 @@
             </div>
             <h1 class="display-1 fw-bold">@Model.StatusCode</h1>
             <p class="fs-3">
-                <span class="text-danger">@Translate.Key("Error")!</span> @Model.Message
+                <span class="text-danger">@StringLocalizer["Error"]!</span> @Model.Message
             </p>
             <p class="lead">
                 @Model.Exception
@@ -41,7 +46,7 @@
                         <jj-link-button onclick="history.back()"
                                         type="LinkButtonType.Button"
                                         icon="Backward"
-                                        text="@Translate.Key("Back")"/>
+                                        text="@StringLocalizer["Back"]"/>
                     </div>
                 </div>
             </div>

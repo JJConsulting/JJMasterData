@@ -148,7 +148,7 @@ public class JJAuditLogView : JJBaseView
             alert.ShowIcon = true;
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = PanelColor.Warning;
-            alert.Messages.Add(Translate.Key("No Records Found"));
+            alert.Messages.Add(StringLocalizer["No Records Found"]);
 
             return alert.GetHtmlBuilder();
         }
@@ -181,7 +181,7 @@ public class JJAuditLogView : JJBaseView
                       {
                           p.AppendElement(HtmlTag.B, b =>
                           {
-                              b.AppendText($"{Translate.Key("Change History")}:");
+                              b.AppendText($"{StringLocalizer["Change History"]}:");
                           });
                       });
                     divFields.AppendElement(HtmlTag.Div, group =>
@@ -207,7 +207,7 @@ public class JJAuditLogView : JJBaseView
                       {
                           p.AppendElement(HtmlTag.B, b =>
                           {
-                              b.AppendText($"{Translate.Key("Snapshot Record")}:");
+                              b.AppendText($"{StringLocalizer["Snapshot Record"]}:");
                           });
                       });
                     divDetail.AppendElement(panel);
@@ -308,20 +308,20 @@ public class JJAuditLogView : JJBaseView
             {
                 icon = "fa fa-pencil fa-lg fa-fw";
                 color = "#ffbf00";
-                action = Translate.Key("Edited");
+                action = StringLocalizer["Edited"];
             }
             else if (row["actionType"].Equals((int)CommandOperation.Insert))
             {
                 icon = "fa fa-plus fa-lg fa-fw";
                 color = "#387c44;";
-                action = Translate.Key("Added");
+                action = StringLocalizer["Added"];
 
             }
             else if (row["actionType"].Equals((int)CommandOperation.Delete))
             {
                 icon = "fa fa-trash fa-lg fa-fw";
                 color = "#b20000";
-                action = Translate.Key("Deleted");
+                action = StringLocalizer["Deleted"];
             }
 
             if (row["origin"].Equals((int)DataContextSource.Api))
@@ -357,7 +357,7 @@ public class JJAuditLogView : JJBaseView
                     div.AppendElement(HtmlTag.Span, span =>
                     {
                         span.WithAttribute("style", "float:right");
-                        span.AppendText(Translate.Key("Browser info."));
+                        span.AppendText(StringLocalizer["Browser info."]);
                         span.WithToolTip(row["browser"].ToString());
 
                         var icon = new JJIcon(IconType.InfoCircle);

@@ -3,10 +3,11 @@
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.Extensions.Localization
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @model ActionsListViewModel
-
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @{
     ViewData["Title"] = $"{Model.DictionaryName} - Actions";

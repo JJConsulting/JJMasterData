@@ -3,6 +3,9 @@
 @using JJMasterData.Core.Web
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
     IHtmlContent NavItem(string menuId)
     {
@@ -54,7 +57,7 @@
                 @if (BootstrapHelper.Version == 3)
                 {
                     <button type="button" class="navbar-toggle collapsed" data-bs-toggle="collapse" data-target="#jj-navbar" aria-expanded="false">
-                        <span class="sr-only">@Translate.Key("Toggle navigation")</span>
+                        <span class="sr-only">@StringLocalizer["Toggle navigation"]</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -71,48 +74,48 @@
                 <ul class="@(BootstrapHelper.Version == 5 ? "nav nav-pills" : "navbar-nav nav")">
                     <li class="@NavItem("Exit") @BootstrapHelper.MarginLeft-1">
                         <a class="nav-link" href="@Url.Action("Index", "Element")">
-                            <span class="fa fa-mail-reply" aria-selected="@AriaSelected("Exit")"></span> @Translate.Key("Exit")
+                            <span class="fa fa-mail-reply" aria-selected="@AriaSelected("Exit")"></span> @StringLocalizer["Exit"]
                         </a>
                     </li>
                     <li class="@NavItem("Entity")">
                         <a class="nav-link @ActiveBs5("Entity")" href="@Url.Action("Index", "Entity", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-database" aria-selected="@AriaSelected("Entity")"></span>&nbsp;@Translate.Key("Entity")
+                            <span class="fa fa-database" aria-selected="@AriaSelected("Entity")"></span>&nbsp;@StringLocalizer["Entity"]
                         </a>
                     </li>
                     <li class="@NavItem("Field")">
                         <a class="nav-link @ActiveBs5("Field")" href="@Url.Action("Index", "Field", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-th" aria-selected="@AriaSelected("Field")"></span>&nbsp;@Translate.Key("Fields")
+                            <span class="fa fa-th" aria-selected="@AriaSelected("Field")"></span>&nbsp;@StringLocalizer["Fields"]
                         </a>
                     </li>
                     <li class="@NavItem("Panel")">
                         <a class="nav-link @ActiveBs5("Panel")" href="@Url.Action("Index", "Panel", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa-solid fa-table-columns" aria-selected="@AriaSelected("Panel")"></span>&nbsp;@Translate.Key("Panels")
+                            <span class="fa-solid fa-table-columns" aria-selected="@AriaSelected("Panel")"></span>&nbsp;@StringLocalizer["Panels"]
                         </a>
                     </li>
                     <li class="@NavItem("Relationships")">
                         <a class="nav-link @ActiveBs5("Relationships")" href="@Url.Action("Index", "Relationships", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-joomla" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@Translate.Key("Relationships")
+                            <span class="fa fa-joomla" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@StringLocalizer["Relationships"]
                         </a>
                     </li>
                     <li class="@NavItem("Indexes")">
                         <a class="nav-link @ActiveBs5("Indexes")" href="@Url.Action("Index", "Indexes", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-indent" aria-selected="@AriaSelected("Indexes")"></span>&nbsp;@Translate.Key("Indexes")
+                            <span class="fa fa-indent" aria-selected="@AriaSelected("Indexes")"></span>&nbsp;@StringLocalizer["Indexes"]
                         </a>
                     </li>
 
                     <li class="@NavItem("Options")">
                         <a class="nav-link @ActiveBs5("Options")" href="@Url.Action("Index", "UIOptions", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-gear" aria-selected="@AriaSelected("Options")"></span>&nbsp;@Translate.Key("Options")
+                            <span class="fa fa-gear" aria-selected="@AriaSelected("Options")"></span>&nbsp;@StringLocalizer["Options"]
                         </a>
                     </li>
                     <li class="@NavItem("Actions")">
                         <a class="nav-link @ActiveBs5("Actions")" href="@Url.Action("Index", "Actions", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-flash" aria-selected="@AriaSelected("Actions")"></span>&nbsp;@Translate.Key("Actions")
+                            <span class="fa fa-flash" aria-selected="@AriaSelected("Actions")"></span>&nbsp;@StringLocalizer["Actions"]
                         </a>
                     </li>
                     <li class="@NavItem("Api") @(BootstrapHelper.Version >= 5 ? "me-auto" : string.Empty)">
                         <a class="nav-link @ActiveBs5("Api")" href="@Url.Action("Index", "Api", new { dictionaryName = Model.DictionaryName })">
-                            <span class="fa fa-globe" aria-selected="@AriaSelected("Api")"></span>&nbsp;@Translate.Key("API")
+                            <span class="fa fa-globe" aria-selected="@AriaSelected("Api")"></span>&nbsp;@StringLocalizer["API"]
                         </a>
                     </li>
                     @if (BootstrapHelper.Version >= 5)
@@ -148,28 +151,28 @@
     private void More()
     {
         <a href="#" class="dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") role="button" aria-haspopup="true" aria-expanded="false">
-            @Translate.Key("More") <span class="caret"></span>
+            @StringLocalizer["More"] <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li class="dropdown-item" onclick="popup.show('@Translate.Key("Database Scripts")', '@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })',1);">
+            <li class="dropdown-item" onclick="popup.show('@StringLocalizer["Database Scripts"]', '@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })',1);">
                 <a href="#">
-                    <span class="fa fa-play-circle fa-fw fa-lg"></span> @Translate.Key("Get Script")
+                    <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Script"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="popup.show('@Translate.Key("Class Source Code")', '@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })',1);">
+            <li class="dropdown-item" onclick="popup.show('@StringLocalizer["Class Source Code"]', '@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })',1);">
                 <a href="#">
-                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @Translate.Key("Get Class")
+                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get Class"]
                 </a>
             </li>
             <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = Model.DictionaryName })', '_blank').focus();">
                 <a href="#">
-                    <span class="fa fa-eye fa-fw fa-lg"></span> @Translate.Key("Preview")
+                    <span class="fa fa-eye fa-fw fa-lg"></span> @StringLocalizer["Preview"]
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>
             <li class="dropdown-item" onclick="popup.show('Help', 'https://portal.jjconsulting.com.br/jjdoc/', 1);">
                 <a href="#">
-                    <span class="fa fa-question-circle fa-fw fa-lg"></span> @Translate.Key("Help")
+                    <span class="fa fa-question-circle fa-fw fa-lg"></span> @StringLocalizer["Help"]
                 </a>
             </li>
         </ul>

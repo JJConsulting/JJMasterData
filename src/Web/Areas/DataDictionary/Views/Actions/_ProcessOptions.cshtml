@@ -1,6 +1,11 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model ProcessOptions
 
 <link href="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.css" rel="stylesheet" />
@@ -95,16 +100,16 @@
 <div class="row" style="margin-bottom:5px">
 
     <div class="col-sm-12">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip")>@Translate.Key("Sql Command")</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip")>@StringLocalizer["Sql Command"]</label>
     </div>
     <div class="col-sm-4">
         <select class="form-control form-select selectpicker" id="cboSqlEvent" name="cboSqlEvent">
-            <option value="1" selected="selected" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@Translate.Key("Before starting the process")">@Translate.Key("Before starting the process")</option>
-            <option value="2" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@Translate.Key("After finishing the process")">@Translate.Key("After finishing the process")</option>
+            <option value="1" selected="selected" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["Before starting the process"]">@StringLocalizer["Before starting the process"]</option>
+            <option value="2" data-content="<span class='fa fa-flash fa-lg fa-fw' style='color:#FFC90E;'></span>&nbsp;@StringLocalizer["After finishing the process"]">@StringLocalizer["After finishing the process"]</option>
         </select>
     </div>
     <div class="col-sm-8 @BootstrapHelper.TextRight" style="margin-top: 15px;">
-        <span class="small text-info">@Translate.Key("(Type Ctrl+Space to AutoComplete)")&nbsp;</span>
+        <span class="small text-info">@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]&nbsp;</span>
     </div>
 
 </div>
@@ -125,7 +130,7 @@
 <hr />
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-3">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom">@Translate.Key("Scope")</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom">@StringLocalizer["Scope"]</label>
         <select class="form-control form-select" id="ProcessOptions_Scope" name="ProcessOptions.Scope">
             @foreach (ProcessScope scope in Enum.GetValues(typeof(ProcessScope)))
             {
@@ -146,11 +151,11 @@
     <div class="col-sm-9">
         <span class="text-info fa fa-info-circle"></span>
         <span class="small">
-            <em>@Translate.Key("Scope of execution of the process. ")</em><br />
-            <b>@Translate.Key("Global")</b>&nbsp;@Translate.Key("Only one process from this dictionary can be run at a time. ")<br />
-            @Translate.Key("and all users will be able to view the latest log and execution of an ongoing process.")
+            <em>@StringLocalizer["Scope of execution of the process. "]</em><br />
+            <b>@StringLocalizer["Global"]</b>&nbsp;@StringLocalizer["Only one process from this dictionary can be run at a time. "]<br />
+            @StringLocalizer["and all users will be able to view the latest log and execution of an ongoing process."]
             <br />
-            <b>@Translate.Key("User")</b>&nbsp;@Translate.Key("Several users can run this process simultaneously, but only see the log and one run of your process.")
+            <b>@StringLocalizer["User"]</b>&nbsp;@StringLocalizer["Several users can run this process simultaneously, but only see the log and one run of your process."]
         </span>
 
     </div>

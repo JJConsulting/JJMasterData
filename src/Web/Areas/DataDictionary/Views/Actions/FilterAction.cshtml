@@ -4,15 +4,18 @@
 
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @model  JJMasterData.Core.DataDictionary.Actions.GridToolbar.FilterAction
 
 @using (Html.BeginForm("FilterAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
-        <li id="navFilterAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divFilterAction">@Translate.Key("Filter Action")</a></li>
-        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>
+        <li id="navFilterAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divFilterAction">@StringLocalizer["Filter Action"]</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a></li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
@@ -23,13 +26,13 @@
         <div id="divFilterAction" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("View in a collapsed panel")">@Translate.Key("ShowAsCollapse")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["View in a collapsed panel"]">@StringLocalizer["ShowAsCollapse"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.ShowAsCollapse, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("Display open dashboard by default")">@Translate.Key("ExpandedByDefault")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Display open dashboard by default"]">@StringLocalizer["ExpandedByDefault"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.ExpandedByDefault, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
@@ -37,16 +40,16 @@
                 <div class="col-sm-6">
                     <span class="text-info fa fa-info-circle"></span>
                     <span class="small">
-                        <b>@Translate.Key("View in a collapsed dashboard.")</b><br />
-                        @Translate.Key("When this property is set to yes the filter icon will be removed from the grid")
-                        @Translate.Key("and a panel with filters will be displayed above the grid.")<br />
-                        @Translate.Key("Filter behavior remains the same.")<br />
+                        <b>@StringLocalizer["View in a collapsed dashboard."]</b><br />
+                        @StringLocalizer["When this property is set to yes the filter icon will be removed from the grid"]
+                        @StringLocalizer["and a panel with filters will be displayed above the grid."]<br />
+                        @StringLocalizer["Filter behavior remains the same."]<br />
                         <br />
                     </span>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("Enable quick screen search")">@Translate.Key("EnableScreenSearch")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Enable quick screen search"]">@StringLocalizer["EnableScreenSearch"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.EnableScreenSearch, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
@@ -56,9 +59,9 @@
                 <div class="col-sm-6">
                     <span class="text-info fa fa-info-circle"></span>
                     <span class="small">
-                        <b>@Translate.Key("Enable quick on - screen search.")</b><br />
-                        @Translate.Key("This search does not query the database, it only looks for records displayed in the grid.")
-                        @Translate.Key("Typically used when grid paging is disabled.")
+                        <b>@StringLocalizer["Enable quick on - screen search."]</b><br />
+                        @StringLocalizer["This search does not query the database, it only looks for records displayed in the grid."]
+                        @StringLocalizer["Typically used when grid paging is disabled."]
                         <br />
                     </span>
                 </div>

@@ -1,5 +1,11 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model JJMasterData.Commons.Data.Entity.ElementIndex
 
 <script type="text/javascript">
@@ -29,30 +35,30 @@
         <div>
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
-                    <label class="@BootstrapHelper.Label " for="VisibleExpression" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Index Name")">@Translate.Key("IndexName")</label>
+                    <label class="@BootstrapHelper.Label " for="VisibleExpression" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Index Name"]">@StringLocalizer["IndexName"]</label>
                     @Html.TextBox("indexName", (string)ViewBag.IndexName, new { @class = "form-control", @readonly = "readonly" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="IsUnique">@Translate.Key("IsUnique")</label>
+                    <label class="@BootstrapHelper.Label " for="IsUnique">@StringLocalizer["IsUnique"]</label>
                     @Html.DropDownListFor(model => model.IsUnique, new[]
                     {
-                        new SelectListItem { Text = Translate.Key("No"), Value = "false" },
-                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
                     },
                         new { @class = "form-control form-select" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="IsClustered">@Translate.Key("IsClustered")</label>
+                    <label class="@BootstrapHelper.Label " for="IsClustered">@StringLocalizer["IsClustered"]</label>
                     @Html.DropDownListFor(model => model.IsClustered, new[]
                     {
-                        new SelectListItem { Text = Translate.Key("No"), Value = "false" },
-                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
                     },
                         new { @class = "form-control form-select" })
                 </div>
 
                 <div class="col-sm-12">
-                    <h4>@Translate.Key("Fields")</h4>
+                    <h4>@StringLocalizer["Fields"]</h4>
                     <hr/>
                 </div>
 
@@ -83,12 +89,12 @@
         <div class="col-sm-12">
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="cmdSave()">
                 <span class="fa fa-check"></span>
-                <span>&nbsp;@Translate.Key("Save")</span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
                 <span class="fa fa-times"></span>
-                <span>&nbsp;@Translate.Key("Cancel")</span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>
         </div>
     </div>

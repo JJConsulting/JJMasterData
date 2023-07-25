@@ -116,24 +116,26 @@ internal class DataImportationLog
 
     private HtmlBuilder GetHtmlLogDetails()
     {
-        var panel = new JJCollapsePanel(CurrentContext);
-        panel.Title = "(Click here for more details)";
-        panel.TitleIcon = new JJIcon(IconType.Film);
-        panel.ExpandedByDefault = false;
-        panel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Label, label =>
-            {
-                label.AppendText(StringLocalizer["Date::"]);
-            })
-            .AppendText("&nbsp;")
-            .AppendText(StringLocalizer["start:"])
-            .AppendText("&nbsp;")
-            .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
-            .AppendText("&nbsp;")
-            .AppendText(StringLocalizer["end:"])
-            .AppendText("&nbsp;")
-            .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
-            .AppendElement(HtmlTag.Br);
+        var panel = new JJCollapsePanel(CurrentContext)
+        {
+            Title = "(Click here for more details)",
+            TitleIcon = new JJIcon(IconType.Film),
+            ExpandedByDefault = false,
+            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
+                .AppendElement(HtmlTag.Label, label =>
+                {
+                    label.AppendText(StringLocalizer["Date::"]);
+                })
+                .AppendText("&nbsp;")
+                .AppendText(StringLocalizer["start:"])
+                .AppendText("&nbsp;")
+                .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
+                .AppendText("&nbsp;")
+                .AppendText(StringLocalizer["end:"])
+                .AppendText("&nbsp;")
+                .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
+                .AppendElement(HtmlTag.Br)
+        };
 
         if (!string.IsNullOrEmpty(Reporter.UserId))
         {
@@ -163,21 +165,22 @@ internal class DataImportationLog
         {
             alert.Icon = IconType.ExclamationTriangle;
             alert.Color = PanelColor.Danger;
-            alert.Title = Translate.Key("Error importing file!");
-            alert.Messages.Add(Translate.Key(Reporter.Message));
+            alert.Title = StringLocalizer["Error importing file!"];
+            alert.Messages.Add(StringLocalizer[Reporter.Message]);
         }
         else if (Reporter.Error > 0)
         {
             alert.Icon = IconType.InfoCircle;
             alert.Color = PanelColor.Info;
-            alert.Title = Translate.Key("File imported with errors!");
-            alert.Messages.Add(Translate.Key(Reporter.Message));
+            alert.Title = StringLocalizer["File imported with errors!"];
+            alert.Messages.Add(StringLocalizer[
+            Reporter.Message]);
         }
         else
         {
             alert.Icon = IconType.Check;
             alert.Color = PanelColor.Success;
-            alert.Title = Translate.Key(Reporter.Message);
+            alert.Title = StringLocalizer[Reporter.Message];
         }
 
         return alert;

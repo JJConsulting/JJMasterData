@@ -8,16 +8,18 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataImportationHelp
 {
     public JJDataImp DataImportation { get; private set; }
-
+    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; private set; }
     internal DataImportationHelp(JJDataImp dataImportation)
     {
         DataImportation = dataImportation;
+        StringLocalizer = DataImportation.StringLocalizer;
     }
 
     public HtmlBuilder GetHtmlHelp()
@@ -75,25 +77,25 @@ internal class DataImportationHelp
                 tr.AppendElement(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:60px")
-                    .AppendText(Translate.Key("Order"));
+                    .AppendText(StringLocalizer["Order"]);
                 });
                 tr.AppendElement(HtmlTag.Th, th =>
                 {
-                    th.AppendText(Translate.Key("Name"));
+                    th.AppendText(StringLocalizer["Name"]);
                 });
                 tr.AppendElement(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:120px")
-                        .AppendText(Translate.Key("Type"));
+                        .AppendText(StringLocalizer["Type"]);
                 });
                 tr.AppendElement(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:90px")
-                        .AppendText(Translate.Key("Required"));
+                        .AppendText(StringLocalizer["Required"]);
                 });
                 tr.AppendElement(HtmlTag.Th, th =>
                 {
-                    th.AppendText(Translate.Key("Details"));
+                    th.AppendText(StringLocalizer["Details"]);
                 });
             });
 
@@ -118,7 +120,7 @@ internal class DataImportationHelp
                 td.AppendElementIf(field.IsPk, HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-star")
-                        .WithToolTip(Translate.Key("Primary Key"))
+                        .WithToolTip(StringLocalizer["Primary Key"])
                         .WithAttribute("style", "color:#efd829;");
                 });
             });
@@ -128,7 +130,7 @@ internal class DataImportationHelp
             });
             tr.AppendElement(HtmlTag.Td, td =>
             {
-                td.AppendText(field.IsRequired ? Translate.Key("Yes") : Translate.Key("No"));
+                td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]);
             });
             tr.AppendElement(HtmlTag.Td, td =>
             {
@@ -147,16 +149,16 @@ internal class DataImportationHelp
         switch (type)
         {
             case FieldType.Date:
-                return Translate.Key("Date");
+                return StringLocalizer["Date"];
             case FieldType.DateTime:
             case FieldType.DateTime2:
-                return Translate.Key("Date and time");
+                return StringLocalizer["Date and time"];
             case FieldType.Int:
-                return Translate.Key("Integer number");
+                return StringLocalizer["Integer number"];
             case FieldType.Float:
-                return Translate.Key("Decimal number");
+                return StringLocalizer["Decimal number"];
             default:
-                return Translate.Key("Text");
+                return StringLocalizer["Text"];
 
         }
     }
@@ -178,18 +180,18 @@ internal class DataImportationHelp
         }
         else if (field.Component == FormComponent.ComboBox)
         {
-            text.Append(Translate.Key("Inform the Id"));
+            text.Append(StringLocalizer["Inform the Id"]);
             text.Append(" ");
             text.Append(GetHtmlComboHelp(field));
         }
         else if (field.Component == FormComponent.CheckBox)
         {
             text.Append("(1,S,Y) ");
-            text.Append(Translate.Key("Selected"));
+            text.Append(StringLocalizer["Selected"]);
         }
         else if (field.DataType == FieldType.Int)
         {
-            text.Append(Translate.Key("No dot or comma"));
+            text.Append(StringLocalizer["No dot or comma"]);
         }
         else if (field.DataType == FieldType.Float)
         {
@@ -221,25 +223,25 @@ internal class DataImportationHelp
     {
         var upload = DataImportation.Upload;
         var text = new StringBuilder();
-        text.Append(Translate.Key("To bulk insert records, select a file of type"));
+        text.Append(StringLocalizer["To bulk insert records, select a file of type"]);
         text.Append("<b>");
-        text.Append(upload.AllowedTypes.Replace(",", $" {Translate.Key("or")} "));
+        text.Append(upload.AllowedTypes.Replace(",", $" {StringLocalizer["or"]} "));
         text.Append("</b>");
         text.Append(", ");
-        text.Append(Translate.Key("with the maximum size of"));
+        text.Append(StringLocalizer["with the maximum size of"]);
         text.Append(" <b>");
         text.Append(Format.FormatFileSize(upload.GetMaxRequestLength()));
         text.Append("</b>");
         text.Append(", ");
-        text.Append(Translate.Key("do not include caption or description in the first line"));
+        text.Append(StringLocalizer["do not include caption or description in the first line"]);
         text.Append(", ");
-        text.Append(Translate.Key("the file must contain"));
+        text.Append(StringLocalizer["the file must contain"]);
         text.Append(" <b>");
         text.Append(columnsCount);
         text.Append(" ");
-        text.Append(Translate.Key("Columns"));
+        text.Append(StringLocalizer["Columns"]);
         text.Append(" </b> ");
-        text.Append(Translate.Key("separated by semicolons (;), following the layout below:"));
+        text.Append(StringLocalizer["separated by semicolons (;), following the layout below:"]);
 
         return text.ToString();
     }
@@ -283,7 +285,7 @@ internal class DataImportationHelp
 
             if (field.DataItem!.EnableMultiSelect)
             {
-                span.AppendText(" " + Translate.Key("To select more than one item, enter the desired values separated by a comma."));
+                span.AppendText(" " + StringLocalizer["To select more than one item, enter the desired values separated by a comma."]);
             }
         });
 

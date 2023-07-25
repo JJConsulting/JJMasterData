@@ -1,11 +1,16 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Web.TagHelpers
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 <div class="row">
     <div class="col-sm-12" id="divWarning" style="display: none;">
-        <jj-alert title="@Translate.Key("Atention!")" icon="IconType.InfoCircle">
-            @Translate.Key("Some databases have limitation on object names,")
-            @Translate.Key("for example Oracle with version less than 12c is limited to 30 characters.")<br/>
-            @Translate.Key("We recommend checking your database documentation before proceeding.")
+        <jj-alert title="@StringLocalizer["Atention!"]" icon="IconType.InfoCircle">
+            @StringLocalizer["Some databases have limitation on object names,"]
+            @StringLocalizer["for example Oracle with version less than 12c is limited to 30 characters."]<br/>
+            @StringLocalizer["We recommend checking your database documentation before proceeding."]
         </jj-alert>
     </div>
 </div>

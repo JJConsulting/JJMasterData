@@ -4,6 +4,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementPanel
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
     ViewData["Title"] = $"{ViewBag.DictionaryName} - Panels";
 }
@@ -134,8 +137,8 @@
                 <input class="form-control"
                        type="search"
                        @BootstrapHelper.GetDataToggle("tooltip")
-                       title="@Translate.Key("Filter by any field visible in the list")"
-                       placeholder="@Translate.Key("Search...")"
+                       title="@StringLocalizer["Filter by any field visible in the list"]"
+                       placeholder="@StringLocalizer["Search..."]"
                        id="txtFilter"
                        name="txtFilter"
                        onkeyup="searchFields(this);"/>
@@ -146,7 +149,7 @@
                         @{int nLine = 0;}
                         @if (ViewBag.Panels.Count == 0)
                         {
-                            <div>@Translate.Key("No record found")</div>
+                            <div>@StringLocalizer["No record found"]</div>
                         }
                         @foreach (FormElementPanel panel in ViewBag.Panels)
                         {
@@ -160,9 +163,9 @@
                                         <br>
                                         @panel.Layout.ToString()
                                     </div>
-                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@Translate.Key("Drag and drop to move")">
+                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                     </div>
-                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@Translate.Key("Drag and drop to move")">
+                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
                                         @nLine.ToString()
                                     </span>
                                 </div>

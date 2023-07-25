@@ -4,15 +4,18 @@
 
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @model  JJMasterData.Core.DataDictionary.Actions.UserCreated.UrlRedirectAction
 
 @using (Html.BeginForm("UrlRedirectAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
-        <li id="navUrlAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@Translate.Key("Url Action")</a></li>
-        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a></li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>
+        <li id="navUrlAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Action"]</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a></li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
@@ -23,25 +26,25 @@
         <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("URL accept expression")">@Translate.Key("Url Redirect")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["URL accept expression"]">@StringLocalizer["Url Redirect"]</label>
                     @Html.TextBoxFor(model => model.UrlRedirect, new { @class = "form-control" })
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@Translate.Key("open action as popup")">@Translate.Key("Popup")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["open action as popup"]">@StringLocalizer["Popup"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.UrlAsPopUp, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Título da Modal">@Translate.Key("Title") @Translate.Key("Popup")</label>
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Título da Modal">@StringLocalizer["Title"] @StringLocalizer["Popup"]</label>
                     @Html.TextBoxFor(model => model.TitlePopUp, new { @class = "form-control" })
                 </div>
 
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Popup Size")">@Translate.Key("Popup Size")</label>
+                    <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Popup Size"]">@StringLocalizer["Popup Size"]</label>
                     <select asp-for="PopupSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
                 </div>
 

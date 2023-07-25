@@ -23,7 +23,7 @@ public class ExpressionsService : IExpressionsService
     #region "Properties"
 
     private IHttpContext CurrentContext { get; }
-    private IStringLocalizer<JJMasterDataResources> Localizer { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILogger<ExpressionsService> Logger { get; }
     private IEntityRepository EntityRepository { get; }
 
@@ -34,12 +34,12 @@ public class ExpressionsService : IExpressionsService
     public ExpressionsService(
         IEntityRepository entityRepository,
         IHttpContext httpContext,
-        IStringLocalizer<JJMasterDataResources> localizer,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<ExpressionsService> logger)
     {
         EntityRepository = entityRepository;
         CurrentContext = httpContext!;
-        Localizer = localizer;
+        StringLocalizer = stringLocalizer;
         Logger = logger;
     }
 
@@ -119,7 +119,7 @@ public class ExpressionsService : IExpressionsService
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (f == null)
-            throw new ArgumentNullException(nameof(f), Translate.Key("ElementField can not be null"));
+            throw new ArgumentNullException(nameof(f), StringLocalizer["ElementField can not be null"]);
 
         return GetValueExpression(f.DefaultValue, f, state, formValues);
     }
@@ -129,7 +129,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            var err = Localizer["Invalid expression for {0} field", actionName];
+            var err = StringLocalizer["Invalid expression for {0} field", actionName];
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -150,7 +150,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = Localizer["Error executing expression {0} for {1} field.", exp, actionName];
+                string err = StringLocalizer["Error executing expression {0} for {1} field.", exp, actionName];
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -163,7 +163,7 @@ public class ExpressionsService : IExpressionsService
         }
         else
         {
-            var err = Localizer["Invalid expression for {0} field", actionName];
+            var err = StringLocalizer["Invalid expression for {0} field", actionName];
             throw new ArgumentException(err, nameof(expression));
         }
 
@@ -176,7 +176,7 @@ public class ExpressionsService : IExpressionsService
     {
         if (string.IsNullOrEmpty(expression))
         {
-            var err = Localizer["Invalid expression for {0} field", actionName];
+            var err = StringLocalizer["Invalid expression for {0} field", actionName];
             throw new ArgumentNullException(nameof(expression), err);
         }
 
@@ -197,7 +197,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = Localizer["Error executing expression {0} for {1} field.", exp, actionName];
+                string err = StringLocalizer["Error executing expression {0} for {1} field.", exp, actionName];
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -210,7 +210,7 @@ public class ExpressionsService : IExpressionsService
         }
         else
         {
-            var err = Localizer["Invalid expression for {0} field", actionName];
+            var err = StringLocalizer["Invalid expression for {0} field", actionName];
             throw new ArgumentException(err, nameof(expression));
         }
 
@@ -221,7 +221,7 @@ public class ExpressionsService : IExpressionsService
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (f == null)
-            throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
+            throw new ArgumentNullException(nameof(f), StringLocalizer["FormElementField can not be null"]);
 
         if (f.TriggerExpression != null) 
             return GetValueExpression(f.TriggerExpression, f, state, formValues);
@@ -236,7 +236,7 @@ public class ExpressionsService : IExpressionsService
             return null;
 
         if (f == null)
-            throw new ArgumentNullException(nameof(f), Translate.Key("FormElementField can not be null"));
+            throw new ArgumentNullException(nameof(f), StringLocalizer["FormElementField can not be null"]);
 
         string? retVal = null;
         try
@@ -264,7 +264,7 @@ public class ExpressionsService : IExpressionsService
                 catch (Exception ex)
                 {
                     var message = new StringBuilder();
-                    message.AppendLine(Localizer["Error executing expression of field {0}.", f.Name]);
+                    message.AppendLine(StringLocalizer["Error executing expression of field {0}.", f.Name]);
                     message.Append(ex.Message);
                     Logger.LogError(ex, message.ToString());
                 }
@@ -280,7 +280,7 @@ public class ExpressionsService : IExpressionsService
             {
                 var exp = expression.Replace("\"", "").Replace("'", "").Split(',');
                 if (exp.Length < 3)
-                    throw new JJMasterDataException(Translate.Key("Invalid Protheus Request"));
+                    throw new JJMasterDataException(StringLocalizer["Invalid Protheus Request"]);
 
                 var urlProtheus = ParseExpression(exp[0], state, false, formValues);
                 var functionName = ParseExpression(exp[1], state, false, formValues);
@@ -293,12 +293,12 @@ public class ExpressionsService : IExpressionsService
             else
             {
                 var errorMessage = new StringBuilder();
-                errorMessage.Append(Translate.Key("Expression not started with"));
+                errorMessage.Append(StringLocalizer["Expression not started with"]);
                 errorMessage.Append(" [val, exp, sql or protheus]. ");
-                errorMessage.Append(Translate.Key("Field"));
+                errorMessage.Append(StringLocalizer["Field"]);
                 errorMessage.Append(": ");
                 errorMessage.Append(f.Name);
-                errorMessage.Append(Translate.Key("Content"));
+                errorMessage.Append(StringLocalizer["Content"]);
                 errorMessage.Append(": ");
                 errorMessage.Append(expression);
                 throw new ArgumentException(errorMessage.ToString());
@@ -307,9 +307,9 @@ public class ExpressionsService : IExpressionsService
         catch (ProtheusException ex)
         {
             var errorMessage = new StringBuilder();
-            errorMessage.Append(Translate.Key("Error retrieving expression in Protheus integration."));
+            errorMessage.Append(StringLocalizer["Error retrieving expression in Protheus integration."]);
             errorMessage.Append(" ");
-            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.Append(StringLocalizer["Field"]);
             errorMessage.Append(": ");
             errorMessage.AppendLine(f.Name);
             errorMessage.Append(ex.Message);
@@ -320,8 +320,8 @@ public class ExpressionsService : IExpressionsService
         catch (Exception ex)
         {
             var errorMessage = new StringBuilder();
-            errorMessage.AppendLine(Translate.Key("Error retrieving expression or trigger."));
-            errorMessage.Append(Translate.Key("Field"));
+            errorMessage.AppendLine(StringLocalizer["Error retrieving expression or trigger."]);
+            errorMessage.Append(StringLocalizer["Field"]);
             errorMessage.Append(": ");
             errorMessage.AppendLine(f.Name);
 

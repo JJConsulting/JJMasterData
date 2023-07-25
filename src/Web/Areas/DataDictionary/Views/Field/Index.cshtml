@@ -5,6 +5,10 @@
 @using JJMasterData.Core.Web.Http.Abstractions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IHttpContext HttpContext
 
 @{
@@ -136,8 +140,8 @@
     var fieldSearchBox = new JJTextGroup(HttpContext)
     {
        Name = "txtFilter",
-       PlaceHolder = Translate.Key("Search..."),
-       ToolTip = Translate.Key("Filter by any field visible in the list")
+       PlaceHolder = StringLocalizer["Search..."],
+       ToolTip = StringLocalizer["Filter by any field visible in the list"]
     };
     
     fieldSearchBox.Attributes.Add("onkeyup","searchFields(this);");
@@ -160,7 +164,7 @@
                     <div class="list-group jjsortable" id="sortable_grid">
                         @if (ViewBag.Fields.Count == 0)
                         {
-                            <div>@Translate.Key("No record found")</div>
+                            <div>@StringLocalizer["No record found"]</div>
                         }
                         @for(int i = 0; i < ViewBag.Fields.Count; i++)
                         {
@@ -175,7 +179,7 @@
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
                                         {
-                                            <span class="fa fa-star" style="color:#efd829;" title="@Translate.Key("Primary key")"></span>
+                                            <span class="fa fa-star" style="color:#efd829;" title="@StringLocalizer["Primary key"]"></span>
                                         }
                                         <br>
                                         @{string label = string.Empty;}
@@ -189,9 +193,9 @@
                                         }
                                         @label
                                     </div>
-                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@Translate.Key("Drag and drop to move")">
+                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                     </div>
-                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@Translate.Key("Drag and drop to move")">
+                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
                                         @i
                                     </span>
                                 </div>

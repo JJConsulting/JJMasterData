@@ -18,23 +18,27 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Factories;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
     private GridViewFactory GridViewFactory { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
 
     public ElementService(GridViewFactory gridViewFactory,
         IValidationDictionary validationDictionary, 
                           IOptions<JJMasterDataCoreOptions> options,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
                           IEntityRepository entityRepository, 
                           IDataDictionaryRepository dataDictionaryRepository) 
         : base(validationDictionary, dataDictionaryRepository)
     {
         GridViewFactory = gridViewFactory;
+        StringLocalizer = stringLocalizer;
         _entityRepository = entityRepository;
         _options = options.Value;
     }
@@ -73,7 +77,7 @@ public class ElementService : BaseService
         {
             if (DataDictionaryRepository.Exists(tableName))
             {
-                AddError("Name", Translate.Key("There is already a dictionary with the name ") + tableName);
+                AddError("Name", StringLocalizer["There is already a dictionary with the name "] + tableName);
             }
         }
 
@@ -81,7 +85,7 @@ public class ElementService : BaseService
         {
             var dataAccess = JJService.EntityRepository;
             if (!dataAccess.TableExists(tableName))
-                AddError("Name", Translate.Key("Table not found"));
+                AddError("Name", StringLocalizer["Table not found"]);
 
         }
 
@@ -130,12 +134,12 @@ public class ElementService : BaseService
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            AddError("Name", Translate.Key("Mandatory dictionary name field"));
+            AddError("Name", StringLocalizer["Mandatory dictionary name field"]);
         }
 
         if (DataDictionaryRepository.Exists(name))
         {
-            AddError("Name", Translate.Key("There is already a dictionary with the name ") + name);
+            AddError("Name", StringLocalizer["There is already a dictionary with the name "] + name);
         }
 
         return IsValid;

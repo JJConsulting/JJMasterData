@@ -2,10 +2,13 @@
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 <div class="page-header">
     <h1>
-        <img alt="JJMasterData" style="width:12%;height:12%;" src="~/_content/JJMasterData.Web/images/JJMasterData.png"><small>@Translate.Key("Add Dictionary")</small>
+        <img alt="JJMasterData" style="width:12%;height:12%;" src="~/_content/JJMasterData.Web/images/JJMasterData.png"><small>@StringLocalizer["Add Dictionary"]</small>
     </h1>
 </div>
 
@@ -13,12 +16,12 @@
 {
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-            <label class="@BootstrapHelper.Label" for="tableName" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("Table Name")</label>
-            @Html.TextBox("tableName", "", new { @class = "form-control", maxlength = "64", placeholder = Translate.Key("Enter a table or view name") })
+            <label class="@BootstrapHelper.Label" for="tableName" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["Table Name"]</label>
+            @Html.TextBox("tableName", "", new { @class = "form-control", maxlength = "64", placeholder = StringLocalizer["Enter a table or view name"] })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-12 ">
             @Html.CheckBox("importFields", true)
-            <label for="importFields">@Translate.Key("Import fields")</label>
+            <label for="importFields">@StringLocalizer["Import fields"]</label>
         </div>
     </div>
     
@@ -32,11 +35,11 @@
         <div class="col-sm-6">
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="location.href='@Url.Action("Index")'">
                 <span class="fa fa-arrow-left"></span>
-                <span>&nbsp;@Translate.Key("Back")</span>
+                <span>&nbsp;@StringLocalizer["Back"]</span>
             </button>
             <button id="btnNext" class="@BootstrapHelper.DefaultButton" type="submit">
                 <span class="fa fa-forward"></span>
-                @Translate.Key("Next")
+                @StringLocalizer["Next"]
             </button>
         </div>
     </div>

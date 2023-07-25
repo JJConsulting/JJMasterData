@@ -3,6 +3,12 @@
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Core.Web.Http.Abstractions
 @model FormElementField
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @inject IHttpContext HttpContext
 @section Scripts{
     <script lang="javascript" type="text/javascript">
@@ -38,57 +44,57 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h4>@Translate.Key("DataFile")</h4>
+        <h4>@StringLocalizer["DataFile"]</h4>
         <hr />
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Folder Path")">@Translate.Key("FolderPath")</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Folder Path"]">@StringLocalizer["FolderPath"]</label>
         @Html.TextBoxFor(model => model.DataFile!.FolderPath, new { maxlength = "400", @class = "form-control" })
         
         <span class="help-block">
-            @Translate.Key("You can use for example: ") {app.path}/DataDictionaries/AnotherFolder
+            @StringLocalizer["You can use for example: "] {app.path}/DataDictionaries/AnotherFolder
         </span>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label class="@BootstrapHelper.Label " for="txtAllowedTypes" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Types of historical files")">@Translate.Key("AllowedTypes")</label>
+        <label class="@BootstrapHelper.Label " for="txtAllowedTypes" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Types of historical files"]">@StringLocalizer["AllowedTypes"]</label>
         @Html.TextBoxFor(model => model.DataFile!.AllowedTypes, new { maxlength = "255", @class = "form-control" })
-        <span class="help-block">@Translate.Key("file types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked")</span>
+        <span class="help-block">@StringLocalizer["file types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked"]</span>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@Translate.Key("Max File Size (MB)"), new {@class = BootstrapHelper.Label})
+        @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@StringLocalizer["Max File Size (MB)"], new {@class = BootstrapHelper.Label})
         @Html.Raw(slider.GetHtml())
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkViewGallery" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("View Gallery")">@Translate.Key("View Gallery")</label>
+        <label class="@BootstrapHelper.Label " for="chkViewGallery" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["View Gallery"]">@StringLocalizer["View Gallery"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.DataFile!.ViewGallery, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkDragDrop" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Allow dragging files")">@Translate.Key("DragDrop")</label>
+        <label class="@BootstrapHelper.Label " for="chkDragDrop" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Allow dragging files"]">@StringLocalizer["DragDrop"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.DataFile!.DragDrop, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkMultiplefile" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Allows you to upload multiple files")">@Translate.Key("MultipleFile")</label>
+        <label class="@BootstrapHelper.Label " for="chkMultiplefile" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Allows you to upload multiple files"]">@StringLocalizer["MultipleFile"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.DataFile!.MultipleFile, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkExportAsLink" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Export file name with download link")">@Translate.Key("ExportAsLink")</label>
+        <label class="@BootstrapHelper.Label " for="chkExportAsLink" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Export file name with download link"]">@StringLocalizer["ExportAsLink"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.DataFile!.ExportAsLink, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
 
     <div class="col-sm-12">
-        <a href="javascript:window.open('https://portal.jjconsulting.com.br/jjdoc/articles/tutorials/data_file.html', '_blank').focus();">@Translate.Key("Need more help ?")</a>
+        <a href="javascript:window.open('https://portal.jjconsulting.com.br/jjdoc/articles/tutorials/data_file.html', '_blank').focus();">@StringLocalizer["Need more help ?"]</a>
     </div>
 
 

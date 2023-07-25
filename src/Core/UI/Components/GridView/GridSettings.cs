@@ -2,6 +2,7 @@
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -10,6 +11,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class GridSettings
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string TableTotalPerPage = "table_regperpage";
     private const string TableTotalPaginationButtons = "table_totalpagebuttons";
     private const string TableBorder = "table_border";
@@ -39,8 +41,9 @@ public class GridSettings
 
     public bool IsHeaderFixed { get; set; }
 
-    public GridSettings()
+    public GridSettings(IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        StringLocalizer = stringLocalizer;
         TotalPerPage = 5;
         TotalPaginationButtons = 5;
         ShowBorder = false;
@@ -50,9 +53,9 @@ public class GridSettings
     }
 
 
-    internal static GridSettings LoadFromForm(IHttpContext currentContext)
+    internal static GridSettings LoadFromForm(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        var gridSettings = new GridSettings();
+        var gridSettings = new GridSettings(stringLocalizer);
         string tableRegPerPage = currentContext.Request[TableTotalPerPage];
         string tableTotalPageButtons = currentContext.Request[TableTotalPaginationButtons];
         string tableBorder = currentContext.Request[TableBorder];
@@ -109,7 +112,7 @@ public class GridSettings
             {
                 label.WithAttribute("for", TableRowHover);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(Translate.Key("Highlight line on mouseover"));
+                label.AppendText(StringLocalizer["Highlight line on mouseover"]);
             });
         div.AppendElement(HtmlTag.Div, div =>
         {
@@ -129,7 +132,7 @@ public class GridSettings
             {
                 label.WithAttribute("for", TableRowsStriped);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(Translate.Key("Show rows striped"));
+                label.AppendText(StringLocalizer["Show rows striped"]);
             });
         div.AppendElement(HtmlTag.Div, div =>
         {
@@ -148,7 +151,7 @@ public class GridSettings
             {
                 label.WithAttribute("for", TableBorder);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(Translate.Key("Show table border"));
+                label.AppendText(StringLocalizer["Show table border"]);
             });
         div.AppendElement(HtmlTag.Div, div =>
         {
@@ -168,7 +171,7 @@ public class GridSettings
             {
                 label.WithAttribute("for", TableTotalPerPage);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(Translate.Key("Records per Page"));
+                label.AppendText(StringLocalizer["Records per Page"]);
             });
         div.AppendElement(HtmlTag.Div, div =>
         {
@@ -209,8 +212,8 @@ public class GridSettings
             .WithNameAndId(name)
             .WithAttributeIf(isChecked, "checked", "checked")
             .WithAttribute("data-toggle", "toggle")
-            .WithAttribute("data-on", Translate.Key("Yes"))
-            .WithAttribute("data-off", Translate.Key("No"));
+            .WithAttribute("data-on", StringLocalizer["Yes"])
+            .WithAttribute("data-off", StringLocalizer["No"]);
 
         return input;
     }

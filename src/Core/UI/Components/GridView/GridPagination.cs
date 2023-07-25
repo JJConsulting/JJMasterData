@@ -7,13 +7,14 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class GridPagination
 {
     private JJGridView GridView { get; set; }
-
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; set; }
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
@@ -21,6 +22,7 @@ internal class GridPagination
 
     public GridPagination(JJGridView gridView)
     {
+        StringLocalizer = gridView.StringLocalizer;
         GridView = gridView;
     }
 
@@ -54,7 +56,7 @@ internal class GridPagination
 
         if (_startButtonIndex > _totalButtons)
         {
-            ul.AppendElement(GetPageButton(1, IconType.AngleDoubleLeft, Translate.Key("First record")));
+            ul.AppendElement(GetPageButton(1, IconType.AngleDoubleLeft, StringLocalizer["First record"]));
             ul.AppendElement(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft));
         }
 
@@ -69,8 +71,8 @@ internal class GridPagination
         if (_endButtonIndex <= _totalPages)
         {
             ul.AppendElement(GetPageButton(_endButtonIndex, IconType.AngleRight,
-                $"{_totalPages} {Translate.Key("pages")}"));
-            ul.AppendElement(GetPageButton(_totalPages, IconType.AngleDoubleRight, Translate.Key("Last record")));
+                $"{_totalPages} {StringLocalizer["pages"]}"));
+            ul.AppendElement(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last record"]));
         }
 
         return ul;
@@ -108,7 +110,7 @@ internal class GridPagination
         {
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
-            label.AppendText(Translate.Key("Showing"));
+            label.AppendText(StringLocalizer["Showing"]);
             label.AppendText(" ");
             
             if (_totalPages <= 1)
@@ -117,7 +119,7 @@ internal class GridPagination
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
                     span.AppendText($" {GridView.TotalRecords:N0} ");
-                    span.AppendText(Translate.Key("record(s)"));
+                    span.AppendText(StringLocalizer["record(s)"]);
                 });
             }
             else
@@ -131,7 +133,7 @@ internal class GridPagination
                 else
                     label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage);
 
-                label.AppendText($" {Translate.Key("From")}");
+                label.AppendText($" {StringLocalizer["From"]}");
                 label.AppendElement(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
@@ -157,7 +159,7 @@ internal class GridPagination
         span.WithAttribute("id", $"selectedtext_{GridView.Name}");
         span.WithAttribute("noSelStr", noRecordSelected);
         span.WithAttribute("oneSelStr", oneRecordSelected);
-        span.WithAttribute("paramSelStr", Translate.Key("{0} selected records"));
+        span.WithAttribute("paramSelStr", StringLocalizer["{0} selected records"]);
 
         if (selectedValues == null || selectedValues.Count == 0)
         {

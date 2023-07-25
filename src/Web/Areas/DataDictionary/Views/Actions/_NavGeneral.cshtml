@@ -2,6 +2,10 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model JJMasterData.Core.DataDictionary.Actions.Abstractions.BasicAction
 
 @{
@@ -15,21 +19,21 @@
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <label class="@BootstrapHelper.Label">@Translate.Key("Name")</label>
+        <label class="@BootstrapHelper.Label">@StringLocalizer["Name"]</label>
         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
 
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <label for="icon" class="@BootstrapHelper.Label">@Translate.Key("Icon")</label>
+        <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
         <partial name="../Icons/_IconSearchBox" model="@(new IconViewModel { InputId = "icon", SelectedIcon = Model.Icon })"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label class="@BootstrapHelper.Label">@Translate.Key("Text")</label>
+        <label class="@BootstrapHelper.Label">@StringLocalizer["Text"]</label>
         @Html.TextBoxFor(model => model.Text, new { @class = "form-control" })
         <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName" />
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label class="@BootstrapHelper.Label " for="txtName">@Translate.Key("ToolTip")</label>
+        <label class="@BootstrapHelper.Label " for="txtName">@StringLocalizer["ToolTip"]</label>
         @Html.TextBoxFor(model => model.ToolTip, new { @class = "form-control" })
     </div>
 </div>

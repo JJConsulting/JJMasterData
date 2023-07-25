@@ -1,11 +1,17 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 <div class="jjrelative">
     <div class="bs-clipboard">
         <div class="btn-group">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Copy to Clipboard")">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Copy to Clipboard"]">
                 <span class="fa fa-copy fa-fw"></span>
-                &nbsp;@Translate.Key("Copy")
+                &nbsp;@StringLocalizer["Copy"]
             </button>
         </div>
     </div>

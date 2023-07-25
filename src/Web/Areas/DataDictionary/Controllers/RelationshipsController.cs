@@ -5,17 +5,20 @@ using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class RelationshipsController : DataDictionaryController
 {
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly RelationshipsService _relationshipsService;
 
     #region Index
 
-    public RelationshipsController(RelationshipsService relationshipsService)
+    public RelationshipsController(RelationshipsService relationshipsService,IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        StringLocalizer = stringLocalizer;
         _relationshipsService = relationshipsService;
     }
 
@@ -152,7 +155,7 @@ public class RelationshipsController : DataDictionaryController
 
         if (string.IsNullOrEmpty(childDictionaryName))
         {
-            selectList.Add(new SelectListItem(Translate.Key("(Select)"), string.Empty));
+            selectList.Add(new SelectListItem(StringLocalizer["(Select)"], string.Empty));
         }
         else
         {
@@ -171,7 +174,7 @@ public class RelationshipsController : DataDictionaryController
 
         if (string.IsNullOrEmpty(childDictionaryName))
         {
-            selectList.Insert(0, new SelectListItem(Translate.Key("(Select)"), string.Empty));
+            selectList.Insert(0, new SelectListItem(StringLocalizer["(Select)"], string.Empty));
         }
 
         return selectList;

@@ -3,7 +3,11 @@
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @model FormElementField
+
 
 
 @{
@@ -111,12 +115,12 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h4>@Translate.Key("DataItem")</h4>
+        <h4>@StringLocalizer["DataItem"]</h4>
         <hr/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("List Type")">@Translate.Key("ListType")</label>
+        <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
         <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
@@ -139,11 +143,11 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Replace the field value with a description of the combination when displaying a grid")">@Translate.Key("ReplaceTextOnGrid")</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Replace the field value with a description of the combination when displaying a grid"]">@StringLocalizer["ReplaceTextOnGrid"]</label>
         @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
         {
-            new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
-            new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
+            new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
         },
             new { @class = "form-control form-select" })
     </div>
@@ -151,16 +155,16 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display text (All) as first option")">@Translate.Key("FirstOption")</label>
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Display text (All) as first option"]">@StringLocalizer["FirstOption"]</label>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Display images with text in the combo")">@Translate.Key("ShowImageLegend")</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Display images with text in the combo"]">@StringLocalizer["ShowImageLegend"]</label>
         @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowImageLegend, new[]
         {
-            new SelectListItem { Text = Translate.Key("No"), Value = "false" },
-            new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+            new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
         },
             new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
@@ -168,12 +172,12 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.")">
-                @Translate.Key("Multiselect")
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."]">
+                @StringLocalizer["Multiselect"]
             </label>
             <select class="form-control form-select" asp-for="DataItem!.EnableMultiSelect">
-                <option value="true">@Translate.Key("Yes")</option>
-                <option value="false">@Translate.Key("No")</option>
+                <option value="true">@StringLocalizer["Yes"]</option>
+                <option value="false">@StringLocalizer["No"]</option>
             </select>
         </div>
     }
@@ -181,14 +185,14 @@
         <table class="table table-striped table-bordered table-hover">
             <thead>
             <tr>
-                <th style="width:120px;">@Translate.Key("Id")</th>
-                <th>@Translate.Key("Description")</th>
+                <th style="width:120px;">@StringLocalizer["Id"]</th>
+                <th>@StringLocalizer["Description"]</th>
                 @if (showImage)
                 {
-                    <th>@Translate.Key("IconId")</th>
-                    <th>@Translate.Key("Color")</th>
+                    <th>@StringLocalizer["IconId"]</th>
+                    <th>@StringLocalizer["Color"]</th>
                 }
-                <th style="width:60px;">@Translate.Key("Remove")</th>
+                <th style="width:60px;">@StringLocalizer["Remove"]</th>
             </tr>
             </thead>
             <tbody>
@@ -222,7 +226,7 @@
                     }
 
                     <td align="center" valign="middle">
-                        <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Remove")" onclick="removeDataItem(@i);">
+                        <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeDataItem(@i);">
                             <span class="fa fa-trash"></span>
                         </a>
                     </td>
@@ -235,17 +239,17 @@
                     <div class="btn-group dropup">
                         <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="addDataItem(1);">
                             <span class="fa fa-plus-circle"></span>
-                            <span>&nbsp;@Translate.Key("Add")</span>
+                            <span>&nbsp;@StringLocalizer["Add"]</span>
                         </button>
                         <button type="button" class="@BootstrapHelper.DefaultButton btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
                             <span class="caret"></span>
-                            <span class="sr-only">@Translate.Key("Toggle Dropdown")</span>
+                            <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>
                         </button>
                         <ul class="dropdown-menu">
                            @for(var i = 2; i <= 10; i++)
                            {
                                <li class="dropdown-item">
-                                   <a href="javascript:addDataItem(@i);">@i @Translate.Key("Lines")</a>
+                                   <a href="javascript:addDataItem(@i);">@i @StringLocalizer["Lines"]</a>
                                </li>
                            }
                         </ul>
@@ -253,7 +257,7 @@
 
                     <button class="@BootstrapHelper.DefaultButton btn-small" onclick="removeAllDataItem();">
                         <span class="fa fa-trash"></span>
-                        <span>&nbsp;@Translate.Key("Remove All")</span>
+                        <span>&nbsp;@StringLocalizer["Remove All"]</span>
                     </button>
                 </td>
             </tr>
@@ -263,8 +267,8 @@
 
 <div id="divSqlCommand" style="@(isManualVal ? "display:none" : "")">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("PL-SQL Command")">@Translate.Key("Command.Sql")</label>
-        <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@Translate.Key("(Type Ctrl+Space to AutoComplete)")</span>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["PL-SQL Command"]">@StringLocalizer["Command.Sql"]</label>
+        <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
         <div class="well" style="margin-bottom: 0px">
             @Html.TextAreaFor(model => model.DataItem!.Command.Sql, new { @class = "form-control", rows = "10" })
         </div>
@@ -273,26 +277,26 @@
         <span class="text-info fa fa-info-circle"></span>
         @if (showImage)
         {
-            <span>@Translate.Key("Return four columns in query 1 = Id, 2 = Description, 3 = ImageId, 4 = Color in Hexa(#ffffff)")</span>
+            <span>@StringLocalizer["Return four columns in query 1 = Id, 2 = Description, 3 = ImageId, 4 = Color in Hexa(#ffffff)"]</span>
         }
         else
         {
-            <span>@Translate.Key("Return two columns in query 1 = Id, 2 = Description")</span>
+            <span>@StringLocalizer["Return two columns in query 1 = Id, 2 = Description"]</span>
         }
         <br/><br/>
-        <b>@Translate.Key("We recommend using the parameters to be passed in the procedure:")</b><br/>
+        <b>@StringLocalizer["We recommend using the parameters to be passed in the procedure:"]</b><br/>
         @if (Model.Component == FormComponent.Search)
         {
             <span>
-                @Translate.Key("{search_id} retrieves the list record from the found ID that can be used in the query filter condition")<br/>
-                @Translate.Key("{search_text} passage of typed text that can be used with the LIKE command in the query.")<br/>
-                <i>@Translate.Key("Optimizing the reading of SEARCH component records")</i>
+                @StringLocalizer["{search_id} retrieves the list record from the found ID that can be used in the query filter condition"]<br/>
+                @StringLocalizer["{search_text} passage of typed text that can be used with the LIKE command in the query."]<br/>
+                <i>@StringLocalizer["Optimizing the reading of SEARCH component records"]</i>
             </span>
         }
         else if (Model.Component == FormComponent.ComboBox)
         {
             <span>
-                @Translate.Key("{search_id} retrieves the list record from the found ID that can be used in the query filter condition")
+                @StringLocalizer["{search_id} retrieves the list record from the found ID that can be used in the query filter condition"]
             </span>
         }
     </label>

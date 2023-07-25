@@ -6,6 +6,10 @@
 @model FormElementField
 
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @{
     string currentTab = ViewBag.Tab;
 
@@ -46,13 +50,13 @@
 
     <ul class="nav nav-tabs">
         <li class="nav-item" id="navGeneral" @IsActive("navGeneral")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a>
         </li>
         <li class="nav-item" id="navComponent" @IsActive("navComponent")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divComponent">@Translate.Key("Component")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divComponent">@StringLocalizer["Component"]</a>
         </li>
         <li class="nav-item" id="navAdvanced"  @IsActive("navAdvanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a>
         </li>
     </ul>
 
@@ -60,56 +64,56 @@
         <div id="divGeneral" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " for="Name" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("FieldName")">@Translate.Key("FieldName")</label>
+                    <label class="@BootstrapHelper.Label " for="Name" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["FieldName"]">@StringLocalizer["FieldName"]</label>
                     @Html.TextBoxFor(model => Model.Name, new { maxlength = "64", @class = "form-control" })
                     <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " for="Label" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Description on the form")">@Translate.Key("Label")</label>
+                    <label class="@BootstrapHelper.Label " for="Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Description on the form"]">@StringLocalizer["Label"]</label>
                     @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " for="DefaultValue" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Expression for a default value")">@Translate.Key("DefaultValue")</label>
+                    <label class="@BootstrapHelper.Label " for="DefaultValue" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Expression for a default value"]">@StringLocalizer["DefaultValue"]</label>
                     @Html.TextBoxFor(model => model.DefaultValue, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="Filter_Type" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Filter Type")">@Translate.Key("Filter")</label>
+                    <label class="@BootstrapHelper.Label " for="Filter_Type" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Filter Type"]">@StringLocalizer["Filter"]</label>
                     <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="DataBehavior" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Field behavior in relation to the database")">@Translate.Key("DataBehavior")</label>
+                    <label class="@BootstrapHelper.Label " for="DataBehavior" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field behavior in relation to the database"]">@StringLocalizer["DataBehavior"]</label>
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="DataType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Data Type")">@Translate.Key("Data Type")</label>
+                    <label class="@BootstrapHelper.Label " for="DataType" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Data Type"]">@StringLocalizer["Data Type"]</label>
                     <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="Tamanho do campo">@Translate.Key("Size")</label>
+                    <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="Tamanho do campo">@StringLocalizer["Size"]</label>
                     @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " for="IsRequired" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Required field")">@Translate.Key("Required")</label>
+                    <label class="@BootstrapHelper.Label " for="IsRequired" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["Required"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.IsRequired, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " for="IsPk" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Chave primária")">@Translate.Key("PK")</label>
+                    <label class="@BootstrapHelper.Label " for="IsPk" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Chave primária"]">@StringLocalizer["PK"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.IsPk, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " for="AutoNum" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Automatic numeric (auto increment)")">@Translate.Key("Identity")</label>
+                    <label class="@BootstrapHelper.Label " for="AutoNum" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Automatic numeric (auto increment)"]">@StringLocalizer["Identity"]</label>
                     <div class="input-append">
                         @Html.CheckBoxFor(model => model.AutoNum, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
                     </div>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
                     <label class="@BootstrapHelper.Label " for="HelpDescription">
-                        @Translate.Key("Help Description")
-                        <span class="fa fa-question-circle help-description" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("The help text will be displayed like this on the form.")"></span>
+                        @StringLocalizer["Help Description"]
+                        <span class="fa fa-question-circle help-description" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["The help text will be displayed like this on the form."]"></span>
                     </label>
                     @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
                 </div>
@@ -121,15 +125,15 @@
             <div class="row">
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " for="Component" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Component Type")">@Translate.Key("Component")</label>
+                    <label class="@BootstrapHelper.Label " for="Component" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Component Type"]">@StringLocalizer["Component"]</label>
                     <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="AutoPostBack" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("When changing the content, it reloads all form fields")">@Translate.Key("AutoPostBack")</label>
+                    <label class="@BootstrapHelper.Label " for="AutoPostBack" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["When changing the content, it reloads all form fields"]">@StringLocalizer["AutoPostBack"]</label>
                     @Html.DropDownListFor(modelItem => modelItem.AutoPostBack, new[]
                     {
-                        new SelectListItem { Text = Translate.Key("No"), Value = "false" },
-                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" }
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
                     },
                         new { @class = "form-control form-select" })
                 </div>
@@ -137,7 +141,7 @@
                 @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
-                        <label class="@BootstrapHelper.Label " for="NumberOfDecimalPlaces" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Number of decimal places")">@Translate.Key("DecimalPlaces")</label>
+                        <label class="@BootstrapHelper.Label " for="NumberOfDecimalPlaces" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Number of decimal places"]">@StringLocalizer["DecimalPlaces"]</label>
                         @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control" })
                     </div>
                 }
@@ -160,9 +164,9 @@
                     <div class="col-sm-12">
                         <span class="text-info fa fa-info-circle"></span>
                         <span class="small">
-                            <b>@Translate.Key("Actions")</b>
+                            <b>@StringLocalizer["Actions"]</b>
                             <br/>
-                            <em>@Translate.Key("This component allows you to add actions, but you must save it to add actions later.")</em>
+                            <em>@StringLocalizer["This component allows you to add actions, but you must save it to add actions later."]</em>
                         </span>
                     </div>
                 }
@@ -196,40 +200,40 @@
         <div id="divAdvanced" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " for="VisibleExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Visible Expression")</label>
+                    <label class="@BootstrapHelper.Label " for="VisibleExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Visible Expression"]</label>
                     @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " for="EnableExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Enable Expression")</label>
+                    <label class="@BootstrapHelper.Label " for="EnableExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Enable Expression"]</label>
                     @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label class="@BootstrapHelper.Label " for="TriggerExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Redoes the expression whenever a field triggers in Auto Post Back")">@Translate.Key("Trigger Expression")</label>
+                    <label class="@BootstrapHelper.Label " for="TriggerExpression" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Redoes the expression whenever a field triggers in Auto Post Back"]">@StringLocalizer["Trigger Expression"]</label>
                     @Html.TextBoxFor(model => model.TriggerExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " for="CssClass" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Class name (CSS) one to be assigned to object group rendering")">@Translate.Key("CssClass")</label>
+                    <label class="@BootstrapHelper.Label " for="CssClass" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Class name (CSS) one to be assigned to object group rendering"]">@StringLocalizer["CssClass"]</label>
                     @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " for="LineGroup" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Row counter, used to break the line in the form (row class)")">@Translate.Key("Group Line")</label>
+                    <label class="@BootstrapHelper.Label " for="LineGroup" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Row counter, used to break the line in the form (row class)"]">@StringLocalizer["Group Line"]</label>
                     @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="Export" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Allows you to export the field")">@Translate.Key("Export")</label>
+                    <label class="@BootstrapHelper.Label " for="Export" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Allows you to export the field"]">@StringLocalizer["Export"]</label>
                     @Html.DropDownListFor(modelItem => modelItem.Export, new[]
                     {
-                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
-                        new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
                     },
                         new { @class = "form-control form-select" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="ValidateRequest" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@Translate.Key("Validates possibly dangerous values ​​on request")">@Translate.Key("Validate Request")</label>
+                    <label class="@BootstrapHelper.Label " for="ValidateRequest" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Validates possibly dangerous values ​​on request"]">@StringLocalizer["Validate Request"]</label>
                     @Html.DropDownListFor(modelItem => modelItem.ValidateRequest, new[]
                     {
-                        new SelectListItem { Text = Translate.Key("Yes"), Value = "true" },
-                        new SelectListItem { Text = Translate.Key("No"), Value = "false" }
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
                     },
                         new { @class = "form-control form-select" })
                 </div>
@@ -247,7 +251,7 @@
                 <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
                     <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
                 </button>
-                <strong>@Translate.Key("Success!")</strong> @Translate.Key("Record saved successfully.")
+                <strong>@StringLocalizer["Success!"]</strong> @StringLocalizer["Record saved successfully."]
             </div>
         </div>
     </div>
@@ -277,7 +281,7 @@
     {
         <button type="button" class="btn btn-primary btn-small" style="color:white" onclick="save();">
             <span class="fa fa-check"></span>
-            <span>&nbsp;@Translate.Key("Save")</span>
+            <span>&nbsp;@StringLocalizer["Save"]</span>
         </button>
     }
 
@@ -285,7 +289,7 @@
     {
         <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
             <span class="fa fa-refresh fa-fw fa-fw"></span>
-            <span>@Translate.Key("Refresh")</span>
+            <span>@StringLocalizer["Refresh"]</span>
         </a>
     }
 
@@ -293,7 +297,7 @@
     {
         <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
             <span class="fa fa-trash"></span>
-            <span>&nbsp;@Translate.Key("Delete")</span>
+            <span>&nbsp;@StringLocalizer["Delete"]</span>
         </a>
     }
 
@@ -301,7 +305,7 @@
     {
         <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
             <span class="fa fa-files-o fa-fw fa-fw"></span>
-            <span>&nbsp;@Translate.Key("Copy")</span>
+            <span>&nbsp;@StringLocalizer["Copy"]</span>
         </button>
     }
 

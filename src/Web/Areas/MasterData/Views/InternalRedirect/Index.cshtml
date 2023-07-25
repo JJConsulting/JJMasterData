@@ -4,6 +4,11 @@
 
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @using (Html.BeginForm())
@@ -23,12 +28,12 @@
             <button type="submit" class="btn btn-primary"
                     formaction="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })">
                 <span class="fa fa-check"></span>
-                <span>&nbsp;@Translate.Key("Save")</span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
             <button type="button" class="@BootstrapHelper.DefaultButton" onclick="window.parent.popup.hide();">
                 <span class="fa fa-times"></span>
-                <span>&nbsp;@Translate.Key("Cancel")</span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>
         </div>
         <br/>

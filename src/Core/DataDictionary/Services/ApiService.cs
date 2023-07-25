@@ -1,13 +1,17 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    public ApiService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository)
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
+    public ApiService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository)
     {
+        StringLocalizer = stringLocalizer;
     }
 
     public bool EditApi(FormElement dicParser)
@@ -29,7 +33,7 @@ public class ApiService : BaseService
 
         if (dicParser.ApiOptions.EnableGetAll & !hasApiGetEnabled)
         {
-            AddError("Api", Translate.Key("To enable sync the get APIs must be enabled."));
+            AddError("Api", StringLocalizer["To enable sync the get APIs must be enabled."]);
         }
 
         return IsValid;

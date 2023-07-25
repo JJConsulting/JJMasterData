@@ -2,7 +2,13 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
+
 
 @{
     ViewData["Title"] = $"{Model.DictionaryName} - API";
@@ -43,7 +49,7 @@
             <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index", new { dictionaryName = Model.DictionaryName })'">
                 <span class="fa fa-times">
                 </span>
-                <span>&nbsp;@Translate.Key("Cancel")</span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>
         </div>
     </div>
@@ -61,14 +67,14 @@
         <!-- Start Form -->
         <div class="@BootstrapHelper.PanelBody">
             <table class="table">
-                <caption>@Translate.Key("Enable or disable API operations")</caption>
+                <caption>@StringLocalizer["Enable or disable API operations"]</caption>
                 <thead>
                     <tr>
                         <th class="jjselect">
                             <input type="checkbox" id="CheckAll" @BootstrapHelper.GetDataToggle("tooltip") title="Enable or Disable All" onclick="$('td.jjselect input').not(':disabled').prop('checked', $('#CheckAll').is(':checked')).change();" />
                         </th>
-                        <th style="width: 90px">@Translate.Key("Verb")</th>
-                        <th>@Translate.Key("Description")</th>
+                        <th style="width: 90px">@StringLocalizer["Verb"]</th>
+                        <th>@StringLocalizer["Description"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,10 +83,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetAll)
                         </td>
                         <td>
-                            <label for="EnableGetAll">@Translate.Key("GET")</label>
+                            <label for="EnableGetAll">@StringLocalizer["GET"]</label>
                         </td>
                         <td>
-                            <label for="EnableGetAll">@Translate.Key("Get all records")</label>
+                            <label for="EnableGetAll">@StringLocalizer["Get all records"]</label>
                         </td>
                     </tr>
                     <tr class="text-info jjgrid-action">
@@ -88,10 +94,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetDetail)
                         </td>
                         <td>
-                            <label for="EnableGetDetail">@Translate.Key("GET")</label>
+                            <label for="EnableGetDetail">@StringLocalizer["GET"]</label>
                         </td>
                         <td>
-                            <label for="EnableGetDetail">@Translate.Key("Get a record detail")</label>
+                            <label for="EnableGetDetail">@StringLocalizer["Get a record detail"]</label>
                         </td>
                     </tr>
                     <tr class="text-success jjgrid-action">
@@ -99,10 +105,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableAdd)
                         </td>
                         <td>
-                            <label for="EnableAdd">@Translate.Key("POST")</label>
+                            <label for="EnableAdd">@StringLocalizer["POST"]</label>
                         </td>
                         <td>
-                            <label for="EnableAdd">@Translate.Key("Add new record")</label>
+                            <label for="EnableAdd">@StringLocalizer["Add new record"]</label>
                         </td>
                     </tr>
                     <tr class="text-primary jjgrid-action">
@@ -110,10 +116,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdate)
                         </td>
                         <td>
-                            <label for="EnableUpdate">@Translate.Key("PUT")</label>
+                            <label for="EnableUpdate">@StringLocalizer["PUT"]</label>
                         </td>
                         <td>
-                            <label for="EnableUpdate">@Translate.Key("Update records")</label>
+                            <label for="EnableUpdate">@StringLocalizer["Update records"]</label>
                         </td>
                     </tr>
                     <tr class="text-primary jjgrid-action">
@@ -121,10 +127,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdatePart)
                         </td>
                         <td>
-                            <label for="EnableUpdatePart">@Translate.Key("PATCH")</label>
+                            <label for="EnableUpdatePart">@StringLocalizer["PATCH"]</label>
                         </td>
                         <td>
-                            <label for="EnableUpdatePart">@Translate.Key("Update some especific fields")</label>
+                            <label for="EnableUpdatePart">@StringLocalizer["Update some especific fields"]</label>
                         </td>
                     </tr>
                     <tr class="text-danger jjgrid-action">
@@ -132,10 +138,10 @@
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableDel)
                         </td>
                         <td>
-                            <label for="EnableDel">@Translate.Key("DEL")</label>
+                            <label for="EnableDel">@StringLocalizer["DEL"]</label>
                         </td>
                         <td>
-                            <label for="EnableDel">@Translate.Key("Delete a record")</label>
+                            <label for="EnableDel">@StringLocalizer["Delete a record"]</label>
                         </td>
                     </tr>
                 </tbody>
@@ -145,24 +151,24 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-5">
-                        <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("ApplyUserIdOn")</label>
-                        @Html.DropDownListFor(model => Model.MetadataApiOptions.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), Translate.Key("(No Apply)"), new { @class = "form-control form-select" })
+                        <label class="@BootstrapHelper.Label " for="ApplyUserIdOn" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Json return format"]">@StringLocalizer["ApplyUserIdOn"]</label>
+                        @Html.DropDownListFor(model => Model.MetadataApiOptions.ApplyUserIdOn, new SelectList(Model.Fields, "Name", "Name"), StringLocalizer["(No Apply)"], new { @class = "form-control form-select" })
 
-                        <span id="helpBlock" class="help-block">@Translate.Key("Aways apply UserId (from login) as filter and default value on set.")</span>
+                        <span id="helpBlock" class="help-block">@StringLocalizer["Aways apply UserId (from login) as filter and default value on set."]</span>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2">
-                        <label class="@BootstrapHelper.Label " for="FormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Json return format")">@Translate.Key("JsonFormat")</label>
+                        <label class="@BootstrapHelper.Label " for="FormatType" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Json return format"]">@StringLocalizer["JsonFormat"]</label>
                         <select asp-for="MetadataApiOptions.FormatType" class = "form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                        <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Used in sync?")">@Translate.Key("Sync")</label>
+                        <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Used in sync?"]">@StringLocalizer["Sync"]</label>
                         @Html.DropDownList("isSync", new[] {
-                            new SelectListItem {Text = Translate.Key("Yes"), Value = "true"},
-                            new SelectListItem {Text = Translate.Key("No"), Value = "false"}
+                            new SelectListItem {Text = StringLocalizer["Yes"], Value = "true"},
+                            new SelectListItem {Text = StringLocalizer["No"], Value = "false"}
                         }, new { @class = "form-control", onchange = "SetVisible(this.value)" })
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
-                        <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Sync Mode")">@Translate.Key("Mode")</label>
+                        <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Sync Mode"]">@StringLocalizer["Mode"]</label>
                         <select asp-for="Mode" class="form-control form-select" asp-items="@Html.GetEnumSelectList<SyncMode>()"></select>
                     </div>
                 </div>

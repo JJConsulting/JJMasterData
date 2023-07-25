@@ -7,6 +7,9 @@
 
 @model RelationshipsLayoutDetailsViewModel
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
     TempData["SelectedTab"] = "#divLayout";
 }
@@ -41,16 +44,16 @@
 
 <ul class="nav nav-tabs">
     <li id="navGeneral" class="nav-item active">
-        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
+        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a>
     </li>
     @if (!Model.IsParent)
     {
         <li id="navBehavior" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@Translate.Key("Behavior")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@StringLocalizer["Behavior"]</a>
         </li>
     }
     <li id="navAdvanced" class="nav-item">
-        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a>
     </li>
 </ul>
 
@@ -71,16 +74,16 @@
             <div id="divBehavior" class="tab-pane fade">
                 <div class="row">
                     <div class="col-sm-6">
-                        <label asp-for="ViewType">@Translate.Key("View Type")</label>
+                        <label asp-for="ViewType">@StringLocalizer["View Type"]</label>
                         <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
                     </div>
                     <div style="margin-top: 5px"  class="col-sm-12">
-                        <jj-alert color="Info" title="@Translate.Key("Help")" icon="IconType.InfoCircle">
+                        <jj-alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
                             <ul>
-                                <li>@Translate.Key("None - The relationship is hidden and not rendered in any component.")</li>
-                                <li>@Translate.Key("List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn).")</li>
-                                <li>@Translate.Key("View - The relationship is shown in a read-only form (1x1).")</li>
-                                <li>@Translate.Key("Update - The relationship is shown in an updatable form (1x1).")</li>
+                                <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
+                                <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
+                                <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
+                                <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
                             </ul>
                         </jj-alert>
                     </div>
@@ -97,12 +100,12 @@
             <div class="col-sm-12">
                 <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="saveForm()">
                     <span class="fa fa-check"></span>
-                    <span>&nbsp;@Translate.Key("Save")</span>
+                    <span>&nbsp;@StringLocalizer["Save"]</span>
                 </button>
 
                 <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
                     <span class="fa fa-times"></span>
-                    <span>&nbsp;@Translate.Key("Cancel")</span>
+                    <span>&nbsp;@StringLocalizer["Cancel"]</span>
                 </button>
             </div>
         </div>

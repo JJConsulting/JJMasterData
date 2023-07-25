@@ -1,6 +1,12 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Commons.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model FormElementPanel
 
 
@@ -9,11 +15,11 @@
         <table style="border:0px;width:100%">
             <tr>
                 <td style="width:45%">
-                    <label class="@BootstrapHelper.Label">@Translate.Key("Available Fields")</label>
+                    <label class="@BootstrapHelper.Label">@StringLocalizer["Available Fields"]</label>
                 </td>
                 <td style="width:70px"></td>
                 <td style="width:50%">
-                    <label class="@BootstrapHelper.Label required">@Translate.Key("Selected Fields")</label>
+                    <label class="@BootstrapHelper.Label required">@StringLocalizer["Selected Fields"]</label>
                 </td>
             </tr>
             <tr>
@@ -29,11 +35,11 @@
                     </select>
                 </td>
                 <td align="middle">
-                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Select")" onclick="addFields();">
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Select"]" onclick="addFields();">
                         <span class="fa fa-angle-double-right fa-fw fa-fw"></span>
                     </button>
                     <br/>
-                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Remove")" onclick="removeFields();">
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeFields();">
                         <span class="fa fa-angle-double-left fa-fw fa-fw"></span>
                     </button>
                 </td>
@@ -49,11 +55,11 @@
                             }
                         </select>
                         <span class="input-group-btn">
-                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Move up")" onclick="moveUp();">
+                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Move up"]" onclick="moveUp();">
                                 <span class="fa fa-arrow-circle-up fa-fw fa-fw"></span>
                             </button>
                             <br/>
-                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@Translate.Key("Move down")" onclick="moveDown();">
+                            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Move down"]" onclick="moveDown();">
                                 <span class="fa fa-arrow-circle-down fa-fw fa-fw"></span>
                             </button>
                         </span>

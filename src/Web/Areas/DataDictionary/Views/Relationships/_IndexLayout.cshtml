@@ -4,6 +4,9 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Commons.Data.Entity
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @model RelationshipsListViewModel
 
 @functions {
@@ -75,7 +78,7 @@
                 @if (!Model.Relationships.Any())
                 {
                     <jj-alert color="Default" show-close-button="false">
-                        @Translate.Key("No relationships found.")
+                        @StringLocalizer["No relationships found."]
                     </jj-alert>
                 }
             }

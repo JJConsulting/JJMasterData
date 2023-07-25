@@ -5,12 +5,14 @@
 @using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @model JJMasterData.Core.DataDictionary.Actions.GridToolbar.ConfigAction
-
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @using (Html.BeginForm("ConfigAction", "Actions", new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a></li>
-        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced"></a>@Translate.Key("Advanced")</li>
+        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>
+        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced"></a>@StringLocalizer["Advanced"]</li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">

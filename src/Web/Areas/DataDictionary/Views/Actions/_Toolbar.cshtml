@@ -1,8 +1,8 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
-@{
-
-}
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 <input type="hidden" id="isActionSave" name="isActionSave" value="false" />
 
@@ -19,12 +19,12 @@
     <div class="col-sm-12">
         <button type="submit" class="btn btn-primary" onclick="$('#isActionSave').val('true');">
             <span class="fa fa-check"></span>
-            <span>&nbsp;@Translate.Key("Save")</span>
+            <span>&nbsp;@StringLocalizer["Save"]</span>
         </button>
 
         <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
             <span class="fa fa-times"></span>
-            <span>&nbsp;@Translate.Key("Cancel")</span>
+            <span>&nbsp;@StringLocalizer["Cancel"]</span>
         </button>
     </div>
 </div>

@@ -328,7 +328,7 @@ public class JJGridView : JJBaseView
             var action = GetCurrentAction(actionMap);
             if (action is ConfigAction)
             {
-                CurrentSettings = GridSettings.LoadFromForm(CurrentContext);
+                CurrentSettings = GridSettings.LoadFromForm(CurrentContext,StringLocalizer);
                 return _currentSettings;
             }
 
@@ -339,10 +339,10 @@ public class JJGridView : JJBaseView
             }
 
             if (_currentSettings == null)
-                CurrentSettings = GridSettings.LoadFromForm(CurrentContext);
+                CurrentSettings = GridSettings.LoadFromForm(CurrentContext,StringLocalizer);
 
             if (_currentSettings == null)
-                CurrentSettings = new GridSettings();
+                CurrentSettings = new GridSettings(StringLocalizer);
 
             return _currentSettings;
         }

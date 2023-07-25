@@ -1,6 +1,12 @@
 ﻿@using JJMasterData.Commons.Localization
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model FormElementPanel
 
 <script lang="javascript" type="text/javascript">
@@ -83,10 +89,10 @@
 
     <ul class="nav nav-tabs">
         <li id="navGeneral" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@Translate.Key("General")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a>
         </li>
         <li id="navAdvanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@Translate.Key("Advanced")</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a>
         </li>
     </ul>
 
@@ -113,7 +119,7 @@
                 <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
                     <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
                 </button>
-                <strong>@Translate.Key("Sucesso!")</strong> @Translate.Key("Record saved successfully.")
+                <strong>@StringLocalizer["Sucesso!"]</strong> @StringLocalizer["Record saved successfully."]
             </div>
         </div>
     </div>
@@ -123,22 +129,22 @@
 
             <button type="button" class="btn btn-primary btn-small" onclick="save();">
                 <span class="fa fa-check"></span>
-                <span>&nbsp;@Translate.Key("Save")</span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
             <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName, panelId = Model.PanelId })">
                 <span class="fa fa-refresh fa-fw fa-fw"></span>
-                <span>&nbsp;@Translate.Key("Refresh")</span>
+                <span>&nbsp;@StringLocalizer["Refresh"]</span>
             </a>
 
             <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { dictionaryName = ViewBag.DictionaryName, panelId = Model.PanelId })">
                 <span class="fa fa-trash"></span>
-                <span>&nbsp;@Translate.Key("Delete")</span>
+                <span>&nbsp;@StringLocalizer["Delete"]</span>
             </a>
 
             <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
                 <span class="fa fa-files-o fa-fw fa-fw"></span>
-                <span>&nbsp;@Translate.Key("Copy")</span>
+                <span>&nbsp;@StringLocalizer["Copy"]</span>
             </button>
 
         </div>

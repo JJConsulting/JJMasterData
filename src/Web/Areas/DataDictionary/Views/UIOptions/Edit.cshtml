@@ -5,6 +5,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementOptions
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 <style>
     input[type=checkbox] {
@@ -20,12 +23,12 @@
         <div class="col-sm-12">
             <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">
                 <span class="fa fa-check"></span>
-                <span>&nbsp;@Translate.Key("Save")</span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
             <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName })'">
                 <span class="fa fa-times">
                 </span>
-                <span>&nbsp;@Translate.Key("Cancel")</span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>
         </div>
     </div>

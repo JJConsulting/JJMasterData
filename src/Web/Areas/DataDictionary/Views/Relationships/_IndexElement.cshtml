@@ -4,6 +4,9 @@
 @using JJMasterData.Web.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsListViewModel
 
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 <script type="text/javascript">
              function deleteRelationship(url) {
@@ -24,9 +27,9 @@
 <div class="row">
     <div class="col-sm-8">
         <jj-link-button icon="PlusCircle"
-                        text="@Translate.Key("New")"
+                        text="@StringLocalizer["New"]"
                         type="LinkButtonType.Button"
-                        on-client-click="popup.show('@Translate.Key("New Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
+                        on-client-click="popup.show('@StringLocalizer["New Relation"]', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
     </div>
 </div>
 <br/>
@@ -34,10 +37,10 @@
 <table id="relationshipsTable" class="table table-striped table-hover">
     <thead>
     <tr>
-        <th scope="col">@Translate.Key("Relation")</th>
-        <th scope="col">@Translate.Key("Columns")</th>
-        <th scope="col">@Translate.Key("UpdateOnCascade")</th>
-        <th scope="col">@Translate.Key("DeleteOnCascade")</th>
+        <th scope="col">@StringLocalizer["Relation"]</th>
+        <th scope="col">@StringLocalizer["Columns"]</th>
+        <th scope="col">@StringLocalizer["UpdateOnCascade"]</th>
+        <th scope="col">@StringLocalizer["DeleteOnCascade"]</th>
         <th scope="col">&nbsp;</th>
     </tr>
     </thead>
@@ -69,13 +72,13 @@
                 </td>
                 <td style="text-align: center;">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="popup.show('@Translate.Key("Edit Relation")', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })');"
-                            data-original-title="@Translate.Key("Edit")">
+                            onclick="popup.show('@StringLocalizer["Edit Relation"]', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })');"
+                            data-original-title="@StringLocalizer["Edit"]">
                         <span class="fa fa-pencil"></span>
                     </button>
                     <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
                             onclick="deleteRelationship('@Url.Action("Delete", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })')"
-                            data-original-title="@Translate.Key("Delete")">
+                            data-original-title="@StringLocalizer["Delete"]">
                         <span class="fa fa-trash"></span>
                     </button>
                 </td>
@@ -89,6 +92,6 @@
 @if (!Model.Relationships.Any())
 {
     <jj-alert color="Default" show-close-button="false">
-        @Translate.Key("No relationships found.")
+        @StringLocalizer["No relationships found."]
     </jj-alert>
 }

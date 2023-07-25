@@ -5,6 +5,11 @@
 @using JJMasterData.Core.DataDictionary.Actions.UserCreated
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.Web
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model ActionsListDetailsViewModel
 
 @{
@@ -15,7 +20,7 @@
     sortableClass = "jjsortable";
     <script language="javascript" type="text/javascript">
         $(document).ready(function () {
-            jjdictionary.doActionSortable('@Model.Context.ToString()', '@GetUrlSort()','@Translate.Key("Unexpected error")');
+            jjdictionary.doActionSortable('@Model.Context.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
         });
     </script>
 }
@@ -24,13 +29,13 @@
     <div class="col-sm-12">
         <div class="btn-group">
             <button type="button" class="@BootstrapHelper.DefaultButton dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
-                <span class="fa fa-plus-circle"></span>&nbsp;@Translate.Key("New Action")&nbsp; <span class="caret"></span>
+                <span class="fa fa-plus-circle"></span>&nbsp;@StringLocalizer["New Action"]&nbsp; <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(UrlRedirectAction))">@Translate.Key("Url Redirect")</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(InternalAction))">@Translate.Key("Internal Redirect")</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(SqlCommandAction))">@Translate.Key("Sql Command")</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(ScriptAction))">@Translate.Key("JavaScript Script")</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a></li>
             </ul>
         </div>
     </div>
@@ -69,7 +74,7 @@
                                        data-size="small"
                                        data-on="On"
                                        data-off="Off"
-                                       onchange="jjdictionary.setDisableAction($(this).prop('checked'),'@GetUrlDisable(action)','@Translate.Key("Unexpected error")');">
+                                       onchange="jjdictionary.setDisableAction($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
                             }
                         </div>
                     </div>

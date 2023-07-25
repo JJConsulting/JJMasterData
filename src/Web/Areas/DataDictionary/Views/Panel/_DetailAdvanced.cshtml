@@ -1,6 +1,12 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Commons.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@using JJMasterData.Commons.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @model FormElementPanel
 
 
@@ -8,15 +14,15 @@
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label asp-for="VisibleExpression" class="@BootstrapHelper.Label" 
                data-bs-toggle="tooltip" data-toggle="tooltip"
-               title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Visible Expression")</label>
+               title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Visible Expression"]</label>
         <input type="text" asp-for="VisibleExpression" class="form-control"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label asp-for="EnableExpression" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@Translate.Key("Expression that returns a Boolean at runtime")">@Translate.Key("Enable Expression")</label>
+        <label asp-for="EnableExpression" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Enable Expression"]</label>
          <input type="text" asp-for="EnableExpression" class="form-control"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <label asp-for="CssClass" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@Translate.Key("Class name (CSS) to be added when rendering the object group")">@Translate.Key("CssClass")</label>
+        <label asp-for="CssClass" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@StringLocalizer["Class name (CSS) to be added when rendering the object group"]">@StringLocalizer["CssClass"]</label>
          <input type="text" asp-for="CssClass" class="form-control"/>
     </div>
 </div>
