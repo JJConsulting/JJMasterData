@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class EntityService : BaseService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
 
     public EntityService(
         IValidationDictionary validationDictionary,
@@ -16,7 +16,7 @@ public class EntityService : BaseService
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
+
     }
 
     private bool ValidateEntity(Element formElement, string originName)

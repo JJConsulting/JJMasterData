@@ -82,7 +82,7 @@ public class FieldFormattingService : IFieldFormattingService
         return stringValue ?? string.Empty;
     }
     
-    public string FormatValue(FormElementField field, object? value)
+    public string FormatValue(FormElementField field, object value)
     {
         if (value == null)
             return string.Empty;

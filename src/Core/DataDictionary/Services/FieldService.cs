@@ -10,7 +10,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
 
     public FieldService(
         IValidationDictionary validationDictionary, 
@@ -18,7 +18,7 @@ public class FieldService : BaseService
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
+
     }
 
     public bool SaveField(string elementName, FormElementField field, string originalName)

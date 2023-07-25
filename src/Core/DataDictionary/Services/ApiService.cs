@@ -6,7 +6,6 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ApiService : BaseService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public ApiService(
         IValidationDictionary validationDictionary, 
@@ -14,7 +13,7 @@ public class ApiService : BaseService
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
+
     }
 
     public bool EditApi(FormElement dicParser)

@@ -708,7 +708,7 @@ public class JJFormView : JJBaseView
 
         try
         {
-            var rows = GetSelectedGridValues();
+            var rows = GridView.GetSelectedGridValues();
             foreach (var errors in rows.Select(DeleteFormValues))
             {
                 if (errors is { Count: > 0 })
@@ -751,7 +751,7 @@ public class JJFormView : JJBaseView
 
                 html.AppendElement(new JJMessageBox(message.ToString(), icon));
 
-                ClearSelectedGridValues();
+                GridView.ClearSelectedGridValues();
             }
         }
         catch (Exception ex)

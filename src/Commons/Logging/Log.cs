@@ -7,12 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
-[Obsolete("Please use ILogger. This class uses a static service locator and don't have <T> categories support.")]
-
 /// <summary>
 /// Static accessor to the ILogger interface.
 /// When possible, use ILogger via constructor injection.
 /// </summary>
+[Obsolete("Please use ILogger. This class uses a static service locator and don't have <T> categories support.")]
 public static class Log
 {
     private static ILogger _logger;

@@ -124,7 +124,7 @@ public class ExpressionsService : IExpressionsService
         return GetValueExpression(f.DefaultValue, f, state, formValues);
     }
 
-    public bool GetBoolValue(string expression, string actionName, PageState state,
+    public bool GetBoolValue(string? expression, string actionName, PageState state,
         IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
     {
         if (string.IsNullOrEmpty(expression))

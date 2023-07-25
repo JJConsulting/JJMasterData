@@ -32,9 +32,6 @@ public class JJCheckBox : JJBaseControl
         set => _isChecked = value;
     }
 
-    private static IExpressionsService ExpressionsService =>
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
-    
     public JJCheckBox(IHttpContext httpContext) : base(httpContext)
     {
         Visible = true;
