@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Filters;
@@ -16,10 +17,10 @@ public class ExportationController : MasterDataController
         DataExportationFactory = dataExportationFactory;
     }
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
-    public async Task<IActionResult> StartExportation(string dictionaryName, string componentName)
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult StartExportation(FormElement formElement, string componentName)
     {
-        var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);
+        var gridView = GridViewFactory.CreateGridView(formElement);
         gridView.IsExternalRoute = true;
         gridView.DataExportation.Name = componentName;
         gridView.ExportFileInBackground();
