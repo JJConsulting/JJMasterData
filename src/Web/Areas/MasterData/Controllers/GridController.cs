@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Filters;
@@ -13,13 +14,12 @@ public class GridController : MasterDataController
     {
         GridViewFactory = gridViewFactory;
     }
-
-
+    
     [HttpPost]
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
-    public async Task<IActionResult> GetGridViewTable(string dictionaryName, string componentName)
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult GetGridViewTable(FormElement formElement, string componentName)
     {
-        var gridView = await GridViewFactory.CreateGridViewAsync(dictionaryName);
+        var gridView = GridViewFactory.CreateGridView(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
         
