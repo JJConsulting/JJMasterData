@@ -30,13 +30,13 @@ public class GridController : MasterDataController
     
     [HttpPost]
     [ServiceFilter<FormElementDecryptionFilter>]
-    public IActionResult GetGridViewTable(FormElement formElement, string componentName)
+    public async Task<IActionResult> GetGridViewTable(FormElement formElement, string componentName)
     {
         var gridView = GridViewFactory.CreateGridView(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
         
-        return Content(gridView.GetTableHtml());
+        return Content(await gridView.GetTableHtmlAsync());
     }
 
 }

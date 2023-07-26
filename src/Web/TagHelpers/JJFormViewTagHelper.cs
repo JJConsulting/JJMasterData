@@ -42,6 +42,6 @@ public class JJFormViewTagHelper : TagHelper
         Configure?.Invoke(formView);
         
         output.TagMode = TagMode.StartTagAndEndTag;
-        output.Content.SetHtmlContent(formView.GetHtml());
+        output.Content.SetHtmlContent(await formView.GetHtmlAsync());
     }
 }

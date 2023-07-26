@@ -171,7 +171,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
             }
             else
             {
-                value = FieldFormattingService.FormatGridValue(field, values,null).GetAwaiter().GetResult();
+                value = FieldFormattingService.FormatGridValueAsync(field, values,null).GetAwaiter().GetResult();
             }
         }
 

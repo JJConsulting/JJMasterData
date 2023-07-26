@@ -53,6 +53,6 @@ public class JJGridViewTagHelper : TagHelper
         Configure?.Invoke(gridView);
 
         output.TagMode = TagMode.StartTagAndEndTag;
-        output.Content.SetHtmlContent(gridView.GetHtml());
+        output.Content.SetHtmlContent(await gridView.GetHtmlAsync());
     }
 }

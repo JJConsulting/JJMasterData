@@ -52,10 +52,6 @@ public abstract class JJBaseView
 
     #endregion
 
-    #region "Constructors"
-
-    #endregion
-
     /// <summary>
     /// Returns the object representation of the HTML
     /// </summary>

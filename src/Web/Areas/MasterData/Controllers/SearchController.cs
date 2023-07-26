@@ -43,7 +43,7 @@ public class SearchController : MasterDataController
 
         if (dataItem!.HasSqlExpression())
         {
-            formValues = await FormValuesService.GetFormValuesWithMergedValues(formElement, (PageState)pageState, true);
+            formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, (PageState)pageState, true);
         }
 
         var context = new SearchBoxContext(formValues, null, (PageState)pageState);

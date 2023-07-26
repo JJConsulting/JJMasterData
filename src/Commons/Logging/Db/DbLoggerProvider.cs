@@ -10,9 +10,9 @@ internal class DbLoggerProvider : ILoggerProvider
 
     private readonly ILogger _logger;
 
-    public DbLoggerProvider(DbLoggerBuffer buffer, IOptionsMonitor<DbLoggerOptions> options)
+    public DbLoggerProvider(DbLoggerBuffer buffer)
     {
-        _logger = new DbLogger(buffer,options);
+        _logger = new DbLogger(buffer);
     }
 
     public ILogger CreateLogger(string categoryName) => _logger;

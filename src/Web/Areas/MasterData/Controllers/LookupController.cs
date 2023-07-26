@@ -58,7 +58,7 @@ public class LookupController : MasterDataController
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var dataItem = formElement.Fields[fieldName].DataItem;
 
-        var formValues = await FormValuesService.GetFormValuesWithMergedValues(formElement,pageState,true);
+        var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState,true);
 
         var selectedValue = LookupService.GetSelectedValue(componentName).ToString();
         

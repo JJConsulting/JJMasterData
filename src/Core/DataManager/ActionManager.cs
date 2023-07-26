@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -395,7 +396,7 @@ internal class ActionManager
         return link;
     }
 
-    public string ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
+    public async Task<string> ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
     {
         try
         {
@@ -415,7 +416,7 @@ internal class ActionManager
                     listSql.Add(sql);
                 }
 
-                EntityRepository.SetCommand(listSql);
+                await EntityRepository.SetCommandAsync(listSql);
                 gridView.ClearSelectedGridValues();
             }
             else
@@ -424,8 +425,7 @@ internal class ActionManager
                 if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                                   map.PkFieldValues.Count > 0))
                 {
-                    //TODO: Use Async
-                    formValues = gridView.EntityRepository.GetDictionaryAsync(FormElement, map.PkFieldValues).GetAwaiter().GetResult();
+                    formValues = await gridView.EntityRepository.GetDictionaryAsync(FormElement, map.PkFieldValues);
                 }
                 else
                 {
@@ -434,7 +434,7 @@ internal class ActionManager
 
                 string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);
                 listSql.Add(sql);
-                EntityRepository.SetCommand(listSql);
+                await EntityRepository.SetCommandAsync(listSql);
             }
         }
         catch (Exception ex)

@@ -9,12 +9,10 @@ namespace JJMasterData.Commons.Logging.Db;
 internal class DbLogger : ILogger
 {
     private readonly DbLoggerBuffer _loggerBuffer;
-    private readonly IOptionsMonitor<DbLoggerOptions> _options;
 
-    public DbLogger(DbLoggerBuffer loggerBuffer, IOptionsMonitor<DbLoggerOptions> options)
+    public DbLogger(DbLoggerBuffer loggerBuffer)
     {
         _loggerBuffer = loggerBuffer;
-        _options = options;
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;

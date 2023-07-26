@@ -271,12 +271,12 @@ public class JJDataPanel : JJBaseView
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
     public IDictionary<string, dynamic> GetFormValues()
     {
-        return FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState, AutoReloadFormFields).GetAwaiter().GetResult();
+        return FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields).GetAwaiter().GetResult();
     }
 
     public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
     {
-        return await FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState, AutoReloadFormFields);
+        return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields);
     }
 
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]

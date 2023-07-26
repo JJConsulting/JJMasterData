@@ -72,7 +72,7 @@ public class SearchBoxFactory
 
         if (dataItem.HasSqlExpression())
         {
-            formValues = FormValuesService.GetFormValuesWithMergedValues(formElement,pageState, true).GetAwaiter().GetResult();
+            formValues = FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState, true).GetAwaiter().GetResult();
         }
 
         var field = formElement.Fields[fieldName];

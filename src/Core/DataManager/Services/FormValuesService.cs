@@ -97,17 +97,17 @@ public class FormValuesService : IFormValuesService
         return values;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValues(
+    public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement, 
         PageState pageState,
         bool autoReloadFormFields,
         string? fieldPrefix = null)
     {
         var dbValues = await GetDbValues(formElement);
-        return await GetFormValuesWithMergedValues(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
+        return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
     }
 
-    public async Task<IDictionary<string,dynamic>> GetFormValuesWithMergedValues(
+    public async Task<IDictionary<string,dynamic>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement, 
         PageState pageState, 
         IDictionary<string,dynamic>? values,

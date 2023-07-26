@@ -1,4 +1,5 @@
 using System.Data;
+using System.Threading.Tasks;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -27,7 +28,7 @@ internal class GridTable
         Filter = gridView.Filter;
     }
 
-    public HtmlBuilder GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlElement()
     {
         var table = new HtmlBuilder(HtmlTag.Table);
 
@@ -40,7 +41,7 @@ internal class GridTable
         table.WithCssClassIf(Settings.IsHeaderFixed, "table-fix-head");
 
         table.AppendElement(Header.GetHtmlElement());
-        table.AppendElement(Body.GetHtmlElement());
+        table.AppendElement(await Body.GetHtmlElementAsync());
 
         return table;
     }

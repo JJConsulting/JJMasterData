@@ -20,7 +20,7 @@ public interface IFormValuesService
     /// <param name="autoReloadFormFields"></param>
     /// <param name="fieldPrefix"></param>
     /// <returns></returns>
-    public Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValues(
+    public Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
         bool autoReloadFormFields,
@@ -34,7 +34,7 @@ public interface IFormValuesService
     /// <param name="autoReloadFormFields"></param>
     /// <param name="fieldPrefix"></param>
     /// <returns></returns>
-    public Task<IDictionary<string,dynamic>> GetFormValuesWithMergedValues(
+    public Task<IDictionary<string,dynamic>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement, 
         PageState pageState, 
         IDictionary<string,dynamic>? values,

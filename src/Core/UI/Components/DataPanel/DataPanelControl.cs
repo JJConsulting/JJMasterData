@@ -292,7 +292,7 @@ internal class DataPanelControl
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(await FieldsService.FormatGridValue(f, Values, UserValues));
+            .AppendText(await FieldsService.FormatGridValueAsync(f, Values, UserValues));
 
         return html;
     }

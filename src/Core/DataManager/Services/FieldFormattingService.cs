@@ -23,7 +23,7 @@ public class FieldFormattingService : IFieldFormattingService
         LookupService = lookupService;
     }
     
-    public async Task<string> FormatGridValue(FormElementField field, IDictionary<string,dynamic> values, IDictionary<string,dynamic> userValues)
+    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string,dynamic> values, IDictionary<string,dynamic> userValues)
     {
         object fieldValue = null;
         if (values.TryGetValue(field.Name, out var value))

@@ -43,7 +43,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
-public class JJGridView : JJBaseView
+public class JJGridView : JJAsyncBaseView
 {
 
 
@@ -669,6 +669,11 @@ public class JJGridView : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    {
         var html = new HtmlBuilder(HtmlTag.Div);
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
 
@@ -679,14 +684,14 @@ public class JJGridView : JJBaseView
         html.AppendElementIf(FilterAction.IsVisible, Filter.GetFilterHtml);
         html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
 
-        html.AppendElement(GetTableHtmlBuilder());
+        html.AppendElement(await GetTableHtmlBuilder());
 
         return html;
     }
 
-    public string GetTableHtml() => GetTableHtmlBuilder().ToString();
+    public async Task<string> GetTableHtmlAsync() => (await GetTableHtmlBuilder()).ToString();
 
-    private HtmlBuilder GetTableHtmlBuilder()
+    private async Task<HtmlBuilder> GetTableHtmlBuilder()
     {
         AssertProperties();
 
@@ -694,14 +699,17 @@ public class JJGridView : JJBaseView
 
         string currentAction = CurrentContext.Request["current_tableaction_" + Name];
 
-        var error = ExecuteCurrentAction(ref currentAction);
+        var error = await ExecuteCurrentAction();
 
+        if (string.IsNullOrEmpty(error))
+            currentAction = null;
+        
         SetDataSource();
 
         if (CheckForExportation(requestType))
             return null;
 
-        if (CheckForTableRow(requestType, Table))
+        if (await CheckForTableRow(requestType, Table))
             return null;
 
         if (CheckForSelectAllRows(requestType))
@@ -714,7 +722,7 @@ public class JJGridView : JJBaseView
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(error, currentAction));
 
-        html.AppendElement(Table.GetHtmlElement());
+        html.AppendElement(await Table.GetHtmlElement());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
@@ -799,7 +807,7 @@ public class JJGridView : JJBaseView
         return false;
     }
 
-    private bool CheckForTableRow(string requestType, GridTable table)
+    private async Task<bool> CheckForTableRow(string requestType, GridTable table)
     {
         if ("tablerow".Equals(requestType))
         {
@@ -811,7 +819,7 @@ public class JJGridView : JJBaseView
 
                 string responseHtml = string.Empty;
 
-                foreach (var td in table.Body.GetTdHtmlList(row, rowIndex))
+                foreach (var td in await table.Body.GetTdHtmlList(row, rowIndex))
                 {
                     responseHtml += td.ToString();
                 }
@@ -884,7 +892,7 @@ public class JJGridView : JJBaseView
 
     public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
 
-    private string ExecuteCurrentAction(ref string currentAction)
+    private async Task<string> ExecuteCurrentAction()
     {
         string error = string.Empty;
         var actionMap = CurrentActionMap;
@@ -893,9 +901,7 @@ public class JJGridView : JJBaseView
         switch (action)
         {
             case SqlCommandAction cmdAction:
-                error = _actionManager.ExecuteSqlCommand(this, actionMap, cmdAction);
-
-                currentAction = string.Empty;
+                error = await _actionManager.ExecuteSqlCommand(this, actionMap, cmdAction);
                 break;
         }
 
@@ -1343,7 +1349,7 @@ public class JJGridView : JJBaseView
             }
 
             string prefixValue = GetFieldName("", values);
-            var newValues = await FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState.List, values,
+            var newValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState.List, values,
                 AutoReloadFormFields, prefixValue);
             listValues.Add(newValues);
         }

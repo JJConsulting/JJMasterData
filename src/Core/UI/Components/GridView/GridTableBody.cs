@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -25,27 +26,27 @@ internal class GridTableBody
         GridView = gridView;
     }
 
-    public HtmlBuilder GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlElementAsync()
     {
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
         tbody.WithAttribute("id", Name);
-        tbody.AppendRange(GetRowsList());
+        tbody.AppendRange(await GetRowsList().ToListAsync());
 
         return tbody;
     }
 
-    private IEnumerable<HtmlBuilder> GetRowsList()
+    private async IAsyncEnumerable<HtmlBuilder> GetRowsList()
     {
         var rows = GridView.DataSource.Rows;
 
         for (int i = 0; i < rows.Count; i++)
         {
-            yield return GetRowHtml(rows[i], i);
+            yield return await GetRowHtml(rows[i], i);
         }
     }
 
-    internal HtmlBuilder GetRowHtml(DataRow row, int index)
+    internal async Task<HtmlBuilder> GetRowHtml(DataRow row, int index)
     {
         var html = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
@@ -55,21 +56,20 @@ internal class GridTableBody
         bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
         html.WithCssClassIf(enableGridAction, "jjgrid-action");
 
-        html.AppendRange(GetTdHtmlList(row, index));
+        html.AppendRange(await GetTdHtmlList(row, index));
 
         return html;
     }
 
-    internal IEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
+    internal async Task<IEnumerable<HtmlBuilder>> GetTdHtmlList(DataRow row, int index)
     {
-        var values = GetValues(row);
+        var values = await GetValues(row);
 
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
         var html = new List<HtmlBuilder>();
-
-
+        
         string onClickScript = GetOnClickScript(values, defaultAction);
 
         if (GridView.EnableMultiSelect)
@@ -87,21 +87,20 @@ internal class GridTableBody
             }
         }
 
-        html.AddRange(GetVisibleFieldsHtmlList(row, index, values, onClickScript));
+        html.AddRange(await GetVisibleFieldsHtmlList(row, index, values, onClickScript).ToListAsync());
         html.AddRange(GetActionsHtmlList(values));
 
         return html;
     }
-
-    [Obsolete("Must be async")]
-    private IEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
+    
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
     {
         foreach (var field in GridView.VisibleFields)
         {
             string value = string.Empty;
             if (values.ContainsKey(field.Name))
             {
-                value = GridView.FieldsService.FormatGridValue(field, values, GridView.UserValues).GetAwaiter().GetResult();
+                value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
             }
 
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -198,7 +197,6 @@ internal class GridTableBody
 
         if (groupedActions.Count > 0)
         {
-            var context = new ActionContext(values, PageState.List, ActionSource.GridTable, OnRenderAction);
             yield return GetActionsGroupHtml(groupedActions, values);
         }
     }
@@ -334,7 +332,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private IDictionary<string, dynamic> GetValues(DataRow row)
+    private async Task<IDictionary<string, dynamic>> GetValues(DataRow row)
     {
         var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         for (int i = 0; i < row.Table.Columns.Count; i++)
@@ -346,6 +344,6 @@ internal class GridTableBody
             return values;
 
         var prefixName = GridView.GetFieldName(string.Empty, values);
-        return GridView.FormValuesService.GetFormValuesWithMergedValues(GridView.FormElement, PageState.List, GridView.AutoReloadFormFields, prefixName).GetAwaiter().GetResult();
+        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List, GridView.AutoReloadFormFields, prefixName);
     }
 }
