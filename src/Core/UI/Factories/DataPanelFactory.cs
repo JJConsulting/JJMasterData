@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Http.Abstractions;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -22,12 +20,12 @@ public class DataPanelFactory
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private FieldControlFactory FieldControlFactory { get; }
-    private ScriptsHelper ScriptsHelper { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
-        FieldControlFactory fieldControlFactory, ScriptsHelper scriptsHelper)
+        FieldControlFactory fieldControlFactory, JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -37,14 +35,13 @@ public class DataPanelFactory
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         FieldControlFactory = fieldControlFactory;
-        ScriptsHelper = scriptsHelper;
+        UrlHelper = urlHelper;
     }
 
     public JJDataPanel CreateDataPanel(FormElement formElement)
     {
         var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, FieldsService, FormValuesService, ExpressionsService, FieldControlFactory,
-            ScriptsHelper);
+            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, FieldControlFactory);
         return dataPanel;
     }
 

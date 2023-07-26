@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -34,6 +35,10 @@ namespace JJMasterData.Core.Web.Components;
 ///TODO: I think Exportation is better than Exp, exp can be experience, experiment, etc.
 public class JJDataExp : JJBaseProcess
 {
+    private readonly JJMasterDataUrlHelper _urlHelper;
+    private readonly JJMasterDataEncryptionService _encryptionService;
+    private DataExportationScripts _dataExportationScripts;
+
 
     #region "Events"
 
@@ -65,7 +70,10 @@ public class JJDataExp : JJBaseProcess
 
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
-    internal DataExportationScriptHelper ScriptHelper { get; }
+    //internal DataExportationScripts Scripts { get; }
+
+    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
+
     private FileDownloaderFactory FileDownloaderFactory { get; }
 
     #endregion
@@ -76,16 +84,19 @@ public class JJDataExp : JJBaseProcess
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFieldValuesService fieldValuesService,
-        DataExportationScriptHelper dataExportationScriptHelper,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         FileDownloaderFactory fileDownloaderFactory,
         ILoggerFactory loggerFactory,
-        IHttpContext currentContext) : 
+        IHttpContext currentContext,
+        JJMasterDataUrlHelper urlHelper, 
+        JJMasterDataEncryptionService encryptionService) : 
         base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
     {
-        ScriptHelper = dataExportationScriptHelper;
+        _urlHelper = urlHelper;
+        _encryptionService = encryptionService;
+
         FileDownloaderFactory = fileDownloaderFactory;
         CurrentContext = currentContext;
         MasterDataOptions = masterDataOptions.Value;

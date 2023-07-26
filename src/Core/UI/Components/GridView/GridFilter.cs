@@ -195,7 +195,7 @@ internal class GridFilter
             Text = "Filter",
             IconClass = "fa fa-search",
             Type = LinkButtonType.Submit,
-            OnClientClick = $"{GridView.ScriptsHelper.GridViewScriptHelper.GetFilterScript(GridView)};return false;"
+            OnClientClick = $"{GridView.Scripts.GetFilterScript(GridView)};return false;"
         };
 
         var btnCancel = new JJLinkButton

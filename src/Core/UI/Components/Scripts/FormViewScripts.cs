@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class FormViewScriptHelper
+public class FormViewScripts
 {
     //TODO: Migrate Actions from ActionManager
 

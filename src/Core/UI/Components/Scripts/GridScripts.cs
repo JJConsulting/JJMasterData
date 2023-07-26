@@ -3,12 +3,12 @@ using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class GridViewScriptHelper
+public class GridScripts
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
-    public GridViewScriptHelper(JJMasterDataEncryptionService encryptionService, JJMasterDataUrlHelper urlHelper)
+    public GridScripts(JJMasterDataEncryptionService encryptionService, JJMasterDataUrlHelper urlHelper)
     {
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;

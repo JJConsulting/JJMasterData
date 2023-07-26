@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataExportationLog
 {
-    private DataExportationScriptHelper ScriptHelper { get; }
+    private DataExportationScripts Scripts { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly string _componentName;
     private readonly bool _isExternalRoute;
@@ -15,7 +15,7 @@ internal class DataExportationLog
 
     public DataExportationLog(JJDataExp dataExportation)
     {
-        ScriptHelper = dataExportation.ScriptHelper;
+        Scripts = dataExportation.Scripts;
         StringLocalizer = dataExportation.StringLocalizer;
         _componentName = dataExportation.Name;
         _isExternalRoute = dataExportation.IsExternalRoute;
@@ -55,7 +55,7 @@ internal class DataExportationLog
 
             div.AppendElement(HtmlTag.A, a =>
             {
-                var stopExportationScript = ScriptHelper.GetStopExportationScript(_dictionaryName, _componentName,
+                var stopExportationScript = Scripts.GetStopExportationScript(_dictionaryName, _componentName,
                     StringLocalizer["Stopping Processing..."], _isExternalRoute);
                 a.WithAttribute("href", $"javascript:{stopExportationScript}");
                 a.AppendElement(HtmlTag.Span, span =>

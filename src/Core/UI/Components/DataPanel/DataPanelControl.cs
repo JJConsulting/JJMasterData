@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -19,18 +16,22 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 internal class DataPanelControl
 {
-    public string Name { get;  }
+
+    private DataPanelScripts _panelScripts;
+
+
+    public string Name { get; }
     public FormElement FormElement { get; }
     public FormUI FormUI { get; private set; }
 
-    public FieldControlFactory ControlFactory { get;  }
+    public FieldControlFactory ControlFactory { get; }
 
     public PageState PageState { get; private set; }
 
-    public IDictionary<string,dynamic> Errors { get; private set; }
+    public IDictionary<string, dynamic> Errors { get; private set; }
 
-    public IDictionary<string,dynamic> UserValues { get; set; }
-    public IDictionary<string,dynamic> Values { get; set; }
+    public IDictionary<string, dynamic> UserValues { get; set; }
+    public IDictionary<string, dynamic> Values { get; set; }
 
     public string FieldNamePrefix { get; set; }
 
@@ -39,7 +40,9 @@ internal class DataPanelControl
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
     internal IExpressionsService ExpressionsService { get; }
     private IFieldsService FieldsService { get; }
-    private ScriptsHelper ScriptsHelper { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal JJMasterDataUrlHelper UrlHelper { get; }
+    internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(EncryptionService, UrlHelper);
     public DataPanelControl(JJDataPanel dataPanel)
     {
         FormElement = dataPanel.FormElement;
@@ -48,7 +51,8 @@ internal class DataPanelControl
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
-        ScriptsHelper = dataPanel.ScriptsHelper;
+        EncryptionService = dataPanel.EncryptionService;
+        UrlHelper = dataPanel.UrlHelper;
         UserValues = dataPanel.UserValues;
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
@@ -64,7 +68,8 @@ internal class DataPanelControl
             IsVerticalLayout = false
         };
         PageState = PageState.Filter;
-        ScriptsHelper = gridView.ScriptsHelper;
+        EncryptionService = gridView.EncryptionService;
+        UrlHelper = gridView.UrlHelper;
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
@@ -100,7 +105,7 @@ internal class DataPanelControl
             bool visible = FieldsService.IsVisible(field, PageState, Values);
             if (!visible)
                 continue;
-            
+
             object value = null;
             if (Values != null && Values.ContainsKey(field.Name))
             {
@@ -113,7 +118,7 @@ internal class DataPanelControl
                     value = Values[field.Name];
                 }
             }
-                
+
 
             if (lineGroup != field.LineGroup)
             {
@@ -197,7 +202,7 @@ internal class DataPanelControl
             fullClass = "col-sm-8";
         }
 
-  
+
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
@@ -281,20 +286,20 @@ internal class DataPanelControl
         return html;
     }
 
-    
+
     private async Task<HtmlBuilder> GetStaticField(FormElementField f)
     {
         var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
         var html = new HtmlBuilder(tag)
             .WithCssClass("form-control-static")
-            .AppendText(await FieldsService.FormatGridValue(f, Values,UserValues));
+            .AppendText(await FieldsService.FormatGridValue(f, Values, UserValues));
 
         return html;
     }
 
     private HtmlBuilder GetControlField(FormElementField field, object value)
     {
-        var control = ControlFactory.CreateControl(FormElement,Name,field, PageState, Values,UserValues, value);
+        var control = ControlFactory.CreateControl(FormElement, Name, field, PageState, Values, UserValues, value);
         control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
@@ -343,12 +348,12 @@ internal class DataPanelControl
         {
             var script = new StringBuilder();
             script.Append("setTimeout(function() { ");
-            script.Append(ScriptsHelper.DataPanelScriptHelper.GetReloadPanelScript(FormElement.Name,f.Name,Name,IsExternalRoute));
+            script.Append(Scripts.GetReloadPanelScript(FormElement.Name, f.Name, Name, IsExternalRoute));
             script.Append("}, 200);");
             return script.ToString();
         }
 
-        return ScriptsHelper.DataPanelScriptHelper.GetReloadPanelScript(FormElement.Name,f.Name,Name,IsExternalRoute);
+        return Scripts.GetReloadPanelScript(FormElement.Name, f.Name, Name, IsExternalRoute);
     }
 
 }

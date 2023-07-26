@@ -65,7 +65,6 @@ internal class GridToolbar
             }
 
             yield return linkButton.GetHtmlBuilder();
-
         }
     }
 
@@ -100,13 +99,13 @@ internal class GridToolbar
                 script = BootstrapHelper.GetModalScript($"config_modal_{GridView.Name}");
                 break;
             case ExportAction:
-                script = GridView.ScriptsHelper.DataExportationScriptHelper.GetExportPopupScript(
+                script = GridView.DataExportation.Scripts.GetExportPopupScript(
                     GridView.FormElement.Name,
                         GridView.Name,
                     GridView.IsExternalRoute);
                 break;
             case RefreshAction:
-                script = GridView.ScriptsHelper.GridViewScriptHelper.GetRefreshScript(GridView);
+                script = GridView.Scripts.GetRefreshScript(GridView);
                 break;
             case FilterAction:
                 script = BootstrapHelper.GetModalScript($"filter_modal_{GridView.Name}");
