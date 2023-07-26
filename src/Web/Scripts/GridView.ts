@@ -34,25 +34,33 @@
         document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
-    
-    //todo
-    static selectAllRows(componentName, rows) {
-        const values = rows.split(",");
-        $(".jjselect input").not(":disabled").prop("checked", true);
-        $("#selectedrows_" + componentName).val(values);
 
-        const selectedText = $("#selectedtext_" + componentName);
-        var promptStr = selectedText.attr("paramSelStr").replace("{0}", values.length.toString());
-        selectedText.text(promptStr);
+    static selectAllRows(componentName, url) {
+        fetch(url, {method:"POST"})
+            .then(response => response.json())
+            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows))
+    }
+
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+
+        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+
+        const selectedRowsInput = document.getElementById("selectedrows_" + componentName) as HTMLInputElement;
+        selectedRowsInput.value = values.join(",");
+
+        const selectedText = document.getElementById("selectedtext_" + componentName);
+        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
     }
 
     static refreshGrid(componentName, url) {
         const form = document.querySelector("form");
-        
+
         let urlBuilder = new UrlBuilder(url)
-        
-        urlBuilder.addQueryParameter("componentName",componentName)
-        
+
+        urlBuilder.addQueryParameter("componentName", componentName)
+
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)

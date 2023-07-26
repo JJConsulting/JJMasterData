@@ -234,7 +234,7 @@ internal class GridTableHeader
                     li.AppendElement(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", $"jjview.doSelectAll('{GridView.Name}')");
+                        a.WithAttribute("onclick", GridView.ScriptsHelper.GridViewScriptHelper.GetSelectAllScript(GridView));
                         a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalRecords]);
                     });
                 });

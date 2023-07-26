@@ -207,6 +207,20 @@ class GridView {
         document.querySelector("#current_formaction_" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
+    static selectAllRows(componentName, url) {
+        fetch(url, { method: "POST" })
+            .then(response => response.json())
+            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows));
+    }
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+        const selectedRowsInput = document.getElementById("selectedrows_" + componentName);
+        selectedRowsInput.value = values.join(",");
+        const selectedText = document.getElementById("selectedtext_" + componentName);
+        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
+    }
     static refreshGrid(componentName, url) {
         const form = document.querySelector("form");
         let urlBuilder = new UrlBuilder(url);
@@ -227,7 +241,7 @@ class GridView {
         });
     }
 }
-class JJSearchBox {
+class SearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
             const componentName = $(this).attr("jjid");
@@ -308,8 +322,6 @@ class JJSearchBox {
             });
         });
     }
-}
-class Lookup {
 }
 class UrlBuilder {
     constructor(url = null) {
@@ -805,7 +817,7 @@ function jjloadform(event, prefixSelector) {
         trigger: "hover"
     });
     JJTextArea.setup();
-    JJSearchBox.setup();
+    SearchBox.setup();
     JJLookup.setup();
     JJSortable.setup();
     JJUpload.setup();
@@ -1314,12 +1326,7 @@ var jjview = (function () {
                 type: frm.attr("method"),
                 url: surl,
                 success: function (data) {
-                    var aValues = data.split(",");
-                    $(".jjselect input").not(":disabled").prop("checked", true);
-                    $("#selectedrows_" + objid).val(aValues);
-                    var oSelectedtext = $("#selectedtext_" + objid);
-                    var promptStr = oSelectedtext.attr("paramSelStr").replace("{0}", aValues.length.toString());
-                    oSelectedtext.text(promptStr);
+                    GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

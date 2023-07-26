@@ -10,6 +10,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
@@ -66,7 +67,7 @@ public class FormService : IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public FormLetter Update(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
+    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
     {
         var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
@@ -80,7 +81,17 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Update(formElement, (IDictionary)values), ref errors);
+        int rowsAffected = 0;
+
+        try
+        {
+            rowsAffected = await EntityRepository.UpdateAsync(formElement, (IDictionary)values);
+        }
+        catch (Exception e)
+        {
+            errors.Add("DbException",ExceptionManager.GetMessage(e));
+        }
+        
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -90,7 +101,7 @@ public class FormService : IFormService
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableAuditLog)
-            AuditLogService.AddLog(formElement,dataContext, values, CommandOperation.Update);
+            await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -102,7 +113,7 @@ public class FormService : IFormService
         return result;
     }
 
-    public FormLetter Insert(FormElement formElement,IDictionary<string,dynamic> values, DataContext dataContext, bool validateFields = true)
+    public async Task<FormLetter> InsertAsync(FormElement formElement,IDictionary<string,dynamic> values, DataContext dataContext, bool validateFields = true)
     {
         IDictionary<string,dynamic>errors;
         if (validateFields)
@@ -120,7 +131,14 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        RunDatabaseCommand(() => EntityRepository.Insert(formElement, (IDictionary)values), ref errors);
+        try
+        {
+            await EntityRepository.InsertAsync(formElement, values as IDictionary);
+        }
+        catch (Exception e)
+        {
+            errors.Add("DbException",ExceptionManager.GetMessage(e));
+        }
 
         if (errors.Count > 0)
             return result;
@@ -129,7 +147,7 @@ public class FormService : IFormService
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (EnableAuditLog)
-            AuditLogService.AddLog(formElement,dataContext, values, CommandOperation.Insert);
+            await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -147,7 +165,7 @@ public class FormService : IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public FormLetter<CommandOperation> InsertOrReplace(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
+    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
     {
         var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
@@ -161,13 +179,22 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        result.Result = RunDatabaseCommand(() => EntityRepository.SetValues(formElement, (IDictionary) values), ref errors);
+
+        try
+        {
+            result.Result = await EntityRepository.SetValuesAsync(formElement, (IDictionary)values);
+        }
+        catch (Exception e)
+        {
+            errors.Add("DbException",ExceptionManager.GetMessage(e));
+        }
+        
 
         if (errors.Count > 0)
             return result;
 
         if (EnableAuditLog)
-            AuditLogService.AddLog(formElement,dataContext, values, result.Result);
+            AuditLogService.LogAsync(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -200,7 +227,7 @@ public class FormService : IFormService
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>
     /// <param name="dataContext"></param>
     /// >
-    public FormLetter Delete(FormElement formElement,IDictionary<string,dynamic> primaryKeys,  DataContext dataContext)
+    public async Task<FormLetter> DeleteAsync(FormElement formElement,IDictionary<string,dynamic> primaryKeys,  DataContext dataContext)
     {
         IDictionary<string,dynamic>errors = new Dictionary<string, dynamic>();
         var result = new FormLetter(errors);
@@ -214,8 +241,16 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        int rowsAffected = RunDatabaseCommand(() => EntityRepository.Delete(formElement, (IDictionary)primaryKeys), ref errors);
-        result.NumberOfRowsAffected = rowsAffected;
+        try
+        {
+            int rowsAffected = await EntityRepository.DeleteAsync(formElement, (IDictionary)primaryKeys);
+            result.NumberOfRowsAffected = rowsAffected;
+        }
+        catch (Exception e)
+        {
+            errors.Add("DbException",ExceptionManager.GetMessage(e));
+        }
+
 
         if (errors.Count > 0)
             return result;
@@ -224,7 +259,7 @@ public class FormService : IFormService
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
         if (EnableAuditLog)
-            AuditLogService.AddLog(formElement,dataContext, primaryKeys, CommandOperation.Delete);
+            await AuditLogService.LogAsync(formElement,dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
@@ -235,33 +270,7 @@ public class FormService : IFormService
 
         return result;
     }
-
-    private static void RunDatabaseCommand(Action action, ref IDictionary<string,dynamic> errors)
-    {
-        try
-        {
-            action.Invoke();
-        }
-        catch (SqlException ex)
-        {
-            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
-        }
-    }
-
-    private static T RunDatabaseCommand<T>(Func<T> func, ref IDictionary<string,dynamic> errors)
-    {
-        try
-        {
-            return func.Invoke();
-        }
-        catch (SqlException ex)
-        {
-            errors.Add("Database Exception", ExceptionManager.GetMessage(ex));
-        }
-
-        return default;
-    }
-
+    
     public void AddFormEvent(IFormEvent formEvent)
     {
         if (formEvent != null)

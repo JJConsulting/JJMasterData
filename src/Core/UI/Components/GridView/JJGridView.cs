@@ -99,8 +99,7 @@ public class JJGridView : JJBaseView
             if (_dataImp != null)
                 return _dataImp;
 
-            _dataImp = JJService.Provider.GetScopedDependentService<JJMasterDataFactory>()
-                .CreateDataImportation(FormElement);
+            _dataImp = DataImportationFactory.Value.CreateDataImportation(FormElement);
             _dataImp.UserValues = UserValues;
             _dataImp.ProcessOptions = ImportAction.ProcessOptions;
             _dataImp.Name = Name + "_dataimp";
@@ -116,8 +115,7 @@ public class JJGridView : JJBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = JJService.Provider.GetScopedDependentService<JJMasterDataFactory>()
-                .CreateDataExportation(FormElement);
+            _dataExp = DataExportationFactory.Value.CreateDataExportation(FormElement);
             _dataExp.Name = Name;
             _dataExp.IsExternalRoute = IsExternalRoute;
             _dataExp.ExportOptions = CurrentExportConfig;
@@ -526,7 +524,9 @@ public class JJGridView : JJBaseView
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selectedrows_" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
+    #endregion
 
+    #region Injected Services
     internal IFieldsService FieldsService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
@@ -534,13 +534,13 @@ public class JJGridView : JJBaseView
     internal IEntityRepository EntityRepository { get; }
     internal ScriptsHelper ScriptsHelper { get; }
     internal IHttpContext CurrentContext { get; }
-    internal DataExportationFactory DataExportationFactory { get; }
-    internal DataImportationFactory DataImportationFactory { get; }
+    internal Lazy<DataExportationFactory> DataExportationFactory { get; }
+    internal Lazy<DataImportationFactory> DataImportationFactory { get; }
     internal LookupFactory LookupFactory { get; }
     internal ComboBoxFactory ComboBoxFactory { get; }
     internal FieldControlFactory FieldControlFactory { get; }
     #endregion
-
+    
     #region "Constructors"
 
 #if NET48
@@ -554,8 +554,8 @@ public class JJGridView : JJBaseView
         EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
         ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
-        DataExportationFactory = JJService.Provider.GetScopedDependentService<DataExportationFactory>();
-        DataImportationFactory = JJService.Provider.GetScopedDependentService<DataImportationFactory>();
+        DataExportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataExportationFactory>>();
+        DataImportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataImportationFactory>>();
         LookupFactory = JJService.Provider.GetScopedDependentService<LookupFactory>();
         ComboBoxFactory = JJService.Provider.GetScopedDependentService<ComboBoxFactory>();
         FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
@@ -608,8 +608,8 @@ public class JJGridView : JJBaseView
         IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        DataExportationFactory dataExportationFactory,
-        DataImportationFactory dataImportationFactory,
+        Lazy<DataExportationFactory> dataExportationFactory,
+        Lazy<DataImportationFactory> dataImportationFactory,
         FieldControlFactory fieldControlFactory)
     {
         FieldsService = fieldsService;
@@ -650,8 +650,8 @@ public class JJGridView : JJBaseView
         IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        DataExportationFactory dataExportationFactory,
-        DataImportationFactory dataImportationFactory,
+        Lazy<DataExportationFactory> dataExportationFactory,
+        Lazy<DataImportationFactory> dataImportationFactory,
         FieldControlFactory fieldControlFactory) : this(currentContext,
         entityRepository, expressionsService, encryptionService, fieldsService, formValuesService, scriptsHelper, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
     {
@@ -784,8 +784,10 @@ public class JJGridView : JJBaseView
     {
         if ("selectall".Equals(requestType))
         {
-            string values = GetEncryptedSelectedRows();
-            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new {selectedRows = values}));
+            string selectedRows = GetEncryptedSelectedRows();
+#pragma warning disable CS0618
+            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new {selectedRows}));
+#pragma warning restore CS0618
             return true;
         }
 

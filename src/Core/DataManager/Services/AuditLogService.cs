@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
@@ -36,7 +37,7 @@ public class AuditLogService : IAuditLogService
         Options = options.Value;
     }
 
-    public void AddLog(Element element,DataContext dataContext, IDictionary<string,dynamic> formValues, CommandOperation action)
+    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string,dynamic> formValues, CommandOperation action)
     {
         var values = new Dictionary<string,dynamic>()
         {
@@ -52,17 +53,17 @@ public class AuditLogService : IAuditLogService
         };
 
         var logElement = GetElement();
-        CreateTableIfNotExist();
-        EntityRepository.Insert(logElement, values);
+        await CreateTableIfNotExistsAsync();
+        await EntityRepository.InsertAsync(logElement, values);
     }
 
-    public void CreateTableIfNotExist()
+    public async Task CreateTableIfNotExistsAsync()
     {
         if (!_hasAuditLogTable)
         {
             var logElement = GetElement();
-            if (!EntityRepository.TableExists(logElement.TableName))
-                EntityRepository.CreateDataModel(logElement);
+            if (!await EntityRepository.TableExistsAsync(logElement.TableName))
+                await EntityRepository.CreateDataModelAsync(logElement);
 
             _hasAuditLogTable = true;
         }
@@ -84,7 +85,7 @@ public class AuditLogService : IAuditLogService
         foreach (var field in pks)
         {
             if (key.Length > 0)
-                key.Append(";");
+                key.Append(';');
 
             key.Append(values[field.Name]);
         }

@@ -82,7 +82,6 @@ public class JJAuditLogView : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        AuditLogService.CreateTableIfNotExist();
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("viewid_" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);

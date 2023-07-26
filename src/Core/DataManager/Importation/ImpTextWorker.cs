@@ -82,7 +82,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     public async Task RunWorkerAsync(CancellationToken token)
     {
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             var currentProcess = new DataImpReporter();
             try
@@ -90,7 +90,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
                 currentProcess.StartDate = DateTime.Now;
                 currentProcess.UserId = UserId;
                 Reporter(currentProcess);
-                RunWorker(currentProcess, token);
+                await RunWorker(currentProcess, token);
 
                 if (currentProcess.Error > 0)
                     currentProcess.Message = StringLocalizer["File imported with errors!"];
@@ -134,7 +134,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         OnProgressChanged?.Invoke(this, reporter);
     }
 
-    private void RunWorker(DataImpReporter currentProcess, CancellationToken token)
+    private async Task RunWorker(DataImpReporter currentProcess, CancellationToken token)
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
@@ -154,7 +154,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
             string cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
-            EntityRepository.SetCommand(cmd);
+            await EntityRepository.SetCommandAsync(cmd);
         }
 
         token.ThrowIfCancellationRequested();
@@ -207,7 +207,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             }
 
             var values = GetDictionaryWithNameAndValue(listField, cols);
-            SetFormValues(values, currentProcess);
+            await SetFormValues(values, currentProcess);
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
         }
@@ -272,12 +272,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private void SetFormValues(IDictionary<string,dynamic> fileValues, DataImpReporter currentProcess)
+    private async Task SetFormValues(IDictionary<string,dynamic> fileValues, DataImpReporter currentProcess)
     {
         try
         {
             var values = FieldValuesService.MergeWithExpressionValues(FormElement,fileValues, PageState.Import, true);
-            var ret = FormService.InsertOrReplace(FormElement,values, DataContext);
+            var ret = await FormService.InsertOrReplaceAsync(FormElement,values, DataContext);
 
             if (ret.IsValid)
             {

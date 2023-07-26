@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
@@ -68,17 +69,17 @@ public class GridViewScriptHelper
         return $"jjview.doFilter('{name}','{enableAjax}')";
     }
     
-    //todo
     public string GetSelectAllScript(JJGridView gridView)
     {
         string name = gridView.Name;
         if (gridView.IsExternalRoute)
         {
-            var url = GetUrl(gridView.FormElement.Name);
-            return $"GridView.selectAll('{name}', '{url}')";
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(gridView.FormElement.Name);
+            var url = UrlHelper.GetUrl("SelectAllRows","Grid", new {dictionaryName = encryptedDictionaryName});
+            return $"GridView.selectAllRows('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doFilter('{name}','{enableAjax}')";
+        return $"jjview.doSelectAll('{name}','{enableAjax}')";
     }
 
 }

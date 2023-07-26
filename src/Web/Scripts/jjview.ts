@@ -208,13 +208,7 @@
                 type: frm.attr("method"),
                 url: surl,
                 success: function (data) {
-                    var aValues = data.split(",");
-                    $(".jjselect input").not(":disabled").prop("checked", true);
-                    $("#selectedrows_" + objid).val(aValues);
-
-                    var oSelectedtext = $("#selectedtext_" + objid);
-                    var promptStr = oSelectedtext.attr("paramSelStr").replace("{0}", aValues.length.toString());
-                    oSelectedtext.text(promptStr);
+                    GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

@@ -25,7 +25,7 @@ public class GridController : MasterDataController
 
         var selectedRows = gridView.GetEncryptedSelectedRows();
         
-        return Content(selectedRows);
+        return Json(new {selectedRows});
     }
     
     [HttpPost]

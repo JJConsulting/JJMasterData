@@ -417,6 +417,7 @@ public class JJFormView : JJBaseView
         return GridView.RenderHtml();
     }
 
+    //todo: be async
     private HtmlBuilder GetHtmlUpdate(ref PageState pageState)
     {
         string formAction = "";
@@ -427,7 +428,7 @@ public class JJFormView : JJBaseView
         if ("OK".Equals(formAction))
         {
             var values = GetFormValues();
-            var errors = UpdateFormValues(values);
+            var errors = UpdateFormValues(values).GetAwaiter().GetResult();
 
             if (errors.Count == 0)
             {
@@ -477,6 +478,7 @@ public class JJFormView : JJBaseView
         }
     }
 
+    //todo: be async
     private HtmlBuilder GetHtmlInsert(ref PageState pageState)
     {
         var action = InsertAction;
@@ -493,7 +495,7 @@ public class JJFormView : JJBaseView
         if (formAction.Equals("OK"))
         {
             var values = GetFormValues();
-            var errors = InsertFormValues(values);
+            var errors = InsertFormValues(values).GetAwaiter().GetResult();
 
             if (errors.Count == 0)
             {
@@ -605,6 +607,7 @@ public class JJFormView : JJBaseView
         return sHtml;
     }
 
+    //todo: be async
     private HtmlBuilder GetHtmlElementInsert(ref PageState pageState)
     {
         string encryptedActionMap = CurrentContext.Request.Form("current_selaction_" + Name);
@@ -613,7 +616,7 @@ public class JJFormView : JJBaseView
         var formElement = DataDictionaryRepository.GetMetadata(InsertAction.ElementNameToSelect);
         var selValues = EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues).GetAwaiter().GetResult();
         var values = FieldValuesService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
-        var erros = InsertFormValues(values, false);
+        var erros = InsertFormValues(values, false).GetAwaiter().GetResult();
 
         if (erros.Count > 0)
         {
@@ -653,6 +656,7 @@ public class JJFormView : JJBaseView
         return GetDataPanelHtml(new(values, null, pageState), false);
     }
 
+    //todo: be async
     private HtmlBuilder GetHtmlDelete(ref PageState pageState)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -661,7 +665,7 @@ public class JJFormView : JJBaseView
             var acMap = CurrentActionMap;
             var filter = acMap.PkFieldValues;
 
-            var errors = DeleteFormValues(filter);
+            var errors = DeleteFormValues(filter).GetAwaiter().GetResult();
 
             if (errors != null && errors.Count > 0)
             {
@@ -698,6 +702,7 @@ public class JJFormView : JJBaseView
         return html;
     }
 
+    //todo: be async
     private HtmlBuilder GetHtmlDeleteSelectedRows(ref PageState pageState)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -708,9 +713,13 @@ public class JJFormView : JJBaseView
         try
         {
             var rows = GridView.GetSelectedGridValues();
-            foreach (var errors in rows.Select(DeleteFormValues))
+            List<IDictionary<string,dynamic>> errorsList = new();
+
+            foreach (var row in rows)
             {
-                if (errors is { Count: > 0 })
+                var errors = DeleteFormValues(row).GetAwaiter().GetResult();
+
+                if (errors.Count > 0)
                 {
                     foreach (var err in errors)
                     {
@@ -958,7 +967,8 @@ public class JJFormView : JJBaseView
     {
         if (!e.Action.Name.Equals("_jjselaction")) return;
 
-        if (sender is not JJGridView grid) return;
+        if (sender is not JJGridView grid) 
+            return;
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(map);
@@ -969,10 +979,10 @@ public class JJFormView : JJBaseView
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public IDictionary<string, dynamic> InsertFormValues(IDictionary<string, dynamic> values,
+    public async Task<IDictionary<string, dynamic>> InsertFormValues(IDictionary<string, dynamic> values,
         bool validateFields = true)
     {
-        var result = FormService.Insert(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId),
+        var result = await FormService.InsertAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId),
             validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -982,17 +992,17 @@ public class JJFormView : JJBaseView
     /// Update the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public IDictionary<string, dynamic> UpdateFormValues(IDictionary<string, dynamic> values)
+    public async Task<IDictionary<string, dynamic>> UpdateFormValues(IDictionary<string, dynamic> values)
     {
-        var result = FormService.Update(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
+        var result = await FormService.UpdateAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
-    public IDictionary<string, dynamic> DeleteFormValues(IDictionary<string, dynamic> filter)
+    public async Task<IDictionary<string, dynamic>> DeleteFormValues(IDictionary<string, dynamic> filter)
     {
         var values = FieldValuesService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
-        var result = FormService.Delete(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
+        var result = await FormService.DeleteAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

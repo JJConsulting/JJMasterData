@@ -283,7 +283,10 @@ internal class GridTableBody
         checkBox.Name = "jjchk_" + index;
         checkBox.Value = GridView.EncryptionService.EncryptStringWithUrlEncode(pkValues);
         checkBox.Text = string.Empty;
-        checkBox.IsChecked = GridView.GetSelectedGridValues().Any(x => x.ContainsKey(pkValues));
+
+        var selectedGridValues = GridView.GetSelectedGridValues();
+        
+        checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value == pkValues));
 
         if (OnRenderSelectedCell != null)
         {

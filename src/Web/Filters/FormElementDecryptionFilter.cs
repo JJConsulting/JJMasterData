@@ -21,7 +21,7 @@ public class FormElementDecryptionFilter : ActionFilterAttribute
         var dictionaryName = _encryptionService.DecryptStringWithUrlDecode(encryptedDictionaryName?.ToString());
         if (dictionaryName != null)
         {
-            context.ActionArguments["formElement"] = await DataDictionaryRepository.GetMetadataAsync(dictionaryName.ToString());
+            context.ActionArguments["formElement"] = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         }
         
         await base.OnActionExecutionAsync(context, next);

@@ -24,8 +24,8 @@ public class GridViewFactory
     private IExpressionsService ExpressionsService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private DataExportationFactory DataExportationFactory { get; }
-    private DataImportationFactory DataImportationFactory { get; }
+    private Lazy<DataExportationFactory> DataExportationFactory { get; }
+    private Lazy<DataImportationFactory> DataImportationFactory { get; }
     private FieldControlFactory FieldControlFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private ScriptsHelper ScriptsHelper { get; }
@@ -43,8 +43,8 @@ public class GridViewFactory
         IFormValuesService formValuesService,
         ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        DataExportationFactory dataExportationFactory,
-        DataImportationFactory dataImportationFactory,
+        Lazy<DataExportationFactory> dataExportationFactory,
+        Lazy<DataImportationFactory> dataImportationFactory,
         FieldControlFactory fieldControlFactory)
     {
         DataDictionaryRepository = dataDictionaryRepository;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,9 +10,10 @@ public static class FactoriesServiceExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
-        services.AddTransient<DataExportationFactory>();
+        services.AddTransient<DataExportationFactory>().AllowLazyInicialization();
+        services.AddTransient<DataImportationFactory>().AllowLazyInicialization();
+        
         services.AddTransient<ComboBoxFactory>();
-        services.AddTransient<DataImportationFactory>();
         services.AddTransient<CheckBoxFactory>();
         services.AddTransient<FieldControlFactory>();
 
