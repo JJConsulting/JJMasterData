@@ -25,6 +25,7 @@ public class FormViewFactory
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private FileDownloaderFactory FileDownloaderFactory { get; }
     private Lazy<GridViewFactory> GridViewFactory { get; }
     private Lazy<AuditLogViewFactory> AuditLogViewFactory { get; }
     private Lazy<DataPanelFactory> DataPanelFactory { get; }
@@ -39,6 +40,7 @@ public class FormViewFactory
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        FileDownloaderFactory fileDownloaderFactory,
         Lazy<GridViewFactory> gridViewFactory,
         Lazy<AuditLogViewFactory> auditLogViewFactory,
         Lazy<DataPanelFactory> dataPanelFactory, 
@@ -53,6 +55,7 @@ public class FormViewFactory
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
+        FileDownloaderFactory = fileDownloaderFactory;
         GridViewFactory = gridViewFactory;
         AuditLogViewFactory = auditLogViewFactory;
         DataPanelFactory = dataPanelFactory;
@@ -67,6 +70,7 @@ public class FormViewFactory
             EntityRepository, DataDictionaryRepository, FormService,
             EncryptionService, FieldValuesService, ExpressionsService, 
             StringLocalizer, 
+            FileDownloaderFactory,
             GridViewFactory,
             AuditLogViewFactory, DataPanelFactory, 
             this); // This need to be a reference to itself to prevent a recursive dependency.

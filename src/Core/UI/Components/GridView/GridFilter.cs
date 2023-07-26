@@ -144,7 +144,7 @@ internal class GridFilter
         string panelName = CurrentContext.Request.QueryString("pnlname");
 
         if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
-            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext);
+            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext, GridView.FieldControlFactory.SearchBoxFactory);
 
         if ("jjsearchbox".Equals(requestType))
         {

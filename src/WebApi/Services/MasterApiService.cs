@@ -132,7 +132,7 @@ public class MasterApiService
         return listRet;
     }
 
-    public IEnumerable<ResponseLetter> SetFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -145,12 +145,12 @@ public class MasterApiService
         foreach (var values in paramsList)
         {
             yield return replace
-                ? InsertOrReplace(formElement, values, formElement.ApiOptions)
-                : Insert(formElement, values, formElement.ApiOptions);
+                ? await InsertOrReplace(formElement, values, formElement.ApiOptions)
+                : await Insert(formElement, values, formElement.ApiOptions);
         }
     }
 
-    public IEnumerable<ResponseLetter> UpdateFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -162,11 +162,11 @@ public class MasterApiService
 
         foreach (var values in paramsList)
         {
-            yield return Update(dictionary, values);
+            yield return await Update(dictionary, values);
         }
     }
 
-    public IEnumerable<ResponseLetter> UpdatePart(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePart(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -182,18 +182,18 @@ public class MasterApiService
 
         foreach (var values in paramsList)
         {
-            yield return Patch(formElement, values);
+            yield return await Patch(formElement, values);
         }
     }
 
-    private ResponseLetter Insert(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, dynamic> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
         {
             var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Insert, true);
-            var formResult = FormService.Insert(formElement, values, GetDataContext());
+            var formResult = await FormService.InsertAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter
@@ -216,13 +216,13 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Update(FormElement formElement, IDictionary<string, dynamic> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, dynamic> apiValues)
     {
         ResponseLetter ret;
         try
         {
             var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Update, true);
-            var formResult = FormService.Update(formElement, values, GetDataContext());
+            var formResult = await FormService.UpdateAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 if (formResult.NumberOfRowsAffected == 0)
@@ -248,14 +248,14 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter InsertOrReplace(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, dynamic> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
         try
         {
             var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Import, true);
-            var formResult = FormService.InsertOrReplace(formElement, values, GetDataContext());
+            var formResult =await FormService.InsertOrReplaceAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
                 ret = new ResponseLetter();
@@ -285,7 +285,7 @@ public class MasterApiService
         return ret;
     }
 
-    private ResponseLetter Patch(FormElement formElement, IDictionary<string, dynamic> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, dynamic> values)
     {
         ResponseLetter ret;
         try
@@ -300,7 +300,7 @@ public class MasterApiService
                 throw new KeyNotFoundException("No records found");
 
             DataHelper.CopyIntoDictionary(ref currentValues, parsedValues, true);
-            ret = Update(formElement, currentValues);
+            ret = await Update(formElement, currentValues);
         }
         catch (Exception ex)
         {
@@ -310,7 +310,7 @@ public class MasterApiService
         return ret;
     }
 
-    public ResponseLetter Delete(string elementName, string id)
+    public async Task<ResponseLetter> Delete(string elementName, string id)
     {
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
@@ -322,7 +322,7 @@ public class MasterApiService
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var values = FieldsService.MergeWithExpressionValues(formElement, primaryKeys, PageState.Delete, true);
-        var formResult = FormService.Delete(formElement, values, GetDataContext());
+        var formResult = await FormService.DeleteAsync(formElement, values, GetDataContext());
 
         if (formResult.IsValid)
         {

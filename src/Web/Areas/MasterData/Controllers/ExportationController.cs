@@ -30,10 +30,10 @@ public class ExportationController : MasterDataController
         return Content(html);
     }
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
-    public async Task<IActionResult> StopExportation(string dictionaryName, string componentName)
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult StopExportation(FormElement formElement, string componentName)
     {
-        var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        var dataExportation = DataExportationFactory.CreateDataExportation(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         dataExportation.StopExportation();
@@ -41,10 +41,10 @@ public class ExportationController : MasterDataController
         return Json(new {});
     }
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
-    public async Task<IActionResult> Settings(string dictionaryName, string componentName)
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult Settings(FormElement formElement, string componentName)
     {
-        var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        var dataExportation =  DataExportationFactory.CreateDataExportation(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         
@@ -52,10 +52,10 @@ public class ExportationController : MasterDataController
         return Content(settings.GetHtmlElement().ToString());
     }
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
-    public async Task<IActionResult> CheckProgress(string dictionaryName, string componentName)
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public IActionResult CheckProgress(FormElement formElement, string componentName)
     {
-        var dataExportation = await DataExportationFactory.CreateDataExportationAsync(dictionaryName);
+        var dataExportation =  DataExportationFactory.CreateDataExportation(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         

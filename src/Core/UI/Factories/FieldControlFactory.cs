@@ -16,14 +16,16 @@ public class FieldControlFactory
     private IExpressionsService ExpressionsService { get; }
     private IFieldVisibilityService FieldVisibilityService { get; }
     internal ComboBoxFactory ComboBoxFactory { get; }
-    private SearchBoxFactory SearchBoxFactory { get; }
+    internal SearchBoxFactory SearchBoxFactory { get; }
     internal LookupFactory LookupFactory { get; }
-    private CheckBoxFactory CheckBoxFactory { get; }
-    private SliderFactory SliderFactory { get; }
-    private TextFileFactory TextFileFactory { get; }
-    private TextAreaFactory TextAreaFactory { get; }
-    private TextGroupFactory TextGroupFactory { get; }
-    private TextRangeFactory TextRangeFactory { get; }
+    internal CheckBoxFactory CheckBoxFactory { get; }
+    internal SliderFactory SliderFactory { get; }
+    internal TextFileFactory TextFileFactory { get; }
+    internal TextAreaFactory TextAreaFactory { get; }
+    internal TextGroupFactory TextGroupFactory { get; }
+    internal TextRangeFactory TextRangeFactory { get; }
+    internal FileDownloaderFactory FileDownloaderFactory { get; }
+
     public event EventHandler<ActionEventArgs> OnRenderAction;
 
     public FieldControlFactory(
@@ -33,6 +35,7 @@ public class FieldControlFactory
         SearchBoxFactory searchBoxFactory,
         LookupFactory lookupFactory,
         CheckBoxFactory checkBoxFactory,
+        FileDownloaderFactory fileDownloaderFactory,
         SliderFactory sliderFactory,
         TextFileFactory textFileFactory,
         TextAreaFactory textAreaFactory,
@@ -45,6 +48,7 @@ public class FieldControlFactory
         SearchBoxFactory = searchBoxFactory;
         LookupFactory = lookupFactory;
         CheckBoxFactory = checkBoxFactory;
+        FileDownloaderFactory = fileDownloaderFactory;
         SliderFactory = sliderFactory;
         TextFileFactory = textFileFactory;
         TextAreaFactory = textAreaFactory;

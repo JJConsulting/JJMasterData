@@ -139,10 +139,9 @@ public class JJFileDownloader : JJBaseView
     }
 
 
-    public static bool IsDownloadRoute()
+    public static bool IsDownloadRoute(IHttpContext currentContext)
     {
-        var currentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
-        
+
         if (currentContext.Request.QueryString(DirectDownloadParameter) != null)
             return true;
         if (currentContext.Request.QueryString(DownloadParameter) != null)
@@ -150,12 +149,8 @@ public class JJFileDownloader : JJBaseView
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute()
+    public static HtmlBuilder ResponseRoute(IHttpContext currentContext, JJMasterDataEncryptionService encryptionService, FileDownloaderFactory factory)
     {
-        var currentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
-        var encryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
-        var factory = JJService.Provider.GetScopedDependentService<FileDownloaderFactory>();
-        
         bool isExternalLink = false;
         string criptFilePath = currentContext.Request.QueryString(DownloadParameter);
         if (criptFilePath == null)

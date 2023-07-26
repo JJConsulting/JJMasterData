@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
@@ -71,14 +72,14 @@ public class MasterApiControllerTest
     [Theory]
     [InlineData("[{\"Id\":1, \"Name\":\"string\",\"Age\":0}]", "ApiTestDictionary", false)]
     [InlineData("[{\"Id\":1, \"Name\":\"new_string\",\"Age\":100}]", "ApiTestDictionary", true)]
-    public void PostTest(string parametersString, string elementName, bool replace)
+    public async Task PostTest(string parametersString, string elementName, bool replace)
     {
         var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
 
         if (parameterList == null) 
             return;
         
-        var result = _controller.Post(parameterList, elementName, replace);
+        var result = await _controller.Post(parameterList, elementName, replace);
 
         var objectResult = result.Result as ObjectResult;
 
@@ -88,11 +89,11 @@ public class MasterApiControllerTest
     [Order(1)]
     [Theory]
     [InlineData("[{\"Id\":1, \"Name\":\"put_string\",\"Age\":0}]", "ApiTestDictionary")]
-    public void PutTest(string parametersString, string elementName)
+    public async Task PutTest(string parametersString, string elementName)
     {
         var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
         
-        var result = _controller.Put(parameterList!, elementName);
+        var result = await _controller.Put(parameterList!, elementName);
 
         var objectResult = result.Result as ObjectResult;
 
@@ -102,11 +103,11 @@ public class MasterApiControllerTest
     [Order(2)]
     [Theory]
     [InlineData("[{\"Id\":1, \"Name\":\"patch_string\",\"Age\":0}]", "ApiTestDictionary")]
-    public void PatchTest(string parametersString, string elementName)
+    public async Task PatchTest(string parametersString, string elementName)
     {
         var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
         
-        var result = _controller.Patch(parameterList!, elementName);
+        var result = await _controller.Patch(parameterList!, elementName);
 
         var objectResult = result.Result as ObjectResult;
 

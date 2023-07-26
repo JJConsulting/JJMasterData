@@ -200,6 +200,7 @@ public class JJFormView : JJBaseView
     internal Lazy<AuditLogViewFactory> AuditLogViewFactory { get; }
     internal Lazy<GridViewFactory> GridViewFactory { get; }
     internal Lazy<DataPanelFactory> DataPanelFactory { get; }
+    internal FileDownloaderFactory FileDownloaderFactory { get; }
     internal FormViewFactory FormViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal IFieldValuesService FieldValuesService { get; }
@@ -227,7 +228,7 @@ public class JJFormView : JJBaseView
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-
+        FileDownloaderFactory = JJService.Provider.GetScopedDependentService<FileDownloaderFactory>();
     }
 
     public JJFormView(string elementName) : this()
@@ -255,6 +256,7 @@ public class JJFormView : JJBaseView
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        FileDownloaderFactory fileDownloaderFactory,
         Lazy<GridViewFactory> gridViewFactory,
         Lazy<AuditLogViewFactory> auditLogViewFactory,
         Lazy<DataPanelFactory> dataPanelFactory,
@@ -265,6 +267,7 @@ public class JJFormView : JJBaseView
         AuditLogViewFactory = auditLogViewFactory;
         GridViewFactory = gridViewFactory;
         FormViewFactory = formViewFactory;
+        FileDownloaderFactory = fileDownloaderFactory;
         FormService = formService;
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
@@ -285,12 +288,13 @@ public class JJFormView : JJBaseView
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        FileDownloaderFactory fileDownloaderFactory,
         Lazy<GridViewFactory> gridViewFactory,
         Lazy<AuditLogViewFactory> auditLogViewFactory,
         Lazy<DataPanelFactory> dataPanelFactory,
         FormViewFactory formViewFactory) : this(currentContext, entityRepository, dataDictionaryRepository, formService,
-        encryptionService, fieldValuesService, expressionsService, stringLocalizer, gridViewFactory,
-        auditLogViewFactory, dataPanelFactory, formViewFactory)
+        encryptionService, fieldValuesService, expressionsService, stringLocalizer,fileDownloaderFactory, gridViewFactory,
+        auditLogViewFactory, dataPanelFactory, formViewFactory )
     {
         Name = "jjview_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -310,8 +314,8 @@ public class JJFormView : JJBaseView
         if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
             return dataPanel.RenderHtml();
 
-        if (JJFileDownloader.IsDownloadRoute())
-            return JJFileDownloader.ResponseRoute();
+        if (JJFileDownloader.IsDownloadRoute(CurrentContext))
+            return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,FileDownloaderFactory);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(DataPanel, CurrentContext);

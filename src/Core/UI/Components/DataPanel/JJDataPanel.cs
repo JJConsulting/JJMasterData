@@ -196,8 +196,8 @@ public class JJDataPanel : JJBaseView
             return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route
-        if (JJFileDownloader.IsDownloadRoute())
-            return JJFileDownloader.ResponseRoute();
+        if (JJFileDownloader.IsDownloadRoute(CurrentContext))
+            return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,FieldControlFactory.FileDownloaderFactory );
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(this,CurrentContext);

@@ -46,21 +46,21 @@ public class MasterApiController : ControllerBase
     }
     
     [HttpPost]
-    public ActionResult<ResponseLetter> Post([FromBody] Dictionary<string,dynamic>[] listParam, string elementName, bool replace = false)
+    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string,dynamic>[] listParam, string elementName, bool replace = false)
     {
-        return GetResponseMessage(_service.SetFields(listParam, elementName, replace));
+        return GetResponseMessage(await _service.SetFields(listParam, elementName, replace).ToListAsync());
     }
     
     [HttpPut]
-    public ActionResult<ResponseLetter> Put([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
-        return GetResponseMessage(_service.UpdateFields(listParam, elementName));
+        return GetResponseMessage(await _service.UpdateFields(listParam, elementName).ToListAsync());
     }
     
     [HttpPatch]
-    public ActionResult<ResponseLetter> Patch([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
-        return GetResponseMessage(_service.UpdatePart(listParam, elementName));
+        return GetResponseMessage(await _service.UpdatePart(listParam, elementName).ToListAsync());
     }
     
     [HttpDelete]

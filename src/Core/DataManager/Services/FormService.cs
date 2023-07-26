@@ -194,7 +194,7 @@ public class FormService : IFormService
             return result;
 
         if (EnableAuditLog)
-            AuditLogService.LogAsync(formElement,dataContext, values, result.Result);
+            await AuditLogService.LogAsync(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {

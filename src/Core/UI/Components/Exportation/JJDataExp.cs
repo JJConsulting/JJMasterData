@@ -67,7 +67,6 @@ public class JJDataExp : JJBaseProcess
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
     internal DataExportationScriptHelper ScriptHelper { get; }
     private FileDownloaderFactory FileDownloaderFactory { get; }
-    internal IHttpContext CurrentContext { get; }
 
     #endregion
 

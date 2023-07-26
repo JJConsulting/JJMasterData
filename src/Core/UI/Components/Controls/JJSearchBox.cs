@@ -25,6 +25,9 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJSearchBox : JJBaseControl
 {
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
+
     #region "Events"
 
     /// <summary>
@@ -168,7 +171,7 @@ public class JJSearchBox : JJBaseControl
     public FormElementDataItem DataItem
     {
         get => _dataItem ??= new FormElementDataItem();
-        init => _dataItem = value;
+        set => _dataItem = value;
     }
 
     /// <summary>
@@ -177,7 +180,7 @@ public class JJSearchBox : JJBaseControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    public static IDataItemService DataItemService { get; } = JJService.Provider.GetScopedDependentService<IDataItemService>();
+    public IDataItemService DataItemService { get; } 
     
     public SearchBoxContext Context { get; } 
     
@@ -185,8 +188,15 @@ public class JJSearchBox : JJBaseControl
 
     #region "Constructors"
 
-    public JJSearchBox(IHttpContext httpContext) : base(httpContext)
+    public JJSearchBox(
+        IHttpContext httpContext,
+        JJMasterDataEncryptionService encryptionService,
+        IDataItemService dataItemService,
+        JJMasterDataUrlHelper urlHelper) : base(httpContext)
     {
+        EncryptionService = encryptionService;
+        UrlHelper = urlHelper;
+        DataItemService = dataItemService;
         Enabled = true;
         TriggerLength = 1;
         PlaceHolder = "Search...";
@@ -197,7 +207,12 @@ public class JJSearchBox : JJBaseControl
         Context = new(null,UserValues,PageState.List);
     }
 
-    public JJSearchBox(ExpressionOptions expOptions, IHttpContext httpContext) : this(httpContext)
+    public JJSearchBox(
+        ExpressionOptions expOptions, 
+        IHttpContext httpContext,
+        JJMasterDataEncryptionService encryptionService,
+        IDataItemService dataItemService,
+        JJMasterDataUrlHelper urlHelper) : this(httpContext, encryptionService, dataItemService,urlHelper)
     {
         Context = new(expOptions.FormValues,expOptions.UserValues,expOptions.PageState);
         UserValues = expOptions.UserValues;
@@ -227,13 +242,16 @@ public class JJSearchBox : JJBaseControl
 
     public static HtmlBuilder ResponseJson(JJDataPanel view, IHttpContext httpContext)
     {
-        return ResponseJson(view, view.FormElement, view.Values, httpContext);
+        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.FieldControlFactory.SearchBoxFactory);
     }
 
-    internal static HtmlBuilder ResponseJson(JJBaseView view,
+    internal static HtmlBuilder ResponseJson(
+        JJBaseView view,
         FormElement formElement,
         IDictionary<string, dynamic> formValues, 
-        IHttpContext httpContext)
+        IHttpContext httpContext,
+        SearchBoxFactory searchBoxFactory
+        )
     {
         string dictionaryName = httpContext.Request.QueryString("dictionaryName");
         string fieldName = httpContext.Request.QueryString("fieldName");
@@ -245,7 +263,7 @@ public class JJSearchBox : JJBaseControl
         var field = formElement.Fields[fieldName];
         var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState);
         
-        var searchBox = JJService.Provider.GetScopedDependentService<SearchBoxFactory>().CreateSearchBox(field, expOptions, null, dictionaryName);
+        var searchBox = searchBoxFactory.CreateSearchBox(field, expOptions, null, dictionaryName);
         searchBox.ResponseJson();
 
         return null;
@@ -300,10 +318,8 @@ public class JJSearchBox : JJBaseControl
         var url = new StringBuilder();
         if (IsExternalRoute)
         {
-            var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-            var urlHelper = JJMasterDataUrlHelper.GetInstance();
-            string dictionaryNameEncrypted = encryptionService.EncryptStringWithUrlEncode(DictionaryName);
-            url.Append(urlHelper.GetUrl("GetItems","Search", new
+            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEncode(DictionaryName);
+            url.Append(UrlHelper.GetUrl("GetItems","Search", new
             {
                 dictionaryName = dictionaryNameEncrypted, 
                 fieldName = FieldName,

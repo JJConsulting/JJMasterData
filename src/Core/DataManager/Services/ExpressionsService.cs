@@ -134,7 +134,7 @@ public class ExpressionsService : IExpressionsService
         }
 
         bool result;
-        if (expression.StartsWith("val:"))
+        if (expression!.StartsWith("val:"))
         {
             result = ParseBool(expression);
         }
@@ -150,7 +150,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = StringLocalizer["Error executing expression {0} for {1} field.", exp, actionName];
+                string err = $"Error executing expression {exp} for {actionName} field.";
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -197,7 +197,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = StringLocalizer["Error executing expression {0} for {1} field.", exp, actionName];
+                string err = $"Error executing expression {exp} for {actionName} field.";
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -254,7 +254,7 @@ public class ExpressionsService : IExpressionsService
                 {
                     var exp = ParseExpression(expression, state, false, formValues);
                     if (f.DataType == FieldType.Float)
-                        exp = exp.Replace(".", "").Replace(",", ".");
+                        exp = exp?.Replace(".", "").Replace(",", ".");
 
                     retVal = exp; //When parse is string id
                     var dt = new DataTable();
