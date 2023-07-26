@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.File;
 
@@ -9,11 +10,14 @@ public class FileLoggerProvider : ILoggerProvider
 
     private readonly ILogger _logger;
 
-    public FileLoggerProvider(FileLoggerBuffer buffer)
+    public FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
     {
-        _logger = new FileLogger(buffer);
+        _logger = new FileLogger(buffer,options);
     }
     public ILogger CreateLogger(string categoryName) => _logger;
 
-    public void Dispose(){}
+    public void Dispose()
+    {
+        
+    }
 }

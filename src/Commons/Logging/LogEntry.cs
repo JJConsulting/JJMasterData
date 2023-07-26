@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging;
 
-public class LogMessage
+public class LogEntry<TState>
 {
     public LogLevel LogLevel { get; }
     public EventId EventId { get; }
-    public object State { get; }
+    public TState State { get; }
     public Exception? Exception { get; }
-    public Func<object, Exception?, string> Formatter { get; }
+    public Func<TState, Exception?, string> Formatter { get; }
 
-    public LogMessage(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)
+    public LogEntry(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         LogLevel = logLevel;
         EventId = eventId;

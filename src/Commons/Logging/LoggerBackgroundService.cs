@@ -26,5 +26,5 @@ public abstract class LoggerBackgroundService<TLoggerBuffer> : BackgroundService
         }
     }
 
-    protected abstract Task LogAsync(LogMessage logMessage, CancellationToken cancellationToken);
+    protected abstract Task LogAsync(char[] logMessage, CancellationToken cancellationToken);
 }

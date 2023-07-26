@@ -1,23 +1,29 @@
-using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace JJMasterData.Commons.Logging;
 
 public abstract class LoggerBuffer
-{ 
-    private readonly ConcurrentQueue<LogMessage> _queue;
+{
+    private readonly Channel<char[]> _channel;
 
-    protected LoggerBuffer()
+    protected LoggerBuffer(int maxSize)
     {
-        _queue = new ConcurrentQueue<LogMessage>();
+        var options = new BoundedChannelOptions(maxSize)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = true,
+            SingleWriter = false
+        };
+        _channel = Channel.CreateBounded<char[]>(options);
     }
 
-    public void Enqueue(LogMessage logMessage)
+    public void Enqueue(char[] entry)
     {
-        _queue.Enqueue(logMessage);
+        _channel.Writer.TryWrite(entry);
     }
 
-    public bool TryDequeue(out LogMessage message)
+    public bool TryDequeue(out char[] entry)
     {
-        return _queue.TryDequeue(out message);
+        return _channel.Reader.TryRead(out entry);
     }
 }
