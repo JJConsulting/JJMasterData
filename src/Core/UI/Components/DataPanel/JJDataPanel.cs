@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components.Scripts;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -36,7 +35,7 @@ public class JJDataPanel : JJBaseView
     #endregion
 
     #region "Properties"
-    
+
     private FormUI _formUI;
 
     /// <summary>
@@ -62,13 +61,13 @@ public class JJDataPanel : JJBaseView
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public IDictionary<string,dynamic> Errors { get; set; }
+    public IDictionary<string, dynamic> Errors { get; set; }
 
     /// <summary>
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public IDictionary<string,dynamic> Values { get; set; }
+    public IDictionary<string, dynamic> Values { get; set; }
 
     /// <summary>
     /// When reloading the panel, keep the values ​​entered in the form
@@ -81,17 +80,18 @@ public class JJDataPanel : JJBaseView
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    public IEntityRepository EntityRepository { get; } 
+    public IEntityRepository EntityRepository { get; }
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
 
     internal IHttpContext CurrentContext { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    internal JJMasterDataUrlHelper UrlHelper { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
     public IFieldsService FieldsService { get; }
-    public IFormValuesService FormValuesService { get; } 
+    public IFormValuesService FormValuesService { get; }
     public IExpressionsService ExpressionsService { get; }
-    public ScriptsHelper ScriptsHelper { get; }
     public FieldControlFactory FieldControlFactory { get; }
+
 
     #endregion
 
@@ -107,8 +107,9 @@ public class JJDataPanel : JJBaseView
         FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-        ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
-        
+        UrlHelper = JJService.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
+        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+
         Values = new Dictionary<string,dynamic>();
         Errors =  new Dictionary<string,dynamic>();
         AutoReloadFormFields = true;
@@ -133,52 +134,52 @@ public class JJDataPanel : JJBaseView
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
 #endif
-    
+
     public JJDataPanel(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         JJMasterDataEncryptionService encryptionService,
-        IFieldsService fieldsService, 
-        IFormValuesService formValuesService, 
-        IExpressionsService expressionsService, 
-        FieldControlFactory fieldControlFactory,
-        ScriptsHelper scriptsHelper
-        )
+        JJMasterDataUrlHelper urlHelper,
+        IFieldsService fieldsService,
+        IFormValuesService formValuesService,
+        IExpressionsService expressionsService,
+        FieldControlFactory fieldControlFactory
+    )
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
         EncryptionService = encryptionService;
+        UrlHelper = urlHelper;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         FieldControlFactory = fieldControlFactory;
-        ScriptsHelper = scriptsHelper;
-        Values = new Dictionary<string,dynamic>();
-        Errors =  new Dictionary<string,dynamic>();
+        Values = new Dictionary<string, dynamic>();
+        Errors = new Dictionary<string, dynamic>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
-    
+
     public JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         JJMasterDataEncryptionService encryptionService,
-        IFieldsService fieldsService, 
-        IFormValuesService formValuesService, 
-        IExpressionsService expressionsService, 
-        FieldControlFactory fieldControlFactory,
-        ScriptsHelper scriptsHelper
-        ) : this(entityRepository,dataDictionaryRepository,currentContext, encryptionService, fieldsService, formValuesService, expressionsService, fieldControlFactory,scriptsHelper)
+        JJMasterDataUrlHelper urlHelper,
+        IFieldsService fieldsService,
+        IFormValuesService formValuesService,
+        IExpressionsService expressionsService,
+        FieldControlFactory fieldControlFactory
+    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, fieldControlFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
-    
+
     #endregion
 
     internal override HtmlBuilder RenderHtml()
@@ -188,26 +189,26 @@ public class JJDataPanel : JJBaseView
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
         //Lookup Route
-        if (JJLookup.IsLookupRoute(this,CurrentContext))
+        if (JJLookup.IsLookupRoute(this, CurrentContext))
             return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
-        if (JJTextFile.IsFormUploadRoute(this,CurrentContext))
+        if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
             return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,FieldControlFactory.FileDownloaderFactory );
+            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, FieldControlFactory.FileDownloaderFactory);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
-            return JJSearchBox.ResponseJson(this,CurrentContext);
+            return JJSearchBox.ResponseJson(this, CurrentContext);
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
             CurrentContext.Response.SendResponse(GetPanelHtml().ToString());
             return null;
         }
-        
+
         if ("geturlaction".Equals(requestType))
         {
             ResponseUrlAction();
@@ -268,23 +269,23 @@ public class JJDataPanel : JJBaseView
     /// Load form data with default values and triggers
     /// </summary>
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
-    public IDictionary<string,dynamic> GetFormValues()
+    public IDictionary<string, dynamic> GetFormValues()
     {
         return FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState, AutoReloadFormFields).GetAwaiter().GetResult();
     }
-    
-    public async Task<IDictionary<string,dynamic>> GetFormValuesAsync()
+
+    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
     {
-        return await FormValuesService.GetFormValuesWithMergedValues(FormElement,PageState, AutoReloadFormFields);
+        return await FormValuesService.GetFormValuesWithMergedValues(FormElement, PageState, AutoReloadFormFields);
     }
-    
+
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]
-    public void LoadValuesFromPK(IDictionary<string,dynamic>pks)
+    public void LoadValuesFromPK(IDictionary<string, dynamic> pks)
     {
         Values = EntityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
     }
-    
-    public async Task LoadValuesFromPkAsync(IDictionary<string,dynamic>pks)
+
+    public async Task LoadValuesFromPkAsync(IDictionary<string, dynamic> pks)
     {
         Values = await EntityRepository.GetDictionaryAsync(FormElement, pks);
     }
@@ -296,7 +297,7 @@ public class JJDataPanel : JJBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string,dynamic>ValidateFields(IDictionary<string,dynamic>values, PageState pageState)
+    public IDictionary<string, dynamic> ValidateFields(IDictionary<string, dynamic> values, PageState pageState)
     {
         return ValidateFields(values, pageState, true);
     }
@@ -308,9 +309,9 @@ public class JJDataPanel : JJBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string,dynamic>ValidateFields(IDictionary<string,dynamic>values, PageState pageState, bool enableErrorLink)
+    public IDictionary<string, dynamic> ValidateFields(IDictionary<string, dynamic> values, PageState pageState, bool enableErrorLink)
     {
-        return FieldsService.ValidateFields(FormElement,values, pageState, enableErrorLink);
+        return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
 
     internal async Task ResponseUrlAction()
@@ -321,7 +322,7 @@ public class JJDataPanel : JJBaseView
         string encryptedActionMap = CurrentContext.Request["encryptedActionMap"];
         if (string.IsNullOrEmpty(encryptedActionMap))
             return;
-        
+
         var parms = EncryptionService.DecryptActionMap(encryptedActionMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
@@ -329,8 +330,8 @@ public class JJDataPanel : JJBaseView
 
         if (action is UrlRedirectAction urlAction)
         {
-            string parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, PageState,  false,values);
-            var result = new Dictionary<string,dynamic>
+            string parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
+            var result = new Dictionary<string, dynamic>
             {
                 { "UrlAsPopUp", urlAction.UrlAsPopUp },
                 { "TitlePopUp", urlAction.TitlePopUp },

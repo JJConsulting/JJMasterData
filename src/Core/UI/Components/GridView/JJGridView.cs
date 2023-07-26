@@ -45,6 +45,8 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 public class JJGridView : JJBaseView
 {
+
+
     #region "Events"
 
     public event EventHandler<GridCellEventArgs> OnRenderCell;
@@ -90,7 +92,7 @@ public class JJGridView : JJBaseView
     private ActionMap _currentActionMap;
     private JJDataImp _dataImp;
     private JJDataExp _dataExp;
-
+    private GridScripts _gridScripts;
 
     internal JJDataImp DataImp
     {
@@ -167,7 +169,7 @@ public class JJGridView : JJBaseView
     internal ActionManager ActionManager =>
         _actionManager ??= new ActionManager(FormElement, ExpressionsService, Name);
 
-    internal IFormValuesService FormValuesService { get; } 
+    internal IFormValuesService FormValuesService { get; }
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -335,7 +337,7 @@ public class JJGridView : JJBaseView
 
             if (_currentSettings == null)
                 CurrentSettings = form.LoadFromForm();
-                
+
             return _currentSettings;
         }
         set
@@ -532,7 +534,10 @@ public class JJGridView : JJBaseView
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal ScriptsHelper ScriptsHelper { get; }
+    internal JJMasterDataUrlHelper UrlHelper { get; }
+    
+    internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper);
+
     internal IHttpContext CurrentContext { get; }
     internal Lazy<DataExportationFactory> DataExportationFactory { get; }
     internal Lazy<DataImportationFactory> DataImportationFactory { get; }
@@ -540,7 +545,7 @@ public class JJGridView : JJBaseView
     internal ComboBoxFactory ComboBoxFactory { get; }
     internal FieldControlFactory FieldControlFactory { get; }
     #endregion
-    
+
     #region "Constructors"
 
 #if NET48
@@ -552,7 +557,7 @@ public class JJGridView : JJBaseView
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        ScriptsHelper = JJService.Provider.GetScopedDependentService<ScriptsHelper>();
+        UrlHelper = JJService.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
         DataExportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataExportationFactory>>();
         DataImportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataImportationFactory>>();
@@ -602,11 +607,11 @@ public class JJGridView : JJBaseView
 
     public JJGridView(IHttpContext currentContext,
         IEntityRepository entityRepository,
+        JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
-        ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         Lazy<DataExportationFactory> dataExportationFactory,
         Lazy<DataImportationFactory> dataImportationFactory,
@@ -617,7 +622,7 @@ public class JJGridView : JJBaseView
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         EntityRepository = entityRepository;
-        ScriptsHelper = scriptsHelper;
+        UrlHelper = urlHelper;
         CurrentContext = currentContext;
         FieldControlFactory = fieldControlFactory;
         FormValuesService = formValuesService;
@@ -644,16 +649,16 @@ public class JJGridView : JJBaseView
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
+        JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
-        ScriptsHelper scriptsHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         Lazy<DataExportationFactory> dataExportationFactory,
         Lazy<DataImportationFactory> dataImportationFactory,
         FieldControlFactory fieldControlFactory) : this(currentContext,
-        entityRepository, expressionsService, encryptionService, fieldsService, formValuesService, scriptsHelper, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
+        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
     {
         Name = "jjview" + formElement.Name.ToLower();
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
@@ -786,7 +791,7 @@ public class JJGridView : JJBaseView
         {
             string selectedRows = GetEncryptedSelectedRows();
 #pragma warning disable CS0618
-            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new {selectedRows}));
+            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new { selectedRows }));
 #pragma warning restore CS0618
             return true;
         }

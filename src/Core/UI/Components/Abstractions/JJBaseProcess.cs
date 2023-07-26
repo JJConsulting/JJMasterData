@@ -59,7 +59,6 @@ public abstract class JJBaseProcess : JJBaseView
     public FormElement FormElement { get; set; }
     
     internal IFieldValuesService FieldValuesService { get; } 
-    
     internal IBackgroundTask BackgroundTask { get; }
     private ILogger<JJBaseProcess> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }

@@ -2,12 +2,12 @@ using JJMasterData.Commons.Cryptography;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class DataPanelScriptHelper
+public class DataPanelScripts
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
 
-    public DataPanelScriptHelper(JJMasterDataUrlHelper urlHelper, JJMasterDataEncryptionService encryptionService)
+    public DataPanelScripts(JJMasterDataEncryptionService encryptionService, JJMasterDataUrlHelper urlHelper)
     {
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;

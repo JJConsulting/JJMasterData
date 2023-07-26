@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.Extensions;
 
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class DataExportationScriptHelper
+public class DataExportationScripts
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
 
-    public DataExportationScriptHelper(JJMasterDataUrlHelper urlHelper, JJMasterDataEncryptionService encryptionService)
+    public DataExportationScripts(JJMasterDataUrlHelper urlHelper, JJMasterDataEncryptionService encryptionService)
     {
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;

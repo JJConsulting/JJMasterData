@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
@@ -18,12 +19,14 @@ namespace JJMasterData.Core.Web.Factories;
 
 public class DataExportationFactory
 {
+    private readonly JJMasterDataUrlHelper _urlHelper;
+    private readonly JJMasterDataEncryptionService _encryptionService;
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IExpressionsService ExpressionsService { get; }
 
     private IFieldValuesService FieldValuesService { get; }
-    private DataExportationScriptHelper ScriptHelper { get; }
+    private DataExportationScripts Scripts { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
@@ -36,19 +39,24 @@ public class DataExportationFactory
         IDataDictionaryRepository dataDictionaryRepository,
         IExpressionsService expressionsService,
         IFieldValuesService fieldValuesService,
-        DataExportationScriptHelper scriptHelper,
+        DataExportationScripts scripts,
         IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTask backgroundTask,
         IHttpContext httpContext,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory,
-        FileDownloaderFactory fileDownloaderFactory)
+        FileDownloaderFactory fileDownloaderFactory,
+        JJMasterDataUrlHelper urlHelper,
+        JJMasterDataEncryptionService encryptionService
+        )
     {
+        _urlHelper = urlHelper;
+        _encryptionService = encryptionService;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
         FieldValuesService = fieldValuesService;
-        ScriptHelper = scriptHelper;
+        Scripts = scripts;
         Options = options;
         BackgroundTask = backgroundTask;
         HttpContext = httpContext;
@@ -65,7 +73,8 @@ public class DataExportationFactory
 
     public JJDataExp CreateDataExportation(FormElement formElement)
     {
-        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, ScriptHelper,
-            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext);
+        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, 
+            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 
+            _urlHelper, _encryptionService);
     }
 }
