@@ -19,6 +19,7 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IFormService, FormService>();
         services.AddTransient<IFieldValuesService, FieldValuesService>();
         services.AddTransient<IFieldsService, FieldsService>();
+        services.AddTransient<IUploadAreaService, UploadAreaService>();
         services.AddScoped<IFormValuesService,FormValuesService>();
         
         services.AddTransient<FormFileService>();

@@ -5,23 +5,19 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJUploadArea : JJBaseView
 {
     /// <summary>
-    /// Event fired when rendering HTML content
+    /// Event fired when the file is posted.
     /// </summary>  
-    /// <remarks>
-    /// To perform validations, just return the error message in the function. 
-    /// If the function returns something other than null, the content will be displayed as an error.
-    /// </remarks>
     public event EventHandler<FormUploadFileEventArgs> OnPostFile;
 
     /// <summary>
@@ -92,10 +88,15 @@ public class JJUploadArea : JJBaseView
     public bool AutoSubmitAfterUploadAll { get; set; }
 
     internal IHttpContext CurrentContext { get; }
+    private IUploadAreaService UploadAreaService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    public JJUploadArea(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public JJUploadArea(
+        IHttpContext currentContext,
+        IUploadAreaService uploadAreaService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
+        UploadAreaService = uploadAreaService;
         StringLocalizer = stringLocalizer;
         AllowedTypes = "*";
         Name = "uploadFile1";
@@ -120,8 +121,9 @@ public class JJUploadArea : JJBaseView
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
         {
-            UploadFile();
-            return null;
+            UploadAreaService.OnPostFile += OnPostFile;
+            var result = UploadAreaService.UploadFile("file",AllowedTypes);
+            CurrentContext.Response.SendResponse(result.ToJson(), "application/json");
         }
 
         return GetFieldHtmlElement();
@@ -177,139 +179,7 @@ public class JJUploadArea : JJBaseView
 
         return maxRequestLength;
     }
-
-    /// <summary>
-    /// Recovers the file after the POST
-    /// </summary>
-    private FormFileContent GetFile()
-    {
-        var fileData = CurrentContext.Request.GetFile("file");
-        using var stream = new MemoryStream();
-        string filename = fileData.FileName;
-        
-#if NETFRAMEWORK
-        fileData.InputStream.CopyTo(stream);
-#else
-        fileData.CopyTo(stream);
-#endif
-
-        var content = new FormFileContent
-        {
-            FileName = filename,
-            Bytes = stream.ToArray(),
-            Length = stream.Length,
-            LastWriteTime = DateTime.Now
-        };
-
-        return content;
-    }
-    private record UploadAreaDto
-    {
-        [JsonProperty("jquery-upload-file-message", NullValueHandling=NullValueHandling.Ignore)]
-        public string Message { get; set; }
-        
-        [JsonProperty("jquery-upload-file-error", NullValueHandling=NullValueHandling.Ignore)]
-        public string Error { get; set; }
-        public string ToJson() => JsonConvert.SerializeObject(this);
-    }
-    private void UploadFile()
-    {
-        UploadAreaDto dto = new();
-        
-        try
-        {
-            string message = string.Empty;
-            
-            var file = GetFile();
-            
-            ValidateSystemFiles(file.FileName);
-
-            if (OnPostFile != null)
-            {
-                var args = new FormUploadFileEventArgs(file);
-                OnPostFile.Invoke(this, args);
-                var errorMessage = args.ErrorMessage;
-                if (args.SuccessMessage != null)
-                {
-                    message = args.SuccessMessage;
-                }
-
-                if (!string.IsNullOrEmpty(errorMessage))
-                    throw new JJMasterDataException(errorMessage);
-            }
-
-            dto.Message = message;
-
-        }
-        catch (Exception ex)
-        {
-            dto.Error = ex.Message;
-        }
-
-        CurrentContext.Response.SendResponse(dto.ToJson(),"text/json");
-    }
-    private void ValidateSystemFiles(string filename)
-    {
-        if (!AllowedTypes.Equals("*"))
-            return;
-
-        var list = new List<string>
-        {
-            ".ade",
-            ".adp",
-            ".apk",
-            ".appx",
-            ".appxbundle",
-            ".bat",
-            ".cab",
-            ".chm",
-            ".cmd",
-            ".com",
-            ".cpl",
-            ".dll",
-            ".dmg",
-            ".ex",
-            ".ex_",
-            ".exe",
-            ".hta",
-            ".ins",
-            ".isp",
-            ".iso",
-            ".js",
-            ".jse",
-            ".lib",
-            ".lnk",
-            ".mde",
-            ".msc",
-            ".msi",
-            ".msix",
-            ".msixbundle",
-            ".msp",
-            ".mst",
-            ".nsh",
-            ".pif",
-            ".ps1",
-            ".scr",
-            ".sct",
-            ".shb",
-            ".sys",
-            ".vb",
-            ".vbe",
-            ".vbs",
-            ".vxd",
-            ".wsc",
-            ".wsf",
-            ".wsh",
-            ".jar",
-            ".cs",
-            ".bin"
-        };
-
-        string ext = FileIO.GetFileNameExtension(filename);
-        if (list.Contains(ext))
-            throw new JJMasterDataException(StringLocalizer["You cannot upload system files"]);
-
-    }
+    
     public bool IsPostAfterUploadAllFiles()
     {
         string nameField = $"uploadaction_{Name}";

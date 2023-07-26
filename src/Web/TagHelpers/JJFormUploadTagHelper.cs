@@ -13,8 +13,7 @@ public class JJFormUploadTagHelper : TagHelper
 
     [HtmlAttributeName("configure")]
     public Action<JJFormUpload>? Configure { get; set; }
-
-
+    
     public JJFormUploadTagHelper(FormUploadFactory formUploadFactory)
     {
         FormUploadFactory = formUploadFactory;
