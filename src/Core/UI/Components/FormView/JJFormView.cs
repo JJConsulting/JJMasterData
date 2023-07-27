@@ -109,7 +109,6 @@ public class JJFormView : JJAsyncBaseView
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
             _dataPanel.IsExternalRoute = IsExternalRoute;
-
             _dataPanel.PageState = PageState;
 
             return _dataPanel;
@@ -140,6 +139,13 @@ public class JJFormView : JJAsyncBaseView
             _gridView.UserValues = UserValues;
             _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowTitle = true;
+            
+            _gridView.ToolBarActions.Add(new InsertAction());
+            _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
+            _gridView.ToolBarActions.Add(new LogAction());
+            _gridView.GridActions.Add(new ViewAction());
+            _gridView.GridActions.Add(new EditAction());
+            _gridView.GridActions.Add(new DeleteAction());
 
             return _gridView;
         }
