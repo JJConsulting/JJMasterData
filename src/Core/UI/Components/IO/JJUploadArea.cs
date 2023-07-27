@@ -89,14 +89,17 @@ public class JJUploadArea : JJBaseView
 
     internal IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public JJUploadArea(
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
+        JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
         UploadAreaService = uploadAreaService;
+        UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
         AllowedTypes = "*";
         Name = "uploadFile1";
@@ -138,6 +141,7 @@ public class JJUploadArea : JJBaseView
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttribute("id", Name);
+                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","Upload"));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

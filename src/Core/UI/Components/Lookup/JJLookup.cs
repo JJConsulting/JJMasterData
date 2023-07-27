@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.Web.Components;
 
 /// Represents a field with a value from another Data Dictionary accessed via popup.
-public class JJLookup : JJBaseControl
+public class JJLookup : JJAsyncBaseControl
 {
     private ILookupService LookupService { get; }
     private ILogger<JJLookup> Logger { get; }
@@ -108,25 +109,30 @@ public class JJLookup : JJBaseControl
 
     internal override HtmlBuilder RenderHtml()
     {
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    {
         if (!IsLookupRoute())
-            return GetLookupHtmlElement();
+            return await GetLookupHtmlElement();
 
         if (IsAjaxGetDescription())
-            SendResult();
+            await SendResult();
         else
             SendLookupUrlDto();
 
         return null;
     }
 
-    private HtmlBuilder GetLookupHtmlElement()
+    private async Task<HtmlBuilder> GetLookupHtmlElement()
     {
         string inputValue = SelectedValue;
 
         string description = Text;
 
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description = LookupService.GetDescriptionAsync(DataItem,inputValue,PageState,FormValues,OnlyNumbers).GetAwaiter().GetResult();
+            description = await LookupService.GetDescriptionAsync(DataItem,inputValue,PageState,FormValues,OnlyNumbers);
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
@@ -176,13 +182,13 @@ public class JJLookup : JJBaseControl
 
 
 
-    private void SendResult()
+    private async Task SendResult()
     {
         LookupResultDto dto = null;
         try
         {
             string searchId = CurrentContext.Request["lkid"];
-            string description = GetDescriptionAsync().GetAwaiter().GetResult();
+            string description = await GetDescriptionAsync();
             dto = new LookupResultDto(searchId, description);
         }
         catch (Exception ex)

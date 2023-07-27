@@ -26,7 +26,6 @@ public class DataExportationScripts
         var checkProgressUrl = UrlHelper.GetUrl("CheckProgress","Exportation",new { dictionaryName=encryptedDictionaryName, componentName });
         
         return $"DataExportation.startExportation('{startExportationUrl}','{checkProgressUrl}', '{componentName}');";
-
     }
     
     public string GetStopExportationScript(string dictionaryName,string componentName,string stopMessage, bool isExternalRoute)
@@ -53,5 +52,4 @@ public class DataExportationScripts
         
         return $"DataExportation.openExportPopup('{url}', '{componentName}');";
     }
-
 }

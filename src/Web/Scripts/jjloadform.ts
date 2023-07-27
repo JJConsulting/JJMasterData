@@ -66,7 +66,7 @@
     SearchBox.setup();
     JJLookup.setup();
     JJSortable.setup();
-    JJUpload.setup();
+    UploadArea.setup();
     JJTabNav.setup();
 
     JJSlider.observeSliders();

@@ -141,7 +141,6 @@ public class JJFileDownloader : JJBaseView
 
     public static bool IsDownloadRoute(IHttpContext currentContext)
     {
-
         if (currentContext.Request.QueryString(DirectDownloadParameter) != null)
             return true;
         if (currentContext.Request.QueryString(DownloadParameter) != null)
@@ -149,7 +148,10 @@ public class JJFileDownloader : JJBaseView
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(IHttpContext currentContext, JJMasterDataEncryptionService encryptionService, FileDownloaderFactory factory)
+    public static HtmlBuilder ResponseRoute(
+        IHttpContext currentContext, 
+        JJMasterDataEncryptionService encryptionService, 
+        FileDownloaderFactory factory)
     {
         bool isExternalLink = false;
         string criptFilePath = currentContext.Request.QueryString(DownloadParameter);
