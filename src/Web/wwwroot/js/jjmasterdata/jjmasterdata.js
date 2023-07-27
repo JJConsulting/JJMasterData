@@ -339,7 +339,8 @@ class FileUploadOptions {
 }
 class UploadArea {
     static uploadFile(options) {
-        $("#" + options.componentName).uploadFile({
+        const selector = "#" + options.componentName;
+        $(selector).uploadFile({
             url: options.url,
             formData: $(options.form).serializeArray(),
             fileName: "file",
@@ -348,19 +349,19 @@ class UploadArea {
             maxFileCount: 1000,
             dragDrop: options.allowDragDrop,
             showFileSize: options.showFileSize,
-            dragdropWidth: ($("#" + options.componentName).width() - 10),
-            statusBarWidth: ($("#" + options.componentName).width() - 10),
+            dragdropWidth: ($(selector).width() - 10),
+            statusBarWidth: ($(selector).width() - 10),
             autoSubmit: true,
             uploadButtonClass: "btn btn-primary",
             allowedTypes: options.allowedTypes,
             acceptFiles: options.allowedTypes !== "*" ? "." + options.allowedTypes.replace(" ", "").replace(",", ",.") : "*",
-            uploadStr: $("#" + options.componentName).attr("uploadStr"),
+            uploadStr: $(selector).attr("uploadStr"),
             dragDropStr: "<span>&nbsp;<b>" + options.dragDropLabel + "</b></span>",
-            doneStr: $("#" + options.componentName).attr("doneStr"),
-            cancelStr: $("#" + options.componentName).attr("cancelStr"),
-            abortStr: $("#" + options.componentName).attr("abortStr"),
-            extErrorStr: $("#" + options.componentName).attr("extErrorStr"),
-            sizeErrorStr: $("#" + options.componentName).attr("sizeErrorStr"),
+            doneStr: $(selector).attr("doneStr"),
+            cancelStr: $(selector).attr("cancelStr"),
+            abortStr: $(selector).attr("abortStr"),
+            extErrorStr: $(selector).attr("extErrorStr"),
+            sizeErrorStr: $(selector).attr("sizeErrorStr"),
             customErrorKeyStr: "jquery-upload-file-error",
             returnType: "json",
             onSubmit: function () {
@@ -427,15 +428,17 @@ class UploadArea {
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
             let frm = document.querySelector("form");
-            let surl = frm.getAttribute("action");
-            if (surl.includes("?")) {
-                surl += "&t=jjupload";
+            let url;
+            if (element.getAttribute("url") != null) {
+                url = element.getAttribute("url");
             }
             else {
-                surl += "?t=jjupload";
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("t", "jjupload");
+                urlBuilder.addQueryParameter("objname", componentName);
+                url = urlBuilder.build();
             }
-            surl += "&objname=" + componentName;
-            const fileUploadOptions = new FileUploadOptions(componentName, surl, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
+            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
             this.uploadFile(fileUploadOptions);
             window.addEventListener("resize", () => {
                 document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =

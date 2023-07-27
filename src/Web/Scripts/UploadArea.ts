@@ -125,18 +125,22 @@ class UploadArea {
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
 
             let frm = document.querySelector("form");
-            let surl = frm.getAttribute("action");
-            if (surl.includes("?")) {
-                surl += "&t=jjupload";
-            } else {
-                surl += "?t=jjupload";
+            
+            let url : string;
+            
+            if(element.getAttribute("url") != null){
+                url = element.getAttribute("url");
             }
-
-            surl += "&objname=" + componentName;
+            else{
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("t","jjupload")
+                urlBuilder.addQueryParameter("objname",componentName)
+                url = urlBuilder.build();
+            }
 
             const fileUploadOptions = new FileUploadOptions(
                 componentName,
-                surl,
+                url,
                 frm,
                 multiple,
                 maxFileSize,
