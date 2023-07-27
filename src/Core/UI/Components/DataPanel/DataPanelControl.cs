@@ -24,7 +24,7 @@ internal class DataPanelControl
     public FormElement FormElement { get; }
     public FormUI FormUI { get; private set; }
 
-    public FieldControlFactory ControlFactory { get; }
+    public ControlsFactory ControlFactory { get; }
 
     public PageState PageState { get; private set; }
 
@@ -47,7 +47,7 @@ internal class DataPanelControl
     {
         FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
-        ControlFactory = dataPanel.FieldControlFactory;
+        ControlFactory = dataPanel.ControlsFactory;
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
@@ -73,7 +73,7 @@ internal class DataPanelControl
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
-        ControlFactory = gridView.FieldControlFactory;
+        ControlFactory = gridView.ControlsFactory;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
         IsExternalRoute = gridView.IsExternalRoute;
@@ -134,7 +134,7 @@ internal class DataPanelControl
             row?.AppendElement(htmlField);
 
             string fieldClass;
-            if (FieldControlFactory.IsRange(field, PageState))
+            if (ControlsFactory.IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -268,7 +268,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendElement(label);
 
-            if (FieldControlFactory.IsRange(f, PageState))
+            if (ControlsFactory.IsRange(f, PageState))
             {
                 row?.AppendElement(GetControlField(f, value));
             }

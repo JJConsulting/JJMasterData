@@ -242,7 +242,7 @@ public class JJSearchBox : JJBaseControl
 
     public static HtmlBuilder ResponseJson(JJDataPanel view, IHttpContext httpContext)
     {
-        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.FieldControlFactory.SearchBoxFactory);
+        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.ControlsFactory.SearchBox);
     }
 
     internal static HtmlBuilder ResponseJson(

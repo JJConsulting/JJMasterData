@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Data;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;

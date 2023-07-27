@@ -270,7 +270,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var factory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        var factory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
         var cbo = (JJComboBox)factory.CreateControl(FormElement,FormElement.Name,field, PageState.List, values,null, selectedValue);
         var item = cbo.GetValue(selectedValue);
 

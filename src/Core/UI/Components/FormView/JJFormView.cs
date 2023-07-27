@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.UI.Components.GridView;
 
 namespace JJMasterData.Core.Web.Components;
 

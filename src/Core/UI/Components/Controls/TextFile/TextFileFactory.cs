@@ -13,27 +13,27 @@ public class TextFileFactory
 {
     private IHttpContext HttpContext { get; }
     private FormUploadFactory FormUploadFactory { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private TextBoxFactory TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
         IHttpContext httpContext,
         FormUploadFactory formUploadFactory,
-        TextGroupFactory textGroupFactory,
+        TextBoxFactory textBoxFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
         FormUploadFactory = formUploadFactory;
-        TextGroupFactory = textGroupFactory;
+        TextBoxFactory = textBoxFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
 
     public JJTextFile CreateTextFile()
     {
-        return new JJTextFile(HttpContext, FormUploadFactory, TextGroupFactory,EncryptionService, StringLocalizer);
+        return new JJTextFile(HttpContext, FormUploadFactory, TextBoxFactory,EncryptionService, StringLocalizer);
     }
     
     internal JJTextFile CreateTextFile(FormElement formElement,

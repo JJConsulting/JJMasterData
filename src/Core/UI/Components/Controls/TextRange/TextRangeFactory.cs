@@ -10,13 +10,13 @@ namespace JJMasterData.Core.Web.Factories;
 public class TextRangeFactory
 {
     private IHttpContext HttpContext { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private TextBoxFactory TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextRangeFactory(IHttpContext httpContext, TextGroupFactory textGroupFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextRangeFactory(IHttpContext httpContext, TextBoxFactory textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
-        TextGroupFactory = textGroupFactory;
+        TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;
     }
     internal JJTextRange CreateTextRange(FormElementField field, IDictionary<string,dynamic> values)
@@ -27,9 +27,9 @@ public class TextRangeFactory
             valueFrom = values[field.Name + "_from"].ToString();
         }
         
-        var range = new JJTextRange(HttpContext,TextGroupFactory,StringLocalizer);
+        var range = new JJTextRange(HttpContext,TextBoxFactory,StringLocalizer);
         range.FieldType = field.DataType;
-        range.FromField = TextGroupFactory.CreateTextGroup(field);
+        range.FromField = TextBoxFactory.CreateTextGroup(field);
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
@@ -40,7 +40,7 @@ public class TextRangeFactory
             valueTo = values[field.Name + "_to"].ToString();
         }
         
-        range.ToField = TextGroupFactory.CreateTextGroup(field);
+        range.ToField = TextBoxFactory.CreateTextGroup(field);
         range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];

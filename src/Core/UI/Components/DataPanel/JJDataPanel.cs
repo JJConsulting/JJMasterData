@@ -90,7 +90,7 @@ public class JJDataPanel : JJBaseView
     public IFieldsService FieldsService { get; }
     public IFormValuesService FormValuesService { get; }
     public IExpressionsService ExpressionsService { get; }
-    public FieldControlFactory FieldControlFactory { get; }
+    public ControlsFactory ControlsFactory { get; }
 
 
     #endregion
@@ -99,7 +99,7 @@ public class JJDataPanel : JJBaseView
 #if NET48
     public JJDataPanel()
     {
-        FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        ControlsFactory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
         EntityRepository =  JJService.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  JJService.Provider.GetScopedDependentService<IHttpContext>();
@@ -116,7 +116,7 @@ public class JJDataPanel : JJBaseView
         PageState = PageState.View;
     }
     
-    [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use JJMasterDataFactory.")]
+    [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(string elementName): this()
     {
         Name = "pnl_" + elementName;
@@ -125,7 +125,7 @@ public class JJDataPanel : JJBaseView
         RenderPanelGroup = FormElement.Panels.Count > 0;
     }
     
-    [Obsolete("This constructor uses a static service locator. This an anti pattern. Please use JJMasterDataFactory.")]
+    [Obsolete("This constructor uses a static service locator. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(
         FormElement formElement) : this()
     {
@@ -144,7 +144,7 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        FieldControlFactory fieldControlFactory
+        ControlsFactory controlsFactory
     )
     {
         EntityRepository = entityRepository;
@@ -155,7 +155,7 @@ public class JJDataPanel : JJBaseView
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        FieldControlFactory = fieldControlFactory;
+        ControlsFactory = controlsFactory;
         Values = new Dictionary<string, dynamic>();
         Errors = new Dictionary<string, dynamic>();
         AutoReloadFormFields = true;
@@ -172,8 +172,8 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        FieldControlFactory fieldControlFactory
-    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, fieldControlFactory)
+        ControlsFactory controlsFactory
+    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, controlsFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -198,7 +198,7 @@ public class JJDataPanel : JJBaseView
 
         //DownloadFile Route
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, FieldControlFactory.FileDownloaderFactory);
+            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, ControlsFactory.FileDownloader);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(this, CurrentContext);

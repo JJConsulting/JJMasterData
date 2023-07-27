@@ -16,13 +16,13 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController : MasterDataController
 {
-    private JJMasterDataFactory MasterDataFactory { get; }
+    private ComponentsFactory MasterDataFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
     private IDictionary<string,dynamic>? _relationValues;
 
-    public InternalRedirectController(JJMasterDataFactory masterDataFactory, JJMasterDataEncryptionService encryptionService)
+    public InternalRedirectController(ComponentsFactory masterDataFactory, JJMasterDataEncryptionService encryptionService)
     {
         MasterDataFactory = masterDataFactory;
         EncryptionService = encryptionService;

@@ -1,23 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class TextGroupFactory
+public class TextBoxFactory
 {
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private ExpressionsService ExpressionsService { get; }
 
-    public TextGroupFactory(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextBoxFactory(IHttpContext httpContext, 
+                          IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+                          ExpressionsService expressionsService)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
+        ExpressionsService = expressionsService;
     }
     
     public JJTextGroup CreateTextGroup()
@@ -25,7 +32,21 @@ public class TextGroupFactory
         return new JJTextGroup(HttpContext);
     }
     
-    public JJTextGroup CreateTextGroup(FormElementField field, object value)
+    public JJTextGroup CreateText(FormElementField field, object value)
+    {
+        var textGroup = CreateTextGroup(field);
+
+        if (field.Component == FormComponent.Currency)
+            value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
+
+        textGroup.Text = value?.ToString() ?? string.Empty;
+        
+        return textGroup;
+    }
+
+
+    public JJTextGroup CreateTextGroup(FormElement formElement,
+        FormElementField field, ExpressionOptions expOptions, object value, string componentName)
     {
         var textGroup = CreateTextGroup(field);
 
@@ -34,7 +55,25 @@ public class TextGroupFactory
 
         textGroup.Text = value?.ToString() ?? string.Empty;
 
+        if (expOptions.PageState == PageState.Filter)
+            textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
+        else
+            AddUserActions(formElement, componentName, field, expOptions, textGroup);
+
         return textGroup;
+    }
+
+
+    private void AddUserActions(FormElement formElement, string componentName, FormElementField field,
+        ExpressionOptions expressionOptions, JJTextGroup textGroup)
+    {
+        var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
+        foreach (var action in actions)
+        {
+            var actionManager = new ActionManager(formElement, ExpressionsService, componentName);
+            var link = actionManager.GetLinkField(action, expressionOptions.FormValues, expressionOptions.PageState, field.Name);
+            textGroup.Actions.Add(link);
+        }
     }
 
     public JJTextGroup CreateTextGroup(FormElementField field)

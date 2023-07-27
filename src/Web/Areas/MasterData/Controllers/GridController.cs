@@ -1,5 +1,5 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 

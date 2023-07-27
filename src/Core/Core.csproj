@@ -48,5 +48,9 @@
         <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
         <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="UI\Factories\" />
+    </ItemGroup>
 
 </Project>

@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using JJMasterData.Commons.Configuration;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
@@ -24,13 +15,21 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -543,13 +542,13 @@ public class JJGridView : JJAsyncBaseView
     internal Lazy<DataImportationFactory> DataImportationFactory { get; }
     internal LookupFactory LookupFactory { get; }
     internal ComboBoxFactory ComboBoxFactory { get; }
-    internal FieldControlFactory FieldControlFactory { get; }
+    internal ControlsFactory ControlsFactory { get; }
     #endregion
 
     #region "Constructors"
 
 #if NET48
-    [Obsolete("This constructor a static service locator and is an anti pattern. Please use JJMasterDataFactory.")]
+    [Obsolete("This constructor a static service locator and is an anti pattern. Please use ComponentsFactory.")]
     public JJGridView()
     {
         FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
@@ -563,7 +562,7 @@ public class JJGridView : JJAsyncBaseView
         DataImportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataImportationFactory>>();
         LookupFactory = JJService.Provider.GetScopedDependentService<LookupFactory>();
         ComboBoxFactory = JJService.Provider.GetScopedDependentService<ComboBoxFactory>();
-        FieldControlFactory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        ControlsFactory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
         FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
         
         Name = "jjview";
@@ -581,7 +580,7 @@ public class JJGridView : JJAsyncBaseView
     }
 
     [Obsolete(
-        "This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use JJMasterDataFactory.")]
+        "This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJGridView(string elementName) : this()
     {
         Name = "jjview" + elementName.ToLower();
@@ -594,7 +593,7 @@ public class JJGridView : JJAsyncBaseView
         gridViewFactory.SetGridOptions(this, FormElement.Options);
     }
 
-    [Obsolete("This constructor a static service locator and is an anti pattern. Please use JJMasterDataFactory.")]
+    [Obsolete("This constructor a static service locator and is an anti pattern. Please use ComponentsFactory.")]
     public JJGridView(FormElement formElement) : this()
     {
         Name = "jjview" + formElement.Name.ToLower();
@@ -615,7 +614,7 @@ public class JJGridView : JJAsyncBaseView
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         Lazy<DataExportationFactory> dataExportationFactory,
         Lazy<DataImportationFactory> dataImportationFactory,
-        FieldControlFactory fieldControlFactory)
+        ControlsFactory controlsFactory)
     {
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
@@ -624,12 +623,12 @@ public class JJGridView : JJAsyncBaseView
         EntityRepository = entityRepository;
         UrlHelper = urlHelper;
         CurrentContext = currentContext;
-        FieldControlFactory = fieldControlFactory;
+        ControlsFactory = controlsFactory;
         FormValuesService = formValuesService;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
-        LookupFactory = fieldControlFactory.LookupFactory;
-        ComboBoxFactory = fieldControlFactory.ComboBoxFactory;
+        LookupFactory = controlsFactory.Lookup;
+        ComboBoxFactory = controlsFactory.ComboBox;
 
         Name = "jjview";
         ShowTitle = true;
@@ -644,7 +643,7 @@ public class JJGridView : JJAsyncBaseView
         RelationValues = new Dictionary<string, dynamic>();
         TitleSize = HeadingSize.H1;
     }
-
+    
     public JJGridView(
         FormElement formElement,
         IHttpContext currentContext,
@@ -657,8 +656,8 @@ public class JJGridView : JJAsyncBaseView
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         Lazy<DataExportationFactory> dataExportationFactory,
         Lazy<DataImportationFactory> dataImportationFactory,
-        FieldControlFactory fieldControlFactory) : this(currentContext,
-        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, fieldControlFactory)
+        ControlsFactory controlsFactory) : this(currentContext,
+        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, controlsFactory)
     {
         Name = "jjview" + formElement.Name.ToLower();
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));

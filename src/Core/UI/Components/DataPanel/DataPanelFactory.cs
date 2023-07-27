@@ -19,13 +19,13 @@ public class DataPanelFactory
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
-    private FieldControlFactory FieldControlFactory { get; }
+    private ControlsFactory ControlsFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
-        FieldControlFactory fieldControlFactory, JJMasterDataUrlHelper urlHelper)
+        ControlsFactory controlsFactory, JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -34,14 +34,14 @@ public class DataPanelFactory
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        FieldControlFactory = fieldControlFactory;
+        ControlsFactory = controlsFactory;
         UrlHelper = urlHelper;
     }
 
     public JJDataPanel CreateDataPanel(FormElement formElement)
     {
         var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, FieldControlFactory);
+            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ControlsFactory);
         return dataPanel;
     }
 

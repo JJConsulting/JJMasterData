@@ -15,6 +15,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -210,7 +211,7 @@ public class JJFormUpload : JJBaseView
 
     internal IHttpContext CurrentContext { get; }
     private FileDownloaderFactory FileDownloaderFactory { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private TextBoxFactory TextBoxFactory { get; }
     internal UploadAreaFactory UploadAreaFactory { get; }
     internal Lazy<GridViewFactory> GridViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
@@ -220,7 +221,7 @@ public class JJFormUpload : JJBaseView
     public JJFormUpload(
         IHttpContext currentContext,
         FileDownloaderFactory fileDownloaderFactory,
-        TextGroupFactory textGroupFactory,
+        TextBoxFactory textBoxFactory,
         UploadAreaFactory uploadAreaFactory, 
         Lazy<GridViewFactory> gridViewFactory,
         JJMasterDataEncryptionService encryptionService,
@@ -229,7 +230,7 @@ public class JJFormUpload : JJBaseView
     {
         CurrentContext = currentContext;
         FileDownloaderFactory = fileDownloaderFactory;
-        TextGroupFactory = textGroupFactory;
+        TextBoxFactory = textBoxFactory;
         UploadAreaFactory = uploadAreaFactory;
         GridViewFactory = gridViewFactory;
         EncryptionService = encryptionService;

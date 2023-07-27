@@ -5,6 +5,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;

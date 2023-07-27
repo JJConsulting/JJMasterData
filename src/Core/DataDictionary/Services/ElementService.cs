@@ -17,8 +17,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
+using JJMasterData.Core.UI.Components.GridView;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 

@@ -14,8 +14,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Factories;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components.GridView;
 
 public class GridViewFactory
 {
@@ -27,7 +29,7 @@ public class GridViewFactory
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private Lazy<DataExportationFactory> DataExportationFactory { get; }
     private Lazy<DataImportationFactory> DataImportationFactory { get; }
-    private FieldControlFactory FieldControlFactory { get; }
+    private ControlsFactory ControlsFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext CurrentContext { get; }
@@ -45,7 +47,7 @@ public class GridViewFactory
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         Lazy<DataExportationFactory> dataExportationFactory,
         Lazy<DataImportationFactory> dataImportationFactory,
-        FieldControlFactory fieldControlFactory)
+        ControlsFactory controlsFactory)
     {
         _urlHelper = urlHelper;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -57,26 +59,26 @@ public class GridViewFactory
         StringLocalizer = stringLocalizer;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
-        FieldControlFactory = fieldControlFactory;
+        ControlsFactory = controlsFactory;
         EntityRepository = entityRepository;
     }
 
     public JJGridView CreateGridView()
     {
         var gridView = new JJGridView(CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
-            FieldsService,FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory, FieldControlFactory);
+            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory, ControlsFactory);
 
         return gridView;
     }
-    
+
     public JJGridView CreateGridView(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement,CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
-            FieldsService,FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory,
-            FieldControlFactory);
-        
-        SetGridOptions(gridView,formElement.Options);
-        
+        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
+            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory,
+            ControlsFactory);
+
+        SetGridOptions(gridView, formElement.Options);
+
         return gridView;
     }
 

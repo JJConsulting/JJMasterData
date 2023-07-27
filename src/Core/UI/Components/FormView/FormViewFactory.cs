@@ -9,6 +9,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;

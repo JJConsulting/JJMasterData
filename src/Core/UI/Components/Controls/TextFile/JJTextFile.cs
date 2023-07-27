@@ -23,7 +23,7 @@ namespace JJMasterData.Core.Web.Components;
 public class JJTextFile : JJBaseControl
 {
     private FormUploadFactory FormUploadFactory { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private TextBoxFactory TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadFormParameterName = "jjuploadform_";
@@ -54,12 +54,12 @@ public class JJTextFile : JJBaseControl
     public JJTextFile(
         IHttpContext currentContext, 
         FormUploadFactory formUploadFactory,
-        TextGroupFactory textGroupFactory,
+        TextBoxFactory textBoxFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
         FormUploadFactory = formUploadFactory;
-        TextGroupFactory = textGroupFactory;
+        TextBoxFactory = textBoxFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
@@ -91,7 +91,7 @@ public class JJTextFile : JJBaseControl
         if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var textGroup = TextGroupFactory.CreateTextGroup();
+        var textGroup = TextBoxFactory.CreateTextGroup();
         textGroup.CssClass = CssClass;
         textGroup.ReadOnly = true;
         textGroup.Name = $"v_{Name}";
@@ -366,7 +366,7 @@ public class JJTextFile : JJBaseControl
         if (field == null) 
             return null;
 
-        var factory = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+        var factory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
         
         var upload = factory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
         return upload.GetHtmlBuilder();

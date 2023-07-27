@@ -72,7 +72,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ExportOptions Configuration { get; set; }
 
-    public FieldControlFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<FieldControlFactory>();
+    public ControlsFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<ControlsFactory>();
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>

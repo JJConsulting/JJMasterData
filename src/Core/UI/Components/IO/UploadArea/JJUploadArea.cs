@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataManager;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using System;
 
 namespace JJMasterData.Core.Web.Components;
 

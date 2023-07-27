@@ -246,7 +246,7 @@ public class JJLookup : JJAsyncBaseControl
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
         if (field == null) 
             return null;
-        var lookup = view.FieldControlFactory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
+        var lookup = view.ControlsFactory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
         return lookup.GetHtmlBuilder();
 
     }

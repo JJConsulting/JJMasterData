@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +16,7 @@ public static class FactoriesServiceExtensions
         
         services.AddTransient<ComboBoxFactory>();
         services.AddTransient<CheckBoxFactory>();
-        services.AddTransient<FieldControlFactory>();
+        services.AddTransient<ControlsFactory>();
 
         services.AddTransient<FormUploadFactory>();
         services.AddTransient<FileDownloaderFactory>();
@@ -25,12 +26,12 @@ public static class FactoriesServiceExtensions
         services.AddTransient<FormViewFactory>().AllowLazyInicialization();
         services.AddTransient<GridViewFactory>().AllowLazyInicialization();
         
-        services.AddTransient<JJMasterDataFactory>();
+        services.AddTransient<ComponentsFactory>();
         services.AddTransient<LookupFactory>();
         services.AddTransient<SearchBoxFactory>();
         services.AddTransient<TextAreaFactory>();
         services.AddTransient<SliderFactory>();
-        services.AddTransient<TextGroupFactory>();
+        services.AddTransient<TextBoxFactory>();
         services.AddTransient<TextRangeFactory>();
         services.AddTransient<UploadAreaFactory>();
         services.AddTransient<TextFileFactory>();

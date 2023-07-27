@@ -18,7 +18,7 @@ public class JJAlert : JJBaseView
     /// </remarks>
     public bool ShowIcon { get; set; } = true;
 
-    public JJAlert()
+    internal JJAlert()
     {
         Messages = new List<string>();
     }

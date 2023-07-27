@@ -2,6 +2,7 @@ using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -17,8 +18,8 @@ public class FormUploadFactory
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     //This prevents a circular dependency:
-    //GridViewFactory depends on FieldControlFactory
-    //FieldControlFactory depends on TextFileFactory
+    //GridViewFactory depends on ControlsFactory
+    //ControlsFactory depends on TextFileFactory
     //TextFileFactory depends on FormUploadFactory
     //FormUploadFactory depends on GridViewFactory !Recursive!
     private Lazy<GridViewFactory> GridViewFactory { get; }
@@ -28,11 +29,11 @@ public class FormUploadFactory
     private FileDownloaderFactory FileDownloaderFactory { get; }
 
     private IHttpContext CurrentContext { get; }
-    private TextGroupFactory TextGroupFactory { get; }
+    private TextBoxFactory TextBoxFactory { get; }
 
     public FormUploadFactory(
         IHttpContext currentContext,
-        TextGroupFactory textGroupFactory,
+        TextBoxFactory textBoxFactory,
         FileDownloaderFactory fileDownloaderFactory,
         UploadAreaFactory uploadAreaFactory,
         Lazy<GridViewFactory> gridViewFactory,
@@ -41,7 +42,7 @@ public class FormUploadFactory
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
-        TextGroupFactory = textGroupFactory;
+        TextBoxFactory = textBoxFactory;
         FileDownloaderFactory = fileDownloaderFactory;
         UploadAreaFactory = uploadAreaFactory;
         GridViewFactory = gridViewFactory;
@@ -55,7 +56,7 @@ public class FormUploadFactory
         return new JJFormUpload(
             CurrentContext, 
             FileDownloaderFactory, 
-            TextGroupFactory, 
+            TextBoxFactory, 
             UploadAreaFactory,
             GridViewFactory,
             EncryptionService, 
