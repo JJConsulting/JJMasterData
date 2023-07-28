@@ -26,10 +26,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJAuditLogView>> AuditLogViewFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
+    private ComponentFactory Factory { get; }
     private IFormEventResolver FormEventResolver { get; }
 
     public FormViewFactory(
@@ -41,12 +38,9 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
-        Lazy<IFormElementComponentFactory<JJAuditLogView>> auditLogViewFactory,
-        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory, 
+        ComponentFactory factory,
         IFormEventResolver formEventResolver
-        )
+    )
     {
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
@@ -56,10 +50,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
-        FileDownloaderFactory = fileDownloaderFactory;
-        GridViewFactory = gridViewFactory;
-        AuditLogViewFactory = auditLogViewFactory;
-        DataPanelFactory = dataPanelFactory;
+        Factory = factory;
         FormEventResolver = formEventResolver;
     }
 
@@ -67,16 +58,13 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     {
         return new JJFormView(
             formElement,
-            CurrentContext, 
+            CurrentContext,
             EntityRepository, DataDictionaryRepository, FormService,
-            EncryptionService, FieldValuesService, ExpressionsService, 
-            StringLocalizer, 
-            FileDownloaderFactory,
-            GridViewFactory,
-            AuditLogViewFactory, DataPanelFactory, 
-            this); // This need to be a reference to itself to prevent a recursive dependency.
+            EncryptionService, FieldValuesService, ExpressionsService,
+            StringLocalizer,
+            Factory);
     }
-    
+
     public async Task<JJFormView> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
@@ -87,7 +75,6 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 
     internal void SetFormViewParams(JJFormView form, FormElement formElement)
     {
-
         var formEvent = FormEventResolver.GetFormEvent(formElement.Name);
         if (formEvent != null)
         {
@@ -96,7 +83,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 
         form.Name = "jjview" + formElement.Name.ToLower();
 
-        var dataContext = new DataContext(CurrentContext,DataContextSource.Form, DataHelper.GetCurrentUserId(CurrentContext,null));
+        var dataContext = new DataContext(CurrentContext, DataContextSource.Form,
+            DataHelper.GetCurrentUserId(CurrentContext, null));
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
 
         SetFormOptions(form, formElement.Options);
