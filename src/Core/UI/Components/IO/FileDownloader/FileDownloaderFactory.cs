@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
+internal class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
 {
     private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }

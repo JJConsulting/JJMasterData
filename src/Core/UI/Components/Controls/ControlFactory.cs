@@ -6,8 +6,6 @@ using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Core.UI.Components;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -133,32 +131,3 @@ public class ControlFactory
     }
 }
 
-public class ControlFactory<T> : IControlFactory<T> where T : JJBaseControl
-{
-    private IServiceProvider ServiceProvider { get; }
-
-    public ControlFactory(IServiceProvider serviceProvider)
-    {
-        ServiceProvider = serviceProvider;
-    }
-
-    public IControlFactory<TComponent> GetFactory<TComponent>() where TComponent : JJBaseControl
-    {
-        var factories = ServiceProvider.GetRequiredService<IEnumerable<IControlFactory>>();
-        return (IControlFactory<TComponent>)factories.First(f => f is IControlFactory<TComponent>);
-    }
-
-    public T Create()
-    {
-        var factory = GetFactory<T>();
-        return factory.Create();
-    }
-
-    public T Create(FormElement formElement, FormElementField field, FormStateData formStateData = null,
-        string parentName = null,
-        object value = null)
-    {
-        var factory = GetFactory<T>();
-        return factory.Create(formElement, field, formStateData, parentName, value);
-    }
-}

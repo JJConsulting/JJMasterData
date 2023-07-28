@@ -1,11 +1,8 @@
-﻿using JJMasterData.Core.UI.Components.GridView;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.Web.Components;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -48,21 +45,4 @@ public class ComponentFactory
     public IFormElementComponentFactory<JJFormView> FormView => GetFormElementComponentFactory<FormViewFactory>();
     public IFormElementComponentFactory<JJGridView> GridView => GetFormElementComponentFactory<GridViewFactory>();
     public IComponentFactory<JJFormUpload> FormUpload => GetFactory<FormUploadFactory>();
-}
-
-public class ComponentFactory<T> : IComponentFactory<T> where T : JJBaseView
-{
-    private IServiceProvider ServiceProvider { get; }
-
-    public ComponentFactory(IServiceProvider serviceProvider)
-    {
-        ServiceProvider = serviceProvider;
-    }
-    
-    public T Create()
-    {
-        var factories = ServiceProvider.GetRequiredService<IEnumerable<IComponentFactory>>();
-        var factory = (IComponentFactory<T>)factories.First(f => f is IComponentFactory<T>);
-        return factory.Create();
-    }
 }
