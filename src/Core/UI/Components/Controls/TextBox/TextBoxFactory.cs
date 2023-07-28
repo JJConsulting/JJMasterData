@@ -45,12 +45,14 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
     }
 
 
-    public JJTextGroup Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJTextGroup Create(FormElement formElement, FormElementField field, ControlContext context)
     {
+        var (formStateData, parentName, value) = context;
+        
         var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
-            value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
+            value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
 
         textGroup.Text = value?.ToString() ?? string.Empty;
 

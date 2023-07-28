@@ -2,6 +2,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.Web;
 
@@ -24,7 +25,5 @@ public interface IControlFactory<TControl> : IControlFactory where TControl : JJ
     public TControl Create(
         FormElement formElement,
         FormElementField field, 
-        FormStateData formStateData = null,
-        string parentName = null, 
-        object value = null);
+        ControlContext context);
 }

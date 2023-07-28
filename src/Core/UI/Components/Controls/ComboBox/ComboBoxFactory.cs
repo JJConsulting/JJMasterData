@@ -18,7 +18,9 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
-    public ComboBoxFactory(IHttpContext httpContext, IEntityRepository entityRepository,IExpressionsService expressionsService,IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
+    public ComboBoxFactory(IHttpContext httpContext, IEntityRepository entityRepository,
+        IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
         EntityRepository = entityRepository;
@@ -34,8 +36,10 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
             LoggerFactory.CreateLogger<JJComboBox>());
     }
 
-    public JJComboBox Create(FormElement formElement, FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJComboBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
+        var formStateData = controlContext.FormStateData;
+
         var comboBox = Create();
         comboBox.DataItem = field.DataItem;
         comboBox.Name = field.Name;
@@ -43,7 +47,7 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
         comboBox.FormValues = formStateData.FormValues;
         comboBox.MultiSelect = field.DataItem!.EnableMultiSelect;
         comboBox.PageState = formStateData.PageState;
-        comboBox.SelectedValue = value?.ToString();
+        comboBox.SelectedValue = controlContext.Value?.ToString();
         comboBox.UserValues = formStateData.UserValues;
 
         return comboBox;

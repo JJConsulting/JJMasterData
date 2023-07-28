@@ -797,7 +797,7 @@ public class JJGridView : JJAsyncBaseView
 
         if (field == null) return null;
 
-        var lookup = LookupFactory.Create(FormElement,field, new FormStateData(null, null, PageState.Filter), null, Name);
+        var lookup = LookupFactory.Create(FormElement,field, new(new FormStateData(null, null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();

@@ -26,8 +26,7 @@ public class ComponentFactory
     public IComponentFactory<JJFileDownloader> Downloader => GetFactory<IComponentFactory<JJFileDownloader>>();
     public ControlFactory Controls => GetFactory<ControlFactory>();
 
-    public ComponentFactory(
-        IServiceProvider serviceProvider)
+    public ComponentFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }

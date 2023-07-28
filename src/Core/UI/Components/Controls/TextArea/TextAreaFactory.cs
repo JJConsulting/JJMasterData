@@ -23,7 +23,7 @@ internal class TextAreaFactory : IControlFactory<JJTextArea>
         return new JJTextArea(HttpContext, StringLocalizer);
     }
 
-    public JJTextArea Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJTextArea Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -32,7 +32,7 @@ internal class TextAreaFactory : IControlFactory<JJTextArea>
         text.SetAttr(field.Attributes);
         text.ToolTip = field.HelpDescription;
         text.MaxLength = field.Size;
-        text.Text = value != null ? value.ToString() : "";
+        text.Text = context.Value != null ? context.Value.ToString() : "";
         text.Name = field.Name;
 
         return text;

@@ -19,7 +19,7 @@ internal class SliderFactory : IControlFactory<JJSlider>
         return new JJSlider(HttpContext);
     }
 
-    public JJSlider Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJSlider Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var slider = new JJSlider(HttpContext)
         {
@@ -28,7 +28,7 @@ internal class SliderFactory : IControlFactory<JJSlider>
             MinValue = field.Attributes[FormElementField.MinValueAttribute] ?? 0f,
             MaxValue = field.Attributes[FormElementField.MaxValueAttribute] ?? 100,
             Step = (double)field.Attributes![FormElementField.StepAttribute],
-            Value = !string.IsNullOrEmpty(value?.ToString()) ? double.Parse(value.ToString()) : null
+            Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()) : null
         };
         return slider;
     }

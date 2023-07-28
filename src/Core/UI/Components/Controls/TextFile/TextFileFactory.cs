@@ -38,8 +38,10 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         return new JJTextFile(HttpContext, FormUploadFactory, TextBoxFactory,EncryptionService, StringLocalizer);
     }
 
-    public JJTextFile Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
     {
+        var (formStateData, parentName, value) = context;
+
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 

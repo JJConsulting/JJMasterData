@@ -5,7 +5,6 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -43,16 +42,14 @@ public class ControlFactory
         return factory.Create();
     }
 
-    public TControl Create<TControl>(ControlContext controlContext) where TControl : JJBaseControl
+    public TControl Create<TControl>(FormElement formElement,FormElementField field, ControlContext controlContext) where TControl : JJBaseControl
     {
         var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
         return factory.Create(
-            controlContext.FormElement,
-            controlContext.Field,
-            controlContext.FormStateData,
-            controlContext.ParentName,
-            controlContext.Value);
+            formElement,
+            field,
+            controlContext);
     }
 
     public JJBaseControl Create(FormElement formElement,
@@ -67,7 +64,7 @@ public class ControlFactory
 
         if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            return GetFactory<IControlFactory<JJTextRange>>().Create(formElement, field, stateData, parentName, value);
+            return GetFactory<IControlFactory<JJTextRange>>().Create(formElement, field, new ControlContext(stateData, parentName, value));
         }
 
         var control = Create(formElement, field, stateData, parentName, value);
@@ -92,46 +89,46 @@ public class ControlFactory
         if (field is null)
             throw new ArgumentNullException(nameof(field));
 
-        var context = new ControlContext(formElement, field, formStateData, parentName, value);
+        var context = new ControlContext(formStateData, parentName, value);
 
         JJBaseControl control;
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                control = Create<JJComboBox>(context);
+                control = Create<JJComboBox>(formElement, field,context);
                 break;
             case FormComponent.Search:
-                control = Create<JJSearchBox>(context);
+                control = Create<JJSearchBox>(formElement, field,context);
                 break;
             case FormComponent.Lookup:
-                control = Create<JJLookup>(context);
+                control = Create<JJLookup>(formElement, field,context);
                 break;
             case FormComponent.CheckBox:
-                control = Create<JJCheckBox>(context);
+                control = Create<JJCheckBox>(formElement, field,context);
 
                 if (formStateData.PageState != PageState.List)
                     ((JJCheckBox)control).Text = string.IsNullOrEmpty(field.Label) ? field.Name : field.Label;
 
                 break;
             case FormComponent.TextArea:
-                control = Create<JJTextArea>(context);
+                control = Create<JJTextArea>(formElement, field,context);
                 break;
             case FormComponent.Slider:
-                control = Create<JJSlider>(context);
+                control = Create<JJSlider>(formElement, field,context);
                 break;
             case FormComponent.File:
                 if (formStateData.PageState == PageState.Filter)
                 {
-                    control = Create<JJTextBox>(context);
+                    control = Create<JJTextBox>(formElement, field,context);
                 }
                 else
                 {
-                    control = Create<JJTextFile>(context);
+                    control = Create<JJTextFile>(formElement, field,context);
                 }
 
                 break;
             default:
-                control = Create<JJTextGroup>(context);
+                control = Create<JJTextGroup>(formElement, field,context);
                 break;
         }
 

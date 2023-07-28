@@ -32,19 +32,19 @@ internal class LookupFactory : IControlFactory<JJLookup>
             LoggerFactory.CreateLogger<JJLookup>());
     }
 
-    public JJLookup Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJLookup Create(FormElement formElement,FormElementField field, ControlContext controlContext)
     {
         var lookup = Create();
         lookup.SetAttr(field.Attributes);
         lookup.Name = field.Name;
-        lookup.SelectedValue = value?.ToString();
+        lookup.SelectedValue = controlContext.Value?.ToString();
         lookup.Visible = true;
         lookup.DataItem = field.DataItem;
         lookup.AutoReloadFormFields = false;
-        lookup.Attributes.Add("pnlname", parentName);
-        lookup.FormValues = formStateData.FormValues;
-        lookup.PageState = formStateData.PageState;
-        lookup.UserValues = formStateData.UserValues;
+        lookup.Attributes.Add("pnlname", controlContext.ParentName);
+        lookup.FormValues = controlContext.FormStateData.FormValues;
+        lookup.PageState = controlContext.FormStateData.PageState;
+        lookup.UserValues = controlContext.FormStateData.UserValues;
 
         if (field.DataType is FieldType.Int)
         {

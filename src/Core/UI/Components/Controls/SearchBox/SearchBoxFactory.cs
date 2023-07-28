@@ -27,7 +27,9 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         IDataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository, 
         IFormValuesService formValuesService,
-        IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, JJMasterDataUrlHelper urlHelper)
+        IHttpContext httpContext, 
+        JJMasterDataEncryptionService encryptionService, 
+        JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataItemService = dataItemService;
@@ -43,15 +45,15 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         return new JJSearchBox(HttpContext,EncryptionService,DataItemService, UrlHelper);
     }
     
-    public JJSearchBox Create(FormElement formElement, FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
-        var search = new JJSearchBox(formStateData, HttpContext,EncryptionService,DataItemService, UrlHelper)
+        var search = new JJSearchBox(controlContext.FormStateData, HttpContext,EncryptionService,DataItemService, UrlHelper)
         {
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
             DictionaryName = formElement.Name,
-            SelectedValue = value?.ToString(),
+            SelectedValue = controlContext.Value?.ToString(),
             Visible = true,
             AutoReloadFormFields = false
         };
@@ -77,6 +79,6 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(userValues, formValues, pageState);
-        return Create(formElement,field, expOptions, null, dictionaryName);
+        return Create(formElement,field, new(expOptions,null,null));
     }
 }

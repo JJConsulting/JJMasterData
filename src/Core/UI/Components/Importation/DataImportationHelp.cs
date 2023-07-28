@@ -250,7 +250,8 @@ internal class DataImportationHelp
     {
         var defaultValues = DataImportation.FieldValuesService.GetDefaultValues(DataImportation.FormElement,null, PageState.Import);
         var expOptions = new FormStateData(DataImportation.UserValues, defaultValues, PageState.Import);
-        var comboBox = DataImportation.ComboBoxFactory.Create(null,field, expOptions, null,null);
+        //TODO: DataItemService is better
+        var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null,null));
         var items = comboBox.GetValues();
 
         if (items.Count == 0)

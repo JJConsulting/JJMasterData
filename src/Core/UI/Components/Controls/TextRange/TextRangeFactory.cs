@@ -26,9 +26,9 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
         return new JJTextRange(HttpContext,TextBoxFactory,StringLocalizer);
     }
 
-    public JJTextRange Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var values = formStateData.FormValues;
+        var values = context.FormStateData.FormValues;
         string valueFrom = "";
         if (values != null && values.ContainsKey(field.Name + "_from"))
         {

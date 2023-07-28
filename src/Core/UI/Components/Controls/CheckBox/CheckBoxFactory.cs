@@ -18,12 +18,12 @@ internal class CheckBoxFactory : IControlFactory<JJCheckBox>
     }
 
     public JJCheckBox Create() => new(HttpContext);
-    public JJCheckBox Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    public JJCheckBox Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var check = new JJCheckBox(HttpContext)
         {
             Name = field.Name,
-            IsChecked = ExpressionsService.ParseBool(value),
+            IsChecked = ExpressionsService.ParseBool(context.FormStateData),
             ToolTip = field.HelpDescription
         };
         return check;
