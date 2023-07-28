@@ -1,8 +1,7 @@
-﻿using System;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.GridView;
+﻿using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace JJMasterData.Core.Web.Factories;
 

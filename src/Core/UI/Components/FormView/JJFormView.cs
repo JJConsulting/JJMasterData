@@ -4,7 +4,6 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
@@ -17,18 +16,18 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.GridView;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -55,15 +54,32 @@ public class JJFormView : JJAsyncBaseView
 
     #region "Properties"
 
+    private IServiceProvider _serviceProvider;
+    private ComponentFactory _componentFactory;
     private JJDataPanel _dataPanel;
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
     private JJAuditLogView _auditLogView;
     private JJDataImp _dataImp;
     private string _userId;
+    
+    internal IHttpContext CurrentContext { get; }
+    internal IEntityRepository EntityRepository { get; }
+    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IFieldValuesService FieldValuesService { get; }
+    internal IExpressionsService ExpressionsService { get; }
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IFormService FormService { get; }
+
+
+    internal ComponentFactory ComponentFactory =>
+        _componentFactory ??= new ComponentFactory(_serviceProvider);
 
     internal JJAuditLogView AuditLogView =>
-        _auditLogView ??= AuditLogViewFactory.Value.Create(FormElement);
+        _auditLogView ??= ComponentFactory.AuditLog.Create(FormElement);
+
+
 
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
@@ -106,7 +122,7 @@ public class JJFormView : JJAsyncBaseView
     {
         get
         {
-            _dataPanel ??= DataPanelFactory.Value.Create(FormElement);
+            _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
             _dataPanel.Name = "jjpanel_" + FormElement.Name.ToLower();
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
@@ -135,7 +151,7 @@ public class JJFormView : JJAsyncBaseView
             if (_gridView is not null)
                 return _gridView;
 
-            _gridView = GridViewFactory.Value.Create(FormElement);
+            _gridView = ComponentFactory.GridView.Create(FormElement);
             _gridView.Name = Name.ToLower();
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
@@ -204,19 +220,7 @@ public class JJFormView : JJAsyncBaseView
 
     internal bool IsModal { get; set; }
 
-    internal IHttpContext CurrentContext { get; }
-    internal IEntityRepository EntityRepository { get; }
-    internal Lazy<IFormElementComponentFactory<JJAuditLogView>> AuditLogViewFactory { get; }
-    internal Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
-    internal Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
-    internal IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-    internal FormViewFactory FormViewFactory { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
-    internal IFieldValuesService FieldValuesService { get; }
-    internal IExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IFormService FormService { get; }
+   
 
     #endregion
 
@@ -225,19 +229,15 @@ public class JJFormView : JJAsyncBaseView
 #if NET48
     public JJFormView()
     {
+        _serviceProvider = JJService.Provider;
         CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        AuditLogViewFactory = JJService.Provider.GetScopedDependentService<Lazy<IFormElementComponentFactory<JJAuditLogView>>>();
-        GridViewFactory = JJService.Provider.GetScopedDependentService<Lazy<IFormElementComponentFactory<JJGridView>>>();
-        DataPanelFactory = JJService.Provider.GetScopedDependentService<Lazy<IFormElementComponentFactory<JJDataPanel>>>();
-        FormViewFactory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
         FormService = JJService.Provider.GetScopedDependentService<IFormService>();
         EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
         FieldValuesService = JJService.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        FileDownloaderFactory = JJService.Provider.GetScopedDependentService<IComponentFactory<JJFileDownloader>>();
     }
 
     public JJFormView(string elementName) : this()
@@ -256,57 +256,20 @@ public class JJFormView : JJAsyncBaseView
     }
 #endif
 
-    internal JJFormView(
-        IHttpContext currentContext,
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        IFormService formService,
-        JJMasterDataEncryptionService encryptionService,
-        IFieldValuesService fieldValuesService,
-        IExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
-        Lazy<IFormElementComponentFactory<JJAuditLogView>> auditLogViewFactory,
-        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
-        FormViewFactory formViewFactory)
-    {
-        CurrentContext = currentContext;
-        EntityRepository = entityRepository;
-        AuditLogViewFactory = auditLogViewFactory;
-        GridViewFactory = gridViewFactory;
-        FormViewFactory = formViewFactory;
-        FileDownloaderFactory = fileDownloaderFactory;
-        FormService = formService;
-        EncryptionService = encryptionService;
-        FieldValuesService = fieldValuesService;
-        ExpressionsService = expressionsService;
-        StringLocalizer = stringLocalizer;
-        DataDictionaryRepository = dataDictionaryRepository;
-        DataPanelFactory = dataPanelFactory;
-        Name = "jjview";
-    }
 
-    internal JJFormView(
-        FormElement formElement,
-        IHttpContext currentContext,
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        IFormService formService,
-        JJMasterDataEncryptionService encryptionService,
-        IFieldValuesService fieldValuesService,
-        IExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
-        Lazy<IFormElementComponentFactory<JJAuditLogView>> auditLogViewFactory,
-        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
-        FormViewFactory formViewFactory) : this(currentContext, entityRepository, dataDictionaryRepository, formService,
-        encryptionService, fieldValuesService, expressionsService, stringLocalizer,fileDownloaderFactory, gridViewFactory,
-        auditLogViewFactory, dataPanelFactory, formViewFactory )
+    internal JJFormView(FormElement formElement, IServiceProvider serviceProvider)
     {
         Name = "jjview_" + formElement.Name.ToLower();
         FormElement = formElement;
+        _serviceProvider = serviceProvider;
+        CurrentContext = serviceProvider.GetRequiredService<IHttpContext>();
+        EntityRepository = serviceProvider.GetRequiredService<IEntityRepository>();
+        DataDictionaryRepository = serviceProvider.GetRequiredService<IDataDictionaryRepository>();
+        FormService = serviceProvider.GetRequiredService<IFormService>();
+        FieldValuesService = serviceProvider.GetRequiredService<IFieldValuesService>();
+        ExpressionsService = serviceProvider.GetRequiredService<IExpressionsService>();
+        StringLocalizer = serviceProvider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
+        EncryptionService = serviceProvider.GetRequiredService<JJMasterDataEncryptionService>();
     }
 
     #endregion
@@ -329,8 +292,11 @@ public class JJFormView : JJAsyncBaseView
             return dataPanel.RenderHtml();
 
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,FileDownloaderFactory);
-
+        {
+            var downloaderFactory = _serviceProvider.GetRequiredService<IComponentFactory<JJFileDownloader>>();
+            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, downloaderFactory);
+        }
+            
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(DataPanel, CurrentContext);
 
@@ -588,7 +554,7 @@ public class JJFormView : JJAsyncBaseView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var selectedForm = FormViewFactory.Create(formElement);
+        var selectedForm = ComponentFactory.FormView.Create(formElement);
         selectedForm.UserValues = UserValues;
         selectedForm.Name = action.ElementNameToSelect;
         selectedForm.SetOptions(formElement.Options);
