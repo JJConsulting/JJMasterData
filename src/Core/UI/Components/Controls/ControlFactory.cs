@@ -144,7 +144,7 @@ public class ControlFactory<T> : IControlFactory<T> where T : JJBaseControl
 
     public IControlFactory<TComponent> GetFactory<TComponent>() where TComponent : JJBaseControl
     {
-        var factories = ServiceProvider.GetRequiredService<IEnumerable<IComponentFactory>>();
+        var factories = ServiceProvider.GetRequiredService<IEnumerable<IControlFactory>>();
         return (IControlFactory<TComponent>)factories.First(f => f is IControlFactory<TComponent>);
     }
 
