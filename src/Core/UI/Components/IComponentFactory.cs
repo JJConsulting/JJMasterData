@@ -9,7 +9,7 @@ public interface IComponentFactory
     
 }
 
-public interface IComponentFactory<TComponent> : IComponentFactory where TComponent : JJBaseView
+public interface IComponentFactory<out TComponent> : IComponentFactory where TComponent : JJBaseView
 {
     TComponent Create();
 }

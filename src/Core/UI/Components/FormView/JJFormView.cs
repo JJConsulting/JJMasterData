@@ -316,7 +316,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if ("geturlaction".Equals(requestType))
         {
-            dataPanel.ResponseUrlAction().GetAwaiter().GetResult();
+            await dataPanel.SendUrlAction();
             return null;
         }
 

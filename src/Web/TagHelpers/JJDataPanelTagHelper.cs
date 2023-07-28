@@ -35,6 +35,6 @@ public class JJDataPanelTagHelper : TagHelper
         Configure?.Invoke(form);
         
         output.TagMode = TagMode.StartTagAndEndTag;
-        output.Content.SetHtmlContent(form.GetHtml());
+        output.Content.SetHtmlContent(await form.GetHtmlAsync());
     }
 }

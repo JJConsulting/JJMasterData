@@ -10,7 +10,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -26,7 +25,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-public class JJDataPanel : JJBaseView
+public class JJDataPanel : JJAsyncBaseView
 {
     #region "Events"
 
@@ -183,7 +182,12 @@ public class JJDataPanel : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        Values ??= GetFormValues();
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async  Task<HtmlBuilder> RenderHtmlAsync()
+    {
+        Values ??= await GetFormValuesAsync();
         string requestType = CurrentContext.Request.QueryString("t");
         string pnlname = CurrentContext.Request.QueryString("pnlname");
 
@@ -211,7 +215,7 @@ public class JJDataPanel : JJBaseView
 
         if ("geturlaction".Equals(requestType))
         {
-            ResponseUrlAction();
+            await SendUrlAction();
             return null;
         }
 
@@ -263,23 +267,16 @@ public class JJDataPanel : JJBaseView
         script.AppendLine("});");
         return script.ToString();
     }
-
-
+    
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    [Obsolete($"{SynchronousMethodObsolete.Message}Please use GetFormValuesAsync")]
-    public IDictionary<string, dynamic> GetFormValues()
-    {
-        return FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields).GetAwaiter().GetResult();
-    }
-
     public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
     {
         return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields);
     }
 
-    [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPKAsync")]
+    [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
     public void LoadValuesFromPK(IDictionary<string, dynamic> pks)
     {
         Values = EntityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
@@ -314,7 +311,8 @@ public class JJDataPanel : JJBaseView
         return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
 
-    internal async Task ResponseUrlAction()
+    [Obsolete("External route is needed")]
+    internal async Task SendUrlAction()
     {
         if (!Name.Equals(CurrentContext.Request["objname"]))
             return;
@@ -326,6 +324,7 @@ public class JJDataPanel : JJBaseView
         var parms = EncryptionService.DecryptActionMap(encryptedActionMap);
 
         var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
+        
         var values = await GetFormValuesAsync();
 
         if (action is UrlRedirectAction urlAction)
@@ -337,7 +336,7 @@ public class JJDataPanel : JJBaseView
                 { "TitlePopUp", urlAction.TitlePopUp },
                 { "UrlRedirect", parsedUrl }
             };
-
+            
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
         }
     }
