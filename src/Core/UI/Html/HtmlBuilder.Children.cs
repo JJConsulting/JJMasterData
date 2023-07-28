@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Html;
@@ -139,6 +140,14 @@ public partial class HtmlBuilder
     {
         if (component != null)
             AppendElement(component.GetHtmlBuilder());
+
+        return this;
+    }
+    
+    public async Task<HtmlBuilder> AppendAsync(JJAsyncBaseView component)
+    {
+        if (component != null)
+            AppendElement(await component.GetHtmlBuilderAsync());
 
         return this;
     }

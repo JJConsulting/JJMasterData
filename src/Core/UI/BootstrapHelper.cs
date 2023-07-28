@@ -19,7 +19,7 @@ public static class BootstrapHelper
     public static readonly int Version;
     static BootstrapHelper()
     {
-        Version = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.BootstrapVersion;
+        Version = 5;
     }
     #endregion
 

@@ -363,7 +363,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if (currentAction is LogAction || PageState is PageState.Log)
         {
-            html = GetHtmlLog();
+            html = await GetHtmlLog();
         }
         else if (currentAction is DeleteAction)
         {
@@ -752,7 +752,7 @@ public class JJFormView : JJAsyncBaseView
     }
 
 
-    private HtmlBuilder GetHtmlLog()
+    private async Task<HtmlBuilder> GetHtmlLog()
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
@@ -770,7 +770,7 @@ public class JJFormView : JJAsyncBaseView
 
         if (PageState == PageState.View)
         {
-            var html = AuditLogView.GetDetailLog(actionMap.PkFieldValues);
+            var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap.PkFieldValues);
             html.AppendElement(GetFormLogBottomBar(actionMap.PkFieldValues));
             PageState = PageState.Log;
             return html;
@@ -779,7 +779,7 @@ public class JJFormView : JJAsyncBaseView
         AuditLogView.GridView.AddToolBarAction(goBackAction);
         AuditLogView.DataPanel = DataPanel;
         PageState = PageState.Log;
-        return AuditLogView.GetHtmlBuilder();
+        return await AuditLogView.GetHtmlBuilderAsync();
     }
 
     private HtmlBuilder GetHtmlDataImp()

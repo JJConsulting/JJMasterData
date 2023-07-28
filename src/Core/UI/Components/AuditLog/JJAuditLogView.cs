@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
@@ -23,7 +24,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJAuditLogView : JJBaseView
+public class JJAuditLogView : JJAsyncBaseView
 {
     private readonly ComponentFactory _componentFactory;
     private JJGridView _gridView;
@@ -81,24 +82,29 @@ public class JJAuditLogView : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    {
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("viewid_" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(viewId))
         {
-            html.AppendElement(GridView);
+            await html.AppendAsync(GridView);
         }
         else
         {
             if ("ajax".Equals(ajax))
             {
-                var panel = GetDetailPanel(viewId);
-                CurrentContext.Response.SendResponse(panel.GetHtml());
+                var panel = await GetDetailPanel(viewId);
+                CurrentContext.Response.SendResponse(await panel.GetHtmlAsync());
                 return null;
             }
 
-            html.AppendElement(GetDetailLog(viewId));
+            html.AppendElement(await GetLogDetailsHtmlAsync(viewId));
             html.AppendElement(GetFormBottombar());
         }
 
@@ -125,15 +131,15 @@ public class JJAuditLogView : JJBaseView
         return viewId;
     }
 
-    public HtmlBuilder GetDetailLog(IDictionary<string,dynamic>values)
+    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string,dynamic>values)
     {
         string viewId = GetKeyLog(values);
-        var html = GetDetailLog(viewId);
+        var html = await GetLogDetailsHtmlAsync(viewId);
         html.AppendHiddenInput($"viewid_{Name}", viewId);
         return html;
     }
 
-    private HtmlBuilder GetDetailLog(string logId)
+    private async Task<HtmlBuilder> GetLogDetailsHtmlAsync(string logId)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -142,10 +148,12 @@ public class JJAuditLogView : JJBaseView
 
         if (string.IsNullOrEmpty(logId))
         {
-            var alert = new JJAlert();
-            alert.ShowIcon = true;
-            alert.Icon = IconType.ExclamationTriangle;
-            alert.Color = PanelColor.Warning;
+            var alert = new JJAlert
+            {
+                ShowIcon = true,
+                Icon = IconType.ExclamationTriangle,
+                Color = PanelColor.Warning
+            };
             alert.Messages.Add(StringLocalizer["No Records Found"]);
 
             return alert.GetHtmlBuilder();
@@ -153,7 +161,7 @@ public class JJAuditLogView : JJBaseView
 
         var filter = new Dictionary<string,dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
-        var values = EntityRepository.GetFields(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
         string recordsKey = values[DataManager.Services.AuditLogService.DicKey]?.ToString();
         var fields = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(json ?? string.Empty);
@@ -217,12 +225,11 @@ public class JJAuditLogView : JJBaseView
         return html;
     }
 
-    public JJDataPanel GetDetailPanel(string logId)
+    public async Task<JJDataPanel> GetDetailPanel(string logId)
     {
-        var filter = new Hashtable();
-        filter.Add(DataManager.Services.AuditLogService.DicId, logId);
+        var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
-        var values = EntityRepository.GetFields(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson].ToString();
 
         IDictionary<string,dynamic> fields = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(json);
