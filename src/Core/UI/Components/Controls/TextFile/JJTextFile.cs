@@ -365,11 +365,9 @@ public class JJTextFile : JJBaseControl
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
         if (field == null) 
-            return null;
-
-        var factory = JJService.Provider.GetScopedDependentService<ControlFactory>();
+            return null; ;
         
-        var upload = factory.Create(view.FormElement,field, null, view.Values, view.PageState, view.Name);
+        var upload = view.ControlFactory.Create(view.FormElement,field, null, view.Values, view.PageState, view.Name);
         return upload.GetHtmlBuilder();
 
     }
