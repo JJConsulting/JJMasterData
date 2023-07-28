@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AllowLazyInicialization(this IServiceCollection services) 
+    public static IServiceCollection AllowLazyInitialization(this IServiceCollection services) 
     {
         var lastRegistration = services.Last();
         
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
             lastRegistration.ServiceType);
         
         var lazyServiceImplementationType = typeof(LazyService<>).MakeGenericType(
-            lastRegistration.ServiceType);
+            lastRegistration.ImplementationType);
         
         services.Add(new ServiceDescriptor(lazyServiceType, lazyServiceImplementationType,lastRegistration.Lifetime));
         return services;

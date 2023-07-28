@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -100,7 +101,7 @@ public class JJGridView : JJAsyncBaseView
             if (_dataImp != null)
                 return _dataImp;
 
-            _dataImp = DataImportationFactory.Value.CreateDataImportation(FormElement);
+            _dataImp = DataImportationFactory.Value.Create(FormElement);
             _dataImp.UserValues = UserValues;
             _dataImp.ProcessOptions = ImportAction.ProcessOptions;
             _dataImp.Name = Name + "_dataimp";
@@ -116,7 +117,7 @@ public class JJGridView : JJAsyncBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = DataExportationFactory.Value.CreateDataExportation(FormElement);
+            _dataExp = DataExportationFactory.Value.Create(FormElement);
             _dataExp.Name = Name;
             _dataExp.IsExternalRoute = IsExternalRoute;
             _dataExp.ExportOptions = CurrentExportConfig;
@@ -538,72 +539,15 @@ public class JJGridView : JJAsyncBaseView
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper);
 
     internal IHttpContext CurrentContext { get; }
-    internal Lazy<DataExportationFactory> DataExportationFactory { get; }
-    internal Lazy<DataImportationFactory> DataImportationFactory { get; }
+    internal Lazy<IFormElementComponentFactory<JJDataExp>> DataExportationFactory { get; }
+    internal Lazy<IFormElementComponentFactory<JJDataImp>> DataImportationFactory { get; }
     internal LookupFactory LookupFactory { get; }
     internal ComboBoxFactory ComboBoxFactory { get; }
-    internal ControlsFactory ControlsFactory { get; }
+    internal ControlFactory ControlFactory { get; }
     #endregion
 
     #region "Constructors"
-
-#if NET48
-    [Obsolete("This constructor a static service locator and is an anti pattern. Please use ComponentsFactory.")]
-    public JJGridView()
-    {
-        FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
-        ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
-        StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        UrlHelper = JJService.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-        CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
-        DataExportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataExportationFactory>>();
-        DataImportationFactory = JJService.Provider.GetScopedDependentService<Lazy<DataImportationFactory>>();
-        LookupFactory = JJService.Provider.GetScopedDependentService<LookupFactory>();
-        ComboBoxFactory = JJService.Provider.GetScopedDependentService<ComboBoxFactory>();
-        ControlsFactory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
-        FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
-        
-        Name = "jjview";
-        ShowTitle = true;
-        EnableFilter = true;
-        EnableAjax = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found";
-        AutoReloadFormFields = true;
-        RelationValues = new Dictionary<string, dynamic>();
-        TitleSize = HeadingSize.H1;
-    }
-
-    [Obsolete(
-        "This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
-    public JJGridView(string elementName) : this()
-    {
-        Name = "jjview" + elementName.ToLower();
-        IsExternalRoute = true;
-
-        var dataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        FormElement = dataDictionaryRepository.GetMetadata(elementName);
-
-        var gridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
-        gridViewFactory.SetGridOptions(this, FormElement.Options);
-    }
-
-    [Obsolete("This constructor a static service locator and is an anti pattern. Please use ComponentsFactory.")]
-    public JJGridView(FormElement formElement) : this()
-    {
-        Name = "jjview" + formElement.Name.ToLower();
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-
-        var gridViewFactory = JJService.Provider.GetScopedDependentService<GridViewFactory>();
-        gridViewFactory.SetGridOptions(this, FormElement.Options);
-    }
-#endif
-
+    
     public JJGridView(IHttpContext currentContext,
         IEntityRepository entityRepository,
         JJMasterDataUrlHelper urlHelper,
@@ -612,9 +556,9 @@ public class JJGridView : JJAsyncBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<DataExportationFactory> dataExportationFactory,
-        Lazy<DataImportationFactory> dataImportationFactory,
-        ControlsFactory controlsFactory)
+        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
+        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
+        ControlFactory controlFactory)
     {
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
@@ -623,12 +567,12 @@ public class JJGridView : JJAsyncBaseView
         EntityRepository = entityRepository;
         UrlHelper = urlHelper;
         CurrentContext = currentContext;
-        ControlsFactory = controlsFactory;
+        ControlFactory = controlFactory;
         FormValuesService = formValuesService;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
-        LookupFactory = controlsFactory.Lookup;
-        ComboBoxFactory = controlsFactory.ComboBox;
+        LookupFactory = controlFactory.GetFactory<LookupFactory>();
+        ComboBoxFactory = controlFactory.GetFactory<ComboBoxFactory>();
 
         Name = "jjview";
         ShowTitle = true;
@@ -654,10 +598,10 @@ public class JJGridView : JJAsyncBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<DataExportationFactory> dataExportationFactory,
-        Lazy<DataImportationFactory> dataImportationFactory,
-        ControlsFactory controlsFactory) : this(currentContext,
-        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, controlsFactory)
+        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
+        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
+        ControlFactory controlFactory) : this(currentContext,
+        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, controlFactory)
     {
         Name = "jjview" + formElement.Name.ToLower();
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
@@ -853,7 +797,7 @@ public class JJGridView : JJAsyncBaseView
 
         if (field == null) return null;
 
-        var lookup = LookupFactory.CreateLookup(field, new ExpressionOptions(null, null, PageState.Filter), null, Name);
+        var lookup = LookupFactory.Create(FormElement,field, new FormStateData(null, null, PageState.Filter), null, Name);
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();
@@ -1121,7 +1065,7 @@ public class JJGridView : JJAsyncBaseView
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(ComboBoxFactory)
+        var legend = new JJLegendView(ComboBoxFactory,StringLocalizer)
         {
             ShowAsModal = true,
             FormElement = FormElement,

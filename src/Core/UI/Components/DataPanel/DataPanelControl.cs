@@ -24,7 +24,7 @@ internal class DataPanelControl
     public FormElement FormElement { get; }
     public FormUI FormUI { get; private set; }
 
-    public ControlsFactory ControlFactory { get; }
+    public ControlFactory ControlFactory { get; }
 
     public PageState PageState { get; private set; }
 
@@ -47,7 +47,7 @@ internal class DataPanelControl
     {
         FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
-        ControlFactory = dataPanel.ControlsFactory;
+        ControlFactory = dataPanel.ControlFactory;
         PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
         Values = dataPanel.Values;
@@ -73,7 +73,7 @@ internal class DataPanelControl
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
-        ControlFactory = gridView.ControlsFactory;
+        ControlFactory = gridView.ControlFactory;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
         IsExternalRoute = gridView.IsExternalRoute;
@@ -134,7 +134,7 @@ internal class DataPanelControl
             row?.AppendElement(htmlField);
 
             string fieldClass;
-            if (ControlsFactory.IsRange(field, PageState))
+            if (ControlFactory.IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -268,7 +268,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendElement(label);
 
-            if (ControlsFactory.IsRange(f, PageState))
+            if (ControlFactory.IsRange(f, PageState))
             {
                 row?.AppendElement(GetControlField(f, value));
             }
@@ -299,7 +299,7 @@ internal class DataPanelControl
 
     private HtmlBuilder GetControlField(FormElementField field, object value)
     {
-        var control = ControlFactory.CreateControl(FormElement, Name, field, PageState, Values, UserValues, value);
+        var control = ControlFactory.Create(FormElement, field, Values, UserValues, PageState, Name, value);
         control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))

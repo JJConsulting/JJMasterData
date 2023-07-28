@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -9,10 +10,10 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class ExportationController : MasterDataController
 {
-    private GridViewFactory GridViewFactory { get; }
-    private DataExportationFactory DataExportationFactory { get; }
+    private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
+    private IFormElementComponentFactory<JJDataExp>  DataExportationFactory { get; }
 
-    public ExportationController(GridViewFactory gridViewFactory,DataExportationFactory dataExportationFactory)
+    public ExportationController(IFormElementComponentFactory<JJGridView> gridViewFactory,IFormElementComponentFactory<JJDataExp> dataExportationFactory)
     {
         GridViewFactory = gridViewFactory;
         DataExportationFactory = dataExportationFactory;
@@ -21,7 +22,7 @@ public class ExportationController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult StartExportation(FormElement formElement, string componentName)
     {
-        var gridView = GridViewFactory.CreateGridView(formElement);
+        var gridView = GridViewFactory.Create(formElement);
         gridView.IsExternalRoute = true;
         gridView.DataExportation.Name = componentName;
         gridView.ExportFileInBackground();
@@ -34,7 +35,7 @@ public class ExportationController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult StopExportation(FormElement formElement, string componentName)
     {
-        var dataExportation = DataExportationFactory.CreateDataExportation(formElement);
+        var dataExportation = DataExportationFactory.Create(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         dataExportation.StopExportation();
@@ -45,7 +46,7 @@ public class ExportationController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult Settings(FormElement formElement, string componentName)
     {
-        var dataExportation =  DataExportationFactory.CreateDataExportation(formElement);
+        var dataExportation =  DataExportationFactory.Create(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         
@@ -56,7 +57,7 @@ public class ExportationController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult CheckProgress(FormElement formElement, string componentName)
     {
-        var dataExportation =  DataExportationFactory.CreateDataExportation(formElement);
+        var dataExportation =  DataExportationFactory.Create(formElement);
         dataExportation.Name = componentName;
         dataExportation.IsExternalRoute = true;
         

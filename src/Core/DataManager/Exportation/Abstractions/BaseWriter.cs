@@ -19,6 +19,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
@@ -44,8 +45,8 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
         JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
 
-    protected TextFileFactory TextFileFactory { get; } =
-        JJService.Provider.GetScopedDependentService<TextFileFactory>();
+    protected IControlFactory<JJTextFile> TextFileFactory { get; } =
+        JJService.Provider.GetScopedDependentService<IControlFactory<JJTextFile>>();
     
     protected ILogger<BaseWriter> Logger { get; } =
         JJService.Provider.GetScopedDependentService<ILogger<BaseWriter>>();
@@ -72,7 +73,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ExportOptions Configuration { get; set; }
 
-    public ControlsFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<ControlsFactory>();
+    public ControlFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<ControlFactory>();
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
@@ -238,7 +239,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         }
 
         string fileName = value;
-        var textFile = TextFileFactory.CreateTextFile();
+        var textFile = TextFileFactory.Create();
         textFile.FormElement = FormElement;
         textFile.ElementField = field;
         textFile.PageState = PageState.List;

@@ -9,7 +9,7 @@
 
 @* ReSharper disable once Html.IdNotResolved *@
 @{
-    var searchBox = SearchBoxFactory.CreateSearchBox();
+    var searchBox = SearchBoxFactory.Create();
     searchBox.DataItem.ShowImageLegend = true;
     searchBox.DataItem.Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
     searchBox.SelectedValue = ((int)Model.SelectedIcon).ToString();

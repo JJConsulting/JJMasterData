@@ -1,3 +1,4 @@
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -6,7 +7,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJUploadAreaTagHelper : TagHelper
 {
-    private UploadAreaFactory UploadAreaFactory { get; }
+    private IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
     [HtmlAttributeName("name")] 
     public string? Name { get; set; }
@@ -14,14 +15,14 @@ public class JJUploadAreaTagHelper : TagHelper
     [HtmlAttributeName("configure")]
     public Action<JJUploadArea>? Configure { get; set; }
 
-    public JJUploadAreaTagHelper(UploadAreaFactory uploadAreaFactory)
+    public JJUploadAreaTagHelper(IComponentFactory<JJUploadArea> uploadAreaFactory)
     {
         UploadAreaFactory = uploadAreaFactory;
     }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var upload = UploadAreaFactory.CreateUploadArea();
+        var upload = UploadAreaFactory.Create();
 
         if (!string.IsNullOrEmpty(Name))
         {

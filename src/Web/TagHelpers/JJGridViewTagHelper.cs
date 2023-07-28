@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Data;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -9,7 +10,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJGridViewTagHelper : TagHelper
 {
-    private GridViewFactory GridViewFactory { get; }
+    private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
 
     [HtmlAttributeName("element-name")]
     public string? ElementName { get; set; }
@@ -23,7 +24,7 @@ public class JJGridViewTagHelper : TagHelper
     [HtmlAttributeName("configure")]
     public Action<JJGridView>? Configure { get; set; }
     
-    public JJGridViewTagHelper(GridViewFactory gridViewFactory)
+    public JJGridViewTagHelper(IFormElementComponentFactory<JJGridView> gridViewFactory)
     {
         GridViewFactory = gridViewFactory;
     }
@@ -35,15 +36,15 @@ public class JJGridViewTagHelper : TagHelper
 
         if (ElementName is not null)
         {
-            gridView = await GridViewFactory.CreateGridViewAsync(ElementName);
+            gridView = await GridViewFactory.CreateAsync(ElementName);
         }
         else if (FormElement is not null)
         {
-            gridView = GridViewFactory.CreateGridView(FormElement);
+            gridView = GridViewFactory.Create(FormElement);
         }
         else if (DataTable is not null)
         {
-            gridView = GridViewFactory.CreateGridView(DataTable);
+            gridView = GridViewFactory.Create(new FormElement(DataTable));
         }
         else
         {

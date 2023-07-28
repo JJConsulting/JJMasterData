@@ -14,7 +14,7 @@ public class GridSortingConfig
     public string CurrentOrder { get; set; }
 
     public FormElement FormElement { get; set; }
-    public ComboBoxFactory ComboBoxFactory { get; set; }
+    public IControlFactory<JJComboBox> ComboBoxFactory { get; set; }
     public string Name { get; set; }
     
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -109,7 +109,7 @@ public class GridSortingConfig
         tbody.WithAttribute("id", $"sortable_{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 
-        var comboBox = ComboBoxFactory.CreateComboBox();
+        var comboBox = ComboBoxFactory.Create();
         comboBox.DataItem.ShowImageLegend = true;
         comboBox.DataItem.Items = new List<DataItemValue>
         {

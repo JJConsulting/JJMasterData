@@ -7,10 +7,11 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class DataPanelFactory
+internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
 {
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -19,13 +20,13 @@ public class DataPanelFactory
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
-    private ControlsFactory ControlsFactory { get; }
+    private ControlFactory ControlFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
-        ControlsFactory controlsFactory, JJMasterDataUrlHelper urlHelper)
+        ControlFactory controlFactory, JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -34,21 +35,21 @@ public class DataPanelFactory
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        ControlsFactory = controlsFactory;
+        ControlFactory = controlFactory;
         UrlHelper = urlHelper;
     }
 
-    public JJDataPanel CreateDataPanel(FormElement formElement)
+    public JJDataPanel Create(FormElement formElement)
     {
         var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ControlsFactory);
+            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ControlFactory);
         return dataPanel;
     }
 
-    public async Task<JJDataPanel> CreateDataPanelAsync(string elementName)
+    public async Task<JJDataPanel> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        var dataPanel = CreateDataPanel(formElement);
+        var dataPanel = Create(formElement);
 
         return dataPanel;
     }

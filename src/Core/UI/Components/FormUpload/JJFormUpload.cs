@@ -15,6 +15,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -95,7 +96,7 @@ public class JJFormUpload : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public JJUploadArea Upload => _upload ??= UploadAreaFactory.CreateUploadArea();
+    public JJUploadArea Upload => _upload ??= UploadAreaFactory.Create();
 
     public JJGridView GridView
     {
@@ -104,7 +105,19 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = GridViewFactory.Value.CreateGridView();
+            var dt = GetDataTableFiles();
+
+            _gridView = GridViewFactory.Value.Create(new FormElement(dt));
+            _gridView.DataSource = dt;
+            _gridView.FormElement.Title = Title;
+            _gridView.FormElement.SubTitle = SubTitle;
+            
+            if(_gridView.FormElement.Fields.Contains("NameJS"))
+                _gridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
+
+            if (_gridView.FormElement.Fields.Contains("LastWriteTime"))
+                _gridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
+            
             _gridView.Name = Name + "_gridview";
             _gridView.UserValues = UserValues;
             _gridView.ShowPagging = false;
@@ -210,20 +223,20 @@ public class JJFormUpload : JJBaseView
     }
 
     internal IHttpContext CurrentContext { get; }
-    private FileDownloaderFactory FileDownloaderFactory { get; }
-    private TextBoxFactory TextBoxFactory { get; }
-    internal UploadAreaFactory UploadAreaFactory { get; }
-    internal Lazy<GridViewFactory> GridViewFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    private  IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    internal IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
+    internal Lazy< IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
     internal ILogger<JJFormUpload> Logger { get; }
     public JJFormUpload(
         IHttpContext currentContext,
-        FileDownloaderFactory fileDownloaderFactory,
-        TextBoxFactory textBoxFactory,
-        UploadAreaFactory uploadAreaFactory, 
-        Lazy<GridViewFactory> gridViewFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IControlFactory<JJTextGroup> textBoxFactory,
+        IComponentFactory<JJUploadArea> uploadAreaFactory, 
+        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
@@ -318,7 +331,8 @@ public class JJFormUpload : JJBaseView
         {
  
             var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
-            var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+            var downloader = FileDownloaderFactory.Create();
+            downloader.FilePath = filePath;
             src = downloader.GetDownloadUrl(filePath);
         }
 
@@ -404,25 +418,6 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlGridView()
     {
-        if (GridView.DataSource == null &&
-            GridView.FormElement == null)
-        {
-            var dt = GetDataTableFiles();
-
-            if (dt == null) return GridView.GetHtmlBuilder();
-
-            GridView.FormElement = new FormElement(dt);
-            GridView.DataSource = dt;
-            GridView.FormElement.Title = Title;
-            GridView.FormElement.SubTitle = SubTitle;
-            
-            if(GridView.FormElement.Fields.Contains("NameJS"))
-                GridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
-
-            if (GridView.FormElement.Fields.Contains("LastWriteTime"))
-                GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
-        }
-
         return GridView.GetHtmlBuilder();
     }
 
@@ -565,7 +560,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+            var downloader = FileDownloaderFactory.Create();
             src = downloader.GetDownloadUrl(filePath);
         }
 
@@ -772,7 +767,8 @@ public class JJFormUpload : JJBaseView
                 throw exception;
             }
         }
-        var downloader = FileDownloaderFactory.CreateFileDownloader(fileName);
+        var downloader = FileDownloaderFactory.Create();
+        downloader.FilePath = fileName;
         downloader.DirectDownload();
     }
 

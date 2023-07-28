@@ -1,7 +1,10 @@
 using System;
 using System.Linq;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,32 +14,34 @@ public static class FactoriesServiceExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
-        services.AddTransient<DataExportationFactory>().AllowLazyInicialization();
-        services.AddTransient<DataImportationFactory>().AllowLazyInicialization();
-        
-        services.AddTransient<ComboBoxFactory>();
-        services.AddTransient<CheckBoxFactory>();
-        services.AddTransient<ControlsFactory>();
+        services.AddTransient(typeof(Lazy<>),typeof(LazyService<>));
+        services.AddTransient(typeof(IControlFactory<>),typeof(ControlFactory<>));
+        services.AddTransient(typeof(IComponentFactory<>), typeof(ComponentFactory<>));
+        services.AddTransient(typeof(IFormElementComponentFactory<>),typeof(FormElementComponentFactory<>));
 
-        services.AddTransient<FormUploadFactory>();
-        services.AddTransient<FileDownloaderFactory>();
+        services.AddTransient<IControlFactory,ComboBoxFactory>();
+        services.AddTransient<IControlFactory,LookupFactory>();
+        services.AddTransient<IControlFactory,SearchBoxFactory>();
+        services.AddTransient<IControlFactory,TextAreaFactory>();
+        services.AddTransient<IControlFactory,SliderFactory>();
+        services.AddTransient<IControlFactory,TextBoxFactory>();
+        services.AddTransient<IControlFactory,TextRangeFactory>();
+        services.AddTransient<IControlFactory,TextFileFactory>();
+        services.AddTransient<ControlFactory>();
+
+        services.AddTransient<IFormElementComponentFactory, AuditLogViewFactory>();
+        services.AddTransient<IFormElementComponentFactory, DataPanelFactory>();
+        services.AddTransient<IFormElementComponentFactory, FormViewFactory>();
+        services.AddTransient<IFormElementComponentFactory, GridViewFactory>();
+        services.AddTransient<IFormElementComponentFactory, DataExportationFactory>();
+        services.AddTransient<IFormElementComponentFactory, DataImportationFactory>();
         
-        services.AddTransient<AuditLogViewFactory>().AllowLazyInicialization();
-        services.AddTransient<DataPanelFactory>().AllowLazyInicialization();
-        services.AddTransient<FormViewFactory>().AllowLazyInicialization();
-        services.AddTransient<GridViewFactory>().AllowLazyInicialization();
-        
-        services.AddTransient<ComponentsFactory>();
-        services.AddTransient<LookupFactory>();
-        services.AddTransient<SearchBoxFactory>();
-        services.AddTransient<TextAreaFactory>();
-        services.AddTransient<SliderFactory>();
-        services.AddTransient<TextBoxFactory>();
-        services.AddTransient<TextRangeFactory>();
-        services.AddTransient<UploadAreaFactory>();
-        services.AddTransient<TextFileFactory>();
+        services.AddTransient<IComponentFactory, FormUploadFactory>();
+        services.AddTransient<IComponentFactory, FileDownloaderFactory>();
+        services.AddTransient<IComponentFactory, UploadAreaFactory>();
+
+        services.AddTransient<ComponentFactory>();
 
         return services;
     }
-
 }

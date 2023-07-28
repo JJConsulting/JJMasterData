@@ -249,8 +249,8 @@ internal class DataImportationHelp
     private string GetHtmlComboHelp(FormElementField field)
     {
         var defaultValues = DataImportation.FieldValuesService.GetDefaultValues(DataImportation.FormElement,null, PageState.Import);
-        var expOptions = new ExpressionOptions(DataImportation.UserValues, defaultValues, PageState.Import);
-        var comboBox = DataImportation.ComboBoxFactory.CreateComboBox(field, expOptions, null);
+        var expOptions = new FormStateData(DataImportation.UserValues, defaultValues, PageState.Import);
+        var comboBox = DataImportation.ComboBoxFactory.Create(null,field, expOptions, null,null);
         var items = comboBox.GetValues();
 
         if (items.Count == 0)

@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -12,9 +13,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FormController : MasterDataController
 {
-    private readonly FormViewFactory _formViewFactory;
+    private readonly IFormElementComponentFactory<JJFormView> _formViewFactory;
 
-    public FormController(FormViewFactory formViewFactory)
+    public FormController(IFormElementComponentFactory<JJFormView>  formViewFactory)
     {
         _formViewFactory = formViewFactory;
     }
@@ -34,7 +35,7 @@ public class FormController : MasterDataController
         PageState pageState,
         ActionMap actionMap)
     {
-        var formView = _formViewFactory.CreateFormView(formElement);
+        var formView = _formViewFactory.Create(formElement);
         formView.IsModal = true;
         formView.IsExternalRoute = true;
         formView.PageState = pageState;
@@ -55,7 +56,7 @@ public class FormController : MasterDataController
         string dictionaryName,
         string componentName)
     {
-        var formView = await _formViewFactory.CreateFormViewAsync(dictionaryName);
+        var formView = await _formViewFactory.CreateAsync(dictionaryName);
         formView.Name = componentName;
         formView.IsExternalRoute = true;
 

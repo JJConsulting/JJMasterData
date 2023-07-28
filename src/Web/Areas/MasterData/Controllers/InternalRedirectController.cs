@@ -16,15 +16,15 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController : MasterDataController
 {
-    private ComponentsFactory MasterDataFactory { get; }
+    private ComponentFactory ComponentFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
     private IDictionary<string,dynamic>? _relationValues;
 
-    public InternalRedirectController(ComponentsFactory masterDataFactory, JJMasterDataEncryptionService encryptionService)
+    public InternalRedirectController(ComponentFactory componentFactory, JJMasterDataEncryptionService encryptionService)
     {
-        MasterDataFactory = masterDataFactory;
+        ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
     }
     
@@ -40,7 +40,7 @@ public class InternalRedirectController : MasterDataController
         {
             case RelationshipViewType.List:
             {
-                    var form = await MasterDataFactory.CreateFormViewAsync(_dictionaryName);
+                    var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
                     form.RelationValues = _relationValues;
 
                     if (userId != null)
@@ -54,7 +54,7 @@ public class InternalRedirectController : MasterDataController
                 }
             case RelationshipViewType.View:
             {
-                var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
                     panel.PageState = PageState.View;
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
@@ -66,7 +66,7 @@ public class InternalRedirectController : MasterDataController
                 }
             case RelationshipViewType.Update:
                 {
-                    var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+                    var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
                     panel.PageState = PageState.Update;
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
@@ -90,7 +90,7 @@ public class InternalRedirectController : MasterDataController
 
         var userId = HttpContext.GetUserId();
 
-        var panel = await MasterDataFactory.CreateDataPanelAsync(_dictionaryName);
+        var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
         panel.PageState = PageState.Update;
 
         await panel.LoadValuesFromPkAsync(_relationValues);

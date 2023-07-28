@@ -12,6 +12,7 @@ using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -61,10 +62,10 @@ public class JJDataImp : JJBaseProcess
 
     internal IFieldVisibilityService FieldVisibilityService { get; }
     
-    private UploadAreaFactory UploadAreaFactory { get; }
+    private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
     internal IFormService FormService { get; }
-    internal ComboBoxFactory ComboBoxFactory { get; }
+    internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
 
     #endregion
 
@@ -78,8 +79,8 @@ public class JJDataImp : JJBaseProcess
         IFieldVisibilityService fieldVisibilityService,
         IBackgroundTask backgroundTask,
         IHttpContext currentContext,
-        UploadAreaFactory uploadAreaFactory,
-        ComboBoxFactory comboBoxFactory,
+        IComponentFactory<JJUploadArea> uploadAreaFactory,
+        IControlFactory<JJComboBox> comboBoxFactory,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
         : base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
@@ -381,7 +382,7 @@ public class JJDataImp : JJBaseProcess
 
     private JJUploadArea GetUploadArea()
     {
-        var area = UploadAreaFactory.CreateUploadArea();
+        var area = UploadAreaFactory.Create();
         area.Multiple = false;
         area.EnableCopyPaste = false;
         area.Name = Name + "_upload";

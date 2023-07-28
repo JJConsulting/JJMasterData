@@ -12,6 +12,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -22,8 +23,8 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJTextFile : JJBaseControl
 {
-    private FormUploadFactory FormUploadFactory { get; }
-    private TextBoxFactory TextBoxFactory { get; }
+    private IComponentFactory<JJFormUpload>  FormUploadFactory { get; }
+    private IControlFactory<JJTextGroup>  TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadFormParameterName = "jjuploadform_";
@@ -53,8 +54,8 @@ public class JJTextFile : JJBaseControl
 
     public JJTextFile(
         IHttpContext currentContext, 
-        FormUploadFactory formUploadFactory,
-        TextBoxFactory textBoxFactory,
+        IComponentFactory<JJFormUpload> formUploadFactory,
+        IControlFactory<JJTextGroup> textBoxFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
@@ -91,7 +92,7 @@ public class JJTextFile : JJBaseControl
         if (!Enabled)
             formUpload.ClearMemoryFiles();
 
-        var textGroup = TextBoxFactory.CreateTextGroup();
+        var textGroup = TextBoxFactory.Create();
         textGroup.CssClass = CssClass;
         textGroup.ReadOnly = true;
         textGroup.Name = $"v_{Name}";
@@ -193,7 +194,7 @@ public class JJTextFile : JJBaseControl
 
     private JJFormUpload GetFormUpload()
     {
-        var form = FormUploadFactory.CreateFormUpload();
+        var form = FormUploadFactory.Create();
         var dataFile = ElementField.DataFile;
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
@@ -366,9 +367,9 @@ public class JJTextFile : JJBaseControl
         if (field == null) 
             return null;
 
-        var factory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
+        var factory = JJService.Provider.GetScopedDependentService<ControlFactory>();
         
-        var upload = factory.CreateControl(view.FormElement,view.Name,field, view.PageState, null, view.Values);
+        var upload = factory.Create(view.FormElement,field, null, view.Values, view.PageState, view.Name);
         return upload.GetHtmlBuilder();
 
     }

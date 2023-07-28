@@ -1,35 +1,47 @@
+using System;
 using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class TextRangeFactory
+internal class TextRangeFactory : IControlFactory<JJTextRange>
 {
     private IHttpContext HttpContext { get; }
     private TextBoxFactory TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextRangeFactory(IHttpContext httpContext, TextBoxFactory textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextRangeFactory(IHttpContext httpContext,IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
-        TextBoxFactory = textBoxFactory;
+        TextBoxFactory = new TextBoxFactory(httpContext, stringLocalizer, expressionsService);
         StringLocalizer = stringLocalizer;
     }
-    internal JJTextRange CreateTextRange(FormElementField field, IDictionary<string,dynamic> values)
+
+    public JJTextRange Create()
     {
+        return new JJTextRange(HttpContext,TextBoxFactory,StringLocalizer);
+    }
+
+    public JJTextRange Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    {
+        var values = formStateData.FormValues;
         string valueFrom = "";
         if (values != null && values.ContainsKey(field.Name + "_from"))
         {
             valueFrom = values[field.Name + "_from"].ToString();
         }
-        
-        var range = new JJTextRange(HttpContext,TextBoxFactory,StringLocalizer);
+
+        var range = Create();
         range.FieldType = field.DataType;
-        range.FromField = TextBoxFactory.CreateTextGroup(field);
+        //todo gustavo: analisar
+        range.FromField = TextBoxFactory.Create();
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
@@ -39,8 +51,8 @@ public class TextRangeFactory
         {
             valueTo = values[field.Name + "_to"].ToString();
         }
-        
-        range.ToField = TextBoxFactory.CreateTextGroup(field);
+        //todo gustavo: analisar
+        range.ToField = TextBoxFactory.Create();
         range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];

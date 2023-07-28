@@ -4,21 +4,24 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJLegendView : JJBaseView
 {
-    private ComboBoxFactory ComboBoxFactory { get; }
+    private IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public bool ShowAsModal { get; set; }
     
     public required FormElement FormElement { get; init; }
 
     #region "Constructors"
 
-    public JJLegendView(ComboBoxFactory comboBoxFactory)
+    public JJLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ComboBoxFactory = comboBoxFactory;
+        StringLocalizer = stringLocalizer;
         Name = "iconLegend";
         ShowAsModal = false;
     }
@@ -42,7 +45,7 @@ public class JJLegendView : JJBaseView
 
         if (field != null)
         {
-            var cbo = ComboBoxFactory.CreateComboBox();
+            var cbo = ComboBoxFactory.Create();
             cbo.Name = field.Name;
             cbo.DataItem = field.DataItem;
 
@@ -61,7 +64,7 @@ public class JJLegendView : JJBaseView
                             CssClass = "fa-fw fa-2x"
                         });
                         div.AppendText("&nbsp;&nbsp;");
-                        div.AppendText(ComboBoxFactory.StringLocalizer[item.Description]);
+                        div.AppendText(StringLocalizer[item.Description]);
                         div.AppendElement(HtmlTag.Br);
                     });
                 }
@@ -70,7 +73,7 @@ public class JJLegendView : JJBaseView
         else
         {
             div.AppendElement(HtmlTag.Br);
-            div.AppendText(ComboBoxFactory.StringLocalizer["There is no caption to be displayed"]);
+            div.AppendText(StringLocalizer["There is no caption to be displayed"]);
         }
 
         return div;
@@ -88,7 +91,7 @@ public class JJLegendView : JJBaseView
         var dialog = new JJModalDialog
         {
             Name = Name,
-            Title = ComboBoxFactory.StringLocalizer["Information"],
+            Title = StringLocalizer["Information"],
             HtmlBuilderContent = form
         };
         

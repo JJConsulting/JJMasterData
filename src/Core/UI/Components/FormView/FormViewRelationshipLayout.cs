@@ -127,7 +127,7 @@ internal class FormViewRelationshipLayout
                 {
                     var childValues = ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter).GetAwaiter().GetResult();
 
-                    var childDataPanel = ParentFormView.DataPanelFactory.Value.CreateDataPanel(childElement);
+                    var childDataPanel = ParentFormView.DataPanelFactory.Value.Create(childElement);
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                     childDataPanel.UserValues = ParentFormView.UserValues;
                     childDataPanel.Values = childValues;
@@ -138,7 +138,7 @@ internal class FormViewRelationshipLayout
                 }
             case RelationshipViewType.List:
             {
-                    var childGrid = ParentFormView.FormViewFactory.CreateFormView(childElement);
+                    var childGrid = ParentFormView.FormViewFactory.Create(childElement);
                     childGrid.UserValues = ParentFormView.UserValues;
                     childGrid.IsExternalRoute = true;
                     childGrid.RelationValues = mappedForeignKeys;

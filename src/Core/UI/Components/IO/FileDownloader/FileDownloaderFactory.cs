@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Cryptography.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class FileDownloaderFactory
+public class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
 {
     private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -31,6 +32,12 @@ public class FileDownloaderFactory
         LoggerFactory = loggerFactory;
     }
 
+    public JJFileDownloader Create()
+    {
+        return new JJFileDownloader(HttpContext, UrlHelper, EncryptionService, StringLocalizer,
+            LoggerFactory.CreateLogger<JJFileDownloader>());
+    }
+    
     public JJFileDownloader CreateFileDownloader(string filePath)
     {
         return new JJFileDownloader(HttpContext,UrlHelper,EncryptionService,StringLocalizer,LoggerFactory.CreateLogger<JJFileDownloader>())
@@ -38,4 +45,6 @@ public class FileDownloaderFactory
             FilePath = filePath
         };
     }
+
+
 }

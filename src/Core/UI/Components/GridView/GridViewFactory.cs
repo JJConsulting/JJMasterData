@@ -19,7 +19,7 @@ using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 
-public class GridViewFactory
+internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private IFieldsService FieldsService { get; }
@@ -27,9 +27,9 @@ public class GridViewFactory
     private IExpressionsService ExpressionsService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private Lazy<DataExportationFactory> DataExportationFactory { get; }
-    private Lazy<DataImportationFactory> DataImportationFactory { get; }
-    private ControlsFactory ControlsFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJDataExp>> DataExportationFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJDataImp>> DataImportationFactory { get; }
+    private ControlFactory ControlFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext CurrentContext { get; }
@@ -45,9 +45,9 @@ public class GridViewFactory
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<DataExportationFactory> dataExportationFactory,
-        Lazy<DataImportationFactory> dataImportationFactory,
-        ControlsFactory controlsFactory)
+        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
+        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
+        ControlFactory controlFactory)
     {
         _urlHelper = urlHelper;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -59,49 +59,49 @@ public class GridViewFactory
         StringLocalizer = stringLocalizer;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
-        ControlsFactory = controlsFactory;
+        ControlFactory = controlFactory;
         EntityRepository = entityRepository;
     }
 
-    public JJGridView CreateGridView()
+    public JJGridView Create()
     {
         var gridView = new JJGridView(CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
-            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory, ControlsFactory);
+            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory, ControlFactory);
 
         return gridView;
     }
 
-    public JJGridView CreateGridView(FormElement formElement)
+    public JJGridView Create(FormElement formElement)
     {
         var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
             FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory,
-            ControlsFactory);
+            ControlFactory);
 
         SetGridOptions(gridView, formElement.Options);
 
         return gridView;
     }
 
-    public JJGridView CreateGridView(DataTable dataTable)
+    public JJGridView Create(DataTable dataTable)
     {
-        var gridView = CreateGridView(new FormElement(dataTable));
+        var gridView = Create(new FormElement(dataTable));
 
         return gridView;
     }
 
-    public async Task<JJGridView> CreateGridViewAsync(string elementName)
+    public async Task<JJGridView> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        var gridView = CreateGridView(formElement);
+        var gridView = Create(formElement);
 
         return gridView;
     }
 
-    public JJGridView CreateGridView<T>(IEnumerable<T> list)
+    public JJGridView Create<T>(IEnumerable<T> list)
     {
         var dataTable = EnumerableHelper.ConvertToDataTable(list);
-        var grid = CreateGridView(dataTable);
+        var grid = Create(dataTable);
         return grid;
     }
 

@@ -12,6 +12,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -49,7 +50,7 @@ public class JJAuditLogView : JJBaseView
     {
         get
         {
-            var panel = DataPanelFactory.Value.CreateDataPanel(FormElement);
+            var panel = DataPanelFactory.Value.Create(FormElement);
             panel.Name = "jjpainellog_" + Name;
             return _dataPainel ??= panel;
         }
@@ -57,16 +58,16 @@ public class JJAuditLogView : JJBaseView
     }
 
     public FormElement FormElement { get; private set; }
-    private Lazy<GridViewFactory> GridViewFactory { get; }
-    private Lazy<DataPanelFactory> DataPanelFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
         FormElement formElement, 
-        Lazy<GridViewFactory> gridViewFactory,
-        Lazy<DataPanelFactory> dataPanelFactory,
+        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
+        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
         IHttpContext currentContext, 
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
@@ -242,7 +243,7 @@ public class JJAuditLogView : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = GridViewFactory.Value.CreateGridView(FormElement);
+        var grid = GridViewFactory.Value.Create(FormElement);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";

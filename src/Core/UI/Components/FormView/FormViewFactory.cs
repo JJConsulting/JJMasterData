@@ -9,6 +9,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -16,7 +17,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class FormViewFactory
+internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 {
     private IHttpContext CurrentContext { get; }
     private IEntityRepository EntityRepository { get; }
@@ -26,10 +27,10 @@ public class FormViewFactory
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private FileDownloaderFactory FileDownloaderFactory { get; }
-    private Lazy<GridViewFactory> GridViewFactory { get; }
-    private Lazy<AuditLogViewFactory> AuditLogViewFactory { get; }
-    private Lazy<DataPanelFactory> DataPanelFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJAuditLogView>> AuditLogViewFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
     private IFormEventResolver FormEventResolver { get; }
 
     public FormViewFactory(
@@ -41,10 +42,10 @@ public class FormViewFactory
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        FileDownloaderFactory fileDownloaderFactory,
-        Lazy<GridViewFactory> gridViewFactory,
-        Lazy<AuditLogViewFactory> auditLogViewFactory,
-        Lazy<DataPanelFactory> dataPanelFactory, 
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
+        Lazy<IFormElementComponentFactory<JJAuditLogView>> auditLogViewFactory,
+        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory, 
         IFormEventResolver formEventResolver
         )
     {
@@ -63,7 +64,7 @@ public class FormViewFactory
         FormEventResolver = formEventResolver;
     }
 
-    public JJFormView CreateFormView(FormElement formElement)
+    public JJFormView Create(FormElement formElement)
     {
         return new JJFormView(
             formElement,
@@ -77,10 +78,10 @@ public class FormViewFactory
             this); // This need to be a reference to itself to prevent a recursive dependency.
     }
     
-    public async Task<JJFormView> CreateFormViewAsync(string elementName)
+    public async Task<JJFormView> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        var form = CreateFormView(formElement);
+        var form = Create(formElement);
         SetFormViewParams(form, formElement);
         return form;
     }

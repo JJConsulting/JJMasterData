@@ -8,6 +8,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -21,7 +22,7 @@ public class JJFileDownloader : JJBaseView
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
     
-    public required string FilePath { get; set; }
+    public string FilePath { get; set; }
 
     public bool IsExternalLink { get; set; }
     
@@ -151,7 +152,7 @@ public class JJFileDownloader : JJBaseView
     public static HtmlBuilder ResponseRoute(
         IHttpContext currentContext, 
         JJMasterDataEncryptionService encryptionService, 
-        FileDownloaderFactory factory)
+        IComponentFactory<JJFileDownloader> factory)
     {
         bool isExternalLink = false;
         string criptFilePath = currentContext.Request.QueryString(DownloadParameter);
@@ -168,7 +169,8 @@ public class JJFileDownloader : JJBaseView
         if (filePath == null)
             throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
-        var download = factory.CreateFileDownloader(filePath);
+        var download = factory.Create();
+        download.FilePath = filePath;
         download.IsExternalLink = isExternalLink;
 
         return download.GetHtmlBuilder();

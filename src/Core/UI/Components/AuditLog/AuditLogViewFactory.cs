@@ -5,6 +5,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -12,10 +13,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class AuditLogViewFactory
+internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView>
 {
-    private Lazy<GridViewFactory> GridViewFactory { get; }
-    private Lazy<DataPanelFactory> DataPanelFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
+    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
     private IHttpContext HttpContext { get; }
     private IEntityRepository EntityRepository { get; }
     private IAuditLogService AuditLogService { get; }
@@ -23,8 +24,8 @@ public class AuditLogViewFactory
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public AuditLogViewFactory(
-        Lazy<GridViewFactory> gridViewFactory,
-        Lazy<DataPanelFactory> dataPanelFactory,
+        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
+        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
         IHttpContext httpContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
@@ -40,14 +41,14 @@ public class AuditLogViewFactory
         StringLocalizer = stringLocalizer;
     }
 
-    public JJAuditLogView CreateAuditLogView(FormElement formElement)
+    public JJAuditLogView Create(FormElement formElement)
     {
         return new JJAuditLogView(formElement,GridViewFactory,DataPanelFactory, HttpContext, EntityRepository, AuditLogService,StringLocalizer);
     }
     
-    public async Task<JJAuditLogView> CreateAuditLogViewAsync(string elementName)
+    public async Task<JJAuditLogView> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        return CreateAuditLogView(formElement);
+        return Create(formElement);
     }
 }
