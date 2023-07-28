@@ -1,10 +1,12 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class SliderFactory
+internal class SliderFactory : IControlFactory<JJSlider>
 {
     private IHttpContext HttpContext { get; }
 
@@ -13,7 +15,12 @@ public class SliderFactory
         HttpContext = httpContext;
     }
     
-    public JJSlider CreateSlider(FormElementField field, object value)
+    public JJSlider Create()
+    {
+        return new JJSlider(HttpContext);
+    }
+
+    public JJSlider Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
     {
         var slider = new JJSlider(HttpContext)
         {

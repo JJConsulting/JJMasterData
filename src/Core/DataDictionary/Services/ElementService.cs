@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using JJMasterData.Core.UI.Components.GridView;
 
@@ -24,11 +25,11 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
-    private GridViewFactory GridViewFactory { get; }
+    private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
 
-    public ElementService(GridViewFactory gridViewFactory,
+    public ElementService(IFormElementComponentFactory<JJGridView> gridViewFactory,
         IValidationDictionary validationDictionary, 
                           IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
@@ -143,7 +144,7 @@ public class ElementService : BaseService
     }
 
 
-    public JJGridView GetFormView()
+    public JJGridView GetGridView()
     {
         var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
@@ -164,7 +165,7 @@ public class ElementService : BaseService
         
         formElement.Options.GridTableActions.Clear();
 
-        var gridView = GridViewFactory.CreateGridView(formElement);
+        var gridView = GridViewFactory.Create(formElement);
         gridView.Name = "List";
         gridView.FilterAction.ExpandedByDefault = true;
 

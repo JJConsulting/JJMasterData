@@ -1,12 +1,14 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class CheckBoxFactory
+internal class CheckBoxFactory : IControlFactory<JJCheckBox>
 {
     private IHttpContext HttpContext { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -16,8 +18,9 @@ public class CheckBoxFactory
         HttpContext = httpContext;
         ExpressionsService = expressionsService;
     }
-    
-    internal JJCheckBox CreateCheckBox(FormElementField field, object value)
+
+    public JJCheckBox Create() => new(HttpContext);
+    public JJCheckBox Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
     {
         var check = new JJCheckBox(HttpContext)
         {

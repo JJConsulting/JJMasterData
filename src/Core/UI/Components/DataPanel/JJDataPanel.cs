@@ -90,8 +90,7 @@ public class JJDataPanel : JJBaseView
     public IFieldsService FieldsService { get; }
     public IFormValuesService FormValuesService { get; }
     public IExpressionsService ExpressionsService { get; }
-    public ControlsFactory ControlsFactory { get; }
-
+    public ControlFactory ControlFactory { get; }
 
     #endregion
 
@@ -99,7 +98,7 @@ public class JJDataPanel : JJBaseView
 #if NET48
     public JJDataPanel()
     {
-        ControlsFactory = JJService.Provider.GetScopedDependentService<ControlsFactory>();
+        ControlFactory = JJService.Provider.GetScopedDependentService<ControlFactory>();
         EntityRepository =  JJService.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  JJService.Provider.GetScopedDependentService<IHttpContext>();
@@ -144,7 +143,7 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ControlsFactory controlsFactory
+        ControlFactory controlFactory
     )
     {
         EntityRepository = entityRepository;
@@ -155,7 +154,7 @@ public class JJDataPanel : JJBaseView
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        ControlsFactory = controlsFactory;
+        ControlFactory = controlFactory;
         Values = new Dictionary<string, dynamic>();
         Errors = new Dictionary<string, dynamic>();
         AutoReloadFormFields = true;
@@ -172,8 +171,8 @@ public class JJDataPanel : JJBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ControlsFactory controlsFactory
-    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, controlsFactory)
+        ControlFactory controlFactory
+    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, controlFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -198,7 +197,8 @@ public class JJDataPanel : JJBaseView
 
         //DownloadFile Route
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, ControlsFactory.FileDownloader);
+            //TODO GUSTAVO INJETAR FILEDOWNLOADER FACTORY OU ARRUMAR
+            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, null);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(this, CurrentContext);

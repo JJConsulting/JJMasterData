@@ -2,13 +2,14 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class LookupFactory
+internal class LookupFactory : IControlFactory<JJLookup>
 {
     private IHttpContext HttpContext { get; }
     private ILookupService LookupService { get; }
@@ -24,33 +25,39 @@ public class LookupFactory
         LoggerFactory = loggerFactory;
     }
 
-    internal JJLookup CreateLookup(FormElementField field, ExpressionOptions expOptions, object value, string panelName)
+    public JJLookup Create()
     {
-        var search = new JJLookup(
+        return new JJLookup(
             HttpContext,
             LookupService,
             LoggerFactory.CreateLogger<JJLookup>());
-        search.SetAttr(field.Attributes);
-        search.Name = field.Name;
-        search.SelectedValue = value?.ToString();
-        search.Visible = true;
-        search.DataItem = field.DataItem;
-        search.AutoReloadFormFields = false;
-        search.Attributes.Add("pnlname", panelName);
-        search.FormValues = expOptions.FormValues;
-        search.PageState = expOptions.PageState;
-        search.UserValues = expOptions.UserValues;
+    }
+
+    public JJLookup Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
+    {
+        var lookup = Create();
+        lookup.SetAttr(field.Attributes);
+        lookup.Name = field.Name;
+        lookup.SelectedValue = value?.ToString();
+        lookup.Visible = true;
+        lookup.DataItem = field.DataItem;
+        lookup.AutoReloadFormFields = false;
+        lookup.Attributes.Add("pnlname", parentName);
+        lookup.FormValues = formStateData.FormValues;
+        lookup.PageState = formStateData.PageState;
+        lookup.UserValues = formStateData.UserValues;
 
         if (field.DataType is FieldType.Int)
         {
-            search.OnlyNumbers = true;
-            search.MaxLength = 11;
+            lookup.OnlyNumbers = true;
+            lookup.MaxLength = 11;
         }
         else
         {
-            search.MaxLength = field.Size;
+            lookup.MaxLength = field.Size;
         }
 
-        return search;
+        return lookup;
     }
+    
 }

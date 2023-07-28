@@ -18,6 +18,7 @@ using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -74,7 +75,7 @@ public class JJDataExp : JJBaseProcess
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
 
-    private FileDownloaderFactory FileDownloaderFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
 
     #endregion
 
@@ -87,7 +88,7 @@ public class JJDataExp : JJBaseProcess
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        FileDownloaderFactory fileDownloaderFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         ILoggerFactory loggerFactory,
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
@@ -120,7 +121,8 @@ public class JJDataExp : JJBaseProcess
 
     internal string GetDownloadUrl(string filePath)
     {
-        var downloader = FileDownloaderFactory.CreateFileDownloader(filePath);
+        var downloader = FileDownloaderFactory.Create();
+        downloader.FilePath = filePath;
         return downloader.GetDownloadUrl(filePath);
     }
 

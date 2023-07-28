@@ -346,7 +346,7 @@ public class ElementController : DataDictionaryController
     private JJGridView GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var gridView = _elementService.GetFormView();
+        var gridView = _elementService.GetGridView();
         gridView.FormElement.Title =
             $"<img src=\"{baseUrl}/_content/JJMasterData.Web/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
 

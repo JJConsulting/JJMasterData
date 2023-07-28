@@ -208,7 +208,7 @@ public class JJSearchBox : JJBaseControl
     }
 
     public JJSearchBox(
-        ExpressionOptions expOptions, 
+        FormStateData expOptions, 
         IHttpContext httpContext,
         JJMasterDataEncryptionService encryptionService,
         IDataItemService dataItemService,
@@ -242,7 +242,7 @@ public class JJSearchBox : JJBaseControl
 
     public static HtmlBuilder ResponseJson(JJDataPanel view, IHttpContext httpContext)
     {
-        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.ControlsFactory.SearchBox);
+        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.ControlFactory.GetFactory<SearchBoxFactory>());
     }
 
     internal static HtmlBuilder ResponseJson(
@@ -261,9 +261,9 @@ public class JJSearchBox : JJBaseControl
             return null;
 
         var field = formElement.Fields[fieldName];
-        var expOptions = new ExpressionOptions(view.UserValues, formValues, pageState);
+        var expOptions = new FormStateData(view.UserValues, formValues, pageState);
         
-        var searchBox = searchBoxFactory.CreateSearchBox(field, expOptions, null, dictionaryName);
+        var searchBox = searchBoxFactory.Create(formElement,field, expOptions, view.Name, dictionaryName);
         searchBox.ResponseJson();
 
         return null;

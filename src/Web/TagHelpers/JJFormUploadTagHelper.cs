@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.Web.Components;
+﻿using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -6,7 +7,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJFormUploadTagHelper : TagHelper
 {
-    private FormUploadFactory FormUploadFactory { get; }
+    private IComponentFactory<JJFormUpload> FormUploadFactory { get; }
 
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
@@ -14,14 +15,14 @@ public class JJFormUploadTagHelper : TagHelper
     [HtmlAttributeName("configure")]
     public Action<JJFormUpload>? Configure { get; set; }
     
-    public JJFormUploadTagHelper(FormUploadFactory formUploadFactory)
+    public JJFormUploadTagHelper(IComponentFactory<JJFormUpload> formUploadFactory)
     {
         FormUploadFactory = formUploadFactory;
     }
     
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var upload = FormUploadFactory.CreateFormUpload();
+        var upload = FormUploadFactory.Create();
 
         if (!string.IsNullOrEmpty(Name))
         {

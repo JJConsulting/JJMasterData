@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJTextRange : JJBaseControl
 {
-    private TextBoxFactory TextBoxFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal JJBaseControl FromField { get; set; }
@@ -23,7 +23,7 @@ public class JJTextRange : JJBaseControl
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    public JJTextRange(IHttpContext currentContext, TextBoxFactory textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
+    public JJTextRange(IHttpContext currentContext, IControlFactory<JJTextGroup> textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
         TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;

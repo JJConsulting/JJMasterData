@@ -1,12 +1,13 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class UploadAreaFactory
+internal class UploadAreaFactory : IComponentFactory<JJUploadArea>
 {
     private IHttpContext HttpContext { get; }
     private IUploadAreaService UploadAreaService { get; }
@@ -25,7 +26,7 @@ public class UploadAreaFactory
         StringLocalizer = stringLocalizer;
     }
 
-    public JJUploadArea CreateUploadArea()
+    public JJUploadArea Create()
     {
         return new JJUploadArea(HttpContext,UploadAreaService,UrlHelper, StringLocalizer);
     }

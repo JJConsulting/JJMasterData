@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
@@ -16,14 +17,14 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class LookupController : MasterDataController
 {
-    private FormViewFactory FormViewFactory { get; }
+    private  IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private ILookupService LookupService { get; }
     private IFormValuesService FormValuesService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public LookupController(
-        FormViewFactory formViewFactory,
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         IDataDictionaryRepository dataDictionaryRepository,
         ILookupService lookupService,
         IFormValuesService formValuesService,

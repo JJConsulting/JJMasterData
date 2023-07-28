@@ -2,6 +2,7 @@ using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class FormUploadFactory
+internal class FormUploadFactory : IComponentFactory<JJFormUpload>
 {
     public ILoggerFactory LoggerFactory { get; }
 
@@ -22,21 +23,21 @@ public class FormUploadFactory
     //ControlsFactory depends on TextFileFactory
     //TextFileFactory depends on FormUploadFactory
     //FormUploadFactory depends on GridViewFactory !Recursive!
-    private Lazy<GridViewFactory> GridViewFactory { get; }
+    private Lazy< IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
 
-    private UploadAreaFactory UploadAreaFactory { get; }
+    private IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
-    private FileDownloaderFactory FileDownloaderFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
 
     private IHttpContext CurrentContext { get; }
-    private TextBoxFactory TextBoxFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
 
     public FormUploadFactory(
         IHttpContext currentContext,
-        TextBoxFactory textBoxFactory,
-        FileDownloaderFactory fileDownloaderFactory,
-        UploadAreaFactory uploadAreaFactory,
-        Lazy<GridViewFactory> gridViewFactory,
+        IControlFactory<JJTextGroup>  textBoxFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IComponentFactory<JJUploadArea> uploadAreaFactory,
+        Lazy< IFormElementComponentFactory<JJGridView>> gridViewFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
@@ -51,7 +52,7 @@ public class FormUploadFactory
         LoggerFactory = loggerFactory;
     }
 
-    public JJFormUpload CreateFormUpload()
+    public JJFormUpload Create()
     {
         return new JJFormUpload(
             CurrentContext, 

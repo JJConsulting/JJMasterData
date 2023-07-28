@@ -12,7 +12,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class SearchBoxFactory
+internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 {
     private IEntityRepository EntityRepository { get; }
     private IDataItemService DataItemService { get; }
@@ -38,19 +38,19 @@ public class SearchBoxFactory
         UrlHelper = urlHelper;
     }
     
-    public JJSearchBox CreateSearchBox()
+    public JJSearchBox Create()
     {
         return new JJSearchBox(HttpContext,EncryptionService,DataItemService, UrlHelper);
     }
     
-    internal JJSearchBox CreateSearchBox(FormElementField field, ExpressionOptions expOptions, object value, string dictionaryName)
+    public JJSearchBox Create(FormElement formElement, FormElementField field, FormStateData formStateData, string parentName, object value)
     {
-        var search = new JJSearchBox(expOptions, HttpContext,EncryptionService,DataItemService, UrlHelper)
+        var search = new JJSearchBox(formStateData, HttpContext,EncryptionService,DataItemService, UrlHelper)
         {
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
-            DictionaryName = dictionaryName,
+            DictionaryName = formElement.Name,
             SelectedValue = value?.ToString(),
             Visible = true,
             AutoReloadFormFields = false
@@ -59,7 +59,7 @@ public class SearchBoxFactory
         return search;
     }
     
-    public async Task<JJSearchBox> CreateSearchBoxAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string,dynamic>userValues)
+    public async Task<JJSearchBox> CreateAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string,dynamic>userValues)
     {
         if (string.IsNullOrEmpty(dictionaryName))
             return null;
@@ -76,7 +76,7 @@ public class SearchBoxFactory
         }
 
         var field = formElement.Fields[fieldName];
-        var expOptions = new ExpressionOptions(userValues, formValues, pageState);
-        return CreateSearchBox(field, expOptions, null, dictionaryName);
+        var expOptions = new FormStateData(userValues, formValues, pageState);
+        return Create(formElement,field, expOptions, null, dictionaryName);
     }
 }

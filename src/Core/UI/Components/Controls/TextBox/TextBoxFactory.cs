@@ -9,32 +9,33 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class TextBoxFactory
+internal class TextBoxFactory : IControlFactory<JJTextGroup>
 {
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ExpressionsService ExpressionsService { get; }
+    private IExpressionsService ExpressionsService { get; }
 
     public TextBoxFactory(IHttpContext httpContext, 
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-                          ExpressionsService expressionsService)
+                          IExpressionsService expressionsService)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         ExpressionsService = expressionsService;
     }
     
-    public JJTextGroup CreateTextGroup()
+    public JJTextGroup Create()
     {
         return new JJTextGroup(HttpContext);
     }
     
-    public JJTextGroup CreateText(FormElementField field, object value)
+    public JJTextGroup Create(FormElementField field, object value)
     {
-        var textGroup = CreateTextGroup(field);
+        var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
             value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
@@ -45,38 +46,37 @@ public class TextBoxFactory
     }
 
 
-    public JJTextGroup CreateTextGroup(FormElement formElement,
-        FormElementField field, ExpressionOptions expOptions, object value, string componentName)
+    public JJTextGroup Create(FormElement formElement,FormElementField field, FormStateData formStateData, string parentName, object value)
     {
-        var textGroup = CreateTextGroup(field);
+        var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
             value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
 
         textGroup.Text = value?.ToString() ?? string.Empty;
 
-        if (expOptions.PageState == PageState.Filter)
+        if (formStateData.PageState == PageState.Filter)
             textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
         else
-            AddUserActions(formElement, componentName, field, expOptions, textGroup);
+            AddUserActions(formElement, parentName, field, formStateData, textGroup);
 
         return textGroup;
     }
 
 
     private void AddUserActions(FormElement formElement, string componentName, FormElementField field,
-        ExpressionOptions expressionOptions, JJTextGroup textGroup)
+        FormStateData formStateData, JJTextGroup textGroup)
     {
         var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
         foreach (var action in actions)
         {
             var actionManager = new ActionManager(formElement, ExpressionsService, componentName);
-            var link = actionManager.GetLinkField(action, expressionOptions.FormValues, expressionOptions.PageState, field.Name);
+            var link = actionManager.GetLinkField(action, formStateData.FormValues, formStateData.PageState, field.Name);
             textGroup.Actions.Add(link);
         }
     }
 
-    public JJTextGroup CreateTextGroup(FormElementField field)
+    public JJTextGroup Create(FormElementField field)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));

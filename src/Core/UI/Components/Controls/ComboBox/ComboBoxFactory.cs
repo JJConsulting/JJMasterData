@@ -3,6 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class ComboBoxFactory
+internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {
     private IHttpContext HttpContext { get; }
     private IEntityRepository EntityRepository { get; }
@@ -27,24 +28,24 @@ public class ComboBoxFactory
         LoggerFactory = loggerFactory;
     }
 
-    public JJComboBox CreateComboBox()
+    public JJComboBox Create()
     {
         return new JJComboBox(HttpContext, EntityRepository, ExpressionsService,
             StringLocalizer,
             LoggerFactory.CreateLogger<JJComboBox>());
     }
-    
-    internal JJComboBox CreateComboBox(FormElementField f, ExpressionOptions expOptions, object value)
+
+    public JJComboBox Create(FormElement formElement, FormElementField field, FormStateData formStateData, string parentName, object value)
     {
-        var comboBox = CreateComboBox();
-        comboBox.DataItem = f.DataItem;
-        comboBox.Name = f.Name;
+        var comboBox = Create();
+        comboBox.DataItem = field.DataItem;
+        comboBox.Name = field.Name;
         comboBox.Visible = true;
-        comboBox.FormValues = expOptions.FormValues;
-        comboBox.MultiSelect = f.DataItem!.EnableMultiSelect;
-        comboBox.PageState = expOptions.PageState;
+        comboBox.FormValues = formStateData.FormValues;
+        comboBox.MultiSelect = field.DataItem!.EnableMultiSelect;
+        comboBox.PageState = formStateData.PageState;
         comboBox.SelectedValue = value?.ToString();
-        comboBox.UserValues = expOptions.UserValues;
+        comboBox.UserValues = formStateData.UserValues;
 
         return comboBox;
     }

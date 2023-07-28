@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
@@ -144,7 +145,7 @@ internal class GridFilter
         string panelName = CurrentContext.Request.QueryString("pnlname");
 
         if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
-            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext, GridView.ControlsFactory.SearchBox);
+            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext, GridView.ControlFactory.GetFactory<SearchBoxFactory>());
 
         if ("jjsearchbox".Equals(requestType))
         {
@@ -156,7 +157,7 @@ internal class GridFilter
                 return null;
 
             var field = GridView.FormElement.Fields[filterName];
-            var jjSearchBox = GridView.ControlsFactory.CreateControl(GridView.FormElement,GridView.Name,field, PageState.Filter, GridView.CurrentFilter, GridView.UserValues);
+            var jjSearchBox = GridView.ControlFactory.Create(GridView.FormElement,field, GridView.CurrentFilter, GridView.UserValues, PageState.Filter, GridView.Name);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
         }
@@ -373,13 +374,13 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)GridView.ControlsFactory.CreateControl(GridView.FormElement,GridView.Name,f, PageState.Filter, values,GridView.UserValues);
+                        var search = (JJSearchBox)GridView.ControlFactory.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = search.SelectedValue;
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)GridView.ControlsFactory.CreateControl(GridView.FormElement,GridView.Name,f, PageState.Filter, values,GridView.UserValues);
+                        var lookup = (JJLookup)GridView.ControlFactory.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;

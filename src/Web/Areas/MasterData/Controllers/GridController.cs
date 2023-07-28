@@ -1,5 +1,7 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +9,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class GridController : MasterDataController
 {
-    private GridViewFactory GridViewFactory { get; }
+    private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
 
-    public GridController(GridViewFactory gridViewFactory)
+    public GridController(IFormElementComponentFactory<JJGridView> gridViewFactory)
     {
         GridViewFactory = gridViewFactory;
     }
@@ -19,7 +21,7 @@ public class GridController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public IActionResult SelectAllRows(FormElement formElement, string componentName)
     {
-        var gridView = GridViewFactory.CreateGridView(formElement);
+        var gridView = GridViewFactory.Create(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
 
@@ -32,7 +34,7 @@ public class GridController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public async Task<IActionResult> GetGridViewTable(FormElement formElement, string componentName)
     {
-        var gridView = GridViewFactory.CreateGridView(formElement);
+        var gridView = GridViewFactory.Create(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
         

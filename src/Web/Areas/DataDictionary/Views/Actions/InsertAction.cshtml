@@ -91,7 +91,7 @@
 
     private JJSearchBox BuildElementToSelect()
     {
-        var cbo = SearchBoxFactory.CreateSearchBox();
+        var cbo = SearchBoxFactory.Create();
         cbo.Name = "ElementNameToSelect";
         cbo.DataItem.Command.Sql = $"select name as cod, name from {Options.Value.DataDictionaryTableName} where type = 'F' order by name";
         cbo.SelectedValue = Model.ElementNameToSelect;

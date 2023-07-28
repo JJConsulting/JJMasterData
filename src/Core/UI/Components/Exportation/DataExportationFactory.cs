@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -17,7 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class DataExportationFactory
+internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly JJMasterDataEncryptionService _encryptionService;
@@ -30,7 +31,7 @@ public class DataExportationFactory
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
-    private FileDownloaderFactory FileDownloaderFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
@@ -45,7 +46,7 @@ public class DataExportationFactory
         IHttpContext httpContext,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory,
-        FileDownloaderFactory fileDownloaderFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService
         )
@@ -65,13 +66,13 @@ public class DataExportationFactory
         FileDownloaderFactory = fileDownloaderFactory;
     }
 
-    public async Task<JJDataExp> CreateDataExportationAsync(string dictionaryName)
+    public async Task<JJDataExp> CreateAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        return CreateDataExportation(formElement);
+        return Create(formElement);
     }
 
-    public JJDataExp CreateDataExportation(FormElement formElement)
+    public JJDataExp Create(FormElement formElement)
     {
         return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, 
             Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 

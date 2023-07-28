@@ -8,10 +8,10 @@ public static class ScriptHelperServiceExtensions
 {
     public static void AddScriptHelpers(this IServiceCollection services)
     {
-        services.AddTransient<DataExportationScripts>().AllowLazyInicialization();
-        services.AddTransient<FormViewScripts>().AllowLazyInicialization();
-        services.AddTransient<DataPanelScripts>().AllowLazyInicialization();
-        services.AddTransient<GridScripts>().AllowLazyInicialization();
+        services.AddTransient<DataExportationScripts>().AllowLazyInitialization();
+        services.AddTransient<FormViewScripts>().AllowLazyInitialization();
+        services.AddTransient<DataPanelScripts>().AllowLazyInitialization();
+        services.AddTransient<GridScripts>().AllowLazyInitialization();
 
     }
 }
