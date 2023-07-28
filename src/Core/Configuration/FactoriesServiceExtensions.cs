@@ -15,7 +15,7 @@ public static class FactoriesServiceExtensions
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
         services.AddTransient(typeof(Lazy<>),typeof(LazyService<>));
-        
+
         services.AddTransient<IControlFactory<JJComboBox>,ComboBoxFactory>();
         services.AddTransient<IControlFactory<JJLookup>,LookupFactory>();
         services.AddTransient<IControlFactory<JJSearchBox>,SearchBoxFactory>();

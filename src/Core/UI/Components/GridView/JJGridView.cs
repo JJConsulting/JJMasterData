@@ -541,8 +541,8 @@ public class JJGridView : JJAsyncBaseView
     internal IHttpContext CurrentContext { get; }
     internal Lazy<IFormElementComponentFactory<JJDataExp>> DataExportationFactory { get; }
     internal Lazy<IFormElementComponentFactory<JJDataImp>> DataImportationFactory { get; }
-    internal LookupFactory LookupFactory { get; }
-    internal ComboBoxFactory ComboBoxFactory { get; }
+    internal IControlFactory<JJLookup> LookupFactory { get; }
+    internal IControlFactory<JJComboBox> ComboBoxFactory { get; }
     internal ControlFactory ControlFactory { get; }
     #endregion
 
@@ -571,8 +571,8 @@ public class JJGridView : JJAsyncBaseView
         FormValuesService = formValuesService;
         DataExportationFactory = dataExportationFactory;
         DataImportationFactory = dataImportationFactory;
-        LookupFactory = controlFactory.GetFactory<LookupFactory>();
-        ComboBoxFactory = controlFactory.GetFactory<ComboBoxFactory>();
+        LookupFactory = controlFactory.GetFactory<IControlFactory<JJLookup>>();
+        ComboBoxFactory = controlFactory.GetFactory<IControlFactory<JJComboBox>>();
 
         Name = "jjview";
         ShowTitle = true;

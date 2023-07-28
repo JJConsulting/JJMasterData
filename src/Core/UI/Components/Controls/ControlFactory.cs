@@ -6,37 +6,46 @@ using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public class ControlFactory
 {
-    private IEnumerable<IControlFactory> Factories { get; }
+    private IServiceScopeFactory ServiceScopeFactory { get; }
     private IFieldVisibilityService FieldVisibilityService { get; }
-
-    public ControlFactory(
-        IEnumerable<IControlFactory> factories,
-        IFieldVisibilityService fieldVisibilityService)
+    
+    
+    public ControlFactory(IServiceScopeFactory serviceScopeFactory, IFieldVisibilityService fieldVisibilityService)
     {
-        Factories = factories;
+        ServiceScopeFactory = serviceScopeFactory;
         FieldVisibilityService = fieldVisibilityService;
     }
 
+    public IServiceProvider ServiceProvider
+    {
+        get
+        {
+            var scope = ServiceScopeFactory.CreateScope();
+            return scope.ServiceProvider;
+        }
+    }
+    
     public TFactory GetFactory<TFactory>() where TFactory : IControlFactory
     {
-        return (TFactory)Factories.First(f => f is TFactory);
+        return ServiceProvider.GetRequiredService<TFactory>();
     }
 
     public TControl Create<TControl>() where TControl : JJBaseControl
     {
-        var factory = (IControlFactory<TControl>)Factories.First(f => f is IControlFactory<TControl>);
+        var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
         return factory.Create();
     }
 
     public TControl Create<TControl>(ControlContext controlContext) where TControl : JJBaseControl
     {
-        var factory = (IControlFactory<TControl>)Factories.First(f => f is IControlFactory<TControl>);
+        var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
         return factory.Create(
             controlContext.FormElement,
@@ -58,10 +67,11 @@ public class ControlFactory
 
         if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            return GetFactory<TextRangeFactory>().Create(formElement, field, stateData, parentName, value);
+            return GetFactory<IControlFactory<JJTextRange>>().Create(formElement, field, stateData, parentName, value);
         }
 
         var control = Create(formElement, field, stateData, parentName, value);
+
         control.Enabled = FieldVisibilityService.IsEnabled(field, pageState, formValues);
 
         return control;
@@ -71,7 +81,7 @@ public class ControlFactory
     {
         return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
-    
+
     public JJBaseControl Create(
         FormElement formElement,
         FormElementField field,
@@ -130,4 +140,3 @@ public class ControlFactory
         return control;
     }
 }
-
