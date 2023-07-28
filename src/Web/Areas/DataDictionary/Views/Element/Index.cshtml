@@ -7,6 +7,6 @@
 
 @using (Html.BeginForm())
 {
-    @Model.GetHtml().ToHtmlString()
+    @Html.Raw(await Model.GetHtmlAsync())
 }
     

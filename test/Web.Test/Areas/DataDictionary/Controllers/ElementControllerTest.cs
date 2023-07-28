@@ -25,7 +25,7 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         {
             Name = Constants.TestDataDictionaryName,
             TableName = Constants.TestDataDictionaryName,
-            Fields = new ElementList
+            Fields = new ElementFieldList
             {
                 new()
                 {

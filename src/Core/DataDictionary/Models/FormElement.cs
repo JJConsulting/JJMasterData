@@ -20,7 +20,7 @@ public class FormElement : Element
     
     [Required]
     [JsonProperty("fields")]
-    public new FormElementList Fields { get; private set; }
+    public new FormElementFieldList Fields { get; private set; }
     
     [Required]
     [JsonProperty("panels")]
@@ -40,7 +40,7 @@ public class FormElement : Element
 
     public FormElement()
     {
-        Fields = new FormElementList(base.Fields);
+        Fields = new FormElementFieldList(base.Fields);
         Panels = new List<FormElementPanel>();
         Options = new FormElementOptions();
         Relationships = new FormElementRelationshipList(base.Relationships);
@@ -63,7 +63,7 @@ public class FormElement : Element
         SubTitle = element.Info;
 
         base.Fields = element.Fields;
-        Fields = new FormElementList(element.Fields);
+        Fields = new FormElementFieldList(element.Fields);
         Panels = new List<FormElementPanel>();
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
@@ -99,13 +99,13 @@ public class FormElement : Element
 
     [JsonConstructor]
     private FormElement(
-        FormElementList fields,
+        FormElementFieldList fields,
         List<FormElementPanel>? panels,
         FormElementRelationshipList relationships, 
         FormElementOptions? options,
         FormElementApiOptions? apiOptions)
     {
-        base.Fields = new ElementList(fields.Cast<ElementField>().ToList());
+        base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
         Fields = fields;
         base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
         Relationships = relationships;

@@ -71,10 +71,8 @@ public class JJDataExp : JJBaseProcess
 
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
-    //internal DataExportationScripts Scripts { get; }
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
-
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
 
     #endregion

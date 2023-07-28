@@ -20,15 +20,13 @@ namespace JJMasterData.Core.UI.Components.GridView;
 
 internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 {
-    private readonly JJMasterDataUrlHelper _urlHelper;
+    private JJMasterDataUrlHelper UrlHelper { get; }
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private Lazy<IFormElementComponentFactory<JJDataExp>> DataExportationFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJDataImp>> DataImportationFactory { get; }
-    private ControlFactory ControlFactory { get; }
+    private ComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext CurrentContext { get; }
@@ -44,11 +42,9 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
-        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
-        ControlFactory controlFactory)
+        ComponentFactory factory)
     {
-        _urlHelper = urlHelper;
+        UrlHelper = urlHelper;
         DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
         FieldsService = fieldsService;
@@ -56,25 +52,15 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        DataExportationFactory = dataExportationFactory;
-        DataImportationFactory = dataImportationFactory;
-        ControlFactory = controlFactory;
+        Factory = factory;
         EntityRepository = entityRepository;
     }
-
-    public JJGridView Create()
-    {
-        var gridView = new JJGridView(CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
-            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory, ControlFactory);
-
-        return gridView;
-    }
+    
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, _urlHelper, ExpressionsService, EncryptionService,
-            FieldsService, FormValuesService, StringLocalizer, DataExportationFactory, DataImportationFactory,
-            ControlFactory);
+        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, UrlHelper, ExpressionsService, EncryptionService,
+            FieldsService, FormValuesService, StringLocalizer, Factory);
 
         SetGridOptions(gridView, formElement.Options);
 

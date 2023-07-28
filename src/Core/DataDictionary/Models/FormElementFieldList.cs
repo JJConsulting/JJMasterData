@@ -11,24 +11,24 @@ namespace JJMasterData.Core.DataDictionary;
 /// <summary>
 /// Implementation of ICollection representing a list of data dictionary fields.
 /// </summary>
-public class FormElementList : ICollection<FormElementField>
+public class FormElementFieldList : ICollection<FormElementField>
 {
     private readonly IList<FormElementField> _formFields;
-    private readonly ElementList _baseFields;
+    private readonly ElementFieldList _baseFields;
     
-    public FormElementList()
+    public FormElementFieldList()
     {
-        _baseFields = new ElementList();
+        _baseFields = new ElementFieldList();
         _formFields = new List<FormElementField>();
     }
     [JsonConstructor]
-    private FormElementList(IList<FormElementField> formFields)
+    private FormElementFieldList(IList<FormElementField> formFields)
     {
-        _baseFields = new ElementList(formFields.Cast<ElementField>().ToList());
+        _baseFields = new ElementFieldList(formFields.Cast<ElementField>().ToList());
         _formFields = formFields;
     }
     
-    public FormElementList(ElementList baseFields)
+    public FormElementFieldList(ElementFieldList baseFields)
     {
         _baseFields = baseFields;
 

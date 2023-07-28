@@ -27,7 +27,7 @@ public class Element
     /// Field List
     /// </summary>
     [JsonProperty("fields")]
-    public ElementList Fields { get; set; }
+    public ElementFieldList Fields { get; set; }
 
     /// <summary>
     /// Index List
@@ -81,7 +81,7 @@ public class Element
 
     public Element()
     {
-        Fields = new ElementList();
+        Fields = new ElementFieldList();
         Indexes = new List<ElementIndex>();
         Relationships = new List<ElementRelationship>();
         SyncMode = SyncMode.Online;

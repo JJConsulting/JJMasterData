@@ -145,7 +145,7 @@ internal class GridFilter
         string panelName = CurrentContext.Request.QueryString("pnlname");
 
         if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
-            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext, GridView.ControlFactory.GetFactory<SearchBoxFactory>());
+            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, GridView.CurrentFilter, GridView.CurrentContext, GridView.ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
         if ("jjsearchbox".Equals(requestType))
         {
@@ -157,7 +157,7 @@ internal class GridFilter
                 return null;
 
             var field = GridView.FormElement.Fields[filterName];
-            var jjSearchBox = GridView.ControlFactory.Create(GridView.FormElement,field, GridView.CurrentFilter, GridView.UserValues, PageState.Filter, GridView.Name);
+            var jjSearchBox = GridView.ComponentFactory.Controls.Create(GridView.FormElement,field, GridView.CurrentFilter, GridView.UserValues, PageState.Filter, GridView.Name);
             jjSearchBox.Name = objName;
             jjSearchBox.GetHtml();
         }
@@ -374,13 +374,13 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)GridView.ControlFactory.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
+                        var search = (JJSearchBox)GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = search.SelectedValue;
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)GridView.ControlFactory.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
+                        var lookup = (JJLookup)GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;

@@ -25,7 +25,7 @@ public class GridSortingConfig
             throw new ArgumentNullException(nameof(grid));
 
         CurrentOrder = grid.CurrentOrder;
-        ComboBoxFactory = grid.ComboBoxFactory;
+        ComboBoxFactory = grid.ComponentFactory.Controls.GetFactory<ComboBoxFactory>();
         StringLocalizer = grid.StringLocalizer;
         FormElement = grid.FormElement;
         Name = grid.Name;

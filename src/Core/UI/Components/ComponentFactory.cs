@@ -24,6 +24,8 @@ public class ComponentFactory
     public IFormElementComponentFactory<JJGridView> GridView => GetFactory<IFormElementComponentFactory<JJGridView>>();
     public IComponentFactory<JJFormUpload> FormUpload => GetFactory<IComponentFactory<JJFormUpload> >();
     public IComponentFactory<JJFileDownloader> Downloader => GetFactory<IComponentFactory<JJFileDownloader>>();
+    public IComponentFactory<JJUploadArea> UploadArea => GetFactory<IComponentFactory<JJUploadArea>>();
+
     public ControlFactory Controls => GetFactory<ControlFactory>();
 
     public ComponentFactory(IServiceProvider serviceProvider)

@@ -12,39 +12,21 @@ namespace JJMasterData.Core.Web.Factories;
 internal class FormUploadFactory : IComponentFactory<JJFormUpload>
 {
     public ILoggerFactory LoggerFactory { get; }
-
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-
-    //This prevents a circular dependency:
-    //GridViewFactory depends on ControlsFactory
-    //ControlsFactory depends on TextFileFactory
-    //TextFileFactory depends on FormUploadFactory
-    //FormUploadFactory depends on GridViewFactory !Recursive!
-    private Lazy< IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
-
-    private IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
-
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-
     private IHttpContext CurrentContext { get; }
-    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private ComponentFactory ComponentFactory { get; }
+
 
     public FormUploadFactory(
         IHttpContext currentContext,
-        IControlFactory<JJTextGroup>  textBoxFactory,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        IComponentFactory<JJUploadArea> uploadAreaFactory,
-        Lazy< IFormElementComponentFactory<JJGridView>> gridViewFactory,
+        ComponentFactory componentFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
-        TextBoxFactory = textBoxFactory;
-        FileDownloaderFactory = fileDownloaderFactory;
-        UploadAreaFactory = uploadAreaFactory;
-        GridViewFactory = gridViewFactory;
+        ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
@@ -54,10 +36,7 @@ internal class FormUploadFactory : IComponentFactory<JJFormUpload>
     {
         return new JJFormUpload(
             CurrentContext, 
-            FileDownloaderFactory, 
-            TextBoxFactory, 
-            UploadAreaFactory,
-            GridViewFactory,
+            ComponentFactory,
             EncryptionService, 
             StringLocalizer,
             LoggerFactory);

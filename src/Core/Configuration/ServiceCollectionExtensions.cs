@@ -66,7 +66,6 @@ public static class ServiceCollectionExtensions
     {
         
         services.AddHttpServices();
-        services.AddScriptHelpers();
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();
    

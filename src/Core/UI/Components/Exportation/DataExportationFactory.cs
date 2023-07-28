@@ -27,7 +27,6 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
     private IExpressionsService ExpressionsService { get; }
 
     private IFieldValuesService FieldValuesService { get; }
-    private DataExportationScripts Scripts { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
@@ -40,7 +39,6 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
         IDataDictionaryRepository dataDictionaryRepository,
         IExpressionsService expressionsService,
         IFieldValuesService fieldValuesService,
-        DataExportationScripts scripts,
         IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTask backgroundTask,
         IHttpContext httpContext,
@@ -57,7 +55,6 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
         FieldValuesService = fieldValuesService;
-        Scripts = scripts;
         Options = options;
         BackgroundTask = backgroundTask;
         HttpContext = httpContext;

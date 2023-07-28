@@ -96,7 +96,7 @@ public class JJFormUpload : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public JJUploadArea Upload => _upload ??= UploadAreaFactory.Create();
+    public JJUploadArea Upload => _upload ??= ComponentFactory.UploadArea.Create();
 
     public JJGridView GridView
     {
@@ -107,7 +107,7 @@ public class JJFormUpload : JJBaseView
 
             var dt = GetDataTableFiles();
 
-            _gridView = GridViewFactory.Value.Create(new FormElement(dt));
+            _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
             _gridView.DataSource = dt;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
@@ -223,29 +223,20 @@ public class JJFormUpload : JJBaseView
     }
 
     internal IHttpContext CurrentContext { get; }
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-    private  IControlFactory<JJTextGroup> TextBoxFactory { get; }
-    internal IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
-    internal Lazy< IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
+    private ComponentFactory ComponentFactory { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
     internal ILogger<JJFormUpload> Logger { get; }
     public JJFormUpload(
         IHttpContext currentContext,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        IControlFactory<JJTextGroup> textBoxFactory,
-        IComponentFactory<JJUploadArea> uploadAreaFactory, 
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
+        ComponentFactory componentFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
-        FileDownloaderFactory = fileDownloaderFactory;
-        TextBoxFactory = textBoxFactory;
-        UploadAreaFactory = uploadAreaFactory;
-        GridViewFactory = gridViewFactory;
+        ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
@@ -331,7 +322,7 @@ public class JJFormUpload : JJBaseView
         {
  
             var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
-            var downloader = FileDownloaderFactory.Create();
+            var downloader = ComponentFactory.Downloader.Create();
             downloader.FilePath = filePath;
             src = downloader.GetDownloadUrl(filePath);
         }
@@ -560,7 +551,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
-            var downloader = FileDownloaderFactory.Create();
+            var downloader = ComponentFactory.Downloader.Create();
             src = downloader.GetDownloadUrl(filePath);
         }
 
@@ -767,7 +758,7 @@ public class JJFormUpload : JJBaseView
                 throw exception;
             }
         }
-        var downloader = FileDownloaderFactory.Create();
+        var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = fileName;
         downloader.DirectDownload();
     }

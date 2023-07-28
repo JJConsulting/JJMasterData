@@ -73,7 +73,7 @@ internal class DataPanelControl
         Errors = new Dictionary<string, dynamic>();
         UserValues = gridView.UserValues;
         Name = gridView.Name;
-        ControlFactory = gridView.ControlFactory;
+        ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
         IsExternalRoute = gridView.IsExternalRoute;

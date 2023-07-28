@@ -14,35 +14,32 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView>
 {
-    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
     private IHttpContext HttpContext { get; }
     private IEntityRepository EntityRepository { get; }
     private IAuditLogService AuditLogService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private ComponentFactory ComponentFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public AuditLogViewFactory(
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
-        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
         IHttpContext httpContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
+        ComponentFactory componentFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        GridViewFactory = gridViewFactory;
-        DataPanelFactory = dataPanelFactory;
         HttpContext = httpContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
         DataDictionaryRepository = dataDictionaryRepository;
+        ComponentFactory = componentFactory;
         StringLocalizer = stringLocalizer;
     }
 
     public JJAuditLogView Create(FormElement formElement)
     {
-        return new JJAuditLogView(formElement,GridViewFactory,DataPanelFactory, HttpContext, EntityRepository, AuditLogService,StringLocalizer);
+        return new JJAuditLogView(formElement, HttpContext, EntityRepository, AuditLogService, ComponentFactory,StringLocalizer);
     }
     
     public async Task<JJAuditLogView> CreateAsync(string elementName)

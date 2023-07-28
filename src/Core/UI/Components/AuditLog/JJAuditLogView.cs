@@ -25,6 +25,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJAuditLogView : JJBaseView
 {
+    private readonly ComponentFactory _componentFactory;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
     private string _userId;
@@ -50,7 +51,7 @@ public class JJAuditLogView : JJBaseView
     {
         get
         {
-            var panel = DataPanelFactory.Value.Create(FormElement);
+            var panel = _componentFactory.DataPanel.Create(FormElement);
             panel.Name = "jjpainellog_" + Name;
             return _dataPainel ??= panel;
         }
@@ -58,24 +59,20 @@ public class JJAuditLogView : JJBaseView
     }
 
     public FormElement FormElement { get; private set; }
-    private Lazy<IFormElementComponentFactory<JJGridView>> GridViewFactory { get; }
-    private Lazy<IFormElementComponentFactory<JJDataPanel>> DataPanelFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
     public JJAuditLogView(
-        FormElement formElement, 
-        Lazy<IFormElementComponentFactory<JJGridView>> gridViewFactory,
-        Lazy<IFormElementComponentFactory<JJDataPanel>> dataPanelFactory,
+        FormElement formElement,
         IHttpContext currentContext, 
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
+        ComponentFactory componentFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
     {
+        _componentFactory = componentFactory;
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
-        GridViewFactory = gridViewFactory;
-        DataPanelFactory = dataPanelFactory;
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
@@ -243,7 +240,7 @@ public class JJAuditLogView : JJBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = GridViewFactory.Value.Create(FormElement);
+        var grid = _componentFactory.GridView.Create(FormElement);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";

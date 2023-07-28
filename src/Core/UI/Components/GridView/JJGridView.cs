@@ -101,7 +101,7 @@ public class JJGridView : JJAsyncBaseView
             if (_dataImp != null)
                 return _dataImp;
 
-            _dataImp = DataImportationFactory.Value.Create(FormElement);
+            _dataImp = ComponentFactory.DataImportation.Create(FormElement);
             _dataImp.UserValues = UserValues;
             _dataImp.ProcessOptions = ImportAction.ProcessOptions;
             _dataImp.Name = Name + "_dataimp";
@@ -117,7 +117,7 @@ public class JJGridView : JJAsyncBaseView
             if (_dataExp != null)
                 return _dataExp;
 
-            _dataExp = DataExportationFactory.Value.Create(FormElement);
+            _dataExp = ComponentFactory.DataExportation.Create(FormElement);
             _dataExp.Name = Name;
             _dataExp.IsExternalRoute = IsExternalRoute;
             _dataExp.ExportOptions = CurrentExportConfig;
@@ -533,60 +533,16 @@ public class JJGridView : JJAsyncBaseView
     internal IExpressionsService ExpressionsService { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal ComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper);
 
     internal IHttpContext CurrentContext { get; }
-    internal Lazy<IFormElementComponentFactory<JJDataExp>> DataExportationFactory { get; }
-    internal Lazy<IFormElementComponentFactory<JJDataImp>> DataImportationFactory { get; }
-    internal IControlFactory<JJLookup> LookupFactory { get; }
-    internal IControlFactory<JJComboBox> ComboBoxFactory { get; }
-    internal ControlFactory ControlFactory { get; }
     #endregion
 
     #region "Constructors"
-    
-    public JJGridView(IHttpContext currentContext,
-        IEntityRepository entityRepository,
-        JJMasterDataUrlHelper urlHelper,
-        IExpressionsService expressionsService,
-        JJMasterDataEncryptionService encryptionService,
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
-        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
-        ControlFactory controlFactory)
-    {
-        FieldsService = fieldsService;
-        ExpressionsService = expressionsService;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        EntityRepository = entityRepository;
-        UrlHelper = urlHelper;
-        CurrentContext = currentContext;
-        ControlFactory = controlFactory;
-        FormValuesService = formValuesService;
-        DataExportationFactory = dataExportationFactory;
-        DataImportationFactory = dataImportationFactory;
-        LookupFactory = controlFactory.GetFactory<IControlFactory<JJLookup>>();
-        ComboBoxFactory = controlFactory.GetFactory<IControlFactory<JJComboBox>>();
-
-        Name = "jjview";
-        ShowTitle = true;
-        EnableFilter = true;
-        EnableAjax = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found";
-        AutoReloadFormFields = true;
-        RelationValues = new Dictionary<string, dynamic>();
-        TitleSize = HeadingSize.H1;
-    }
     
     public JJGridView(
         FormElement formElement,
@@ -598,13 +554,30 @@ public class JJGridView : JJAsyncBaseView
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        Lazy<IFormElementComponentFactory<JJDataExp>> dataExportationFactory,
-        Lazy<IFormElementComponentFactory<JJDataImp>> dataImportationFactory,
-        ControlFactory controlFactory) : this(currentContext,
-        entityRepository, urlHelper, expressionsService, encryptionService, fieldsService, formValuesService, stringLocalizer, dataExportationFactory, dataImportationFactory, controlFactory)
+        ComponentFactory componentFactory)
     {
         Name = "jjview" + formElement.Name.ToLower();
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        ShowTitle = true;
+        EnableFilter = true;
+        EnableAjax = true;
+        EnableSorting = true;
+        ShowHeaderWhenEmpty = true;
+        ShowPagging = true;
+        ShowToolbar = true;
+        EmptyDataText = "No records found";
+        AutoReloadFormFields = true;
+        RelationValues = new Dictionary<string, dynamic>();
+        TitleSize = HeadingSize.H1;
+        FormElement = formElement;
+        FieldsService = fieldsService;
+        ExpressionsService = expressionsService;
+        EncryptionService = encryptionService;
+        StringLocalizer = stringLocalizer;
+        ComponentFactory = componentFactory;
+        EntityRepository = entityRepository;
+        UrlHelper = urlHelper;
+        CurrentContext = currentContext;
+        FormValuesService = formValuesService;
     }
 
     #endregion
@@ -797,7 +770,7 @@ public class JJGridView : JJAsyncBaseView
 
         if (field == null) return null;
 
-        var lookup = LookupFactory.Create(FormElement,field, new(new FormStateData(null, null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement,field, new(new FormStateData(null, null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();
@@ -1065,7 +1038,7 @@ public class JJGridView : JJAsyncBaseView
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(ComboBoxFactory,StringLocalizer)
+        var legend = new JJLegendView(ComponentFactory.Controls.GetFactory<ComboBoxFactory>(),StringLocalizer)
         {
             ShowAsModal = true,
             FormElement = FormElement,
