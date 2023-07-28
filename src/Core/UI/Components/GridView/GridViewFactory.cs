@@ -4,18 +4,17 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Components.Scripts;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 
