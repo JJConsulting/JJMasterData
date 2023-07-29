@@ -1,15 +1,12 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -30,7 +27,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -615,10 +611,16 @@ public class JJGridView : JJAsyncBaseView
 
         string currentAction = CurrentContext.Request["current_tableaction_" + Name];
 
-        var error = await ExecuteCurrentAction();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
-        if (string.IsNullOrEmpty(error))
-            currentAction = null;
+        if (CheckForSqlCommand())
+        {
+            var errorMessage = await ExecuteSqlCommand();
+            if (errorMessage == null)
+                currentAction = null;
+            else
+                html.AppendElement(errorMessage);
+        }
         
         SetDataSource();
 
@@ -631,12 +633,12 @@ public class JJGridView : JJAsyncBaseView
         if (CheckForSelectAllRows(requestType))
             return null;
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        
         html.WithAttribute("id", $"jjgridview_{Name}");
         html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
 
         html.AppendText(GetScriptHtml());
-        html.AppendRange(GetHiddenInputs(error, currentAction));
+        html.AppendRange(GetHiddenInputs(currentAction));
 
         html.AppendElement(await Table.GetHtmlElement());
 
@@ -678,15 +680,9 @@ public class JJGridView : JJAsyncBaseView
         return false;
     }
 
-    private IEnumerable<HtmlBuilder> GetHiddenInputs(string error, string currentAction)
+    private IEnumerable<HtmlBuilder> GetHiddenInputs(string currentAction)
     {
         var elementList = new List<HtmlBuilder>();
-
-        if (!string.IsNullOrEmpty(error))
-        {
-            elementList.Add(new HtmlBuilder(error));
-        }
-
         elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
         elementList.Add(GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString()));
         elementList.Add(GetHiddenInput($"current_tableaction_{Name}", currentAction));
@@ -808,22 +804,21 @@ public class JJGridView : JJAsyncBaseView
 
     public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
 
-    private async Task<string> ExecuteCurrentAction()
+
+    private bool CheckForSqlCommand()
     {
-        string error = string.Empty;
-        var actionMap = CurrentActionMap;
-        var action = GetCurrentAction(actionMap);
-
-        switch (action)
-        {
-            case SqlCommandAction cmdAction:
-                error = await _actionManager.ExecuteSqlCommand(this, actionMap, cmdAction);
-                break;
-        }
-
-        return error;
+        var action = GetCurrentAction(CurrentActionMap);
+        return action is SqlCommandAction;
     }
 
+    private Task<JJMessageBox> ExecuteSqlCommand()
+    {
+        var actionMap = CurrentActionMap;
+        var action = GetCurrentAction(actionMap);
+        var gridSqlAction = new GridSqlCommandAction(this);
+        return gridSqlAction.ExecuteSqlCommand(actionMap, (SqlCommandAction)action);
+    }
+    
     private void AssertProperties()
     {
         if (FormElement == null)
@@ -831,7 +826,6 @@ public class JJGridView : JJAsyncBaseView
 
         if (EnableMultiSelect && PrimaryKeyFields.Count == 0)
             throw new JJMasterDataException(
-
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary");
     }
 
