@@ -395,54 +395,5 @@ internal class ActionManager
 
         return link;
     }
-
-    public async Task<string> ExecuteSqlCommand(JJGridView gridView, ActionMap map, SqlCommandAction cmdAction)
-    {
-        try
-        {
-            var listSql = new List<string>();
-            if (map.ActionSource == ActionSource.GridToolbar && gridView.EnableMultiSelect && cmdAction.ApplyOnSelected)
-            {
-                var selectedRows = gridView.GetSelectedGridValues();
-                if (selectedRows.Count == 0)
-                {
-                    string msg = StringLocalizer["No lines selected."];
-                    return new JJMessageBox(msg, MessageIcon.Warning).GetHtml();
-                }
-
-                foreach (var row in selectedRows)
-                {
-                    string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, row);
-                    listSql.Add(sql);
-                }
-
-                await EntityRepository.SetCommandAsync(listSql);
-                gridView.ClearSelectedGridValues();
-            }
-            else
-            {
-                IDictionary<string, dynamic> formValues;
-                if (map.PkFieldValues != null && (map.PkFieldValues != null ||
-                                                  map.PkFieldValues.Count > 0))
-                {
-                    formValues = await gridView.EntityRepository.GetDictionaryAsync(FormElement, map.PkFieldValues);
-                }
-                else
-                {
-                    formValues = FieldValuesService.GetDefaultValues(FormElement, null, PageState.List);
-                }
-
-                string sql = Expression.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);
-                listSql.Add(sql);
-                await EntityRepository.SetCommandAsync(listSql);
-            }
-        }
-        catch (Exception ex)
-        {
-            string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error).GetHtml();
-        }
-
-        return null;
-    }
+    
 }
