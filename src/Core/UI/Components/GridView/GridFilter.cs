@@ -81,7 +81,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        ApplyCurrentFilter(null);
+        await ApplyCurrentFilter(null);
         return _currentFilter;
     }
     

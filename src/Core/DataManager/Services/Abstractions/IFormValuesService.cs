@@ -7,9 +7,8 @@ namespace JJMasterData.Core.DataManager;
 
 public interface IFormValuesService
 {
-    IDictionary<string,dynamic> GetFormValues(
-        FormElement formElement,
-        PageState pageState, 
+    Task<IDictionary<string, dynamic>> GetFormValuesAsync(FormElement formElement,
+        PageState pageState,
         string? fieldPrefix = null);
     
     /// <summary>

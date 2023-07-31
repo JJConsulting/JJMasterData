@@ -406,7 +406,7 @@ public class JJFormView : JJAsyncBaseView
         if ("OK".Equals(formAction))
         {
             var values = await GetFormValuesAsync();
-            var errors = UpdateFormValuesAsync(values).GetAwaiter().GetResult();
+            var errors = await UpdateFormValuesAsync(values);
 
             if (errors.Count == 0)
             {
@@ -448,7 +448,7 @@ public class JJFormView : JJAsyncBaseView
             {
                 autoReloadFields = false;
                 var acMap = CurrentActionMap;
-                values = EntityRepository.GetDictionaryAsync(FormElement, acMap.PkFieldValues).GetAwaiter().GetResult();
+                values = await EntityRepository.GetDictionaryAsync(FormElement, acMap.PkFieldValues);
             }
 
             PageState = PageState.Update;

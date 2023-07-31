@@ -38,7 +38,8 @@ public class FormValuesService : IFormValuesService
         CurrentContext = currentContext;
     }
 
-    public IDictionary<string,dynamic> GetFormValues(FormElement formElement,PageState pageState, string? fieldPrefix = null)
+    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync(FormElement formElement, PageState pageState,
+        string? fieldPrefix = null)
     {
         if (formElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -56,7 +57,7 @@ public class FormValuesService : IFormValuesService
             {
                 case FormComponent.Search:
                 {
-                    value = DataItemService.GetSelectedValue(field,null,values,pageState);
+                    value = await DataItemService.GetSelectedValueAsync(field,null,values,pageState);
                     break;
                 }
                 case FormComponent.Lookup:
@@ -122,7 +123,7 @@ public class FormValuesService : IFormValuesService
 
         if (CurrentContext.IsPost && autoReloadFormFields)
         {
-            var requestedValues = GetFormValues(formElement,pageState, prefix);
+            var requestedValues = await GetFormValuesAsync(formElement,pageState, prefix);
             DataHelper.CopyIntoDictionary(ref newValues, requestedValues, true);
         }
         

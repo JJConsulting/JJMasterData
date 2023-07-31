@@ -25,7 +25,7 @@ public class DataItemService : IDataItemService
         HttpContext = httpContext;
     }
     
-    public async Task<string> GetSelectedValue(FormElementField field,string searchText, IDictionary<string,dynamic?> values, PageState pageState)
+    public async Task<string> GetSelectedValueAsync(FormElementField field,string searchText, IDictionary<string,dynamic?> values, PageState pageState)
     {
         if (HttpContext.IsPost)
         {

@@ -50,8 +50,8 @@ public class FieldValuesService : IFieldValuesService
             }
         }
 
-        ApplyDefaultValues(formElement, newValues, pageState, replaceNullValues);
-        ApplyTriggerValues(formElement, newValues, pageState);
+        await ApplyDefaultValues(formElement, newValues, pageState, replaceNullValues);
+        await ApplyTriggerValues(formElement, newValues, pageState);
 
         return newValues;
     }
@@ -84,7 +84,7 @@ public class FieldValuesService : IFieldValuesService
                 values.Add(v.Key, v.Value);
         }
 
-        ApplyDefaultValues(formElement,values, pageState, false);
+        await ApplyDefaultValues(formElement,values, pageState, false);
         return values;
     }
 
