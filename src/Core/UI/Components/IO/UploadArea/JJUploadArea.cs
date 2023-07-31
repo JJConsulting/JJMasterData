@@ -136,7 +136,7 @@ public class JJUploadArea : JJBaseView
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","Upload"));
+                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea"));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

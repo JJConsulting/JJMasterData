@@ -13,20 +13,23 @@ namespace JJMasterData.Core.Web.Factories;
 internal class TextFileFactory : IControlFactory<JJTextFile>
 {
     private IHttpContext HttpContext { get; }
-    private IComponentFactory<JJFormUpload> FormUploadFactory { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
+    private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
         IHttpContext httpContext,
-        IComponentFactory<JJFormUpload> formUploadFactory,
+        JJMasterDataUrlHelper urlHelper,
+        IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
-        FormUploadFactory = formUploadFactory;
+        UrlHelper = urlHelper;
+        UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
@@ -35,7 +38,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpContext, FormUploadFactory, TextBoxFactory,EncryptionService, StringLocalizer);
+        return new JJTextFile(HttpContext,UrlHelper, UploadViewFactory, TextBoxFactory,EncryptionService, StringLocalizer);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)

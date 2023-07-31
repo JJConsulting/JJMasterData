@@ -7,15 +7,15 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJFormUploadTagHelper : TagHelper
 {
-    private IComponentFactory<JJFormUpload> FormUploadFactory { get; }
+    private IComponentFactory<JJUploadView> FormUploadFactory { get; }
 
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     [HtmlAttributeName("configure")]
-    public Action<JJFormUpload>? Configure { get; set; }
+    public Action<JJUploadView>? Configure { get; set; }
     
-    public JJFormUploadTagHelper(IComponentFactory<JJFormUpload> formUploadFactory)
+    public JJFormUploadTagHelper(IComponentFactory<JJUploadView> formUploadFactory)
     {
         FormUploadFactory = formUploadFactory;
     }

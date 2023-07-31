@@ -31,7 +31,7 @@ public class FormFileService
         foreach (var field in uploadFields)
         {
             string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var fileService = new FormFileManager(field.Name + "_formupload", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
+            var fileService = new FormFileManager(field.Name + "_uploadview", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
             fileService.SaveMemoryFiles(folderPath);
         }
     }
@@ -44,7 +44,7 @@ public class FormFileService
         
         foreach (var field in uploadFields)
         {
-            var fileService = new FormFileManager(field.Name + "_formupload", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
+            var fileService = new FormFileManager(field.Name + "_uploadview", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
             fileService.DeleteAll();
         }
     }

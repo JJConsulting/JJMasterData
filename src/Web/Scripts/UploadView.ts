@@ -1,0 +1,26 @@
+class UploadView{
+    open(componentName: string, title:string, values: string, url: string = null){
+
+        const panelName = $("#v_" + componentName).attr("pnlname");
+        
+        if(url == null){
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName)
+            urlBuilder.addQueryParameter("uploadViewParams",values)
+            
+            url = urlBuilder.build();
+        }
+        
+        const popup = new Popup();
+        popup.modalId =componentName + "-popup"
+        popup.modalTitleId = componentName + "-popup-title"
+
+        if(url == null){
+            popup.show(title, url , 1);
+        }
+        else{
+            popup.showHtmlFromUrl(title, url,null, 1);
+        }
+
+    }
+}

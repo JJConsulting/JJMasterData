@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -13,7 +10,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -23,11 +19,12 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJTextFile : JJBaseControl
 {
-    private IComponentFactory<JJFormUpload>  FormUploadFactory { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
+    private IComponentFactory<JJUploadView>  UploadViewFactory { get; }
     private IControlFactory<JJTextGroup>  TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private const string UploadFormParameterName = "jjuploadform_";
+    private const string UploadViewParameterName = "jjuploadview_";
     private IDictionary<string,dynamic> _formValues;
     private FormFilePathBuilder _pathBuiler;
     
@@ -54,12 +51,14 @@ public class JJTextFile : JJBaseControl
 
     public JJTextFile(
         IHttpContext currentContext, 
-        IComponentFactory<JJFormUpload> formUploadFactory,
+        JJMasterDataUrlHelper urlHelper,
+        IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
-        FormUploadFactory = formUploadFactory;
+        UrlHelper = urlHelper;
+        UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
@@ -69,20 +68,26 @@ public class JJTextFile : JJBaseControl
     {
         if (IsFormUploadRoute())
         {
-            //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
-            //por esse motivo passamos os valores nessários do form anterior por parametro o:)
-            LoadDirectValues();
-            var formUpload = GetFormUpload();
-
-            var html = new HtmlBuilder();
-            html.AppendElement(formUpload);
-            html.AppendScript(GetRefreshScript(formUpload));
-            return html;
+            return GetFormUploadHtmlBuilder();
         }
         else
         {
             return GetHtmlTextGroup();
         }
+    }
+
+    internal HtmlBuilder GetFormUploadHtmlBuilder()
+    {
+        //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
+        //por esse motivo passamos os valores nessários do form anterior por parametro o:)
+        LoadValuesFromQuery();
+        
+        var formUpload = GetFormUpload();
+
+        var html = new HtmlBuilder();
+        html.AppendElement(formUpload);
+        html.AppendScript(GetRefreshScript(formUpload));
+        return html;
     }
 
     private HtmlBuilder GetHtmlTextGroup()
@@ -100,11 +105,13 @@ public class JJTextFile : JJBaseControl
         textGroup.Attributes = Attributes;
         textGroup.Text = GetPresentationText(formUpload);
 
-        var btn = new JJLinkButton();
-        btn.ShowAsButton = true;
-        btn.OnClientClick = GetOpenUploadFormAction();
-        btn.ToolTip = "Manage Files";
-        btn.IconClass = IconType.Paperclip.GetCssClass();
+        var btn = new JJLinkButton
+        {
+            ShowAsButton = true,
+            OnClientClick = GetUploadViewAction(),
+            ToolTip = "Manage Files",
+            IconClass = IconType.Paperclip.GetCssClass()
+        };
         textGroup.Actions.Add(btn);
 
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -119,57 +126,62 @@ public class JJTextFile : JJBaseControl
         return html;
     }
 
-    private string GetRefreshScript(JJFormUpload formUpload)
+    private string GetRefreshScript(JJUploadView uploadView)
     {
         return $$"""
             $(document).ready(function () {
-                window.parent.$("#v_{{Name}}").val("{{GetPresentationText(formUpload)}}");
-                window.parent.$("#{{Name}}").val("{{GetFileName(formUpload)}}");
+                window.parent.$("#v_{{Name}}").val("{{GetPresentationText(uploadView)}}");
+                window.parent.$("#{{Name}}").val("{{GetFileName(uploadView)}}");
             });
         """;
     }
 
-    private string GetOpenUploadFormAction()
+    private string GetUploadViewAction()
     {
-        var parms = new OpenFormParms
+        var parms = new UploadViewParams
         {
             PageState = PageState,
-            Enable = Enabled & !ReadOnly
+            Enable = Enabled && !ReadOnly
         };
 
         if (PageState != PageState.Insert)
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         string json = JsonConvert.SerializeObject(parms);
-        string value = EncryptionService.EncryptStringWithUrlEncode(json);
+        string values = EncryptionService.EncryptStringWithUrlEncode(json);
 
         string title = ElementField.Label;
-        if (title == null)
-            title = "Manage Files";
-        else
-            title = title.Replace('\'', '`').Replace('\"', ' ');
+        title = title == null ? "Manage Files" : title.Replace('\'', '`').Replace('\"', ' ');
 
         title = StringLocalizer[title];
-        return $"jjview.openUploadForm('{Name}','{title}','{value}');";
+
+        string? url = null;
+        
+        if (IsExternalRoute)
+        {
+            url = UrlHelper.GetUrl("GetUploadView", "TextFile", new {dictionaryName = FormElement.Name, componentName = Name, @params = values});
+        }
+        
+        return $"UploadView.open('{Name}','{title}','{values}');";
     }
 
-    private void LoadDirectValues()
+    private void LoadValuesFromQuery()
     {
-        string uploadvalues = CurrentContext.Request.QueryString("uploadvalues");
-        if (string.IsNullOrEmpty(uploadvalues))
-            throw new ArgumentNullException(nameof(uploadvalues));
+        var uploadViewParams = CurrentContext.Request.QueryString("uploadViewParams");
+        if (string.IsNullOrEmpty(uploadViewParams))
+            throw new ArgumentNullException(nameof(uploadViewParams));
 
-        string json = EncryptionService.DecryptStringWithUrlDecode(uploadvalues);
-        var parms = JsonConvert.DeserializeObject<OpenFormParms>(json);
-        if (parms == null)
+        var json = EncryptionService.DecryptStringWithUrlDecode(uploadViewParams);
+        var @params = JsonConvert.DeserializeObject<UploadViewParams>(json);
+        if (@params == null)
             throw new JJMasterDataException("Invalid parameters when opening file upload");
 
-        PageState = parms.PageState;
-        Enabled = parms.Enable;
+        PageState = @params.PageState;
+        Enabled = @params.Enable;
 
-        if (!string.IsNullOrEmpty(parms.PkValues))
+        if (!string.IsNullOrEmpty(@params.PkValues))
         {
-            string[] values = parms.PkValues.Split('|');
+            var values = @params.PkValues.Split('|');
             var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
             for (int i = 0; i < pkFields.Count; i++)
             {
@@ -181,22 +193,22 @@ public class JJTextFile : JJBaseControl
     public void SaveMemoryFiles()
     {
         string folderPath = GetFolderPath();
-        JJFormUpload formUpload = GetFormUpload();
-        formUpload.SaveMemoryFiles(folderPath);
+        JJUploadView uploadView = GetFormUpload();
+        uploadView.SaveMemoryFiles(folderPath);
     }
 
     public void DeleteAll()
     {
-        JJFormUpload formUpload = GetFormUpload();
-        formUpload.FolderPath = GetFolderPath();
-        formUpload.DeleteAll();
+        JJUploadView uploadView = GetFormUpload();
+        uploadView.FolderPath = GetFolderPath();
+        uploadView.DeleteAll();
     }
 
-    private JJFormUpload GetFormUpload()
+    private JJUploadView GetFormUpload()
     {
-        var form = FormUploadFactory.Create();
+        var form = UploadViewFactory.Create();
         var dataFile = ElementField.DataFile;
-        form.Name = ElementField.Name + "_formupload"; //this is important
+        form.Name = ElementField.Name + "_uploadview"; //this is important
         form.Title = "";
         form.AutoSave = false;
         form.GridView.ShowToolbar = false;
@@ -244,16 +256,16 @@ public class JJTextFile : JJBaseControl
     private string GetPanelName()
     {
         string pnlName = string.Empty;
-        if (Attributes.ContainsKey("pnlname"))
-            pnlName = Attributes["pnlname"]?.ToString();
+        if (Attributes.TryGetValue("pnlname", out var attribute))
+            pnlName = attribute?.ToString();
 
         return pnlName;
     }
 
-    private string GetFileName(JJFormUpload formUpload)
+    private string GetFileName(JJUploadView uploadView)
     {
         string fileNames = string.Empty;
-        var listFile = formUpload.GetFiles().FindAll(x => !x.Deleted);
+        var listFile = uploadView.GetFiles().FindAll(x => !x.Deleted);
         foreach (var file in listFile)
         {
             if (fileNames != string.Empty)
@@ -266,9 +278,9 @@ public class JJTextFile : JJBaseControl
 
     }
 
-    private string GetPresentationText(JJFormUpload formUpload)
+    private string GetPresentationText(JJUploadView uploadView)
     {
-        var files = formUpload.GetFiles().FindAll(x => !x.Deleted);
+        var files = uploadView.GetFiles().FindAll(x => !x.Deleted);
 
         return files.Count switch
         {
@@ -340,7 +352,7 @@ public class JJTextFile : JJBaseControl
     private bool IsFormUploadRoute()
     {
         string pnlName = GetPanelName();
-        string lookupRoute = CurrentContext.Request.QueryString(UploadFormParameterName + pnlName);
+        string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + pnlName);
         return Name.Equals(lookupRoute);
     }
 
@@ -354,12 +366,12 @@ public class JJTextFile : JJBaseControl
         else
             dataPanelName = string.Empty;
 
-        return httpContext.Request.QueryString(UploadFormParameterName + dataPanelName) != null;
+        return httpContext.Request.QueryString(UploadViewParameterName + dataPanelName) != null;
     }
 
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
-        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadFormParameterName + view.Name);
+        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
         if (uploadFormRoute == null) 
             return null;
 
@@ -372,14 +384,6 @@ public class JJTextFile : JJBaseControl
 
     }
 
-    private class OpenFormParms
-    {
-        public PageState PageState { get; set; }
 
-        public bool Enable { get; set; }
-
-        public string PkValues { get; set; }
-
-    }
 
 }

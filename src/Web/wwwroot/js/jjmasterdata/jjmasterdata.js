@@ -1520,7 +1520,7 @@ var jjview = (function () {
                 $("form:first").trigger("submit");
             }
         },
-        openUploadForm: function (objid, title, values) {
+        openUploadView: function (objid, title, values) {
             const pnlname = $("#v_" + objid).attr("pnlname");
             let url = $("form").attr("action");
             url += url.includes("?") ? "&" : "?";

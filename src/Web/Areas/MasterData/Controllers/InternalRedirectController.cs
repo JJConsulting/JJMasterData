@@ -32,7 +32,7 @@ public class InternalRedirectController : MasterDataController
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
-        bool isAjax = HttpContext.Request.Query.ContainsKey("uploadValues");
+        bool isAjax = HttpContext.Request.Query.ContainsKey("uploadViewParams");
         
         InternalRedirectViewModel model;
         

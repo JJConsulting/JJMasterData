@@ -34,7 +34,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 /// <seealso cref="JJUploadArea"/>
 /// TODO: New name suggestion: JJUploadView (I think we should use view for components with other components inside)
-public class JJFormUpload : JJBaseView
+public class JJUploadView : JJBaseView
 {
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
@@ -46,38 +46,20 @@ public class JJFormUpload : JJBaseView
     private ScriptAction _renameAction;
     private JJGridView _gridView;
     private JJUploadArea _upload;
-    private FormFileManager _service;
+    private FormFileManager _formFileManager;
 
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
     
-    /// <summary>
-    /// Render upload colapse panel 
-    /// (default is true)
-    /// </summary>
-    public bool ShowAddFile { get; set; }
-
-    /// <summary>
-    /// Colapse panel uplod is expanded 
-    /// (default is true)
-    /// </summary>
-    public bool ExpandedByDefault { get; set; }
-
-    /// <summary>
-    /// Form Tile
-    /// </summary>
+    public bool ShowAddFiles { get; set; }
+    
+    public bool IsCollapseExpandedByDefault { get; set; }
+    
     public string Title { get; set; }
-
-    /// <summary>
-    /// Form Sub-Tile
-    /// </summary>
     public string SubTitle { get; set; }
-
-    /// <summary>
-    /// Show images as gallery
-    /// </summary>
+    
     public bool ViewGallery { get; set; }
 
     /// <summary>
@@ -92,7 +74,7 @@ public class JJFormUpload : JJBaseView
     /// (Optional) If the path is not given, all files will be stored in the session.
     /// </summary>
     /// <remarks>
-    /// Example: c:\temp\files\
+    /// Example: C:\temp\files\ (Windows) or /tmp/Files (Linux)
     /// </remarks>
     public string FolderPath { get; set; }
 
@@ -129,12 +111,12 @@ public class JJFormUpload : JJBaseView
 
             _gridView.AddGridAction(DownloadAction);
 
-            _gridView.OnRenderAction += (object sender, ActionEventArgs args) =>
+            _gridView.OnRenderAction += (_, args) =>
             {
                 if(args.Action.Name.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
-                    var isInMemory = FormFileManager.GetFile(fileName).IsInMemory;
+                    var isInMemory = FormFileFormFileManager.GetFile(fileName).IsInMemory;
                     if (isInMemory)
                     {
                         args.LinkButton.Enabled = false;
@@ -205,20 +187,20 @@ public class JJFormUpload : JJBaseView
         set => _renameAction = value;
     }
 
-    private FormFileManager FormFileManager
+    private FormFileManager FormFileFormFileManager
     {
         get
         {
-            if (_service == null)
+            if (_formFileManager == null)
             {
-                _service = new FormFileManager(Name, CurrentContext,StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
-                _service.OnBeforeCreateFile += OnBeforeCreateFile;
-                _service.OnBeforeDeleteFile += OnBeforeDeleteFile;
-                _service.OnBeforeRenameFile += OnBeforeRenameFile;
+                _formFileManager = new FormFileManager(Name, CurrentContext,StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
+                _formFileManager.OnBeforeCreateFile += OnBeforeCreateFile;
+                _formFileManager.OnBeforeDeleteFile += OnBeforeDeleteFile;
+                _formFileManager.OnBeforeRenameFile += OnBeforeRenameFile;
             }
-            _service.AutoSave = AutoSave;
-            _service.FolderPath = FolderPath;
-            return _service;
+            _formFileManager.AutoSave = AutoSave;
+            _formFileManager.FolderPath = FolderPath;
+            return _formFileManager;
         }
     }
 
@@ -227,8 +209,8 @@ public class JJFormUpload : JJBaseView
     internal JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
-    internal ILogger<JJFormUpload> Logger { get; }
-    public JJFormUpload(
+    internal ILogger<JJUploadView> Logger { get; }
+    public JJUploadView(
         IHttpContext currentContext,
         ComponentFactory componentFactory,
         JJMasterDataEncryptionService encryptionService,
@@ -240,10 +222,10 @@ public class JJFormUpload : JJBaseView
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
-        Logger = loggerFactory.CreateLogger<JJFormUpload>();
-        Name = "jjuploadform1";
-        ShowAddFile = true;
-        ExpandedByDefault = true;
+        Logger = loggerFactory.CreateLogger<JJUploadView>();
+        Name = "jjuploadview";
+        ShowAddFiles = true;
+        IsCollapseExpandedByDefault = true;
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -276,7 +258,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewVideo);
-        var video = FormFileManager.GetFile(fileName).Content;
+        var video = FormFileFormFileManager.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
                           Convert.ToBase64String(video.Bytes.ToArray(), 0, video.Bytes.ToArray().Length);
@@ -307,7 +289,7 @@ public class JJFormUpload : JJBaseView
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewImage);
-        var file = FormFileManager.GetFile(fileName);
+        var file = FormFileFormFileManager.GetFile(fileName);
 
         if (file == null)
             return null;
@@ -321,7 +303,7 @@ public class JJFormUpload : JJBaseView
         else
         {
  
-            var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
+            var filePath = Path.Combine(FormFileFormFileManager.FolderPath, fileName);
             var downloader = ComponentFactory.Downloader.Create();
             downloader.FilePath = filePath;
             src = downloader.GetDownloadUrl(filePath);
@@ -358,7 +340,7 @@ public class JJFormUpload : JJBaseView
             if ("DELFILE".Equals(uploadAction))
                 DeleteFile(fileName);
             else if ("DOWNLOADFILE".Equals(uploadAction))
-                DownloadFile(Path.Combine(FormFileManager.FolderPath, fileName));
+                DownloadFile(Path.Combine(FormFileFormFileManager.FolderPath, fileName));
             else if ("RENAMEFILE".Equals(uploadAction))
                 RenameFile(fileName);
         }
@@ -376,13 +358,13 @@ public class JJFormUpload : JJBaseView
            .AppendHiddenInput($"uploadaction_{Name}")
            .AppendHiddenInput($"filename_{Name}");
 
-        if (!ShowAddFile)
+        if (!ShowAddFiles)
             return html;
 
         html.AppendElement(new JJCollapsePanel(CurrentContext)
         {
             Title = "New File",
-            ExpandedByDefault = ExpandedByDefault,
+            ExpandedByDefault = IsCollapseExpandedByDefault,
             HtmlBuilderContent = GetHtmlFormPanel()
         });
 
@@ -400,7 +382,7 @@ public class JJFormUpload : JJBaseView
             });
         }
 
-        if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
+        if (!Upload.Multiple && FormFileFormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
         panelContent.AppendElement(Upload);
@@ -414,7 +396,7 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlGallery()
     {
-        var files = FormFileManager.GetFiles();
+        var files = FormFileFormFileManager.GetFiles();
         if (files.Count <= 0) return null;
 
         foreach (var ac in GridView.GridActions)
@@ -523,7 +505,7 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlBuilder GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
+    private static HtmlBuilder GetHtmlItemBox(string fileName, string cssIcon, string colorIcon)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("style", "height:180px;")
@@ -538,11 +520,11 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
-        var file = FormFileManager.GetFile(fileName);
+        var file = FormFileFormFileManager.GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-        string filePath = Path.Combine(FormFileManager.FolderPath, fileName);
+        string filePath = Path.Combine(FormFileFormFileManager.FolderPath, fileName);
 
         if (file.IsInMemory)
         {
@@ -669,10 +651,12 @@ public class JJFormUpload : JJBaseView
         };
         btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
 
-        var modal = new JJModalDialog();
-        modal.Name = $"preview_modal_{Upload.Name}";
-        modal.Title = "Would you like to save the image below?";
-        modal.HtmlBuilderContent = html;
+        var modal = new JJModalDialog
+        {
+            Name = $"preview_modal_{Upload.Name}",
+            Title = "Would you like to save the image below?",
+            HtmlBuilderContent = html
+        };
         modal.Buttons.Add(btnOk);
         modal.Buttons.Add(btnCancel);
 
@@ -681,7 +665,7 @@ public class JJFormUpload : JJBaseView
 
     private DataTable GetDataTableFiles()
     {
-        var files = FormFileManager.GetFiles();
+        var files = FormFileFormFileManager.GetFiles();
         var dt = new DataTable();
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
@@ -723,25 +707,25 @@ public class JJFormUpload : JJBaseView
     }
 
     public void RenameFile(string currentName, string newName) =>
-      FormFileManager.RenameFile(currentName, newName);
+      FormFileFormFileManager.RenameFile(currentName, newName);
 
     public void CreateFile(FormFileContent file) =>
-        FormFileManager.CreateFile(file, !Upload.Multiple);
+        FormFileFormFileManager.CreateFile(file, !Upload.Multiple);
 
     public void DeleteFile(string fileName) =>
-        FormFileManager.DeleteFile(fileName);
+        FormFileFormFileManager.DeleteFile(fileName);
 
     internal void DeleteAll() => 
-        FormFileManager.DeleteAll();
+        FormFileFormFileManager.DeleteAll();
 
     public List<FormFileInfo> GetFiles() => 
-        FormFileManager.GetFiles();
+        FormFileFormFileManager.GetFiles();
 
     public void ClearMemoryFiles() => 
-        FormFileManager.MemoryFiles = null;
+        FormFileFormFileManager.MemoryFiles = null;
 
     public void SaveMemoryFiles(string folderPath) =>
-        FormFileManager.SaveMemoryFiles(folderPath);
+        FormFileFormFileManager.SaveMemoryFiles(folderPath);
 
     public void DownloadFile(string fileName)
     {
@@ -768,7 +752,7 @@ public class JJFormUpload : JJBaseView
     /// </summary>
     public void Disable()
     {
-        ShowAddFile = false;
+        ShowAddFiles = false;
         foreach (var action in GridView.GridActions)
         {
             action.SetVisible(false);

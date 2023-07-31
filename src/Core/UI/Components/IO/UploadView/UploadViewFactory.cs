@@ -9,16 +9,15 @@ using System;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class FormUploadFactory : IComponentFactory<JJFormUpload>
+internal class UploadViewFactory : IComponentFactory<JJUploadView>
 {
     public ILoggerFactory LoggerFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IHttpContext CurrentContext { get; }
     private ComponentFactory ComponentFactory { get; }
-
-
-    public FormUploadFactory(
+    
+    public UploadViewFactory(
         IHttpContext currentContext,
         ComponentFactory componentFactory,
         JJMasterDataEncryptionService encryptionService,
@@ -32,9 +31,9 @@ internal class FormUploadFactory : IComponentFactory<JJFormUpload>
         LoggerFactory = loggerFactory;
     }
 
-    public JJFormUpload Create()
+    public JJUploadView Create()
     {
-        return new JJFormUpload(
+        return new JJUploadView(
             CurrentContext, 
             ComponentFactory,
             EncryptionService, 

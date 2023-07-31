@@ -1009,7 +1009,7 @@ public class JJFormView : JJAsyncBaseView
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
-            string sessionName = $"{field.Name}_formupload_jjfiles";
+            string sessionName = $"{field.Name}_uploadview_jjfiles";
             if (CurrentContext?.Session[sessionName] != null)
                 CurrentContext.Session[sessionName] = null;
         }

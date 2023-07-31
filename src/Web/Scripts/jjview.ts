@@ -426,20 +426,11 @@
             }
         },
 
-        openUploadForm: function (objid, title, values) {
-            const pnlname = $("#v_" + objid).attr("pnlname");
-            let url = $("form").attr("action");
-            url += url.includes("?") ? "&" : "?";
-            url += "jjuploadform_" + pnlname + "=" + objid;
-            url += "&uploadvalues=" + values;
-            popup.show(title, url , 1);
-        },
-
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();
             var url = $("form").attr("action");
             url += url.includes("?") ? "&" : "?";
-            url += "jjuploadform_" + pnlname + "=" + objid;
+            url += "jjuploadview_" + pnlname + "=" + objid;
             url += "&downloadfile=" + filename;
 
             window.location.assign(url);
