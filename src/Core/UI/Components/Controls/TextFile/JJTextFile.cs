@@ -66,19 +66,19 @@ public class JJTextFile : JJBaseControl
 
     internal override HtmlBuilder RenderHtml()
     {
-        if (IsFormUploadRoute())
-            return GetFormUploadHtmlBuilder();
+        if (IsUploadViewRoute())
+            return GetUploadViewHtmlBuilder();
 
         return GetHtmlTextGroup();
     }
 
-    internal HtmlBuilder GetFormUploadHtmlBuilder()
+    internal HtmlBuilder GetUploadViewHtmlBuilder()
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
         LoadValuesFromQuery();
 
-        var formUpload = GetFormUpload();
+        var formUpload = GetUploadView();
 
         var html = new HtmlBuilder();
         html.AppendComponent(formUpload);
@@ -88,7 +88,7 @@ public class JJTextFile : JJBaseControl
 
     private HtmlBuilder GetHtmlTextGroup()
     {
-        var formUpload = GetFormUpload();
+        var formUpload = GetUploadView();
 
         if (!Enabled)
             formUpload.ClearMemoryFiles();
@@ -197,21 +197,21 @@ public class JJTextFile : JJBaseControl
     public void SaveMemoryFiles()
     {
         string folderPath = GetFolderPath();
-        JJUploadView uploadView = GetFormUpload();
+        JJUploadView uploadView = GetUploadView();
         uploadView.SaveMemoryFiles(folderPath);
     }
 
     public void DeleteAll()
     {
-        JJUploadView uploadView = GetFormUpload();
+        JJUploadView uploadView = GetUploadView();
         uploadView.FolderPath = GetFolderPath();
         uploadView.DeleteAll();
     }
 
-    private JJUploadView GetFormUpload()
+    private JJUploadView GetUploadView()
     {
         var form = UploadViewFactory.Create();
-        var dataFile = FormElementField.DataFile;
+        var dataFile = FormElementField.DataFile!;
         form.Name = FormElementField.Name + "_uploadview"; //this is important
         form.Title = "";
         form.IsExternalRoute = IsExternalRoute;
@@ -259,11 +259,11 @@ public class JJTextFile : JJBaseControl
 
     private string GetPanelName()
     {
-        string pnlName = string.Empty;
+        string panelName = string.Empty;
         if (Attributes.TryGetValue("pnlname", out var attribute))
-            pnlName = attribute?.ToString();
+            panelName = attribute?.ToString();
 
-        return pnlName;
+        return panelName;
     }
 
     private string GetFileName(JJUploadView uploadView)
@@ -351,14 +351,14 @@ public class JJTextFile : JJBaseControl
         return url;
     }
 
-    private bool IsFormUploadRoute()
+    private bool IsUploadViewRoute()
     {
         string pnlName = GetPanelName();
         string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + pnlName);
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsFormUploadRoute(JJBaseView view, IHttpContext httpContext)
+    public static bool IsUploadViewRoute(JJBaseView view, IHttpContext httpContext)
     {
         string dataPanelName;
         if (view is JJFormView formView)

@@ -27,7 +27,7 @@ internal class DataExportationSettings
         StringLocalizer = dataExportation.StringLocalizer;
     }
 
-    internal HtmlBuilder GetHtmlElement()
+    internal HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         

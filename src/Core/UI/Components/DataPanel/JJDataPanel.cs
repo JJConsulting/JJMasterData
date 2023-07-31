@@ -196,7 +196,7 @@ public class JJDataPanel : JJAsyncBaseView
             return JJLookup.ResponseRoute(this);
 
         //FormUpload Route
-        if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
+        if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
             return JJTextFile.ResponseRoute(this);
 
         //DownloadFile Route

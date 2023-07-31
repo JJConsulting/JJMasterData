@@ -20,12 +20,12 @@ public class ExportationController : MasterDataController
     }
     
     [ServiceFilter<FormElementDecryptionFilter>]
-    public IActionResult StartExportation(FormElement formElement, string componentName)
+    public async Task<IActionResult> StartExportation(FormElement formElement, string componentName)
     {
         var gridView = GridViewFactory.Create(formElement);
         gridView.IsExternalRoute = true;
         gridView.DataExportation.Name = componentName;
-        gridView.ExportFileInBackground();
+        await gridView.ExportFileInBackground();
         
         var html = new DataExportationLog(gridView.DataExportation).GetHtmlProcess().ToString();
         
@@ -51,7 +51,7 @@ public class ExportationController : MasterDataController
         dataExportation.IsExternalRoute = true;
         
         var settings = new DataExportationSettings(dataExportation);
-        return Content(settings.GetHtmlElement().ToString());
+        return Content(settings.GetHtmlBuilder().ToString());
     }
     
     [ServiceFilter<FormElementDecryptionFilter>]

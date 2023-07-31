@@ -101,7 +101,6 @@ public class JJUploadView : JJBaseView
                 return _gridView;
 
             var dt = GetDataTableFiles();
-
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
             _gridView.DataSource = dt;
             _gridView.FormElement.Title = Title;
@@ -123,6 +122,7 @@ public class JJUploadView : JJBaseView
             _gridView.EmptyDataText = "There is no file to display";
             _gridView.ShowHeaderWhenEmpty = false;
 
+            _gridView.GridActions.Clear();
             _gridView.AddGridAction(DownloadAction);
 
             _gridView.OnRenderAction += (_, args) =>
@@ -210,12 +210,12 @@ public class JJUploadView : JJBaseView
         }
     }
 
-    internal IHttpContext CurrentContext { get; }
+    private IHttpContext CurrentContext { get; }
     private ComponentFactory ComponentFactory { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
-    internal ILogger<JJUploadView> Logger { get; }
+    private ILogger<JJUploadView> Logger { get; }
     public JJUploadView(
         IHttpContext currentContext,
         ComponentFactory componentFactory,
@@ -692,15 +692,15 @@ public class JJUploadView : JJBaseView
         return dt;
     }
 
-    public void OnFileUploaded(object sender, FormUploadFileEventArgs e)
+    public void OnFileUploaded(object sender, FormUploadFileEventArgs args)
     {
         try
         {
-            CreateFile(e.File);
+            CreateFile(args.File);
         }
         catch (Exception ex)
         {
-            e.ErrorMessage = ex.Message;
+            args.ErrorMessage = ex.Message;
         }
     }
 

@@ -119,7 +119,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         grid.ShowPagging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
 
-        if (!GridFormSettings.HasFormValues(grid.CurrentContext) | !grid.ShowToolbar | !grid.ConfigAction.IsVisible)
+        if (!GridFormSettings.HasFormValues(grid.CurrentContext) || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad && grid.FormElement != null)

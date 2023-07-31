@@ -288,7 +288,7 @@ public class JJFormView : JJAsyncBaseView
         if (JJLookup.IsLookupRoute(this, CurrentContext))
             return DataPanel.RenderHtml();
 
-        if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
+        if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
             return DataPanel.RenderHtml();
 
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))

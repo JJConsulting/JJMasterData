@@ -106,12 +106,12 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlElement();
+        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder();
     }
 
     protected override Task<HtmlBuilder> RenderHtmlAsync()
     {
-        return Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlElement());
+        return Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder());
     }
 
     internal static JJIcon GetFileIcon(string ext)

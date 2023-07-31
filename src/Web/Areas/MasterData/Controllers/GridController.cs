@@ -19,13 +19,13 @@ public class GridController : MasterDataController
         
     [HttpPost]
     [ServiceFilter<FormElementDecryptionFilter>]
-    public IActionResult SelectAllRows(FormElement formElement, string componentName)
+    public async Task<IActionResult> SelectAllRows(FormElement formElement, string componentName)
     {
         var gridView = GridViewFactory.Create(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
 
-        var selectedRows = gridView.GetEncryptedSelectedRowsAsync();
+        var selectedRows = await gridView.GetEncryptedSelectedRowsAsync();
         
         return Json(new {selectedRows});
     }
