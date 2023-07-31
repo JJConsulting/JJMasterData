@@ -4,7 +4,7 @@
 @using JJMasterData.Core.Web.Http.Abstractions
 @using JJMasterData.Web.Extensions
 @inject IHttpContext HttpContext
-@inject SearchBoxFactory SearchBoxFactory
+@inject IControlFactory<JJSearchBox> SearchBoxFactory
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.IconViewModel 
 
 @* ReSharper disable once Html.IdNotResolved *@

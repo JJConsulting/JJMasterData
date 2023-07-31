@@ -284,13 +284,12 @@ public class JJFormView : JJAsyncBaseView
     {
         var requestType = CurrentContext.Request.QueryString("t");
         var objName = CurrentContext.Request.QueryString("objname");
-        var dataPanel = DataPanel;
 
         if (JJLookup.IsLookupRoute(this, CurrentContext))
-            return dataPanel.RenderHtml();
+            return DataPanel.RenderHtml();
 
         if (JJTextFile.IsFormUploadRoute(this, CurrentContext))
-            return dataPanel.RenderHtml();
+            return DataPanel.RenderHtml();
 
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
             return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,ComponentFactory.Downloader);
@@ -316,7 +315,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if ("geturlaction".Equals(requestType))
         {
-            await dataPanel.SendUrlAction();
+            await DataPanel.SendUrlAction();
             return null;
         }
 
