@@ -156,16 +156,16 @@ public class JJFormView : JJAsyncBaseView
     /// <summary>
     /// Estado atual da pagina
     /// </summary>
-    private PageState _pageState;
+    private PageState? _pageState;
 
     public PageState PageState
     {
         get
         {
-            if (CurrentContext.Request["current_pagestate_" + Name] != null)
+            if (CurrentContext.Request["current_pagestate_" + Name] != null && _pageState is null)
                 _pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
 
-            return _pageState;
+            return _pageState ?? PageState.List;
         }
         internal set => _pageState = value;
     }

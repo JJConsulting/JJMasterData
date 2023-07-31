@@ -29,7 +29,7 @@ public class JJDataPanel : JJAsyncBaseView
 {
     #region "Events"
 
-    public EventHandler<ActionEventArgs> OnRenderAction;
+    public event EventHandler<ActionEventArgs> OnRenderAction;
 
     #endregion
 
@@ -69,7 +69,7 @@ public class JJDataPanel : JJAsyncBaseView
     public IDictionary<string, dynamic> Values { get; set; }
 
     /// <summary>
-    /// When reloading the panel, keep the values ​​entered in the form
+    /// When reloading the panel, keep the values entered in the form
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
@@ -86,10 +86,10 @@ public class JJDataPanel : JJAsyncBaseView
     internal IHttpContext CurrentContext { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
-    public IFieldsService FieldsService { get; }
-    public IFormValuesService FormValuesService { get; }
-    public IExpressionsService ExpressionsService { get; }
-    public ControlFactory ControlFactory { get; }
+    internal IFieldsService FieldsService { get; }
+    internal IFormValuesService FormValuesService { get; }
+    internal IExpressionsService ExpressionsService { get; }
+    internal ControlFactory ControlFactory { get; }
 
     #endregion
 
