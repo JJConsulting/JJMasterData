@@ -378,7 +378,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else
         {
-            html = GetGridHtml();
+            html = await GetGridViewHtml();
         }
 
         if (html != null)
@@ -390,9 +390,9 @@ public class JJFormView : JJAsyncBaseView
         return html;
     }
 
-    private HtmlBuilder GetGridHtml()
+    private async Task<HtmlBuilder> GetGridViewHtml()
     {
-        return GridView.RenderHtml();
+        return await GridView.GetHtmlBuilderAsync();
     }
 
 
@@ -417,7 +417,7 @@ public class JJFormView : JJAsyncBaseView
                 }
 
                 PageState = PageState.List;
-                return GetGridHtml();
+                return await GetGridViewHtml();
             }
 
             PageState = PageState.Update;
@@ -427,7 +427,7 @@ public class JJFormView : JJAsyncBaseView
         if ("CANCEL".Equals(formAction))
         {
             PageState = PageState.List;
-            return GetGridHtml();
+            return await GetGridViewHtml();
         }
 
         if ("REFRESH".Equals(formAction))
@@ -506,7 +506,7 @@ public class JJFormView : JJAsyncBaseView
                 }
 
                 PageState = PageState.List;
-                return GetGridHtml();
+                return await GetGridViewHtml();
             }
 
             PageState = PageState.Insert;
@@ -517,7 +517,7 @@ public class JJFormView : JJAsyncBaseView
         {
             PageState = PageState.List;
             ClearTempFiles();
-            return GetGridHtml();
+            return await GetGridViewHtml();
         }
 
         if (formAction.Equals("ELEMENTSEL"))
@@ -624,7 +624,7 @@ public class JJFormView : JJAsyncBaseView
         if (acMap == null)
         {
             PageState = PageState.List;
-            return GetGridHtml();
+            return await GetGridViewHtml();
         }
 
         PageState = PageState.View;
@@ -672,7 +672,7 @@ public class JJFormView : JJAsyncBaseView
             return null;
         }
 
-        html.AppendElement(GetGridHtml());
+        html.AppendElement(await GetGridViewHtml());
         PageState = PageState.List;
 
         return html;
@@ -743,7 +743,7 @@ public class JJFormView : JJAsyncBaseView
         }
         finally
         {
-            html.AppendElement(GetGridHtml());
+            html.AppendElement(await GetGridViewHtml());
             PageState = PageState.List;
         }
 
