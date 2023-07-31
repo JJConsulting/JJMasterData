@@ -45,7 +45,7 @@ public class JJCheckBox : JJBaseControl
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
             .WithCssClassIf(!Enabled, "disabled")
-            .AppendElement(GetInputHtml());
+            .Append(GetInputHtml());
 
         return html;
     }
@@ -56,7 +56,7 @@ public class JJCheckBox : JJBaseControl
 
         div.WithCssClass("form-check");
         
-        div.AppendElement(HtmlTag.Input, input =>
+        div.Append(HtmlTag.Input, input =>
         {
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
@@ -72,7 +72,7 @@ public class JJCheckBox : JJBaseControl
 
         div.AppendHiddenInput(Name + "_hidden", IsChecked ? Value : "0");
 
-        div.AppendElementIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
+        div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {
             label.WithAttribute("for", Name);
             label.AppendText(Text);

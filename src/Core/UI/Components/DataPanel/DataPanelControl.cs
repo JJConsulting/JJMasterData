@@ -79,15 +79,15 @@ internal class DataPanelControl
         IsExternalRoute = gridView.IsExternalRoute;
     }
 
-    public HtmlBuilder GetHtmlForm(List<FormElementField> fields)
+    public async Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)
     {
         if (FormUI.IsVerticalLayout)
-            return GetHtmlFormVertical(fields);
+            return await GetHtmlFormVertical(fields);
 
-        return GetHtmlFormHorizontal(fields);
+        return await GetHtmlFormHorizontal(fields);
     }
 
-    private HtmlBuilder GetHtmlFormVertical(List<FormElementField> fields)
+    private async Task<HtmlBuilder> GetHtmlFormVertical(List<FormElementField> fields)
     {
         string colClass = "";
         int cols = FormUI.FormCols;
@@ -102,7 +102,7 @@ internal class DataPanelControl
         HtmlBuilder row = null;
         foreach (var field in fields)
         {
-            bool visible = FieldsService.IsVisible(field, PageState, Values);
+            bool visible = await FieldsService.IsVisibleAsync(field, PageState, Values);
             if (!visible)
                 continue;
 
@@ -125,13 +125,13 @@ internal class DataPanelControl
                 lineGroup = field.LineGroup;
                 row = new HtmlBuilder(HtmlTag.Div)
                     .WithCssClass("row");
-                html.AppendElement(row);
+                html.Append(row);
             }
 
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
-            row?.AppendElement(htmlField);
+            row?.Append(htmlField);
 
             string fieldClass;
             if (ControlFactory.IsRange(field, PageState))
@@ -158,18 +158,18 @@ internal class DataPanelControl
                 htmlField.WithCssClass("jjborder-static");
 
             if (field.Component != FormComponent.CheckBox)
-                htmlField.AppendElement(new JJLabel(field));
+                htmlField.AppendComponent(new JJLabel(field));
 
             if (IsViewModeAsStatic)
-                htmlField.AppendElement(GetStaticField(field).GetAwaiter().GetResult());
+                htmlField.Append(await GetStaticField(field));
             else
-                htmlField.AppendElement(GetControlField(field, value));
+                htmlField.Append(await GetControlField(field, value));
         }
 
         return html;
     }
 
-    private HtmlBuilder GetHtmlFormHorizontal(List<FormElementField> fields)
+    private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
     {
         string labelClass = "";
         string fieldClass = "";
@@ -220,7 +220,7 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = FieldsService.IsVisible(f, PageState, Values);
+            bool visible = await FieldsService.IsVisibleAsync(f, PageState, Values);
             if (!visible)
                 continue;
 
@@ -245,7 +245,7 @@ internal class DataPanelControl
                     .WithCssClass("form-group")
                     .WithCssClassIf(BootstrapHelper.Version > 3, "row mb-3");
 
-                html.AppendElement(row);
+                html.Append(row);
             }
 
             string colClass = fieldClass;
@@ -266,19 +266,19 @@ internal class DataPanelControl
             }
 
             row?.WithCssClass(cssClass)
-             .AppendElement(label);
+             .AppendComponent(label);
 
             if (ControlFactory.IsRange(f, PageState))
             {
-                row?.AppendElement(GetControlField(f, value));
+                row?.Append(await GetControlField(f, value));
             }
             else
             {
-                row.AppendElement(HtmlTag.Div, col =>
+                await row?.AppendAsync(HtmlTag.Div, async col =>
                 {
                     col.WithCssClass(colClass);
-                    col.AppendElement(IsViewModeAsStatic ? GetStaticField(f).GetAwaiter().GetResult() : GetControlField(f, value));
-                });
+                    col.Append(IsViewModeAsStatic ? await GetStaticField(f) : await GetControlField(f, value));
+                })!;
             }
 
         }
@@ -297,15 +297,15 @@ internal class DataPanelControl
         return html;
     }
 
-    private HtmlBuilder GetControlField(FormElementField field, object value)
+    private async Task<HtmlBuilder> GetControlField(FormElementField field, object value)
     {
-        var control = ControlFactory.Create(FormElement, field, Values, UserValues, PageState, Name, value);
+        var control = await ControlFactory.CreateAsync(FormElement, field, Values, UserValues, PageState, Name, value);
         control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;
 
-        control.Enabled = FieldsService.IsEnabled(field, PageState, Values);
+        control.Enabled = await FieldsService.IsEnabledAsync(field, PageState, Values);
         if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(field.Name))
         {
             control.CssClass = "is-invalid";

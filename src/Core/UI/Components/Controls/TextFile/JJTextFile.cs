@@ -20,29 +20,29 @@ namespace JJMasterData.Core.Web.Components;
 public class JJTextFile : JJBaseControl
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IComponentFactory<JJUploadView>  UploadViewFactory { get; }
-    private IControlFactory<JJTextGroup>  TextBoxFactory { get; }
+    private IComponentFactory<JJUploadView> UploadViewFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadViewParameterName = "jjuploadview_";
-    private IDictionary<string,dynamic> _formValues;
+    private IDictionary<string, dynamic> _formValues;
     private FormFilePathBuilder _pathBuiler;
-    
-    public IDictionary<string,dynamic> FormValues
+
+    public IDictionary<string, dynamic> FormValues
     {
-        get => _formValues ??= new Dictionary<string,dynamic>();
+        get => _formValues ??= new Dictionary<string, dynamic>();
         set => _formValues = value;
     }
 
     public new string ToolTip
     {
-        get => ElementField.HelpDescription;
-        set => ElementField.HelpDescription = value;
+        get => FormElementField.HelpDescription;
+        set => FormElementField.HelpDescription = value;
     }
 
     public PageState PageState { get; set; }
 
-    public FormElementField ElementField { get; set; }
+    public FormElementField FormElementField { get; set; }
 
     public FormElement FormElement { get; set; }
 
@@ -50,7 +50,7 @@ public class JJTextFile : JJBaseControl
 
 
     public JJTextFile(
-        IHttpContext currentContext, 
+        IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
@@ -67,13 +67,9 @@ public class JJTextFile : JJBaseControl
     internal override HtmlBuilder RenderHtml()
     {
         if (IsFormUploadRoute())
-        {
             return GetFormUploadHtmlBuilder();
-        }
-        else
-        {
-            return GetHtmlTextGroup();
-        }
+
+        return GetHtmlTextGroup();
     }
 
     internal HtmlBuilder GetFormUploadHtmlBuilder()
@@ -81,11 +77,11 @@ public class JJTextFile : JJBaseControl
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
         LoadValuesFromQuery();
-        
+
         var formUpload = GetFormUpload();
 
         var html = new HtmlBuilder();
-        html.AppendElement(formUpload);
+        html.AppendComponent(formUpload);
         html.AppendScript(GetRefreshScript(formUpload));
         return html;
     }
@@ -115,13 +111,13 @@ public class JJTextFile : JJBaseControl
         textGroup.Actions.Add(btn);
 
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(textGroup)
-            .AppendElement(HtmlTag.Input, i =>
-                {
-                    i.WithAttribute("type", "hidden")
-                     .WithNameAndId(Name)
-                     .WithAttribute("value", GetFileName(formUpload));
-                });
+            .AppendComponent(textGroup)
+            .Append(HtmlTag.Input, i =>
+            {
+                i.WithAttribute("type", "hidden")
+                    .WithNameAndId(Name)
+                    .WithAttribute("value", GetFileName(formUpload));
+            });
 
         return html;
     }
@@ -147,22 +143,30 @@ public class JJTextFile : JJBaseControl
         if (PageState != PageState.Insert)
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
-        string json = JsonConvert.SerializeObject(parms);
-        string values = EncryptionService.EncryptStringWithUrlEncode(json);
+        var json = JsonConvert.SerializeObject(parms);
+        var values = EncryptionService.EncryptStringWithUrlEncode(json);
 
-        string title = ElementField.Label;
+        var title = FormElementField.Label;
         title = title == null ? "Manage Files" : title.Replace('\'', '`').Replace('\"', ' ');
 
         title = StringLocalizer[title];
 
-        string? url = null;
-        
+        var url = string.Empty;
+
         if (IsExternalRoute)
         {
-            url = UrlHelper.GetUrl("GetUploadView", "TextFile", new {dictionaryName = FormElement.Name, componentName = Name, @params = values});
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(FormElement.Name);
+            url = UrlHelper.GetUrl("GetUploadView", "TextFile",
+                new
+                {
+                    dictionaryName = encryptedDictionaryName, 
+                    fieldName = FormElementField.Name, 
+                    componentName = Name,
+                    uploadViewParams = values
+                });
         }
-        
-        return $"UploadView.open('{Name}','{title}','{values}');";
+
+        return $"UploadView.open('{Name}','{title}','{values}', '{url}');";
     }
 
     private void LoadValuesFromQuery()
@@ -207,9 +211,10 @@ public class JJTextFile : JJBaseControl
     private JJUploadView GetFormUpload()
     {
         var form = UploadViewFactory.Create();
-        var dataFile = ElementField.DataFile;
-        form.Name = ElementField.Name + "_uploadview"; //this is important
+        var dataFile = FormElementField.DataFile;
+        form.Name = FormElementField.Name + "_uploadview"; //this is important
         form.Title = "";
+        form.IsExternalRoute = IsExternalRoute;
         form.AutoSave = false;
         form.GridView.ShowToolbar = false;
         form.RenameAction.SetVisible(true);
@@ -236,7 +241,6 @@ public class JJTextFile : JJBaseControl
 
         foreach (var pkField in pkFields)
         {
-
             if (!FormValues.ContainsKey(pkField.Name))
                 return false;
 
@@ -250,7 +254,7 @@ public class JJTextFile : JJBaseControl
 
     public string GetFolderPath()
     {
-        return PathBuilder.GetFolderPath(ElementField, FormValues);
+        return PathBuilder.GetFolderPath(FormElementField, FormValues);
     }
 
     private string GetPanelName()
@@ -275,7 +279,6 @@ public class JJTextFile : JJBaseControl
         }
 
         return fileNames;
-
     }
 
     private string GetPresentationText(JJUploadView uploadView)
@@ -313,7 +316,6 @@ public class JJTextFile : JJBaseControl
         }
 
         return btnGroup.GetHtmlBuilder();
-
     }
 
     private JJLinkButton GetLinkButton(string filename)
@@ -321,7 +323,7 @@ public class JJTextFile : JJBaseControl
         var btn = new JJLinkButton();
         btn.IconClass = IconType.CloudDownload.GetCssClass();
         btn.Text = filename;
-        btn.Attributes.Add("onclick","event.stopPropagation()");
+        btn.Attributes.Add("onclick", "event.stopPropagation()");
         btn.UrlAction = GetDownloadLink(filename);
         btn.IsGroup = true;
 
@@ -372,18 +374,15 @@ public class JJTextFile : JJBaseControl
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
-        if (uploadFormRoute == null) 
+        if (uploadFormRoute == null)
             return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
-        if (field == null) 
-            return null; ;
-        
-        var upload = view.ControlFactory.Create(view.FormElement,field, null, view.Values, view.PageState, view.Name);
+        if (field == null)
+            return null;
+        ;
+
+        var upload = view.ControlFactory.CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name).GetAwaiter().GetResult();
         return upload.GetHtmlBuilder();
-
     }
-
-
-
 }

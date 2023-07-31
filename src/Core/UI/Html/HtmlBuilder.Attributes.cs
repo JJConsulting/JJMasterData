@@ -107,7 +107,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Sets a tooltip to the HTML Element
+    /// Sets a tooltip to the HTML Tag
     /// </summary>
     public HtmlBuilder WithToolTip(string tooltip)
     {

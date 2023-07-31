@@ -45,10 +45,10 @@ public class JJTitle : JJBaseView
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
             .WithCssClass(BootstrapHelper.PageHeader)
-            .AppendElement(Tag, e =>
+            .Append(Tag, e =>
             {
                 e.AppendText(Title);
-                e.AppendElement(HtmlTag.Small, e =>
+                e.Append(HtmlTag.Small, e =>
                 {
                     e.AppendText(" " + SubTitle);
                 });
@@ -60,14 +60,14 @@ public class JJTitle : JJBaseView
     {
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
-            .AppendElement(HtmlTag.Blockquote, block =>
+            .Append(HtmlTag.Blockquote, block =>
             {
                 block.WithCssClass("blockquote mb-1");
-                block.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p =>
+                block.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.P, p =>
                 {
                     p.AppendText(Title);
                 });
-                block.AppendElementIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
+                block.AppendIf(!string.IsNullOrEmpty(SubTitle), HtmlTag.Footer, p =>
                 {
                     p.WithCssClass("blockquote-footer");
                     p.WithCssClassIf(string.IsNullOrEmpty(Title), "mt-1");

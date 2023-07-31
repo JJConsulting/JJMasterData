@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -19,24 +20,24 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
-    public IEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    public async IAsyncEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var tabNav = GetTabRelationshipsHtml(parentPanel, relationships);
+            var tabNav = await GetTabRelationshipsHtml(parentPanel, relationships);
 
             yield return tabNav;
         }
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
         {
-            var relationshipHtml = GetRelationshipHtml(parentPanel, relationship);
+            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship);
             var panel = GetNonTabRelationshipPanelHtml(relationship, relationshipHtml);
             yield return panel;
         }
     }
 
-    private HtmlBuilder GetTabRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    private async Task<HtmlBuilder> GetTabRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
         var tabNav = new JJTabNav(ParentFormView.CurrentContext)
         {
@@ -45,7 +46,7 @@ internal class FormViewRelationshipLayout
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var relationshipHtml = GetRelationshipHtml(parentPanel, relationship);
+            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship);
             tabNav.ListTab.Add(new NavContent
             {
                 Title = relationship.Panel.Title,
@@ -91,23 +92,23 @@ internal class FormViewRelationshipLayout
             case PanelLayout.NoDecoration:
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
-                div.AppendElement(new JJTitle(relationship.Panel.Title, string.Empty)
+                div.AppendComponent(new JJTitle(relationship.Panel.Title, string.Empty)
                 {
                     Size = HeadingSize.H3
                 });
-                div.AppendElement(content);
+                div.Append(content);
                 return div;
             default:
                 return null;
         }
     }
 
-    private HtmlBuilder? GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
+    private async Task<HtmlBuilder?> GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
     {
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return ParentFormView.GetParentPanelHtml(parentPanel);
+            return await ParentFormView.GetParentPanelHtml(parentPanel);
         }
 
         var childElement = ParentFormView.DataDictionaryRepository.GetMetadata(relationship.ElementRelationship!.ChildElement);

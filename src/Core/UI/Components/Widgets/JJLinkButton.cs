@@ -129,16 +129,16 @@ public class JJLinkButton : JJBaseView
         html.WithCssClassIf(!Enabled, "disabled");
 
         if (icon != null)
-            html.AppendElement(icon);
+            html.AppendComponent(icon);
 
         if (!string.IsNullOrEmpty(Text))
-            html.AppendElement(HtmlTag.Span, s =>
+            html.Append(HtmlTag.Span, s =>
                 {
                     s.AppendText("&nbsp;" + Text);
                 });
 
         if (_spinner != null)
-            html.AppendElement(Spinner);
+            html.AppendComponent(Spinner);
 
         return html;
     }

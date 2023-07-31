@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
@@ -22,47 +23,47 @@ internal class DataImportationHelp
         StringLocalizer = DataImportation.StringLocalizer;
     }
 
-    public HtmlBuilder GetHtmlHelp()
+    public async Task<HtmlBuilder> GetHtmlHelpAsync()
     {
         var panel = new JJCollapsePanel(DataImportation.CurrentContext)
         {
             Title = "Import File - Help",
             TitleIcon = new JJIcon(IconType.QuestionCircle),
             ExpandedByDefault = true,
-            HtmlBuilderContent = GetHtmlContent()
+            HtmlBuilderContent = await GetHtmlContent()
         };
 
         var html = panel.RenderHtml()
            .AppendHiddenInput("current_uploadaction", "")
            .AppendHiddenInput("filename", "")
-           .AppendElement(GetBackButton());
+           .AppendComponent(GetBackButton());
 
         return html;
     }
 
-    private HtmlBuilder GetHtmlContent()
+    private async Task<HtmlBuilder> GetHtmlContent()
     {
-        var list = GetListImportedField();
+        var list = await GetListImportedField();
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Div, row =>
+            .Append(HtmlTag.Div, row =>
             {
                 row.WithCssClass("row")
-                   .AppendElement(HtmlTag.Div, col =>
+                    .Append(HtmlTag.Div, col =>
                     {
                         col.WithCssClass("col-sm-12")
-                           .AppendText(GetInfoText(list.Count))
-                           .AppendElement(HtmlTag.Br)
-                           .AppendElement(HtmlTag.Br);
+                            .AppendText(GetInfoText(list.Count))
+                            .Append(HtmlTag.Br)
+                            .Append(HtmlTag.Br);
                     });
-            })
-            .AppendElement(HtmlTag.Div, div =>
+            });
+           await html.AppendAsync(HtmlTag.Div, async div =>
              {
-                 div.WithCssClass("table-responsive")
-                    .AppendElement(HtmlTag.Table, table =>
+                 div.WithCssClass("table-responsive");
+                     await div.AppendAsync(HtmlTag.Table, async table =>
                     {
                         table.WithCssClass("table table-hover")
-                             .AppendElement(GetHeaderColumns())
-                             .AppendElement(GetBodyColums(list));
+                             .Append(GetHeaderColumns())
+                             .Append(await GetBodyColums(list));
                     });
              });
 
@@ -72,28 +73,28 @@ internal class DataImportationHelp
     private HtmlBuilder GetHeaderColumns()
     {
         var head = new HtmlBuilder(HtmlTag.Thead)
-            .AppendElement(HtmlTag.Tr, tr =>
+            .Append(HtmlTag.Tr, tr =>
             {
-                tr.AppendElement(HtmlTag.Th, th =>
+                tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:60px")
                     .AppendText(StringLocalizer["Order"]);
                 });
-                tr.AppendElement(HtmlTag.Th, th =>
+                tr.Append(HtmlTag.Th, th =>
                 {
                     th.AppendText(StringLocalizer["Name"]);
                 });
-                tr.AppendElement(HtmlTag.Th, th =>
+                tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:120px")
                         .AppendText(StringLocalizer["Type"]);
                 });
-                tr.AppendElement(HtmlTag.Th, th =>
+                tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:90px")
                         .AppendText(StringLocalizer["Required"]);
                 });
-                tr.AppendElement(HtmlTag.Th, th =>
+                tr.Append(HtmlTag.Th, th =>
                 {
                     th.AppendText(StringLocalizer["Details"]);
                 });
@@ -102,7 +103,7 @@ internal class DataImportationHelp
         return head;
     }
 
-    private HtmlBuilder GetBodyColums(List<FormElementField> list)
+    private async Task<HtmlBuilder> GetBodyColums(List<FormElementField> list)
     {
         var body = new HtmlBuilder(HtmlTag.Tbody);
         int orderField = 1;
@@ -110,34 +111,34 @@ internal class DataImportationHelp
         {
             var tr = new HtmlBuilder(HtmlTag.Tr);
             var currentOrderField = orderField;
-            tr.AppendElement(HtmlTag.Td, td =>
+            tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(currentOrderField.ToString());
             });
-            tr.AppendElement(HtmlTag.Td, td =>
+            tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
-                td.AppendElementIf(field.IsPk, HtmlTag.Span, span =>
+                td.AppendIf(field.IsPk, HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-star")
                         .WithToolTip(StringLocalizer["Primary Key"])
                         .WithAttribute("style", "color:#efd829;");
                 });
             });
-            tr.AppendElement(HtmlTag.Td, td =>
+            tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(GetDataTypeDescription(field.DataType));
             });
-            tr.AppendElement(HtmlTag.Td, td =>
+            tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]);
             });
-            tr.AppendElement(HtmlTag.Td, td =>
+            await tr.AppendAsync(HtmlTag.Td, async td =>
             {
-                td.AppendText(GetFormatDescription(field));
+                td.AppendText(await GetFormatDescription(field));
             });
 
-            body.AppendElement(tr);
+            body.Append(tr);
             orderField++;
         }
 
@@ -163,7 +164,7 @@ internal class DataImportationHelp
         }
     }
 
-    private string GetFormatDescription(FormElementField field)
+    private async Task<string> GetFormatDescription(FormElementField field)
     {
         var text = new StringBuilder();
         if (field.Component == FormComponent.Date)
@@ -182,7 +183,7 @@ internal class DataImportationHelp
         {
             text.Append(StringLocalizer["Inform the Id"]);
             text.Append(" ");
-            text.Append(GetHtmlComboHelp(field));
+            text.Append(await GetHtmlComboHelp(field));
         }
         else if (field.Component == FormComponent.CheckBox)
         {
@@ -246,9 +247,9 @@ internal class DataImportationHelp
         return text.ToString();
     }
 
-    private string GetHtmlComboHelp(FormElementField field)
+    private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = DataImportation.FieldValuesService.GetDefaultValues(DataImportation.FormElement,null, PageState.Import);
+        var defaultValues = await DataImportation.FieldValuesService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
         var expOptions = new FormStateData(DataImportation.UserValues, defaultValues, PageState.Import);
         //TODO: DataItemService is better
         var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null,null));
@@ -261,7 +262,7 @@ internal class DataImportationHelp
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithCssClass("small");
-        span.AppendElement(HtmlTag.Span, span =>
+        span.Append(HtmlTag.Span, span =>
         {
             span.AppendText("(");
 
@@ -273,7 +274,7 @@ internal class DataImportationHelp
                 else
                     span.AppendText(", ");
 
-                span.AppendElement(HtmlTag.B, b =>
+                span.Append(HtmlTag.B, b =>
                 {
                     b.AppendText(item.Id);
                 });
@@ -307,7 +308,7 @@ internal class DataImportationHelp
         return btnBack;
     }
 
-    private List<FormElementField> GetListImportedField()
+    private async Task<List<FormElementField>> GetListImportedField()
     {
         if (DataImportation.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -315,7 +316,7 @@ internal class DataImportationHelp
         var list = new List<FormElementField>();
         foreach (var field in DataImportation.FormElement.Fields)
         {
-            bool visible = DataImportation.FieldVisibilityService.IsVisible(field, PageState.Import, null);
+            bool visible = await DataImportation.FieldVisibilityService.IsVisibleAsync(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

@@ -10,7 +10,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendElement(HtmlBuilder builder)
+    public HtmlBuilder Append(HtmlBuilder builder)
     {
         if (builder != null)
             _children.Add(builder);
@@ -27,7 +27,18 @@ public partial class HtmlBuilder
             return this;
             
         foreach (var item in htmlList)
-            AppendElement(item);
+            Append(item);
+
+        return this;
+    }
+    
+    public async Task<HtmlBuilder> AppendRangeAsync(IAsyncEnumerable<HtmlBuilder> htmlList)
+    {
+        if (htmlList == null) 
+            return this;
+            
+        await foreach (var item in htmlList)
+            Append(item);
 
         return this;
     }
@@ -35,32 +46,41 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendElement(HtmlTag tag, Action<HtmlBuilder> elementAction = null)
+    public HtmlBuilder Append(HtmlTag tag, Action<HtmlBuilder> builderAction = null)
     {
-        var childElement = new HtmlBuilder(tag);
-        elementAction?.Invoke(childElement);
-        AppendElement(childElement);
+        var child = new HtmlBuilder(tag);
+        builderAction?.Invoke(child);
+        Append(child);
+        return this;
+    }
+    
+    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderAction = null)
+    {
+        var child = new HtmlBuilder(tag);
+        await builderAction?.Invoke(child)!;
+        Append(child);
         return this;
     }
         
     /// <summary>
     /// Conditional insert a HTML builder from a return of a function. Use this to improve performance.
     /// </summary>
-    public HtmlBuilder AppendElementIf(bool condition, Func<HtmlBuilder> func)
+    public HtmlBuilder AppendIf(bool condition, Func<HtmlBuilder> func)
     {
         if (condition)
-            AppendElement(func.Invoke());
+            Append(func.Invoke());
 
         return this;
     }
 
+    
     /// <summary>
     /// Conditional insert HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendElementIf(bool condition, HtmlTag tag, Action<HtmlBuilder> elementAction = null)
+    public HtmlBuilder AppendIf(bool condition, HtmlTag tag, Action<HtmlBuilder> builderAction = null)
     {
         if (condition)
-            AppendElement(tag, elementAction);
+            Append(tag, builderAction);
 
         return this;
     }
@@ -72,8 +92,8 @@ public partial class HtmlBuilder
     {
         if (!string.IsNullOrEmpty(rawText))
         {
-            var childElement = new HtmlBuilder(rawText);
-            AppendElement(childElement);
+            var child = new HtmlBuilder(rawText);
+            Append(child);
         }
                 
         return this;
@@ -84,8 +104,8 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendText(int value)
     {
-        var childElement = new HtmlBuilder(value.ToString());
-        AppendElement(childElement);
+        var child = new HtmlBuilder(value.ToString());
+        Append(child);
         return this;
     }
 
@@ -105,7 +125,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name, string value)
     {
-        return AppendElement(HtmlTag.Input, input =>
+        return Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
             input.WithNameAndId(name);
@@ -126,28 +146,28 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendScript(string rawScript)
     {
-        var childElement = new HtmlBuilder(HtmlTag.Script)
+        var child = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
             .AppendText(rawScript);
 
-        return AppendElement(childElement);
+        return Append(child);
     }
 
     /// <summary>
     /// Insert a JJ component as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendElement(JJBaseView component)
+    public HtmlBuilder AppendComponent(JJBaseView component)
     {
         if (component != null)
-            AppendElement(component.GetHtmlBuilder());
+            Append(component.GetHtmlBuilder());
 
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendAsync(JJAsyncBaseView component)
+    public async Task<HtmlBuilder> AppendComponentAsync(JJAsyncBaseView component)
     {
         if (component != null)
-            AppendElement(await component.GetHtmlBuilderAsync());
+            Append(await component.GetHtmlBuilderAsync());
 
         return this;
     }

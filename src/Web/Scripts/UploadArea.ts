@@ -67,7 +67,6 @@ class UploadArea {
             afterUploadAll: function (element) {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#uploadaction_" + options.componentName).val("afteruploadall");
-                    $("form:first").trigger("submit");
                 }
             },
         });

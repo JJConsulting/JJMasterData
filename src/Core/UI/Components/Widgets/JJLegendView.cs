@@ -55,24 +55,24 @@ public class JJLegendView : JJBaseView
             {
                 foreach (var item in values)
                 {
-                    div.AppendElement(HtmlTag.Div, div =>
+                    div.Append(HtmlTag.Div, div =>
                     {
                         div.WithAttribute("style", "height:40px");
 
-                        div.AppendElement(new JJIcon(item.Icon, item.ImageColor, item.Description)
+                        div.AppendComponent(new JJIcon(item.Icon, item.ImageColor, item.Description)
                         {
                             CssClass = "fa-fw fa-2x"
                         });
                         div.AppendText("&nbsp;&nbsp;");
                         div.AppendText(StringLocalizer[item.Description]);
-                        div.AppendElement(HtmlTag.Br);
+                        div.Append(HtmlTag.Br);
                     });
                 }
             }
         }
         else
         {
-            div.AppendElement(HtmlTag.Br);
+            div.Append(HtmlTag.Br);
             div.AppendText(StringLocalizer["There is no caption to be displayed"]);
         }
 
@@ -86,7 +86,7 @@ public class JJLegendView : JJBaseView
         var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
             .WithAttribute("role", "form")
-            .AppendElement(GetHtmlLegend(field));
+            .Append(GetHtmlLegend(field));
         
         var dialog = new JJModalDialog
         {

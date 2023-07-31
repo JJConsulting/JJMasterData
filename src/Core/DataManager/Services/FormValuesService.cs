@@ -126,7 +126,7 @@ public class FormValuesService : IFormValuesService
             DataHelper.CopyIntoDictionary(ref newValues, requestedValues, true);
         }
         
-        return FieldValuesService.MergeWithExpressionValues(formElement,newValues, pageState, !CurrentContext.IsPost);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement,newValues, pageState, !CurrentContext.IsPost);
     }
     
     

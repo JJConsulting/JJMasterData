@@ -40,9 +40,9 @@ public class JJTabNav : JJBaseView
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
-            .AppendElement(GetNavTabs())
-            .AppendElement(GetTabContent())
-            .AppendElement(HtmlTag.Input, i =>
+            .Append(GetNavTabs())
+            .Append(GetTabContent())
+            .Append(HtmlTag.Input, i =>
             {
                 i.WithAttribute("type", "hidden")
                  .WithNameAndId(InputHiddenSelectedTabName)
@@ -64,12 +64,12 @@ public class JJTabNav : JJBaseView
             string navId = $"{Name}_nav_{i}";
 
             var index = i;
-            ul.AppendElement(HtmlTag.Li, li =>
+            ul.Append(HtmlTag.Li, li =>
             {
                 li.WithCssClassIf(BootstrapHelper.Version > 3, "nav-item")
                   .WithCssClassIf(SelectedTabIndex == index && BootstrapHelper.Version == 3, "active")
                   .WithAttribute("role", "presentation")
-                  .AppendElement(HtmlTag.A, a =>
+                  .Append(HtmlTag.A, a =>
                   {
                       a.WithAttribute("href", $"#{navId}")
                        .WithAttribute("aria-controls", navId)
@@ -101,9 +101,9 @@ public class JJTabNav : JJBaseView
                 .WithAttribute("role", "tabpanel")
                 .WithCssClass("tab-pane fade")
                 .WithCssClassIf(SelectedTabIndex == i, "active" + BootstrapHelper.Show)
-                .AppendElement(nav.HtmlContent);
+                .Append(nav.HtmlContent);
 
-            tabContent.AppendElement(divContent);
+            tabContent.Append(divContent);
         }
 
         return tabContent;

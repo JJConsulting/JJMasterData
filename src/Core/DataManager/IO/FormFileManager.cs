@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 
-internal class FormFileManager
+public class FormFileManager
 {
     private IHttpContext HttpContext { get; }
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
@@ -59,7 +59,9 @@ internal class FormFileManager
 
     public FormFileManager(
         string memoryFilesSessionName,
-        IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer, ILogger<FormFileManager> logger)
+        IHttpContext httpContext,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        ILogger<FormFileManager> logger)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
@@ -132,15 +134,15 @@ internal class FormFileManager
     public void CreateFile(FormFileContent fileContent, bool replaceIfExists)
     {
         if (fileContent == null)
-            throw new ArgumentNullException(nameof(FormFileContent));
+            throw new ArgumentNullException(nameof(fileContent));
 
         string fileName = fileContent.FileName;
 
         if (OnBeforeCreateFile != null)
         {
-            var evt = new FormUploadFileEventArgs(fileContent);
-            OnBeforeCreateFile.Invoke(this, evt);
-            string errorMessage = evt.ErrorMessage;
+            var args = new FormUploadFileEventArgs(fileContent);
+            OnBeforeCreateFile.Invoke(this, args);
+            string errorMessage = args.ErrorMessage;
 
             if (!string.IsNullOrEmpty(errorMessage))
             {

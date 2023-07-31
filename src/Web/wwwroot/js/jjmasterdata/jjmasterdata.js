@@ -379,7 +379,6 @@ class UploadArea {
             afterUploadAll: function (element) {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#uploadaction_" + options.componentName).val("afteruploadall");
-                    $("form:first").trigger("submit");
                 }
             },
         });
@@ -448,6 +447,28 @@ class UploadArea {
                 this.handleCopyPaste(componentName);
             }
         });
+    }
+}
+class UploadView {
+    static open(componentName, title, values, url = null) {
+        const panelName = $("#v_" + componentName).attr("pnlname");
+        if (url == null) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadViewParams", values);
+            url = urlBuilder.build();
+        }
+        const popup = new Popup();
+        popup.modalId = componentName + "-popup";
+        popup.modalTitleId = componentName + "-popup-title";
+        if (url == null || url.length == 0) {
+            popup.show(title, url, 1);
+        }
+        else {
+            popup.showHtmlFromUrl(title, url, null, 1).then(_ => {
+                jjloadform();
+            });
+        }
     }
 }
 class UrlBuilder {
@@ -1520,19 +1541,11 @@ var jjview = (function () {
                 $("form:first").trigger("submit");
             }
         },
-        openUploadView: function (objid, title, values) {
-            const pnlname = $("#v_" + objid).attr("pnlname");
-            let url = $("form").attr("action");
-            url += url.includes("?") ? "&" : "?";
-            url += "jjuploadform_" + pnlname + "=" + objid;
-            url += "&uploadvalues=" + values;
-            popup.show(title, url, 1);
-        },
         directDownload: function (objid, pnlname, filename) {
             messageWait.show();
             var url = $("form").attr("action");
             url += url.includes("?") ? "&" : "?";
-            url += "jjuploadform_" + pnlname + "=" + objid;
+            url += "jjuploadview_" + pnlname + "=" + objid;
             url += "&downloadfile=" + filename;
             window.location.assign(url);
             setTimeout(function () {
@@ -1843,7 +1856,7 @@ class Popup {
 }
 `;
         let html = "";
-        html += "<div id=\"popup-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
+        html += `<div id=\"${this.modalId}\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n`;
         if (bootstrapVersion == 3) {
             html += modalDialogDiv;
         }
@@ -1860,10 +1873,10 @@ class Popup {
         html += "      <div class=\"modal-header\">\r\n";
         if (bootstrapVersion == 3) {
             html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
+            html += `       <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
         }
         else {
-            html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
+            html += `        <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
             if (bootstrapVersion >= 5) {
                 html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
             }

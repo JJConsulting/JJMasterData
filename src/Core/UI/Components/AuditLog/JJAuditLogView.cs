@@ -93,7 +93,7 @@ public class JJAuditLogView : JJAsyncBaseView
 
         if (string.IsNullOrEmpty(viewId))
         {
-            await html.AppendAsync(GridView);
+            await html.AppendComponentAsync(GridView);
         }
         else
         {
@@ -104,8 +104,8 @@ public class JJAuditLogView : JJAsyncBaseView
                 return null;
             }
 
-            html.AppendElement(await GetLogDetailsHtmlAsync(viewId));
-            html.AppendElement(GetFormBottombar());
+            html.Append(await GetLogDetailsHtmlAsync(viewId));
+            html.AppendComponent(GetFormBottombar());
         }
 
         html.AppendHiddenInput($"viewid_{Name}", viewId);
@@ -144,7 +144,7 @@ public class JJAuditLogView : JJAsyncBaseView
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (GridView.ShowTitle)
-            html.AppendElement(GridView.GetTitle(UserValues));
+            html.AppendComponent(GridView.GetTitle(UserValues));
 
         if (string.IsNullOrEmpty(logId))
         {
@@ -174,54 +174,54 @@ public class JJAuditLogView : JJAsyncBaseView
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        row.AppendElement(HtmlTag.Div, d =>
+        row.Append(HtmlTag.Div, d =>
         {
             d.WithCssClass("col-sm-3");
-            d.AppendElement(HtmlTag.Div, div =>
+            d.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("jjrelative");
-                div.AppendElement(HtmlTag.Div, divFields =>
+                div.Append(HtmlTag.Div, divFields =>
                 {
                     divFields.WithCssClass("listField")
-                      .AppendElement(HtmlTag.P, p =>
+                      .Append(HtmlTag.P, p =>
                       {
-                          p.AppendElement(HtmlTag.B, b =>
+                          p.Append(HtmlTag.B, b =>
                           {
                               b.AppendText($"{StringLocalizer["Change History"]}:");
                           });
                       });
-                    divFields.AppendElement(HtmlTag.Div, group =>
+                    divFields.Append(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable_grid");
                         group.WithCssClass("list-group sortable_grid");
-                        group.AppendElement(GetHtmlGridInfo(recordsKey, logId));
+                        group.Append(GetHtmlGridInfo(recordsKey, logId));
                     });
                 });
             });
         });
 
-        row.AppendElement(HtmlTag.Div, d =>
+        row.Append(HtmlTag.Div, d =>
         {
             d.WithCssClass("col-sm-9");
-            d.AppendElement(HtmlTag.Div, div =>
+            d.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("jjrelative");
-                div.AppendElement(HtmlTag.Div, divDetail =>
+                div.Append(HtmlTag.Div, divDetail =>
                 {
                     divDetail.WithCssClass("fieldDetail")
-                      .AppendElement(HtmlTag.P, p =>
+                      .Append(HtmlTag.P, p =>
                       {
-                          p.AppendElement(HtmlTag.B, b =>
+                          p.Append(HtmlTag.B, b =>
                           {
                               b.AppendText($"{StringLocalizer["Snapshot Record"]}:");
                           });
                       });
-                    divDetail.AppendElement(panel);
+                    divDetail.AppendComponent(panel);
                 });
             });
         });
 
-        html.AppendElement(row);
+        html.Append(row);
         return html;
     }
 
@@ -249,7 +249,7 @@ public class JJAuditLogView : JJAsyncBaseView
 
         var grid = _componentFactory.GridView.Create(FormElement);
         grid.FormElement.Title = FormElement.Title;
-        grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
+        grid.SetCurrentFilterAsync(DataManager.Services.AuditLogService.DicName, FormElement.Name).GetAwaiter().GetResult();
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";
 
         var fieldKey = grid.FormElement.Fields[DataManager.Services.AuditLogService.DicKey];
@@ -339,27 +339,27 @@ public class JJAuditLogView : JJAsyncBaseView
             string logId = row["id"].ToString();
             string message = StringLocalizer["{0} from {1} by user:{2}", action, origem, row["userId"].ToString()];
 
-            html.AppendElement(HtmlTag.A, a =>
+            html.Append(HtmlTag.A, a =>
             {
                 a.WithAttribute("href", $"javascript:jjview.loadFrameLog('{Name}','{logId}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId.Equals(viewId), "active");
 
-                a.AppendElement(HtmlTag.Div, div =>
+                a.Append(HtmlTag.Div, div =>
                 {
                     div.WithAttribute("style", "height: 60px;");
-                    div.AppendElement(HtmlTag.Span, span =>
+                    div.Append(HtmlTag.Span, span =>
                     {
                         span.WithCssClass(icon);
                         span.WithAttribute("style", $"color:{color};");
                         span.WithToolTip(action);
                     });
-                    div.AppendElement(HtmlTag.B, b =>
+                    div.Append(HtmlTag.B, b =>
                     {
                         b.AppendText(message);
                     });
-                    div.AppendElement(HtmlTag.Span, span =>
+                    div.Append(HtmlTag.Span, span =>
                     {
                         span.WithAttribute("style", "float:right");
                         span.AppendText(StringLocalizer["Browser info."]);
@@ -367,15 +367,15 @@ public class JJAuditLogView : JJAsyncBaseView
 
                         var icon = new JJIcon(IconType.InfoCircle);
                         icon.CssClass = "help-description";
-                        span.AppendElement(icon);
+                        span.AppendComponent(icon);
                     });
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.B, b =>
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.B, b =>
                     {
                         b.AppendText(row["modified"].ToString());
                     });
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.B, b =>
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.B, b =>
                     {
                         b.AppendText("IP: " + row["ip"]);
                     });

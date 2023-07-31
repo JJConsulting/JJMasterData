@@ -70,9 +70,9 @@ public class JJTextGroup : JJTextBox
             .WithCssClass(GroupCssClass);
 
         if (hasAddons)
-            inputGroup.AppendElement(GetHtmlAddons());
+            inputGroup.Append(GetHtmlAddons());
 
-        inputGroup.AppendElement(input);
+        inputGroup.Append(input);
 
         if (hasAction)
             AddActionsAt(inputGroup);
@@ -92,7 +92,7 @@ public class JJTextGroup : JJTextBox
             builderGroup = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.InputGroupBtn);
 
-            inputGroup.AppendElement(builderGroup);
+            inputGroup.Append(builderGroup);
         }
 
         var btnGroup = new JJLinkButtonGroup();
@@ -109,7 +109,7 @@ public class JJTextGroup : JJTextBox
         var html = new HtmlBuilder(HtmlTag.Span)
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
-             .AppendElementIf(Addons.Icon != null,()=> Addons.Icon.RenderHtml())
+             .AppendIf(Addons.Icon != null,()=> Addons.Icon.RenderHtml())
              .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

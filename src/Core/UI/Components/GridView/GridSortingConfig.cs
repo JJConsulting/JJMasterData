@@ -61,17 +61,17 @@ public class GridSortingConfig
         dialog.Buttons.Add(btnCancel);
 
         var htmlContent = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
-                div.AppendElement(new JJIcon("text-info fa fa-triangle-exclamation"));
+                div.AppendComponent(new JJIcon("text-info fa fa-triangle-exclamation"));
                 div.AppendText("&nbsp;");
                 div.AppendText(StringLocalizer["Drag and drop to change order."]);
             })
-            .AppendElement(HtmlTag.Table, table =>
+            .Append(HtmlTag.Table, table =>
             {
                 table.WithCssClass("table table-hover");
-                table.AppendElement(GetHtmlHeader());
-                table.AppendElement(GetHtmlBody());
+                table.Append(GetHtmlHeader());
+                table.Append(GetHtmlBody());
             });
 
         dialog.HtmlBuilderContent = htmlContent;
@@ -82,18 +82,18 @@ public class GridSortingConfig
     private HtmlBuilder GetHtmlHeader()
     {
         var thead = new HtmlBuilder(HtmlTag.Thead);
-        thead.AppendElement(HtmlTag.Tr, tr =>
+        thead.Append(HtmlTag.Tr, tr =>
         {
-            tr.AppendElement(HtmlTag.Th, th =>
+            tr.Append(HtmlTag.Th, th =>
             {
                 th.WithAttribute("style", "width:50px");
                 th.AppendText("#");
             });
-            tr.AppendElement(HtmlTag.Th, th =>
+            tr.Append(HtmlTag.Th, th =>
             {
                 th.AppendText(StringLocalizer["Column"]);
             });
-            tr.AppendElement(HtmlTag.Th, th =>
+            tr.Append(HtmlTag.Th, th =>
             {
                 th.WithAttribute("style", "width:220px");
                 th.AppendText(StringLocalizer["Order"]);
@@ -139,21 +139,21 @@ public class GridSortingConfig
                 comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
             }
 
-            tbody.AppendElement(HtmlTag.Tr, tr =>
+            tbody.Append(HtmlTag.Tr, tr =>
             {
                 tr.WithAttribute("id", item.Name);
                 tr.WithCssClass("ui-sortable-handle");
-                tr.AppendElement(HtmlTag.Td, td =>
+                tr.Append(HtmlTag.Td, td =>
                 {
-                    td.AppendElement(new JJIcon("fa fa-arrows"));
+                    td.AppendComponent(new JJIcon("fa fa-arrows"));
                 });
-                tr.AppendElement(HtmlTag.Td, td =>
+                tr.Append(HtmlTag.Td, td =>
                 {
                     td.AppendText(StringLocalizer[item.Label ?? item.Name]);
                 });
-                tr.AppendElement(HtmlTag.Td, td =>
+                tr.Append(HtmlTag.Td, td =>
                 {
-                    td.AppendElement(comboBox);
+                    td.AppendComponent(comboBox);
                 });
             });
         }

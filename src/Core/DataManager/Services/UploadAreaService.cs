@@ -14,7 +14,7 @@ namespace JJMasterData.Core.DataManager.Services;
 public class UploadAreaService : IUploadAreaService
 {
     private IHttpContext CurrentContext { get; }
-    public event EventHandler<FormUploadFileEventArgs>? OnPostFile;
+    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
 
     public UploadAreaService(IHttpContext currentContext)
     {
@@ -34,7 +34,7 @@ public class UploadAreaService : IUploadAreaService
             ValidateAllowedExtensions(file.FileName, allowedTypes);
             
             var args = new FormUploadFileEventArgs(file);
-            OnPostFile?.Invoke(this, args);
+            OnFileUploaded?.Invoke(this, args);
             var errorMessage = args.ErrorMessage;
             if (args.SuccessMessage != null)
             {

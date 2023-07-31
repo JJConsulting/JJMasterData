@@ -25,7 +25,7 @@ public class GridController : MasterDataController
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
 
-        var selectedRows = gridView.GetEncryptedSelectedRows();
+        var selectedRows = gridView.GetEncryptedSelectedRowsAsync();
         
         return Json(new {selectedRows});
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
@@ -24,16 +25,16 @@ internal class GridTableHeader
         StringLocalizer = GridView.StringLocalizer;
     }
 
-    public HtmlBuilder GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
         if (GridView.DataSource.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
 
-        html.AppendElement(HtmlTag.Tr, tr =>
+        html.Append(HtmlTag.Tr, async tr =>
         {
-            tr.AppendElementIf(GridView.EnableMultiSelect, GetMultSelectThHtmlElement);
-            tr.AppendRange(GetVisibleFieldsThList());
+            tr.AppendIf(GridView.EnableMultiSelect, GetMultSelectThHtmlElement);
+            await tr.AppendRangeAsync(GetVisibleFieldsThList());
             tr.AppendRange(GetActionsThList());
         });
 
@@ -59,21 +60,21 @@ internal class GridTableHeader
         }
     }
 
-    private IEnumerable<HtmlBuilder> GetVisibleFieldsThList()
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsThList()
     {
-        foreach (var field in GridView.VisibleFields)
+        await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
             string style = GetFieldStyle(field);
 
             th.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
-            th.AppendElement(HtmlTag.Span, span =>
+            th.Append(HtmlTag.Span, span =>
             {
                 if (GridView.EnableSorting && field.DataBehavior != FieldBehavior.Virtual)
                 {
                     SetSortAttributes(span, field);
                 }
-                span.AppendElement(HtmlTag.Span, span =>
+                span.Append(HtmlTag.Span, span =>
                 {
                     if (!string.IsNullOrEmpty(field.HelpDescription))
                     {
@@ -99,29 +100,29 @@ internal class GridTableHeader
                     }
 
                     if (order.Equals(field.Name + " DESC"))
-                        th.AppendElement(GetDescendingIcon());
+                        th.Append(GetDescendingIcon());
                     else if (order.Equals(field.Name + " ASC") || order.Equals(field.Name))
-                        th.AppendElement(GetAscendingIcon());
+                        th.Append(GetAscendingIcon());
                 }
             }
             else
             {
                 if (field.Name.EndsWith("::DESC"))
-                    th.AppendElement(GetDescendingIcon());
+                    th.Append(GetDescendingIcon());
                 else if (field.Name.EndsWith("::ASC"))
-                    th.AppendElement(GetAscendingIcon());
+                    th.Append(GetAscendingIcon());
             }
 
-            bool isAppliedFilter = GridView.CurrentFilter != null &&
+            bool isAppliedFilter = GridView.GetCurrentFilterAsync() != null &&
                                    field.Filter.Type != FilterMode.None &&
                                    !GridView.RelationValues.ContainsKey(field.Name) &&
-                                   (GridView.CurrentFilter.ContainsKey(field.Name) ||
-                                    GridView.CurrentFilter.ContainsKey(field.Name + "_from"));
+                                   ((await GridView.GetCurrentFilterAsync()).ContainsKey(field.Name) ||
+                                    (await GridView.GetCurrentFilterAsync()).ContainsKey(field.Name + "_from"));
 
             if (isAppliedFilter)
             {
                 th.AppendText("&nbsp;");
-                th.AppendElement(new JJIcon("fa fa-filter").GetHtmlBuilder()
+                th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
                     .WithToolTip(StringLocalizer["Applied filter"]));
             }
 
@@ -193,7 +194,7 @@ internal class GridTableHeader
         }
 
         th.WithCssClass("jjselect")
-            .AppendElement(HtmlTag.Input, input =>
+            .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("type", "checkbox")
                     .WithNameAndId("jjchk_all")
@@ -203,35 +204,35 @@ internal class GridTableHeader
                         "$('td.jjselect input').not(':disabled').prop('checked',$('#jjchk_all').is(':checked')).change();");
             });
 
-        th.AppendElementIf(hasPages, HtmlTag.Span, span =>
+        th.AppendIf(hasPages, HtmlTag.Span, span =>
         {
             span.WithCssClass("dropdown");
-            span.AppendElement(HtmlTag.A, a =>
+            span.Append(HtmlTag.A, a =>
             {
                 a.WithAttribute("href", "#");
                 a.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
                 a.WithCssClass("dropdown-toggle");
-                a.AppendElementIf(BootstrapHelper.Version == 3,
+                a.AppendIf(BootstrapHelper.Version == 3,
                     new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlBuilder);
             });
 
-            span.AppendElement(HtmlTag.Ul, ul =>
+            span.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("dropdown-menu");
-                ul.AppendElement(HtmlTag.Li, li =>
+                ul.Append(HtmlTag.Li, li =>
                 {
                     li.WithCssClass("dropdown-item");
-                    li.AppendElement(HtmlTag.A, a =>
+                    li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", $"jjview.doUnSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });
-                ul.AppendElementIf(GridView.TotalRecords <= 50000, HtmlTag.Li, li =>
+                ul.AppendIf(GridView.TotalRecords <= 50000, HtmlTag.Li, li =>
                 {
                     li.WithCssClass("dropdown-item");
-                    li.AppendElement(HtmlTag.A, a =>
+                    li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript(GridView));

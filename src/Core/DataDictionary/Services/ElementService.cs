@@ -144,7 +144,7 @@ public class ElementService : BaseService
     }
 
 
-    public JJGridView GetGridView()
+    public async Task<JJGridView> GetGridView()
     {
         var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
@@ -172,9 +172,11 @@ public class ElementService : BaseService
         gridView.MaintainValuesOnLoad = true;
         gridView.EnableMultiSelect = true;
         gridView.ExportAction.SetVisible(false);
+
+        var filter = await gridView.GetCurrentFilterAsync();
         
-        if (!gridView.CurrentFilter.ContainsKey("type"))
-            gridView.CurrentFilter.Add("type", "F");
+        if (!filter.ContainsKey("type"))
+            filter.Add("type", "F");
 
         gridView.OnDataLoad += FormViewOnDataLoad;
 

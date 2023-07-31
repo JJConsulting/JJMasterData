@@ -115,59 +115,13 @@ public class ExpressionsService : IExpressionsService
     }
 
 
-    public string? GetDefaultValue(ElementField f, PageState state, IDictionary<string, dynamic?> formValues,
+    public async Task<string?> GetDefaultValueAsync(ElementField field, PageState state, IDictionary<string, dynamic?> formValues,
         IDictionary<string, dynamic?>? userValues = null)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), StringLocalizer["ElementField can not be null"]);
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), StringLocalizer["ElementField can not be null"]);
 
-        return GetValueExpression(f.DefaultValue, f, state, formValues);
-    }
-
-    public bool GetBoolValue(string? expression, string actionName, PageState state,
-        IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
-    {
-        if (string.IsNullOrEmpty(expression))
-        {
-            var err = StringLocalizer["Invalid expression for {0} field", actionName];
-            throw new ArgumentNullException(nameof(expression), err);
-        }
-
-        bool result;
-        if (expression!.StartsWith("val:"))
-        {
-            result = ParseBool(expression);
-        }
-        else if (expression.StartsWith("exp:"))
-        {
-            var exp = "";
-            try
-            {
-                exp = ParseExpression(expression, state, true, formValues);
-                var dt = new DataTable("temp");
-                result = (bool)dt.Compute(exp, "");
-                dt.Dispose();
-            }
-            catch (Exception ex)
-            {
-                string err = $"Error executing expression {exp} for {actionName} field.";
-                err += " " + ex.Message;
-                throw new ArgumentException(err, nameof(expression));
-            }
-        }
-        else if (expression.StartsWith("sql:"))
-        {
-            var exp = ParseExpression(expression, state, false, formValues);
-            var obj = EntityRepository.GetResult(exp);
-            result = ParseBool(obj);
-        }
-        else
-        {
-            var err = StringLocalizer["Invalid expression for {0} field", actionName];
-            throw new ArgumentException(err, nameof(expression));
-        }
-
-        return result;
+        return await GetExpressionValueAsync(field.DefaultValue, field, state, formValues);
     }
 
     public async Task<bool> GetBoolValueAsync(string expression, string actionName, PageState state,
@@ -216,20 +170,21 @@ public class ExpressionsService : IExpressionsService
 
         return result;
     }
+    
 
-    public string? GetTriggerValue(FormElementField f, PageState state, IDictionary<string, dynamic?> formValues,
+    public async Task<string?> GetTriggerValueAsync(FormElementField f, PageState state, IDictionary<string, dynamic?> formValues,
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (f == null)
             throw new ArgumentNullException(nameof(f), StringLocalizer["FormElementField can not be null"]);
 
         if (f.TriggerExpression != null) 
-            return GetValueExpression(f.TriggerExpression, f, state, formValues);
+            return await GetExpressionValueAsync(f.TriggerExpression, f, state, formValues);
 
         return null;
     }
 
-    public string? GetValueExpression(string expression, ElementField f, PageState state,
+    public async Task<string?> GetExpressionValueAsync(string expression, ElementField f, PageState state,
         IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
     {
         if (string.IsNullOrEmpty(expression))
@@ -272,7 +227,7 @@ public class ExpressionsService : IExpressionsService
             else if (expression.StartsWith("sql:"))
             {
                 var exp = ParseExpression(expression, state, false, formValues);
-                var obj = EntityRepository.GetResult(exp);
+                var obj = await EntityRepository.GetResultAsync(exp);
                 if (obj != null)
                     retVal = obj.ToString();
             }

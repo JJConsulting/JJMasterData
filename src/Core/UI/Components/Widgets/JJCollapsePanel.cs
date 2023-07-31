@@ -56,14 +56,14 @@ public class JJCollapsePanel : JJBaseView
     {
         var root = new HtmlBuilder(HtmlTag.Div);
 
-        root.AppendElement(HtmlTag.Input, input =>
+        root.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
             input.WithNameAndId($"collapse_mode_{Name}");
             input.WithValue(IsCollapseOpen ? "1" : "0");
         });
 
-        root.AppendElement(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
+        root.Append(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
 
         root.AppendScript($"setupCollapsePanel('{Name}')");
 
@@ -76,11 +76,11 @@ public class JJCollapsePanel : JJBaseView
         var accordion = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("accordion pb-1 mb-3")
                 .WithAttribute("id", $"{Name}")
-                .AppendElement(HtmlTag.Div, div =>
+                .Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("accordion-item");
-                    div.AppendElement(GetAccordionHeader());
-                    div.AppendElement(GetAccordionBody());
+                    div.Append(GetAccordionHeader());
+                    div.Append(GetAccordionBody());
                 });
         return accordion;
     }
@@ -91,14 +91,14 @@ public class JJCollapsePanel : JJBaseView
         .WithCssClass(
             $"accordion-header ")
         .WithAttribute("id", $"heading-{Name.ToLower()}")
-        .AppendElement(HtmlTag.Button, button =>
+        .Append(HtmlTag.Button, button =>
         {
             button.WithCssClass($"accordion-button {(!IsCollapseOpen ? "collapsed" : "")}");
             button.WithAttribute("type", "button");
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
-            button.AppendElement(TitleIcon);
+            button.AppendComponent(TitleIcon);
             button.AppendTextIf(TitleIcon != null, "&nbsp;");
             button.AppendText(Title);
         });
@@ -113,7 +113,7 @@ public class JJCollapsePanel : JJBaseView
             .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
             .WithAttribute("aria-labelledby", $"heading-{Name.ToLower()}")
             .WithDataAttribute("parent", $"#{Name}")
-            .AppendElement(GetBody());
+            .Append(GetBody());
         return body;
     }
     #endregion
@@ -123,16 +123,16 @@ public class JJCollapsePanel : JJBaseView
     {
         var panel = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.PanelGroup)
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
-                div.AppendElement(GetPanelHeading());
-                div.AppendElement(HtmlTag.Div, body =>
+                div.Append(GetPanelHeading());
+                div.Append(HtmlTag.Div, body =>
                 {
                     body.WithNameAndId(Name)
                     .WithCssClass("panel-collapse collapse")
                     .WithCssClassIf(IsCollapseOpen, BootstrapHelper.Show)
-                    .AppendElement(GetBody());
+                    .Append(GetBody());
                 });
             });
         return panel;
@@ -145,12 +145,12 @@ public class JJCollapsePanel : JJBaseView
             .WithDataAttribute("toggle", "collapse")
             .WithDataAttribute("target", "#" + Name)
             .WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLower())
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass($"{BootstrapHelper.PanelTitle} unselectable");
-                div.AppendElement(HtmlTag.A, a =>
+                div.Append(HtmlTag.A, a =>
                 {
-                    a.AppendElement(TitleIcon);
+                    a.AppendComponent(TitleIcon);
                     a.AppendTextIf(TitleIcon != null, "&nbsp;");
                     a.AppendText(Title);
                 });
@@ -167,12 +167,12 @@ public class JJCollapsePanel : JJBaseView
         if (!string.IsNullOrEmpty(SubTitle))
         {
             var title = new JJTitle(null, SubTitle);
-            panelBody.AppendElement(title.GetHtmlBlockquote());
+            panelBody.Append(title.GetHtmlBlockquote());
         }
 
         panelBody.AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent);
-        panelBody.AppendElementIf(HtmlBuilderContent != null,()=> HtmlBuilderContent);
-        panelBody.AppendElementIf(Buttons.Count > 0,GetButtons);
+        panelBody.AppendIf(HtmlBuilderContent != null,()=> HtmlBuilderContent);
+        panelBody.AppendIf(Buttons.Count > 0,GetButtons);
         panelBody.WithCssClass(CssClass);
         panelBody.WithCssClass(BootstrapHelper.Version >= 5 ? "accordion-body" : BootstrapHelper.PanelBody);
 
@@ -186,7 +186,7 @@ public class JJCollapsePanel : JJBaseView
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("col-md-12");
                 div.WithCssClassIf(ButtonPosition == Position.Left, BootstrapHelper.TextLeft);
@@ -195,7 +195,7 @@ public class JJCollapsePanel : JJBaseView
                 foreach (var btn in Buttons)
                 {
                     div.AppendText("&nbsp;");
-                    div.AppendElement(btn.RenderHtml().WithCssClass("ms-1"));
+                    div.Append(btn.RenderHtml().WithCssClass("ms-1"));
                 }
 
             });

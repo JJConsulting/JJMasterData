@@ -227,7 +227,7 @@ public class JJComboBox : JJBaseControl
                 CssClass = "fa-lg fa-fw"
             }.RenderHtml();
 
-            div.AppendElement(icon);
+            div.Append(icon);
 
             if (DataItem.ReplaceTextOnGrid)
             {

@@ -19,10 +19,10 @@ internal class JJToolbar : JJBaseView
             .WithAttributes(Attributes)
             .WithCssClass(BootstrapHelper.FormGroup)
             .WithCssClass(CssClass)
-            .AppendElement(HtmlTag.Div, row =>
+            .Append(HtmlTag.Div, row =>
             {
                 row.WithCssClass("row");
-                row.AppendElement(GetHtmlCol());
+                row.Append(GetHtmlCol());
             });
 
         return html;
@@ -43,7 +43,7 @@ internal class JJToolbar : JJBaseView
             if (i != 0)
                 element.WithAttribute("style", "margin-left: 3px;");
 
-            div.AppendElement(element);
+            div.Append(element);
         }
 
         return div;

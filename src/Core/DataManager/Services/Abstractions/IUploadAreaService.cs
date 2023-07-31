@@ -9,6 +9,6 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public interface IUploadAreaService
 {
-    event EventHandler<FormUploadFileEventArgs> OnPostFile;
+    event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
     UploadAreaResultDto UploadFile(string fileName = "file",string? allowedTypes = null);
 }

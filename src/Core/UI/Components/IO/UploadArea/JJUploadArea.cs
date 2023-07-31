@@ -13,7 +13,7 @@ public class JJUploadArea : JJBaseView
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
-    public event EventHandler<FormUploadFileEventArgs> OnPostFile;
+    public event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
 
     /// <summary>
     /// Allowed extension type, separated by comma.
@@ -54,7 +54,7 @@ public class JJUploadArea : JJBaseView
     /// <remarks>
     /// Default = "is not allowed. Allowed extensions: "
     /// </remarks>
-    public string NotAllowedExtensionErrorLabel { get; set; }
+    public string ExtensionNotAllowedLabel { get; set; }
 
     /// <remarks>
     /// Default = "is not allowed. Allowed Max size: "
@@ -107,7 +107,7 @@ public class JJUploadArea : JJBaseView
         DoneLabel = "Done";
         CancelLabel = "Cancel";
         AbortLabel = "Stop";
-        NotAllowedExtensionErrorLabel = "is not allowed. Allowed extensions: ";
+        ExtensionNotAllowedLabel = "is not allowed. Allowed extensions: ";
         SizeErrorLabel = "is not allowed. Allowed Max size: ";
         DragDropLabel = "Paste or Drag & Drop Files";
 
@@ -119,7 +119,9 @@ public class JJUploadArea : JJBaseView
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
         {
-            UploadAreaService.OnPostFile += OnPostFile;
+            if (OnFileUploaded != null) 
+                UploadAreaService.OnFileUploaded += OnFileUploaded;
+            
             var result = UploadAreaService.UploadFile("file",AllowedTypes);
             CurrentContext.Response.SendResponse(result.ToJson(), "application/json");
         }
@@ -132,11 +134,11 @@ public class JJUploadArea : JJBaseView
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
             .AppendHiddenInput($"uploadaction_{Name}", string.Empty)
-            .AppendElement(HtmlTag.Div,  div =>
+            .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea"));
+                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", new {componentName = Name}));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());
@@ -149,7 +151,7 @@ public class JJUploadArea : JJBaseView
                     div.WithAttribute("doneStr", StringLocalizer[DoneLabel]);
                     div.WithAttribute("cancelStr", StringLocalizer[CancelLabel]);
                     div.WithAttribute("abortStr", StringLocalizer[AbortLabel]);
-                    div.WithAttribute("extErrorStr", StringLocalizer[NotAllowedExtensionErrorLabel]);
+                    div.WithAttribute("extErrorStr", StringLocalizer[ExtensionNotAllowedLabel]);
                     div.WithAttribute("sizeErrorStr", StringLocalizer[SizeErrorLabel]);
                 });
 

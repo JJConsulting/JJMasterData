@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace JJMasterData.Core.Web.Components;
@@ -21,22 +22,27 @@ internal class GridToolbar
         GridView = gridView;
     }
 
-    public HtmlBuilder GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var toolbar = new JJToolbar();
-        toolbar.Items.AddRange(GetActionsHtmlElement());
+        
+        await foreach(var action in GetActionsHtmlElement())
+        {
+            toolbar.Items.Add(action);
+        }
+        
         return toolbar.GetHtmlBuilder();
     }
 
-    private IEnumerable<HtmlBuilder> GetActionsHtmlElement()
+    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         var expressionsService = GridView.ExpressionsService;
-        var formValues = GridView.DefaultValues;
+        var formValues = await GridView.GetDefaultValuesAsync();
 
         foreach (var action in actions)
         {
-            bool isVisible = expressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List, formValues);
+            bool isVisible = await expressionsService.GetBoolValueAsync	(action.VisibleExpression, action.Name, PageState.List, formValues);
             if (!isVisible)
                 continue;
 
@@ -46,7 +52,7 @@ internal class GridToolbar
                 continue;
             }
 
-            bool isEnabled = expressionsService.GetBoolValue(action.EnableExpression, action.Name, PageState.List, formValues);
+            bool isEnabled = await expressionsService.GetBoolValueAsync(action.EnableExpression, action.Name, PageState.List, formValues);
             var linkButton = JJLinkButton.GetInstance(action, isEnabled, true);
             linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)

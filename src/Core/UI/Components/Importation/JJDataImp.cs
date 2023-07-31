@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -102,8 +103,13 @@ public class JJDataImp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    {
         HtmlBuilder html = null;
-        Upload.OnPostFile += OnPostFile;
+        Upload.OnFileUploaded += FileUploaded;
 
         string action = CurrentContext.Request["current_uploadaction"];
 
@@ -124,7 +130,7 @@ public class JJDataImp : JJBaseProcess
                 html = GetHtmlLogProcess();
                 break;
             case "process_help":
-                html = new DataImportationHelp(this).GetHtmlHelp();
+                html = await new DataImportationHelp(this).GetHtmlHelpAsync();
                 break;
             case "posted_past_text":
             {
@@ -155,7 +161,7 @@ public class JJDataImp : JJBaseProcess
         var html = new DataImportationLog(this).GetHtmlLog()
          .AppendHiddenInput("current_uploadaction")
          .AppendHiddenInput("filename")
-         .AppendElement(BackButton);
+         .AppendComponent(BackButton);
 
         return html;
     }
@@ -171,35 +177,35 @@ public class JJDataImp : JJBaseProcess
             .WithAttribute("style", "text-align: center;")
             .AppendScript($"JJDataImp.startProcess('{Upload.Name}'); ")
             .AppendHiddenInput("current_uploadaction")
-            .AppendElement(HtmlTag.Div, spin =>
+            .Append(HtmlTag.Div, spin =>
             {
                 spin.WithAttribute("id", "impSpin")
                     .WithAttribute("style", "position: relative; height: 80px");
             })
             .AppendText("&nbsp;&nbsp;&nbsp;")
             .AppendText(StringLocalizer["Waiting..."])
-            .AppendElement(HtmlTag.Br).AppendElement(HtmlTag.Br)
-            .AppendElement(HtmlTag.Div, msg =>
+            .Append(HtmlTag.Br).Append(HtmlTag.Br)
+            .Append(HtmlTag.Div, msg =>
             {
                 msg.WithAttribute("id", "divMsgProcess")
                    .WithAttribute("style", "display:none")
-                   .AppendElement(HtmlTag.Div, status =>
+                   .Append(HtmlTag.Div, status =>
                    {
                        status.WithAttribute("id", "divStatus");
                    })
-                   .AppendElement(HtmlTag.Span, resume =>
+                   .Append(HtmlTag.Span, resume =>
                    {
                        resume.WithAttribute("id", "lblResumeLog");
                    });
             })
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("style", "width:50%;")
                    .WithCssClass(BootstrapHelper.CenterBlock)
-                   .AppendElement(HtmlTag.Div, progress =>
+                   .Append(HtmlTag.Div, progress =>
                    {
                        progress.WithCssClass("progress")
-                           .AppendElement(HtmlTag.Div, bar =>
+                           .Append(HtmlTag.Div, bar =>
                             {
                                 bar.WithCssClass("progress-bar")
                                    .WithAttribute("role", "progressbar")
@@ -210,8 +216,8 @@ public class JJDataImp : JJBaseProcess
                             });
                    });
             })
-            .AppendElement(new DataImportationLog(this).GetHtmlResume())
-            .AppendElement(HtmlTag.Br).AppendElement(HtmlTag.Br);
+            .Append(new DataImportationLog(this).GetHtmlResume())
+            .Append(HtmlTag.Br).Append(HtmlTag.Br);
 
         var btnStop = new JJLinkButton
         {
@@ -219,7 +225,7 @@ public class JJDataImp : JJBaseProcess
             IconClass = IconType.Stop.GetCssClass(),
             Text = StringLocalizer["Stop the import."]
         };
-        html.AppendElement(btnStop);
+        html.AppendComponent(btnStop);
 
         return html;
     }
@@ -231,7 +237,7 @@ public class JJDataImp : JJBaseProcess
             .AppendScript("JJDataImp.addPasteListener();")
             .AppendHiddenInput("current_uploadaction")
             .AppendHiddenInput("filename")
-            .AppendElement(HtmlTag.TextArea, area =>
+            .Append(HtmlTag.TextArea, area =>
             {
                 area.WithNameAndId("pasteValue");
                 area.WithAttribute("style", "display:none");
@@ -243,26 +249,26 @@ public class JJDataImp : JJBaseProcess
         collapsePanel.Title = "Import File";
         collapsePanel.ExpandedByDefault = ExpandedByDefault;
         collapsePanel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Label, label =>
+            .Append(HtmlTag.Label, label =>
             {
                 label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
             })
-            .AppendElement(Upload);
+            .AppendComponent(Upload);
 
-        html.AppendElement(collapsePanel);
-        html.AppendElement(HtmlTag.Div, row =>
+        html.AppendComponent(collapsePanel);
+        html.Append(HtmlTag.Div, row =>
         {
             row.WithCssClass("row");
-            row.AppendElement(HtmlTag.Div, col =>
+            row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12");
-                col.AppendElement(BackButton);
-                col.AppendElement(HelpButton);
+                col.AppendComponent(BackButton);
+                col.AppendComponent(HelpButton);
 
                 var pipeline = BackgroundTask.GetProgress<IProgressReporter>(keyprocess);
                 if (pipeline != null)
                 {
-                    col.AppendElement(LogButton);
+                    col.AppendComponent(LogButton);
                 }
             });
         });
@@ -270,7 +276,7 @@ public class JJDataImp : JJBaseProcess
         return html;
     }
     
-    private void OnPostFile(object sender, FormUploadFileEventArgs e)
+    private void FileUploaded(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
         Stream stream = new MemoryStream(e.File.Bytes);

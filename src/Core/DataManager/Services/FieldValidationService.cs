@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -22,7 +23,7 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
     
-    public IDictionary<string,dynamic> ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string,dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
@@ -31,12 +32,12 @@ public class FieldValidationService : IFieldValidationService
 
         foreach (var field in formElement.Fields)
         {
-            var isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, field.Name, pageState, formValues);
+            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, field.Name, pageState, formValues);
             if (!isVisible)
                 continue;
 
-            var isEnable = ExpressionsService.GetBoolValue(field.EnableExpression, field.Name, pageState, formValues);
-            if (!isEnable)
+            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, field.Name, pageState, formValues);
+            if (!isEnabled)
                 continue;
 
             string value;

@@ -32,26 +32,26 @@ public class JJModalDialog : JJBaseView
             .WithAttribute("role", "dialog")
             .WithAttribute("aria-hidden", "true")
             .WithAttribute("aria-labelledby", $"{Name}-label")
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass(GetSizeClass());
-                div.AppendElement(HtmlTag.Div, content =>
+                div.Append(HtmlTag.Div, content =>
                 {
                     content.WithCssClass("modal-content");
-                    content.AppendElement(GetHtmlHeader());
+                    content.Append(GetHtmlHeader());
                     
-                    content.AppendElement(HtmlTag.Div, body =>
+                    content.Append(HtmlTag.Div, body =>
                     {
                         body.WithCssClass("modal-body")
                             .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
-                            .AppendElement(HtmlBuilderContent);
+                            .Append(HtmlBuilderContent);
                     });
-                    content.AppendElementIf(Buttons.Count > 0, HtmlTag.Div, footer =>
+                    content.AppendIf(Buttons.Count > 0, HtmlTag.Div, footer =>
                     {
                         footer.WithCssClass("modal-footer");
                         foreach (var btn in Buttons)
                         {
-                            footer.AppendElement(btn);
+                            footer.AppendComponent(btn);
                         }
                     });
 
@@ -66,13 +66,13 @@ public class JJModalDialog : JJBaseView
         var btn = JJAlert.GetCloseButton("modal");
         var header = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("modal-header")
-            .AppendElementIf(BootstrapHelper.Version == 3, ()=>btn)
-            .AppendElement(HtmlTag.H4, h4 =>
+            .AppendIf(BootstrapHelper.Version == 3, ()=>btn)
+            .Append(HtmlTag.H4, h4 =>
             {
                 h4.WithCssClass("modal-title")
                   .AppendText(Title);
             })
-            .AppendElementIf(BootstrapHelper.Version > 3,()=> btn);
+            .AppendIf(BootstrapHelper.Version > 3,()=> btn);
 
         return header;
     }

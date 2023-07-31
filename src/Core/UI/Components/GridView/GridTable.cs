@@ -40,8 +40,8 @@ internal class GridTable
         table.WithCssClassIf(Settings.ShowRowStriped, "table-striped");
         table.WithCssClassIf(Settings.IsHeaderFixed, "table-fix-head");
 
-        table.AppendElement(Header.GetHtmlElement());
-        table.AppendElement(await Body.GetHtmlElementAsync());
+        table.Append(await Header.GetHtmlBuilderAsync());
+        table.Append(await Body.GetHtmlElementAsync());
 
         return table;
     }

@@ -23,59 +23,59 @@ public class MasterApiController : ControllerBase
     [HttpGet]
     [Produces(typeof(MasterApiListResponse))]
     [Route("{pag?}/{regporpag:int?}/{orderby?}/{tot?}")]
-    public ActionResult<MasterApiListResponse> GetAll(string elementName, [FromQuery] int pag = 1,
+    public async Task<ActionResult<MasterApiListResponse>> GetAll(string elementName, [FromQuery] int pag = 1,
         [FromQuery] int regporpag = 1000, [FromQuery] string? orderby = null, [FromQuery] int? tot = 0)
     {
         if (Request.Headers.Accept.ToString().Contains("text/csv"))
         {
-            string text = _service.GetListFieldAsText(elementName, pag, regporpag, orderby);
+            string text = await _service.GetListFieldAsTextAsync(elementName, pag, regporpag, orderby);
 
             return Content(text, "text/csv");
         }
 
-        var response = _service.GetListFields(elementName, pag, regporpag, orderby, tot!.Value);
+        var response = await _service.GetListFieldsAsync(elementName, pag, regporpag, orderby, tot!.Value);
         return Ok(response);
     }
     
     [HttpGet]
     [Produces(typeof(Dictionary<string, object>))]
     [Route("{id}")]
-    public ActionResult<Dictionary<string, object>> Get(string elementName, string id)
+    public async Task<ActionResult<Dictionary<string, object>>> Get(string elementName, string id)
     {
-        return Ok(_service.GetFields(elementName, id));
+        return Ok(await _service.GetFieldsAsync(elementName, id));
     }
     
     [HttpPost]
     public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string,dynamic>[] listParam, string elementName, bool replace = false)
     {
-        return GetResponseMessage(await _service.SetFields(listParam, elementName, replace).ToListAsync());
+        return GetResponseMessage(await _service.SetFieldsAsync(listParam, elementName, replace).ToListAsync());
     }
     
     [HttpPut]
     public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
-        return GetResponseMessage(await _service.UpdateFields(listParam, elementName).ToListAsync());
+        return GetResponseMessage(await _service.UpdateFieldsAsync(listParam, elementName).ToListAsync());
     }
     
     [HttpPatch]
     public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
     {
-        return GetResponseMessage(await _service.UpdatePart(listParam, elementName).ToListAsync());
+        return GetResponseMessage(await _service.UpdatePartAsync(listParam, elementName).ToListAsync());
     }
     
     [HttpDelete]
-    public ActionResult<ResponseLetter> Delete(string elementName, string id)
+    public async Task<ActionResult<ResponseLetter>> Delete(string elementName, string id)
     {
-        return Ok(_service.Delete(elementName, id));
+        return Ok(await _service.DeleteAsync(elementName, id));
     }
     
     [HttpPost]
     [Produces(typeof(FormValues[]))]
     [Route("trigger/{pageState?}/{objname?}")]
-    public ActionResult<ResponseLetter> PostTrigger(string elementName, [FromBody] IDictionary<string,dynamic>? paramValues,
+    public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] IDictionary<string,dynamic>? paramValues,
         PageState pageState, string objname = "")
     {
-        return Ok(_service.PostTrigger(elementName, paramValues, pageState, objname));
+        return Ok(await _service.PostTriggerAsync(elementName, paramValues, pageState, objname));
     }
     
     [HttpPost]

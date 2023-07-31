@@ -219,10 +219,10 @@ public class JJDataPanel : JJAsyncBaseView
             return null;
         }
 
-        return GetPanelHtml();
+        return await GetPanelHtml();
     }
 
-    internal HtmlBuilder GetPanelHtml()
+    internal async Task<HtmlBuilder> GetPanelHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
@@ -235,8 +235,8 @@ public class JJDataPanel : JJAsyncBaseView
         }
 
         var panelGroup = new DataPanelLayout(this);
-        html.AppendRange(panelGroup.GetHtmlPanelList());
-        html.AppendScript(GetHtmlFormScript());
+        await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
+        html.AppendScript(await GetHtmlFormScript());
 
         return html;
     }
@@ -247,7 +247,7 @@ public class JJDataPanel : JJAsyncBaseView
         return EncryptionService.EncryptStringWithUrlEncode(pkval);
     }
 
-    private string GetHtmlFormScript()
+    private async Task<string> GetHtmlFormScript()
     {
         var script = new StringBuilder();
         script.AppendLine("");
@@ -261,7 +261,8 @@ public class JJDataPanel : JJAsyncBaseView
         var listField = FormElement.Fields.ToList();
         if (!listField.Exists(x => x.AutoPostBack))
         {
-            script.AppendLine(new DataPanelScript(this).GetHtmlFormScript());
+            var dataPanelScript = new DataPanelScript(this);
+            script.AppendLine(await dataPanelScript.GetHtmlFormScript());
         }
 
         script.AppendLine("});");
@@ -294,9 +295,9 @@ public class JJDataPanel : JJAsyncBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string, dynamic> ValidateFields(IDictionary<string, dynamic> values, PageState pageState)
+    public async Task<IDictionary<string, dynamic>>  ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
     {
-        return ValidateFields(values, pageState, true);
+        return await ValidateFieldsAsync(values, pageState, true);
     }
 
     /// <summary>
@@ -306,9 +307,9 @@ public class JJDataPanel : JJAsyncBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string, dynamic> ValidateFields(IDictionary<string, dynamic> values, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState, bool enableErrorLink)
     {
-        return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
+        return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
 
     [Obsolete("External route is needed")]

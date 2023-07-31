@@ -34,28 +34,28 @@ public class JJTextRange : JJBaseControl
         var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-3");
             
             FromField.Name = Name + "_from";
             FromField.Enabled = Enabled;
             
-            div.AppendElement(FromField);
+            div.AppendComponent(FromField);
         });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-3");
             
             ToField.Name = Name + "_to";
             ToField.Enabled = Enabled;
             
-            div.AppendElement(ToField);
+            div.AppendComponent(ToField);
         });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-4");
-            div.AppendElementIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
+            div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
 
         return div;
@@ -67,17 +67,17 @@ public class JJTextRange : JJBaseControl
 
         var dropdown = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("dropdown")
-            .AppendElement(GetDropdownButton())
-            .AppendElement(HtmlTag.Ul, ul =>
+            .Append(GetDropdownButton())
+            .Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("dropdown-menu");
                 ul.WithAttribute("aria-labelledby", $"dropdown_{Name}");
-                ul.AppendElement(GetListItem(StringLocalizer["Today"], GetTodayScript(now)));
-                ul.AppendElement(GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now)));
-                ul.AppendElement(GetListItem(StringLocalizer["This month"], GetThisMonthScript(now)));
-                ul.AppendElement(GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now)));
-                ul.AppendElement(GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now)));
-                ul.AppendElement(GetListItem(StringLocalizer["Clear"], GetClearScript()));
+                ul.Append(GetListItem(StringLocalizer["Today"], GetTodayScript(now)));
+                ul.Append(GetListItem(StringLocalizer["Yesterday"], GetYesterdayScript(now)));
+                ul.Append(GetListItem(StringLocalizer["This month"], GetThisMonthScript(now)));
+                ul.Append(GetListItem(StringLocalizer["Last month"], GetLastMonthScript(now)));
+                ul.Append(GetListItem(StringLocalizer["Last three months"], GetLastThreeMonthsScript(now)));
+                ul.Append(GetListItem(StringLocalizer["Clear"], GetClearScript()));
             });
 
         return dropdown;
@@ -93,7 +93,7 @@ public class JJTextRange : JJBaseControl
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
             .AppendText(StringLocalizer["Periods"] + "&nbsp;")
-            .AppendElement(HtmlTag.Span, span => { span.WithCssClass("caret"); });
+            .Append(HtmlTag.Span, span => { span.WithCssClass("caret"); });
     }
 
     private string GetClearScript()
@@ -143,7 +143,7 @@ public class JJTextRange : JJBaseControl
     {
         return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("dropdown-item")
-            .AppendElement(HtmlTag.A, a =>
+            .Append(HtmlTag.A, a =>
             {
                 a.WithAttribute("href", "#");
                 a.WithAttribute("onclick", script);

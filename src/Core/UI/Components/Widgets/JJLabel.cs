@@ -62,13 +62,13 @@ public class JJLabel : JJBaseView
             .WithCssClass(BootstrapHelper.Label)
             .WithCssClass(CssClass)
             .AppendText(Text)
-            .AppendElementIf(IsRequired, HtmlTag.Span, s =>
+            .AppendIf(IsRequired, HtmlTag.Span, s =>
             {
                 s.WithCssClass("required-symbol");
                 s.AppendText("*");
                 s.WithToolTip(RequiredText ?? "Required");
             })
-            .AppendElementIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
+            .AppendIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
             {
                 s.WithCssClass("fa fa-question-circle help-description");
                 s.WithToolTip(ToolTip);

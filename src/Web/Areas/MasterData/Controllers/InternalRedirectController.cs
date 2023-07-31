@@ -98,7 +98,7 @@ public class InternalRedirectController : MasterDataController
             panel.SetUserValues("USERID", userId);
 
         var values = await panel.GetFormValuesAsync();
-        var errors = panel.ValidateFields(values, PageState.Update);
+        var errors = await panel.ValidateFieldsAsync(values, PageState.Update);
         var formElement = panel.FormElement;
         try
         {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -108,6 +109,11 @@ public class JJDataExp : JJBaseProcess
         return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlElement();
     }
 
+    protected override Task<HtmlBuilder> RenderHtmlAsync()
+    {
+        return Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlElement());
+    }
+
     internal static JJIcon GetFileIcon(string ext)
     {
         if (ext.EndsWith("xls"))
@@ -138,7 +144,7 @@ public class JJDataExp : JJBaseProcess
                     ShowCloseButton = false,
                     MessageTitle = reporter.Message
                 };
-                html.AppendElement(panel);
+                html.AppendComponent(panel);
             }
             else
             {
@@ -146,14 +152,14 @@ public class JJDataExp : JJBaseProcess
                 var icon = GetFileIcon(file.Extension);
                 icon.CssClass = "fa-3x ";
 
-                html.AppendElement(HtmlTag.Div, div =>
+                html.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("text-center");
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.Span, span =>
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.Span, span =>
                     {
                         span.WithCssClass("text-success");
-                        span.AppendElement(HtmlTag.Span, span =>
+                        span.Append(HtmlTag.Span, span =>
                         {
                             span.WithCssClass("fa fa-check fa-lg");
                             span.WithAttribute("aria-hidden", "true");
@@ -161,34 +167,34 @@ public class JJDataExp : JJBaseProcess
 
                         span.AppendText(StringLocalizer["File generated successfully!"]);
                     });
-                    div.AppendElement(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
 
                     string elapsedTime = Format.FormatTimeSpan(reporter.StartDate, reporter.EndDate);
 
                     div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
 
-                    div.AppendElement(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
 
-                    div.AppendElement(HtmlTag.I, i =>
+                    div.Append(HtmlTag.I, i =>
                     {
                         i.AppendText(
                             StringLocalizer["If the download does not start automatically, click on the icon below."]);
                     });
 
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
 
-                    div.AppendElement(HtmlTag.A, a =>
+                    div.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("id", $"export_link_{Name}");
                         a.WithAttribute("href", url);
-                        a.AppendElement(icon);
-                        a.AppendElement(HtmlTag.Br);
+                        a.AppendComponent(icon);
+                        a.Append(HtmlTag.Br);
                         a.AppendText(file.Name);
                     });
-                    div.AppendElement(HtmlTag.Br);
-                    div.AppendElement(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
+                    div.Append(HtmlTag.Br);
                 });
             }
 
@@ -200,15 +206,15 @@ public class JJDataExp : JJBaseProcess
             };
             btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");
 
-            html.AppendElement(HtmlTag.Hr);
+            html.Append(HtmlTag.Hr);
 
-            html.AppendElement(HtmlTag.Div, div =>
+            html.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("row");
-                div.AppendElement(HtmlTag.Div, div =>
+                div.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass($"col-sm-12 {BootstrapHelper.TextRight}");
-                    div.AppendElement(btnCancel);
+                    div.AppendComponent(btnCancel);
                 });
             });
 

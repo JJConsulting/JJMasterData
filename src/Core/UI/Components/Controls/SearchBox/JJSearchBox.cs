@@ -276,7 +276,7 @@ public class JJSearchBox : JJBaseControl
             throw new ArgumentException("[DataItem] property not set");
 
         var div = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Input, input =>
+            .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("id", Id + "_text");
                 input.WithAttribute("name", Name + "_text");
@@ -302,7 +302,7 @@ public class JJSearchBox : JJBaseControl
                 input.WithAttribute("value", description);
 
             })
-            .AppendElement(HtmlTag.Input, input =>
+            .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("hidden", "hidden");
                 input.WithAttribute("id", Id);

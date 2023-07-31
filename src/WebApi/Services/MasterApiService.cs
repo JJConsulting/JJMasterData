@@ -61,12 +61,12 @@ public class MasterApiService
         _formEventResolver = formEventResolver;
     }
 
-    public string GetListFieldAsText(string elementName, int pag, int regporpag, string? orderby)
+    public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var formElement = _dataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await _dataDictionaryRepository.GetMetadataAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -80,13 +80,13 @@ public class MasterApiService
         return text;
     }
 
-    public MasterApiListResponse GetListFields(string elementName, int pag, int regporpag, string? orderby,
+    public async Task<MasterApiListResponse> GetListFieldsAsync(string elementName, int pag, int regporpag, string? orderby,
         int total = 0)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
+        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
         if (!dictionary.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -106,33 +106,32 @@ public class MasterApiService
         return ret;
     }
 
-    public Dictionary<string, object> GetFields(string elementName, string id)
+    public async Task<Dictionary<string, object>> GetFieldsAsync(string elementName, string id)
     {
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
-        if (!dictionary.ApiOptions.EnableGetDetail)
+        var formElement = await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
-
-        var element = dictionary;
-        var primaryKeys = DataHelper.GetPkValues(element, id, ',');
-        var filters = ParseFilter(dictionary, primaryKeys);
-        var fields = _entityRepository.GetFields(element, filters as IDictionary);
+        
+        var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
+        var filters = ParseFilter(formElement, primaryKeys);
+        var fields = await _entityRepository.GetDictionaryAsync(formElement, filters);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException("No records found");
 
         //We transform to dictionary to preserve the order of fields in parse
         var listRet = new Dictionary<string, object>();
-        foreach (var field in element.Fields)
+        foreach (var field in formElement.Fields)
         {
-            string fieldName = dictionary.ApiOptions.GetFieldNameParsed(field.Name);
-            if (fields.ContainsKey(field.Name))
-                listRet.Add(fieldName, fields[field.Name]!);
+            string fieldName = formElement.ApiOptions.GetFieldNameParsed(field.Name);
+            if (fields.TryGetValue(field.Name, out var field1))
+                listRet.Add(fieldName, field1!);
         }
 
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -150,7 +149,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFields(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -166,7 +165,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePart(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -192,7 +191,7 @@ public class MasterApiService
         ResponseLetter ret;
         try
         {
-            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Insert, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Insert, true);
             var formResult = await FormService.InsertAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -221,7 +220,7 @@ public class MasterApiService
         ResponseLetter ret;
         try
         {
-            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Update, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Update, true);
             var formResult = await FormService.UpdateAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -254,7 +253,7 @@ public class MasterApiService
         ResponseLetter ret;
         try
         {
-            var values = FieldsService.MergeWithExpressionValues(formElement, apiValues, PageState.Import, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Import, true);
             var formResult =await FormService.InsertOrReplaceAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -310,7 +309,7 @@ public class MasterApiService
         return ret;
     }
 
-    public async Task<ResponseLetter> Delete(string elementName, string id)
+    public async Task<ResponseLetter> DeleteAsync(string elementName, string id)
     {
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
@@ -321,7 +320,7 @@ public class MasterApiService
 
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
-        var values = FieldsService.MergeWithExpressionValues(formElement, primaryKeys, PageState.Delete, true);
+        var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, primaryKeys, PageState.Delete, true);
         var formResult = await FormService.DeleteAsync(formElement, values, GetDataContext());
 
         if (formResult.IsValid)
@@ -342,7 +341,7 @@ public class MasterApiService
     /// <summary>
     /// Fired when triggering the form
     /// </summary>
-    public Dictionary<string, FormValues> PostTrigger(
+    public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
         string elementName, IDictionary<string, dynamic>? paramValues, PageState pageState, string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
@@ -354,19 +353,19 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var values = ParseFilter(dictionary, paramValues);
-        var userValues = new Hashtable
+        var userValues = new Dictionary<string,object>
         {
             { "objname", objname }
         };
 
-        var newvalues = FieldsService.MergeWithExpressionValues(dictionary, values, pageState, false);
+        var newvalues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (FormElementField f in dictionary.Fields)
         {
             var formValues = new FormValues
             {
-                Enable = ExpressionsService.GetBoolValue(f.EnableExpression, f.Name, pageState, newvalues),
-                Visible = ExpressionsService.GetBoolValue(f.VisibleExpression, f.Name, pageState, newvalues)
+                Enable = await ExpressionsService.GetBoolValueAsync(f.EnableExpression, f.Name, pageState, newvalues),
+                Visible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, f.Name, pageState, newvalues)
             };
 
             if (newvalues != null && newvalues.TryGetValue(f.Name, out var newvalue))

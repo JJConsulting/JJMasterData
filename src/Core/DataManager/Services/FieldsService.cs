@@ -24,19 +24,19 @@ public class FieldsService : IFieldsService
         FieldValuesService = fieldValuesService;
     }
     
-    public bool IsVisible(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
+    public async Task<bool> IsVisibleAsync(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
     {
-        return FieldVisibilityService.IsVisible(field, state, formValues);
+        return await FieldVisibilityService.IsVisibleAsync(field, state, formValues);
     }
 
-    public bool IsEnabled(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
+    public async Task<bool> IsEnabledAsync(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
     {
-        return FieldVisibilityService.IsEnabled(field, state, formValues);
+        return await FieldVisibilityService.IsEnabledAsync(field, state, formValues);
     }
 
-    public IDictionary<string, dynamic> ValidateFields(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
-       return FieldValidationService.ValidateFields(formElement, formValues, pageState, enableErrorLink);
+       return await FieldValidationService.ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
     }
 
     public string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true)
@@ -54,19 +54,19 @@ public class FieldsService : IFieldsService
         return FieldFormattingService.FormatValue(field, value);
     }
 
-    public IDictionary<string, dynamic> MergeWithExpressionValues(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState,
+    public async Task<IDictionary<string,dynamic>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState,
         bool replaceNullValues)
     {
-        return FieldValuesService.MergeWithExpressionValues(formElement, formValues, pageState, replaceNullValues);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formValues, pageState, replaceNullValues);
     }
 
-    public IDictionary<string, dynamic> GetDefaultValues(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState)
+    public async Task<IDictionary<string,dynamic>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState)
     {
-        return FieldValuesService.GetDefaultValues(formElement, formValues, pageState);
+        return await FieldValuesService.GetDefaultValuesAsync(formElement, formValues, pageState);
     }
 
-    public IDictionary<string, dynamic> MergeWithDefaultValues(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState)
+    public async Task<IDictionary<string,dynamic>>  MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState)
     {
-        return FieldValuesService.MergeWithDefaultValues(formElement, formValues, pageState);
+        return await FieldValuesService.MergeWithDefaultValuesAsync(formElement, formValues, pageState);
     }
 }

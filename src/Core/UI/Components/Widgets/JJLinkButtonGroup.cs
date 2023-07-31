@@ -49,13 +49,13 @@ public class JJLinkButtonGroup : JJBaseView
         foreach (var action in listAction)
         {
             action.ShowAsButton = ShowAsButton;
-            inputGroup.AppendElement(action);
+            inputGroup.AppendComponent(action);
         }
 
         if (listActionGroup.Count > 0)
         {
-            inputGroup.AppendElement(GetHtmlCaretButton());
-            inputGroup.AppendElement(HtmlTag.Ul, ul =>
+            inputGroup.Append(GetHtmlCaretButton());
+            inputGroup.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("dropdown-menu dropdown-menu-right");
                 AddGroupActions(ul, listActionGroup);
@@ -71,15 +71,15 @@ public class JJLinkButtonGroup : JJBaseView
 
             if (action.DividerLine)
             {
-                ul.AppendElement(HtmlTag.Li, li =>
+                ul.Append(HtmlTag.Li, li =>
                 {
                     li.WithAttribute("role", "separator").WithCssClass("divider dropdown-divider");
                 });
             }
 
-            ul.AppendElement(HtmlTag.Li, li =>
+            ul.Append(HtmlTag.Li, li =>
             {
-                li.WithCssClass("dropdown-item").AppendElement(action);
+                li.WithCssClass("dropdown-item").AppendComponent(action);
             });
         }
     }
@@ -94,7 +94,7 @@ public class JJLinkButtonGroup : JJBaseView
             .WithCssClass("dropdown-toggle")
             .WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton)
             .AppendTextIf(!string.IsNullOrEmpty(CaretText), CaretText)
-            .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
+            .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("caret")
                     .WithToolTip(MoreActionsText ?? "More Options");

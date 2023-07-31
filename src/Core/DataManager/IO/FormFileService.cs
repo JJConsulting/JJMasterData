@@ -10,17 +10,12 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormFileService
 {
-    private IHttpContext HttpContext { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ILoggerFactory LoggerFactory { get; }
+    private FormFileManagerFactory FormFileManagerFactory { get; }
 
-    public FormFileService(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
+    public FormFileService(FormFileManagerFactory formFileManagerFactory)
     {
-        HttpContext = httpContext;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
+        FormFileManagerFactory = formFileManagerFactory;
     }
-    
     internal void SaveFormMemoryFiles(FormElement formElement, IDictionary<string,dynamic> primaryKeys)
     {
         var uploadFields = formElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
@@ -31,8 +26,8 @@ public class FormFileService
         foreach (var field in uploadFields)
         {
             string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var fileService = new FormFileManager(field.Name + "_uploadview", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
-            fileService.SaveMemoryFiles(folderPath);
+            var manager = FormFileManagerFactory.Create(field.Name + "_uploadview");
+            manager.SaveMemoryFiles(folderPath);
         }
     }
 
@@ -44,8 +39,8 @@ public class FormFileService
         
         foreach (var field in uploadFields)
         {
-            var fileService = new FormFileManager(field.Name + "_uploadview", HttpContext, StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
-            fileService.DeleteAll();
+            var manager = FormFileManagerFactory.Create(field.Name + "_uploadview");
+            manager.DeleteAll();
         }
     }
 }

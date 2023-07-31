@@ -52,7 +52,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
             throw new ArgumentException("DataFile cannot be null");
 
         var text = Create();
-        text.ElementField = field;
+        text.FormElementField = field;
         text.PageState = formStateData.PageState;
         text.Text = value != null ? value.ToString() : "";
         text.FormValues = formStateData.FormValues;

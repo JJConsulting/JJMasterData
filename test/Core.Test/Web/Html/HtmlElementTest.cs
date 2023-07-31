@@ -11,7 +11,7 @@ public class HtmlElementTest
     public void RenderTagWithCloseTag_Test(HtmlTag tag)
     {
         var builder = new HtmlBuilder();
-        builder.AppendElement(tag);
+        builder.Append(tag);
         var result = builder.ToString();
 
         string formattedTag = tag.ToString().ToLower();
@@ -44,7 +44,7 @@ public class HtmlElementTest
     {
         var builder = new HtmlBuilder(HtmlTag.Div)
              .AppendText("test2")
-             .AppendElement(HtmlTag.Span, s =>
+             .Append(HtmlTag.Span, s =>
              {
                  s.AppendText("test1");
              });
@@ -71,10 +71,10 @@ public class HtmlElementTest
         var builder = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId("id1")
             .WithCssClass("class1, class2")
-            .AppendElement(HtmlTag.H1, h1 =>
+            .Append(HtmlTag.H1, h1 =>
             {
                 h1.AppendText("Simple Title"); 
-                h1.AppendElement(HtmlTag.Small, s =>
+                h1.Append(HtmlTag.Small, s =>
                 {
                     s.AppendText("This is a subtitle");
                 });

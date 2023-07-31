@@ -28,12 +28,12 @@ public class ElementController : DataDictionaryController
         _scriptsService = scriptsService;
     }
 
-    public ActionResult Index()
+    public async Task<ActionResult> Index()
     {
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = GetEntityFormView();
+            var model = await GetEntityGridView();
             return View(model);
         }
         catch (DataAccessException)
@@ -67,9 +67,9 @@ public class ElementController : DataDictionaryController
         return View();
     }
 
-    public IActionResult Export()
+    public async Task<IActionResult> Export()
     {
-        var gridView = GetFormView();
+        var gridView = await GetGridView();
         var selectedRows = gridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
@@ -92,10 +92,10 @@ public class ElementController : DataDictionaryController
         upload.AddLabel = StringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
         upload.AutoSubmitAfterUploadAll = false;
-        upload.OnPostFile += OnPostFile;
+        upload.OnFileUploaded += FileUploaded;
     }
 
-    private async void OnPostFile(object? sender, FormUploadFileEventArgs e)
+    private async void FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
         await _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
@@ -181,9 +181,9 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public JJGridView GetEntityFormView()
+    public async Task<JJGridView> GetEntityGridView()
     {
-        var gridView = GetFormView();
+        var gridView = await GetGridView();
 
         var acTools = new UrlRedirectAction
         {
@@ -329,9 +329,9 @@ public class ElementController : DataDictionaryController
         return gridView;
     }
     
-    public IActionResult Delete()
+    public async Task<IActionResult> Delete()
     {
-        var formView = GetEntityFormView();
+        var formView = await GetEntityGridView();
 
         var selectedGridValues = formView.GetSelectedGridValues();
 
@@ -343,10 +343,10 @@ public class ElementController : DataDictionaryController
         return RedirectToAction(nameof(Index));
     }
 
-    private JJGridView GetFormView()
+    private async Task<JJGridView> GetGridView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var gridView = _elementService.GetGridView();
+        var gridView = await _elementService.GetGridView();
         gridView.FormElement.Title =
             $"<img src=\"{baseUrl}/_content/JJMasterData.Web/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
 

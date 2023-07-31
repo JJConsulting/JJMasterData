@@ -20,12 +20,14 @@ public class TextFileController : MasterDataController
     }
 
     [ServiceFilter<FormElementDecryptionFilter>]
-    public IActionResult GetUploadView(FormElement formElement, string componentName)
+    public IActionResult GetUploadView(FormElement formElement,string fieldName, string componentName)
     {
         var textFile = TextFileFactory.Create();
         textFile.FormElement = formElement;
         textFile.Name = componentName;
-
+        textFile.IsExternalRoute = true;
+        textFile.FormElementField = formElement.Fields[fieldName];
+        
         var htmlBuilder = textFile.GetFormUploadHtmlBuilder();
 
         return Content(htmlBuilder.ToString());

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.DataManager;
@@ -16,8 +17,8 @@ public interface IFieldValuesService
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    IDictionary<string,dynamic> MergeWithExpressionValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues);
+    Task<IDictionary<string,dynamic>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues);
 
-    IDictionary<string,dynamic> GetDefaultValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState state);
-    IDictionary<string,dynamic> MergeWithDefaultValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState);
+    Task<IDictionary<string,dynamic>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState state);
+    Task<IDictionary<string,dynamic>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState);
 }

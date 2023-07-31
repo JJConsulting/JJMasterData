@@ -35,13 +35,13 @@ public class JJAlert : JJBaseView
             .WithAttribute("role", "alert");
 
         if (ShowCloseButton)
-            html.AppendElement(GetCloseButton("alert"));
+            html.Append(GetCloseButton("alert"));
 
         if (ShowIcon && Icon is not null)
-            html.AppendElement(new JJIcon(Icon.Value));
+            html.AppendComponent(new JJIcon(Icon.Value));
 
         if (!string.IsNullOrEmpty(Title))
-            html.AppendElement(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Title}"));
+            html.Append(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Title}"));
 
         if (Messages == null) 
             return html;
@@ -52,7 +52,7 @@ public class JJAlert : JJBaseView
             html.AppendText(message);
             
             if(index > 0) 
-                html.AppendElement(HtmlTag.Br);
+                html.Append(HtmlTag.Br);
         }
 
 
@@ -74,7 +74,7 @@ public class JJAlert : JJBaseView
             .WithAttribute("aria-label", "Close")
             .WithDataAttribute("dismiss", dimissValue)
             .WithCssClass(BootstrapHelper.Close)
-            .AppendElementIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>
+            .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, span =>
             {
                 span.WithAttribute("aria-hidden", "true");
                 span.AppendText("&times;");

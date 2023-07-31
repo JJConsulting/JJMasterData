@@ -28,37 +28,37 @@ internal class DataExportationLog
         
         div.WithCssClass("text-center");
         
-        div.AppendElement(GetLoading());
+        div.Append(GetLoading());
 
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithAttribute("id", "divMsgProcess")
                 .WithCssClass("text-center")
                 .WithAttribute("style", "display:none;");
             
-            div.AppendElement(GetProgressData());
+            div.Append(GetProgressData());
 
-            div.AppendElement(HtmlTag.Br);
+            div.Append(HtmlTag.Br);
 
             div.AppendText(StringLocalizer["Exportation started on"]);
 
             div.AppendText(" ");
             
-            div.AppendElement(HtmlTag.Span, span =>
+            div.Append(HtmlTag.Span, span =>
             {
                 span.WithAttribute("id", "lblStartDate");
             });
             
-            div.AppendElement(HtmlTag.Br);
-            div.AppendElement(HtmlTag.Br);
-            div.AppendElement(HtmlTag.Br);
+            div.Append(HtmlTag.Br);
+            div.Append(HtmlTag.Br);
+            div.Append(HtmlTag.Br);
 
-            div.AppendElement(HtmlTag.A, a =>
+            div.Append(HtmlTag.A, a =>
             {
                 var stopExportationScript = Scripts.GetStopExportationScript(_dictionaryName, _componentName,
                     StringLocalizer["Stopping Processing..."], _isExternalRoute);
                 a.WithAttribute("href", $"javascript:{stopExportationScript}");
-                a.AppendElement(HtmlTag.Span, span =>
+                a.Append(HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-stop");
                 });
@@ -74,7 +74,7 @@ internal class DataExportationLog
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align:center;")
             .AppendHiddenInput("current_uploadaction", string.Empty)
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("id", "exportationSpinner");
                 div.WithAttribute("style", "position: relative; height: 80px");
@@ -84,20 +84,20 @@ internal class DataExportationLog
     private static HtmlBuilder GetProgressData()
     {
         return new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("id", "divStatus");
                 div.WithCssClass("text-center");
-                div.AppendElement(HtmlTag.Span, span => { span.WithAttribute("id", "lblResumeLog"); });
+                div.Append(HtmlTag.Span, span => { span.WithAttribute("id", "lblResumeLog"); });
             })
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("style", "display:none;width:50%");
                 div.WithCssClass(BootstrapHelper.CenterBlock);
-                div.AppendElement(HtmlTag.Div, div =>
+                div.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("progress");
-                    div.AppendElement(HtmlTag.Div, div =>
+                    div.Append(HtmlTag.Div, div =>
                     {
                         div.WithCssClass("progress-bar");
                         div.WithAttribute("role", "progressbar");

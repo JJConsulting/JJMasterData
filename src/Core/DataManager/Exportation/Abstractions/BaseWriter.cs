@@ -51,6 +51,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     protected ILogger<BaseWriter> Logger { get; } =
         JJService.Provider.GetScopedDependentService<ILogger<BaseWriter>>();
     
+    //TODO: This is bad, async prop.
     public List<FormElementField> Fields
     {
         get
@@ -60,7 +61,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
                 if (Configuration.ExportAllFields)
                     _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
                 else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldVisibilityService.IsVisible(x, PageState.List, null));
+                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldVisibilityService.IsVisibleAsync(x, PageState.List, null).GetAwaiter().GetResult());
             }
 
             return _fields;
@@ -241,7 +242,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         string fileName = value;
         var textFile = TextFileFactory.Create();
         textFile.FormElement = FormElement;
-        textFile.ElementField = field;
+        textFile.FormElementField = field;
         textFile.PageState = PageState.List;
         textFile.Text = value;
         textFile.FormValues = values;

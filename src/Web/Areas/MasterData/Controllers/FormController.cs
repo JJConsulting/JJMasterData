@@ -46,7 +46,7 @@ public class FormController : MasterDataController
         }
 
         var form = new HtmlBuilder(HtmlTag.Form);
-        form.AppendElement(formView.GetHtmlBuilder());
+        form.Append(formView.GetHtmlBuilder());
         return Content(form.ToString());
     }
     

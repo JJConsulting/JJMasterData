@@ -30,15 +30,15 @@ internal class GridPagination
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
-            .AppendElement(HtmlTag.Div, div =>
+            .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("row justify-content-between");
-                div.AppendElement(HtmlTag.Div, div =>
+                div.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("col-sm-9");
-                    div.AppendElement(GetPaginationHtmlElement());
+                    div.Append(GetPaginationHtmlElement());
                 });
-                div.AppendElement(GetTotalRecordsHtmlElement());
+                div.Append(GetTotalRecordsHtmlElement());
             });
 
         return html;
@@ -51,23 +51,23 @@ internal class GridPagination
 
         if (_startButtonIndex > _totalButtons)
         {
-            ul.AppendElement(GetPageButton(1, IconType.AngleDoubleLeft, StringLocalizer["First record"]));
-            ul.AppendElement(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft));
+            ul.Append(GetPageButton(1, IconType.AngleDoubleLeft, StringLocalizer["First record"]));
+            ul.Append(GetPageButton(_startButtonIndex - 1, IconType.AngleLeft));
         }
 
         for (int i = _startButtonIndex; i < _endButtonIndex; i++)
         {
             if (i > _totalPages || _totalPages <= 1)
                 break;
-            ul.AppendElement(GetPageButton(i));
+            ul.Append(GetPageButton(i));
         }
 
 
         if (_endButtonIndex <= _totalPages)
         {
-            ul.AppendElement(GetPageButton(_endButtonIndex, IconType.AngleRight,
+            ul.Append(GetPageButton(_endButtonIndex, IconType.AngleRight,
                 $"{_totalPages} {StringLocalizer["pages"]}"));
-            ul.AppendElement(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last record"]));
+            ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last record"]));
         }
 
         return ul;
@@ -78,7 +78,7 @@ internal class GridPagination
         var li = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("page-item")
             .WithCssClassIf(page == GridView.CurrentPage, "active")
-            .AppendElement(HtmlTag.A, a =>
+            .Append(HtmlTag.A, a =>
             {
                 a.WithCssClass("page-link");
                 a.WithAttribute("style", "cursor:pointer; cursor:hand;");
@@ -86,7 +86,7 @@ internal class GridPagination
                 a.WithAttribute("onclick", "javascript:" + GridView.Scripts.GetPaginationScript(GridView,page));
                 if (icon != null)
                 {
-                    a.AppendElement(new JJIcon(icon.Value));
+                    a.AppendComponent(new JJIcon(icon.Value));
                 }
                 else
                 {
@@ -101,7 +101,7 @@ internal class GridPagination
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
-        div.AppendElement(HtmlTag.Label, label =>
+        div.Append(HtmlTag.Label, label =>
         {
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
@@ -110,7 +110,7 @@ internal class GridPagination
             
             if (_totalPages <= 1)
             {
-                label.AppendElement(HtmlTag.Span, span =>
+                label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
                     span.AppendText($" {GridView.TotalRecords:N0} ");
@@ -129,7 +129,7 @@ internal class GridPagination
                     label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage);
 
                 label.AppendText($" {StringLocalizer["From"]}");
-                label.AppendElement(HtmlTag.Span, span =>
+                label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
                     span.AppendText($"&nbsp;{GridView.TotalRecords:N0}");
@@ -137,8 +137,8 @@ internal class GridPagination
             }
         });
 
-        div.AppendElementIf(GridView.EnableMultiSelect, HtmlTag.Br);
-        div.AppendElementIf(GridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
+        div.AppendIf(GridView.EnableMultiSelect, HtmlTag.Br);
+        div.AppendIf(GridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
         
         return div;
     }

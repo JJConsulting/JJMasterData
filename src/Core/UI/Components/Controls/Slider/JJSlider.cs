@@ -24,11 +24,11 @@ public class JJSlider : JJBaseControl
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
             .WithCssClass(CssClass)
-            .AppendElement(HtmlTag.Div, col =>
+            .Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass(ShowInput ? "col-sm-9" : "col-sm-12");
                 col.WithCssClassIf(BootstrapHelper.Version > 3, "d-flex justify-content-end align-items-center");
-                col.AppendElement(GetHtmlSlider());
+                col.Append(GetHtmlSlider());
             });
 
         if (ShowInput)
@@ -49,10 +49,10 @@ public class JJSlider : JJBaseControl
                 }
             };
 
-            html.AppendElement(HtmlTag.Div, row =>
+            html.Append(HtmlTag.Div, row =>
             {
                 row.WithCssClass("col-sm-3");
-                row.AppendElement(number);
+                row.AppendComponent(number);
             });
         }
 

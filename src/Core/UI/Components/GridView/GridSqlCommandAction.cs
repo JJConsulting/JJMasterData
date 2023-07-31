@@ -78,7 +78,7 @@ internal class GridSqlCommandAction
         }
         else
         {
-            formValues = _gridView.FieldsService.GetDefaultValues(formElement, null, PageState.List);
+            formValues = await _gridView.FieldsService.GetDefaultValuesAsync(formElement, null, PageState.List);
         }
 
         string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);

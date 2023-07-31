@@ -81,7 +81,6 @@ public class JJGridView : JJAsyncBaseView
     private DataTable _dataSource;
     private ActionManager _actionManager;
     private List<FormElementField> _pkFields;
-    private List<FormElementField> _visibleFields;
     private IDictionary<string, dynamic> _defaultValues;
     private List<BasicAction> _toolBarActions;
     private List<BasicAction> _gridActions;
@@ -141,24 +140,16 @@ public class JJGridView : JJAsyncBaseView
         }
     }
 
-    internal List<FormElementField> VisibleFields
+    internal async IAsyncEnumerable<FormElementField> GetVisibleFieldsAsync()
     {
-        get
+        if (FormElement == null)
+            throw new ArgumentNullException(nameof(FormElement));
+
+        var defaultValues = await GetDefaultValuesAsync();
+        foreach (var f in FormElement.Fields)
         {
-            if (_visibleFields != null) return _visibleFields;
-
-            if (FormElement == null)
-                throw new ArgumentNullException(nameof(FormElement));
-
-            _visibleFields = new List<FormElementField>();
-            var defaultValues = DefaultValues;
-            foreach (var f in FormElement.Fields)
-            {
-                if (FieldsService.IsVisible(f, PageState.List, defaultValues))
-                    _visibleFields.Add(f);
-            }
-
-            return _visibleFields;
+            if (await FieldsService.IsVisibleAsync(f, PageState.List, defaultValues))
+                yield return f;
         }
     }
 
@@ -200,8 +191,6 @@ public class JJGridView : JJAsyncBaseView
     public bool EnableFilter { get; set; }
 
     public bool ShowToolbar { get; set; }
-
-    public IDictionary<string, dynamic> CurrentFilter => Filter.GetCurrentFilter();
 
     /// <summary>
     /// Retrieve the order of the table,
@@ -463,8 +452,8 @@ public class JJGridView : JJAsyncBaseView
 
     public HeadingSize TitleSize { get; set; }
 
-    internal IDictionary<string, dynamic> DefaultValues =>
-        _defaultValues ??= FieldsService.GetDefaultValues(FormElement, null, PageState.List);
+    internal async Task<IDictionary<string, dynamic>> GetDefaultValuesAsync() => _defaultValues ??=
+        await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
     public LegendAction LegendAction => (LegendAction)ToolBarActions.Find(x => x is LegendAction);
 
@@ -592,13 +581,29 @@ public class JJGridView : JJAsyncBaseView
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
 
-        html.AppendElementIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
-        html.AppendElementIf(FilterAction.IsVisible, Filter.GetFilterHtml);
-        html.AppendElementIf(ShowToolbar, GetToolbarHtmlBuilder);
+        html.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
 
-        html.AppendElement(await GetTableHtmlBuilder());
+        if (FilterAction.IsVisible)
+        {
+            html.Append(await Filter.GetFilterHtml());
+        }
+
+        if (ShowToolbar)
+        {
+            html.Append(await GetToolbarHtmlBuilder());
+        }
+
+        html.Append(await GetTableHtmlBuilder());
 
         return html;
+    }
+    
+    public async Task<IDictionary<string, dynamic>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
+
+    
+    public void SetCurrentFilter(string key, object value)
+    {
+        Filter.SetCurrentFilter(key,value);
     }
 
     public async Task<string> GetTableHtmlAsync() => (await GetTableHtmlBuilder()).ToString();
@@ -619,7 +624,7 @@ public class JJGridView : JJAsyncBaseView
             if (errorMessage == null)
                 currentAction = null;
             else
-                html.AppendElement(errorMessage);
+                html.AppendComponent(errorMessage);
         }
         
         SetDataSource();
@@ -630,37 +635,37 @@ public class JJGridView : JJAsyncBaseView
         if (await CheckForTableRow(requestType, Table))
             return null;
 
-        if (CheckForSelectAllRows(requestType))
+        if (await CheckForSelectAllRows(requestType))
             return null;
 
         
         html.WithAttribute("id", $"jjgridview_{Name}");
-        html.AppendElementIf(SortAction.IsVisible, GetSortingConfig);
+        html.AppendIf(SortAction.IsVisible, GetSortingConfig);
 
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
 
-        html.AppendElement(await Table.GetHtmlElement());
+        html.Append(await Table.GetHtmlElement());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
-            html.AppendElement(GetNoRecordsAlert());
+            html.Append(await GetNoRecordsAlert());
         }
 
         var gridPagination = new GridPagination(this);
 
-        html.AppendElement(gridPagination.GetHtmlElement());
+        html.Append(gridPagination.GetHtmlElement());
 
         if (ShowToolbar)
         {
-            html.AppendElement(GetSettingsHtml());
+            html.Append(await GetSettingsHtml());
 
-            html.AppendElement(GetExportHtml());
+            html.Append(await GetExportHtml());
 
-            html.AppendElement(GetLegendHtml());
+            html.Append(await GetLegendHtml());
         }
 
-        html.AppendElement(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
+        html.Append(HtmlTag.Div, div => { div.WithCssClass("clearfix"); });
 
         if (CheckForAjaxResponse(requestType, html))
             return null;
@@ -705,11 +710,11 @@ public class JJGridView : JJAsyncBaseView
         return input;
     }
 
-    private bool CheckForSelectAllRows(string requestType)
+    private async Task<bool> CheckForSelectAllRows(string requestType)
     {
         if ("selectall".Equals(requestType))
         {
-            string selectedRows = GetEncryptedSelectedRows();
+            string selectedRows = await GetEncryptedSelectedRowsAsync();
 #pragma warning disable CS0618
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new { selectedRows }));
 #pragma warning restore CS0618
@@ -731,7 +736,7 @@ public class JJGridView : JJAsyncBaseView
 
                 string responseHtml = string.Empty;
 
-                foreach (var td in await table.Body.GetTdHtmlList(row, rowIndex))
+                await foreach (var td in  table.Body.GetTdHtmlList(row, rowIndex))
                 {
                     responseHtml += td.ToString();
                 }
@@ -794,7 +799,7 @@ public class JJGridView : JJAsyncBaseView
         return titleComponent;
     }
 
-    internal HtmlBuilder GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlElement();
+    internal async Task<HtmlBuilder> GetToolbarHtmlBuilder() => await new GridToolbar(this).GetHtmlBuilderAsync();
 
     public string GetFilterHtml() => Filter.GetFilterHtml().ToString();
 
@@ -829,7 +834,7 @@ public class JJGridView : JJAsyncBaseView
                     "It is not allowed to enable multiple selection without defining a primary key in the data dictionary");
     }
 
-    private HtmlBuilder GetNoRecordsAlert()
+    private async Task<HtmlBuilder> GetNoRecordsAlert()
     {
         var alert = new JJAlert
         {
@@ -839,7 +844,9 @@ public class JJGridView : JJAsyncBaseView
             Icon = IconType.InfoCircle
         };
 
-        if (!Filter.HasFilter()) return alert.GetHtmlBuilder();
+        var hasFilter =await Filter.HasFilter();
+        
+        if (!hasFilter) return alert.GetHtmlBuilder();
 
         alert.Messages.Add("There are filters applied for this query.");
         alert.Icon = IconType.Filter;
@@ -966,11 +973,10 @@ public class JJGridView : JJAsyncBaseView
         return script.ToString();
     }
 
-    private HtmlBuilder GetSettingsHtml()
+    private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
-        bool isVisible =
-            ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1005,11 +1011,10 @@ public class JJGridView : JJAsyncBaseView
         return modal.GetHtmlBuilder();
     }
 
-    private HtmlBuilder GetExportHtml()
+    private async Task<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
-        bool isVisible =
-            ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1023,11 +1028,11 @@ public class JJGridView : JJAsyncBaseView
         return modal.GetHtmlBuilder();
     }
 
-    private HtmlBuilder GetLegendHtml()
+    private async Task<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
         bool isVisible =
-            ActionManager.Expression.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
+            await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1080,7 +1085,7 @@ public class JJGridView : JJAsyncBaseView
         return values;
     }
 
-    private void HandleExportation()
+    private async Task HandleExportation()
     {
         string expressionType = CurrentContext.Request.QueryString("exptype");
         switch (expressionType)
@@ -1095,7 +1100,7 @@ public class JJGridView : JJAsyncBaseView
                     if (IsUserSetDataSource || OnDataLoad != null)
                     {
                         var tot = int.MaxValue;
-                        var dt = GetDataTable(CurrentFilter, CurrentOrder, tot, 1, ref tot);
+                        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, tot, 1, ref tot);
                         DataExportation.StartExportation(dt);
                     }
                     else
@@ -1143,9 +1148,9 @@ public class JJGridView : JJAsyncBaseView
         }
     }
 
-    internal void ExportFileInBackground()
+    internal async Task ExportFileInBackground()
     {
-        DataExportation.ExportFileInBackground(CurrentFilter, CurrentOrder);
+        DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
 
     /// <summary>
@@ -1167,11 +1172,11 @@ public class JJGridView : JJAsyncBaseView
         return DataSource;
     }
 
-    private void SetDataSource(int totalOfRecords = 0)
+    private async Task SetDataSource(int totalOfRecords = 0)
     {
         if (_dataSource == null || IsUserSetDataSource)
         {
-            _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
+            _dataSource = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
                 ref totalOfRecords);
             TotalRecords = totalOfRecords;
 
@@ -1179,7 +1184,7 @@ public class JJGridView : JJAsyncBaseView
             if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
             {
                 CurrentPage = 1;
-                _dataSource = GetDataTable(CurrentFilter, CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
+                _dataSource = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
                     ref totalOfRecords);
                 TotalRecords = totalOfRecords;
             }
@@ -1232,7 +1237,7 @@ public class JJGridView : JJAsyncBaseView
     public async Task<List<IDictionary<string, dynamic>>> GetGridValues(int recordPerPage, int currentPage)
     {
         int tot = 1;
-        var dt = GetDataTable(CurrentFilter, CurrentOrder, recordPerPage, currentPage, ref tot);
+        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage, ref tot);
 
         return await GetGridValues(dt);
     }
@@ -1306,10 +1311,10 @@ public class JJGridView : JJAsyncBaseView
         SelectedRowsId = string.Empty;
     }
 
-    public string GetEncryptedSelectedRows()
+    public async Task<string> GetEncryptedSelectedRowsAsync()
     {
         int tot = 0;
-        var dt = GetDataTable(CurrentFilter, CurrentOrder, 999999, 1, ref tot);
+        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, 999999, 1, ref tot);
         var selectedKeys = new StringBuilder();
         var hasVal = false;
         foreach (DataRow row in dt.Rows)
@@ -1333,7 +1338,7 @@ public class JJGridView : JJAsyncBaseView
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public IDictionary<string, dynamic> ValidateGridFields(List<IDictionary<string, dynamic>> values)
+    public async Task<IDictionary<string, dynamic>> ValidateGridFieldsAsync(List<IDictionary<string, dynamic>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
@@ -1345,8 +1350,8 @@ public class JJGridView : JJAsyncBaseView
             line++;
             foreach (var field in FormElement.Fields)
             {
-                bool enabled = FieldsService.IsEnabled(field, PageState.List, row);
-                bool visible = FieldsService.IsVisible(field, PageState.List, row);
+                bool enabled =await FieldsService.IsEnabledAsync(field, PageState.List, row);
+                bool visible =await FieldsService.IsVisibleAsync(field, PageState.List, row);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string val = string.Empty;
@@ -1496,9 +1501,10 @@ public class JJGridView : JJAsyncBaseView
     /// Add or change a value in the CurrentFilter.<br></br>
     /// If it exists, change it, otherwise it includes it.
     /// </summary>
-    public void SetCurrentFilter(string field, object value)
+    public async Task SetCurrentFilterAsync(string field, object value)
     {
-        CurrentFilter[field] = value;
+        var filter = await GetCurrentFilterAsync();
+        filter[field] = value;
     }
 
     /// <summary>

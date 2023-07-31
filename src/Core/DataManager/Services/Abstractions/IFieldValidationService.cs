@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.DataManager;
@@ -16,6 +17,6 @@ public interface IFieldValidationService
     /// Key = Field name
     /// Value = Error message
     /// </returns>
-    IDictionary<string,dynamic>ValidateFields(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink);
+    Task<IDictionary<string,dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink);
     string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true);
 }

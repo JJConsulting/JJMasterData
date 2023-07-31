@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public abstract class JJBaseProcess : JJBaseView
+public abstract class JJBaseProcess : JJAsyncBaseView
 {
     private string _processKey;
     private ProcessOptions _processOptions;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 
@@ -17,7 +18,7 @@ internal class DataPanelScript
         DataPanel = dataPanel;
     }
 
-    public string GetHtmlFormScript()
+    public async Task<string> GetHtmlFormScript()
     {
         var script = new StringBuilder();
         var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
@@ -39,7 +40,7 @@ internal class DataPanelScript
             if (list.Count == 0)
                 continue;
 
-            exp = ParseExpression(exp, list);
+            exp = await ParseExpression(exp, list);
 
             string selector = string.Join(",", list.Select(x => $"'#{x}'"));
             script.Append('\t');
@@ -81,7 +82,7 @@ internal class DataPanelScript
         return script.ToString();
     }
 
-    private string ParseExpression(string exp, List<string> list)
+    private async Task<string> ParseExpression(string exp, List<string> list)
     {
         foreach (string fieldName in list)
         {
@@ -105,7 +106,7 @@ internal class DataPanelScript
                 //Campos ocultos
                 if (field != null)
                 {
-                    bool visible = DataPanel.FieldsService.IsVisible(field, DataPanel.PageState, DataPanel.Values);
+                    bool visible = await DataPanel.FieldsService.IsVisibleAsync(field, DataPanel.PageState, DataPanel.Values);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

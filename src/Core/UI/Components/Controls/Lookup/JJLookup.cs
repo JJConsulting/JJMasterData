@@ -159,7 +159,7 @@ public class JJLookup : JJAsyncBaseControl
             }
         };
 
-        div.AppendElement(textGroup);
+        div.AppendComponent(textGroup);
         div.AppendHiddenInput($"id_{Name}", SelectedValue);
         return div;
     }
@@ -246,7 +246,7 @@ public class JJLookup : JJAsyncBaseControl
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
         if (field == null) 
             return null;
-        var lookup = view.ControlFactory.Create(view.FormElement,field, null, view.Values, view.PageState, view.Name);
+        var lookup = view.ControlFactory.CreateAsync(view.FormElement,field, null, view.Values, view.PageState, view.Name).GetAwaiter().GetResult();
         return lookup.GetHtmlBuilder();
 
     }

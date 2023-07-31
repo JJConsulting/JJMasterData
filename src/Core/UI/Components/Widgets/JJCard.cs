@@ -38,7 +38,7 @@ public class JJCard : JJBaseView
         {
             return new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass("mb-3")
-                .AppendElement(html);
+                .Append(html);
         }
             
         return html;
@@ -52,21 +52,21 @@ public class JJCard : JJBaseView
             .WithCssClass(CssClass)
             .WithCssClass(BootstrapHelper.GetPanel(Color.ToString().ToLower()));
 
-        html.AppendElementIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
+        html.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
         {
             header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()));
             header.AppendText(Title);
         });
 
-        html.AppendElement(HtmlTag.Div, d =>
+        html.Append(HtmlTag.Div, d =>
         {
             d.WithCssClass(BootstrapHelper.PanelBody);
             if (!string.IsNullOrEmpty(SubTitle))
             {
                 var title = new JJTitle(null, SubTitle);
-                d.AppendElement(title.GetHtmlBlockquote());
+                d.Append(title.GetHtmlBlockquote());
             }
-            d.AppendElement(HtmlBuilderContent);
+            d.Append(HtmlBuilderContent);
         });
 
         return html;
@@ -87,10 +87,10 @@ public class JJCard : JJBaseView
         if (HasTitle)
         {
             var title = new JJTitle(Title, SubTitle);
-            html.AppendElement(title.GetHtmlBlockquote());
+            html.Append(title.GetHtmlBlockquote());
         }
 
-        html.AppendElement(HtmlBuilderContent);
+        html.Append(HtmlBuilderContent);
 
         return html;
     }

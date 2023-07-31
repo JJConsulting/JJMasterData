@@ -5,6 +5,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -52,7 +53,7 @@ public class ControlFactory
             controlContext);
     }
 
-    public JJBaseControl Create(FormElement formElement,
+    public async Task<JJBaseControl> CreateAsync(FormElement formElement,
         FormElementField field,
         IDictionary<string, dynamic> formValues,
         IDictionary<string, dynamic> userValues,
@@ -69,7 +70,7 @@ public class ControlFactory
 
         var control = Create(formElement, field, stateData, parentName, value);
 
-        control.Enabled = FieldVisibilityService.IsEnabled(field, pageState, formValues);
+        control.Enabled = await FieldVisibilityService.IsEnabledAsync(field, pageState, formValues);
 
         return control;
     }

@@ -83,7 +83,7 @@
 `
         let html = "";
 
-        html += "<div id=\"popup-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
+        html += `<div id=\"${this.modalId}\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n`;
 
         if (bootstrapVersion == 3 ) {
             html += modalDialogDiv;
@@ -104,10 +104,10 @@
 
         if (bootstrapVersion == 3) {
             html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
+            html += `       <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
         }
         else {
-            html += "        <h4 id=\"popup-modal-title\" class=\"modal-title\"></h4>\r\n";
+            html += `        <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
             if (bootstrapVersion >= 5) {
                 html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
             }

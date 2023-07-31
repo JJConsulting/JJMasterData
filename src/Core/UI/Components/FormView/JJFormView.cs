@@ -311,7 +311,7 @@ public class JJFormView : JJAsyncBaseView
             if (!DataImp.Upload.Name.Equals(objName))
                 return null;
             
-            GetHtmlDataImp();
+            await GetHtmlDataImp();
         }
         else if ("geturlaction".Equals(requestType))
         {
@@ -337,7 +337,7 @@ public class JJFormView : JJAsyncBaseView
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
 
-        string htmlPanel = GetDataPanelHtml(new(values, null, PageState), true).ToString();
+        string htmlPanel = GetDataPanelHtmlAsync(new(values, null, PageState), true).ToString();
         return htmlPanel;
     }
 
@@ -358,7 +358,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if (currentAction is ImportAction || PageState is PageState.Import)
         {
-            html = GetHtmlDataImp();
+            html = await GetHtmlDataImp();
         }
         else if (currentAction is LogAction || PageState is PageState.Log)
         {
@@ -421,7 +421,7 @@ public class JJFormView : JJAsyncBaseView
             }
 
             PageState = PageState.Update;
-            return GetDataPanelHtml(new(values, errors, PageState), true);
+            return await GetDataPanelHtmlAsync(new(values, errors, PageState), true);
         }
 
         if ("CANCEL".Equals(formAction))
@@ -433,7 +433,7 @@ public class JJFormView : JJAsyncBaseView
         if ("REFRESH".Equals(formAction))
         {
             var values = await GetFormValuesAsync();
-            return GetDataPanelHtml(new(values, null, PageState), true);
+            return await GetDataPanelHtmlAsync(new(values, null, PageState), true);
         }
         else
         {
@@ -452,14 +452,14 @@ public class JJFormView : JJAsyncBaseView
             }
 
             PageState = PageState.Update;
-            return GetDataPanelHtml(new(values, null, PageState), autoReloadFields);
+            return await GetDataPanelHtmlAsync(new(values, null, PageState), autoReloadFields);
         }
     }
     
     private async Task<HtmlBuilder> GetHtmlInsert()
     {
         var action = InsertAction;
-        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
             RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
@@ -495,11 +495,11 @@ public class JJFormView : JJAsyncBaseView
                     };
                     alert.Messages.Add(StringLocalizer["Record added successfully"]);
                     var alertHtml = alert.GetHtmlBuilder();
-                    alertHtml.AppendElement(HtmlTag.Div, div =>
+                    await alertHtml.AppendAsync(HtmlTag.Div, async div =>
                     {
                         div.WithAttribute("id", $"pnl_insert_{Name}")
                             .WithAttribute("style", "display:none")
-                            .AppendElement(GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false));
+                            .Append(await GetDataPanelHtmlAsync(new(RelationValues, null, PageState.Insert), false));
                     });
                     alertHtml.AppendScript($"jjview.showInsertSucess('{Name}');");
                     return alertHtml;
@@ -510,7 +510,7 @@ public class JJFormView : JJAsyncBaseView
             }
 
             PageState = PageState.Insert;
-            return GetDataPanelHtml(new(values, errors, PageState), true);
+            return await GetDataPanelHtmlAsync(new(values, errors, PageState), true);
         }
 
         if (formAction.Equals("CANCEL"))
@@ -534,13 +534,13 @@ public class JJFormView : JJAsyncBaseView
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
-            return GetDataPanelHtml(new(formValues, null, PageState), true);
+            return await GetDataPanelHtmlAsync(new(formValues, null, PageState), true);
         }
 
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
-            return GetDataPanelHtml(new(RelationValues, null, PageState.Insert), false);
+            return await GetDataPanelHtmlAsync(new(RelationValues, null, PageState.Insert), false);
         return GetHtmlElementList(action);
     }
 
@@ -580,7 +580,7 @@ public class JJFormView : JJAsyncBaseView
         };
         selectedForm.GridView.AddGridAction(selAction);
 
-        sHtml.AppendElement(selectedForm);
+        sHtml.AppendComponent(selectedForm);
 
         return sHtml;
     }
@@ -592,7 +592,7 @@ public class JJFormView : JJAsyncBaseView
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
         var selValues = await EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues);
-        var values = FieldValuesService.MergeWithExpressionValues(formElement, selValues, PageState.Insert, true);
+        var values = await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selValues, PageState.Insert, true);
         var erros = await InsertFormValuesAsync(values, false);
 
         if (erros.Count > 0)
@@ -605,14 +605,14 @@ public class JJFormView : JJAsyncBaseView
                 sMsg.Append("<br>");
             }
 
-            html.AppendElement(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning));
-            html.AppendElement(GetHtmlElementList(InsertAction));
+            html.AppendComponent(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning));
+            html.Append(GetHtmlElementList(InsertAction));
             PageState = PageState.Insert;
         }
         else
         {
             PageState = PageState.Update;
-            html.AppendElement(GetDataPanelHtml(new(values, null, PageState), false));
+            html.Append(await GetDataPanelHtmlAsync(new(values, null, PageState), false));
         }
 
         return html;
@@ -630,7 +630,7 @@ public class JJFormView : JJAsyncBaseView
         PageState = PageState.View;
         var filter = acMap.PkFieldValues;
         var values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
-        return GetDataPanelHtml(new(values, null, PageState), false);
+        return await GetDataPanelHtmlAsync(new(values, null, PageState), false);
     }
     
     private async Task<HtmlBuilder> GetHtmlDelete()
@@ -653,7 +653,7 @@ public class JJFormView : JJAsyncBaseView
                     errorMessage.AppendLine("<br>");
                 }
 
-                html.AppendElement(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning));
+                html.AppendComponent(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning));
             }
             else
             {
@@ -663,7 +663,7 @@ public class JJFormView : JJAsyncBaseView
         }
         catch (Exception ex)
         {
-            html.AppendElement(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
         }
 
         if (!string.IsNullOrEmpty(UrlRedirect))
@@ -672,7 +672,7 @@ public class JJFormView : JJAsyncBaseView
             return null;
         }
 
-        html.AppendElement(await GetGridViewHtml());
+        html.Append(await GetGridViewHtml());
         PageState = PageState.List;
 
         return html;
@@ -732,18 +732,18 @@ public class JJFormView : JJAsyncBaseView
                     icon = MessageIcon.Warning;
                 }
 
-                html.AppendElement(new JJMessageBox(message.ToString(), icon));
+                html.AppendComponent(new JJMessageBox(message.ToString(), icon));
 
                 GridView.ClearSelectedGridValues();
             }
         }
         catch (Exception ex)
         {
-            html.AppendElement(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
         }
         finally
         {
-            html.AppendElement(await GetGridViewHtml());
+            html.Append(await GetGridViewHtml());
             PageState = PageState.List;
         }
 
@@ -770,7 +770,7 @@ public class JJFormView : JJAsyncBaseView
         if (PageState == PageState.View)
         {
             var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap.PkFieldValues);
-            html.AppendElement(GetFormLogBottomBar(actionMap.PkFieldValues));
+            html.AppendComponent(GetFormLogBottomBar(actionMap.PkFieldValues));
             PageState = PageState.Log;
             return html;
         }
@@ -781,10 +781,10 @@ public class JJFormView : JJAsyncBaseView
         return await AuditLogView.GetHtmlBuilderAsync();
     }
 
-    private HtmlBuilder GetHtmlDataImp()
+    private async Task<HtmlBuilder> GetHtmlDataImp()
     {
         var action = GridView.ImportAction;
-        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
             RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
@@ -792,7 +792,7 @@ public class JJFormView : JJAsyncBaseView
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
-            html.AppendElement(GridView.GetTitle(UserValues));
+            html.AppendComponent(GridView.GetTitle(UserValues));
 
         PageState = PageState.Import;
         var sScriptImport = new StringBuilder();
@@ -804,12 +804,12 @@ public class JJFormView : JJAsyncBaseView
         dataImpView.BackButton.OnClientClick = sScriptImport.ToString();
         dataImpView.ProcessOptions = action.ProcessOptions;
         dataImpView.EnableHistoryLog = LogAction.IsVisible;
-        html.AppendElement(dataImpView);
+        html.AppendComponent(dataImpView);
 
         return html;
     }
 
-    private HtmlBuilder GetDataPanelHtml(FormContext formContext, bool autoReloadFormFields)
+    private async Task<HtmlBuilder> GetDataPanelHtmlAsync(FormContext formContext, bool autoReloadFormFields)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         var relationships = FormElement.Relationships.Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
@@ -825,11 +825,11 @@ public class JJFormView : JJAsyncBaseView
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (ShowTitle)
-            html.AppendElement(GridView.GetTitle(values));
+            html.AppendComponent(GridView.GetTitle(values));
 
         if (relationships.Count == 0)
         {
-            return GetParentPanelHtml(parentPanel);
+            return await GetParentPanelHtml(parentPanel);
         }
 
         var layout = new FormViewRelationshipLayout(this);
@@ -838,34 +838,34 @@ public class JJFormView : JJAsyncBaseView
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
 
-        html.AppendElement(GetFormToolbar(topActions, parentPanel.PageState, parentPanel.Values));
+        html.AppendComponent(GetFormToolbar(topActions, parentPanel.PageState, parentPanel.Values));
 
         var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships);
 
-        html.AppendRange(layoutHtml);
+        await html.AppendRangeAsync(layoutHtml);
 
         var bottomActions = FormElement.Options.FormToolbarActions
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
 
-        html.AppendElement(GetFormToolbar(bottomActions, parentPanel.PageState, parentPanel.Values));
+        html.AppendComponent(GetFormToolbar(bottomActions, parentPanel.PageState, parentPanel.Values));
 
         return html;
     }
 
-    internal HtmlBuilder GetParentPanelHtml(JJDataPanel parentPanel)
+    internal async Task<HtmlBuilder> GetParentPanelHtml(JJDataPanel parentPanel)
     {
-        var parentPanelHtml = parentPanel.GetPanelHtml();
+        var parentPanelHtml = await parentPanel.GetPanelHtml();
 
         if (parentPanel.Errors != null)
-            parentPanelHtml.AppendElement(new JJValidationSummary(parentPanel.Errors));
+            parentPanelHtml.AppendComponent(new JJValidationSummary(parentPanel.Errors));
 
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
 
         var toolbar = GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values);
 
-        parentPanelHtml.AppendElement(toolbar);
+        parentPanelHtml.AppendComponent(toolbar);
         parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
 
         return parentPanelHtml;
@@ -976,7 +976,7 @@ public class JJFormView : JJAsyncBaseView
 
     public async Task<IDictionary<string, dynamic>> DeleteFormValuesAsync(IDictionary<string, dynamic> filter)
     {
-        var values = FieldValuesService.MergeWithExpressionValues(FormElement, filter, PageState.Delete, true);
+        var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -995,12 +995,12 @@ public class JJFormView : JJAsyncBaseView
 
         return values;
     }
-    public IDictionary<string, dynamic> ValidateFields(IDictionary<string, dynamic> values, PageState pageState)
+    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
     {
         var painel = DataPanel;
         painel.Values = values;
 
-        var errors = painel.ValidateFields(values, pageState);
+        var errors = await painel.ValidateFieldsAsync(values, pageState);
         return errors;
     }
 
@@ -1076,10 +1076,10 @@ public class JJFormView : JJAsyncBaseView
         get => GridView.ToolBarActions;
         internal set => GridView.ToolBarActions = value;
     }
-    [Obsolete("Please use GridView.SetCurrentFilter")]
+    [Obsolete("Please use GridView.SetCurrentFilterAsync")]
     public void SetCurrentFilter(string userid, string userId)
     {
-        GridView.SetCurrentFilter(UserId, UserId);
+        GridView.SetCurrentFilterAsync(UserId, UserId).GetAwaiter().GetResult();
     }
     [Obsolete("Please use GridView.ImportAction")]
     public ImportAction ImportAction => GridView.ImportAction;

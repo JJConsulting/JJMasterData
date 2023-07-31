@@ -31,7 +31,7 @@ internal class GridTableBody
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
         tbody.WithAttribute("id", Name);
-        tbody.AppendRange(await GetRowsList().ToListAsync());
+        await tbody.AppendRangeAsync(GetRowsList());
 
         return tbody;
     }
@@ -56,20 +56,18 @@ internal class GridTableBody
         bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
         html.WithCssClassIf(enableGridAction, "jjgrid-action");
 
-        html.AppendRange(await GetTdHtmlList(row, index));
+        await html.AppendRangeAsync(GetTdHtmlList(row, index));
 
         return html;
     }
 
-    internal async Task<IEnumerable<HtmlBuilder>> GetTdHtmlList(DataRow row, int index)
+    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
     {
         var values = await GetValues(row);
 
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        var html = new List<HtmlBuilder>();
-        
         string onClickScript = GetOnClickScript(values, defaultAction);
 
         if (GridView.EnableMultiSelect)
@@ -77,25 +75,31 @@ internal class GridTableBody
             var checkBox = GetMultiSelect(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jjselect");
-            td.AppendElement(checkBox);
-            html.Add(td);
+            td.AppendComponent(checkBox);
 
             if (!GridView.EnableEditMode && onClickScript == string.Empty)
             {
                 onClickScript =
                     $"$('#{checkBox.Name}').not(':disabled').prop('checked',!$('#{checkBox.Name}').is(':checked')).change()";
             }
+
+            yield return td;
         }
 
-        html.AddRange(await GetVisibleFieldsHtmlList(row, index, values, onClickScript).ToListAsync());
-        html.AddRange(GetActionsHtmlList(values));
+        await foreach (var visibleFieldHtml in GetVisibleFieldsHtmlList(row, index, values, onClickScript))
+        {
+            yield return visibleFieldHtml;
+        }
 
-        return html;
+        foreach (var actionHtml in GetActionsHtmlList(values))
+        {
+            yield return actionHtml;
+        }
     }
     
     private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
     {
-        foreach (var field in GridView.VisibleFields)
+        await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
             string value = string.Empty;
             if (values.ContainsKey(field.Name))
@@ -110,7 +114,7 @@ internal class GridTableBody
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
             {
-                td.AppendElement(GetEditModeFieldHtml(field, row, index, values, value));
+                td.Append(await GetEditModeFieldHtml(field, row, index, values, value));
             }
             else
             {
@@ -130,8 +134,8 @@ internal class GridTableBody
                 {
                     if (field.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
-                        td.AppendElement(upload.GetButtonGroupHtml());
+                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
+                        td.Append(upload.GetButtonGroupHtml());
                     }
                     else
                     {
@@ -144,7 +148,7 @@ internal class GridTableBody
         }
     }
 
-    private HtmlBuilder GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, dynamic> values,
+    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, dynamic> values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
@@ -163,7 +167,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var baseField = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
+        var baseField = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
         baseField.Name = name;
         baseField.Attributes.Add("nRowId", index);
         baseField.CssClass = field.Name;
@@ -178,7 +182,7 @@ internal class GridTableBody
         }
         else
         {
-            div.AppendElement(baseField);
+            div.AppendComponent(baseField);
         }
 
         return div;
@@ -214,7 +218,7 @@ internal class GridTableBody
             btnGroup.Actions.Add(GridView.ActionManager.GetLinkGrid(groupedAction, values));
         }
 
-        td.AppendElement(btnGroup);
+        td.AppendComponent(btnGroup);
         return td;
     }
 
@@ -240,7 +244,7 @@ internal class GridTableBody
             }
 
             if (link != null)
-                td.AppendElement(link);
+                td.AppendComponent(link);
 
             yield return td;
         }

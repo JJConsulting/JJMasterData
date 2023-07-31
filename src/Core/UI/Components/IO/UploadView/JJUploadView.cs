@@ -78,7 +78,20 @@ public class JJUploadView : JJBaseView
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public JJUploadArea Upload => _upload ??= ComponentFactory.UploadArea.Create();
+    public JJUploadArea Upload
+    {
+        get
+        {
+            if (_upload != null)
+                return _upload;
+            
+            _upload = ComponentFactory.UploadArea.Create();
+            _upload.Name = Name + "-files";
+            _upload.IsExternalRoute = IsExternalRoute;
+
+            return _upload;
+        }
+    }
 
     public JJGridView GridView
     {
@@ -102,6 +115,7 @@ public class JJUploadView : JJBaseView
             
             _gridView.Name = Name + "_gridview";
             _gridView.UserValues = UserValues;
+            _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
 
@@ -116,7 +130,7 @@ public class JJUploadView : JJBaseView
                 if(args.Action.Name.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
-                    var isInMemory = FormFileFormFileManager.GetFile(fileName).IsInMemory;
+                    var isInMemory = FormFileManager.GetFile(fileName).IsInMemory;
                     if (isInMemory)
                     {
                         args.LinkButton.Enabled = false;
@@ -130,23 +144,15 @@ public class JJUploadView : JJBaseView
         }
     }
     
-    public ScriptAction DownloadAction
-    {
-        get
+    public ScriptAction DownloadAction =>
+        _downloadAction ??= new ScriptAction
         {
-            if (_downloadAction == null)
-                _downloadAction = new ScriptAction
-                {
-                    Icon = IconType.CloudDownload,
-                    ToolTip = "Download File",
-                    Name = "DOWNLOADFILE",
-                    OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
-                };
+            Icon = IconType.CloudDownload,
+            ToolTip = "Download File",
+            Name = "DOWNLOADFILE",
+            OnClientClick = "jjview.downloadFile('" + Name + "','{NameJS}');"
+        };
 
-            return _downloadAction;
-        }
-    }
-    
     public ScriptAction DeleteAction
     {
         get
@@ -187,13 +193,13 @@ public class JJUploadView : JJBaseView
         set => _renameAction = value;
     }
 
-    private FormFileManager FormFileFormFileManager
+    private FormFileManager FormFileManager
     {
         get
         {
             if (_formFileManager == null)
             {
-                _formFileManager = new FormFileManager(Name, CurrentContext,StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
+                _formFileManager = new FormFileManager(Name + "-files", CurrentContext,StringLocalizer, LoggerFactory.CreateLogger<FormFileManager>());
                 _formFileManager.OnBeforeCreateFile += OnBeforeCreateFile;
                 _formFileManager.OnBeforeDeleteFile += OnBeforeDeleteFile;
                 _formFileManager.OnBeforeRenameFile += OnBeforeRenameFile;
@@ -230,7 +236,7 @@ public class JJUploadView : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
-        Upload.OnPostFile += UploadOnPostFile;
+        Upload.OnFileUploaded += OnFileUploaded;
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
             return GetHtmlPreviewImage(previewImage);
@@ -243,14 +249,14 @@ public class JJUploadView : JJBaseView
 
         string uploadAction = CurrentContext.Request["uploadaction_" + Name];
         if (!string.IsNullOrEmpty(uploadAction))
-            html.AppendElement(GetResponseAction(uploadAction));
+            html.Append(GetResponseAction(uploadAction));
 
         if (!string.IsNullOrEmpty(Title))
-            html.AppendElement(new JJTitle(Title, SubTitle));
+            html.AppendComponent(new JJTitle(Title, SubTitle));
 
-        html.AppendElement(GetHtmlForm());
-        html.AppendElement(ViewGallery ? GetHtmlGallery() : GetHtmlGridView());
-        html.AppendElement(GetHtmlPreviewModal());
+        html.Append(GetHtmlForm());
+        html.Append(ViewGallery ? GetHtmlGallery() : GetHtmlGridView());
+        html.AppendComponent(GetHtmlPreviewModal());
 
         return html;
     }
@@ -258,7 +264,7 @@ public class JJUploadView : JJBaseView
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewVideo);
-        var video = FormFileFormFileManager.GetFile(fileName).Content;
+        var video = FormFileManager.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
                           Convert.ToBase64String(video.Bytes.ToArray(), 0, video.Bytes.ToArray().Length);
@@ -271,9 +277,9 @@ public class JJUploadView : JJBaseView
         script.AppendLine("	}); ");
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.AppendElement(HtmlTag.Center, c =>
+        html.Append(HtmlTag.Center, c =>
         {
-            c.AppendElement(HtmlTag.Video, video =>
+            c.Append(HtmlTag.Video, video =>
             {
                 video.WithAttribute("id", "video")
                      .WithAttribute("src", srcVideo)
@@ -289,7 +295,7 @@ public class JJUploadView : JJBaseView
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
         string fileName = EncryptionService.DecryptStringWithUrlDecode(previewImage);
-        var file = FormFileFormFileManager.GetFile(fileName);
+        var file = FormFileManager.GetFile(fileName);
 
         if (file == null)
             return null;
@@ -303,7 +309,7 @@ public class JJUploadView : JJBaseView
         else
         {
  
-            var filePath = Path.Combine(FormFileFormFileManager.FolderPath, fileName);
+            var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
             var downloader = ComponentFactory.Downloader.Create();
             downloader.FilePath = filePath;
             src = downloader.GetDownloadUrl(filePath);
@@ -317,9 +323,9 @@ public class JJUploadView : JJBaseView
         """;
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.AppendElement(HtmlTag.Center, c =>
+        html.Append(HtmlTag.Center, c =>
         {
-            c.AppendElement(HtmlTag.Img, img =>
+            c.Append(HtmlTag.Img, img =>
             {
                 img.WithAttribute("id", "img")
                    .WithAttribute("src", src)
@@ -340,7 +346,7 @@ public class JJUploadView : JJBaseView
             if ("DELFILE".Equals(uploadAction))
                 DeleteFile(fileName);
             else if ("DOWNLOADFILE".Equals(uploadAction))
-                DownloadFile(Path.Combine(FormFileFormFileManager.FolderPath, fileName));
+                DownloadFile(Path.Combine(FormFileManager.FolderPath, fileName));
             else if ("RENAMEFILE".Equals(uploadAction))
                 RenameFile(fileName);
         }
@@ -361,7 +367,7 @@ public class JJUploadView : JJBaseView
         if (!ShowAddFiles)
             return html;
 
-        html.AppendElement(new JJCollapsePanel(CurrentContext)
+        html.AppendComponent(new JJCollapsePanel(CurrentContext)
         {
             Title = "New File",
             ExpandedByDefault = IsCollapseExpandedByDefault,
@@ -376,16 +382,16 @@ public class JJUploadView : JJBaseView
         var panelContent = new HtmlBuilder();
         if (!Upload.AllowedTypes.Equals("*"))
         {
-            panelContent.AppendElement(new JJLabel
+            panelContent.AppendComponent(new JJLabel
             {
                 Text = $"{StringLocalizer["File Type:"]}&nbsp;<b>{Upload.AllowedTypes}</b>"
             });
         }
 
-        if (!Upload.Multiple && FormFileFormFileManager.CountFiles() > 0)
+        if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
-        panelContent.AppendElement(Upload);
+        panelContent.AppendComponent(Upload);
         return panelContent;
     }
 
@@ -396,7 +402,7 @@ public class JJUploadView : JJBaseView
 
     private HtmlBuilder GetHtmlGallery()
     {
-        var files = FormFileFormFileManager.GetFiles();
+        var files = FormFileManager.GetFiles();
         if (files.Count <= 0) return null;
 
         foreach (var ac in GridView.GridActions)
@@ -412,17 +418,17 @@ public class JJUploadView : JJBaseView
             var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
-            col.AppendElement(HtmlTag.Ul, ul =>
+            col.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("list-group list-group-flush");
-                ul.AppendElement(GetHtmlGalleryPreview(file.FileName));
-                ul.AppendElement(GetHtmlGalleryListItem("Name", file.FileName));
-                ul.AppendElement(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
-                ul.AppendElement(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                ul.AppendElement(HtmlTag.Li, li =>
+                ul.Append(GetHtmlGalleryPreview(file.FileName));
+                ul.Append(GetHtmlGalleryListItem("Name", file.FileName));
+                ul.Append(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
+                ul.Append(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
+                ul.Append(HtmlTag.Li, li =>
                 {
                     li.WithCssClass("list-group-item");
-                    li.AppendElement(HtmlTag.Table, table =>
+                    li.Append(HtmlTag.Table, table =>
                     {
                         table.WithCssClass("table-gallery");
                         table.AppendRange(GridView.Table.Body.GetActionsHtmlList(ConvertFormFileToDictionary(file)).ToList());
@@ -430,7 +436,7 @@ public class JJUploadView : JJBaseView
                 });
             });
 
-            row.AppendElement(col);
+            row.Append(col);
         }
 
         return row;
@@ -440,7 +446,7 @@ public class JJUploadView : JJBaseView
     {
         return new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item")
-            .AppendElement(HtmlTag.B, b =>
+            .Append(HtmlTag.B, b =>
             {
                 b.AppendText(StringLocalizer[label]);
             })
@@ -457,48 +463,48 @@ public class JJUploadView : JJBaseView
             case ".png":
             case ".jpg":
             case ".jpeg":
-                html.AppendElement(GetHtmlImageBox(fileName));
+                html.Append(GetHtmlImageBox(fileName));
                 break;
             case ".mp4":
                 html.WithCssClass("text-center");
-                html.AppendElement(GetHtmlVideoBox(fileName));
+                html.Append(GetHtmlVideoBox(fileName));
                 break;
             case ".pdf":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-pdf-o", "red"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-pdf-o", "red"));
                 break;
             case ".pptx":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-powerpoint-o", "red"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-powerpoint-o", "red"));
                 break;
             case ".docx":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-word-o", "blue"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-word-o", "blue"));
                 break;
             case ".csv":
             case ".txt":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-text-o", "black"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-text-o", "black"));
                 break;
             case ".xls":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-excel-o", "green"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-excel-o", "green"));
                 break;
             case ".rar":
             case ".zip":
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-zip-o", "#d2bb1c"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-zip-o", "#d2bb1c"));
                 break;
             default:
                 html.WithCssClass("text-center");
                 html.WithAttribute("style", "background-color:#f5f5f5");
-                html.AppendElement(GetHtmlItemBox(fileName, "fa fa-file-o", "gray"));
+                html.Append(GetHtmlItemBox(fileName, "fa fa-file-o", "gray"));
                 break;
         }
 
@@ -509,7 +515,7 @@ public class JJUploadView : JJBaseView
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("style", "height:180px;")
-            .AppendElement(HtmlTag.Span, span =>
+            .Append(HtmlTag.Span, span =>
             {
                 span.WithCssClass(cssIcon)
                     .WithToolTip(fileName)
@@ -520,11 +526,11 @@ public class JJUploadView : JJBaseView
 
     private HtmlBuilder GetHtmlImageBox(string fileName)
     {
-        var file = FormFileFormFileManager.GetFile(fileName);
+        var file = FormFileManager.GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-        string filePath = Path.Combine(FormFileFormFileManager.FolderPath, fileName);
+        string filePath = Path.Combine(FormFileManager.FolderPath, fileName);
 
         if (file.IsInMemory)
         {
@@ -547,7 +553,7 @@ public class JJUploadView : JJBaseView
 
         var html = new HtmlBuilder(HtmlTag.A)
         .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
-        .AppendElement(HtmlTag.Img, img =>
+        .Append(HtmlTag.Img, img =>
         {
             img.WithAttribute("loading", "lazy")
                .WithAttribute("src", src)
@@ -573,7 +579,7 @@ public class JJUploadView : JJBaseView
 
         var html = new HtmlBuilder(HtmlTag.A)
          .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")
-         .AppendElement(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
+         .Append(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
 
         return html;
     }
@@ -595,18 +601,18 @@ public class JJUploadView : JJBaseView
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        html.AppendElement(HtmlTag.Div, row =>
+        html.Append(HtmlTag.Div, row =>
         {
             row.WithCssClass("row");
-            row.AppendElement(HtmlTag.Div, col =>
+            row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12")
-                   .AppendElement(new JJLabel
+                   .AppendComponent(new JJLabel
                    {
                        LabelFor = $"preview_filename_{Upload.Name}",
                        Text = "File name"
                    })
-                   .AppendElement(new JJTextGroup(CurrentContext)
+                   .AppendComponent(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename_{Upload.Name}",
                        Addons = new InputAddons(".png"),
@@ -615,18 +621,18 @@ public class JJUploadView : JJBaseView
             });
         });
 
-        html.AppendElement(HtmlTag.Div, row =>
+        html.Append(HtmlTag.Div, row =>
         {
             row.WithCssClass("row");
-            row.AppendElement(HtmlTag.Div, col =>
+            row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12");
-                col.AppendElement(HtmlTag.Hr);
+                col.Append(HtmlTag.Hr);
             });
-            row.AppendElement(HtmlTag.Div, col =>
+            row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12");
-                col.AppendElement(HtmlTag.Img, img =>
+                col.Append(HtmlTag.Img, img =>
                 {
                     img.WithAttribute("id", "pastedimage_0")
                        .WithAttribute("style", "max-height:350px;")
@@ -665,7 +671,7 @@ public class JJUploadView : JJBaseView
 
     private DataTable GetDataTableFiles()
     {
-        var files = FormFileFormFileManager.GetFiles();
+        var files = FormFileManager.GetFiles();
         var dt = new DataTable();
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
@@ -686,7 +692,7 @@ public class JJUploadView : JJBaseView
         return dt;
     }
 
-    private void UploadOnPostFile(object sender, FormUploadFileEventArgs e)
+    public void OnFileUploaded(object sender, FormUploadFileEventArgs e)
     {
         try
         {
@@ -707,25 +713,25 @@ public class JJUploadView : JJBaseView
     }
 
     public void RenameFile(string currentName, string newName) =>
-      FormFileFormFileManager.RenameFile(currentName, newName);
+      FormFileManager.RenameFile(currentName, newName);
 
     public void CreateFile(FormFileContent file) =>
-        FormFileFormFileManager.CreateFile(file, !Upload.Multiple);
+        FormFileManager.CreateFile(file, !Upload.Multiple);
 
     public void DeleteFile(string fileName) =>
-        FormFileFormFileManager.DeleteFile(fileName);
+        FormFileManager.DeleteFile(fileName);
 
     internal void DeleteAll() => 
-        FormFileFormFileManager.DeleteAll();
+        FormFileManager.DeleteAll();
 
     public List<FormFileInfo> GetFiles() => 
-        FormFileFormFileManager.GetFiles();
+        FormFileManager.GetFiles();
 
     public void ClearMemoryFiles() => 
-        FormFileFormFileManager.MemoryFiles = null;
+        FormFileManager.MemoryFiles = null;
 
     public void SaveMemoryFiles(string folderPath) =>
-        FormFileFormFileManager.SaveMemoryFiles(folderPath);
+        FormFileManager.SaveMemoryFiles(folderPath);
 
     public void DownloadFile(string fileName)
     {

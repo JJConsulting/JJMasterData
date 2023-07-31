@@ -63,16 +63,16 @@ internal class GridFormSettings
 
         if (isPaginationEnabled)
         {
-            div.AppendElement(GetPaginationElement(gridSettings));
+            div.Append(GetPaginationElement(gridSettings));
         }
         else
         {
             div.AppendHiddenInput(TableTotalPerPage, gridSettings.TotalPerPage.ToString());
         }
 
-        div.AppendElement(GetShowBorderElement(gridSettings));
-        div.AppendElement(GetShowRowsStripedElement(gridSettings));
-        div.AppendElement(GetHighlightLineElement(gridSettings));
+        div.Append(GetShowBorderElement(gridSettings));
+        div.Append(GetShowRowsStripedElement(gridSettings));
+        div.Append(GetHighlightLineElement(gridSettings));
 
         return div;
     }
@@ -81,16 +81,16 @@ internal class GridFormSettings
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .AppendElement(HtmlTag.Label, label =>
+            .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", TableRowHover);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(_stringLocalizer["Highlight line on mouseover"]);
             });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.AppendElement(GetDataToggleElement(TableRowHover, gridSettings.ShowRowHover));
+            div.Append(GetDataToggleElement(TableRowHover, gridSettings.ShowRowHover));
         });
 
 
@@ -101,16 +101,16 @@ internal class GridFormSettings
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .AppendElement(HtmlTag.Label, label =>
+            .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", TableRowsStriped);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(_stringLocalizer["Show rows striped"]);
             });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.AppendElement(GetDataToggleElement(TableRowsStriped, gridSettings.ShowRowStriped));
+            div.Append(GetDataToggleElement(TableRowsStriped, gridSettings.ShowRowStriped));
         });
 
         return div;
@@ -120,16 +120,16 @@ internal class GridFormSettings
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .AppendElement(HtmlTag.Label, label =>
+            .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", TableBorder);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(_stringLocalizer["Show table border"]);
             });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.AppendElement(GetDataToggleElement(TableBorder, gridSettings.ShowBorder));
+            div.Append(GetDataToggleElement(TableBorder, gridSettings.ShowBorder));
         });
 
 
@@ -140,18 +140,18 @@ internal class GridFormSettings
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
-            .AppendElement(HtmlTag.Label, label =>
+            .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", TableTotalPerPage);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(_stringLocalizer["Records per Page"]);
             });
-        div.AppendElement(HtmlTag.Div, div =>
+        div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-2");
-            div.AppendElement(GetTotalPerPageSelectElement(gridSettings));
+            div.Append(GetTotalPerPageSelectElement(gridSettings));
         });
-        div.AppendElement(HtmlTag.Div, div => { div.WithCssClass("col-sm-6"); });
+        div.Append(HtmlTag.Div, div => { div.WithCssClass("col-sm-6"); });
 
         return div;
     }
@@ -165,7 +165,7 @@ internal class GridFormSettings
         for (int i = 1; i < 7; i++)
         {
             int page = i * 5;
-            select.AppendElement(HtmlTag.Option, option =>
+            select.Append(HtmlTag.Option, option =>
             {
                 option.WithAttributeIf(gridSettings.TotalPerPage == page, "selected", "selected");
                 option.WithValue(page.ToString());

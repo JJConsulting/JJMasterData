@@ -69,7 +69,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
     {
-        var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Update, EnableErrorLinks);
+        var errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null)
@@ -117,7 +117,7 @@ public class FormService : IFormService
     {
         IDictionary<string,dynamic>errors;
         if (validateFields)
-            errors = FieldValidationService.ValidateFields(formElement,values, PageState.Insert, EnableErrorLinks);
+            errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Insert, EnableErrorLinks);
         else
             errors = new Dictionary<string,dynamic>();
 
@@ -167,7 +167,7 @@ public class FormService : IFormService
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
     {
-        var errors = FieldValidationService.ValidateFields(formElement,values, PageState.Import, EnableErrorLinks);
+        var errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)

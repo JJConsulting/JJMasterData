@@ -71,36 +71,36 @@ public class JJFileDownloader : JJBaseView
         string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(new JJTitle(StringLocalizer["Downloading"],fileName.ToLower()))
-            .AppendElement(HtmlTag.Section, section =>
+            .AppendComponent(new JJTitle(StringLocalizer["Downloading"],fileName.ToLower()))
+            .Append(HtmlTag.Section, section =>
             {
                 section.WithCssClass("container mt-3");
-                section.AppendElement(HtmlTag.Div, div =>
+                section.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("jumbotron px-3 py-4 px-sm-4 py-sm-5 bg-light rounded-3 mb-3");
-                    div.AppendElement(HtmlTag.Div, div =>
+                    div.Append(HtmlTag.Div, div =>
                     {
-                        div.AppendElement(HtmlTag.H1, h1 =>
+                        div.Append(HtmlTag.H1, h1 =>
                         {
-                            h1.AppendElement(new JJIcon("fa fa-cloud-download text-info"));
+                            h1.AppendComponent(new JJIcon("fa fa-cloud-download text-info"));
                             h1.AppendText(fileName);
                         });
-                        div.AppendElement(HtmlTag.P, p =>
+                        div.Append(HtmlTag.P, p =>
                         {
                             p.AppendText($"{StringLocalizer["File Size:"]} {size}");
-                            p.AppendElement(HtmlTag.Br);
+                            p.Append(HtmlTag.Br);
                             p.AppendText($"{StringLocalizer["Last write time:"]} {lastWriteTime}");
                         });
-                        div.AppendElement(HtmlTag.Hr, hr =>
+                        div.Append(HtmlTag.Hr, hr =>
                         {
                             hr.WithCssClass("my-4");
                         });
-                        div.AppendElement(HtmlTag.P, p =>
+                        div.Append(HtmlTag.P, p =>
                         {
                             p.AppendText(StringLocalizer["You are downloading file {0}.", fileName]);
                             p.AppendText(" ");
                             p.AppendText(StringLocalizer["If the download not start automatically"] + ", ");
-                            p.AppendElement(HtmlTag.A, a =>
+                            p.Append(HtmlTag.A, a =>
                             {
                                 a.WithAttribute("href", url);
                                 a.AppendText(StringLocalizer["click here."]);

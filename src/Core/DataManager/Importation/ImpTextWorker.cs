@@ -147,7 +147,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
         //recupera default values
-        var defaultValues = FieldValuesService.GetDefaultValues(FormElement,null, PageState.Import);
+        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement,null, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
@@ -260,7 +260,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
         {
-            bool visible = FieldVisibilityService.IsVisible(field, PageState.Import, null);
+            bool visible = FieldVisibilityService.IsVisibleAsync(field, PageState.Import, null).GetAwaiter().GetResult();
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }
@@ -276,7 +276,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         try
         {
-            var values = FieldValuesService.MergeWithExpressionValues(FormElement,fileValues, PageState.Import, true);
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,fileValues, PageState.Import, true);
             var ret = await FormService.InsertOrReplaceAsync(FormElement,values, DataContext);
 
             if (ret.IsValid)

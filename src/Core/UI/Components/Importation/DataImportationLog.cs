@@ -25,13 +25,13 @@ internal class DataImportationLog
     public HtmlBuilder GetHtmlLog()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(GetAlertPanel())
-            .AppendElement(GetHtmlResume())
-            .AppendElement(HtmlTag.Div, div =>
+            .AppendComponent(GetAlertPanel())
+            .Append(GetHtmlResume())
+            .Append(HtmlTag.Div, div =>
             {
                 div.AppendText("&nbsp;");
             })
-            .AppendElement(GetHtmlLogDetails());
+            .Append(GetHtmlLogDetails());
 
         return html;
     }
@@ -42,69 +42,69 @@ internal class DataImportationLog
             .WithAttribute("style", "text-align: center;")
             .WithCssClass("jjlabel-process");
 
-        html.AppendElementIf(Reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
+        html.AppendIf(Reporter.EndDate != DateTime.MinValue, HtmlTag.Div, div =>
         {
             string elapsedTime = Format.FormatTimeSpan(Reporter.StartDate, Reporter.EndDate);
             div.AppendText(StringLocalizer["Process performed on {0}", elapsedTime]);
         });
 
-        html.AppendElement(HtmlTag.Span, s =>
+        html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblInsert")
              .WithAttributeIf(Reporter.Insert == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Inserted::"])
-             .AppendElement(HtmlTag.Span, count =>
+             .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblInsertCount")
                       .AppendText(Reporter.Insert.ToString("N0"));
              });
         });
-        html.AppendElement(HtmlTag.Span, s =>
+        html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblUpdate")
              .WithAttributeIf(Reporter.Update == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Updated::"])
-             .AppendElement(HtmlTag.Span, count =>
+             .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblUpdateCount")
                       .AppendText(Reporter.Update.ToString("N0"));
              });
         });
-        html.AppendElement(HtmlTag.Span, s =>
+        html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelDefault)
              .WithAttribute("id", "lblDelete")
              .WithAttributeIf(Reporter.Delete == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Deleted::"])
-             .AppendElement(HtmlTag.Span, count =>
+             .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblDeleteCount")
                       .AppendText(Reporter.Delete.ToString("N0"));
              });
         });
 
-        html.AppendElement(HtmlTag.Span, s =>
+        html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelWarning)
              .WithAttribute("id", "lblIgnore")
              .WithAttributeIf(Reporter.Ignore == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Ignored:"])
-             .AppendElement(HtmlTag.Span, count =>
+             .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblIgnoreCount")
                       .AppendText(Reporter.Ignore.ToString("N0"));
              });
         });
 
-        html.AppendElement(HtmlTag.Span, s =>
+        html.Append(HtmlTag.Span, s =>
         {
             s.WithCssClass(BootstrapHelper.LabelDanger)
              .WithAttribute("id", "lblError")
              .WithAttributeIf(Reporter.Error == 0, "style", "display:none;")
              .AppendText(StringLocalizer["Errors::"])
-             .AppendElement(HtmlTag.Span, count =>
+             .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblErrorCount")
                       .AppendText(Reporter.Error.ToString("N0"));
@@ -122,7 +122,7 @@ internal class DataImportationLog
             TitleIcon = new JJIcon(IconType.Film),
             ExpandedByDefault = false,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .AppendElement(HtmlTag.Label, label =>
+                .Append(HtmlTag.Label, label =>
                 {
                     label.AppendText(StringLocalizer["Date::"]);
                 })
@@ -134,22 +134,22 @@ internal class DataImportationLog
                 .AppendText(StringLocalizer["end:"])
                 .AppendText("&nbsp;")
                 .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
-                .AppendElement(HtmlTag.Br)
+                .Append(HtmlTag.Br)
         };
 
         if (!string.IsNullOrEmpty(Reporter.UserId))
         {
-            panel.HtmlBuilderContent.AppendElement(HtmlTag.Label, label =>
+            panel.HtmlBuilderContent.Append(HtmlTag.Label, label =>
             {
                 label.AppendText(StringLocalizer["User Id::"]);
             })
             .AppendText("&nbsp;")
             .AppendText(Reporter.UserId)
-            .AppendElement(HtmlTag.Br);
+            .Append(HtmlTag.Br);
         }
 
         panel.HtmlBuilderContent
-                .AppendElement(HtmlTag.Br)
+                .Append(HtmlTag.Br)
                 .AppendText(Reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
         return panel.RenderHtml();
