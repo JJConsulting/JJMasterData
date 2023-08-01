@@ -954,7 +954,7 @@ public class SqlServerProvider : BaseProvider
         return alterTableScript;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
     {
         var command = new DataAccessCommand
         {

@@ -65,7 +65,7 @@ public interface IDataDictionaryRepository
     IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <inheritdoc cref="GetMetadataInfoList"/>
-    Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, int totalRecords);
+    Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage);
     
     /// <summary>
     /// Checks if the dictionary exists

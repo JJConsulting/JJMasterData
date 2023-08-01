@@ -10,6 +10,7 @@
     <LangVersion>11</LangVersion>
 
     <RootNamespace>JJMasterData.Commons.Test</RootNamespace>
+    <AssemblyName>JJMasterData.Commons.Test</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

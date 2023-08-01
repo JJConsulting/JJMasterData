@@ -31,6 +31,7 @@
 		<PackageReference Include="System.Threading.Channels" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<InternalsVisibleTo Include="JJMasterData.Commons.Test" />
 		<InternalsVisibleTo Include="JJMasterData.Core" />
 	</ItemGroup>
 </Project>

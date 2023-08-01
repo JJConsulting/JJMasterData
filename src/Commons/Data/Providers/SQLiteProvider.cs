@@ -267,7 +267,7 @@ public class ProviderSQLite : BaseProvider
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
     {
         var isFirst = true;
         var sSql = new StringBuilder();
@@ -333,7 +333,7 @@ public class ProviderSQLite : BaseProvider
     public new DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regporpag, int pag, ref int tot)
     {
         DataAccessParameter pTot = null;
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
+        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag,  pTot);
         DataTable dt = DataAccess.GetDataTable(cmd);
         tot = 0;
 

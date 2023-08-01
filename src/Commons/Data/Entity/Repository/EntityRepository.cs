@@ -99,16 +99,14 @@ public class EntityRepository : IEntityRepository
     public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
         Provider.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
-    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
-        int totalRecords)
+    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
-        return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage, totalRecords);
+        return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
     
-    public async Task<(List<IDictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
-        int totalRecords)
+    public async Task<(List<IDictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
-        return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage, totalRecords);
+        return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
@@ -152,7 +150,7 @@ public class EntityRepository : IEntityRepository
     {
         var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(metadata, filters as IDictionary, "", 1, 1, ref total);
+        var cmd = Provider.GetReadCommand(metadata, filters as IDictionary, "", 1, 1,  total);
 
         return await DataAccess.GetDictionaryAsync(cmd);
     }
@@ -190,8 +188,8 @@ public class EntityRepository : IEntityRepository
     {
         var result = await GetDictionaryListAsync(element, parameters?.Parameters as IDictionary,
             parameters?.OrderBy?.ToString(), parameters?.PaginationData?.RecordsPerPage ?? 5,
-            parameters?.PaginationData?.Page ?? 1, 1);
+            parameters?.PaginationData?.Page ?? 1);
         
-        return new EntityResult(new DataSource(result.Item1), result.Item2);
+        return new EntityResult(result.Item1,result.Item2);
     }
 }

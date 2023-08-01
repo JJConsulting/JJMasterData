@@ -38,7 +38,7 @@ public abstract class BaseProvider
     public abstract DataAccessCommand GetInsertCommand(Element element, IDictionary values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, IDictionary values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary filters);
-    public abstract DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot);
+    public abstract DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter totalParameter);
     public abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values);
     public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     ///<inheritdoc cref="IEntityRepository.Insert(Element, IDictionary)"/>
@@ -188,7 +188,7 @@ public abstract class BaseProvider
     {
         var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, "", 1, 1, ref total);
+        var cmd = GetReadCommand(element, filters, "", 1, 1, total);
         return DataAccess.GetFields(cmd);
     }
     
@@ -197,7 +197,7 @@ public abstract class BaseProvider
     {
         var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, "", 1, 1, ref total);
+        var cmd = GetReadCommand(element, filters, "", 1, 1, total);
         return await DataAccess.GetFieldsAsync(cmd);
     }
 
@@ -210,19 +210,19 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
+        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", tot, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, totalParameter);
         var dt = DataAccess.GetDataTable(cmd);
         tot = 0;
-        if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
-            tot = (int)pTot.Value;
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            tot = (int)totalParameter.Value;
 
         return dt;
     }
     
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
+    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -230,18 +230,18 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
+        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", null, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, totalParameter);
         var dt = await DataAccess.GetDataTableAsync(cmd);
-        total = 0;
-        if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
-            total = (int)pTot.Value;
+        int total = 0;
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            total = (int)totalParameter.Value;
 
         return (dt, total);
     }
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<(List<IDictionary<string,dynamic>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
+    public async Task<(List<IDictionary<string,dynamic>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -249,15 +249,16 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
+        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", null, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage,  totalParameter);
         var list = (await DataAccess.GetDictionaryListAsync(cmd)).Select(dict => (IDictionary<string, dynamic>)dict).ToList();
-        
-        total = 0;
-        if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
-            total = (int)pTot.Value;
 
-        return (list, total);
+        int totalRecords = 0;
+        
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            totalRecords = (int)totalParameter.Value;
+
+        return (list, totalRecords);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
@@ -270,8 +271,7 @@ public abstract class BaseProvider
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
     public async Task<DataTable> GetDataTableAsync(Element element, IDictionary filters)
     {
-        const int total = 1;
-        return (await GetDataTableAsync(element, filters, null, int.MaxValue, 1, total)).Item1;
+        return (await GetDataTableAsync(element, filters, null, int.MaxValue, 1)).Item1;
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
@@ -285,8 +285,7 @@ public abstract class BaseProvider
     ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
     public async Task<int> GetCountAsync(Element element, IDictionary filters)
     {
-        var tot = 0;
-        var tuple = await GetDataTableAsync(element, filters, null, 1, 1, tot);
+        var tuple = await GetDataTableAsync(element, filters, null, 1, 1);
         return tuple.Item2;
     }
 

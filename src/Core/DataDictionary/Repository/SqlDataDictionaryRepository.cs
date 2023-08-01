@@ -51,8 +51,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         const string orderBy = "name, type";
         const string currentName = "";
-        const int tot = 1;
-        var result = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, orderBy, 10000, 1, tot);
+        var result = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, orderBy, 10000, 1);
 
         return ParseDataTable(result.Item1, currentName, list);
     }
@@ -98,8 +97,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         const int totalRecords = 10000;
         var filter = new Dictionary<string,dynamic>{ { "type", "F" } };
 
-        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1,
-            totalRecords);
+        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1);
         foreach (DataRow row in dt.Item1.Rows)
         {
             yield return row["name"].ToString();
@@ -265,14 +263,13 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     }
 
     public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filter,
-        string orderBy, int recordsPerPage, int currentPage,
-        int totalRecords)
+        string orderBy, int recordsPerPage, int currentPage)
     {
         var filters = (IDictionary)filter.ToDictionary();
         filters.Add("type", "F");
 
         var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filters, orderBy, recordsPerPage,
-            currentPage, totalRecords);
+            currentPage);
         return dt.Item1.ToModelList<FormElementInfo>();
     }
 }

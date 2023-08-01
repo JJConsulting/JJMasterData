@@ -43,7 +43,7 @@ public class PlainTextReader
         {
             var pTot = new DataAccessParameter(_provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
                 ParameterDirection.InputOutput);
-            var cmd = _provider.GetReadCommand(element, filters, orderby, regporpag, pag, ref pTot);
+            var cmd = _provider.GetReadCommand(element, filters, orderby, regporpag, pag, pTot);
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
             if (conn == null)

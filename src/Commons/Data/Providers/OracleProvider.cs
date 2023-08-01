@@ -855,7 +855,7 @@ public class OracleProvider : BaseProvider
         return cmd;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
     {
         var cmd = new DataAccessCommand
         {

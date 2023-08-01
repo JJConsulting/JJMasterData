@@ -1099,9 +1099,8 @@ public class JJGridView : JJAsyncBaseView
                 {
                     if (IsUserSetDataSource || OnDataLoad != null)
                     {
-                        var tot = int.MaxValue;
-                        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, tot, 1, ref tot);
-                        DataExportation.StartExportation(dt);
+                        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
+                        DataExportation.StartExportation(result.ToDataTable());
                     }
                     else
                     {
@@ -1172,30 +1171,35 @@ public class JJGridView : JJAsyncBaseView
         return DataSource;
     }
 
-    private async Task SetDataSource(int totalOfRecords = 0)
+    private async Task SetDataSource()
     {
         if (_dataSource == null || IsUserSetDataSource)
         {
-            _dataSource = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
-                ref totalOfRecords);
-            TotalRecords = totalOfRecords;
+            var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
+                CurrentSettings.TotalPerPage, CurrentPage);
+            _dataSource = result.ToDataTable();
+            TotalRecords = result.TotalOfRecords;
 
             //Se estiver paginando e não retornar registros volta para pagina inicial
             if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
             {
                 CurrentPage = 1;
-                _dataSource = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, CurrentSettings.TotalPerPage, CurrentPage,
-                    ref totalOfRecords);
-                TotalRecords = totalOfRecords;
+                result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
+                    CurrentSettings.TotalPerPage, CurrentPage);
+                _dataSource = result.ToDataTable();
+                TotalRecords = result.TotalOfRecords;
             }
         }
     }
 
-    private DataTable GetDataTable(IDictionary<string, dynamic> filters, string orderBy, int recordsPerPage,
-        int currentPage,
-        ref int total)
+    private async Task<EntityResult> GetEntityResultAsync(
+        IDictionary<string, dynamic> filters, 
+        string orderBy, 
+        int recordsPerPage,
+        int currentPage)
     {
         DataTable dt;
+        int total = 0;
         if (IsUserSetDataSource)
         {
             var tempdt = DataSource;
@@ -1224,11 +1228,11 @@ public class JJGridView : JJAsyncBaseView
         }
         else
         {
-            dt = EntityRepository.GetDataTable(FormElement, (IDictionary)filters, orderBy, recordsPerPage, currentPage,
-                ref total);
+            var parameters = new EntityParameters(filters, OrderByData.FromString(orderBy), new PaginationData(currentPage, recordsPerPage));
+            return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
         }
 
-        return dt;
+        return new EntityResult(dt,total);
     }
 
     /// <remarks>
@@ -1236,10 +1240,9 @@ public class JJGridView : JJAsyncBaseView
     /// </remarks>
     public async Task<List<IDictionary<string, dynamic>>> GetGridValues(int recordPerPage, int currentPage)
     {
-        int tot = 1;
-        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage, ref tot);
+        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
 
-        return await GetGridValues(dt);
+        return await GetGridValues(result.ToDataTable());
     }
 
     /// <remarks>
@@ -1313,11 +1316,10 @@ public class JJGridView : JJAsyncBaseView
 
     public async Task<string> GetEncryptedSelectedRowsAsync()
     {
-        int tot = 0;
-        var dt = GetDataTable(await GetCurrentFilterAsync(), CurrentOrder, 999999, 1, ref tot);
+        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
         var selectedKeys = new StringBuilder();
         var hasVal = false;
-        foreach (DataRow row in dt.Rows)
+        foreach (DataRow row in result.ToDataTable().Rows)
         {
             if (!hasVal)
                 hasVal = true;

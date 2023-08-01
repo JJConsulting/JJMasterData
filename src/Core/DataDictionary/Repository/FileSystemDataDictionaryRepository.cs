@@ -140,10 +140,10 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return Task.CompletedTask;
     }
 
-    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage,
-        int totalRecords)
+    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
     {
-        var result = GetMetadataInfoList(filters,orderBy,recordsPerPage,currentPage,ref totalRecords);
+        int total = 0;
+        var result = GetMetadataInfoList(filters,orderBy,recordsPerPage,currentPage,ref total);
         return await Task.FromResult(result);
     }
 

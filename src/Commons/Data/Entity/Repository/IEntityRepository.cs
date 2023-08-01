@@ -49,7 +49,7 @@ public interface IEntityRepository
     public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <inheritdoc cref="GetDataTable(Element, IDictionary, string , int ,int , ref int)"/>
-    public Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int totalRecords);
+    public Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage);
     
     /// <summary>
     /// Returns records from the database based on the filter.  
@@ -267,7 +267,11 @@ public interface IEntityRepository
     public Task<bool> ExecuteBatchAsync(string script);
 
     Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string,dynamic> filters);
-    Task<(List<IDictionary<string, dynamic>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage, int i);
+    Task<(List<IDictionary<string, dynamic>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
 
     Task<bool> ColumnExistsAsync(string tableName, string columnName);
+
+    Task<EntityResult> GetEntityResultAsync(
+        Element element,
+        EntityParameters parameters = null);
 }
