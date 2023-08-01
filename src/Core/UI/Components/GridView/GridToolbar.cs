@@ -42,7 +42,7 @@ internal class GridToolbar
 
         foreach (var action in actions)
         {
-            bool isVisible = await expressionsService.GetBoolValueAsync	(action.VisibleExpression, action.Name, PageState.List, formValues);
+            bool isVisible = await expressionsService.GetBoolValueAsync	(action.VisibleExpression, PageState.List, formValues);
             if (!isVisible)
                 continue;
 
@@ -52,7 +52,7 @@ internal class GridToolbar
                 continue;
             }
 
-            bool isEnabled = await expressionsService.GetBoolValueAsync(action.EnableExpression, action.Name, PageState.List, formValues);
+            bool isEnabled = await expressionsService.GetBoolValueAsync(action.EnableExpression, PageState.List, formValues);
             var linkButton = JJLinkButton.GetInstance(action, isEnabled, true);
             linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)

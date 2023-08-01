@@ -20,7 +20,7 @@ public class FieldVisibilityService : IFieldVisibilityService
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
-        return await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, field.Name, state, formValues);
+        return await ExpressionsService.GetBoolValueAsync(field.VisibleExpression,state, formValues);
     }
     
     public async Task<bool> IsEnabledAsync(FormElementField field, PageState state, IDictionary<string,dynamic>formValues)
@@ -31,6 +31,6 @@ public class FieldVisibilityService : IFieldVisibilityService
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
-        return await ExpressionsService.GetBoolValueAsync(field.EnableExpression, field.Name, state, formValues);
+        return await ExpressionsService.GetBoolValueAsync(field.EnableExpression, state, formValues);
     }
 }

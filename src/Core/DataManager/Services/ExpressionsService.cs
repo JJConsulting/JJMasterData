@@ -124,14 +124,15 @@ public class ExpressionsService : IExpressionsService
         return await GetExpressionValueAsync(field.DefaultValue, field, state, formValues);
     }
 
-    public async Task<bool> GetBoolValueAsync(string expression, string actionName, PageState state,
+    public async Task<bool> GetBoolValueAsync(
+        string expression,
+        PageState state,
         IDictionary<string, dynamic?>? formValues = null,
         IDictionary<string, dynamic?>? userValues = null)
     {
         if (string.IsNullOrEmpty(expression))
         {
-            var err = StringLocalizer["Invalid expression for {0} field", actionName];
-            throw new ArgumentNullException(nameof(expression), err);
+            throw new ArgumentNullException(nameof(expression));
         }
 
         bool result;
@@ -151,7 +152,7 @@ public class ExpressionsService : IExpressionsService
             }
             catch (Exception ex)
             {
-                string err = $"Error executing expression {exp} for {actionName} field.";
+                string err = $"Error executing expression {exp}";
                 err += " " + ex.Message;
                 throw new ArgumentException(err, nameof(expression));
             }
@@ -164,34 +165,33 @@ public class ExpressionsService : IExpressionsService
         }
         else
         {
-            var err = StringLocalizer["Invalid expression for {0} field", actionName];
-            throw new ArgumentException(err, nameof(expression));
+            throw new JJMasterDataException($"Expression do not starts with allowed types (val, exp, sql): {expression}");
         }
 
         return result;
     }
     
 
-    public async Task<string?> GetTriggerValueAsync(FormElementField f, PageState state, IDictionary<string, dynamic?> formValues,
+    public async Task<string?> GetTriggerValueAsync(FormElementField field, PageState state, IDictionary<string, dynamic?> formValues,
         IDictionary<string, dynamic?>? userValues = null)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), StringLocalizer["FormElementField can not be null"]);
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), StringLocalizer["FormElementField can not be null"]);
 
-        if (f.TriggerExpression != null) 
-            return await GetExpressionValueAsync(f.TriggerExpression, f, state, formValues);
+        if (field.TriggerExpression != null) 
+            return await GetExpressionValueAsync(field.TriggerExpression, field, state, formValues);
 
         return null;
     }
 
-    public async Task<string?> GetExpressionValueAsync(string expression, ElementField f, PageState state,
+    private async Task<string?> GetExpressionValueAsync(string expression, ElementField field, PageState state,
         IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
     {
         if (string.IsNullOrEmpty(expression))
             return null;
 
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), StringLocalizer["FormElementField can not be null"]);
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), StringLocalizer["FormElementField can not be null"]);
 
         string? retVal = null;
         try
@@ -208,7 +208,7 @@ public class ExpressionsService : IExpressionsService
                 try
                 {
                     var exp = ParseExpression(expression, state, false, formValues);
-                    if (f.DataType == FieldType.Float)
+                    if (field.DataType == FieldType.Float)
                         exp = exp?.Replace(".", "").Replace(",", ".");
 
                     retVal = exp; //When parse is string id
@@ -219,7 +219,7 @@ public class ExpressionsService : IExpressionsService
                 catch (Exception ex)
                 {
                     var message = new StringBuilder();
-                    message.AppendLine(StringLocalizer["Error executing expression of field {0}.", f.Name]);
+                    message.AppendLine(StringLocalizer["Error executing expression of field {0}.", field.Name]);
                     message.Append(ex.Message);
                     Logger.LogError(ex, message.ToString());
                 }
@@ -252,7 +252,7 @@ public class ExpressionsService : IExpressionsService
                 errorMessage.Append(" [val, exp, sql or protheus]. ");
                 errorMessage.Append(StringLocalizer["Field"]);
                 errorMessage.Append(": ");
-                errorMessage.Append(f.Name);
+                errorMessage.Append(field.Name);
                 errorMessage.Append(StringLocalizer["Content"]);
                 errorMessage.Append(": ");
                 errorMessage.Append(expression);
@@ -266,7 +266,7 @@ public class ExpressionsService : IExpressionsService
             errorMessage.Append(" ");
             errorMessage.Append(StringLocalizer["Field"]);
             errorMessage.Append(": ");
-            errorMessage.AppendLine(f.Name);
+            errorMessage.AppendLine(field.Name);
             errorMessage.Append(ex.Message);
             var exception = new JJMasterDataException(errorMessage.ToString(), ex);
             Logger.LogError(exception, exception.Message);
@@ -278,7 +278,7 @@ public class ExpressionsService : IExpressionsService
             errorMessage.AppendLine(StringLocalizer["Error retrieving expression or trigger."]);
             errorMessage.Append(StringLocalizer["Field"]);
             errorMessage.Append(": ");
-            errorMessage.AppendLine(f.Name);
+            errorMessage.AppendLine(field.Name);
 
             var exception = new JJMasterDataException(errorMessage.ToString(), ex);
 

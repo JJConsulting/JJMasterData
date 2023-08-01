@@ -312,8 +312,8 @@ internal class ActionManager
     private JJLinkButton GetLink(BasicAction action, IDictionary<string, dynamic> formValues, PageState pagestate,
         ActionSource contextAction, string fieldName = null)
     {
-        var enabled = Expression.GetBoolValueAsync(action.EnableExpression, action.Name, pagestate, formValues).GetAwaiter().GetResult();
-        var visible = Expression.GetBoolValueAsync(action.VisibleExpression, action.Name, pagestate, formValues).GetAwaiter().GetResult();
+        var enabled = Expression.GetBoolValueAsync(action.EnableExpression,  pagestate, formValues).GetAwaiter().GetResult();
+        var visible = Expression.GetBoolValueAsync(action.VisibleExpression, pagestate, formValues).GetAwaiter().GetResult();
         var link = JJLinkButton.GetInstance(action, enabled, visible);
 
         string script;

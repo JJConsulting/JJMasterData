@@ -2573,7 +2573,7 @@
     <value>Tamanho: {0} MB</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="Snapshot Record" xml:space="preserve">
+  <data name="Record Snapshot" xml:space="preserve">
     <value>Foto do Registro</value>
     <comment>JJMasterDataCore</comment>
   </data>

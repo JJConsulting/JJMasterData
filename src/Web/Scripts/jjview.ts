@@ -442,28 +442,8 @@
 
         viewLog: function (objid, id) {
 
-            $("#viewid_" + objid).val(id);
+            $("#logId-" + objid).val(id);
             $("form:first").trigger("submit");
-        },
-
-        loadFrameLog: function (objId, logId) {
-            $("#sortable_grid a").removeClass("active");
-
-            if (logId != "")
-                $("#" + logId).addClass("active");
-
-            $('#viewid_' + objId).val(logId);
-
-            const frm = $("form");
-            let surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=ajax";
-            else
-                surl += "?t=ajax";
-
-            $.post(surl, frm.serialize(), function (data) {
-                $("#jjpainellog_loghistory").html(data);
-            });
         }
     };
 })();

@@ -7,6 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function loadAuditLog(componentName, logId, url = null) {
+    $("#sortable_grid a").removeClass("active");
+    if (logId != "")
+        $("#" + logId).addClass("active");
+    document.querySelector('#logId-' + componentName).value = logId;
+    if (url == null || url.length == 0) {
+        let builder = new UrlBuilder();
+        builder.addQueryParameter("t", "ajax");
+        url = builder.build();
+    }
+    fetch(url, {
+        method: "POST",
+        body: new FormData(document.querySelector("form"))
+    }).then(response => response.text()).then(data => {
+        document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+    });
+}
 function setupCollapsePanel(name) {
     let nameSelector = "#" + name;
     let collapseSelector = '#collapse_mode_' + name;
@@ -1554,23 +1571,8 @@ var jjview = (function () {
             }, 1500);
         },
         viewLog: function (objid, id) {
-            $("#viewid_" + objid).val(id);
+            $("#logId-" + objid).val(id);
             $("form:first").trigger("submit");
-        },
-        loadFrameLog: function (objId, logId) {
-            $("#sortable_grid a").removeClass("active");
-            if (logId != "")
-                $("#" + logId).addClass("active");
-            $('#viewid_' + objId).val(logId);
-            const frm = $("form");
-            let surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=ajax";
-            else
-                surl += "?t=ajax";
-            $.post(surl, frm.serialize(), function (data) {
-                $("#jjpainellog_loghistory").html(data);
-            });
         }
     };
 })();

@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
@@ -39,10 +35,12 @@ public class JJAuditLogView : JJAsyncBaseView
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
     internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
-    
+
     private IHttpContext CurrentContext { get; }
 
     public IAuditLogService AuditLogService { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
     /// <summary>
@@ -53,7 +51,7 @@ public class JJAuditLogView : JJAsyncBaseView
         get
         {
             var panel = _componentFactory.DataPanel.Create(FormElement);
-            panel.Name = "jjpainellog_" + Name;
+            panel.Name = "auditlogview-panel-" + Name;
             return _dataPainel ??= panel;
         }
         set => _dataPainel = value;
@@ -66,17 +64,21 @@ public class JJAuditLogView : JJAsyncBaseView
 
     public JJAuditLogView(
         FormElement formElement,
-        IHttpContext currentContext, 
+        IHttpContext currentContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
         ComponentFactory componentFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) 
+        JJMasterDataEncryptionService encryptionService,
+        JJMasterDataUrlHelper urlHelper,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         _componentFactory = componentFactory;
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
+        EncryptionService = encryptionService;
+        UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
     }
 
@@ -87,10 +89,8 @@ public class JJAuditLogView : JJAsyncBaseView
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
-        await AuditLogService.CreateTableIfNotExistsAsync();
-        
         string ajax = CurrentContext.Request.QueryString("t");
-        string viewId = CurrentContext.Request.Form("viewid_" + Name);
+        string viewId = CurrentContext.Request.Form("logId-" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(viewId))
@@ -101,8 +101,10 @@ public class JJAuditLogView : JJAsyncBaseView
         {
             if ("ajax".Equals(ajax))
             {
-                var panel = await GetDetailPanel(viewId);
+                var panel = await GetDetailsPanelAsync(viewId);
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(await panel.GetHtmlAsync());
+#pragma warning restore CS0618
                 return null;
             }
 
@@ -110,14 +112,14 @@ public class JJAuditLogView : JJAsyncBaseView
             html.AppendComponent(GetFormBottombar());
         }
 
-        html.AppendHiddenInput($"viewid_{Name}", viewId);
+        html.AppendHiddenInput($"logId-{Name}", viewId);
 
         return html;
     }
 
-    private string GetEntryKey(IDictionary<string,dynamic> values)
+    private string GetEntryKey(IDictionary<string, dynamic> values)
     {
-        var filter = new Dictionary<string,dynamic>
+        var filter = new Dictionary<string, dynamic>
         {
             { DataManager.Services.AuditLogService.DicName, FormElement.Name },
             {
@@ -137,7 +139,7 @@ public class JJAuditLogView : JJAsyncBaseView
         return viewId;
     }
 
-    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string,dynamic>values)
+    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string, dynamic> values)
     {
         string viewId = GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(viewId);
@@ -165,17 +167,17 @@ public class JJAuditLogView : JJAsyncBaseView
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Dictionary<string,dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
         string recordsKey = values[DataManager.Services.AuditLogService.DicKey]?.ToString();
-        var fields = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(json ?? string.Empty);
+        var fields = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json ?? string.Empty);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;
         panel.Values = fields;
-        panel.Name = "jjpainellog_" + Name;
+        panel.Name = "auditlogview-panel-" + Name;
 
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
@@ -189,13 +191,11 @@ public class JJAuditLogView : JJAsyncBaseView
                 div.Append(HtmlTag.Div, divFields =>
                 {
                     divFields.WithCssClass("listField")
-                      .Append(HtmlTag.P, p =>
-                      {
-                          p.Append(HtmlTag.B, b =>
-                          {
-                              b.AppendText($"{StringLocalizer["Change History"]}:");
-                          });
-                      });
+                        .Append(HtmlTag.P,
+                            p =>
+                            {
+                                p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Change History"]}:"); });
+                            });
                     divFields.Append(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable_grid");
@@ -215,13 +215,11 @@ public class JJAuditLogView : JJAsyncBaseView
                 div.Append(HtmlTag.Div, divDetail =>
                 {
                     divDetail.WithCssClass("fieldDetail")
-                      .Append(HtmlTag.P, p =>
-                      {
-                          p.Append(HtmlTag.B, b =>
-                          {
-                              b.AppendText($"{StringLocalizer["Snapshot Record"]}:");
-                          });
-                      });
+                        .Append(HtmlTag.P,
+                            p =>
+                            {
+                                p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Record Snapshot"]}:"); });
+                            });
                     divDetail.AppendComponent(panel);
                 });
             });
@@ -231,14 +229,14 @@ public class JJAuditLogView : JJAsyncBaseView
         return html;
     }
 
-    private async Task<JJDataPanel> GetDetailPanel(string logId)
+    public async Task<JJDataPanel> GetDetailsPanelAsync(string logId)
     {
         var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson].ToString();
 
-        IDictionary<string,dynamic> fields = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(json);
+        IDictionary<string, dynamic> fields = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;
@@ -255,7 +253,8 @@ public class JJAuditLogView : JJAsyncBaseView
 
         var grid = _componentFactory.GridView.Create(AuditLogService.GetFormElement());
         grid.FormElement.Title = FormElement.Title;
-        grid.SetCurrentFilterAsync(DataManager.Services.AuditLogService.DicName, FormElement.Name).GetAwaiter().GetResult();
+        grid.SetCurrentFilterAsync(DataManager.Services.AuditLogService.DicName, FormElement.Name).GetAwaiter()
+            .GetResult();
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";
 
         var fieldKey = grid.FormElement.Fields[DataManager.Services.AuditLogService.DicKey];
@@ -271,9 +270,11 @@ public class JJAuditLogView : JJAsyncBaseView
             fieldKey.HelpDescription = "Primary key separated by semicolons";
         }
 
-        var btnViewLog = new ScriptAction();
-        btnViewLog.Icon = IconType.Eye;
-        btnViewLog.ToolTip = "View";
+        var btnViewLog = new ScriptAction
+        {
+            Icon = IconType.Eye,
+            ToolTip = "View"
+        };
         btnViewLog.Name = nameof(btnViewLog);
         btnViewLog.OnClientClick = $"jjview.viewLog('{Name}','{{{DataManager.Services.AuditLogService.DicId}}}');";
 
@@ -284,12 +285,14 @@ public class JJAuditLogView : JJAsyncBaseView
 
     private JJToolbar GetFormBottombar()
     {
-        var btn = new JJLinkButton();
-        btn.Type = LinkButtonType.Button;
-        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.OnClientClick = $"jjview.viewLog('{Name}','');";
-        btn.IconClass = IconType.ArrowLeft.GetCssClass();
-        btn.Text = "Back";
+        var btn = new JJLinkButton
+        {
+            Type = LinkButtonType.Button,
+            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
+            OnClientClick = $"jjview.viewLog('{Name}','');",
+            IconClass = IconType.ArrowLeft.GetCssClass(),
+            Text = "Back"
+        };
 
         var toolbar = new JJToolbar();
         toolbar.Items.Add(btn.GetHtmlBuilder());
@@ -298,14 +301,16 @@ public class JJAuditLogView : JJAsyncBaseView
 
     private HtmlBuilder GetHtmlGridInfo(string recordsKey, string viewId)
     {
-        var filter = new Hashtable();
-        filter.Add(DataManager.Services.AuditLogService.DicKey, recordsKey);
-        filter.Add(DataManager.Services.AuditLogService.DicName, FormElement.Name);
+        var filter = new Dictionary<string, dynamic>
+        {
+            { DataManager.Services.AuditLogService.DicKey, recordsKey },
+            { DataManager.Services.AuditLogService.DicName, FormElement.Name }
+        };
 
         string orderby = DataManager.Services.AuditLogService.DicModified + " DESC";
         int tot = 1;
 
-        DataTable dt = EntityRepository.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
+        var dt = EntityRepository.GetDataTable(GridView.FormElement, filter, orderby, int.MaxValue, 1, ref tot);
 
         var html = new HtmlBuilder(HtmlTag.Div);
         foreach (DataRow row in dt.Rows)
@@ -326,7 +331,6 @@ public class JJAuditLogView : JJAsyncBaseView
                 icon = "fa fa-plus fa-lg fa-fw";
                 color = "#387c44;";
                 action = StringLocalizer["Added"];
-
             }
             else if (row["actionType"].Equals((int)CommandOperation.Delete))
             {
@@ -347,7 +351,15 @@ public class JJAuditLogView : JJAsyncBaseView
 
             html.Append(HtmlTag.A, a =>
             {
-                a.WithAttribute("href", $"javascript:jjview.loadFrameLog('{Name}','{logId}')");
+                var url = IsExternalRoute
+                    ? UrlHelper.GetUrl("GetDetailsPanel", "AuditLog",
+                        new
+                        {
+                            dictionaryName = EncryptionService.EncryptStringWithUrlEncode(FormElement.Name),
+                            componentName = Name
+                        })
+                    : string.Empty;
+                a.WithAttribute("href", $"javascript:loadAuditLog('{Name}','{logId}', '{url}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId.Equals(viewId), "active");
@@ -361,30 +373,23 @@ public class JJAuditLogView : JJAsyncBaseView
                         span.WithAttribute("style", $"color:{color};");
                         span.WithToolTip(action);
                     });
-                    div.Append(HtmlTag.B, b =>
-                    {
-                        b.AppendText(message);
-                    });
+                    div.Append(HtmlTag.B, b => { b.AppendText(message); });
                     div.Append(HtmlTag.Span, span =>
                     {
                         span.WithAttribute("style", "float:right");
                         span.AppendText(StringLocalizer["Browser info."]);
                         span.WithToolTip(row["browser"].ToString());
 
-                        var icon = new JJIcon(IconType.InfoCircle);
-                        icon.CssClass = "help-description";
+                        var icon = new JJIcon(IconType.InfoCircle)
+                        {
+                            CssClass = "help-description"
+                        };
                         span.AppendComponent(icon);
                     });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b =>
-                    {
-                        b.AppendText(row["modified"].ToString());
-                    });
+                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"].ToString()); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b =>
-                    {
-                        b.AppendText("IP: " + row["ip"]);
-                    });
+                    div.Append(HtmlTag.B, b => { b.AppendText("IP: " + row["ip"]); });
                 });
             });
         }

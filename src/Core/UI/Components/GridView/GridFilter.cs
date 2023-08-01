@@ -139,7 +139,7 @@ internal class GridFilter
     public async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = GridView.FilterAction;
-        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression,filterAction.Name,PageState.List,await GridView.GetDefaultValuesAsync());
+        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression,PageState.List,await GridView.GetDefaultValuesAsync());
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);

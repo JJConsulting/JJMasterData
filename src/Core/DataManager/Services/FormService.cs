@@ -19,6 +19,7 @@ public class FormService : IFormService
 {
     #region Properties
     private IEntityRepository EntityRepository { get; }
+    private IExpressionsService ExpressionsService { get; }
     private FormFileService FormFileService { get; }
 
     private IFieldValidationService FieldValidationService { get; }
@@ -26,9 +27,6 @@ public class FormService : IFormService
     private IAuditLogService AuditLogService { get; }
 
     public bool EnableErrorLinks { get; set; }
-
-    public bool EnableAuditLog { get; set; }
-    internal bool Loaded { get; set; }
     #endregion
 
     #region Events
@@ -47,12 +45,14 @@ public class FormService : IFormService
 
     public FormService(
         IEntityRepository entityRepository,
+        IExpressionsService expressionsService,
         FormFileService formFileService,
         IFieldValidationService fieldValidationService,
         IAuditLogService auditLogService)
     {
         FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;
+        ExpressionsService = expressionsService;
         FormFileService = formFileService;
         AuditLogService = auditLogService;
     }
@@ -100,7 +100,7 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (EnableAuditLog)
+        if (await IsAuditLogEnabled(formElement, PageState.Update	, values))
             await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
@@ -146,7 +146,7 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (EnableAuditLog)
+        if (await IsAuditLogEnabled(formElement, PageState.Insert, values))
             await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
@@ -193,7 +193,7 @@ public class FormService : IFormService
         if (errors.Count > 0)
             return result;
 
-        if (EnableAuditLog)
+        if (await IsAuditLogEnabled(formElement, PageState.Import, values))
             await AuditLogService.LogAsync(formElement,dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
@@ -250,15 +250,14 @@ public class FormService : IFormService
         {
             errors.Add("DbException",ExceptionManager.GetMessage(e));
         }
-
-
+        
         if (errors.Count > 0)
             return result;
 
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
-        if (EnableAuditLog)
+        if (await IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
             await AuditLogService.LogAsync(formElement,dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
@@ -284,6 +283,13 @@ public class FormService : IFormService
             OnAfterInsert += formEvent.OnAfterInsert;
             OnAfterUpdate += formEvent.OnAfterUpdate;
         }
+    }
+    
+    private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string,dynamic> formValues)
+    {
+        var auditLogExpression = formElement.Options.GridToolbarActions.LogAction.EnableExpression;
+        var isEnabled = await ExpressionsService.GetBoolValueAsync(auditLogExpression, pageState,formValues);
+        return isEnabled;
     }
 
     #endregion

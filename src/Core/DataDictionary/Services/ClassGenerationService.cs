@@ -18,30 +18,30 @@ public class ClassGenerationService
 
     public async Task<string> GetClassSourceCode(string elementName)
     {
-        string prop = "public @PropType @PropName { get; set; } ";
+        const string propertyTemplate = "public @PropertyType @PropertyName { get; set; } ";
 
-        var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        var propsBuilder = new StringBuilder();
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var properties = new StringBuilder();
 
-        foreach (var item in dicParser.Fields.ToList())
+        foreach (var item in formElement.Fields.ToList())
         {
-            var nameProp = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
-            var typeProp = GetPropertyType(item.DataType, item.IsRequired);
-            var propField = prop.Replace("@PropName", ToCamelCase(nameProp)).Replace("@PropType", typeProp);
+            var propertyName = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var propertyType = GetPropertyType(item.DataType, item.IsRequired);
+            var property = propertyTemplate.Replace("@PropertyName", ToCamelCase(propertyName)).Replace("@PropertyType", propertyType);
 
-            propsBuilder.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
-            propsBuilder.AppendLine("\t"+propField);
-            propsBuilder.AppendLine("");
+            properties.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
+            properties.AppendLine("\t"+property);
+            properties.AppendLine("");
 
         }
 
-        var resultClass = new StringBuilder();
+        var classResult = new StringBuilder();
 
-        resultClass.AppendLine($"public class {dicParser.Name}" + "\r\n{");
-        resultClass.AppendLine(propsBuilder.ToString());
-        resultClass.AppendLine("\r\n}");
+        classResult.AppendLine($"public class {formElement.Name}" + "\r\n{");
+        classResult.AppendLine(properties.ToString());
+        classResult.AppendLine("\r\n}");
 
-        return resultClass.ToString();
+        return classResult.ToString();
     }
 
     private static string GetPropertyType(FieldType dataTypeField, bool required)

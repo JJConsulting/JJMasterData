@@ -32,11 +32,11 @@ public class FieldValidationService : IFieldValidationService
 
         foreach (var field in formElement.Fields)
         {
-            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, field.Name, pageState, formValues);
+            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression,  pageState, formValues);
             if (!isVisible)
                 continue;
 
-            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, field.Name, pageState, formValues);
+            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, pageState, formValues);
             if (!isEnabled)
                 continue;
 

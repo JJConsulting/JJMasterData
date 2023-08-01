@@ -976,7 +976,7 @@ public class JJGridView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1014,7 +1014,7 @@ public class JJGridView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1032,7 +1032,7 @@ public class JJGridView : JJAsyncBaseView
     {
         var action = LegendAction;
         bool isVisible =
-            await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, action.Name, PageState.List,
+            await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
                 RelationValues);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);

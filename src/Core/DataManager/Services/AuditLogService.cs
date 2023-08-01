@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -29,11 +31,13 @@ public class AuditLogService : IAuditLogService
 
     private static bool _hasAuditLogTable;
     private IEntityRepository EntityRepository { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataCoreOptions Options { get; }
 
-    public AuditLogService(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
+    public AuditLogService(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
+        StringLocalizer = stringLocalizer;
         Options = options.Value;
     }
 
@@ -72,7 +76,7 @@ public class AuditLogService : IAuditLogService
     private static string GetJsonFields(IDictionary<string,dynamic>formValues)
     {
         var valuesAux = formValues
-            .Where(item => item.Value != DBNull.Value)
+            .Where(item => item.Value is not DBNull)
             .ToDictionary(item => item.Key, item => item.Value);
 
         return JsonConvert.SerializeObject(valuesAux);
@@ -96,9 +100,9 @@ public class AuditLogService : IAuditLogService
     public Element GetElement()
     {
         string tableName = Options.AuditLogTableName;
-        var element = new Element(tableName, "Log")
+        var element = new Element(tableName, StringLocalizer["Audit Log"])
         {
-            CustomProcNameGet = Options.GetWriteProcedureName(tableName),
+            CustomProcNameGet = Options.GetReadProcedureName(tableName),
             CustomProcNameSet = Options.GetWriteProcedureName(tableName)
         };
         element.Fields.AddPK(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
@@ -124,6 +128,8 @@ public class AuditLogService : IAuditLogService
         form.Fields[DicJson].VisibleExpression = "val:0";
         form.Fields[DicModified].Component = FormComponent.DateTime;
 
+        form.Options.GridTableActions.Clear();
+        
         var origin = form.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem!.ReplaceTextOnGrid = true;

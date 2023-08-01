@@ -21,7 +21,7 @@ public class UploadAreaController : MasterDataController
 
     public IActionResult UploadFile(string componentName)
     {
-        UploadAreaService.OnFileUploaded += (sender, args) =>
+        UploadAreaService.OnFileUploaded += (_, args) =>
         {
 
             var manager = FormFileManagerFactory.Create(componentName);
