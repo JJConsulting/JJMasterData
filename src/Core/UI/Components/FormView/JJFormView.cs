@@ -91,6 +91,7 @@ public class JJFormView : JJAsyncBaseView
                 return _dataImp;
 
             _dataImp = _gridView.DataImp;
+            _dataImp.IsExternalRoute = IsExternalRoute;
             _dataImp.OnAfterDelete += OnAfterDelete;
             _dataImp.OnAfterInsert += OnAfterInsert;
             _dataImp.OnAfterUpdate += OnAfterUpdate;

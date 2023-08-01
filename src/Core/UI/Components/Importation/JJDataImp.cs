@@ -67,6 +67,7 @@ public class JJDataImp : JJBaseProcess
 
     internal IFormService FormService { get; }
     internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
 
     #endregion
 
@@ -82,6 +83,7 @@ public class JJDataImp : JJBaseProcess
         IHttpContext currentContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
+        JJMasterDataUrlHelper urlHelper,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
         : base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
@@ -90,6 +92,7 @@ public class JJDataImp : JJBaseProcess
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
+        UrlHelper = urlHelper;
         FormService = formService;
         FormElement = formElement;
         var importAction = formElement.Options.GridToolbarActions.ImportAction;
@@ -117,9 +120,11 @@ public class JJDataImp : JJBaseProcess
         {
             case "process_check":
             {
-                var reporterProgress = GetCurrentProcess();
+                var reporterProgress = GetCurrentProgress();
                 string json = JsonConvert.SerializeObject(reporterProgress);
+#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(json, "text/json");
+#pragma warning restore CS0618
                 break;
             }
             case "process_stop":
@@ -175,7 +180,9 @@ public class JJDataImp : JJBaseProcess
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
-            .AppendScript($"JJDataImp.startProcess('{Upload.Name}'); ")
+            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation"))
+            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation"))
+            .AppendScript($"DataImportation.startProcess('{Upload.Name}'); ")
             .AppendHiddenInput("current_uploadaction")
             .Append(HtmlTag.Div, spin =>
             {
@@ -221,7 +228,7 @@ public class JJDataImp : JJBaseProcess
 
         var btnStop = new JJLinkButton
         {
-            OnClientClick = $"javascript:JJDataImp.stopProcess('{Upload.Name}','{StringLocalizer["Stopping Processing..."]}');",
+            OnClientClick = $"javascript:DataImportation.stopProcess('{Upload.Name}','{StringLocalizer["Stopping Processing..."]}');",
             IconClass = IconType.Stop.GetCssClass(),
             Text = StringLocalizer["Stop the import."]
         };
@@ -234,7 +241,7 @@ public class JJDataImp : JJBaseProcess
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
-            .AppendScript("JJDataImp.addPasteListener();")
+            .AppendScript("DataImportation.addPasteListener();")
             .AppendHiddenInput("current_uploadaction")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
@@ -244,16 +251,18 @@ public class JJDataImp : JJBaseProcess
             });
             
 
-        var collapsePanel = new JJCollapsePanel(CurrentContext);
-        collapsePanel.TitleIcon = new JJIcon(IconType.FolderOpenO);
-        collapsePanel.Title = "Import File";
-        collapsePanel.ExpandedByDefault = ExpandedByDefault;
-        collapsePanel.HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-            .Append(HtmlTag.Label, label =>
-            {
-                label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
-            })
-            .AppendComponent(Upload);
+        var collapsePanel = new JJCollapsePanel(CurrentContext)
+        {
+            TitleIcon = new JJIcon(IconType.FolderOpenO),
+            Title = "Import File",
+            ExpandedByDefault = ExpandedByDefault,
+            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
+                .Append(HtmlTag.Label, label =>
+                {
+                    label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
+                })
+                .AppendComponent(Upload)
+        };
 
         html.AppendComponent(collapsePanel);
         html.Append(HtmlTag.Div, row =>
@@ -327,7 +336,7 @@ public class JJDataImp : JJBaseProcess
         BackgroundTask.Run(ProcessKey, worker);
     }
 
-    internal DataImpDto GetCurrentProcess()
+    internal DataImpDto GetCurrentProgress()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
         var reporter = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);

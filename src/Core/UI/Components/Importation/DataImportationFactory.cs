@@ -31,6 +31,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
     private IHttpContext HttpContext { get; }
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
     private  IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
@@ -46,6 +47,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
         IHttpContext httpContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
+        JJMasterDataUrlHelper urlHelper,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
@@ -60,6 +62,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
         HttpContext = httpContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
+        UrlHelper = urlHelper;
         LoggerFactory = loggerFactory;
         StringLocalizer = stringLocalizer;
     }
@@ -67,7 +70,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
     public JJDataImp Create(FormElement formElement)
     {
         return new JJDataImp(formElement, EntityRepository, ExpressionsService, FieldValuesService, FormService,
-            FieldVisibilityService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory, LoggerFactory,
+            FieldVisibilityService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,UrlHelper, LoggerFactory,
             StringLocalizer);
     }
 

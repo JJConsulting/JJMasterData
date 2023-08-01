@@ -12,7 +12,8 @@ public abstract class JJAsyncBaseView : JJBaseView
 {
     public async Task<string?> GetHtmlAsync()
     {
-        return Visible ? (await RenderHtmlAsync()).ToString() : null;
+        var htmlBuilder = await RenderHtmlAsync();
+        return Visible ? htmlBuilder?.ToString() : null;
     }
 
     public async Task<HtmlBuilder?> GetHtmlBuilderAsync()
@@ -21,5 +22,5 @@ public abstract class JJAsyncBaseView : JJBaseView
     }
     
     internal abstract override HtmlBuilder RenderHtml();
-    protected abstract Task<HtmlBuilder> RenderHtmlAsync();
+    protected abstract Task<HtmlBuilder?> RenderHtmlAsync();
 }

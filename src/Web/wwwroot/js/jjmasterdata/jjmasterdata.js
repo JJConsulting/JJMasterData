@@ -166,6 +166,183 @@ class DataExportation {
         });
     }
 }
+class DataImportation {
+    static setLoadMessage() {
+        const options = {
+            lines: 13,
+            length: 38,
+            width: 17,
+            radius: 45,
+            scale: 0.2,
+            corners: 1,
+            color: "#000",
+            opacity: 0.3,
+            rotate: 0,
+            direction: 1,
+            speed: 1.2,
+            trail: 62,
+            fps: 20,
+            zIndex: 2e9,
+            className: "spinner",
+            top: "50%",
+            left: "50%",
+            shadow: false,
+            hwaccel: false,
+            position: "absolute"
+        };
+        const target = document.getElementById('impSpin');
+        new Spinner(options).spin(target);
+    }
+    static checkProgress(componentName) {
+        showWaitOnPost = false;
+        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url");
+        let url;
+        if (checkProgressUrl) {
+            url = checkProgressUrl;
+        }
+        else {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("t", "ajaxdataimp");
+            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
+            urlBuilder.addQueryParameter("objname", componentName);
+            url = urlBuilder.build();
+        }
+        fetch(url, {
+            method: 'GET',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(result => {
+            const divMsgProcess = document.querySelector("#divMsgProcess");
+            if (divMsgProcess) {
+                divMsgProcess.style.display = "";
+            }
+            const progressBar = document.querySelector(".progress-bar");
+            if (progressBar) {
+                progressBar.style.width = result.PercentProcess + "%";
+                progressBar.textContent = result.PercentProcess + "%";
+            }
+            const lblResumeLog = document.querySelector("#lblResumeLog");
+            if (lblResumeLog) {
+                lblResumeLog.textContent = result.Message;
+            }
+            const lblStartDate = document.querySelector("#lblStartDate");
+            if (lblStartDate) {
+                lblStartDate.textContent = result.StartDate;
+            }
+            if (result.Insert > 0) {
+                document.querySelector("#lblInsert").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblInsertCount").textContent = result.Insert;
+                }
+                else {
+                    jjutil.animateValue("lblInsertCount", DataImportation.insertCount, result.Insert, 1000);
+                }
+                DataImportation.insertCount = result.Insert;
+            }
+            if (result.Update > 0) {
+                document.querySelector("#lblUpdate").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblUpdateCount").textContent = result.Update;
+                }
+                else {
+                    jjutil.animateValue("lblUpdateCount", DataImportation.updateCount, result.Update, 1000);
+                }
+                DataImportation.updateCount = result.Update;
+            }
+            if (result.Delete > 0) {
+                document.querySelector("#lblDelete").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblDeleteCount").textContent = result.Delete;
+                }
+                else {
+                    jjutil.animateValue("lblDeleteCount", DataImportation.deleteCount, result.Delete, 1000);
+                }
+                DataImportation.deleteCount = result.Delete;
+            }
+            if (result.Ignore > 0) {
+                document.querySelector("#lblIgnore").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblIgnoreCount").textContent = result.Ignore;
+                }
+                else {
+                    jjutil.animateValue("lblIgnoreCount", DataImportation.ignoreCount, result.Ignore, 1000);
+                }
+                DataImportation.ignoreCount = result.Ignore;
+            }
+            if (result.Error > 0) {
+                document.querySelector("#lblError").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblErrorCount").textContent = result.Error;
+                }
+                else {
+                    jjutil.animateValue("lblErrorCount", DataImportation.errorCount, result.Error, 1000);
+                }
+                DataImportation.errorCount = result.Error;
+            }
+            if (!result.IsProcessing) {
+                document.querySelector("#current_uploadaction").value = "process_finished";
+                setTimeout(function () {
+                    document.querySelector("form").dispatchEvent(new Event("submit"));
+                }, 1000);
+            }
+        })
+            .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+    static startProcess(objname) {
+        $(document).ready(function () {
+            DataImportation.setLoadMessage();
+            setInterval(function () {
+                DataImportation.checkProgress(objname);
+            }, 3000);
+        });
+    }
+    static stopProcess(objname, stopStr) {
+        $("#divMsgProcess").html(stopStr);
+        showWaitOnPost = false;
+        const form = $("form");
+        let url = form.attr("action");
+        if (url.includes("?"))
+            url += "&t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
+        else
+            url += "?t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
+        $.ajax({
+            url: url,
+            dataType: "json",
+            cache: false
+        });
+    }
+    static addPasteListener() {
+        $(document).ready(function () {
+            document.addEventListener("paste", (e) => {
+                var pastedText = undefined;
+                if (window.clipboardData && window.clipboardData.getData) {
+                    pastedText = window.clipboardData.getData("Text");
+                }
+                else if (e.clipboardData && e.clipboardData.getData) {
+                    pastedText = e.clipboardData.getData("text/plain");
+                }
+                e.preventDefault();
+                if (pastedText != undefined) {
+                    $("#current_uploadaction").val("posted_past_text");
+                    $("#pasteValue").val(pastedText);
+                    $("form:first").trigger("submit");
+                }
+                return false;
+            });
+        });
+    }
+}
+DataImportation.insertCount = 0;
+DataImportation.updateCount = 0;
+DataImportation.deleteCount = 0;
+DataImportation.ignoreCount = 0;
+DataImportation.errorCount = 0;
 class DataPanel {
     static Reload(url, componentName, fieldName) {
         const form = document.querySelector("form");
@@ -634,149 +811,6 @@ class JJDataExp {
         });
     }
 }
-class JJDataImp {
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
-        const target = document.getElementById('impSpin');
-        new Spinner(options).spin(target);
-    }
-    static checkProgress(objname) {
-        showWaitOnPost = false;
-        const form = $("form");
-        let url = form.attr("action");
-        if (url.includes("?"))
-            url += "&t=ajaxdataimp&current_uploadaction=process_check&objname=" + objname;
-        else
-            url += "?t=ajaxdataimp&current_uploadaction=process_check&objname=" + objname;
-        $.ajax({
-            url: url,
-            dataType: "json",
-            cache: false,
-            success: function (result) {
-                $("#divMsgProcess").css("display", "");
-                $(".progress-bar").css("width", result.PercentProcess + "%")
-                    .text(result.PercentProcess + "%");
-                $("#lblResumeLog").text(result.Message);
-                $("#lblStartDate").text(result.StartDate);
-                if (result.Insert > 0) {
-                    $("#lblInsert").css("display", "");
-                    if (result.PercentProcess == 100)
-                        $("#lblInsertCount").text(result.Insert);
-                    else
-                        jjutil.animateValue("lblInsertCount", JJDataImp.insertCount, result.Insert, 1000);
-                    JJDataImp.insertCount = result.Insert;
-                }
-                if (result.Update > 0) {
-                    $("#lblUpdate").css("display", "");
-                    if (result.PercentProcess == 100)
-                        $("#lblUpdateCount").text(result.Update);
-                    else
-                        jjutil.animateValue("lblUpdateCount", JJDataImp.updateCount, result.Update, 1000);
-                    JJDataImp.updateCount = result.Update;
-                }
-                if (result.Delete > 0) {
-                    $("#lblDelete").css("display", "");
-                    if (result.PercentProcess == 100)
-                        $("#lblDeleteCount").text(result.Delete);
-                    else
-                        jjutil.animateValue("lblDeleteCount", JJDataImp.deleteCount, result.Delete, 1000);
-                    JJDataImp.deleteCount = result.Delete;
-                }
-                if (result.Ignore > 0) {
-                    $("#lblIgnore").css("display", "");
-                    if (result.PercentProcess == 100)
-                        $("#lblIgnoreCount").text(result.Ignore);
-                    else
-                        jjutil.animateValue("lblIgnoreCount", JJDataImp.ignoreCount, result.Ignore, 1000);
-                    JJDataImp.ignoreCount = result.Ignore;
-                }
-                if (result.Error > 0) {
-                    $("#lblError").css("display", "");
-                    if (result.PercentProcess == 100)
-                        $("#lblErrorCount").text(result.Error);
-                    else
-                        jjutil.animateValue("lblErrorCount", JJDataImp.errorCount, result.Error, 1000);
-                    JJDataImp.errorCount = result.Error;
-                }
-                if (!result.IsProcessing) {
-                    $("#current_uploadaction").val("process_finished");
-                    setTimeout(function () {
-                        $("form:first").trigger("submit");
-                    }, 1000);
-                }
-            }
-        });
-    }
-    static startProcess(objname) {
-        $(document).ready(function () {
-            JJDataImp.setLoadMessage();
-            setInterval(function () {
-                JJDataImp.checkProgress(objname);
-            }, 3000);
-        });
-    }
-    static stopProcess(objname, stopStr) {
-        $("#divMsgProcess").html(stopStr);
-        showWaitOnPost = false;
-        const form = $("form");
-        let url = form.attr("action");
-        if (url.includes("?"))
-            url += "&t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
-        else
-            url += "?t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
-        $.ajax({
-            url: url,
-            dataType: "json",
-            cache: false
-        });
-    }
-    static addPasteListener() {
-        $(document).ready(function () {
-            document.addEventListener("paste", (e) => {
-                var pastedText = undefined;
-                if (window.clipboardData && window.clipboardData.getData) {
-                    pastedText = window.clipboardData.getData("Text");
-                }
-                else if (e.clipboardData && e.clipboardData.getData) {
-                    pastedText = e.clipboardData.getData("text/plain");
-                }
-                e.preventDefault();
-                if (pastedText != undefined) {
-                    $("#current_uploadaction").val("posted_past_text");
-                    $("#pasteValue").val(pastedText);
-                    $("form:first").trigger("submit");
-                }
-                return false;
-            });
-        });
-    }
-}
-JJDataImp.insertCount = 0;
-JJDataImp.updateCount = 0;
-JJDataImp.deleteCount = 0;
-JJDataImp.ignoreCount = 0;
-JJDataImp.errorCount = 0;
 class JJDataPanel {
     static doReload(panelname, objid) {
         let url = new UrlBuilder();
