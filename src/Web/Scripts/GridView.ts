@@ -61,6 +61,8 @@
 
         urlBuilder.addQueryParameter("componentName", componentName)
 
+        messageWait.show()
+        
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)
@@ -70,6 +72,7 @@
                 document.querySelector<HTMLInputElement>("#jjgridview_" + componentName).innerHTML = data;
                 jjloadform();
                 document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "";
+                messageWait.hide();
             })
             .catch(error => {
                 console.log(error);

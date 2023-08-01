@@ -242,6 +242,7 @@ class GridView {
         const form = document.querySelector("form");
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
+        messageWait.show();
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)
@@ -251,6 +252,7 @@ class GridView {
             document.querySelector("#jjgridview_" + componentName).innerHTML = data;
             jjloadform();
             document.querySelector("#current_filteraction_" + componentName).value = "";
+            messageWait.hide();
         })
             .catch(error => {
             console.log(error);
