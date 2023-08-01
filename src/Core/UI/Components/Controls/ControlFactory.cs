@@ -15,14 +15,13 @@ public class ControlFactory
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IFieldVisibilityService FieldVisibilityService { get; }
     
-    
     public ControlFactory(IServiceScopeFactory serviceScopeFactory, IFieldVisibilityService fieldVisibilityService)
     {
         ServiceScopeFactory = serviceScopeFactory;
         FieldVisibilityService = fieldVisibilityService;
     }
 
-    public IServiceProvider ServiceProvider
+    private IServiceProvider ServiceProvider
     {
         get
         {

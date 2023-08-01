@@ -175,7 +175,7 @@ public class JJLookup : JJAsyncBaseControl
 
     public void SendLookupUrlDto()
     {
-        LookupUrlDto dto = LookupService.GetLookupUrlDto(DataItem,Name,PageState,FormValues);
+        var dto = LookupService.GetLookupUrlDto(DataItem,Name,PageState,FormValues);
 
         CurrentContext.Response.SendResponse(dto.ToJson(), "application/json");
     }

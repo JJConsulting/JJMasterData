@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -64,7 +65,7 @@ public class ActionsService : BaseService
         }
     }
 
-    public bool SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
+    public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
         var formElement = DataDictionaryRepository.GetMetadata(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
@@ -107,7 +108,7 @@ public class ActionsService : BaseService
                 throw new ArgumentOutOfRangeException(nameof(context), context, null);
         }
 
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return true;
     }

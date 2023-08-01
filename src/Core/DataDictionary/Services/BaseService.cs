@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -39,9 +40,9 @@ public abstract class BaseService
 
     public bool IsValid => _validationDictionary.IsValid;
 
-    public FormElement GetFormElement(string dictionaryName)
+    public async Task<FormElement> GetFormElementAsync(string dictionaryName)
     {
-        return DataDictionaryRepository.GetMetadata(dictionaryName);
+        return await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
     }
 
     public bool ValidateName(string name)

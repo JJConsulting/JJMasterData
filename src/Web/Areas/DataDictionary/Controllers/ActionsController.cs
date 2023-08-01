@@ -38,14 +38,14 @@ public class ActionsController : DataDictionaryController
         return View(model);
     }
 
-    public ActionResult Edit(string dictionaryName, string actionName, ActionSource context, string fieldName)
+    public async Task<IActionResult> Edit(string dictionaryName, string actionName, ActionSource context, string fieldName)
     {
         if (dictionaryName is null)
         {
             throw new ArgumentNullException(nameof(dictionaryName));
         }
 
-        var metadata = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var metadata = await _actionsService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         BasicAction? action = context switch
         {
@@ -56,13 +56,13 @@ public class ActionsController : DataDictionaryController
             _ => null
         };
 
-        PopulateViewBag(dictionaryName, action!, context, fieldName);
+        await PopulateViewBag(dictionaryName, action!, context, fieldName);
 
         return View(action!.GetType().Name, action);
         
     }
 
-    public ActionResult Add(string dictionaryName, string actionType, ActionSource context, string? fieldName)
+    public async Task<IActionResult> Add(string dictionaryName, string actionType, ActionSource context, string? fieldName)
     {
         BasicAction action = actionType switch
         {
@@ -73,7 +73,7 @@ public class ActionsController : DataDictionaryController
             _ => throw new JJMasterDataException("Invalid Action")
         };
 
-        PopulateViewBag(dictionaryName, action, context, fieldName);
+        await PopulateViewBag(dictionaryName, action, context, fieldName);
         return View(action.GetType().Name, action);
     }
 
@@ -102,240 +102,240 @@ public class ActionsController : DataDictionaryController
 
 
     [HttpPost]
-    public ActionResult InsertAction(string dictionaryName, InsertAction insertAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> InsertAction(string dictionaryName, InsertAction insertAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, insertAction, context, originalName);
+            await SaveAction(dictionaryName, insertAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, insertAction, context);
+        await PopulateViewBag(dictionaryName, insertAction, context);
         return View(insertAction);
     }
 
     [HttpPost]
-    public ActionResult ConfigAction(string dictionaryName, ConfigAction configAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> ConfigAction(string dictionaryName, ConfigAction configAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, configAction, context, originalName);
+            await SaveAction(dictionaryName, configAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, configAction, context);
+        await PopulateViewBag(dictionaryName, configAction, context);
         return View(configAction);
     }
 
     [HttpPost]
-    public ActionResult ExportAction(string dictionaryName, ExportAction exportAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> ExportAction(string dictionaryName, ExportAction exportAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, exportAction, context, originalName);
+            await SaveAction(dictionaryName, exportAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, exportAction, context);
+        await PopulateViewBag(dictionaryName, exportAction, context);
         return View(exportAction);
     }
 
     [HttpPost]
-    public ActionResult ViewAction(string dictionaryName, ViewAction viewAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> ViewAction(string dictionaryName, ViewAction viewAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, viewAction, context, originalName);
+            await SaveAction(dictionaryName, viewAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, viewAction, context);
+        await PopulateViewBag(dictionaryName, viewAction, context);
         return View(viewAction);
     }
 
     [HttpPost]
-    public ActionResult EditAction(string dictionaryName, EditAction editAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> EditAction(string dictionaryName, EditAction editAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, editAction, context, originalName);
+            await SaveAction(dictionaryName, editAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, editAction, context);
+        await PopulateViewBag(dictionaryName, editAction, context);
         return View(editAction);
     }
 
     [HttpPost]
-    public ActionResult DeleteAction(string dictionaryName, DeleteAction deleteAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> DeleteAction(string dictionaryName, DeleteAction deleteAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, deleteAction, context, originalName);
+            await SaveAction(dictionaryName, deleteAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, deleteAction, context);
+        await PopulateViewBag(dictionaryName, deleteAction, context);
         return View(deleteAction);
     }
 
     [HttpPost]
-    public ActionResult ImportAction(string dictionaryName, ImportAction importAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> ImportAction(string dictionaryName, ImportAction importAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, importAction, context, originalName);
+            await SaveAction(dictionaryName, importAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, importAction, context);
+        await PopulateViewBag(dictionaryName, importAction, context);
         return View(importAction);
     }
 
     [HttpPost]
-    public ActionResult RefreshAction(string dictionaryName, RefreshAction refreshAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> RefreshAction(string dictionaryName, RefreshAction refreshAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, refreshAction, context, originalName);
+            await SaveAction(dictionaryName, refreshAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, refreshAction, context);
+        await PopulateViewBag(dictionaryName, refreshAction, context);
         return View(refreshAction);
     }
 
     [HttpPost]
-    public ActionResult LegendAction(string dictionaryName, LegendAction legendAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> LegendAction(string dictionaryName, LegendAction legendAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, legendAction, context, originalName);
+            await SaveAction(dictionaryName, legendAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, legendAction, context);
+        await PopulateViewBag(dictionaryName, legendAction, context);
         return View(legendAction);
     }
 
     [HttpPost]
-    public ActionResult SortAction(string dictionaryName, SortAction sortAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> SortAction(string dictionaryName, SortAction sortAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, sortAction, context, originalName);
+            await SaveAction(dictionaryName, sortAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, sortAction, context);
+        await PopulateViewBag(dictionaryName, sortAction, context);
         return View(sortAction);
     }
     
     [HttpPost]
-    public IActionResult SaveAction(string dictionaryName, SaveAction saveAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> SaveAction(string dictionaryName, SaveAction saveAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, saveAction, context, originalName);
+            await SaveAction(dictionaryName, saveAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, saveAction, context);
+        await PopulateViewBag(dictionaryName, saveAction, context);
         return View(saveAction);
     }
     
     [HttpPost]
-    public IActionResult CancelAction(string dictionaryName, CancelAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> CancelAction(string dictionaryName, CancelAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, cancelAction, context, originalName);
+            await SaveAction(dictionaryName, cancelAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, cancelAction, context);
+        await PopulateViewBag(dictionaryName, cancelAction, context);
         return View(cancelAction);
     }
     
     [HttpPost]
-    public IActionResult BackAction(string dictionaryName, BackAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> BackAction(string dictionaryName, BackAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, cancelAction, context, originalName);
+            await SaveAction(dictionaryName, cancelAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, cancelAction, context);
+        await PopulateViewBag(dictionaryName, cancelAction, context);
         return View(cancelAction);
     }
 
     [HttpPost]
-    public ActionResult LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, logAction, context, originalName);
+            await SaveAction(dictionaryName, logAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, logAction, context);
+        await PopulateViewBag(dictionaryName, logAction, context);
         return View(logAction);
     }
 
     [HttpPost]
-    public ActionResult FilterAction(string dictionaryName, FilterAction filterAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> FilterAction(string dictionaryName, FilterAction filterAction, ActionSource context, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, filterAction, context, originalName);
+            await SaveAction(dictionaryName, filterAction, context, originalName);
         }
 
-        PopulateViewBag(dictionaryName, filterAction, context);
+        await PopulateViewBag(dictionaryName, filterAction, context);
         return View(filterAction);
     }
 
     [HttpPost]
-    public ActionResult UrlRedirectAction(string dictionaryName, UrlRedirectAction urlAction, ActionSource context,
+    public async Task<IActionResult> UrlRedirectAction(string dictionaryName, UrlRedirectAction urlAction, ActionSource context,
         string? fieldName, string? originalName, bool isActionSave)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, urlAction, context, originalName, fieldName);
+            await SaveAction(dictionaryName, urlAction, context, originalName, fieldName);
         }
 
-        PopulateViewBag(dictionaryName, urlAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, urlAction, context, fieldName);
         return View(urlAction);
     }
 
     [HttpPost]
-    public ActionResult ScriptAction(string dictionaryName, ScriptAction scriptAction, ActionSource context,
+    public async Task<IActionResult> ScriptAction(string dictionaryName, ScriptAction scriptAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, scriptAction, context, originalName, fieldName);
+            await SaveAction(dictionaryName, scriptAction, context, originalName, fieldName);
         }
 
-        PopulateViewBag(dictionaryName, scriptAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, scriptAction, context, fieldName);
         return View(scriptAction);
     }
 
     [HttpPost]
-    public ActionResult SqlCommandAction(string dictionaryName, SqlCommandAction sqlAction, ActionSource context,
+    public async Task<IActionResult> SqlCommandAction(string dictionaryName, SqlCommandAction sqlAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, sqlAction, context, originalName, fieldName);
+            await SaveAction(dictionaryName, sqlAction, context, originalName, fieldName);
         }
 
-        PopulateViewBag(dictionaryName, sqlAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, sqlAction, context, fieldName);
         return View(sqlAction);
     }
     
 
     [HttpPost]
-    public ActionResult InternalAction(string dictionaryName, InternalAction internalAction, ActionSource context,
+    public async Task<IActionResult> InternalAction(string dictionaryName, InternalAction internalAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
         if (isActionSave)
         {
-            SaveAction(dictionaryName, internalAction, context, originalName, fieldName);
+            await SaveAction(dictionaryName, internalAction, context, originalName, fieldName);
         }
 
-        PopulateViewBag(dictionaryName, internalAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, internalAction, context, fieldName);
         return View(internalAction);
     }
 
     [HttpPost]
-    public ActionResult AddRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
+    public async Task<IActionResult> AddRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
         string redirectField, string internalField, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.Add(new FormActionRelationField
@@ -344,22 +344,22 @@ public class ActionsController : DataDictionaryController
             InternalField = internalField
         });
 
-        PopulateViewBag(dictionaryName, internalAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, internalAction, context, fieldName);
         return View(internalAction.GetType().Name, internalAction);
     }
 
     [HttpPost]
-    public ActionResult RemoveRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
+    public async Task<IActionResult> RemoveRelation(string dictionaryName, InternalAction internalAction, ActionSource context,
         int relationIndex, string? fieldName)
     {
         internalAction.ElementRedirect.RelationFields.RemoveAt(relationIndex);
-        PopulateViewBag(dictionaryName, internalAction, context, fieldName);
+        await PopulateViewBag(dictionaryName, internalAction, context, fieldName);
         return View(internalAction.GetType().Name, internalAction);
     }
 
-    private void SaveAction(string dictionaryName, BasicAction basicAction, ActionSource context,string? originalName,string? fieldName = null)
+    private async Task SaveAction(string dictionaryName, BasicAction basicAction, ActionSource context,string? originalName,string? fieldName = null)
     {
-        _actionsService.SaveAction(dictionaryName, basicAction, context, originalName, fieldName);
+        await _actionsService.SaveAction(dictionaryName, basicAction, context, originalName, fieldName);
         
         if (ModelState.IsValid)
             ViewBag.Success = true;
@@ -367,7 +367,7 @@ public class ActionsController : DataDictionaryController
             ViewBag.Error = _actionsService.GetValidationSummary().GetHtml();
     }
 
-    private void PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionSource context, string? fieldName = null)
+    private async Task PopulateViewBag(string dictionaryName, BasicAction basicAction, ActionSource context, string? fieldName = null)
     {
         if ((string?)Request.Query["originalName"] != null)
             ViewBag.OriginalName = Request.Query["originalName"];
@@ -390,7 +390,7 @@ public class ActionsController : DataDictionaryController
             case ImportAction _:
             case ExportAction _:
             {
-                var formElement = _actionsService.GetFormElement(dictionaryName);
+                var formElement = await _actionsService.GetFormElementAsync(dictionaryName);
                 ViewBag.HintDictionary = _actionsService.GetHintDictionary(formElement);
                 break;
             }

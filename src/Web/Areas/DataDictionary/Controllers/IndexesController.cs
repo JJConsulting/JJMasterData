@@ -15,17 +15,17 @@ public class IndexesController : DataDictionaryController
         _indexesService = indexesService;
     }
 
-    public ActionResult Index(string dictionaryName)
+    public async Task<ActionResult> Index(string dictionaryName)
     {
-        List<ElementIndex> listIndexes = _indexesService.GetFormElement(dictionaryName).Indexes;
+        List<ElementIndex> listIndexes = (await _indexesService.GetFormElementAsync(dictionaryName)).Indexes;
         PopulateViewBag(dictionaryName);
 
         return View(listIndexes);
     }
 
-    public ActionResult Detail(string dictionaryName, string index)
+    public async Task<ActionResult> Detail(string dictionaryName, string index)
     {
-        FormElement formElement = _indexesService.GetFormElement(dictionaryName);
+        FormElement formElement = await _indexesService.GetFormElementAsync(dictionaryName);
 
         ElementIndex elementIndex;
         if (!string.IsNullOrEmpty(index))
@@ -62,9 +62,9 @@ public class IndexesController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Index(string dictionaryName, string filter)
+    public async Task<ActionResult> Index(string dictionaryName, string filter)
     {
-        List<ElementIndex> indexes = _indexesService.GetFormElement(dictionaryName).Indexes;
+        List<ElementIndex> indexes = (await _indexesService.GetFormElementAsync(dictionaryName)).Indexes;
 
         if (!string.IsNullOrEmpty(filter))
             indexes = indexes.FindAll(l => l.Columns.Contains(filter));
@@ -103,9 +103,9 @@ public class IndexesController : DataDictionaryController
         ViewBag.MenuId = "Indexes";
     }
 
-    private void PopulateCheckBox(string dictionaryName, string index)
+    private async Task PopulateCheckBox(string dictionaryName, string index)
     {
-        var formElement = _indexesService.GetFormElement(dictionaryName);
+        var formElement = await _indexesService.GetFormElementAsync(dictionaryName);
         var listItems = new List<SelectListItem>();
 
         foreach (var field in formElement.Fields)

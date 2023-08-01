@@ -362,7 +362,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if (currentAction is LogAction || PageState is PageState.Log)
         {
-            html = await GetHtmlLog();
+            html = await GetLogHtml();
         }
         else if (currentAction is DeleteAction)
         {
@@ -751,7 +751,7 @@ public class JJFormView : JJAsyncBaseView
     }
 
 
-    private async Task<HtmlBuilder> GetHtmlLog()
+    private async Task<HtmlBuilder> GetLogHtml()
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();

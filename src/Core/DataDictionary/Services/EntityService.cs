@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -45,14 +46,14 @@ public class EntityService : BaseService
     }
 
 
-    public FormElement EditEntity(FormElement formElement, string entityName)
+    public async Task<FormElement> EditEntityAsync(FormElement formElement, string entityName)
     {
         if (!ValidateEntity(formElement, entityName))
             return null;
         
         try
         {
-            var dicParser = DataDictionaryRepository.GetMetadata(entityName);
+            var dicParser = await DataDictionaryRepository.GetMetadataAsync(entityName);
 
             dicParser.Name = formElement.Name;
             dicParser.TableName = formElement.TableName;

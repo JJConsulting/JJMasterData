@@ -14,9 +14,9 @@ public class PanelController : DataDictionaryController
         _panelService = panelService;
     }
 
-    public ActionResult Index(string dictionaryName, int? panelId = null)
+    public async Task<ActionResult> Index(string dictionaryName, int? panelId = null)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
         FormElementPanel panel;
         if (panelId == null)
         {
@@ -37,18 +37,18 @@ public class PanelController : DataDictionaryController
     }
 
     //Partial View
-    public IActionResult Detail(string dictionaryName, int panelId)
+    public async Task<IActionResult> Detail(string dictionaryName, int panelId)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
         var panel = formElement.GetPanelById(panelId);
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
     }
 
     //Partial View
-    public IActionResult Add(string dictionaryName)
+    public async Task<IActionResult> Add(string dictionaryName)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
+        var formElement =await  _panelService.GetFormElementAsync(dictionaryName);
         var panel = new FormElementPanel();
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
@@ -75,9 +75,9 @@ public class PanelController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Index(string dictionaryName, FormElementPanel panel)
+    public async Task<IActionResult> Index(string dictionaryName, FormElementPanel panel)
     {
-        var formElement = _panelService.GetFormElement(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
         PopulateViewBag(formElement, panel);
         return View("Index", panel);
     }

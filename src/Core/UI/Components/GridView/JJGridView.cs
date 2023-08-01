@@ -627,9 +627,9 @@ public class JJGridView : JJAsyncBaseView
                 html.AppendComponent(errorMessage);
         }
         
-        SetDataSource();
+        await SetDataSource();
 
-        if (CheckForExportation(requestType))
+        if (await CheckForExportation(requestType))
             return null;
 
         if (await CheckForTableRow(requestType, Table))
@@ -750,13 +750,13 @@ public class JJGridView : JJAsyncBaseView
         return false;
     }
 
-    private bool CheckForExportation(string requestType)
+    private async Task<bool> CheckForExportation(string requestType)
     {
         if ("tableexp".Equals(requestType))
         {
             string gridName = CurrentContext.Request.QueryString("gridName");
             if (Name.Equals(gridName))
-                HandleExportation();
+                await HandleExportation();
 
             return true;
         }
@@ -1107,7 +1107,7 @@ public class JJGridView : JJAsyncBaseView
                     {
                         try
                         {
-                            ExportFileInBackground();
+                            await ExportFileInBackground();
                         }
                         catch (Exception ex)
                         {
@@ -1165,9 +1165,9 @@ public class JJGridView : JJAsyncBaseView
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the <see cref="FormElement"/>;
     /// </returns>
-    public DataTable GetDataTable()
+    public async Task<DataTable> GetDataTableAsync()
     {
-        SetDataSource();
+        await SetDataSource();
 
         return DataSource;
     }
@@ -1249,7 +1249,7 @@ public class JJGridView : JJAsyncBaseView
     {
         if (dt == null)
         {
-            dt = GetDataTable();
+            dt = await GetDataTableAsync();
             if (dt == null)
                 return null;
         }

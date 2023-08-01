@@ -87,6 +87,8 @@ public class JJAuditLogView : JJAsyncBaseView
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
+        await AuditLogService.CreateTableIfNotExistsAsync();
+        
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("viewid_" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -113,11 +115,15 @@ public class JJAuditLogView : JJAsyncBaseView
         return html;
     }
 
-    private string GetKeyLog(IDictionary<string,dynamic>values)
+    private string GetEntryKey(IDictionary<string,dynamic> values)
     {
-        var filter = new Hashtable();
-        filter.Add(DataManager.Services.AuditLogService.DicName, FormElement.Name);
-        filter.Add(DataManager.Services.AuditLogService.DicKey, AuditLogService.GetKey(FormElement, values));
+        var filter = new Dictionary<string,dynamic>
+        {
+            { DataManager.Services.AuditLogService.DicName, FormElement.Name },
+            {
+                DataManager.Services.AuditLogService.DicKey, AuditLogService.GetKey(FormElement, values)
+            }
+        };
 
         string orderby = DataManager.Services.AuditLogService.DicModified + " DESC";
         int tot = 1;
@@ -133,7 +139,7 @@ public class JJAuditLogView : JJAsyncBaseView
 
     public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string,dynamic>values)
     {
-        string viewId = GetKeyLog(values);
+        string viewId = GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(viewId);
         html.AppendHiddenInput($"viewid_{Name}", viewId);
         return html;
@@ -225,7 +231,7 @@ public class JJAuditLogView : JJAsyncBaseView
         return html;
     }
 
-    public async Task<JJDataPanel> GetDetailPanel(string logId)
+    private async Task<JJDataPanel> GetDetailPanel(string logId)
     {
         var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
 
@@ -247,7 +253,7 @@ public class JJAuditLogView : JJAsyncBaseView
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = _componentFactory.GridView.Create(FormElement);
+        var grid = _componentFactory.GridView.Create(AuditLogService.GetFormElement());
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilterAsync(DataManager.Services.AuditLogService.DicName, FormElement.Name).GetAwaiter().GetResult();
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";

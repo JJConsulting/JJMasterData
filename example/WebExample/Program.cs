@@ -13,6 +13,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
         var settingsPath = Path.Combine(root, "appsettings.json");
 

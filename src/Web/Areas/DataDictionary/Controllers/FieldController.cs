@@ -16,9 +16,9 @@ public class FieldController : DataDictionaryController
         _fieldService = fieldService;
     }
 
-    public IActionResult Index(string dictionaryName, string? fieldName)
+    public async Task<IActionResult> Index(string dictionaryName, string? fieldName)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         FormElementField? field;
         if (string.IsNullOrEmpty(fieldName))
         {
@@ -39,17 +39,17 @@ public class FieldController : DataDictionaryController
     }
 
     //Partial View
-    public IActionResult Detail(string dictionaryName, string fieldName)
+    public async Task<IActionResult> Detail(string dictionaryName, string fieldName)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         var field = formElement.Fields[fieldName];
         PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
 
-    public IActionResult Add(string dictionaryName)
+    public async Task<IActionResult> Add(string dictionaryName)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         var field = new FormElementField();
         PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
@@ -77,9 +77,9 @@ public class FieldController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Index(string dictionaryName, FormElementField? field)
+    public async Task<IActionResult> Index(string dictionaryName, FormElementField? field)
     {
-        var formElement = _fieldService.GetFormElement(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         PopulateViewBag(formElement, field);
         return View("Index", field);
     }

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -22,9 +23,9 @@ public class RelationshipsService : BaseService
         _panelService = panelService;
     }
 
-    public void SaveElementRelationship(ElementRelationship elementRelationship, int? id, string dictionaryName)
+    public async Task SaveElementRelationship(ElementRelationship elementRelationship, int? id, string dictionaryName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var relationships = formElement.Relationships;
         
         var formElementRelationShip = relationships.FirstOrDefault( r=> r.Id ==id);
@@ -48,19 +49,19 @@ public class RelationshipsService : BaseService
         DataDictionaryRepository.InsertOrReplace(formElement);
     }
 
-    public void SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
+    public async Task SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
         string dictionaryName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
         relationship.Panel = panel;
 
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
-    public bool ValidateRelation(string dictionaryName, string childElementName, string pkColumnName,
+    public async Task<bool> ValidateRelation(string dictionaryName, string childElementName, string pkColumnName,
         string fkColumnName)
     {
         if (string.IsNullOrEmpty(childElementName))
@@ -69,7 +70,7 @@ public class RelationshipsService : BaseService
             return IsValid;
         }
 
-        if (!DataDictionaryRepository.Exists(childElementName))
+        if (!(await DataDictionaryRepository.ExistsAsync(childElementName)))
         {
             AddError("Entity", StringLocalizer["Entity {0} not found", childElementName]);
             return IsValid;
@@ -87,14 +88,14 @@ public class RelationshipsService : BaseService
             return IsValid;
         }
 
-        var fkColumn = GetField(childElementName, fkColumnName);
+        var fkColumn = await GetFieldAsync(childElementName, fkColumnName);
         if (fkColumn == null)
         {
             AddError("", StringLocalizer["Column {0} not found in {1}.", fkColumnName, childElementName]);
             return IsValid;
         }
 
-        var pkColumn = GetField(dictionaryName, pkColumnName);
+        var pkColumn = await GetFieldAsync(dictionaryName, pkColumnName);
         if (pkColumn == null)
         {
             AddError("", StringLocalizer["Column {0} not found.", pkColumnName]);
@@ -117,14 +118,14 @@ public class RelationshipsService : BaseService
         return IsValid;
     }
 
-    private ElementField? GetField(string dictionaryName, string fieldName)
+    private async Task<ElementField?> GetFieldAsync(string dictionaryName, string fieldName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
         return formElement.Fields.Contains(fieldName) ? formElement.Fields[fieldName] : null;
     }
 
 
-    public bool ValidateElementRelationship(ElementRelationship elementRelationship, string dictionaryName,
+    public async Task<bool> ValidateElementRelationship(ElementRelationship elementRelationship, string dictionaryName,
         int? index)
     {
         if (string.IsNullOrWhiteSpace(elementRelationship.ChildElement))
@@ -146,7 +147,7 @@ public class RelationshipsService : BaseService
 
         if (IsValid && index == null)
         {
-            var element = GetFormElement(dictionaryName);
+            var element = await GetFormElementAsync(dictionaryName);
             var relationships = element.Relationships
                 .GetElementRelationships().FindAll(x => x.ChildElement.Equals(elementRelationship.ChildElement));
             if (relationships.Count > 0)
@@ -158,10 +159,10 @@ public class RelationshipsService : BaseService
         return IsValid;
     }
 
-    public bool ValidateFinallyAddRelation(string dictionaryName, ElementRelationship elementRelationship,
+    public async Task<bool> ValidateFinallyAddRelation(string dictionaryName, ElementRelationship elementRelationship,
         string pkColumnName, string fkColumnName)
     {
-        if (ValidateRelation(dictionaryName, elementRelationship.ChildElement, pkColumnName, fkColumnName))
+        if (await ValidateRelation(dictionaryName, elementRelationship.ChildElement, pkColumnName, fkColumnName))
         {
             var list = elementRelationship.Columns.FindAll(x =>
                 x.PkColumn.Equals(pkColumnName) &&

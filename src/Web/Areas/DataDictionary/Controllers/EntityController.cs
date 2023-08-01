@@ -15,21 +15,21 @@ public class EntityController : DataDictionaryController
         _resolver = resolver;
     }
 
-    public ActionResult Index(string dictionaryName)
+    public async Task<IActionResult> Index(string dictionaryName)
     {
-        return View(Populate(dictionaryName, true));
+        return View(await Populate(dictionaryName, true));
     }
 
-    public ActionResult Edit(string dictionaryName)
+    public async Task<IActionResult> Edit(string dictionaryName)
     {
-        return View(Populate(dictionaryName, false));
+        return View(await Populate(dictionaryName, false));
     }
 
     [HttpPost]        
-    public ActionResult Edit(
+    public async Task<ActionResult> Edit(
         EntityViewModel model)
     {
-        var entity = _entityService.EditEntity(model.FormElement, model.DictionaryName);
+        var entity = await _entityService.EditEntityAsync(model.FormElement, model.DictionaryName);
 
         if (entity != null)
         {
@@ -43,11 +43,11 @@ public class EntityController : DataDictionaryController
 
     }
 
-    private EntityViewModel Populate(string dictionaryName, bool readOnly)
+    private async Task<EntityViewModel> Populate(string dictionaryName, bool readOnly)
     {
         var viewModel = new EntityViewModel(menuId:"Entity", dictionaryName:dictionaryName)
         {
-            FormElement = _entityService.GetFormElement(dictionaryName),
+            FormElement = await _entityService.GetFormElementAsync(dictionaryName),
             FormEvent = _resolver?.GetFormEvent(dictionaryName),
             ReadOnly = readOnly
         };

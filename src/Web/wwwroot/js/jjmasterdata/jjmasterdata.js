@@ -380,6 +380,7 @@ class UploadArea {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#uploadaction_" + options.componentName).val("afteruploadall");
                 }
+                jjloadform();
             },
         });
     }
