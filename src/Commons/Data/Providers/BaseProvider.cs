@@ -241,7 +241,7 @@ public abstract class BaseProvider
     }
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<(List<Dictionary<string,dynamic>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
+    public async Task<(List<IDictionary<string,dynamic>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, int total)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -251,12 +251,13 @@ public abstract class BaseProvider
 
         var pTot = new DataAccessParameter(VariablePrefix + "qtdtotal", total, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, ref pTot);
-        var dt = await DataAccess.GetDictionaryListAsync(cmd);
+        var list = (await DataAccess.GetDictionaryListAsync(cmd)).Select(dict => (IDictionary<string, dynamic>)dict).ToList();
+        
         total = 0;
         if (pTot is { Value: not null } && pTot.Value != DBNull.Value)
             total = (int)pTot.Value;
 
-        return (dt, total);
+        return (list, total);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>

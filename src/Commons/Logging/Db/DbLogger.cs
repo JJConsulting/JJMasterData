@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-internal class DbLogger : ILogger
+public class DbLogger : ILogger
 {
     private readonly DbLoggerBuffer _loggerBuffer;
 

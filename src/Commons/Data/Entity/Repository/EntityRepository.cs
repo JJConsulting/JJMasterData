@@ -105,7 +105,7 @@ public class EntityRepository : IEntityRepository
         return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage, totalRecords);
     }
     
-    public async Task<(List<Dictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
+    public async Task<(List<IDictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
         int totalRecords)
     {
         return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage, totalRecords);
@@ -148,7 +148,6 @@ public class EntityRepository : IEntityRepository
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
     
     
-    
     public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string, dynamic> filters)
     {
         var total =
@@ -166,8 +165,6 @@ public class EntityRepository : IEntityRepository
 
     public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
 
-
-    
     ///<inheritdoc cref="IEntityRepository.GetScriptCreateTable(Element)"/>
     public string GetScriptCreateTable(Element element) => Provider.GetCreateTableScript(element);
 
@@ -186,5 +183,15 @@ public class EntityRepository : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element,IDictionary,string,int,int,bool,string)"/>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
         Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
-
+    
+    public async Task<EntityResult> GetEntityResultAsync(
+        Element element,
+        EntityParameters? parameters = null)
+    {
+        var result = await GetDictionaryListAsync(element, parameters?.Parameters as IDictionary,
+            parameters?.OrderBy?.ToString(), parameters?.PaginationData?.RecordsPerPage ?? 5,
+            parameters?.PaginationData?.Page ?? 1, 1);
+        
+        return new EntityResult(new DataSource(result.Item1), result.Item2);
+    }
 }

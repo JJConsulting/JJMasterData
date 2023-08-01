@@ -40,6 +40,7 @@ public class DataAccess
                 error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
                 throw new DataAccessException(error.ToString());
             }
+
             try
             {
                 _factory = DataAccessProviderFactory.GetDbProviderFactory(ConnectionProvider);
@@ -85,7 +86,8 @@ public class DataAccess
     /// </summary>
     public DataAccess()
     {
-        ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+        ConnectionString =
+ System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
         if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ProviderName, out var provider))
         {
             ConnectionProvider = provider;
@@ -103,7 +105,8 @@ public class DataAccess
     /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
     public DataAccess(string connectionStringName)
     {
-        ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+        ConnectionString =
+ System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
         if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ProviderName, out var provider))
         {
             ConnectionProvider = provider;
@@ -244,10 +247,8 @@ public class DataAccess
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    ///<remarks>Cancellation token not supported at Fill method. https://github.com/dotnet/runtime/issues/22109.</remarks>
     public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
-        var dt = new DataTable();
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -255,20 +256,21 @@ public class DataAccess
 
             using (dbCommand.Connection)
             {
-                using (var dataAdapter = Factory.CreateDataAdapter())
+                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    dataAdapter!.SelectCommand = dbCommand;
-                    dataAdapter.Fill(dt);
-                }
-
-                if (cmd.Parameters != null)
-                {
-                    foreach (var param in cmd.Parameters.Where(param =>
-                                 param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+                    var dataTable = reader.GetSchemaTable();
+                    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                     {
-                        param.Value = dbCommand.Parameters[param.Name].Value;
+                        var dataRow = dataTable!.NewRow();
+                        for (var i = 0; i < dataTable.Columns.Count; i++)
+                        {
+                            dataRow[i] = reader[i];
+                        }
+
+                        dataTable.Rows.Add(dataRow);
                     }
+
+                    return dataTable;
                 }
             }
         }
@@ -276,8 +278,6 @@ public class DataAccess
         {
             throw GetDataAccessException(ex, cmd);
         }
-
-        return dt;
     }
 
     /// <summary>
@@ -686,9 +686,9 @@ public class DataAccess
     public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        return await GetAsync<Hashtable>(command,cancellationToken);
+        return await GetAsync<Hashtable>(command, cancellationToken);
     }
-    
+
     public async Task<T> GetAsync<T>(DataAccessCommand command,
         CancellationToken cancellationToken = default) where T : IDictionary, new()
     {
@@ -733,8 +733,9 @@ public class DataAccess
 
         return result;
     }
-    
-    public async Task<List<T>> GetListAsync<T>(DataAccessCommand cmd, CancellationToken cancellationToken = default) where T : IDictionary, new()
+
+    public async Task<List<T>> GetListAsync<T>(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+        where T : IDictionary, new()
     {
         var dictionaryList = new List<T>();
 
@@ -761,6 +762,7 @@ public class DataAccess
                                 : dataReader.GetValue(dataReader.GetOrdinal(columnName));
                             dictionary[columnName] = value;
                         }
+
                         dictionaryList.Add(dictionary);
                     }
                 }
@@ -782,8 +784,6 @@ public class DataAccess
 
         return dictionaryList;
     }
-
-
 
 
     private static DataAccessCommand GetTableExistsCommand(string table)
@@ -1043,30 +1043,34 @@ public class DataAccess
         return dbParameter;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand cmd,
+        CancellationToken cancellationToken = default)
     {
-        return await GetAsync<Dictionary<string, dynamic>>(cmd,cancellationToken);
+        return await GetAsync<Dictionary<string, dynamic>>(cmd, cancellationToken);
     }
-    
-    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+
+    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand cmd,
+        CancellationToken cancellationToken = default)
     {
-        return await GetListAsync<Dictionary<string, dynamic>>(cmd,cancellationToken);
+        return await GetListAsync<Dictionary<string, dynamic>>(cmd, cancellationToken);
     }
-    
+
     private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
     {
         var command = new DataAccessCommand
         {
-            Sql = @"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
+            Sql =
+                @"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName AND COLUMN_NAME = @ColumnName"
         };
-        
+
         command.AddParameter("@TableName", tableName, DbType.String);
         command.AddParameter("@ColumnName", columnName, DbType.String);
-        
+
         return command;
     }
-    
-    public async Task<bool> ColumnExistsAsync(string tableName, string columnName, CancellationToken cancellationToken = default)
+
+    public async Task<bool> ColumnExistsAsync(string tableName, string columnName,
+        CancellationToken cancellationToken = default)
     {
         var command = GetColumnExistsCommand(tableName, columnName);
         try
@@ -1083,7 +1087,7 @@ public class DataAccess
         }
         catch (Exception ex)
         {
-            throw GetDataAccessException(ex,command);
+            throw GetDataAccessException(ex, command);
         }
     }
 }

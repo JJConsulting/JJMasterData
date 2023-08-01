@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Data;
 
 namespace JJMasterData.Commons.Data.Entity;
 
-public record EntityResult<T>
+public record EntityResult
 (
-    IEnumerable<T> Data,
+    DataSource Data,
     int TotalOfRecords
 )
 {
-    public IEnumerable<T> Data { get; } = Data;
+    public DataSource Data { get; } = Data;
     public int TotalOfRecords { get; } = TotalOfRecords;
 }
