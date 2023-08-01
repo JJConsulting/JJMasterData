@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Logging.File;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace JJMasterData.Commons.Test.Logging;
@@ -11,8 +12,9 @@ public class LoggerTest
     [Fact]
     public void LogAtFileTest()
     {
-        var mock = new Mock<FileLoggerBuffer>();
-        var fileLogger = new FileLogger(mock.Object);
+        var buffer = new Mock<FileLoggerBuffer>();
+        var options = new Mock<IOptionsMonitor<FileLoggerOptions>>();
+        var fileLogger = new FileLogger(buffer.Object,options.Object);
         fileLogger.LogInformation("Test");
         
         var exception = Record.Exception(() => fileLogger.LogInformation("Test"));
@@ -23,8 +25,8 @@ public class LoggerTest
     [Fact]
     public void LogAtDatabaseTest()
     {
-        var mock = new Mock<DbLoggerBuffer>();
-        var dbLogger = new DbLogger(mock.Object);
+        var buffer = new Mock<DbLoggerBuffer>();
+        var dbLogger = new DbLogger(buffer.Object);
         
         var exception = Record.Exception(() => dbLogger.LogInformation("Test"));
         Assert.Null(exception);
