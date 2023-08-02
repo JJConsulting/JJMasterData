@@ -189,7 +189,7 @@ public class JJDataPanel : JJAsyncBaseView
     {
         Values ??= await GetFormValuesAsync();
         string requestType = CurrentContext.Request.QueryString("t");
-        string pnlname = CurrentContext.Request.QueryString("pnlname");
+        string panelName = CurrentContext.Request.QueryString("pnlname");
 
         //Lookup Route
         if (JJLookup.IsLookupRoute(this, CurrentContext))
@@ -207,9 +207,10 @@ public class JJDataPanel : JJAsyncBaseView
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(this, CurrentContext);
 
-        if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
+        if ("reloadPanel".Equals(requestType) && Name.Equals(panelName))
         {
-            CurrentContext.Response.SendResponseObsolete(GetPanelHtml().ToString());
+            var html = await GetPanelHtml();
+            CurrentContext.Response.SendResponse(html.ToString());
             return null;
         }
 

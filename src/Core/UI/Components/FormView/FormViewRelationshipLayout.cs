@@ -108,7 +108,7 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return await ParentFormView.GetParentPanelHtml(parentPanel);
+            return await ParentFormView.GetFormViewWithParentPanelHtml(parentPanel);
         }
 
         var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);

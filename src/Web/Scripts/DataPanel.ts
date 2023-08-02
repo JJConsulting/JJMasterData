@@ -3,6 +3,7 @@ class DataPanel {
         let url = new UrlBuilder()
         url.addQueryParameter("pnlname",panelname)
         url.addQueryParameter("objname",objid)
+        url.addQueryParameter("t","reloadPanel")
 
         DataPanel.Reload(url.build(), panelname, objid)
     }
@@ -20,7 +21,7 @@ class DataPanel {
                 return response.text();
             })
             .then(data => {
-                document.getElementById(componentName).innerHTML = data;
+                document.getElementById(componentName).outerHTML = data;
                 jjloadform();
                 jjutil.gotoNextFocus(fieldName);
             })

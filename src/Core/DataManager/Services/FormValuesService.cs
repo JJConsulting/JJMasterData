@@ -73,7 +73,7 @@ public class FormValuesService : IFormValuesService
                 case FormComponent.Currency:
                 case FormComponent.Number:
                     string requestType = CurrentContext.Request.QueryString("t");
-                    if (value != null && ("reloadpainel".Equals(requestType) || "tablerow".Equals(requestType) ||
+                    if (value != null && ("reloadPanel".Equals(requestType) || "tablerow".Equals(requestType) ||
                                           "ajax".Equals(requestType)))
                     {
                         if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,

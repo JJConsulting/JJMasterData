@@ -163,8 +163,8 @@ public class JJFormView : JJAsyncBaseView
     {
         get
         {
-            if (CurrentContext.Request["current_pagestate_" + Name] != null && _pageState is null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request["current_pagestate_" + Name]);
+            if (CurrentContext.Request["current-pageState-" + Name] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request["current-pageState-" + Name]);
 
             return _pageState ?? PageState.List;
         }
@@ -298,7 +298,7 @@ public class JJFormView : JJAsyncBaseView
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(DataPanel, CurrentContext);
 
-        if ("reloadpainel".Equals(requestType))
+        if ("reloadPanel".Equals(requestType))
         {
             var panelHtml = await GetReloadPanelHtmlAsync();
 
@@ -337,9 +337,13 @@ public class JJFormView : JJAsyncBaseView
         IDictionary<string, dynamic> values = null;
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
+        else
+            values = await GetFormValuesAsync();
 
-        var htmlPanel = await GetDataPanelHtmlAsync(new(values, null, PageState), true);
-        return htmlPanel.ToString();
+        DataPanel.Values = values;
+        
+        var htmlPanel = await DataPanel.GetHtmlAsync();
+        return htmlPanel;
     }
 
     private async Task<HtmlBuilder> GetHtmlForm()
@@ -384,7 +388,7 @@ public class JJFormView : JJAsyncBaseView
 
         if (html != null)
         {
-            html.AppendHiddenInput($"current_pagestate_{Name.ToLower()}", ((int)PageState).ToString());
+            html.AppendHiddenInput($"current-pageState-{Name.ToLower()}", ((int)PageState).ToString());
             html.AppendHiddenInput($"current_formaction_{Name.ToLower()}", "");
         }
 
@@ -401,8 +405,8 @@ public class JJFormView : JJAsyncBaseView
     {
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (CurrentContext.Request["current-panelAction-" + Name] != null)
+            formAction = CurrentContext.Request["current-panelAction-" + Name];
 
         if ("OK".Equals(formAction))
         {
@@ -467,8 +471,8 @@ public class JJFormView : JJAsyncBaseView
 
         string formAction = "";
 
-        if (CurrentContext.Request["current_painelaction_" + Name] != null)
-            formAction = CurrentContext.Request["current_painelaction_" + Name];
+        if (CurrentContext.Request["current-panelAction-" + Name] != null)
+            formAction = CurrentContext.Request["current-panelAction-" + Name];
 
         if (formAction.Equals("OK"))
         {
@@ -548,7 +552,7 @@ public class JJFormView : JJAsyncBaseView
     private HtmlBuilder GetHtmlElementList(InsertAction action)
     {
         var sHtml = new HtmlBuilder(HtmlTag.Div);
-        sHtml.AppendHiddenInput($"current_painelaction_{Name}", "ELEMENTLIST");
+        sHtml.AppendHiddenInput($"current-panelAction-{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
@@ -558,7 +562,7 @@ public class JJFormView : JJAsyncBaseView
         selectedForm.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
-        goBackScript.Append($"$('#current_pagestate_{Name}').val('{((int)PageState.List).ToString()}'); ");
+        goBackScript.Append($"$('#current-pageState-{Name}').val('{((int)PageState.List).ToString()}'); ");
         goBackScript.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -756,7 +760,7 @@ public class JJFormView : JJAsyncBaseView
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
-        script.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
+        script.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
         script.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -797,7 +801,7 @@ public class JJFormView : JJAsyncBaseView
 
         PageState = PageState.Import;
         var sScriptImport = new StringBuilder();
-        sScriptImport.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
+        sScriptImport.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
         sScriptImport.AppendLine("$('form:first').submit(); ");
 
         var dataImpView = DataImportation;
@@ -812,7 +816,6 @@ public class JJFormView : JJAsyncBaseView
 
     private async Task<HtmlBuilder> GetDataPanelHtmlAsync(FormContext formContext, bool autoReloadFormFields)
     {
-        var html = new HtmlBuilder(HtmlTag.Div);
         var relationships = FormElement.Relationships.Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
             .ToList();
 
@@ -824,14 +827,15 @@ public class JJFormView : JJAsyncBaseView
         parentPanel.Values = values;
         parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
-
-        if (ShowTitle)
-            html.AppendComponent(GridView.GetTitle(values));
-
+        
         if (relationships.Count == 0)
         {
-            return await GetParentPanelHtml(parentPanel);
+            return await GetFormViewWithParentPanelHtml(parentPanel);
         }
+
+        var html = new HtmlBuilder(HtmlTag.Div);
+        if (ShowTitle)
+            html.AppendComponent(GridView.GetTitle(values));
 
         var layout = new FormViewRelationshipLayout(this);
 
@@ -854,28 +858,31 @@ public class JJFormView : JJAsyncBaseView
         return html;
     }
 
-    internal async Task<HtmlBuilder> GetParentPanelHtml(JJDataPanel parentPanel)
+    internal async Task<HtmlBuilder> GetFormViewWithParentPanelHtml(JJDataPanel parentPanel)
     {
-        var parentPanelHtml = await parentPanel.GetPanelHtml();
-
+        var formHtml = new HtmlBuilder(HtmlTag.Div);
+        formHtml.WithNameAndId(Name);
+        
         if (parentPanel.Errors != null)
-            parentPanelHtml.AppendComponent(new JJValidationSummary(parentPanel.Errors));
+            formHtml.AppendComponent(new JJValidationSummary(parentPanel.Errors));
 
+        var parentPanelHtml = await parentPanel.GetPanelHtml();
+        
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
 
         var toolbar = GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values);
 
-        parentPanelHtml.AppendComponent(toolbar);
-        parentPanelHtml.AppendHiddenInput($"current_painelaction_{Name}");
-
-        return parentPanelHtml;
+        formHtml.Append(parentPanelHtml);
+        formHtml.AppendComponent(toolbar);
+        formHtml.AppendHiddenInput($"current-panelAction-{Name}");
+        return formHtml;
     }
 
     private JJToolbar GetFormLogBottomBar(IDictionary<string, dynamic> values)
     {
         var backScript = new StringBuilder();
-        backScript.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
+        backScript.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
         backScript.AppendLine("$('form:first').submit(); ");
 
         var btnBack = GetBackButton();
@@ -1045,7 +1052,7 @@ public class JJFormView : JJAsyncBaseView
             Text = "Hide Log",
             IconClass = IconType.Film.GetCssClass(),
             CssClass = "btn btn-primary btn-small",
-            OnClientClick = $"$('#current_pagestate_{Name}').val('{(int)PageState.List}');{scriptAction}"
+            OnClientClick = $"$('#current-pageState-{Name}').val('{(int)PageState.List}');{scriptAction}"
         };
         return btn;
     }

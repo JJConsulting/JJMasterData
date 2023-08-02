@@ -286,7 +286,7 @@
         },
 
         doSelElementInsert: function (componentName, encryptedActionMap) {
-            $("#current_painelaction_" + componentName).val("ELEMENTSEL");
+            $("#current-panelAction-" + componentName).val("ELEMENTSEL");
             $("#current_selaction_" + componentName).val(encryptedActionMap);
             $("form:first").trigger("submit");
         },

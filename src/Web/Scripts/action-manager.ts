@@ -1,7 +1,7 @@
 
 class ActionManager {
     static executePanelAction(name: string, action: string){
-        $("#current_painelaction_" + name).val(action);
+        $("#current-panelAction-" + name).val(action);
         let form = document.querySelector<HTMLFormElement>(`form#${name}`);
 
         if(!form){

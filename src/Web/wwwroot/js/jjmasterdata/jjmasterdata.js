@@ -353,6 +353,7 @@ class DataPanel {
         let url = new UrlBuilder();
         url.addQueryParameter("pnlname", panelname);
         url.addQueryParameter("objname", objid);
+        url.addQueryParameter("t", "reloadPanel");
         DataPanel.Reload(url.build(), panelname, objid);
     }
     static Reload(url, componentName, fieldName) {
@@ -368,7 +369,7 @@ class DataPanel {
             return response.text();
         })
             .then(data => {
-            document.getElementById(componentName).innerHTML = data;
+            document.getElementById(componentName).outerHTML = data;
             jjloadform();
             jjutil.gotoNextFocus(fieldName);
         })
@@ -708,7 +709,7 @@ class UrlBuilder {
 }
 class ActionManager {
     static executePanelAction(name, action) {
-        $("#current_painelaction_" + name).val(action);
+        $("#current-panelAction-" + name).val(action);
         let form = document.querySelector(`form#${name}`);
         if (!form) {
             form = document.forms[0];
@@ -1486,7 +1487,7 @@ var jjview = (function () {
             $("#config_modal_" + objid).modal("hide");
         },
         doSelElementInsert: function (componentName, encryptedActionMap) {
-            $("#current_painelaction_" + componentName).val("ELEMENTSEL");
+            $("#current-panelAction-" + componentName).val("ELEMENTSEL");
             $("#current_selaction_" + componentName).val(encryptedActionMap);
             $("form:first").trigger("submit");
         },
