@@ -1301,7 +1301,7 @@
     <value>表单元素字段不能为null</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="FormView" xml:space="preserve">
+  <data name="JJView" xml:space="preserve">
     <value>表单预览</value>
     <comment>JJMasterDataWeb</comment>
   </data>

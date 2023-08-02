@@ -20,7 +20,7 @@ public class ComponentFactory
         GetFactory<IFormElementComponentFactory<JJDataImportation>>();
 
     public IFormElementComponentFactory<JJDataPanel> DataPanel => GetFactory<IFormElementComponentFactory<JJDataPanel>>();
-    public IFormElementComponentFactory<JJFormView> FormView => GetFactory< IFormElementComponentFactory<JJFormView> >();
+    public IFormElementComponentFactory<JJFormView> JJView => GetFactory< IFormElementComponentFactory<JJFormView> >();
     public IFormElementComponentFactory<JJGridView> GridView => GetFactory<IFormElementComponentFactory<JJGridView>>();
     public IComponentFactory<JJUploadView> FormUpload => GetFactory<IComponentFactory<JJUploadView> >();
     public IComponentFactory<JJFileDownloader> Downloader => GetFactory<IComponentFactory<JJFileDownloader>>();

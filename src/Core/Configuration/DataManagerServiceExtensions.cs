@@ -17,6 +17,7 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IFieldVisibilityService, FieldVisibilityService>();
         services.AddTransient<IFieldValidationService, FieldValidationService>();
         services.AddTransient<IFormService, FormService>();
+        services.AddTransient<IUrlRedirectService, UrlRedirectService>();
         services.AddTransient<IFieldValuesService, FieldValuesService>();
         services.AddTransient<IFieldsService, FieldsService>();
         services.AddTransient<IUploadAreaService, UploadAreaService>();

@@ -11,7 +11,7 @@ public class UrlRedirectAction : UserCreatedAction
     public bool UrlAsPopUp { get; set; }
 
     [JsonProperty("titlePopUp")]
-    public string TitlePopUp { get; set; }
+    public string PopUpTitle { get; set; }
 
     [JsonProperty("popupSize")]
     public PopupSize PopupSize { get; set; }
@@ -19,7 +19,7 @@ public class UrlRedirectAction : UserCreatedAction
     public UrlRedirectAction()
     {
         UrlAsPopUp = false;
-        TitlePopUp = "Title";
+        PopUpTitle = "Title";
         PopupSize = PopupSize.Default;
         Icon = IconType.ExternalLink;
     }

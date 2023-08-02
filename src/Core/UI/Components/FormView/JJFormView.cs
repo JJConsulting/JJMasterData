@@ -316,7 +316,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if ("geturlaction".Equals(requestType))
         {
-            await DataPanel.SendUrlAction();
+            await DataPanel.SendUrlRedirect();
             return null;
         }
 
@@ -506,7 +506,7 @@ public class JJFormView : JJAsyncBaseView
                             .WithAttribute("style", "display:none")
                             .Append(await GetDataPanelHtmlAsync(new(RelationValues, null, PageState.Insert), false));
                     });
-                    alertHtml.AppendScript($"FormView.showInsertSucess('{Name}');");
+                    alertHtml.AppendScript($"JJView.showInsertSucess('{Name}');");
                     return alertHtml;
                 }
 
@@ -556,7 +556,7 @@ public class JJFormView : JJAsyncBaseView
         sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
 
         var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
-        var selectedForm = ComponentFactory.FormView.Create(formElement);
+        var selectedForm = ComponentFactory.JJView.Create(formElement);
         selectedForm.UserValues = UserValues;
         selectedForm.Name = action.ElementNameToSelect;
         selectedForm.SetOptions(formElement.Options);
@@ -955,7 +955,7 @@ public class JJFormView : JJAsyncBaseView
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(map);
-        e.LinkButton.OnClientClick = $"FormView.openSelectElementInsert('{Name}','{encryptedActionMap}');";
+        e.LinkButton.OnClientClick = $"JJView.openSelectElementInsert('{Name}','{encryptedActionMap}');";
     }
 
     /// <summary>
@@ -1034,7 +1034,7 @@ public class JJFormView : JJAsyncBaseView
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"FormView.doPainelAction('{Name}','CANCEL');",
+            OnClientClick = $"JJView.doPainelAction('{Name}','CANCEL');",
             IconClass = IconType.Times.GetCssClass(),
             Text = "Cancel"
         };

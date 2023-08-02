@@ -232,7 +232,7 @@ public class ElementController : DataDictionaryController
             Icon = IconType.Upload,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = "Import",
+            PopUpTitle = "Import",
             UrlRedirect = Url.Action("Import"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
@@ -259,7 +259,7 @@ public class ElementController : DataDictionaryController
             Icon = IconType.InfoCircle,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = StringLocalizer["About"],
+            PopUpTitle = StringLocalizer["About"],
             UrlRedirect = Url.Action("Index", "About", new { Area = "DataDictionary" }),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
@@ -274,7 +274,7 @@ public class ElementController : DataDictionaryController
             Icon = IconType.FileTextO,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = StringLocalizer["Log"],
+            PopUpTitle = StringLocalizer["Log"],
             UrlRedirect = Url.Action("Index", "Log", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
@@ -289,7 +289,7 @@ public class ElementController : DataDictionaryController
             Icon = IconType.Code,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = StringLocalizer["Application Options"],
+            PopUpTitle = StringLocalizer["Application Options"],
             UrlRedirect = Url.Action("Index", "Options", new { Area = "DataDictionary" }),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
@@ -304,7 +304,7 @@ public class ElementController : DataDictionaryController
             Icon = IconType.Globe,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            TitlePopUp = StringLocalizer["Resources"],
+            PopUpTitle = StringLocalizer["Resources"],
             UrlRedirect = Url.Action("Index", "Resources", new { Area = "DataDictionary" }),
             Order = 11,
             CssClass = BootstrapHelper.PullRight

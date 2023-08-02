@@ -522,7 +522,7 @@ public class JJGridView : JJAsyncBaseView
     internal IEntityRepository EntityRepository { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     
-    internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper);
+    internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper, ExpressionsService, StringLocalizer);
 
     internal IHttpContext CurrentContext { get; }
     #endregion
@@ -541,7 +541,7 @@ public class JJGridView : JJAsyncBaseView
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ComponentFactory componentFactory)
     {
-        Name = "FormView" + formElement.Name.ToLower();
+        Name = "JJView" + formElement.Name.ToLower();
         ShowTitle = true;
         EnableFilter = true;
         EnableAjax = true;
@@ -865,7 +865,7 @@ public class JJGridView : JJAsyncBaseView
         {
             script.AppendLine("\t$(document).ready(function () {");
             script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            script.AppendLine("\t\t\tFormView.selectItem('" + Name + "', $(this)); ");
+            script.AppendLine("\t\t\tJJView.selectItem('" + Name + "', $(this)); ");
             script.AppendLine("\t\t});");
             script.AppendLine("\t});");
         }
@@ -1001,7 +1001,7 @@ public class JJGridView : JJAsyncBaseView
             Text = "Cancel",
             IconClass = "fa fa-times",
             ShowAsButton = true,
-            OnClientClick = $"FormView.closeSettingsModal('{Name}');"
+            OnClientClick = $"JJView.closeSettingsModal('{Name}');"
         };
         modal.Buttons.Add(btnCancel);
 

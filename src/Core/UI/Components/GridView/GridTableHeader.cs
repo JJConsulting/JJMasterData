@@ -225,7 +225,7 @@ internal class GridTableHeader
                     li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", $"FormView.unSelectAll('{GridView.Name}')");
+                        a.WithAttribute("onclick", $"JJView.unSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });

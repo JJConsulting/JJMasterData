@@ -115,7 +115,7 @@ internal class ActionManager
 
         if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
         {
-            script.Append("FormView.redirectFormUrl('");
+            script.Append("FormView.executeRedirectAction('");
             script.Append(ComponentName);
             script.Append("','");
             script.Append(encryptedActionMap);
@@ -133,7 +133,7 @@ internal class ActionManager
         {
             string url = Expression.ParseExpression(action.UrlRedirect, pageState, false, formValues);
             string popup = action.UrlAsPopUp ? "true" : "false";
-            string popUpTitle = action.TitlePopUp;
+            string popUpTitle = action.PopUpTitle;
 
             script.Append("FormView.doUrlRedirect('");
             script.Append(url);

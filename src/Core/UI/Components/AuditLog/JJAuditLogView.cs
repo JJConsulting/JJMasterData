@@ -276,7 +276,7 @@ public class JJAuditLogView : JJAsyncBaseView
             ToolTip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"FormView.viewLog('{Name}','{{{DataManager.Services.AuditLogService.DicId}}}');";
+        btnViewLog.OnClientClick = $"JJView.viewLog('{Name}','{{{DataManager.Services.AuditLogService.DicId}}}');";
 
         grid.GridActions.Add(btnViewLog);
 
@@ -289,7 +289,7 @@ public class JJAuditLogView : JJAsyncBaseView
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"FormView.viewLog('{Name}','');",
+            OnClientClick = $"JJView.viewLog('{Name}','');",
             IconClass = IconType.ArrowLeft.GetCssClass(),
             Text = "Back"
         };

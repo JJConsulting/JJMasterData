@@ -4,7 +4,6 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -13,12 +12,13 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Services;
+
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -216,7 +216,7 @@ public class JJDataPanel : JJAsyncBaseView
 
         if ("geturlaction".Equals(requestType))
         {
-            await SendUrlAction();
+            await SendUrlRedirect();
             return null;
         }
 
@@ -312,9 +312,8 @@ public class JJDataPanel : JJAsyncBaseView
     {
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
-
-    [Obsolete("External route is needed")]
-    internal async Task SendUrlAction()
+    
+    internal async Task SendUrlRedirect()
     {
         if (!Name.Equals(CurrentContext.Request["objname"]))
             return;
@@ -323,24 +322,10 @@ public class JJDataPanel : JJAsyncBaseView
         if (string.IsNullOrEmpty(encryptedActionMap))
             return;
 
-        var parms = EncryptionService.DecryptActionMap(encryptedActionMap);
+        var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
 
-        var action = FormElement.Fields[parms?.FieldName].Actions.Get(parms?.ActionName);
+        var model = await new UrlRedirectService(FormValuesService, ExpressionsService).GetUrlRedirectAsync(FormElement,actionMap, PageState);
         
-        var values = await GetFormValuesAsync();
-
-        if (action is UrlRedirectAction urlAction)
-        {
-            string parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, PageState, false, values);
-            var result = new Dictionary<string, dynamic>
-            {
-                { "UrlAsPopUp", urlAction.UrlAsPopUp },
-                { "TitlePopUp", urlAction.TitlePopUp },
-                { "UrlRedirect", parsedUrl }
-            };
-            
-            CurrentContext.Response.SendResponseObsolete(JsonConvert.SerializeObject(result), "application/json");
-        }
+        CurrentContext.Response.SendResponse(model.ToJson(), "application/json");
     }
-
 }

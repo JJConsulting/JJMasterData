@@ -1,4 +1,4 @@
-﻿class FormView {
+﻿class JJView {
     private static postFormValues(objid, enableAjax, loadform) {
         if (enableAjax) {
             const frm = $("form");
@@ -229,7 +229,7 @@
         $("form:first").trigger("submit");
     }
 
-    static redirectFormUrl(objid, criptid, confirmMessage) {
+    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
             if (!result) {
@@ -240,18 +240,18 @@
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&t=geturlaction&objname=" + objid;
+            surl += "&t=geturlaction&objname=" + componentName;
         else
-            surl += "?t=geturlaction&objname=" + objid;
+            surl += "?t=geturlaction&objname=" + componentName;
 
         $.ajax({
             async: true,
             type: "POST",
             url: surl,
-            data: frm.serialize() + '&criptid=' + criptid,
+            data: frm.serialize() + '&criptid=' + encryptedActionMap,
             success: function (data) {
                 if (data.UrlAsPopUp) {
-                    popup.show(data.TitlePopUp, data.UrlRedirect);
+                    popup.show(data.PopUpTitle, data.UrlRedirect);
                 } else {
                     window.location.href = data.UrlRedirect;
                 }

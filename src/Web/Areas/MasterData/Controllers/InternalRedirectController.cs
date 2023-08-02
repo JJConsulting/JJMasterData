@@ -40,7 +40,7 @@ public class InternalRedirectController : MasterDataController
         {
             case RelationshipViewType.List:
             {
-                    var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
+                    var form = await ComponentFactory.JJView.CreateAsync(_dictionaryName);
                     form.RelationValues = _relationValues;
 
                     if (userId != null)

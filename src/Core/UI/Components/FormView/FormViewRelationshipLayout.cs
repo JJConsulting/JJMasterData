@@ -139,7 +139,7 @@ internal class FormViewRelationshipLayout
                 }
             case RelationshipViewType.List:
             {
-                    var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
+                    var childFormView = ParentFormView.ComponentFactory.JJView.Create(childElement);
                     childFormView.UserValues = ParentFormView.UserValues;
                     childFormView.IsExternalRoute = true;
                     childFormView.RelationValues = mappedForeignKeys;

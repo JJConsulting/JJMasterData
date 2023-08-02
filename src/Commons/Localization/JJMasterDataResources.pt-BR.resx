@@ -1301,7 +1301,7 @@
     <value>FormElementField não pode ser nulo</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="FormView" xml:space="preserve">
+  <data name="JJView" xml:space="preserve">
     <value>Visualização do formulário</value>
     <comment>JJMasterDataWeb</comment>
   </data>
