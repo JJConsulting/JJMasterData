@@ -59,7 +59,7 @@ public class JJFormView : JJAsyncBaseView
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
     private JJAuditLogView _auditLogView;
-    private JJDataImp _dataImp;
+    private JJDataImportation _dataImportation;
     private string _userId;
 
     internal JJAuditLogView AuditLogView =>
@@ -83,20 +83,20 @@ public class JJFormView : JJAsyncBaseView
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    public JJDataImp DataImp
+    public JJDataImportation DataImportation
     {
         get
         {
-            if (_dataImp != null)
-                return _dataImp;
+            if (_dataImportation != null)
+                return _dataImportation;
 
-            _dataImp = _gridView.DataImp;
-            _dataImp.IsExternalRoute = IsExternalRoute;
-            _dataImp.OnAfterDelete += OnAfterDelete;
-            _dataImp.OnAfterInsert += OnAfterInsert;
-            _dataImp.OnAfterUpdate += OnAfterUpdate;
+            _dataImportation = _gridView.DataImportation;
+            _dataImportation.IsExternalRoute = IsExternalRoute;
+            _dataImportation.OnAfterDelete += OnAfterDelete;
+            _dataImportation.OnAfterInsert += OnAfterInsert;
+            _dataImportation.OnAfterUpdate += OnAfterUpdate;
 
-            return _dataImp;
+            return _dataImportation;
         }
     }
 
@@ -301,15 +301,15 @@ public class JJFormView : JJAsyncBaseView
         if ("reloadpainel".Equals(requestType))
         {
             var panelHtml = await GetReloadPanelHtmlAsync();
-#pragma warning disable CS0618
+
             CurrentContext.Response.SendResponse(panelHtml);
-#pragma warning restore CS0618
+
             return null;
         }
 
         if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
         {
-            if (!DataImp.Upload.Name.Equals(objName))
+            if (!DataImportation.Upload.Name.Equals(objName))
                 return null;
             
             await GetHtmlDataImp();
@@ -324,7 +324,7 @@ public class JJFormView : JJAsyncBaseView
 
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(htmlForm.ToString());
+            CurrentContext.Response.SendResponseObsolete(htmlForm.ToString());
             return null;
         }
 
@@ -800,7 +800,7 @@ public class JJFormView : JJAsyncBaseView
         sScriptImport.Append($"$('#current_pagestate_{Name}').val('{(int)PageState.List}'); ");
         sScriptImport.AppendLine("$('form:first').submit(); ");
 
-        var dataImpView = DataImp;
+        var dataImpView = DataImportation;
         dataImpView.UserValues = UserValues;
         dataImpView.BackButton.OnClientClick = sScriptImport.ToString();
         dataImpView.ProcessOptions = action.ProcessOptions;

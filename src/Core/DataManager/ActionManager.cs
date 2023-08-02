@@ -84,7 +84,7 @@ internal class ActionManager
 
 
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = urlHelper.GetUrl(null, "InternalRedirect", new { parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEncode(@params.ToString()), Area = "MasterData" });
+        string url = urlHelper.GetUrl(null, "InternalRedirect", new { parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEscape(@params.ToString()), Area = "MasterData" });
 
         var script = new StringBuilder();
         script.Append("jjview.doUrlRedirect('");
@@ -203,7 +203,7 @@ internal class ActionManager
     private static string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
     {
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-        string encryptedDictionaryName = encryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        string encryptedDictionaryName = encryptionService.EncryptStringWithUrlEscape(dictionaryName);
 
 
         var pageState = action switch

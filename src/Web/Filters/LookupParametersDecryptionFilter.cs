@@ -21,7 +21,7 @@ public class LookupParametersDecryptionFilter : ActionFilterAttribute
         {
             if (context.HttpContext.Request.Query.TryGetValue("lookupParameters", out var encryptedParameters))
             {
-                var decryptedQueryString = _encryptionService.DecryptStringWithUrlDecode(encryptedParameters); 
+                var decryptedQueryString = _encryptionService.DecryptStringWithUrlUnescape(encryptedParameters); 
 
                 context.ActionArguments["lookupParameters"] = LookupParameters.FromQueryString(decryptedQueryString);
             }

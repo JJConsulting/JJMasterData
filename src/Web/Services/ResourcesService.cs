@@ -77,8 +77,8 @@ public class ResourcesService : BaseService
         formView.OnBeforeUpdate += ValidateEspecialChars;
         formView.OnAfterInsert += ClearCache;
         formView.OnAfterUpdate += ClearCache;
-        formView.DataImp.OnAfterProcess += ClearCache;
-        formView.DataImp.OnBeforeImport += ValidateEspecialChars;
+        formView.DataImportation.OnAfterProcess += ClearCache;
+        formView.DataImportation.OnBeforeImport += ValidateEspecialChars;
 
         return formView;
     }

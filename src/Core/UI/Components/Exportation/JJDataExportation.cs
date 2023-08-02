@@ -33,9 +33,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Exporta dados para um arquivo
 /// </summary>
-///
-///TODO: I think Exportation is better than Exp, exp can be experience, experiment, etc.
-public class JJDataExp : JJBaseProcess
+public class JJDataExportation : JJBaseProcess
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly JJMasterDataEncryptionService _encryptionService;
@@ -79,11 +77,11 @@ public class JJDataExp : JJBaseProcess
     #endregion
 
     #region "Constructors"
-    internal JJDataExp(
+    internal JJDataExportation(
         FormElement formElement,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFieldValuesService fieldValuesService,
+        IFieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTask backgroundTask, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
@@ -92,7 +90,7 @@ public class JJDataExp : JJBaseProcess
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
         JJMasterDataEncryptionService encryptionService) : 
-        base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;
@@ -106,12 +104,12 @@ public class JJDataExp : JJBaseProcess
 
     internal override HtmlBuilder RenderHtml()
     {
-        return IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder();
+        return RenderHtmlAsync().GetAwaiter().GetResult();
     }
 
-    protected override Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
-        return Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder());
+        return await Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder());
     }
 
     internal static JJIcon GetFileIcon(string ext)

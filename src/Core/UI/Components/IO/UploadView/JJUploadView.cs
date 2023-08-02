@@ -263,7 +263,7 @@ public class JJUploadView : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
-        string fileName = EncryptionService.DecryptStringWithUrlDecode(previewVideo);
+        string fileName = EncryptionService.DecryptStringWithUrlUnescape(previewVideo);
         var video = FormFileManager.GetFile(fileName).Content;
 
         string srcVideo = "data:video/mp4;base64," +
@@ -294,7 +294,7 @@ public class JJUploadView : JJBaseView
 
     private HtmlBuilder GetHtmlPreviewImage(string previewImage)
     {
-        string fileName = EncryptionService.DecryptStringWithUrlDecode(previewImage);
+        string fileName = EncryptionService.DecryptStringWithUrlUnescape(previewImage);
         var file = FormFileManager.GetFile(fileName);
 
         if (file == null)
@@ -549,7 +549,7 @@ public class JJUploadView : JJBaseView
             url += "?";
 
         url += "previewImage=";
-        url += EncryptionService.EncryptStringWithUrlEncode(fileName);
+        url += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
         .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
@@ -575,7 +575,7 @@ public class JJUploadView : JJBaseView
             videoUrl += "?";
 
         videoUrl += "previewVideo=";
-        videoUrl += EncryptionService.EncryptStringWithUrlEncode(fileName);
+        videoUrl += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
          .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")

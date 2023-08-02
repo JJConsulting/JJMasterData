@@ -19,7 +19,7 @@ public class DataExportationScripts
         if (!isExternalRoute) 
             return $"JJDataExp.doExport('{componentName}');";
 
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
         var startExportationUrl = UrlHelper.GetUrl("StartExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
         
@@ -33,7 +33,7 @@ public class DataExportationScripts
         if (!isExternalRoute) 
             return $"JJDataExp.stopExportation('{componentName}');";
 
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
         var stopExportationUrl = UrlHelper.GetUrl("StopExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
         
@@ -46,7 +46,7 @@ public class DataExportationScripts
         if (!isExternalRoute) 
             return $"JJDataExp.openExportUI('{componentName}');";
         
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(dictionaryName);
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
         var url = UrlHelper.GetUrl("Settings","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
         

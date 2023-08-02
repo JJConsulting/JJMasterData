@@ -18,7 +18,7 @@ public class FormElementDecryptionFilter : ActionFilterAttribute
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var encryptedDictionaryName = context.RouteData.Values["dictionaryName"];
-        var dictionaryName = _encryptionService.DecryptStringWithUrlDecode(encryptedDictionaryName?.ToString());
+        var dictionaryName = _encryptionService.DecryptStringWithUrlUnescape(encryptedDictionaryName?.ToString());
         if (dictionaryName != null)
         {
             context.ActionArguments["formElement"] = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);

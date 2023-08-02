@@ -141,7 +141,7 @@ public class FormValuesService : IFormValuesService
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 
-        string pkValues = EncryptionService.DecryptStringWithUrlDecode(encryptedPkValues);
+        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues);
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
         
         return await EntityRepository.GetDictionaryAsync(element, filters);

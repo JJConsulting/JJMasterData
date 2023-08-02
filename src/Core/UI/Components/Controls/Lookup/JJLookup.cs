@@ -177,7 +177,7 @@ public class JJLookup : JJAsyncBaseControl
     {
         var dto = LookupService.GetLookupUrlDto(DataItem,Name,PageState,FormValues);
 
-        CurrentContext.Response.SendResponse(dto.ToJson(), "application/json");
+        CurrentContext.Response.SendResponseObsolete(dto.ToJson(), "application/json");
     }
 
 
@@ -196,7 +196,7 @@ public class JJLookup : JJAsyncBaseControl
             Logger.LogError(ex, ex.Message);
         }
 
-        CurrentContext.Response.SendResponse(dto?.ToJson(), "application/json");
+        CurrentContext.Response.SendResponseObsolete(dto?.ToJson(), "application/json");
     }
 
     /// <summary>

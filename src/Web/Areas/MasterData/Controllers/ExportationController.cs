@@ -11,9 +11,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 public class ExportationController : MasterDataController
 {
     private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
-    private IFormElementComponentFactory<JJDataExp>  DataExportationFactory { get; }
+    private IFormElementComponentFactory<JJDataExportation>  DataExportationFactory { get; }
 
-    public ExportationController(IFormElementComponentFactory<JJGridView> gridViewFactory,IFormElementComponentFactory<JJDataExp> dataExportationFactory)
+    public ExportationController(IFormElementComponentFactory<JJGridView> gridViewFactory,IFormElementComponentFactory<JJDataExportation> dataExportationFactory)
     {
         GridViewFactory = gridViewFactory;
         DataExportationFactory = dataExportationFactory;

@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataExportationSettings
 {
-    private JJDataExp DataExportation { get; }
+    private JJDataExportation DataExportation { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
@@ -21,7 +21,7 @@ internal class DataExportationSettings
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
 
-    public DataExportationSettings(JJDataExp dataExportation)
+    public DataExportationSettings(JJDataExportation dataExportation)
     {
         DataExportation = dataExportation;
         StringLocalizer = dataExportation.StringLocalizer;
@@ -341,7 +341,7 @@ internal class DataExportationSettings
             if (FileIO.IsFileLocked(file))
                 continue;
 
-            var icon = JJDataExp.GetFileIcon(file.Extension);
+            var icon = JJDataExportation.GetFileIcon(file.Extension);
             string url = DataExportation.GetDownloadUrl(file.FullName);
 
             var div = new HtmlBuilder(HtmlTag.Div);

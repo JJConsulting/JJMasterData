@@ -18,10 +18,13 @@ public class JJResponse : IHttpResponse
         HttpContext = httpContextAccessor.HttpContext;
     }
 #endif
-    
-
-    /// <inheritdoc cref="SendResponse"/>
     public void SendResponse(string data, string contentType = null)
+    {
+        SendResponseObsolete(data, contentType);
+    }
+
+    /// <inheritdoc cref="SendResponseObsolete"/>
+    public void SendResponseObsolete(string data, string contentType = null)
     {
         System.Web.HttpContext.Current!.Response.ClearContent();
 #if NETFRAMEWORK

@@ -85,43 +85,43 @@ public class JJGridView : JJAsyncBaseView
     private List<BasicAction> _toolBarActions;
     private List<BasicAction> _gridActions;
     private ActionMap _currentActionMap;
-    private JJDataImp _dataImp;
-    private JJDataExp _dataExp;
+    private JJDataImportation _dataImportation;
+    private JJDataExportation _dataExportation;
     private GridScripts _gridScripts;
 
-    internal JJDataImp DataImp
+    internal JJDataImportation DataImportation
     {
         get
         {
-            if (_dataImp != null)
-                return _dataImp;
+            if (_dataImportation != null)
+                return _dataImportation;
 
-            _dataImp = ComponentFactory.DataImportation.Create(FormElement);
-            _dataImp.UserValues = UserValues;
-            _dataImp.ProcessOptions = ImportAction.ProcessOptions;
-            _dataImp.Name = Name + "_dataimp";
+            _dataImportation = ComponentFactory.DataImportation.Create(FormElement);
+            _dataImportation.UserValues = UserValues;
+            _dataImportation.ProcessOptions = ImportAction.ProcessOptions;
+            _dataImportation.Name = Name + "_dataimp";
 
-            return _dataImp;
+            return _dataImportation;
         }
     }
 
-    public JJDataExp DataExportation
+    public JJDataExportation DataExportation
     {
         get
         {
-            if (_dataExp != null)
-                return _dataExp;
+            if (_dataExportation != null)
+                return _dataExportation;
 
-            _dataExp = ComponentFactory.DataExportation.Create(FormElement);
-            _dataExp.Name = Name;
-            _dataExp.IsExternalRoute = IsExternalRoute;
-            _dataExp.ExportOptions = CurrentExportConfig;
-            _dataExp.ShowBorder = CurrentSettings.ShowBorder;
-            _dataExp.ShowRowStriped = CurrentSettings.ShowRowStriped;
-            _dataExp.UserValues = UserValues;
-            _dataExp.ProcessOptions = ExportAction.ProcessOptions;
+            _dataExportation = ComponentFactory.DataExportation.Create(FormElement);
+            _dataExportation.Name = Name;
+            _dataExportation.IsExternalRoute = IsExternalRoute;
+            _dataExportation.ExportOptions = CurrentExportConfig;
+            _dataExportation.ShowBorder = CurrentSettings.ShowBorder;
+            _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
+            _dataExportation.UserValues = UserValues;
+            _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
 
-            return _dataExp;
+            return _dataExportation;
         }
     }
 
@@ -678,7 +678,7 @@ public class JJGridView : JJAsyncBaseView
         string objName = CurrentContext.Request.QueryString("objname");
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponse(html.ToString());
+            CurrentContext.Response.SendResponseObsolete(html.ToString());
             return true;
         }
 
@@ -715,9 +715,9 @@ public class JJGridView : JJAsyncBaseView
         if ("selectall".Equals(requestType))
         {
             string selectedRows = await GetEncryptedSelectedRowsAsync();
-#pragma warning disable CS0618
+
             CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(new { selectedRows }));
-#pragma warning restore CS0618
+
             return true;
         }
 
@@ -741,7 +741,7 @@ public class JJGridView : JJAsyncBaseView
                     responseHtml += td.ToString();
                 }
 
-                CurrentContext.Response.SendResponse(responseHtml);
+                CurrentContext.Response.SendResponseObsolete(responseHtml);
             }
 
             return true;
@@ -1074,7 +1074,7 @@ public class JJGridView : JJAsyncBaseView
         if (string.IsNullOrEmpty(currentRow))
             return values;
 
-        var decriptId = EncryptionService.DecryptStringWithUrlDecode(currentRow);
+        var decriptId = EncryptionService.DecryptStringWithUrlUnescape(currentRow);
         var @params = HttpUtility.ParseQueryString(decriptId);
 
         foreach (string key in @params)
@@ -1091,9 +1091,7 @@ public class JJGridView : JJAsyncBaseView
         switch (expressionType)
         {
             case "showoptions":
-#pragma warning disable CS0618
                 CurrentContext.Response.SendResponse(DataExportation.GetHtml());
-#pragma warning restore CS0618
                 break;
             case "export":
                 {
@@ -1115,34 +1113,34 @@ public class JJGridView : JJAsyncBaseView
                                 MessageTitle = "Error"
                             };
 
-#pragma warning disable CS0618
+
                             CurrentContext.Response.SendResponse(err.GetHtml());
-#pragma warning restore CS0618
+
                             return;
                         }
                     }
 
                     var html = new DataExportationLog(DataExportation).GetHtmlProcess();
 
-#pragma warning disable CS0618
+
                     CurrentContext.Response.SendResponse(html.ToString());
-#pragma warning restore CS0618
+
                     break;
                 }
             case "checkProgress":
                 {
                     var dto = DataExportation.GetCurrentProgress();
                     var json = JsonConvert.SerializeObject(dto);
-#pragma warning disable CS0618
+
                     CurrentContext.Response.SendResponse(json, "text/json");
-#pragma warning restore CS0618
+
                     break;
                 }
             case "stopProcess":
                 DataExportation.StopExportation();
-#pragma warning disable CS0618
+
                 CurrentContext.Response.SendResponse("{}", "text/json");
-#pragma warning restore CS0618
+
                 break;
         }
     }
@@ -1295,7 +1293,7 @@ public class JJGridView : JJAsyncBaseView
         foreach (string pk in pkList)
         {
             var values = new Dictionary<string, dynamic>();
-            string descriptval = EncryptionService.DecryptStringWithUrlDecode(pk);
+            string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
             string[] ids = descriptval.Split(';');
             for (int i = 0; i < pkFields.Count; i++)
             {
@@ -1327,7 +1325,7 @@ public class JJGridView : JJAsyncBaseView
                 selectedKeys.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append(EncryptionService.EncryptStringWithUrlEncode(values));
+            selectedKeys.Append(EncryptionService.EncryptStringWithUrlEscape(values));
         }
 
         return selectedKeys.ToString();

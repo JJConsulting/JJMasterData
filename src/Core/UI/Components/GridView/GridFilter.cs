@@ -70,7 +70,7 @@ internal class GridFilter
         var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
-            var filterJson = GridView.EncryptionService.DecryptStringWithUrlDecode(filters);
+            var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
             _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
             return _currentFilter;
         }
@@ -257,7 +257,7 @@ internal class GridFilter
 
         if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
         {
-            CurrentContext.Response.SendResponse(html.ToString());
+            CurrentContext.Response.SendResponseObsolete(html.ToString());
             return null;
         }
 
@@ -336,7 +336,7 @@ internal class GridFilter
         var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
-            var filterJson = GridView.EncryptionService.DecryptStringWithUrlDecode(filters);
+            var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
             values = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
         }
 

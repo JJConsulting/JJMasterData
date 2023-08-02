@@ -360,28 +360,28 @@ public class MasterApiService
 
         var newvalues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);
         var listFormValues = new Dictionary<string, FormValues>();
-        foreach (FormElementField f in dictionary.Fields)
+        foreach (var field in dictionary.Fields)
         {
             var formValues = new FormValues
             {
-                Enable = await ExpressionsService.GetBoolValueAsync(f.EnableExpression, f.Name, pageState, newvalues),
-                Visible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, f.Name, pageState, newvalues)
+                Enable = await ExpressionsService.GetBoolValueAsync(field.EnableExpression,  pageState, newvalues),
+                Visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, pageState, newvalues)
             };
 
-            if (newvalues != null && newvalues.TryGetValue(f.Name, out var newvalue))
+            if (newvalues != null && newvalues.TryGetValue(field.Name, out var newvalue))
                 formValues.Value = newvalue!;
 
-            if (!f.Name.ToLower().Equals(objname.ToLower()))
+            if (!field.Name.ToLower().Equals(objname.ToLower()))
             {
-                if (f.Component is FormComponent.ComboBox or FormComponent.Search)
+                if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = DataItemService
-                        .GetValues(f.DataItem, null, null, new(newvalues, null, pageState)).GetAwaiter().GetResult()
+                        .GetValues(field.DataItem, null, null, new(newvalues, null, pageState)).GetAwaiter().GetResult()
                         .ToList();
                 }
             }
 
-            listFormValues.Add(f.Name.ToLower(), formValues);
+            listFormValues.Add(field.Name.ToLower(), formValues);
         }
 
         return listFormValues;

@@ -283,7 +283,7 @@ internal class GridTableBody
 
         var checkBox = new JJCheckBox(GridView.CurrentContext);
         checkBox.Name = "jjchk_" + index;
-        checkBox.Value = GridView.EncryptionService.EncryptStringWithUrlEncode(pkValues);
+        checkBox.Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues);
         checkBox.Text = string.Empty;
 
         var selectedGridValues = GridView.GetSelectedGridValues();

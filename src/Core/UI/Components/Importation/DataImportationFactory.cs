@@ -15,23 +15,24 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
+internal class DataImportationFactory : IFormElementComponentFactory<JJDataImportation>
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-    private IFieldValuesService FieldValuesService { get; }
+    private IFieldsService FieldsService { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IFormService FormService { get; }
-    private IFieldVisibilityService FieldVisibilityService { get; }
     private IFormEventResolver FormEventResolver { get; }
     private IHttpContext HttpContext { get; }
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
     private  IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
@@ -39,42 +40,42 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImp>
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFieldValuesService fieldValuesService,
         IBackgroundTask backgroundTask,
         IFormService formService,
-        IFieldVisibilityService fieldVisibilityService,
+        IFieldsService fieldsService,
         IFormEventResolver formEventResolver,
         IHttpContext httpContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
         JJMasterDataUrlHelper urlHelper,
+        JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
-        FieldValuesService = fieldValuesService;
+        FieldsService = fieldsService;
         BackgroundTask = backgroundTask;
         FormService = formService;
-        FieldVisibilityService = fieldVisibilityService;
         FormEventResolver = formEventResolver;
         HttpContext = httpContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
         UrlHelper = urlHelper;
+        EncryptionService = encryptionService;
         LoggerFactory = loggerFactory;
         StringLocalizer = stringLocalizer;
     }
 
-    public JJDataImp Create(FormElement formElement)
+    public JJDataImportation Create(FormElement formElement)
     {
-        return new JJDataImp(formElement, EntityRepository, ExpressionsService, FieldValuesService, FormService,
-            FieldVisibilityService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,UrlHelper, LoggerFactory,
+        return new JJDataImportation(formElement, EntityRepository, ExpressionsService, FormService,
+            FieldsService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,UrlHelper,EncryptionService, LoggerFactory,
             StringLocalizer);
     }
 
-    public async Task<JJDataImp> CreateAsync(string elementName)
+    public async Task<JJDataImportation> CreateAsync(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));

@@ -28,8 +28,8 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
         services.AddTransient<IFormElementComponentFactory<JJFormView>, FormViewFactory>();
         services.AddTransient<IFormElementComponentFactory<JJGridView>, GridViewFactory>();
-        services.AddTransient<IFormElementComponentFactory<JJDataExp>, DataExportationFactory>();
-        services.AddTransient<IFormElementComponentFactory<JJDataImp>, DataImportationFactory>();
+        services.AddTransient<IFormElementComponentFactory<JJDataExportation>, DataExportationFactory>();
+        services.AddTransient<IFormElementComponentFactory<JJDataImportation>, DataImportationFactory>();
 
         services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
         services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();

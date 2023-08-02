@@ -209,7 +209,7 @@ public class JJDataPanel : JJAsyncBaseView
 
         if ("reloadpainel".Equals(requestType) && Name.Equals(pnlname))
         {
-            CurrentContext.Response.SendResponse(GetPanelHtml().ToString());
+            CurrentContext.Response.SendResponseObsolete(GetPanelHtml().ToString());
             return null;
         }
 
@@ -244,7 +244,7 @@ public class JJDataPanel : JJAsyncBaseView
     private string GetPkHiddenInput()
     {
         string pkval = DataHelper.ParsePkValues(FormElement, Values, '|');
-        return EncryptionService.EncryptStringWithUrlEncode(pkval);
+        return EncryptionService.EncryptStringWithUrlEscape(pkval);
     }
 
     private async Task<string> GetHtmlFormScript()
@@ -338,7 +338,7 @@ public class JJDataPanel : JJAsyncBaseView
                 { "UrlRedirect", parsedUrl }
             };
             
-            CurrentContext.Response.SendResponse(JsonConvert.SerializeObject(result), "application/json");
+            CurrentContext.Response.SendResponseObsolete(JsonConvert.SerializeObject(result), "application/json");
         }
     }
 

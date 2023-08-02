@@ -58,7 +58,7 @@ public abstract class JJBaseProcess : JJAsyncBaseView
     /// </summary>
     public FormElement FormElement { get; set; }
     
-    internal IFieldValuesService FieldValuesService { get; } 
+    internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }
     private ILogger<JJBaseProcess> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -67,14 +67,14 @@ public abstract class JJBaseProcess : JJAsyncBaseView
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFieldValuesService fieldValuesService,
+        IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
         ILogger<JJBaseProcess> logger,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
-        FieldValuesService = fieldValuesService;
+        FieldsService = fieldsService;
         BackgroundTask = backgroundTask;
         Logger = logger;
         StringLocalizer = stringLocalizer;
@@ -91,10 +91,10 @@ public abstract class JJBaseProcess : JJAsyncBaseView
 
         switch (this)
         {
-            case JJDataExp:
+            case JJDataExportation:
                 processKey.Append("Export/");
                 break;
-            case JJDataImp:
+            case JJDataImportation:
                 processKey.Append("Import/");
                 break;
         }

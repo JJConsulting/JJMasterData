@@ -102,9 +102,9 @@ public class JJAuditLogView : JJAsyncBaseView
             if ("ajax".Equals(ajax))
             {
                 var panel = await GetDetailsPanelAsync(viewId);
-#pragma warning disable CS0618
+
                 CurrentContext.Response.SendResponse(await panel.GetHtmlAsync());
-#pragma warning restore CS0618
+
                 return null;
             }
 
@@ -355,7 +355,7 @@ public class JJAuditLogView : JJAsyncBaseView
                     ? UrlHelper.GetUrl("GetDetailsPanel", "AuditLog",
                         new
                         {
-                            dictionaryName = EncryptionService.EncryptStringWithUrlEncode(FormElement.Name),
+                            dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name),
                             componentName = Name
                         })
                     : string.Empty;

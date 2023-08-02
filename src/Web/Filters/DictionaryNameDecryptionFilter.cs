@@ -19,7 +19,7 @@ public class DictionaryNameDecryptionFilter : ActionFilterAttribute
             return;
         try
         {
-            var decryptedValue = _encryptionService.DecryptStringWithUrlDecode(encryptedDictionaryName?.ToString());
+            var decryptedValue = _encryptionService.DecryptStringWithUrlUnescape(encryptedDictionaryName?.ToString());
             context.ActionArguments["dictionaryName"] = decryptedValue;
         }
         catch (Exception)

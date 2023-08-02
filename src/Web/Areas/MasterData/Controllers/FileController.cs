@@ -15,7 +15,7 @@ public class FileController : MasterDataController
     
     public IActionResult Download(string filePath)
     {
-        var descriptedPath = EncryptionService.DecryptStringWithUrlDecode(filePath);
+        var descriptedPath = EncryptionService.DecryptStringWithUrlUnescape(filePath);
         var file = System.IO.File.Open(descriptedPath, FileMode.Open);
         
         return File(file, "application/octet-stream", Path.GetFileName(descriptedPath));

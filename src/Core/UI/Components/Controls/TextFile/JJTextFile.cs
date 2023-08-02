@@ -144,7 +144,7 @@ public class JJTextFile : JJBaseControl
             parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
 
         var json = JsonConvert.SerializeObject(parms);
-        var values = EncryptionService.EncryptStringWithUrlEncode(json);
+        var values = EncryptionService.EncryptStringWithUrlEscape(json);
 
         var title = FormElementField.Label;
         title = title == null ? "Manage Files" : title.Replace('\'', '`').Replace('\"', ' ');
@@ -155,7 +155,7 @@ public class JJTextFile : JJBaseControl
 
         if (IsExternalRoute)
         {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(FormElement.Name);
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
             url = UrlHelper.GetUrl("GetUploadView", "TextFile",
                 new
                 {
@@ -175,7 +175,7 @@ public class JJTextFile : JJBaseControl
         if (string.IsNullOrEmpty(uploadViewParams))
             throw new ArgumentNullException(nameof(uploadViewParams));
 
-        var json = EncryptionService.DecryptStringWithUrlDecode(uploadViewParams);
+        var json = EncryptionService.DecryptStringWithUrlUnescape(uploadViewParams);
         var @params = JsonConvert.DeserializeObject<UploadViewParams>(json);
         if (@params == null)
             throw new JJMasterDataException("Invalid parameters when opening file upload");
@@ -346,7 +346,7 @@ public class JJTextFile : JJBaseControl
             url += JJFileDownloader.DownloadParameter;
 
         url += "=";
-        url += EncryptionService.EncryptStringWithUrlEncode(filePath);
+        url += EncryptionService.EncryptStringWithUrlEscape(filePath);
 
         return url;
     }

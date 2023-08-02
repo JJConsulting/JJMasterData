@@ -13,7 +13,7 @@ internal class DataExportationLog
     private readonly bool _isExternalRoute;
     private readonly string _dictionaryName;
 
-    public DataExportationLog(JJDataExp dataExportation)
+    public DataExportationLog(JJDataExportation dataExportation)
     {
         Scripts = dataExportation.Scripts;
         StringLocalizer = dataExportation.StringLocalizer;

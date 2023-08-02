@@ -25,7 +25,7 @@ public static class WriterFactory
         return JJService.Provider.GetService<ITextWriter>();
     }
 
-    public static BaseWriter GetInstance(JJDataExp exporter)
+    public static BaseWriter GetInstance(JJDataExportation exporter)
     {
         BaseWriter writer;
         switch (exporter.ExportOptions.FileExtension)
@@ -72,7 +72,7 @@ public static class WriterFactory
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExp exporter, BaseWriter writer)
+    private static void ConfigureWriter(JJDataExportation exporter, BaseWriter writer)
     {
         writer.FormElement = exporter.FormElement;
         writer.Configuration = exporter.ExportOptions;

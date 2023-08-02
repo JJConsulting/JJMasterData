@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -12,6 +13,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
@@ -23,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJDataImp : JJBaseProcess
+public class JJDataImportation : JJBaseProcess
 {
     #region "Events"
 
@@ -51,48 +53,47 @@ public class JJDataImp : JJBaseProcess
     public JJLinkButton LogButton => _logButton ??= GetLogButton();
 
     public JJUploadArea Upload => _upload ??= GetUploadArea();
-
-    
     
     public bool EnableHistoryLog { get; set; }
 
     /// <summary>
     /// Default: true (panel is open by default)
     /// </summary>
-    public bool ExpandedByDefault { get; set; }
-
-    internal IFieldVisibilityService FieldVisibilityService { get; }
+    public bool ExpandedByDefault { get; set; } = true;
+    
+    internal IFieldsService FieldsService { get; }
     
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
     internal IFormService FormService { get; }
     internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
 
     #endregion
 
     #region "Constructors"
-    public JJDataImp(
+    public JJDataImportation(
         FormElement formElement,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IFieldValuesService fieldValuesService,
         IFormService formService,
-        IFieldVisibilityService fieldVisibilityService,
+        IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
         IHttpContext currentContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
         JJMasterDataUrlHelper urlHelper,
+        JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldValuesService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
     {
-        FieldVisibilityService = fieldVisibilityService;
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
         UrlHelper = urlHelper;
+        EncryptionService = encryptionService;
         FormService = formService;
         FormElement = formElement;
         var importAction = formElement.Options.GridToolbarActions.ImportAction;
@@ -122,14 +123,14 @@ public class JJDataImp : JJBaseProcess
             {
                 var reporterProgress = GetCurrentProgress();
                 string json = JsonConvert.SerializeObject(reporterProgress);
-#pragma warning disable CS0618
+
                 CurrentContext.Response.SendResponse(json, "text/json");
-#pragma warning restore CS0618
+
                 break;
             }
             case "process_stop":
                 StopExportation();
-                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
+                CurrentContext.Response.SendResponseObsolete("{\"isProcessing\": \"false\"}", "text/json");
                 break;
             case "process_finished":
                 html = GetHtmlLogProcess();
@@ -180,8 +181,8 @@ public class JJDataImp : JJBaseProcess
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
-            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation"))
-            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation"))
+            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation", new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
+            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation",new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
             .AppendScript($"DataImportation.startProcess('{Upload.Name}'); ")
             .AppendHiddenInput("current_uploadaction")
             .Append(HtmlTag.Div, spin =>

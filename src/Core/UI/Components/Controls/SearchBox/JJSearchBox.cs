@@ -318,7 +318,7 @@ public class JJSearchBox : JJBaseControl
         var url = new StringBuilder();
         if (IsExternalRoute)
         {
-            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEncode(DictionaryName);
+            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(DictionaryName);
             url.Append(UrlHelper.GetUrl("GetItems","Search", new
             {
                 dictionaryName = dictionaryNameEncrypted, 
@@ -394,9 +394,9 @@ public class JJSearchBox : JJBaseControl
             return;
 
         string json = JsonConvert.SerializeObject(GetListBoxItems());
-#pragma warning disable CS0618
+
         CurrentContext.Response.SendResponse(json, "application/json");
-#pragma warning restore CS0618
+
     }
 
     public IEnumerable<DataItemResult> GetListBoxItems()

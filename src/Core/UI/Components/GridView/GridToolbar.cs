@@ -61,7 +61,7 @@ internal class GridToolbar
                     linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
                     linkButton.Spinner.Visible = true;
                     break;
-                case ImportAction when GridView.DataImp.IsRunning():
+                case ImportAction when GridView.DataImportation.IsRunning():
                     linkButton.Spinner.Visible = true;
                     break;
                 case FilterAction fAction:

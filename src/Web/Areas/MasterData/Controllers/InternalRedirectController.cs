@@ -133,7 +133,7 @@ public class InternalRedirectController : MasterDataController
         _dictionaryName = null;
         _relationshipType = RelationshipViewType.List;
         _relationValues = new Dictionary<string, dynamic>();
-        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlDecode(parameters));
+        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlUnescape(parameters));
         _dictionaryName = @params.Get("formname");
         foreach (string key in @params)
         {

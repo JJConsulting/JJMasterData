@@ -214,7 +214,7 @@ public class AccountService
     public string BuildToken(string? userId)
     {
         string token = $"{userId}|{ApiVersion}|{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-        return EncryptionService.EncryptStringWithUrlEncode(token);
+        return EncryptionService.EncryptStringWithUrlEscape(token);
     }
 
     public TokenInfo? GetTokenInfo(string? token)
@@ -225,7 +225,7 @@ public class AccountService
         TokenInfo? info = null;
         try
         {
-            string infoToken = EncryptionService.DecryptStringWithUrlDecode(token);
+            string infoToken = EncryptionService.DecryptStringWithUrlUnescape(token);
             if (infoToken != null)
             {
                 string[] parms = infoToken.Split('|');

@@ -13,11 +13,11 @@ public class ComponentFactory
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
         GetFactory<IFormElementComponentFactory<JJAuditLogView>>();
 
-    public IFormElementComponentFactory<JJDataExp> DataExportation =>
-        GetFactory<IFormElementComponentFactory<JJDataExp>>();
+    public IFormElementComponentFactory<JJDataExportation> DataExportation =>
+        GetFactory<IFormElementComponentFactory<JJDataExportation>>();
 
-    public IFormElementComponentFactory<JJDataImp> DataImportation =>
-        GetFactory<IFormElementComponentFactory<JJDataImp>>();
+    public IFormElementComponentFactory<JJDataImportation> DataImportation =>
+        GetFactory<IFormElementComponentFactory<JJDataImportation>>();
 
     public IFormElementComponentFactory<JJDataPanel> DataPanel => GetFactory<IFormElementComponentFactory<JJDataPanel>>();
     public IFormElementComponentFactory<JJFormView> FormView => GetFactory< IFormElementComponentFactory<JJFormView> >();

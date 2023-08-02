@@ -8,9 +8,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class ImportationController : MasterDataController
 {
-    private IFormElementComponentFactory<JJDataImp> Factory { get; }
+    private IFormElementComponentFactory<JJDataImportation> Factory { get; }
 
-    public ImportationController(IFormElementComponentFactory<JJDataImp> factory)
+    public ImportationController(IFormElementComponentFactory<JJDataImportation> factory)
     {
         Factory = factory;
     }

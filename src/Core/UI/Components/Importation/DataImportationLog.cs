@@ -15,11 +15,11 @@ internal class DataImportationLog
     internal DataImpReporter Reporter { get; private set; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IHttpContext CurrentContext { get; }
-    internal DataImportationLog(JJDataImp dataImp)
+    internal DataImportationLog(JJDataImportation dataImportation)
     {
-        StringLocalizer = dataImp.StringLocalizer;
-        CurrentContext = dataImp.CurrentContext;
-        Reporter = dataImp.GetCurrentReporter();
+        StringLocalizer = dataImportation.StringLocalizer;
+        CurrentContext = dataImportation.CurrentContext;
+        Reporter = dataImportation.GetCurrentReporter();
     }
 
     public HtmlBuilder GetHtmlLog()
@@ -53,7 +53,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblInsert")
              .WithAttributeIf(Reporter.Insert == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Inserted::"])
+             .AppendText(StringLocalizer["Inserted:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblInsertCount")
@@ -65,7 +65,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelSucess)
              .WithAttribute("id", "lblUpdate")
              .WithAttributeIf(Reporter.Update == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Updated::"])
+             .AppendText(StringLocalizer["Updated:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblUpdateCount")
@@ -77,7 +77,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelDefault)
              .WithAttribute("id", "lblDelete")
              .WithAttributeIf(Reporter.Delete == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Deleted::"])
+             .AppendText(StringLocalizer["Deleted:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblDeleteCount")
@@ -103,7 +103,7 @@ internal class DataImportationLog
             s.WithCssClass(BootstrapHelper.LabelDanger)
              .WithAttribute("id", "lblError")
              .WithAttributeIf(Reporter.Error == 0, "style", "display:none;")
-             .AppendText(StringLocalizer["Errors::"])
+             .AppendText(StringLocalizer["Errors:"])
              .Append(HtmlTag.Span, count =>
              {
                  count.WithAttribute("id", "lblErrorCount")

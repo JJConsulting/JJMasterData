@@ -134,7 +134,7 @@ public class JJFileDownloader : JJBaseView
 
     internal string GetDownloadUrl(string filePath)
     {
-        var encryptedFilePath = EncryptionService.EncryptStringWithUrlEncode(filePath);
+        var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(filePath);
 
         return UrlHelper.GetUrl("Download", "File", new {filePath = encryptedFilePath});
     }
@@ -165,7 +165,7 @@ public class JJFileDownloader : JJBaseView
         if (criptFilePath == null)
             return null;
 
-        string filePath = encryptionService.DecryptStringWithUrlDecode(criptFilePath);
+        string filePath = encryptionService.DecryptStringWithUrlUnescape(criptFilePath);
         if (filePath == null)
             throw new JJMasterDataException("Invalid file path or badly formatted URL");
 

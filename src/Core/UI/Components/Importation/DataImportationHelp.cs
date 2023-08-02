@@ -15,9 +15,9 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataImportationHelp
 {
-    public JJDataImp DataImportation { get; private set; }
+    public JJDataImportation DataImportation { get; private set; }
     public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; private set; }
-    internal DataImportationHelp(JJDataImp dataImportation)
+    internal DataImportationHelp(JJDataImportation dataImportation)
     {
         DataImportation = dataImportation;
         StringLocalizer = DataImportation.StringLocalizer;
@@ -249,7 +249,7 @@ internal class DataImportationHelp
 
     private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = await DataImportation.FieldValuesService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
+        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
         var expOptions = new FormStateData(DataImportation.UserValues, defaultValues, PageState.Import);
         //TODO: DataItemService is better
         var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null,null));
@@ -316,7 +316,7 @@ internal class DataImportationHelp
         var list = new List<FormElementField>();
         foreach (var field in DataImportation.FormElement.Fields)
         {
-            bool visible = await DataImportation.FieldVisibilityService.IsVisibleAsync(field, PageState.Import, null);
+            bool visible = await DataImportation.FieldsService.IsVisibleAsync(field, PageState.Import, null);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

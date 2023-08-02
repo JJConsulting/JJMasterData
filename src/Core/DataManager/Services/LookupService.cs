@@ -46,7 +46,7 @@ public class LookupService : ILookupService
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            EncryptionService.EncryptStringWithUrlEncode(lookupParameters.ToQueryString(ExpressionsService, pageState,
+            EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, pageState,
                 formValues));
 
         var dto = new LookupUrlDto(

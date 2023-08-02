@@ -74,7 +74,7 @@ public class GridScripts
         string name = gridView.Name;
         if (gridView.IsExternalRoute)
         {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEncode(gridView.FormElement.Name);
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(gridView.FormElement.Name);
             var url = UrlHelper.GetUrl("SelectAllRows","Grid", new {dictionaryName = encryptedDictionaryName});
             return $"GridView.selectAllRows('{name}', '{url}')";
         }

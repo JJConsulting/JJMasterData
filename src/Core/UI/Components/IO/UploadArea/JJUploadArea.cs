@@ -123,9 +123,7 @@ public class JJUploadArea : JJBaseView
                 UploadAreaService.OnFileUploaded += OnFileUploaded;
             
             var result = UploadAreaService.UploadFile("file",AllowedTypes);
-#pragma warning disable CS0618
             CurrentContext.Response.SendResponse(result.ToJson(), "application/json");
-#pragma warning restore CS0618
         }
 
         return GetFieldHtmlElement();

@@ -18,15 +18,14 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
+internal class DataExportationFactory : IFormElementComponentFactory<JJDataExportation>
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly JJMasterDataEncryptionService _encryptionService;
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-
-    private IFieldValuesService FieldValuesService { get; }
+    private IFieldsService FieldsService { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
@@ -38,7 +37,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IExpressionsService expressionsService,
-        IFieldValuesService fieldValuesService,
+        IFieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTask backgroundTask,
         IHttpContext httpContext,
@@ -54,7 +53,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
-        FieldValuesService = fieldValuesService;
+        FieldsService = fieldsService;
         Options = options;
         BackgroundTask = backgroundTask;
         HttpContext = httpContext;
@@ -63,15 +62,15 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExp>
         FileDownloaderFactory = fileDownloaderFactory;
     }
 
-    public async Task<JJDataExp> CreateAsync(string dictionaryName)
+    public async Task<JJDataExportation> CreateAsync(string dictionaryName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         return Create(formElement);
     }
 
-    public JJDataExp Create(FormElement formElement)
+    public JJDataExportation Create(FormElement formElement)
     {
-        return new JJDataExp(formElement, EntityRepository, ExpressionsService, FieldValuesService, 
+        return new JJDataExportation(formElement, EntityRepository, ExpressionsService, FieldsService, 
             Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 
             _urlHelper, _encryptionService);
     }
