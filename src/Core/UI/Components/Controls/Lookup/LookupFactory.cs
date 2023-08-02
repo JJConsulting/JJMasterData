@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -12,15 +13,21 @@ internal class LookupFactory : IControlFactory<JJLookup>
 {
     private IHttpContext HttpContext { get; }
     private ILookupService LookupService { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public LookupFactory(       
         IHttpContext httpContext,
         ILookupService lookupService,
+        JJMasterDataEncryptionService encryptionService,
+        JJMasterDataUrlHelper urlHelper,
         ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
         LookupService = lookupService;
+        EncryptionService = encryptionService;
+        UrlHelper = urlHelper;
         LoggerFactory = loggerFactory;
     }
 
@@ -29,6 +36,8 @@ internal class LookupFactory : IControlFactory<JJLookup>
         return new JJLookup(
             HttpContext,
             LookupService,
+            EncryptionService,
+            UrlHelper,
             LoggerFactory.CreateLogger<JJLookup>());
     }
 
