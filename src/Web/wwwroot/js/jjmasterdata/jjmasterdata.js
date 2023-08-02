@@ -302,19 +302,24 @@ class DataImportation {
             }, 3000);
         });
     }
-    static stopProcess(objname, stopStr) {
-        $("#divMsgProcess").html(stopStr);
+    static stopProcess(componentName, stopLabel) {
         showWaitOnPost = false;
-        const form = $("form");
-        let url = form.attr("action");
-        if (url.includes("?"))
-            url += "&t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
-        else
-            url += "?t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
-        $.ajax({
-            url: url,
-            dataType: "json",
-            cache: false
+        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url");
+        let url;
+        if (stopProcessUrl) {
+            url = stopProcessUrl;
+        }
+        else {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("t", "ajaxdataimp");
+            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
+            urlBuilder.addQueryParameter("objname", componentName);
+            url = urlBuilder.build();
+        }
+        fetch(url).then(response => response.json()).then(data => {
+            if (data.isProcessing === false) {
+                document.getElementById("divMsgProcess").innerHTML = stopLabel;
+            }
         });
     }
     static addPasteListener() {

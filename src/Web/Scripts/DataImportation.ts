@@ -151,23 +151,28 @@
         });
     }
 
-    static stopProcess(objname, stopStr) {
-        $("#divMsgProcess").html(stopStr);
+    static stopProcess(componentName, stopLabel) {
         showWaitOnPost = false;
 
-        const form = $("form");
+        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url")
 
-        let url: string = form.attr("action");
+        let url: string;
 
-        if (url.includes("?"))
-            url += "&t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
-        else
-            url += "?t=ajaxdataimp&current_uploadaction=process_stop&objname=" + objname;
+        if(stopProcessUrl){
+            url = stopProcessUrl
+        }else{
+            let urlBuilder = new UrlBuilder()
+            urlBuilder.addQueryParameter("t","ajaxdataimp")
+            urlBuilder.addQueryParameter("current_uploadaction","process_check")
+            urlBuilder.addQueryParameter("objname",componentName)
+            url = urlBuilder.build()
+        }
 
-        $.ajax({
-            url: url,
-            dataType: "json",
-            cache: false
+
+        fetch(url).then(response=>response.json()).then(data=>{
+            if(data.isProcessing === false){
+                document.getElementById("divMsgProcess").innerHTML = stopLabel;
+            }
         });
     }
 

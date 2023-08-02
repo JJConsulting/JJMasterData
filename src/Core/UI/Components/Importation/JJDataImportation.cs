@@ -130,7 +130,7 @@ public class JJDataImportation : JJBaseProcess
             }
             case "process_stop":
                 StopExportation();
-                CurrentContext.Response.SendResponseObsolete("{\"isProcessing\": \"false\"}", "text/json");
+                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
                 break;
             case "process_finished":
                 html = GetHtmlLogProcess();
