@@ -338,8 +338,8 @@ public class JJFormView : JJAsyncBaseView
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
 
-        string htmlPanel = GetDataPanelHtmlAsync(new(values, null, PageState), true).ToString();
-        return htmlPanel;
+        var htmlPanel = await GetDataPanelHtmlAsync(new(values, null, PageState), true);
+        return htmlPanel.ToString();
     }
 
     private async Task<HtmlBuilder> GetHtmlForm()

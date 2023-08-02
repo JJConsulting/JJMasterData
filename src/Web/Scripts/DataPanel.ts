@@ -1,4 +1,12 @@
 class DataPanel {
+    static ReloadAtSamePage(panelname, objid){
+        let url = new UrlBuilder()
+        url.addQueryParameter("pnlname",panelname)
+        url.addQueryParameter("objname",objid)
+
+        DataPanel.Reload(url.build(), panelname, objid)
+    }
+    
     static Reload(url, componentName, fieldName) {
         const form = document.querySelector("form");
         fetch(url, {

@@ -50,13 +50,13 @@ public class FormController : MasterDataController
         return Content(form.ToString());
     }
     
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [ServiceFilter<FormElementDecryptionFilter>]
     [HttpPost]
     public async Task<IActionResult> ReloadPanel(
-        string dictionaryName,
+        FormElement formElement,
         string componentName)
     {
-        var formView = await _formViewFactory.CreateAsync(dictionaryName);
+        var formView = _formViewFactory.Create(formElement);
         formView.Name = componentName;
         formView.IsExternalRoute = true;
 

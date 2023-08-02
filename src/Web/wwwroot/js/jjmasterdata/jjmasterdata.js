@@ -349,6 +349,12 @@ DataImportation.deleteCount = 0;
 DataImportation.ignoreCount = 0;
 DataImportation.errorCount = 0;
 class DataPanel {
+    static ReloadAtSamePage(panelname, objid) {
+        let url = new UrlBuilder();
+        url.addQueryParameter("pnlname", panelname);
+        url.addQueryParameter("objname", objid);
+        DataPanel.Reload(url.build(), panelname, objid);
+    }
     static Reload(url, componentName, fieldName) {
         const form = document.querySelector("form");
         fetch(url, {
@@ -816,14 +822,6 @@ class JJDataExp {
         });
     }
 }
-class JJDataPanel {
-    static doReload(panelname, objid) {
-        let url = new UrlBuilder();
-        url.addQueryParameter("pnlname", panelname);
-        url.addQueryParameter("objname", objid);
-        DataPanel.Reload(url.build(), panelname, objid);
-    }
-}
 function applyDecimalPlaces() {
     let decimalPlaces = $(this).attr("jjdecimalplaces");
     if (decimalPlaces == null)
@@ -1132,7 +1130,7 @@ class JJLookup {
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
-                            JJDataPanel.doReload(panelName, lookupId);
+                            DataPanel.ReloadAtSamePage(panelName, lookupId);
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {

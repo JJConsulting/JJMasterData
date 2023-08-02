@@ -7,13 +7,13 @@ using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class DataPanelScript
+internal class DataPanelExpressionScripts
 {   
     private JJDataPanel DataPanel { get; set; }
 
     private FormElement FormElement => DataPanel.FormElement;
 
-    public DataPanelScript(JJDataPanel dataPanel)
+    public DataPanelExpressionScripts(JJDataPanel dataPanel)
     {
         DataPanel = dataPanel;
     }

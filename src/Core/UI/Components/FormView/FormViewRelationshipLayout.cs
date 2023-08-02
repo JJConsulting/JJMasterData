@@ -111,7 +111,7 @@ internal class FormViewRelationshipLayout
             return await ParentFormView.GetParentPanelHtml(parentPanel);
         }
 
-        var childElement = ParentFormView.DataDictionaryRepository.GetMetadata(relationship.ElementRelationship!.ChildElement);
+        var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
 
         var filter = new Dictionary<string, dynamic>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))
@@ -139,16 +139,16 @@ internal class FormViewRelationshipLayout
                 }
             case RelationshipViewType.List:
             {
-                    var childGrid = ParentFormView.ComponentFactory.FormView.Create(childElement);
-                    childGrid.UserValues = ParentFormView.UserValues;
-                    childGrid.IsExternalRoute = true;
-                    childGrid.RelationValues = mappedForeignKeys;
-                    childGrid.GridView.Filter.ApplyCurrentFilter(filter);
-                    childGrid.SetOptions(childElement.Options);
+                    var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
+                    childFormView.UserValues = ParentFormView.UserValues;
+                    childFormView.IsExternalRoute = true;
+                    childFormView.RelationValues = mappedForeignKeys;
+                    await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
+                    childFormView.SetOptions(childElement.Options);
 
-                    childGrid.GridView.ShowTitle = false;
+                    childFormView.GridView.ShowTitle = false;
 
-                    var htmlBuilder = childGrid.RenderHtml();
+                    var htmlBuilder = childFormView.RenderHtml();
                     if (htmlBuilder != null)
                     {
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
@@ -162,7 +162,7 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private IDictionary<string, dynamic?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, dynamic> filters)
+    private static IDictionary<string, dynamic?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, dynamic> filters)
     {
         var foreignKeys = new Dictionary<string, dynamic?>();
         var relationships = formElement.Relationships.GetElementRelationships();

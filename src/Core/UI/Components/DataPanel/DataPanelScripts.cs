@@ -1,4 +1,5 @@
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
@@ -15,9 +16,11 @@ public class DataPanelScripts
 
     public string GetReloadPanelScript(string dictionaryName, string fieldName, string componentName, bool isExternalRoute)
     {
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
+        
         if(!isExternalRoute)
-            return $"JJDataPanel.doReload('{componentName}','{fieldName}');";
+            return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";
 
-        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", new {dictionaryName, componentName})}','{componentName}','{fieldName}')";
+        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", new {dictionaryName = encryptedDictionaryName, componentName})}','{componentName}','{fieldName}')";
     }
 }

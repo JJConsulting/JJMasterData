@@ -261,7 +261,7 @@ public class JJDataPanel : JJAsyncBaseView
         var listField = FormElement.Fields.ToList();
         if (!listField.Exists(x => x.AutoPostBack))
         {
-            var dataPanelScript = new DataPanelScript(this);
+            var dataPanelScript = new DataPanelExpressionScripts(this);
             script.AppendLine(await dataPanelScript.GetHtmlFormScript());
         }
 

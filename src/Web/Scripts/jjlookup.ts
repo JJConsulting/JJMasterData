@@ -85,7 +85,7 @@
                             JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass)
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
-                            JJDataPanel.doReload(panelName,lookupId)
+                            DataPanel.ReloadAtSamePage(panelName,lookupId)
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
