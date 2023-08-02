@@ -70,7 +70,7 @@
             .then(response => response.text())
             .then(data => {
                 document.querySelector<HTMLInputElement>("#jjgridview_" + componentName).innerHTML = data;
-                LoadJJMasterData();
+                loadJJMasterData();
                 document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "";
                 SpinnerOverlay.hide();
             })

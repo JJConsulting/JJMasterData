@@ -20,7 +20,7 @@ class UploadView{
         }
         else{
             popup.showHtmlFromUrl(title, url,null, 1).then(_=>{
-                LoadJJMasterData()
+                loadJJMasterData()
             })
         }
 

@@ -22,7 +22,7 @@
 
                     $("#jjgridview_" + objid).html(data);
                     if (loadform) {
-                        LoadJJMasterData();
+                        loadJJMasterData();
                     }
                     $("#current_filteraction_" + objid).val("");
                 },

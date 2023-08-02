@@ -1,4 +1,4 @@
-﻿function LoadJJMasterData(event?, prefixSelector?) {
+﻿function loadJJMasterData(event?, prefixSelector?) {
 
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
