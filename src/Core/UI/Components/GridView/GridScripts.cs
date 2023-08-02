@@ -28,7 +28,7 @@ public class GridScripts
         }
 
         string ajax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doSorting('{gridView.Name}','{ajax}','{fieldName}')";
+        return $"FormView.sortFormValues('{gridView.Name}','{ajax}','{fieldName}')";
     }
 
     public string GetPaginationScript(JJGridView gridView, int page)
@@ -41,7 +41,7 @@ public class GridScripts
         }
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doPagination('{name}', {enableAjax}, {page})";
+        return $"FormView.paginateGrid('{name}', {enableAjax}, {page})";
     }
 
     public string GetRefreshScript(JJGridView gridView)
@@ -54,7 +54,7 @@ public class GridScripts
         }
 
         string enableAjax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doRefresh('{name}', {enableAjax})";
+        return $"FormView.refresh('{name}', {enableAjax})";
     }
 
     public string GetFilterScript(JJGridView gridView)
@@ -66,7 +66,7 @@ public class GridScripts
             return $"GridView.filter('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doFilter('{name}','{enableAjax}')";
+        return $"FormView.filter('{name}','{enableAjax}')";
     }
     
     public string GetSelectAllScript(JJGridView gridView)
@@ -79,7 +79,7 @@ public class GridScripts
             return $"GridView.selectAllRows('{name}', '{url}')";
         }
         string enableAjax = gridView.EnableAjax ? "true" : "false";
-        return $"jjview.doSelectAll('{name}','{enableAjax}')";
+        return $"FormView.selectAll('{name}','{enableAjax}')";
     }
 
 }

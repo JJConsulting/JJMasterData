@@ -61,7 +61,7 @@
 
         urlBuilder.addQueryParameter("componentName", componentName)
 
-        messageWait.show()
+        SpinnerOverlay.show()
         
         fetch(urlBuilder.build(), {
             method: form.method,
@@ -70,9 +70,9 @@
             .then(response => response.text())
             .then(data => {
                 document.querySelector<HTMLInputElement>("#jjgridview_" + componentName).innerHTML = data;
-                jjloadform();
+                LoadJJMasterData();
                 document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "";
-                messageWait.hide();
+                SpinnerOverlay.hide();
             })
             .catch(error => {
                 console.log(error);

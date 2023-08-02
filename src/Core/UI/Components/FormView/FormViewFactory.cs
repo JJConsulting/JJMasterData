@@ -81,7 +81,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             AddFormEvent(form, formEvent);
         }
 
-        form.Name = "jjview" + formElement.Name.ToLower();
+        form.Name = "FormView" + formElement.Name.ToLower();
 
         var dataContext = new DataContext(CurrentContext, DataContextSource.Form,
             DataHelper.GetCurrentUserId(CurrentContext, null));

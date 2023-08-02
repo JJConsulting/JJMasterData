@@ -11,7 +11,7 @@ class UploadView{
             url = urlBuilder.build();
         }
         
-        const popup = new Popup();
+        const popup = new Modal();
         popup.modalId =componentName + "-popup"
         popup.modalTitleId = componentName + "-popup-title"
 
@@ -20,7 +20,7 @@ class UploadView{
         }
         else{
             popup.showHtmlFromUrl(title, url,null, 1).then(_=>{
-                jjloadform()
+                LoadJJMasterData()
             })
         }
 

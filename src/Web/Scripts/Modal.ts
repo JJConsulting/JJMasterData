@@ -1,4 +1,4 @@
-﻿class Popup {
+﻿class Modal {
     modalId: string = "popup-modal";
     modalTitleId: string = "popup-modal-title";
 
@@ -16,9 +16,9 @@
         }
 
         if(isIframe){
-            messageWait.show();
+            SpinnerOverlay.show();
             $("iframe").on("load", function () {
-                messageWait.hide();
+                SpinnerOverlay.hide();
             });
         }
     }
@@ -151,12 +151,12 @@
     }
 
     async showHtmlFromUrl(title: string, url: RequestInfo | URL, options: RequestInit = null, size = 1) {
-        messageWait.show();
+        SpinnerOverlay.show();
         await fetch(url,options)
             .then(response => response.text())
             .then(html => {
                 this.showHtml(title, html, size)
-                messageWait.hide();
+                SpinnerOverlay.hide();
             })
             .catch(error => {
                 console.error('Error fetching HTML from URL:', error);
@@ -173,7 +173,7 @@
 }
 
 var popup = function () {
-    if (!(this instanceof Popup)) {
-        return new Popup();
+    if (!(this instanceof Modal)) {
+        return new Modal();
     }
 }()

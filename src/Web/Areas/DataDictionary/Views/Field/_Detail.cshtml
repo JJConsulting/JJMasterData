@@ -20,13 +20,13 @@
 
 <script lang="javascript" type="text/javascript">
     function save() {
-        messageWait.show();
+        SpinnerOverlay.show();
         const url = "@Url.Action("Save", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
     function copy() {
-        messageWait.show();
+        SpinnerOverlay.show();
         const url = "@Url.Action("Copy", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }

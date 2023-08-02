@@ -30,13 +30,13 @@
 
 
     function addRelation() {
-        messageWait.show();
+        SpinnerOverlay.show();
         var url = "@Html.Raw(Url.Action("AddRelation", "Actions", new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }))";
         $("form:first").attr("action", url).submit();
     }
 
     function removeRelation(relationIndex) {
-        messageWait.show();
+        SpinnerOverlay.show();
         $("<input>").attr({
             type: "hidden",
             id: "relationIndex",

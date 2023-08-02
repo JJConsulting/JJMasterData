@@ -220,7 +220,7 @@ internal class GridFilter
             Text = "Clear Filter",
             IconClass = "fa fa-trash",
             ShowAsButton = true,
-            OnClientClick = $"jjview.doClearFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
+            OnClientClick = $"FormView.clearFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
         };
 
         
@@ -290,7 +290,7 @@ internal class GridFilter
         {
             Attributes =
             {
-                { "onkeyup", $"jjview.doSearch('{GridView.Name}', this);" }
+                { "onkeyup", $"FormView.searchOnDOM('{GridView.Name}', this);" }
             },
             ToolTip = StringLocalizer["Filter by any field visible in the list"],
             PlaceHolder = StringLocalizer["Filter"],

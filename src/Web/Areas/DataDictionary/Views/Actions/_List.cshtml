@@ -16,7 +16,7 @@
     sortableClass = "jjsortable";
     <script language="javascript" type="text/javascript">
         $(document).ready(function () {
-            jjdictionary.doActionSortable('@Model.Context.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
+            DataDictionaryUtils.sortAction('@Model.Context.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
         });
     </script>
 }
@@ -70,7 +70,7 @@
                                        data-size="small"
                                        data-on="On"
                                        data-off="Off"
-                                       onchange="jjdictionary.setDisableAction($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                       onchange="DataDictionaryUtils.setDisableAction($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
                             }
                         </div>
                     </div>
@@ -113,7 +113,7 @@
     public string GetCmdDelete(BasicAction action)
     {
         var script = new StringBuilder();
-        script.Append("jjdictionary.deleteAction('");
+        script.Append("DataDictionaryUtils.deleteAction('");
         script.Append(action.Name);
         script.Append("', '");
         script.Append(Url.Action("Remove", "Actions",

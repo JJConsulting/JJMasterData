@@ -37,11 +37,11 @@
             
             $(this).blur(function () {
                 if ($(this).val() == "") {
-                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass)
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.searchClass)
                     $(jjSearchBoxHiddenSelector).val("");
                 }
                 else if($(jjSearchBoxHiddenSelector).val() == ""){
-                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass)
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass)
                 }
             });
             
@@ -53,7 +53,7 @@
                     triggerLength: triggerlength,
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
-                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "")
+                        FeedbackIcon.setIcon(jjSearchBoxSelector, "")
                         
                         return frm.serializeArray();
                     },
@@ -61,7 +61,7 @@
                 onSelect: function (item) {
                     $(jjSearchBoxHiddenSelector).val(item.value);
                     if (item.value != "") {
-                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass)
+                        FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass)
                     }
                 },
                 displayField: "name",

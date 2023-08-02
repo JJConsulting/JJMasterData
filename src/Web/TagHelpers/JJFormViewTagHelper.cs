@@ -40,7 +40,7 @@ public class JJFormViewTagHelper : TagHelper
             throw new InvalidOperationException("Please set ElementName or FormElement at your JJFormView TagHelper.");
         }
 
-        formView.IsExternalRoute = false;
+        formView.IsExternalRoute = true;
 
         Configure?.Invoke(formView);
         

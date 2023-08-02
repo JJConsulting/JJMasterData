@@ -189,7 +189,7 @@
                  }
              })
              .then(function(error) {
-                 messageWait.hide();
+                 SpinnerOverlay.hide();
                  messageBox.show("@StringLocalizer["Error"]", error.message, 3);
              });
          }

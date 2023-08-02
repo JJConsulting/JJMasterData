@@ -1,4 +1,4 @@
-class JJFeedbackIcon {
+class FeedbackIcon {
     public static searchClass = "jj-icon-search";
     public static successClass = "jj-icon-success";
     public static warningClass = "jj-icon-warning";
@@ -6,10 +6,10 @@ class JJFeedbackIcon {
 
     public static removeAllIcons(selector: string){
         $(selector)
-            .removeClass(JJFeedbackIcon.successClass)
-            .removeClass(JJFeedbackIcon.warningClass)
-            .removeClass(JJFeedbackIcon.searchClass)
-            .removeClass(JJFeedbackIcon.errorClass)
+            .removeClass(FeedbackIcon.successClass)
+            .removeClass(FeedbackIcon.warningClass)
+            .removeClass(FeedbackIcon.searchClass)
+            .removeClass(FeedbackIcon.errorClass)
     }
     
     public static setIcon(selector: string, iconClass : string){

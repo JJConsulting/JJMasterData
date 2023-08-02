@@ -81,13 +81,13 @@
 <script lang="javascript" type="text/javascript">
 
     function addElementMapFilter() {
-        messageWait.show();
+        SpinnerOverlay.show();
         var url = "@Url.Action("AddElementMapFilter", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }
 
     function removeElementMapFilter(elementMapFieldName) {
-        messageWait.show();
+        SpinnerOverlay.show();
         $("<input>").attr({
             type: "hidden",
             id: "elementMapFieldName",

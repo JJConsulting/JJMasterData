@@ -22,7 +22,7 @@ class DataPanel {
             })
             .then(data => {
                 document.getElementById(componentName).outerHTML = data;
-                jjloadform();
+                LoadJJMasterData();
                 jjutil.gotoNextFocus(fieldName);
             })
             .catch(error => {

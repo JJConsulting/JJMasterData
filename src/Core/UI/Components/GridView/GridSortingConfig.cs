@@ -46,7 +46,7 @@ public class GridSortingConfig
             IconClass = IconType.Check.GetCssClass(),
             ShowAsButton = true,
             Text = "Sort",
-            OnClientClick = $"jjview.doMultSorting('{Name}');"
+            OnClientClick = $"FormView.sortItems('{Name}');"
         };
         dialog.Buttons.Add(btnSort);
 

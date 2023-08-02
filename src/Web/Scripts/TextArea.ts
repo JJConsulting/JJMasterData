@@ -1,4 +1,4 @@
-﻿class JJTextArea{
+﻿class TextArea {
     static setup(){
         $("textarea").keydown(function () {
             var oTextArea = $(this);

@@ -34,7 +34,7 @@
         }
     
         function populateFkColumn() {
-          messageWait.show();
+          SpinnerOverlay.show();
           document.querySelector('form').action = '@Url.Action("ElementDetails", "Relationships")';
           document.querySelector('form').submit();
         }

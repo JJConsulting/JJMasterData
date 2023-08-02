@@ -1,4 +1,4 @@
-﻿class JJSlider {
+﻿class Slider {
     static observeSliders() {
         let sliders = document.getElementsByClassName("jjslider");
 

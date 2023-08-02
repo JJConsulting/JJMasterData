@@ -1,4 +1,4 @@
-﻿class JJLookup{
+class Lookup {
     static setup(){
         $("input.jjlookup").each(function () {
             let lookupInput = $(this);
@@ -58,7 +58,7 @@
                 showWaitOnPost = false;
                 setHiddenLookup();
                 
-                JJFeedbackIcon.removeAllIcons(jjLookupSelector)
+                FeedbackIcon.removeAllIcons(jjLookupSelector)
 
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
@@ -78,11 +78,11 @@
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass)
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass)
                         } else {
                             const lookupHiddenInputElement = document.getElementById("id_" + lookupId) as HTMLInputElement | null;
                             const lookupInputElement = document.getElementById(lookupId) as HTMLInputElement | null;
-                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass)
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass)
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
                             DataPanel.ReloadAtSamePage(panelName,lookupId)
@@ -91,7 +91,7 @@
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass)
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass)
 
                         console.log(errorThrown);
                         console.log(textStatus);

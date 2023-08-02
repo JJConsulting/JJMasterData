@@ -87,7 +87,7 @@ internal class ActionManager
         string url = urlHelper.GetUrl(null, "InternalRedirect", new { parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEscape(@params.ToString()), Area = "MasterData" });
 
         var script = new StringBuilder();
-        script.Append("jjview.doUrlRedirect('");
+        script.Append("FormView.doUrlRedirect('");
         script.Append(url);
         script.Append("',");
         script.Append(popup);
@@ -115,7 +115,7 @@ internal class ActionManager
 
         if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
         {
-            script.Append("jjview.doFormUrlRedirect('");
+            script.Append("FormView.redirectFormUrl('");
             script.Append(ComponentName);
             script.Append("','");
             script.Append(encryptedActionMap);
@@ -135,7 +135,7 @@ internal class ActionManager
             string popup = action.UrlAsPopUp ? "true" : "false";
             string popUpTitle = action.TitlePopUp;
 
-            script.Append("jjview.doUrlRedirect('");
+            script.Append("FormView.doUrlRedirect('");
             script.Append(url);
             script.Append("',");
             script.Append(popup);
@@ -245,7 +245,7 @@ internal class ActionManager
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
 
         var script = new StringBuilder();
-        script.Append("jjview.doConfigUI('");
+        script.Append("FormView.openSettingsModal('");
         script.Append(ComponentName);
         script.Append("','");
         script.Append(encryptedActionMap);
@@ -261,7 +261,7 @@ internal class ActionManager
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         var script = new StringBuilder();
-        script.Append("jjview.gridAction('");
+        script.Append("FormView.gridAction('");
         script.Append(ComponentName);
         script.Append("','");
         script.Append(encryptedActionMap);
@@ -359,7 +359,7 @@ internal class ActionManager
                 script = $"return ActionManager.executePanelAction('{ComponentName}','CANCEL');";
                 break;
             case RefreshAction:
-                script = $"jjview.doRefresh('{ComponentName}');";
+                script = $"FormView.refresh('{ComponentName}');";
                 break;
             case FilterAction filterAction:
                 {

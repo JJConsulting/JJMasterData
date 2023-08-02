@@ -76,7 +76,7 @@
     }
 
     function addDataItem(qtd) {
-        messageWait.show();
+        SpinnerOverlay.show();
         $("<input>").attr({
             type: "hidden",
             id: "qtdRowsToAdd",
@@ -89,7 +89,7 @@
     }
 
     function removeDataItem(dataItemIndex) {
-        messageWait.show();
+        SpinnerOverlay.show();
         $("<input>").attr({
             type: "hidden",
             id: "dataItemIndex",
@@ -102,7 +102,7 @@
     }
 
     function removeAllDataItem() {
-        messageWait.show();
+        SpinnerOverlay.show();
         const url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
         $("form:first").attr("action", url).submit();
     }

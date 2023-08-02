@@ -17,7 +17,7 @@ public class DataExportationScripts
     public string GetStartExportationScript(string dictionaryName,string componentName, bool isExternalRoute)
     {
         if (!isExternalRoute) 
-            return $"JJDataExp.doExport('{componentName}');";
+            return $"DataExportation.startExportationAtSamePage('{componentName}');";
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
@@ -31,7 +31,7 @@ public class DataExportationScripts
     public string GetStopExportationScript(string dictionaryName,string componentName,string stopMessage, bool isExternalRoute)
     {
         if (!isExternalRoute) 
-            return $"JJDataExp.stopExportation('{componentName}');";
+            return $"DataExportation.stopExportationAtSamePage('{componentName}');";
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
@@ -44,7 +44,7 @@ public class DataExportationScripts
     public string GetExportPopupScript(string dictionaryName,string componentName, bool isExternalRoute)
     {
         if (!isExternalRoute) 
-            return $"JJDataExp.openExportUI('{componentName}');";
+            return $"DataExportation.openExportPopupSamePage('{componentName}');";
         
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         

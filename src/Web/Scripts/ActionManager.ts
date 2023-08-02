@@ -46,6 +46,6 @@ class ActionManager {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body:JSON.stringify({})
-        },1).then(_=>jjloadform())
+        },1).then(_=>LoadJJMasterData())
     }
 }

@@ -1,4 +1,4 @@
-﻿function jjloadform(event?, prefixSelector?) {
+﻿function LoadJJMasterData(event?, prefixSelector?) {
 
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
@@ -62,17 +62,15 @@
         trigger: "hover"
     });
 
-    JJTextArea.setup();
+    TextArea.setup();
     SearchBox.setup();
-    JJLookup.setup();
+    Lookup.setup();
     JJSortable.setup();
     UploadArea.setup();
-    JJTabNav.setup();
+    TabNav.setup();
 
-    JJSlider.observeSliders();
-    JJSlider.observeInputs();
-
-    messageWait.hide();
+    Slider.observeSliders();
+    Slider.observeInputs();
 
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
@@ -82,10 +80,10 @@
             }
 
             if (showWaitOnPost) {
-                messageWait.show();
+                SpinnerOverlay.show();
             }
         },
-        ajaxStop: function () { messageWait.hide(); }
+        ajaxStop: function () { SpinnerOverlay.hide(); }
     });
 
     $("form").on("submit",function () {
@@ -100,7 +98,7 @@
         }
         
         if (isValid && showWaitOnPost) {
-            setTimeout(function () { messageWait.show(); }, 1);
+            setTimeout(function () { SpinnerOverlay.show(); }, 1);
         }
     });
 }

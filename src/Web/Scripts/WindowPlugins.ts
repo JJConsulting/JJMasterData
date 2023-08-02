@@ -1,5 +1,5 @@
 ﻿interface Window {
-    popup: Popup
+    popup: Modal
     clipboardData: any
     $ : JQueryStatic
 }

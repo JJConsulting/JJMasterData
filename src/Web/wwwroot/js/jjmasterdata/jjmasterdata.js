@@ -7,6 +7,47 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class ActionManager {
+    static executePanelAction(name, action) {
+        $("#current-panelAction-" + name).val(action);
+        let form = document.querySelector(`form#${name}`);
+        if (!form) {
+            form = document.forms[0];
+        }
+        form.requestSubmit();
+        return false;
+    }
+    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
+        const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
+        let form = document.querySelector("form");
+        if (!form) {
+            form = document.forms[0];
+        }
+        currentTableActionInput.value = "";
+        currentFormActionInput.value = encryptedActionMap;
+        form.submit();
+    }
+    static executeFormActionAsPopUp(url, title, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        popup.showHtmlFromUrl(title, url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: JSON.stringify({})
+        }, 1).then(_ => LoadJJMasterData());
+    }
+}
 function loadAuditLog(componentName, logId, url = null) {
     $("#sortable_grid a").removeClass("active");
     if (logId != "")
@@ -37,7 +78,168 @@ function setupCollapsePanel(name) {
         });
     });
 }
+class DataDictionaryUtils {
+    static deleteAction(actionName, url, questionStr) {
+        let confirmed = confirm(questionStr);
+        if (confirmed == true) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (response) {
+                    if (response.success) {
+                        $("#" + actionName).remove();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    SpinnerOverlay.hide();
+                    if (xhr.responseText != "") {
+                        var err = JSON.parse(xhr.responseText);
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                    else {
+                        console.log(xhr);
+                    }
+                }
+            });
+        }
+    }
+    static sortAction(context, url, errorStr) {
+        $("#sortable_" + context).sortable({
+            update: function () {
+                var order = $(this).sortable('toArray');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: { orderFields: order, context: context },
+                    success: function (response) {
+                        if (!response.success) {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        SpinnerOverlay.hide();
+                        if (xhr.responseText != "") {
+                            var err = JSON.parse(xhr.responseText);
+                            if (err.status == 401) {
+                                document.forms[0].submit();
+                            }
+                            else {
+                                messageBox.show("JJMasterData", err.message, 4);
+                            }
+                        }
+                        else {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    }
+                });
+            }
+        }).disableSelection();
+    }
+    static setDisableAction(isDisable, url, errorStr) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { value: isDisable },
+            success: function (response) {
+                if (!response.success) {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            },
+            error: function (xhr, status, error) {
+                SpinnerOverlay.hide();
+                if (xhr.responseText != "") {
+                    var err = JSON.parse(xhr.responseText);
+                    if (err.status == 401) {
+                        document.forms[0].submit();
+                    }
+                    else {
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                }
+                else {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            }
+        });
+    }
+    static refreshAction(isPopup = false) {
+        SpinnerOverlay.show();
+        if (isPopup) {
+            window.parent.popup.hide();
+            window.parent.document.forms[0].submit();
+        }
+        else {
+            popup.hide();
+            document.forms[0].submit();
+        }
+    }
+    static postAction(url) {
+        SpinnerOverlay.show();
+        $("form:first").attr("action", url).submit();
+    }
+    static exportElement(id, url, validStr) {
+        var values = $("#selectedrows_" + id).val();
+        if (values == "") {
+            messageBox.show("JJMasterData", validStr, 3);
+            return false;
+        }
+        var form = $("form:first");
+        var originAction = $("form:first").attr('action');
+        form.attr('action', url);
+        form.submit();
+        setTimeout(function () {
+            form.attr('action', originAction);
+            SpinnerOverlay.hide();
+        }, 2000);
+        return true;
+    }
+}
 class DataExportation {
+    static startProgressVerificationAtSamePage(componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            DataExportation.setLoadMessage();
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("t", "tableExp");
+            urlBuilder.addQueryParameter("gridName", componentName);
+            urlBuilder.addQueryParameter("exptype", "checkProgress");
+            var isCompleted = false;
+            while (!isCompleted) {
+                isCompleted = yield DataExportation.checkProgress(urlBuilder.build(), componentName);
+                yield sleep(3000);
+            }
+        });
+    }
+    static stopProcessAtSamePage(componentName, stopMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("t", "tableExp");
+            urlBuilder.addQueryParameter("gridName", componentName);
+            urlBuilder.addQueryParameter("exptype", "stopProcess");
+            yield DataExportation.stopExportation(urlBuilder.build(), stopMessage);
+        });
+    }
+    static openExportPopupAtSamePage(componentName) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t", "tableExp");
+        urlBuilder.addQueryParameter("gridName", componentName);
+        urlBuilder.addQueryParameter("exptype", "showOptions");
+        DataExportation.openExportPopup(urlBuilder.build(), componentName);
+    }
+    static startExportationAtSamePage(componentName) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t", "tableExp");
+        urlBuilder.addQueryParameter("gridName", componentName);
+        urlBuilder.addQueryParameter("exptype", "export");
+        fetch(urlBuilder.build(), {
+            method: "POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
+            const modalBody = "#export_modal_" + componentName + " .modal-body ";
+            document.querySelector(modalBody).innerHTML = html;
+            LoadJJMasterData(null, modalBody);
+            yield DataExportation.startProgressVerificationAtSamePage(componentName);
+        }));
+    }
     static checkProgress(url, componentName) {
         return __awaiter(this, void 0, void 0, function* () {
             showWaitOnPost = false;
@@ -98,7 +300,7 @@ class DataExportation {
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        jjloadform(null);
+        LoadJJMasterData(null);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -141,7 +343,7 @@ class DataExportation {
             .then(data => {
             const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
             modalBody.innerHTML = data;
-            jjloadform();
+            LoadJJMasterData();
             DataExportation.startProgressVerification(checkProgressUrl, componentName);
         })
             .catch(error => {
@@ -370,12 +572,416 @@ class DataPanel {
         })
             .then(data => {
             document.getElementById(componentName).outerHTML = data;
-            jjloadform();
+            LoadJJMasterData();
             jjutil.gotoNextFocus(fieldName);
         })
             .catch(error => {
             console.error(error);
         });
+    }
+}
+function applyDecimalPlaces() {
+    let decimalPlaces = $(this).attr("jjdecimalplaces");
+    if (decimalPlaces == null)
+        decimalPlaces = "2";
+    if (localeCode === 'pt')
+        $(this).number(true, decimalPlaces, ",", ".");
+    else
+        $(this).number(true, decimalPlaces);
+}
+class FeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(FeedbackIcon.successClass)
+            .removeClass(FeedbackIcon.warningClass)
+            .removeClass(FeedbackIcon.searchClass)
+            .removeClass(FeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
+    }
+}
+FeedbackIcon.searchClass = "jj-icon-search";
+FeedbackIcon.successClass = "jj-icon-success";
+FeedbackIcon.warningClass = "jj-icon-warning";
+FeedbackIcon.errorClass = "jj-icon-error";
+class FormView {
+    static postFormValues(objid, enableAjax, loadform) {
+        if (enableAjax) {
+            const frm = $("form");
+            let surl = frm.attr("action");
+            if (surl.includes("?"))
+                surl += "&t=ajax";
+            else
+                surl += "?t=ajax";
+            surl += "&objname=" + objid;
+            $.ajax({
+                async: true,
+                type: frm.attr("method"),
+                url: surl,
+                data: frm.serialize(),
+                success: function (data) {
+                    if (data.substring(2, 18) == "<!--ErrorPage-->") {
+                        $("form:first").trigger("submit");
+                        return;
+                    }
+                    $("#jjgridview_" + objid).html(data);
+                    if (loadform) {
+                        LoadJJMasterData();
+                    }
+                    $("#current_filteraction_" + objid).val("");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                    console.log(textStatus);
+                    console.log(jqXHR);
+                    $("#current_filteraction_" + objid).val("");
+                }
+            });
+        }
+        else {
+            $("form:first").trigger("submit");
+        }
+    }
+    static selectItem(objid, obj) {
+        var values = $("#selectedrows_" + objid).val().toString();
+        var valuesList = [];
+        if (obj.attr("id") == "jjchk_all")
+            return;
+        if (values.length > 0) {
+            valuesList = values.split(",");
+        }
+        if (obj.prop("checked")) {
+            if ($.inArray(obj.val(), valuesList) < 0)
+                valuesList.push(obj.val());
+        }
+        else {
+            valuesList = valuesList.filter(function (item) {
+                return item !== obj.val();
+            });
+        }
+        $("#selectedrows_" + objid).val(valuesList);
+        var textInfo = "";
+        var selectedText = $("#selectedtext_" + objid);
+        if (valuesList.length == 0)
+            textInfo = selectedText.attr("noSelStr");
+        else if (valuesList.length == 1)
+            textInfo = selectedText.attr("oneSelStr");
+        else
+            textInfo = selectedText.attr("paramSelStr").replace("{0}", valuesList.length.toString());
+        selectedText.text(textInfo);
+    }
+    static unSelectAll(objid) {
+        $(".jjselect input").not(":disabled").prop("checked", false);
+        $("#selectedrows_" + objid).val("");
+        var oSelectedtext = $("#selectedtext_" + objid);
+        oSelectedtext.text(oSelectedtext.attr("noSelStr"));
+    }
+    static selectAll(objid) {
+        var frm = $("form");
+        var surl = frm.attr("action");
+        if (surl.includes("?"))
+            surl += "&t=selectall";
+        else
+            surl += "?t=selectall";
+        $.ajax({
+            async: true,
+            type: frm.attr("method"),
+            url: surl,
+            success: function (data) {
+                GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                console.log(textStatus);
+                console.log(jqXHR);
+            }
+        });
+    }
+    static sortFormValues(objid, enableAjax, v) {
+        var tableOrder = "#current_tableorder_" + objid;
+        if (v + " ASC" == $(tableOrder).val())
+            $(tableOrder).val(v + " DESC");
+        else
+            $(tableOrder).val(v + " ASC");
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        this.postFormValues(objid, enableAjax, true);
+    }
+    static sortItems(objid) {
+        var descCommand = "";
+        var order = $("#sortable_" + objid).sortable("toArray");
+        for (var i = 0; i < order.length; i++) {
+            var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
+            switch (tipoOrdenacao) {
+                case "A":
+                    descCommand += order[i] + " ASC,";
+                    break;
+                case "D":
+                    descCommand += order[i] + " DESC,";
+                    break;
+            }
+        }
+        descCommand = descCommand.substring(0, descCommand.length - 1);
+        $("#current_tableorder_" + objid).val(descCommand);
+        $("#sort_modal_" + objid).modal('hide');
+        $("#current_formaction_" + objid).val("");
+        this.refresh(objid, true);
+    }
+    static paginateGrid(objid, enableAjax, v) {
+        $("#current_tablepage_" + objid).val(v);
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        this.postFormValues(objid, enableAjax, true);
+    }
+    static refresh(objid, enableAjax) {
+        $("#current_tableaction_" + objid).val("");
+        $("#current_tablerow_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        this.postFormValues(objid, enableAjax, true);
+    }
+    static openSettingsModal(componentName, encryptedActionMap) {
+        $("#current_tableaction_" + componentName).val(encryptedActionMap);
+        $("#current_tablepage_" + componentName).val("1");
+        $("#current_tablerow_" + componentName).val("");
+        $("#current_formaction_" + componentName).val("");
+        $("form:first").trigger("submit");
+    }
+    static closeSettingsModal(objid) {
+        $("form").trigger("reset");
+        $("form :checkbox").change();
+        $("#config_modal_" + objid).modal("hide");
+    }
+    static filter(objid, enableAjax) {
+        $("#current_filteraction_" + objid).val("FILTERACTION");
+        $("#current_tableaction_" + objid).val("");
+        $("#current_tablepage_" + objid).val("1");
+        $("#current_formaction_" + objid).val("");
+        this.postFormValues(objid, enableAjax, false);
+        return false;
+    }
+    static openSelectElementInsert(componentName, encryptedActionMap) {
+        $("#current-panelAction-" + componentName).val("ELEMENTSEL");
+        $("#current_selaction_" + componentName).val(encryptedActionMap);
+        $("form:first").trigger("submit");
+    }
+    static clearFilter(objid, enableAjax) {
+        var divId = "#gridfilter_" + objid;
+        var selector = divId + " input:enabled, " + divId + " select:enabled";
+        $(selector).each(function () {
+            let currentObj = $(this);
+            if (currentObj.hasClass("flatpickr-input")) {
+                currentObj.val("");
+            }
+            let inputType = this.type;
+            if (inputType == "checkbox") {
+                currentObj.prop("checked", false);
+            }
+            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
+                currentObj.tagsinput('removeAll');
+            }
+            else if (inputType != "hidden") {
+                currentObj.val("");
+                if (currentObj.hasClass("selectpicker")) {
+                    currentObj.selectpicker("render");
+                }
+                else if (currentObj.hasClass("jjsearchbox")) {
+                    currentObj.blur();
+                }
+                else if (currentObj.hasClass("jjlookup")) {
+                    currentObj.blur();
+                }
+            }
+        });
+        $("#current_filteraction_" + objid).val("CLEARACTION");
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        this.postFormValues(objid, enableAjax, false);
+    }
+    static gridAction(componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        $("#current_tableaction_" + componentName).val(encryptedActionMap);
+        $("#current_formaction_" + componentName).val("");
+        $("form:first").trigger("submit");
+    }
+    static redirectFormUrl(objid, criptid, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        var frm = $("form");
+        var surl = frm.attr("action");
+        if (surl.includes("?"))
+            surl += "&t=geturlaction&objname=" + objid;
+        else
+            surl += "?t=geturlaction&objname=" + objid;
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: surl,
+            data: frm.serialize() + '&criptid=' + criptid,
+            success: function (data) {
+                if (data.UrlAsPopUp) {
+                    popup.show(data.TitlePopUp, data.UrlRedirect);
+                }
+                else {
+                    window.location.href = data.UrlRedirect;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+                console.log(textStatus);
+                console.log(jqXHR);
+            }
+        });
+    }
+    static executeSqlCommand(objid, criptid, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        $("#current_tableaction_" + objid).val("");
+        $("#current_formaction_" + objid).val("");
+        $("#current_tablerow_" + objid).val(criptid);
+        $("form:first").trigger("submit");
+    }
+    static setLookup(objid, value) {
+        window.parent.popup.hide();
+        setTimeout(function () {
+            window.parent.$("#id_" + objid).val(value);
+            window.parent.$("#" + objid).val(value).change().blur();
+        }, 100);
+    }
+    static executeUrlRedirect(url, ispopup, title, confirmMessage, popupSize = 1) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        if (ispopup) {
+            popup.show(title, url, popupSize);
+        }
+        else {
+            window.location.href = url;
+        }
+    }
+    static showInsertSucess(objid) {
+        $("#pnl_insertmsg_" + objid).fadeOut(2000, function () {
+            $("#pnl_insert_" + objid).slideDown();
+        });
+    }
+    static deleteFile(objid, filename, promptStr) {
+        const result = confirm(promptStr);
+        if (!result) {
+            return false;
+        }
+        $("#uploadaction_" + objid).val("DELFILE");
+        $("#filename_" + objid).val(filename);
+        $("form:first").trigger("submit");
+    }
+    static downloadFile(objid, filename) {
+        $("#uploadaction_" + objid).val("DOWNLOADFILE");
+        $("#filename_" + objid).val(filename);
+        $("form:first").trigger("submit");
+        setTimeout(function () {
+            SpinnerOverlay.hide();
+            $("#uploadaction_" + objid).val("");
+        }, 1500);
+    }
+    static renameFile(objid, filename, promptStr) {
+        var newFileName = prompt(promptStr, filename);
+        if (newFileName != null && newFileName != filename) {
+            $("#uploadaction_" + objid).val("RENAMEFILE");
+            $("#filename_" + objid).val(filename + ";" + newFileName);
+            $("form:first").trigger("submit");
+        }
+    }
+    static directDownload(objid, pnlname, filename) {
+        SpinnerOverlay.show();
+        var url = $("form").attr("action");
+        url += url.includes("?") ? "&" : "?";
+        url += "jjuploadview_" + pnlname + "=" + objid;
+        url += "&downloadfile=" + filename;
+        window.location.assign(url);
+        setTimeout(function () {
+            SpinnerOverlay.hide();
+        }, 1500);
+    }
+    static showExportOptions(objid, exportType) {
+        if (exportType == "1") {
+            $("#" + objid + "_div_export_orientation").hide();
+            $("#" + objid + "_div_export_all").show();
+            $("#" + objid + "_div_export_delimiter").hide();
+            $("#" + objid + "_div_export_fistline").show();
+        }
+        else if (exportType == "2") {
+            $("#" + objid + "_div_export_orientation").show();
+            $("#" + objid + "_div_export_all").hide();
+            $("#" + objid + "_div_export_delimiter").hide();
+            $("#" + objid + "_div_export_fistline").hide();
+        }
+        else {
+            $("#" + objid + "_div_export_orientation").hide();
+            $("#" + objid + "_div_export_all").show();
+            $("#" + objid + "_div_export_delimiter").show();
+            $("#" + objid + "_div_export_fistline").show();
+        }
+    }
+    static viewLog(objid, id) {
+        $("#logId-" + objid).val(id);
+        $("form:first").trigger("submit");
+    }
+    static searchOnDOM(objid, oDom) {
+        var value = $(oDom).val().toString().toLowerCase();
+        $("#table_" + objid + " tr").filter(function () {
+            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            if (!isSearch) {
+                var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
+                $(this).find("input").each(function () {
+                    var inputValue = $(this).val();
+                    if (inputValue != null) {
+                        let isSearch = inputValue.toString().replace(",", "")
+                            .replace(".", "")
+                            .replace("-", "")
+                            .toLowerCase()
+                            .indexOf(valueNew) > -1;
+                        if (isSearch)
+                            return false;
+                    }
+                });
+            }
+            if (!isSearch) {
+                $(this).find("select").each(function () {
+                    var selectedText = $(this).children("option:selected").text();
+                    if (selectedText != null) {
+                        isSearch = selectedText.toLowerCase().indexOf(valueNew) > -1;
+                        if (isSearch)
+                            return false;
+                    }
+                });
+            }
+            $(this).toggle(isSearch);
+        });
+        if (value.length > 0) {
+            $("#infotext_" + objid).css("display", "none");
+            $("ul.pagination").css("display", "none");
+        }
+        else {
+            $("#infotext_" + objid).css("display", "");
+            $("ul.pagination").css("display", "");
+        }
     }
 }
 var _a, _b;
@@ -431,7 +1037,7 @@ class GridView {
         const form = document.querySelector("form");
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
-        messageWait.show();
+        SpinnerOverlay.show();
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)
@@ -439,9 +1045,9 @@ class GridView {
             .then(response => response.text())
             .then(data => {
             document.querySelector("#jjgridview_" + componentName).innerHTML = data;
-            jjloadform();
+            LoadJJMasterData();
             document.querySelector("#current_filteraction_" + componentName).value = "";
-            messageWait.hide();
+            SpinnerOverlay.hide();
         })
             .catch(error => {
             console.log(error);
@@ -449,525 +1055,31 @@ class GridView {
         });
     }
 }
-class SearchBox {
-    static setup() {
-        $("input.jjsearchbox").each(function () {
-            const componentName = $(this).attr("jjid");
-            let urltypehead = $(this).attr("urltypehead");
-            let triggerlength = $(this).attr("triggerlength");
-            let numberofitems = $(this).attr("numberofitems");
-            let scrollbar = Boolean($(this).attr("scrollbar"));
-            let showimagelegend = Boolean($(this).attr("showimagelegend"));
-            if (triggerlength == null)
-                triggerlength = "1";
-            if (numberofitems == null)
-                numberofitems = "10";
-            if (scrollbar == null)
-                scrollbar = false;
-            if (showimagelegend == null)
-                showimagelegend = false;
-            const frm = $("form");
-            if (!urltypehead.includes("GetItems")) {
-                let url = frm.attr("action");
-                if (url.includes("?"))
-                    url += "&";
-                else
-                    url += "?";
-                urltypehead = url + urltypehead;
-            }
-            const jjSearchBoxSelector = "#" + componentName + "_text";
-            const jjSearchBoxHiddenSelector = "#" + componentName;
-            $(this).blur(function () {
-                if ($(this).val() == "") {
-                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.searchClass);
-                    $(jjSearchBoxHiddenSelector).val("");
-                }
-                else if ($(jjSearchBoxHiddenSelector).val() == "") {
-                    JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.warningClass);
-                }
-            });
-            $(this).typeahead({
-                ajax: {
-                    url: urltypehead,
-                    method: "POST",
-                    loadingClass: "loading-circle",
-                    triggerLength: triggerlength,
-                    preDispatch: function () {
-                        $(jjSearchBoxHiddenSelector).val("");
-                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, "");
-                        return frm.serializeArray();
-                    },
-                },
-                onSelect: function (item) {
-                    $(jjSearchBoxHiddenSelector).val(item.value);
-                    if (item.value != "") {
-                        JJFeedbackIcon.setIcon(jjSearchBoxSelector, JJFeedbackIcon.successClass);
-                    }
-                },
-                displayField: "name",
-                valueField: "id",
-                triggerLength: triggerlength,
-                items: numberofitems,
-                scrollBar: scrollbar,
-                item: '<li class="dropdown-item"><a href="#"></a></li>',
-                highlighter: function (item) {
-                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    let textSel;
-                    if (showimagelegend) {
-                        const parts = item.split("|");
-                        textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
-                            return "<strong>" + match + "</strong>";
-                        });
-                        textSel = "<i class='fa fa-lg fa-fw " + parts[1] + "' style='color:" + parts[2] + ";margin-right:6px;'></i>" + textSel;
-                    }
-                    else {
-                        textSel = item.replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
-                            return "<strong>" + match + "</strong>";
-                        });
-                    }
-                    return textSel;
-                }
-            });
-        });
-    }
-}
-class FileUploadOptions {
-    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
-        this.componentName = componentName;
-        this.url = url;
-        this.form = form;
-        this.allowMultiple = allowMultiple;
-        this.maxFileSize = maxFileSize;
-        this.allowDragDrop = allowDragDrop;
-        this.showFileSize = showFileSize;
-        this.allowedTypes = allowedTypes;
-        this.dragDropLabel = dragDropLabel;
-        this.autoSubmit = autoSubmit;
-    }
-}
-class UploadArea {
-    static uploadFile(options) {
-        const selector = "#" + options.componentName;
-        $(selector).uploadFile({
-            url: options.url,
-            formData: $(options.form).serializeArray(),
-            fileName: "file",
-            multiple: options.allowMultiple,
-            maxFileSize: options.maxFileSize,
-            maxFileCount: 1000,
-            dragDrop: options.allowDragDrop,
-            showFileSize: options.showFileSize,
-            dragdropWidth: ($(selector).width() - 10),
-            statusBarWidth: ($(selector).width() - 10),
-            autoSubmit: true,
-            uploadButtonClass: "btn btn-primary",
-            allowedTypes: options.allowedTypes,
-            acceptFiles: options.allowedTypes !== "*" ? "." + options.allowedTypes.replace(" ", "").replace(",", ",.") : "*",
-            uploadStr: $(selector).attr("uploadStr"),
-            dragDropStr: "<span>&nbsp;<b>" + options.dragDropLabel + "</b></span>",
-            doneStr: $(selector).attr("doneStr"),
-            cancelStr: $(selector).attr("cancelStr"),
-            abortStr: $(selector).attr("abortStr"),
-            extErrorStr: $(selector).attr("extErrorStr"),
-            sizeErrorStr: $(selector).attr("sizeErrorStr"),
-            customErrorKeyStr: "jquery-upload-file-error",
-            returnType: "json",
-            onSubmit: function () {
-                showWaitOnPost = false;
-            },
-            onSuccess: function (files, data, xhr, pd) {
-                var message = data["jquery-upload-file-message"];
-                if (message && message != "") {
-                    var div = $("<div class='ajax-file-upload-filename'></div>");
-                    $("<span class='fa fa-check-circle text-success'></span>").appendTo(div);
-                    $("<span>&nbsp;" + message + "</span>").appendTo(div);
-                    div.appendTo(pd.statusbar[0]);
-                }
-            },
-            afterUploadAll: function (element) {
-                if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#uploadaction_" + options.componentName).val("afteruploadall");
-                }
-                jjloadform();
-            },
-        });
-    }
-    static handleCopyPaste(componentName) {
-        window.addEventListener("paste", (e) => {
-            var files = e.clipboardData.files;
-            if (files.length === 1) {
-                var file = files[0];
-                if (file.type.indexOf("image") !== -1) {
-                    document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
-                        document.querySelector("#preview_modal_" + componentName).classList.add("hide");
-                        var filename = document.querySelector("#preview_filename_" + componentName).value || "image";
-                        filename += ".png";
-                        const dt = new DataTransfer();
-                        const myNewFile = new File([file], filename, { type: file.type });
-                        dt.items.add(myNewFile);
-                        document.querySelector("#" + componentName + " input[type='file']").files = dt.files;
-                        document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-                        return;
-                    });
-                    var reader = new FileReader();
-                    reader.onload = function (event) {
-                        document.querySelector("#pastedimage_" + componentName).src = event.target.result.toString();
-                        var filename = file.name.replace(/\.[^/.]+$/, "");
-                        document.querySelector("#preview_filename_" + componentName).value = filename;
-                        document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
-                    };
-                    reader.readAsDataURL(file);
-                    return;
-                }
-            }
-            document.querySelector("#" + componentName + " input[type='file']").files = files;
-            document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-        });
-    }
-    static setup() {
-        document.querySelectorAll("div.fileUpload").forEach((element) => {
-            let componentName = element.getAttribute("id");
-            let multiple = element.getAttribute("jjmultiple") === "true";
-            let autoSubmit = element.getAttribute("autoSubmit") === "true";
-            let maxFileSize = element.getAttribute("maxFileSize");
-            let dragDrop = element.getAttribute("dragDrop");
-            let copyPaste = element.getAttribute("copyPaste");
-            let showFileSize = element.getAttribute("showFileSize");
-            let allowedTypes = element.getAttribute("allowedTypes");
-            let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
-            let frm = document.querySelector("form");
-            let url;
-            if (element.getAttribute("url") != null) {
-                url = element.getAttribute("url");
-            }
-            else {
-                let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("t", "jjupload");
-                urlBuilder.addQueryParameter("objname", componentName);
-                url = urlBuilder.build();
-            }
-            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
-            this.uploadFile(fileUploadOptions);
-            window.addEventListener("resize", () => {
-                document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
-                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
-            });
-            if (copyPaste === "true") {
-                this.handleCopyPaste(componentName);
-            }
-        });
-    }
-}
-class UploadView {
-    static open(componentName, title, values, url = null) {
-        const panelName = $("#v_" + componentName).attr("pnlname");
-        if (url == null) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);
-            urlBuilder.addQueryParameter("uploadViewParams", values);
-            url = urlBuilder.build();
-        }
-        const popup = new Popup();
-        popup.modalId = componentName + "-popup";
-        popup.modalTitleId = componentName + "-popup-title";
-        if (url == null || url.length == 0) {
-            popup.show(title, url, 1);
-        }
-        else {
-            popup.showHtmlFromUrl(title, url, null, 1).then(_ => {
-                jjloadform();
-            });
-        }
-    }
-}
-class UrlBuilder {
-    constructor(url = null) {
-        this.url = url;
-        this.queryParameters = new Map();
-    }
-    addQueryParameter(key, value) {
-        this.queryParameters.set(key, value);
-    }
-    build() {
-        const form = document.querySelector("form");
-        if (this.url == null) {
-            this.url = form.getAttribute("action");
-        }
-        if (!this.url.includes("?")) {
-            this.url += "?";
-        }
-        let isFirst = true;
-        for (const [key, value] of this.queryParameters.entries()) {
-            if (!isFirst) {
-                this.url += "&";
-            }
-            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            isFirst = false;
-        }
-        return this.url;
-    }
-}
-class ActionManager {
-    static executePanelAction(name, action) {
-        $("#current-panelAction-" + name).val(action);
-        let form = document.querySelector(`form#${name}`);
-        if (!form) {
-            form = document.forms[0];
-        }
-        form.requestSubmit();
-        return false;
-    }
-    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
-        const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
-        let form = document.querySelector("form");
-        if (!form) {
-            form = document.forms[0];
-        }
-        currentTableActionInput.value = "";
-        currentFormActionInput.value = encryptedActionMap;
-        form.submit();
-    }
-    static executeFormActionAsPopUp(url, title, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        popup.showHtmlFromUrl(title, url, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: JSON.stringify({})
-        }, 1).then(_ => jjloadform());
-    }
-}
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
-    jjloadform("load", null);
+    LoadJJMasterData("load", null);
 });
-class JJDataExp {
-    static startProgressVerification(objname) {
-        return __awaiter(this, void 0, void 0, function* () {
-            DataExportation.setLoadMessage();
-            const form = $("form");
-            let formUrl = form.attr("action");
-            if (formUrl.includes("?"))
-                formUrl += "&t=tableexp";
-            else
-                formUrl += "?t=tableexp";
-            formUrl += "&gridName=" + objname;
-            formUrl += "&exptype=checkProgress";
-            var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportation.checkProgress(formUrl, objname);
-                yield sleep(3000);
-            }
-        });
-    }
-    static stopProcess(componentName, stopMessage) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const form = $("form");
-            let url = form.attr("action");
-            if (url.includes("?"))
-                url += "&t=tableexp";
-            else
-                url += "?t=tableexp";
-            url += "&gridName=" + componentName;
-            url += "&exptype=stopProcess";
-            yield DataExportation.stopExportation(url, stopMessage);
-        });
-    }
-    static openExportUI(componentName) {
-        const frm = $("form");
-        let url = frm.attr("action");
-        if (url.includes("?"))
-            url += "&t=tableexp";
-        else
-            url += "?t=tableexp";
-        url += "&gridName=" + componentName;
-        url += "&exptype=showoptions";
-        DataExportation.openExportPopup(url, componentName);
-    }
-    static doExport(objid) {
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=tableexp";
-        else
-            surl += "?t=tableexp";
-        surl += "&gridName=" + objid;
-        surl += "&exptype=export";
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            data: frm.serialize(),
-            success: function (data) {
-                var modalBody = "#export_modal_" + objid + " .modal-body ";
-                $(modalBody).html(data);
-                jjloadform(null, modalBody);
-                JJDataExp.startProgressVerification(objid);
+class JJSortable {
+    static setup() {
+        $(".jjsortable").sortable({
+            helper: function (e, tr) {
+                var $originals = tr.children();
+                var $helper = tr.clone();
+                $helper.children().each(function (index) {
+                    $(this).width($originals.eq(index).width());
+                });
+                return $helper;
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
-    }
-}
-function applyDecimalPlaces() {
-    let decimalPlaces = $(this).attr("jjdecimalplaces");
-    if (decimalPlaces == null)
-        decimalPlaces = "2";
-    if (localeCode === 'pt')
-        $(this).number(true, decimalPlaces, ",", ".");
-    else
-        $(this).number(true, decimalPlaces);
-}
-var jjdictionary = (function () {
-    return {
-        deleteAction: function (actionName, url, questionStr) {
-            let confirmed = confirm(questionStr);
-            if (confirmed == true) {
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    success: function (response) {
-                        if (response.success) {
-                            $("#" + actionName).remove();
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        messageWait.hide();
-                        if (xhr.responseText != "") {
-                            var err = JSON.parse(xhr.responseText);
-                            messageBox.show("JJMasterData", err.message, 4);
-                        }
-                        else {
-                            console.log(xhr);
-                        }
-                    }
+            change: function (event, ui) {
+                ui.placeholder.css({
+                    visibility: "visible",
+                    background: "#fbfbfb"
                 });
             }
-        },
-        doActionSortable: function (context, url, errorStr) {
-            $("#sortable_" + context).sortable({
-                update: function () {
-                    var order = $(this).sortable('toArray');
-                    $.ajax({
-                        type: "POST",
-                        url: url,
-                        data: { orderFields: order, context: context },
-                        success: function (response) {
-                            if (!response.success) {
-                                messageBox.show("JJMasterData", errorStr, 4);
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            messageWait.hide();
-                            if (xhr.responseText != "") {
-                                var err = JSON.parse(xhr.responseText);
-                                if (err.status == 401) {
-                                    document.forms[0].submit();
-                                }
-                                else {
-                                    messageBox.show("JJMasterData", err.message, 4);
-                                }
-                            }
-                            else {
-                                messageBox.show("JJMasterData", errorStr, 4);
-                            }
-                        }
-                    });
-                }
-            }).disableSelection();
-        },
-        setDisableAction: function (isDisable, url, errorStr) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: { value: isDisable },
-                success: function (response) {
-                    if (!response.success) {
-                        messageBox.show("JJMasterData", errorStr, 4);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    messageWait.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        if (err.status == 401) {
-                            document.forms[0].submit();
-                        }
-                        else {
-                            messageBox.show("JJMasterData", err.message, 4);
-                        }
-                    }
-                    else {
-                        messageBox.show("JJMasterData", errorStr, 4);
-                    }
-                }
-            });
-        },
-        refreshAction: function (isPopup = false) {
-            messageWait.show();
-            if (isPopup) {
-                window.parent.popup.hide();
-                window.parent.document.forms[0].submit();
-            }
-            else {
-                popup.hide();
-                document.forms[0].submit();
-            }
-        },
-        postAction: function (url) {
-            messageWait.show();
-            $("form:first").attr("action", url).submit();
-        },
-        exportElement: function (id, url, validStr) {
-            var values = $("#selectedrows_" + id).val();
-            if (values == "") {
-                messageBox.show("JJMasterData", validStr, 3);
-                return false;
-            }
-            var form = $("form:first");
-            var originAction = $("form:first").attr('action');
-            form.attr('action', url);
-            form.submit();
-            setTimeout(function () {
-                form.attr('action', originAction);
-                messageWait.hide();
-            }, 2000);
-            return true;
-        }
-    };
-})();
-class JJFeedbackIcon {
-    static removeAllIcons(selector) {
-        $(selector)
-            .removeClass(JJFeedbackIcon.successClass)
-            .removeClass(JJFeedbackIcon.warningClass)
-            .removeClass(JJFeedbackIcon.searchClass)
-            .removeClass(JJFeedbackIcon.errorClass);
-    }
-    static setIcon(selector, iconClass) {
-        this.removeAllIcons(selector);
-        $(selector).addClass(iconClass);
+        });
     }
 }
-JJFeedbackIcon.searchClass = "jj-icon-search";
-JJFeedbackIcon.successClass = "jj-icon-success";
-JJFeedbackIcon.warningClass = "jj-icon-warning";
-JJFeedbackIcon.errorClass = "jj-icon-error";
-function jjloadform(event, prefixSelector) {
+function LoadJJMasterData(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
@@ -1022,15 +1134,14 @@ function jjloadform(event, prefixSelector) {
         container: "body",
         trigger: "hover"
     });
-    JJTextArea.setup();
+    TextArea.setup();
     SearchBox.setup();
-    JJLookup.setup();
+    Lookup.setup();
     JJSortable.setup();
     UploadArea.setup();
-    JJTabNav.setup();
-    JJSlider.observeSliders();
-    JJSlider.observeInputs();
-    messageWait.hide();
+    TabNav.setup();
+    Slider.observeSliders();
+    Slider.observeInputs();
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1038,10 +1149,10 @@ function jjloadform(event, prefixSelector) {
                 return null;
             }
             if (showWaitOnPost) {
-                messageWait.show();
+                SpinnerOverlay.show();
             }
         },
-        ajaxStop: function () { messageWait.hide(); }
+        ajaxStop: function () { SpinnerOverlay.hide(); }
     });
     $("form").on("submit", function () {
         let isValid;
@@ -1052,11 +1163,11 @@ function jjloadform(event, prefixSelector) {
             isValid = true;
         }
         if (isValid && showWaitOnPost) {
-            setTimeout(function () { messageWait.show(); }, 1);
+            setTimeout(function () { SpinnerOverlay.show(); }, 1);
         }
     });
 }
-class JJLookup {
+class Lookup {
     static setup() {
         $("input.jjlookup").each(function () {
             let lookupInput = $(this);
@@ -1105,7 +1216,7 @@ class JJLookup {
             lookupInput.one("blur", function () {
                 showWaitOnPost = false;
                 setHiddenLookup();
-                JJFeedbackIcon.removeAllIcons(jjLookupSelector);
+                FeedbackIcon.removeAllIcons(jjLookupSelector);
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
                     return;
@@ -1123,12 +1234,12 @@ class JJLookup {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
                         if (data.description == "") {
-                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.warningClass);
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
                         }
                         else {
                             const lookupHiddenInputElement = document.getElementById("id_" + lookupId);
                             const lookupInputElement = document.getElementById(lookupId);
-                            JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.successClass);
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
                             DataPanel.ReloadAtSamePage(panelName, lookupId);
@@ -1137,7 +1248,7 @@ class JJLookup {
                     error: function (jqXHR, textStatus, errorThrown) {
                         showWaitOnPost = true;
                         lookupInput.removeClass("loading-circle");
-                        JJFeedbackIcon.setIcon(jjLookupSelector, JJFeedbackIcon.errorClass);
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
                         console.log(errorThrown);
                         console.log(textStatus);
                         console.log(jqXHR);
@@ -1147,544 +1258,70 @@ class JJLookup {
         });
     }
 }
-class JJSlider {
-    static observeSliders() {
-        let sliders = document.getElementsByClassName("jjslider");
-        Array.from(sliders).forEach((slider) => {
-            let sliderInput = document.getElementById(slider.id + "-value");
-            document.getElementById(slider.id).addEventListener('change', function () {
-                this.setAttribute('value', (this).value);
-            });
-            slider.oninput = function () {
-                let decimalPlaces = $(this).attr("jjdecimalplaces");
-                if (decimalPlaces == null)
-                    decimalPlaces = "0";
-                let sliderValue = (this).value;
-                if (localeCode === 'pt')
-                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
-                else
-                    sliderInput.value = $.number(sliderValue, decimalPlaces);
-            };
-        });
+var TMessageIcon;
+(function (TMessageIcon) {
+    TMessageIcon[TMessageIcon["NONE"] = 1] = "NONE";
+    TMessageIcon[TMessageIcon["INFO"] = 2] = "INFO";
+    TMessageIcon[TMessageIcon["WARNING"] = 3] = "WARNING";
+    TMessageIcon[TMessageIcon["ERROR"] = 4] = "ERROR";
+    TMessageIcon[TMessageIcon["QUESTION"] = 5] = "QUESTION";
+})(TMessageIcon || (TMessageIcon = {}));
+var TMessageSize;
+(function (TMessageSize) {
+    TMessageSize[TMessageSize["SMALL"] = 1] = "SMALL";
+    TMessageSize[TMessageSize["DEFAULT"] = 2] = "DEFAULT";
+    TMessageSize[TMessageSize["LARGE"] = 3] = "LARGE";
+})(TMessageSize || (TMessageSize = {}));
+class MessageBox {
+    static setTitle(title) {
+        $(MessageBox.jQueryModalTitleId).html(title);
     }
-    static observeInputs() {
-        let inputs = document.getElementsByClassName("jjslider-value");
-        Array.from(inputs).forEach((input) => {
-            let slider = document.getElementById(input.id.replace("-value", ""));
-            input.oninput = function () {
-                slider.value = $("#" + input.id).val();
-            };
-        });
+    static setContent(content) {
+        $(MessageBox.jQueryModalContentId).html(content);
     }
-}
-class JJSortable {
-    static setup() {
-        $(".jjsortable").sortable({
-            helper: function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
-                    $(this).width($originals.eq(index).width());
-                });
-                return $helper;
-            },
-            change: function (event, ui) {
-                ui.placeholder.css({
-                    visibility: "visible",
-                    background: "#fbfbfb"
-                });
-            }
-        });
-    }
-}
-class JJTabNav {
-    static setup() {
-        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
-            var link = $(e.target);
-            $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
-        });
-    }
-}
-class JJTextArea {
-    static setup() {
-        $("textarea").keydown(function () {
-            var oTextArea = $(this);
-            var iMaxChar = oTextArea.attr("maxlength");
-            var strValid = oTextArea.attr("strvalid2");
-            var strChars = oTextArea.attr("strchars");
-            if (isNaN(iMaxChar))
-                iMaxChar = oTextArea.attr("jjmaxlength");
-            if (isNaN(iMaxChar))
-                return;
-            if (isNaN(strValid))
-                strValid = "Maximum limit of {0} characters!";
-            if (isNaN(strChars))
-                strChars = "({0} characters remaining)";
-            if (!isNaN(iMaxChar)) {
-                var nId = oTextArea.attr("id");
-                var iTypedChar = oTextArea.val().toString().length;
-                if (iTypedChar > iMaxChar) {
-                    alert(strValid.replace("{0}", iMaxChar));
-                }
-                strChars = strChars.replace("{0}", (iMaxChar - oTextArea.val().toString().length));
-                strChars += "&nbsp;";
-                if ($("#spansize_" + nId).length) {
-                    $("#spansize_" + nId).html(strChars);
-                }
-                else {
-                    $("<span id='spansize_" + nId + "' class='small' style='float: right'>" + strChars + "</span>").insertBefore(oTextArea);
-                }
-            }
-        });
-    }
-}
-var jjview = (function () {
-    function tablePost(objid, enableAjax, loadform) {
-        if (enableAjax) {
-            const frm = $("form");
-            let surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=ajax";
-            else
-                surl += "?t=ajax";
-            surl += "&objname=" + objid;
-            $.ajax({
-                async: true,
-                type: frm.attr("method"),
-                url: surl,
-                data: frm.serialize(),
-                success: function (data) {
-                    if (data.substring(2, 18) == "<!--ErrorPage-->") {
-                        $("form:first").trigger("submit");
-                        return;
-                    }
-                    $("#jjgridview_" + objid).html(data);
-                    if (loadform) {
-                        jjloadform();
-                    }
-                    $("#current_filteraction_" + objid).val("");
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                    $("#current_filteraction_" + objid).val("");
-                }
-            });
-        }
-        else {
-            $("form:first").trigger("submit");
-        }
-    }
-    return {
-        showExportOptions: function (objid, exportType) {
-            if (exportType == "1") {
-                $("#" + objid + "_div_export_orientation").hide();
-                $("#" + objid + "_div_export_all").show();
-                $("#" + objid + "_div_export_delimiter").hide();
-                $("#" + objid + "_div_export_fistline").show();
-            }
-            else if (exportType == "2") {
-                $("#" + objid + "_div_export_orientation").show();
-                $("#" + objid + "_div_export_all").hide();
-                $("#" + objid + "_div_export_delimiter").hide();
-                $("#" + objid + "_div_export_fistline").hide();
-            }
-            else {
-                $("#" + objid + "_div_export_orientation").hide();
-                $("#" + objid + "_div_export_all").show();
-                $("#" + objid + "_div_export_delimiter").show();
-                $("#" + objid + "_div_export_fistline").show();
-            }
-        },
-        doClearFilter: function (objid, enableAjax) {
-            var divId = "#gridfilter_" + objid;
-            var selector = divId + " input:enabled, " + divId + " select:enabled";
-            $(selector).each(function () {
-                let currentObj = $(this);
-                if (currentObj.hasClass("flatpickr-input")) {
-                    currentObj.val("");
-                }
-                let inputType = this.type;
-                if (inputType == "checkbox") {
-                    currentObj.prop("checked", false);
-                }
-                else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                    currentObj.tagsinput('removeAll');
-                }
-                else if (inputType != "hidden") {
-                    currentObj.val("");
-                    if (currentObj.hasClass("selectpicker")) {
-                        currentObj.selectpicker("render");
-                    }
-                    else if (currentObj.hasClass("jjsearchbox")) {
-                        currentObj.blur();
-                    }
-                    else if (currentObj.hasClass("jjlookup")) {
-                        currentObj.blur();
-                    }
-                }
-            });
-            $("#current_filteraction_" + objid).val("CLEARACTION");
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            tablePost(objid, enableAjax, false);
-        },
-        doFilter: function (objid, enableAjax) {
-            $("#current_filteraction_" + objid).val("FILTERACTION");
-            $("#current_tableaction_" + objid).val("");
-            $("#current_tablepage_" + objid).val("1");
-            $("#current_formaction_" + objid).val("");
-            tablePost(objid, enableAjax, false);
-            return false;
-        },
-        doSearch: function (objid, oDom) {
-            var value = $(oDom).val().toString().toLowerCase();
-            $("#table_" + objid + " tr").filter(function () {
-                var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-                var isSearch = textValues.toLowerCase().indexOf(value) > -1;
-                if (!isSearch) {
-                    var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
-                    $(this).find("input").each(function () {
-                        var inputValue = $(this).val();
-                        if (inputValue != null) {
-                            let isSearch = inputValue.toString().replace(",", "")
-                                .replace(".", "")
-                                .replace("-", "")
-                                .toLowerCase()
-                                .indexOf(valueNew) > -1;
-                            if (isSearch)
-                                return false;
-                        }
-                    });
-                }
-                if (!isSearch) {
-                    $(this).find("select").each(function () {
-                        var selectedText = $(this).children("option:selected").text();
-                        if (selectedText != null) {
-                            isSearch = selectedText.toLowerCase().indexOf(valueNew) > -1;
-                            if (isSearch)
-                                return false;
-                        }
-                    });
-                }
-                $(this).toggle(isSearch);
-            });
-            if (value.length > 0) {
-                $("#infotext_" + objid).css("display", "none");
-                $("ul.pagination").css("display", "none");
-            }
-            else {
-                $("#infotext_" + objid).css("display", "");
-                $("ul.pagination").css("display", "");
-            }
-        },
-        doSelectItem: function (objid, obj) {
-            var values = $("#selectedrows_" + objid).val().toString();
-            var valuesList = [];
-            if (obj.attr("id") == "jjchk_all")
-                return;
-            if (values.length > 0) {
-                valuesList = values.split(",");
-            }
-            if (obj.prop("checked")) {
-                if ($.inArray(obj.val(), valuesList) < 0)
-                    valuesList.push(obj.val());
-            }
-            else {
-                valuesList = valuesList.filter(function (item) { return item !== obj.val(); });
-            }
-            $("#selectedrows_" + objid).val(valuesList);
-            var textInfo = "";
-            var selectedText = $("#selectedtext_" + objid);
-            if (valuesList.length == 0)
-                textInfo = selectedText.attr("noSelStr");
-            else if (valuesList.length == 1)
-                textInfo = selectedText.attr("oneSelStr");
-            else
-                textInfo = selectedText.attr("paramSelStr").replace("{0}", valuesList.length.toString());
-            selectedText.text(textInfo);
-        },
-        doUnSelectAll: function (objid) {
-            $(".jjselect input").not(":disabled").prop("checked", false);
-            $("#selectedrows_" + objid).val("");
-            var oSelectedtext = $("#selectedtext_" + objid);
-            oSelectedtext.text(oSelectedtext.attr("noSelStr"));
-        },
-        doSelectAll: function (objid) {
-            var frm = $("form");
-            var surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=selectall";
-            else
-                surl += "?t=selectall";
-            $.ajax({
-                async: true,
-                type: frm.attr("method"),
-                url: surl,
-                success: function (data) {
-                    GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                }
-            });
-        },
-        doSorting: function (objid, enableAjax, v) {
-            var tableOrder = "#current_tableorder_" + objid;
-            if (v + " ASC" == $(tableOrder).val())
-                $(tableOrder).val(v + " DESC");
-            else
-                $(tableOrder).val(v + " ASC");
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            tablePost(objid, enableAjax, true);
-        },
-        doMultSorting: function (objid) {
-            var descCommand = "";
-            var order = $("#sortable_" + objid).sortable("toArray");
-            for (var i = 0; i < order.length; i++) {
-                var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
-                switch (tipoOrdenacao) {
-                    case "A":
-                        descCommand += order[i] + " ASC,";
-                        break;
-                    case "D":
-                        descCommand += order[i] + " DESC,";
-                        break;
-                }
-            }
-            descCommand = descCommand.substring(0, descCommand.length - 1);
-            $("#current_tableorder_" + objid).val(descCommand);
-            $("#sort_modal_" + objid).modal('hide');
-            $("#current_formaction_" + objid).val("");
-            jjview.doRefresh(objid, true);
-        },
-        doPagination: function (objid, enableAjax, v) {
-            $("#current_tablepage_" + objid).val(v);
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            tablePost(objid, enableAjax, true);
-        },
-        doRefresh: function (objid, enableAjax) {
-            $("#current_tableaction_" + objid).val("");
-            $("#current_tablerow_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            tablePost(objid, enableAjax, true);
-        },
-        doConfigUI: function (componentName, encryptedActionMap) {
-            $("#current_tableaction_" + componentName).val(encryptedActionMap);
-            $("#current_tablepage_" + componentName).val("1");
-            $("#current_tablerow_" + componentName).val("");
-            $("#current_formaction_" + componentName).val("");
-            $("form:first").trigger("submit");
-        },
-        doConfigCancel: function (objid) {
-            $("form").trigger("reset");
-            $("form :checkbox").change();
-            $("#config_modal_" + objid).modal("hide");
-        },
-        doSelElementInsert: function (componentName, encryptedActionMap) {
-            $("#current-panelAction-" + componentName).val("ELEMENTSEL");
-            $("#current_selaction_" + componentName).val(encryptedActionMap);
-            $("form:first").trigger("submit");
-        },
-        gridAction: function (componentName, encryptedActionMap, confirmMessage) {
-            if (confirmMessage) {
-                var result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            $("#current_tableaction_" + componentName).val(encryptedActionMap);
-            $("#current_formaction_" + componentName).val("");
-            $("form:first").trigger("submit");
-        },
-        doFormUrlRedirect: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                var result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            var frm = $("form");
-            var surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&t=geturlaction&objname=" + objid;
-            else
-                surl += "?t=geturlaction&objname=" + objid;
-            $.ajax({
-                async: true,
-                type: "POST",
-                url: surl,
-                data: frm.serialize() + '&criptid=' + criptid,
-                success: function (data) {
-                    if (data.UrlAsPopUp) {
-                        popup.show(data.TitlePopUp, data.UrlRedirect);
-                    }
-                    else {
-                        window.location.href = data.UrlRedirect;
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                }
-            });
-        },
-        doSqlCommand: function (objid, criptid, confirmMessage) {
-            if (confirmMessage) {
-                var result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            $("#current_tableaction_" + objid).val("");
-            $("#current_formaction_" + objid).val("");
-            $("#current_tablerow_" + objid).val(criptid);
-            $("form:first").trigger("submit");
-        },
-        showInsertSucess: function (objid) {
-            $("#pnl_insertmsg_" + objid).fadeOut(2000, function () {
-                $("#pnl_insert_" + objid).slideDown();
-            });
-        },
-        doUrlRedirect: function (url, ispopup, title, confirmMessage, popupSize = 1) {
-            if (confirmMessage) {
-                const result = confirm(confirmMessage);
-                if (!result) {
-                    return false;
-                }
-            }
-            if (ispopup) {
-                popup.show(title, url, popupSize);
-            }
-            else {
-                window.location.href = url;
-            }
-        },
-        setLookup: function (objid, value) {
-            window.parent.popup.hide();
-            setTimeout(function () {
-                window.parent.$("#id_" + objid).val(value);
-                window.parent.$("#" + objid).val(value).change().blur();
-            }, 100);
-        },
-        deleteFile: function (objid, filename, promptStr) {
-            const result = confirm(promptStr);
-            if (!result) {
-                return false;
-            }
-            $("#uploadaction_" + objid).val("DELFILE");
-            $("#filename_" + objid).val(filename);
-            $("form:first").trigger("submit");
-        },
-        downloadFile: function (objid, filename) {
-            $("#uploadaction_" + objid).val("DOWNLOADFILE");
-            $("#filename_" + objid).val(filename);
-            $("form:first").trigger("submit");
-            setTimeout(function () {
-                messageWait.hide();
-                $("#uploadaction_" + objid).val("");
-            }, 1500);
-        },
-        renameFile: function (objid, filename, promptStr) {
-            var newFileName = prompt(promptStr, filename);
-            if (newFileName != null && newFileName != filename) {
-                $("#uploadaction_" + objid).val("RENAMEFILE");
-                $("#filename_" + objid).val(filename + ";" + newFileName);
-                $("form:first").trigger("submit");
-            }
-        },
-        directDownload: function (objid, pnlname, filename) {
-            messageWait.show();
-            var url = $("form").attr("action");
-            url += url.includes("?") ? "&" : "?";
-            url += "jjuploadview_" + pnlname + "=" + objid;
-            url += "&downloadfile=" + filename;
-            window.location.assign(url);
-            setTimeout(function () {
-                messageWait.hide();
-            }, 1500);
-        },
-        viewLog: function (objid, id) {
-            $("#logId-" + objid).val(id);
-            $("form:first").trigger("submit");
-        }
-    };
-})();
-var messageBox = (function () {
-    const TMessageIcon = {
-        NONE: 1,
-        INFO: 2,
-        WARNING: 3,
-        ERROR: 4,
-        QUESTION: 5
-    };
-    const TMessageSize = {
-        SMALL: 1,
-        DEFAULT: 2,
-        LARGE: 3
-    };
-    var jQueryModalId = "#site-modal";
-    var jQueryModalTitleId = "#site-modal-title";
-    var jQueryModalContentId = "#site-modal-content";
-    var jQueryModalButton1Id = "#site-modal-btn1";
-    var jQueryModalButton2Id = "#site-modal-btn2";
-    var modalId = jQueryModalId.substring(1);
-    var button1Id = jQueryModalButton1Id.substring(1);
-    function setTitle(title) {
-        $(jQueryModalTitleId).html(title);
-    }
-    function setContent(content) {
-        $(jQueryModalContentId).html(content);
-    }
-    function showModal() {
-        if (bootstrapVersion < 5) {
-            $(jQueryModalId)
+    static showModal() {
+        if (MessageBox.bootstrapVersion < 5) {
+            $(MessageBox.jQueryModalId)
                 .modal()
                 .on("shown.bs.modal", function () {
-                $(jQueryModalButton1Id).focus();
+                $(MessageBox.jQueryModalButton1Id).focus();
             });
         }
         else {
-            const modal = new bootstrap.Modal(document.getElementById(modalId), {});
+            const modal = new bootstrap.Modal(document.getElementById(MessageBox.modalId), {});
             modal.show();
-            modal.addEventListener('shown.bs.modal', function () {
-                document.getElementById(button1Id).focus();
+            modal.addEventListener("shown.bs.modal", function () {
+                document.getElementById(MessageBox.button1Id).focus();
             });
         }
     }
-    function setBtn1(label, func) {
-        $(jQueryModalButton1Id).text(label);
+    static setBtn1(label, func) {
+        $(MessageBox.jQueryModalButton1Id).text(label);
         if ($.isFunction(func)) {
-            $(jQueryModalButton1Id).on("click.siteModalClick1", func);
+            $(MessageBox.jQueryModalButton1Id).on("click.siteModalClick1", func);
         }
-        $(jQueryModalButton1Id).show();
+        $(MessageBox.jQueryModalButton1Id).show();
     }
-    function setBtn2(label, func) {
-        $(jQueryModalButton2Id).text(label);
+    static setBtn2(label, func) {
+        $(MessageBox.jQueryModalButton2Id).text(label);
         if ($.isFunction(func)) {
-            $(jQueryModalButton2Id).on("click.siteModalClick2", func);
+            $(MessageBox.jQueryModalButton2Id).on("click.siteModalClick2", func);
         }
-        $(jQueryModalButton2Id).show();
+        $(MessageBox.jQueryModalButton2Id).show();
     }
-    function reset() {
-        setTitle("");
-        setContent("");
-        $(jQueryModalButton1Id).text("");
-        $(jQueryModalButton1Id).off("click.siteModalClick1");
-        $(jQueryModalButton2Id).text("");
-        $(jQueryModalButton2Id).off("click.siteModalClick2");
+    static reset() {
+        MessageBox.setTitle("");
+        MessageBox.setContent("");
+        $(MessageBox.jQueryModalButton1Id).text("");
+        $(MessageBox.jQueryModalButton1Id).off("click.siteModalClick1");
+        $(MessageBox.jQueryModalButton2Id).text("");
+        $(MessageBox.jQueryModalButton2Id).off("click.siteModalClick2");
     }
-    function loadHtml(icontype, sizetype) {
-        if ($(jQueryModalId).length) {
-            $(jQueryModalId).remove();
+    static loadHtml(icontype, sizetype) {
+        if ($(MessageBox.jQueryModalId).length) {
+            $(MessageBox.jQueryModalId).remove();
         }
-        var html = "";
+        let html = "";
         html += "<div id=\"site-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
         html += "  <div class=\"modal-dialog";
         if (sizetype == TMessageSize.LARGE)
@@ -1694,59 +1331,65 @@ var messageBox = (function () {
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion >= 4) {
+        if (MessageBox.bootstrapVersion >= 4) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         }
-        else if (bootstrapVersion >= 5) {
-            html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
+        else if (MessageBox.bootstrapVersion >= 5) {
+            html +=
+                '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
         }
-        else if (bootstrapVersion == 3) {
-            html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button></h4>\r\n";
+        else if (MessageBox.bootstrapVersion == 3) {
+            html +=
+                '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
         html += "      </div>\r\n";
         html += "      <div class=\"modal-body\">\r\n";
         html += "        <table border=\"0\">\r\n";
         html += "          <tr>\r\n";
-        html += "            <td style=\"width:40px\">\r\n";
+        html += '            <td style="width:40px">\r\n';
         if (icontype == TMessageIcon.ERROR) {
-            html += "              <span class=\"text-danger\">\r\n";
-            html += "                <span class=\"fa fa-times-circle\" aria-hidden=\"true\" style=\"font-size: 30px;\"></span>\r\n";
+            html += '              <span class="text-danger">\r\n';
+            html +=
+                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (icontype == TMessageIcon.WARNING) {
-            html += "              <span class=\"text-warning\">\r\n";
-            html += "                <span class=\"fa fa-exclamation-triangle \" aria-hidden=\"true\" style=\"font-size: 30px;\"></span>\r\n";
+            html += '              <span class="text-warning">\r\n';
+            html +=
+                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (icontype == TMessageIcon.INFO) {
-            html += "              <span class=\"text-info\">\r\n";
-            html += "                <span class=\"fa fa-info-circle\" aria-hidden=\"true\" style=\"font-size: 30px;\"></span>\r\n";
+            html += '              <span class="text-info">\r\n';
+            html +=
+                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
         else if (icontype == TMessageIcon.QUESTION) {
-            html += "              <span class=\"text-info\">\r\n";
-            html += "                <span class=\"fa fa-question-circle\" aria-hidden=\"true\" style=\"font-size: 30px;\"></span>\r\n";
+            html += '              <span class="text-info">\r\n';
+            html +=
+                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
             html += "              </span>\r\n";
         }
         html += "            </td>\r\n";
         html += "            <td>\r\n";
-        html += "              <span id=\"site-modal-content\"></span>\r\n";
+        html += '              <span id="site-modal-content"></span>\r\n';
         html += "            </td>\r\n";
         html += "          </tr>\r\n";
         html += "        </table>\r\n";
         html += "      </div>\r\n";
         html += "      <div class=\"modal-footer\">\r\n";
-        if (bootstrapVersion == 3) {
-            html += "        <button type=\"button\" id=\"site-modal-btn1\" class=\"btn btn-default\" data-dismiss=\"modal\"></button>\r\n";
-            html += "        <button type=\"button\" id=\"site-modal-btn2\" class=\"btn btn-default\" data-dismiss=\"modal\"></button>\r\n";
+        if (MessageBox.bootstrapVersion == 3) {
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
         }
-        else if (bootstrapVersion == 4) {
-            html += "        <button type=\"button\" id=\"site-modal-btn1\" class=\"btn btn-outline-dark\" data-dismiss=\"modal\"></button>\r\n";
-            html += "        <button type=\"button\" id=\"site-modal-btn2\" class=\"btn btn-outline-dark\" data-dismiss=\"modal\"></button>\r\n";
+        else if (MessageBox.bootstrapVersion == 4) {
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
         }
         else {
-            html += "        <button type=\"button\" id=\"site-modal-btn1\" class=\"btn btn-outline-dark\" data-bs-dismiss=\"modal\"></button>\r\n";
-            html += "        <button type=\"button\" id=\"site-modal-btn2\" class=\"btn btn-outline-dark\" data-bs-dismiss=\"modal\"></button>\r\n";
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
         }
         html += "      </div>\r\n";
         html += "    </div>\r\n";
@@ -1754,79 +1397,40 @@ var messageBox = (function () {
         html += "</div>\r\n";
         $("body").append(html);
     }
-    return {
-        show: function (title, content, icontype, sizetype, btn1Label, btn1Func, btn2Label, btn2Func) {
-            reset();
-            loadHtml(icontype, sizetype);
-            setTitle(title);
-            setContent(content);
-            if (btn1Label === undefined) {
-                setBtn1("Fechar", null);
-            }
-            else {
-                setBtn1(btn1Label, btn1Func);
-            }
-            if (btn2Label === undefined) {
-                $(jQueryModalButton2Id).hide();
-            }
-            else {
-                setBtn2(btn2Label, btn2Func);
-            }
-            showModal();
-        },
-        hide: function () {
-            $(jQueryModalId).modal("hide");
-            $(".modal-backdrop").hide();
+    static show(title, content, icontype, sizetype, btn1Label, btn1Func, btn2Label, btn2Func) {
+        MessageBox.reset();
+        MessageBox.loadHtml(icontype, sizetype || TMessageSize.DEFAULT);
+        MessageBox.setTitle(title);
+        MessageBox.setContent(content);
+        if (btn1Label === undefined) {
+            MessageBox.setBtn1("Fechar", null);
         }
-    };
-})();
-var messageWait = (function () {
-    var htmlIdWaitModal = "#jjform_wait_message";
-    function loadHtml() {
-        if (!$(htmlIdWaitModal).length) {
-            var html = "";
-            html += "<div id=\"jjform_wait_message\">\r\n";
-            html += "    <div class=\"ajaxImage\"></div>\r\n";
-            html += "    <div class=\"ajaxMessage\">Aguarde...</div>\r\n";
-            html += "</div>";
-            $(html).insertAfter($("body"));
-            var opts = {
-                lines: 17,
-                length: 28,
-                width: 14,
-                radius: 38,
-                scale: 0.40,
-                corners: 1,
-                color: "#000",
-                opacity: 0.3,
-                rotate: 0,
-                direction: 1,
-                speed: 1.2,
-                trail: 62,
-                fps: 20,
-                zIndex: 2e9,
-                className: "spinner",
-                top: "50%",
-                left: "50%",
-                shadow: false,
-                hwaccel: false,
-                position: "absolute",
-            };
-            var spinner = new Spinner(opts).spin();
-            $(spinner.el).insertAfter($("#jjform_wait_message .ajaxImage"));
+        else {
+            MessageBox.setBtn1(btn1Label, btn1Func);
         }
+        if (btn2Label === undefined) {
+            $(MessageBox.jQueryModalButton2Id).hide();
+        }
+        else {
+            MessageBox.setBtn2(btn2Label, btn2Func);
+        }
+        MessageBox.showModal();
     }
-    return {
-        show: function () {
-            loadHtml();
-            $(htmlIdWaitModal).css("display", "");
-        },
-        hide: function () {
-            $(htmlIdWaitModal).css("display", "none");
-        }
-    };
-})();
-class Popup {
+    static hide() {
+        $(MessageBox.jQueryModalId).modal("hide");
+        $(".modal-backdrop").hide();
+    }
+}
+MessageBox.jQueryModalId = "#site-modal";
+MessageBox.jQueryModalTitleId = "#site-modal-title";
+MessageBox.jQueryModalContentId = "#site-modal-content";
+MessageBox.jQueryModalButton1Id = "#site-modal-btn1";
+MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
+MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
+MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
+MessageBox.bootstrapVersion = 5;
+const messageBox = MessageBox;
+class Modal {
     constructor() {
         this.modalId = "popup-modal";
         this.modalTitleId = "popup-modal-title";
@@ -1843,9 +1447,9 @@ class Popup {
             modal.show();
         }
         if (isIframe) {
-            messageWait.show();
+            SpinnerOverlay.show();
             $("iframe").on("load", function () {
-                messageWait.hide();
+                SpinnerOverlay.hide();
             });
         }
     }
@@ -1956,12 +1560,12 @@ class Popup {
     }
     showHtmlFromUrl(title, url, options = null, size = 1) {
         return __awaiter(this, void 0, void 0, function* () {
-            messageWait.show();
+            SpinnerOverlay.show();
             yield fetch(url, options)
                 .then(response => response.text())
                 .then(html => {
                 this.showHtml(title, html, size);
-                messageWait.hide();
+                SpinnerOverlay.hide();
             })
                 .catch(error => {
                 console.error('Error fetching HTML from URL:', error);
@@ -1976,10 +1580,386 @@ class Popup {
     }
 }
 var popup = function () {
-    if (!(this instanceof Popup)) {
-        return new Popup();
+    if (!(this instanceof Modal)) {
+        return new Modal();
     }
 }();
+class SearchBox {
+    static setup() {
+        $("input.jjsearchbox").each(function () {
+            const componentName = $(this).attr("jjid");
+            let urltypehead = $(this).attr("urltypehead");
+            let triggerlength = $(this).attr("triggerlength");
+            let numberofitems = $(this).attr("numberofitems");
+            let scrollbar = Boolean($(this).attr("scrollbar"));
+            let showimagelegend = Boolean($(this).attr("showimagelegend"));
+            if (triggerlength == null)
+                triggerlength = "1";
+            if (numberofitems == null)
+                numberofitems = "10";
+            if (scrollbar == null)
+                scrollbar = false;
+            if (showimagelegend == null)
+                showimagelegend = false;
+            const frm = $("form");
+            if (!urltypehead.includes("GetItems")) {
+                let url = frm.attr("action");
+                if (url.includes("?"))
+                    url += "&";
+                else
+                    url += "?";
+                urltypehead = url + urltypehead;
+            }
+            const jjSearchBoxSelector = "#" + componentName + "_text";
+            const jjSearchBoxHiddenSelector = "#" + componentName;
+            $(this).blur(function () {
+                if ($(this).val() == "") {
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.searchClass);
+                    $(jjSearchBoxHiddenSelector).val("");
+                }
+                else if ($(jjSearchBoxHiddenSelector).val() == "") {
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass);
+                }
+            });
+            $(this).typeahead({
+                ajax: {
+                    url: urltypehead,
+                    method: "POST",
+                    loadingClass: "loading-circle",
+                    triggerLength: triggerlength,
+                    preDispatch: function () {
+                        $(jjSearchBoxHiddenSelector).val("");
+                        FeedbackIcon.setIcon(jjSearchBoxSelector, "");
+                        return frm.serializeArray();
+                    },
+                },
+                onSelect: function (item) {
+                    $(jjSearchBoxHiddenSelector).val(item.value);
+                    if (item.value != "") {
+                        FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
+                    }
+                },
+                displayField: "name",
+                valueField: "id",
+                triggerLength: triggerlength,
+                items: numberofitems,
+                scrollBar: scrollbar,
+                item: '<li class="dropdown-item"><a href="#"></a></li>',
+                highlighter: function (item) {
+                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+                    let textSel;
+                    if (showimagelegend) {
+                        const parts = item.split("|");
+                        textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
+                            return "<strong>" + match + "</strong>";
+                        });
+                        textSel = "<i class='fa fa-lg fa-fw " + parts[1] + "' style='color:" + parts[2] + ";margin-right:6px;'></i>" + textSel;
+                    }
+                    else {
+                        textSel = item.replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
+                            return "<strong>" + match + "</strong>";
+                        });
+                    }
+                    return textSel;
+                }
+            });
+        });
+    }
+}
+class Slider {
+    static observeSliders() {
+        let sliders = document.getElementsByClassName("jjslider");
+        Array.from(sliders).forEach((slider) => {
+            let sliderInput = document.getElementById(slider.id + "-value");
+            document.getElementById(slider.id).addEventListener('change', function () {
+                this.setAttribute('value', (this).value);
+            });
+            slider.oninput = function () {
+                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                if (decimalPlaces == null)
+                    decimalPlaces = "0";
+                let sliderValue = (this).value;
+                if (localeCode === 'pt')
+                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
+                else
+                    sliderInput.value = $.number(sliderValue, decimalPlaces);
+            };
+        });
+    }
+    static observeInputs() {
+        let inputs = document.getElementsByClassName("jjslider-value");
+        Array.from(inputs).forEach((input) => {
+            let slider = document.getElementById(input.id.replace("-value", ""));
+            input.oninput = function () {
+                slider.value = $("#" + input.id).val();
+            };
+        });
+    }
+}
+class SpinnerOverlay {
+    static loadHtml() {
+        if (!$(this.spinnerOverlayId).length) {
+            const html = `
+                <div id="spinner-overlay">
+                    <div class="ajaxImage"></div>
+                    <div class="ajaxMessage">Loading...</div>
+                </div>
+            `;
+            $(html).insertAfter($("body"));
+            const options = {
+                lines: 17,
+                length: 28,
+                width: 14,
+                radius: 38,
+                scale: 0.40,
+                corners: 1,
+                color: "#000",
+                opacity: 0.3,
+                rotate: 0,
+                direction: 1,
+                speed: 1.2,
+                trail: 62,
+                fps: 20,
+                zIndex: 2e9,
+                className: "spinner",
+                top: "50%",
+                left: "50%",
+                shadow: false,
+                hwaccel: false,
+                position: "absolute",
+            };
+            this.spinner = new Spinner(options).spin();
+            if (this.spinner.el) {
+                $(this.spinner.el).insertAfter($("#spinner-overlay .ajaxImage"));
+            }
+        }
+    }
+    static show() {
+        this.loadHtml();
+        document.querySelector(this.spinnerOverlayId).style.display = "";
+    }
+    static hide() {
+        document.querySelector(this.spinnerOverlayId).style.display = "none";
+    }
+}
+SpinnerOverlay.spinnerOverlayId = "#spinner-overlay";
+class TabNav {
+    static setup() {
+        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
+            var link = $(e.target);
+            $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
+        });
+    }
+}
+class TextArea {
+    static setup() {
+        $("textarea").keydown(function () {
+            var oTextArea = $(this);
+            var iMaxChar = oTextArea.attr("maxlength");
+            var strValid = oTextArea.attr("strvalid2");
+            var strChars = oTextArea.attr("strchars");
+            if (isNaN(iMaxChar))
+                iMaxChar = oTextArea.attr("jjmaxlength");
+            if (isNaN(iMaxChar))
+                return;
+            if (isNaN(strValid))
+                strValid = "Maximum limit of {0} characters!";
+            if (isNaN(strChars))
+                strChars = "({0} characters remaining)";
+            if (!isNaN(iMaxChar)) {
+                var nId = oTextArea.attr("id");
+                var iTypedChar = oTextArea.val().toString().length;
+                if (iTypedChar > iMaxChar) {
+                    alert(strValid.replace("{0}", iMaxChar));
+                }
+                strChars = strChars.replace("{0}", (iMaxChar - oTextArea.val().toString().length));
+                strChars += "&nbsp;";
+                if ($("#spansize_" + nId).length) {
+                    $("#spansize_" + nId).html(strChars);
+                }
+                else {
+                    $("<span id='spansize_" + nId + "' class='small' style='float: right'>" + strChars + "</span>").insertBefore(oTextArea);
+                }
+            }
+        });
+    }
+}
+class FileUploadOptions {
+    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
+        this.componentName = componentName;
+        this.url = url;
+        this.form = form;
+        this.allowMultiple = allowMultiple;
+        this.maxFileSize = maxFileSize;
+        this.allowDragDrop = allowDragDrop;
+        this.showFileSize = showFileSize;
+        this.allowedTypes = allowedTypes;
+        this.dragDropLabel = dragDropLabel;
+        this.autoSubmit = autoSubmit;
+    }
+}
+class UploadArea {
+    static uploadFile(options) {
+        const selector = "#" + options.componentName;
+        $(selector).uploadFile({
+            url: options.url,
+            formData: $(options.form).serializeArray(),
+            fileName: "file",
+            multiple: options.allowMultiple,
+            maxFileSize: options.maxFileSize,
+            maxFileCount: 1000,
+            dragDrop: options.allowDragDrop,
+            showFileSize: options.showFileSize,
+            dragdropWidth: ($(selector).width() - 10),
+            statusBarWidth: ($(selector).width() - 10),
+            autoSubmit: true,
+            uploadButtonClass: "btn btn-primary",
+            allowedTypes: options.allowedTypes,
+            acceptFiles: options.allowedTypes !== "*" ? "." + options.allowedTypes.replace(" ", "").replace(",", ",.") : "*",
+            uploadStr: $(selector).attr("uploadStr"),
+            dragDropStr: "<span>&nbsp;<b>" + options.dragDropLabel + "</b></span>",
+            doneStr: $(selector).attr("doneStr"),
+            cancelStr: $(selector).attr("cancelStr"),
+            abortStr: $(selector).attr("abortStr"),
+            extErrorStr: $(selector).attr("extErrorStr"),
+            sizeErrorStr: $(selector).attr("sizeErrorStr"),
+            customErrorKeyStr: "jquery-upload-file-error",
+            returnType: "json",
+            onSubmit: function () {
+                showWaitOnPost = false;
+            },
+            onSuccess: function (files, data, xhr, pd) {
+                var message = data["jquery-upload-file-message"];
+                if (message && message != "") {
+                    var div = $("<div class='ajax-file-upload-filename'></div>");
+                    $("<span class='fa fa-check-circle text-success'></span>").appendTo(div);
+                    $("<span>&nbsp;" + message + "</span>").appendTo(div);
+                    div.appendTo(pd.statusbar[0]);
+                }
+            },
+            afterUploadAll: function (element) {
+                if (options.autoSubmit && element.selectedFiles > 0) {
+                    $("#uploadaction_" + options.componentName).val("afteruploadall");
+                }
+                LoadJJMasterData();
+            },
+        });
+    }
+    static handleCopyPaste(componentName) {
+        window.addEventListener("paste", (e) => {
+            var files = e.clipboardData.files;
+            if (files.length === 1) {
+                var file = files[0];
+                if (file.type.indexOf("image") !== -1) {
+                    document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
+                        document.querySelector("#preview_modal_" + componentName).classList.add("hide");
+                        var filename = document.querySelector("#preview_filename_" + componentName).value || "image";
+                        filename += ".png";
+                        const dt = new DataTransfer();
+                        const myNewFile = new File([file], filename, { type: file.type });
+                        dt.items.add(myNewFile);
+                        document.querySelector("#" + componentName + " input[type='file']").files = dt.files;
+                        document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
+                        return;
+                    });
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        document.querySelector("#pastedimage_" + componentName).src = event.target.result.toString();
+                        var filename = file.name.replace(/\.[^/.]+$/, "");
+                        document.querySelector("#preview_filename_" + componentName).value = filename;
+                        document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
+                    };
+                    reader.readAsDataURL(file);
+                    return;
+                }
+            }
+            document.querySelector("#" + componentName + " input[type='file']").files = files;
+            document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
+        });
+    }
+    static setup() {
+        document.querySelectorAll("div.fileUpload").forEach((element) => {
+            let componentName = element.getAttribute("id");
+            let multiple = element.getAttribute("jjmultiple") === "true";
+            let autoSubmit = element.getAttribute("autoSubmit") === "true";
+            let maxFileSize = element.getAttribute("maxFileSize");
+            let dragDrop = element.getAttribute("dragDrop");
+            let copyPaste = element.getAttribute("copyPaste");
+            let showFileSize = element.getAttribute("showFileSize");
+            let allowedTypes = element.getAttribute("allowedTypes");
+            let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
+            let frm = document.querySelector("form");
+            let url;
+            if (element.getAttribute("url") != null) {
+                url = element.getAttribute("url");
+            }
+            else {
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("t", "jjupload");
+                urlBuilder.addQueryParameter("objname", componentName);
+                url = urlBuilder.build();
+            }
+            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
+            this.uploadFile(fileUploadOptions);
+            window.addEventListener("resize", () => {
+                document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
+                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
+            });
+            if (copyPaste === "true") {
+                this.handleCopyPaste(componentName);
+            }
+        });
+    }
+}
+class UploadView {
+    static open(componentName, title, values, url = null) {
+        const panelName = $("#v_" + componentName).attr("pnlname");
+        if (url == null) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadViewParams", values);
+            url = urlBuilder.build();
+        }
+        const popup = new Modal();
+        popup.modalId = componentName + "-popup";
+        popup.modalTitleId = componentName + "-popup-title";
+        if (url == null || url.length == 0) {
+            popup.show(title, url, 1);
+        }
+        else {
+            popup.showHtmlFromUrl(title, url, null, 1).then(_ => {
+                LoadJJMasterData();
+            });
+        }
+    }
+}
+class UrlBuilder {
+    constructor(url = null) {
+        this.url = url;
+        this.queryParameters = new Map();
+    }
+    addQueryParameter(key, value) {
+        this.queryParameters.set(key, value);
+    }
+    build() {
+        const form = document.querySelector("form");
+        if (this.url == null) {
+            this.url = form.getAttribute("action");
+        }
+        if (!this.url.includes("?")) {
+            this.url += "?";
+        }
+        let isFirst = true;
+        for (const [key, value] of this.queryParameters.entries()) {
+            if (!isFirst) {
+                this.url += "&";
+            }
+            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            isFirst = false;
+        }
+        return this.url;
+    }
+}
 var jjutil = (function () {
     return {
         justNumber: function (e) {

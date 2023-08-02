@@ -4,4 +4,5 @@ interface JQuery{
     typeahead : Function
     tagsinput : Function
     valid: Function
+    sortable: Function
 }

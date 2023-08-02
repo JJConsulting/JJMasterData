@@ -159,7 +159,7 @@ textarea {
     }
 
 /*Ajax message*/
-#jjform_wait_message {
+#spinner-overlay {
     position: fixed;
     right: 0px;
     bottom: 0px;
@@ -174,11 +174,11 @@ textarea {
     cursor: progress;
 }
 
-    #jjform_wait_message .ajaxImage {
+    #spinner-overlay .ajaxImage {
     }
 
 
-    #jjform_wait_message .ajaxMessage {
+    #spinner-overlay .ajaxMessage {
         color: white;
         text-align: center;
         position: absolute;

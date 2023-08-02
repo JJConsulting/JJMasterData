@@ -1,4 +1,58 @@
 class DataExportation{
+    static async startProgressVerificationAtSamePage(componentName) {
+        DataExportation.setLoadMessage();
+
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t","tableExp")
+        urlBuilder.addQueryParameter("gridName",componentName)
+        urlBuilder.addQueryParameter("exptype","checkProgress")
+        
+        var isCompleted : boolean = false;
+
+        while(!isCompleted){
+            isCompleted = await DataExportation.checkProgress(urlBuilder.build(), componentName);
+            await sleep(3000);
+        }
+    }
+
+    static async stopProcessAtSamePage(componentName, stopMessage) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t","tableExp")
+        urlBuilder.addQueryParameter("gridName",componentName)
+        urlBuilder.addQueryParameter("exptype","stopProcess")
+        
+        await DataExportation.stopExportation(urlBuilder.build(), stopMessage);
+    }
+
+
+    static openExportPopupAtSamePage(componentName) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t","tableExp")
+        urlBuilder.addQueryParameter("gridName",componentName)
+        urlBuilder.addQueryParameter("exptype","showOptions")
+
+        DataExportation.openExportPopup(urlBuilder.build(), componentName)
+    }
+
+    static startExportationAtSamePage(componentName) {
+
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t","tableExp")
+        urlBuilder.addQueryParameter("gridName",componentName)
+        urlBuilder.addQueryParameter("exptype","export")
+
+        fetch(urlBuilder.build(),{
+            method:"POST",
+            body: new FormData(document.querySelector<HTMLFormElement>("form"))
+        }).then(response=>response.text()).then(async html => {
+            const modalBody = "#export_modal_" + componentName + " .modal-body ";
+            document.querySelector<HTMLElement>(modalBody).innerHTML = html;
+            
+            LoadJJMasterData(null, modalBody);
+            await DataExportation.startProgressVerificationAtSamePage(componentName)
+        });
+        
+    }
     
     static async checkProgress(url, componentName) {
         showWaitOnPost = false;
@@ -67,7 +121,7 @@ class DataExportation{
     private static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        jjloadform(null);
+        LoadJJMasterData(null);
 
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
@@ -112,7 +166,7 @@ class DataExportation{
             .then(data => {
                 const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
                 modalBody.innerHTML = data;
-                jjloadform();
+                LoadJJMasterData();
                 DataExportation.startProgressVerification(checkProgressUrl,componentName)
  
             })

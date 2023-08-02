@@ -1,5 +1,6 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -48,15 +49,14 @@ public class LookupController : MasterDataController
         }); 
     }
 
-    [ServiceFilter<DictionaryNameDecryptionFilter>]
+    [ServiceFilter<FormElementDecryptionFilter>]
     public async Task<IActionResult> GetResult(
-        string dictionaryName, 
+        FormElement formElement, 
         string componentName,
         PageState pageState,
         string fieldName,
         string searchId)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var dataItem = formElement.Fields[fieldName].DataItem;
 
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState,true);
@@ -73,16 +73,9 @@ public class LookupController : MasterDataController
 
         if (!lookupParameters.EnableElementActions)
         {
-            foreach (var action in form.GridView.ToolBarActions)
+            foreach (var action in form.GridView.ToolBarActions.Where(IsLookupAction()))
             {
-                if (action is not LegendAction 
-                    && action is not RefreshAction 
-                    && action is not FilterAction 
-                    && action is not ConfigAction 
-                    && action is not SortAction)
-                {
-                    action.SetVisible(false);
-                }
+                action.SetVisible(false);
             }
 
             foreach (var action in form.GridView.GridActions)
@@ -96,7 +89,7 @@ public class LookupController : MasterDataController
             action.IsDefaultOption = false;
         }
 
-        var script = $"jjview.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
+        var script = $"FormView.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",
@@ -113,5 +106,13 @@ public class LookupController : MasterDataController
             form.SetCurrentFilter(filter.Key, filter.Value?.ToString());
         }
     }
-    
+
+    private static Func<BasicAction, bool> IsLookupAction()
+    {
+        return action => action is not LegendAction 
+                         && action is not RefreshAction 
+                         && action is not FilterAction 
+                         && action is not ConfigAction 
+                         && action is not SortAction;
+    }
 }

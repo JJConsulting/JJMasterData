@@ -70,7 +70,7 @@
                 }
             },
             error: function (xhr, status, error) {
-                messageWait.hide();
+                SpinnerOverlay.hide();
                 if (xhr.responseText != "") {
                     var err = JSON.parse(xhr.responseText);
                     //Session expired
@@ -96,7 +96,7 @@
 
         $.get(url, function (data) {
             $("#fieldDetail").html(data);
-            jjloadform(null, "#fieldDetail ");
+            LoadJJMasterData(null, "#fieldDetail ");
             savePanelState();
             resizeContainer();
         });

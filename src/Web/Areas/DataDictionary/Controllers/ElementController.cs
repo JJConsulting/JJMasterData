@@ -248,7 +248,7 @@ public class ElementController : DataDictionaryController
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"jjdictionary.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                $"DataDictionaryUtils.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
         gridView.AddToolBarAction(btnExport);
 
