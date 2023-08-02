@@ -5,8 +5,11 @@ class Lookup {
             let lookupId = lookupInput.attr("id");
             let panelName = lookupInput.attr("pnlname");
             let popupTitle = lookupInput.attr("popuptitle");
+            let lookupUrl = lookupInput.attr("lookup-url");
             let popupSize : number = +lookupInput.attr("popupsize");
             let form = $("form");
+            
+            
             let url : string = form.attr("action");
 
             if (url.includes("?"))
@@ -21,25 +24,7 @@ class Lookup {
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             
             $("#btn_" + lookupId).on("click",function () {
-
-                let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
-
-                $.ajax({
-                    type: 'POST',
-                    data: form.serialize(),
-                    dataType: "json",
-                    cache: false,
-                    url: ajaxUrl,
-                    success: function (data) {
-                        popup.show(popupTitle, data.url, popupSize);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                        console.log(textStatus);
-                        console.log(jqXHR);
-                    }
-                });
-                return false;
+                popup.show(popupTitle, lookupUrl, popupSize);
             });
 
             function setHiddenLookup(){

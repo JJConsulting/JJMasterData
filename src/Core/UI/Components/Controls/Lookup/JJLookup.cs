@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -15,6 +17,8 @@ namespace JJMasterData.Core.Web.Components;
 public class JJLookup : JJAsyncBaseControl
 {
     private ILookupService LookupService { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     private ILogger<JJLookup> Logger { get; }
 
 
@@ -92,9 +96,13 @@ public class JJLookup : JJAsyncBaseControl
     public JJLookup(
         IHttpContext httpContext,
         ILookupService lookupService,
+        JJMasterDataEncryptionService encryptionService,
+        JJMasterDataUrlHelper urlHelper,
         ILogger<JJLookup> logger) : base(httpContext)
     {
         LookupService = lookupService;
+        EncryptionService = encryptionService;
+        UrlHelper = urlHelper;
         Logger = logger;
         Enabled = true;
         AutoReloadFormFields = true;
@@ -103,7 +111,6 @@ public class JJLookup : JJAsyncBaseControl
         PopSize = PopupSize.Full;
         PopTitle = "Search";
     }
-
 
     #endregion
 
@@ -119,8 +126,6 @@ public class JJLookup : JJAsyncBaseControl
 
         if (IsAjaxGetDescription())
             await SendResult();
-        else
-            SendLookupUrlDto();
 
         return null;
     }
@@ -132,9 +137,25 @@ public class JJLookup : JJAsyncBaseControl
         string description = Text;
 
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description = await LookupService.GetDescriptionAsync(DataItem,inputValue,PageState,FormValues,OnlyNumbers);
+            description =
+                await LookupService.GetDescriptionAsync(DataItem, inputValue, PageState, FormValues, OnlyNumbers);
 
         var div = new HtmlBuilder(HtmlTag.Div);
+
+        Attributes["lookup-url"] = LookupService.GetLookupUrl(DataItem, Name, PageState, FormValues);
+
+        // if (IsExternalRoute)
+        // {
+        //     var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(DataItem.ElementMap.ElementName);
+        //     Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup",
+        //         new
+        //         {
+        //             dictionaryName = encryptedDictionaryName, 
+        //             componentName = Name, 
+        //             
+        //             pageState = PageState
+        //         });
+        // }
 
         var textGroup = new JJTextGroup(CurrentContext)
         {
@@ -159,6 +180,7 @@ public class JJLookup : JJAsyncBaseControl
             }
         };
 
+
         div.AppendComponent(textGroup);
         div.AppendHiddenInput($"id_{Name}", SelectedValue);
         return div;
@@ -172,14 +194,6 @@ public class JJLookup : JJAsyncBaseControl
             return " jj-icon-warning";
         return null;
     }
-
-    public void SendLookupUrlDto()
-    {
-        var dto = LookupService.GetLookupUrlDto(DataItem,Name,PageState,FormValues);
-
-        CurrentContext.Response.SendResponseObsolete(dto.ToJson(), "application/json");
-    }
-
 
 
     private async Task SendResult()
@@ -214,7 +228,7 @@ public class JJLookup : JJAsyncBaseControl
         return "ajax".Equals(lkaction);
     }
 
- 
+
     private bool IsLookupRoute()
     {
         string pnlName = string.Empty;
@@ -240,14 +254,15 @@ public class JJLookup : JJAsyncBaseControl
     public static HtmlBuilder ResponseRoute(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
-        if (string.IsNullOrEmpty(lookupRoute)) 
+        if (string.IsNullOrEmpty(lookupRoute))
             return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
-        if (field == null) 
+        if (field == null)
             return null;
-        var lookup = view.ControlFactory.CreateAsync(view.FormElement,field, null, view.Values, view.PageState, view.Name).GetAwaiter().GetResult();
+        var lookup = view.ControlFactory
+            .CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name).GetAwaiter()
+            .GetResult();
         return lookup.GetHtmlBuilder();
-
     }
 }

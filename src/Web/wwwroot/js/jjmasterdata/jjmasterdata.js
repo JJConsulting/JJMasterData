@@ -45,7 +45,7 @@ class ActionManager {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: JSON.stringify({})
-        }, 1).then(_ => LoadJJMasterData());
+        }, 1).then(_ => loadJJMasterData());
     }
 }
 function loadAuditLog(componentName, logId, url = null) {
@@ -236,7 +236,7 @@ class DataExportation {
         }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
             const modalBody = "#export_modal_" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
-            LoadJJMasterData(null, modalBody);
+            loadJJMasterData(null, modalBody);
             yield DataExportation.startProgressVerificationAtSamePage(componentName);
         }));
     }
@@ -300,7 +300,7 @@ class DataExportation {
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        LoadJJMasterData(null);
+        loadJJMasterData(null);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -343,7 +343,7 @@ class DataExportation {
             .then(data => {
             const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
             modalBody.innerHTML = data;
-            LoadJJMasterData();
+            loadJJMasterData();
             DataExportation.startProgressVerification(checkProgressUrl, componentName);
         })
             .catch(error => {
@@ -572,7 +572,7 @@ class DataPanel {
         })
             .then(data => {
             document.getElementById(componentName).outerHTML = data;
-            LoadJJMasterData();
+            loadJJMasterData();
             jjutil.gotoNextFocus(fieldName);
         })
             .catch(error => {
@@ -628,7 +628,7 @@ class FormView {
                     }
                     $("#jjgridview_" + objid).html(data);
                     if (loadform) {
-                        LoadJJMasterData();
+                        loadJJMasterData();
                     }
                     $("#current_filteraction_" + objid).val("");
                 },
@@ -1045,7 +1045,7 @@ class GridView {
             .then(response => response.text())
             .then(data => {
             document.querySelector("#jjgridview_" + componentName).innerHTML = data;
-            LoadJJMasterData();
+            loadJJMasterData();
             document.querySelector("#current_filteraction_" + componentName).value = "";
             SpinnerOverlay.hide();
         })
@@ -1057,7 +1057,7 @@ class GridView {
 }
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
-    LoadJJMasterData("load", null);
+    loadJJMasterData("load", null);
 });
 class JJSortable {
     static setup() {
@@ -1079,7 +1079,7 @@ class JJSortable {
         });
     }
 }
-function LoadJJMasterData(event, prefixSelector) {
+function loadJJMasterData(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
     }
@@ -1174,6 +1174,7 @@ class Lookup {
             let lookupId = lookupInput.attr("id");
             let panelName = lookupInput.attr("pnlname");
             let popupTitle = lookupInput.attr("popuptitle");
+            let lookupUrl = lookupInput.attr("lookup-url");
             let popupSize = +lookupInput.attr("popupsize");
             let form = $("form");
             let url = form.attr("action");
@@ -1186,23 +1187,7 @@ class Lookup {
             const jjLookupSelector = "#" + lookupId + "";
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
-                let ajaxUrl = url + "&lkaction=geturl&lkid=" + lookupInput.val();
-                $.ajax({
-                    type: 'POST',
-                    data: form.serialize(),
-                    dataType: "json",
-                    cache: false,
-                    url: ajaxUrl,
-                    success: function (data) {
-                        popup.show(popupTitle, data.url, popupSize);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                        console.log(textStatus);
-                        console.log(jqXHR);
-                    }
-                });
-                return false;
+                popup.show(popupTitle, lookupUrl, popupSize);
             });
             function setHiddenLookup() {
                 $("#id_" + lookupId).val(lookupInput.val());
@@ -1841,7 +1826,7 @@ class UploadArea {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#uploadaction_" + options.componentName).val("afteruploadall");
                 }
-                LoadJJMasterData();
+                loadJJMasterData();
             },
         });
     }
@@ -1928,7 +1913,7 @@ class UploadView {
         }
         else {
             popup.showHtmlFromUrl(title, url, null, 1).then(_ => {
-                LoadJJMasterData();
+                loadJJMasterData();
             });
         }
     }

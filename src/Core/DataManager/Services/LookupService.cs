@@ -38,7 +38,7 @@ public class LookupService : ILookupService
         UrlHelper = urlHelper;
     }
     
-    public LookupUrlDto GetLookupUrlDto(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues)
+    public string GetLookupUrl(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues)
     {
         var elementMap = dataItem.ElementMap;
 
@@ -48,10 +48,8 @@ public class LookupService : ILookupService
         var encryptedLookupParameters =
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, pageState,
                 formValues));
-
-        var dto = new LookupUrlDto(
-            UrlHelper.GetUrl("Index", "Lookup", new { lookupParameters = encryptedLookupParameters }));
-        return dto;
+        
+        return UrlHelper.GetUrl("Index", "Lookup", new { lookupParameters = encryptedLookupParameters });
     }
     
     public async Task<string> GetDescriptionAsync(

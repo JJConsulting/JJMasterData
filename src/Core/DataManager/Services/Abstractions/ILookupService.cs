@@ -7,7 +7,7 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public interface ILookupService
 {
-    LookupUrlDto GetLookupUrlDto(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues);
+    string GetLookupUrl(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues);
     object GetSelectedValue(string componentName);
 
     Task<string> GetDescriptionAsync(
